@@ -1,4 +1,4 @@
-import { Meta } from "../layouts/Meta";
+import { Meta } from "../layout/Meta";
 
 export const Swap = () => {
   return (
