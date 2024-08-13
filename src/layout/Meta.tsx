@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 import { AppConfig } from "./appConfig";
 import metaImage from "../../public/metadata.png";
@@ -9,7 +9,11 @@ export type IMetaProps = {
   canonical?: string;
 };
 
-export const Meta: React.FC<IMetaProps> = (props) => {
+export const Meta: React.FC<IMetaProps> = ({
+  title,
+  description,
+  canonical,
+}) => {
   const router = useLocation();
   const basePath = router.pathname.split("/")[1];
 
@@ -42,18 +46,18 @@ export const Meta: React.FC<IMetaProps> = (props) => {
       />
       <link rel="icon" href={`${basePath}/favicon.ico`} key="favicon" />
 
-      <title key="title">{props.title}</title>
-      <meta name="description" content={props.description} />
+      <title key="title">{title}</title>
+      <meta name="description" content={description} />
 
       <meta property="og:type" content={"image/png"} />
       <meta property="og:image" content={metaImage} />
-      <meta property="og:title" content={props.title} />
-      <meta property="og:description" content={props.description} />
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
       <meta property="og:locale" content={AppConfig.locale} />
       <meta property="og:site_name" content={AppConfig.site_name}></meta>
-      <link rel="canonical" href="https://garden.finance/" />
+      <link rel="canonical" href={AppConfig.canonical + canonical} />
 
       <meta name="keywords" content="Garden" />
       <meta name="keywords" content="Bitcoin exchange" />
@@ -71,7 +75,7 @@ export const Meta: React.FC<IMetaProps> = (props) => {
       <meta name="twitter:card" content={"summary_large_image"} />
       <meta name="twitter:site" content={"garden.finance"} />
       <meta name="twitter:creator" content={"@garden_finance"} />
-      <meta name="twitter:description" content={props.description} />
+      <meta name="twitter:description" content={description} />
       {/* End Twitter tags */}
     </Helmet>
   );

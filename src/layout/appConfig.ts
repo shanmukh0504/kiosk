@@ -4,4 +4,5 @@ export const AppConfig = {
   description:
     "Garden provides one of the easiest ways for you to acquire WBTC with real BTC",
   locale: "en",
+  canonical: "https://app.garden.finance/",
 };
