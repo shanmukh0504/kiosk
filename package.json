@@ -42,5 +42,6 @@
     "bracketSpacing": true,
     "bracketSameLine": false,
     "arrowParens": "always"
-  }
+  },
+  "packageManager": "yarn@4.4.0"
 }
