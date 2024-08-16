@@ -1,0 +1,18 @@
+{
+  "cSpell.words": [
+    "gardenfi",
+    "Parens",
+    "tailwindcss",
+    "tanstack",
+    "tseslint",
+    "viem"
+  ],
+  "prettier.semi": true,
+  "prettier.singleQuote": false,
+  "prettier.trailingComma": "all",
+  "prettier.tabWidth": 2,
+  "prettier.bracketSpacing": true,
+  "prettier.bracketSameLine": false,
+  "prettier.arrowParens": "always",
+  "editor.formatOnSave": true // Automatically format on save
+}
