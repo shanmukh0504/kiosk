@@ -1,8 +1,8 @@
 import { Route, Routes } from "react-router-dom";
+import { Layout } from "../layout/Layout";
+import { INTERNAL_ROUTES } from "../constants/constants";
 import { Swap } from "./swap";
 import { Quests } from "./quests";
-import { INTERNAL_ROUTES } from "./common/constants";
-import { Layout } from "./layout/Layout";
 
 function App() {
   return (

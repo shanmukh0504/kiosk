@@ -1,8 +1,8 @@
 import { Footer, Opacity } from "@gardenfi/garden-book";
 import { FC } from "react";
 import { Orb } from "../common/Orb";
-import { getCurrentTheme } from "../common/utils";
-import { Navbar } from "../navbar/Navbar";
+import { getCurrentTheme } from "../utils/utils";
+import { Navbar } from "./navbar/Navbar";
 
 type LayoutProps = {
   children: React.ReactNode;

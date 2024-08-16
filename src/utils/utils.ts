@@ -1,4 +1,4 @@
-import { INTERNAL_ROUTES, THEMES } from "./constants";
+import { INTERNAL_ROUTES, THEMES } from "../constants/constants";
 
 export const isProduction = () => {
   return import.meta.env.VITE_ENVIRONMENT === "production";

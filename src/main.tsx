@@ -1,10 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App.tsx";
 import { BrowserRouter } from "react-router-dom";
+import App from "./pages/index.tsx";
 import { HelmetProvider } from "react-helmet-async";
 import { WagmiProvider } from "wagmi";
-import { config } from "./wagmi/config.ts";
+import { config } from "./layout/wagmi/config.ts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 import "@gardenfi/garden-book/styles.css";

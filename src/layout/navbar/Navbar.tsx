@@ -1,5 +1,5 @@
 import { GardenFullLogo, Typography } from "@gardenfi/garden-book";
-import { INTERNAL_ROUTES } from "../common/constants";
+import { INTERNAL_ROUTES } from "../../constants/constants";
 
 export const Navbar = () => {
   const path = window.location.pathname;
