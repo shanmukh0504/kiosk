@@ -1,0 +1,33 @@
+import { useState, useEffect, useCallback } from "react";
+
+type Viewport = {
+  width: number;
+  height: number;
+};
+
+export const useViewport = (): Viewport => {
+  const [viewport, setViewport] = useState<Viewport>({
+    width: -1,
+    height: -1,
+  });
+
+  const handleResize = useCallback(() => {
+    setViewport({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!window) return;
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [handleResize]);
+
+  return viewport;
+};
