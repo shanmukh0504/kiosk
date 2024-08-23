@@ -1,13 +1,21 @@
 import { GardenFullLogo, Typography } from "@gardenfi/garden-book";
 import { INTERNAL_ROUTES } from "../../constants/constants";
+import { API } from "../../constants/api";
 
 export const Navbar = () => {
   const path = window.location.pathname;
   const isCurrentRoute = (route: string) => path === route;
 
+  const handleHomeLogoClick = () => {
+    window.open(API().home, "_blank");
+  };
+
   return (
     <div className={"flex items-center px-10 py-6 gap-16"}>
-      <GardenFullLogo />
+      <GardenFullLogo
+        onClick={handleHomeLogoClick}
+        className="cursor-pointer"
+      />
       <div className="flex gap-12">
         {Object.values(INTERNAL_ROUTES).map((route) => {
           return (

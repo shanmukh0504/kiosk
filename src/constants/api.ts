@@ -6,5 +6,8 @@ export const API = () => {
     throw new Error("Missing VITE_QUESTS_URL in env");
   }
 
-  return { quests: protocol + QUESTS_URL + "/quests" };
+  return {
+    home: "https://garden.finance",
+    quests: protocol + QUESTS_URL + "/quests",
+  };
 };
