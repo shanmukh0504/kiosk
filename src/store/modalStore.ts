@@ -1,15 +1,7 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 export const modalNames = {
   connectWallet: "connectWallet",
-  referralModal: "referralModal",
-  feedbackForm: "feedbackForm",
-  accessCode: "accessCode",
-  orderDetails: "orderDetails",
-  stakeSeed: "stakeSeed",
-  manageStake: "manageStake",
-  seedInfo: "seedInfo",
-  bandIt: "bandIt",
 } as const;
 
 export type ModalName = keyof typeof modalNames;
@@ -24,7 +16,7 @@ type ModalState = {
 
 export const modalStore = create<ModalState>((set) => ({
   modalName: {
-    connectWallet: false,
+    connectWallet: true,
     referralModal: false,
     feedbackForm: false,
     accessCode: false,
@@ -45,3 +37,7 @@ export const modalStore = create<ModalState>((set) => ({
     }));
   },
 }));
+
+export const openModal = modalStore.getState().setOpenModal;
+export const closeModal = modalStore.getState().setCloseModal;
+export const getModalState = modalStore.getState().modalName;
