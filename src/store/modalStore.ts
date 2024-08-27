@@ -17,14 +17,6 @@ type ModalState = {
 export const modalStore = create<ModalState>((set) => ({
   modalName: {
     connectWallet: true,
-    referralModal: false,
-    feedbackForm: false,
-    accessCode: false,
-    orderDetails: false,
-    stakeSeed: false,
-    manageStake: false,
-    seedInfo: false,
-    bandIt: false,
   },
   setOpenModal: (name) => {
     set((state) => ({
@@ -37,7 +29,3 @@ export const modalStore = create<ModalState>((set) => ({
     }));
   },
 }));
-
-export const openModal = modalStore.getState().setOpenModal;
-export const closeModal = modalStore.getState().setCloseModal;
-export const getModalState = modalStore.getState().modalName;

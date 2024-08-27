@@ -7,7 +7,7 @@ export const Navbar = () => {
   const path = window.location.pathname;
   const isCurrentRoute = (route: string) => path === route;
 
-  const openModal = modalStore((state) => state.setOpenModal);
+  const { setOpenModal } = modalStore();
 
   const handleHomeLogoClick = () => window.open(API().home, "_blank");
 
@@ -34,7 +34,7 @@ export const Navbar = () => {
       <div
         className="ml-auto"
         onClick={() => {
-          openModal(modalNames.connectWallet);
+          setOpenModal(modalNames.connectWallet);
         }}
       >
         Address
