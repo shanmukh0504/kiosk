@@ -1,14 +1,15 @@
 import { GardenFullLogo, Typography } from "@gardenfi/garden-book";
 import { INTERNAL_ROUTES } from "../../constants/constants";
 import { API } from "../../constants/api";
+import { modalNames, modalStore } from "../../store/modalStore";
 
 export const Navbar = () => {
   const path = window.location.pathname;
   const isCurrentRoute = (route: string) => path === route;
 
-  const handleHomeLogoClick = () => {
-    window.open(API().home, "_blank");
-  };
+  const { setOpenModal } = modalStore();
+
+  const handleHomeLogoClick = () => window.open(API().home, "_blank");
 
   return (
     <div className={"flex items-center px-10 py-6 gap-16"}>
@@ -30,7 +31,14 @@ export const Navbar = () => {
           );
         })}
       </div>
-      <div className="ml-auto">Address</div>
+      <div
+        className="ml-auto"
+        onClick={() => {
+          setOpenModal(modalNames.connectWallet);
+        }}
+      >
+        Address
+      </div>
     </div>
   );
 };
