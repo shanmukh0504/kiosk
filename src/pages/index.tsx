@@ -3,8 +3,10 @@ import { Layout } from "../layout/Layout";
 import { INTERNAL_ROUTES } from "../constants/constants";
 import { SwapPage } from "./swap";
 import { Quests } from "./quests";
+import { useBuildIdCheck } from "../hooks/useBuildIdCheck";
 
 function App() {
+  useBuildIdCheck();
   return (
     <Layout>
       <Routes>

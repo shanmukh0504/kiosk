@@ -9,5 +9,6 @@ export const API = () => {
   return {
     home: "https://garden.finance",
     quests: protocol + QUESTS_URL + "/quests",
+    buildId: "/build-id.json",
   };
 };
