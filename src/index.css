@@ -29,11 +29,6 @@
         src: url("./fonts/Satoshi-Black.woff2");
     }
 
-    body {
-        @apply font-satoshi;
-        @apply text-grey;
-    }
-
     input[type="number"]::-webkit-inner-spin-button,
     input[type="number"]::-webkit-outer-spin-button {
         -webkit-appearance: none;

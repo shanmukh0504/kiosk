@@ -1,6 +1,6 @@
 import { Meta } from "../layout/Meta";
 
-export const Quests = () => {
+export const QuestsPage = () => {
   return (
     <div>
       <h1>Quests</h1>

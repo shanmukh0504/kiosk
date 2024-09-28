@@ -332,19 +332,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/garden-book@npm:^0.0.26":
-  version: 0.0.26
-  resolution: "@gardenfi/garden-book@npm:0.0.26"
+"@gardenfi/garden-book@npm:^0.0.36":
+  version: 0.0.36
+  resolution: "@gardenfi/garden-book@npm:0.0.36"
   dependencies:
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^2.1.1"
     lottie-react: "npm:^2.4.0"
+    postcss-prefixwrap: "npm:^1.51.0"
     react-lazy-load-image-component: "npm:^1.6.2"
     tailwind-merge: "npm:^2.4.0"
   peerDependencies:
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 10c0/c03fa054fb73a98c0a0c642ee51eafa67bfc9d79a033e62954d38213bb37e629dec7322618d8bbd31b649d9452eb10fa57609aad1e9f9f815de930530430e375
+  checksum: 10c0/ec600d796302772c2b970ccba6ca146a96062b464e1c0847deb565d0dc4014c3a69eca9c42cc0020d7f388d45a130a0595e07c9e1bc1117200bc94ebdb3adb02
   languageName: node
   linkType: hard
 
@@ -4423,7 +4424,7 @@ __metadata:
   resolution: "garden-kiosk@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.8.0"
-    "@gardenfi/garden-book": "npm:^0.0.26"
+    "@gardenfi/garden-book": "npm:^0.0.36"
     "@tanstack/react-query": "npm:^5.51.23"
     "@types/react": "npm:^18.3.3"
     "@types/react-dom": "npm:^18.3.0"
@@ -6788,6 +6789,15 @@ __metadata:
   peerDependencies:
     postcss: ^8.2.14
   checksum: 10c0/7f9c3f2d764191a39364cbdcec350f26a312431a569c9ef17408021424726b0d67995ff5288405e3724bb7152a4c92f73c027e580ec91e798800ed3c52e2bc6e
+  languageName: node
+  linkType: hard
+
+"postcss-prefixwrap@npm:^1.51.0":
+  version: 1.51.0
+  resolution: "postcss-prefixwrap@npm:1.51.0"
+  peerDependencies:
+    postcss: "*"
+  checksum: 10c0/78090540627d35418c121a85d46221758dcc47f2499a7f84f2e26984cebf876808e41076963ea0c8e2f1458badde482da121881343ca31c6df0251cacf883a9f
   languageName: node
   linkType: hard
 

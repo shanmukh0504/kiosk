@@ -7,7 +7,7 @@ import { WagmiProvider } from "wagmi";
 import { config } from "./layout/wagmi/config.ts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
-import "@gardenfi/garden-book/styles.css";
+import "@gardenfi/garden-book/style.css";
 
 const queryClient = new QueryClient();
 

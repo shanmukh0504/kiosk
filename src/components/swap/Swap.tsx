@@ -1,4 +1,12 @@
-import { Button } from "@gardenfi/garden-book";
+import {
+  ArrowLeftIcon,
+  BTCLogo,
+  Button,
+  Chip,
+  KeyboardDownIcon,
+  RadioCheckedIcon,
+  TimerIcon,
+} from "@gardenfi/garden-book";
 import { useState } from "react";
 import { useConnect } from "wagmi";
 
@@ -6,6 +14,7 @@ export const Swap = () => {
   const { connectors, connect } = useConnect();
   const [sendAmount, setSendAmount] = useState("");
   const [receiveAmount, setReceiveAmount] = useState("");
+  const [showAssetSelector, setShowAssetSelector] = useState(false);
 
   const handleChange = (
     input: string,
@@ -49,15 +58,46 @@ export const Swap = () => {
           {connector.name}
         </button>
       ))}
-      <div className="bg-white/50 rounded-[20px] w-full max-w-[424px] mx-auto p-3">
-        <div className="flex flex-col gap-4">
+      <div className="relative bg-white/50 rounded-[20px] w-full max-w-[424px] mx-auto p-3">
+        <div
+          className={`flex flex-col gap-3 absolute top-0 ${showAssetSelector ? "left-0" : "left-full"} z-10 h-full w-full p-3 transition-all`}
+        >
+          <div className="flex justify-between items-center p-1">
+            <span className="font-bold text-sm">Token select</span>
+            <ArrowLeftIcon
+              className="cursor-pointer"
+              onClick={() => setShowAssetSelector(false)}
+            />
+          </div>
+          <div className="flex gap-3">
+            <Chip className="pl-3 pr-2 py-1 cursor-pointer">
+              Bitcoin
+              <RadioCheckedIcon />
+            </Chip>
+            <Chip className="bg-opacity-50 px-3 py-1 cursor-pointer">
+              Ethereum
+            </Chip>
+            <Chip className="bg-opacity-50 px-3 py-1 cursor-pointer">
+              Arbitrum
+            </Chip>
+            <Chip className="bg-opacity-50 px-3 py-1 cursor-pointer">
+              Solana
+            </Chip>
+          </div>
+        </div>
+        <div
+          className={`${showAssetSelector && "opacity-0"} flex flex-col gap-4 transition-opacity`}
+        >
           <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
             <div className="flex justify-between">
               <div className="flex gap-3">
                 <span className="font-semibold text-xs">Send</span>
                 <span className="text-xs">~224.51 USD</span>
               </div>
-              <span className="text-xs">~2m 30s</span>
+              <div className="flex gap-1 items-center">
+                <TimerIcon className="h-4" />
+                <span className="text-xs">~2m 30s</span>
+              </div>
             </div>
             <div className="flex justify-between">
               <input
@@ -67,7 +107,14 @@ export const Swap = () => {
                 placeholder="0.0"
                 onChange={(e) => handleChange(e.target.value, 8, setSendAmount)}
               />
-              <span className="font-medium text-xl">BTC</span>
+              <div className="flex items-center gap-3">
+                <span className="font-medium text-xl">BTC</span>
+                <BTCLogo />
+                <KeyboardDownIcon
+                  className="cursor-pointer"
+                  onClick={() => setShowAssetSelector(true)}
+                />
+              </div>
             </div>
           </div>
           <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
@@ -76,7 +123,10 @@ export const Swap = () => {
                 <span className="font-semibold text-xs">Receive</span>
                 <span className="text-xs">~224.51 USD</span>
               </div>
-              <span className="text-xs">~2m 30s</span>
+              <div className="flex gap-1 items-center">
+                <TimerIcon className="h-4" />
+                <span className="text-xs">~2m 30s</span>
+              </div>
             </div>
             <div className="flex justify-between">
               <input
@@ -88,7 +138,14 @@ export const Swap = () => {
                   handleChange(e.target.value, 8, setReceiveAmount)
                 }
               />
-              <span className="font-medium text-xl">BTC</span>
+              <div className="flex items-center gap-3">
+                <span className="font-medium text-xl">WBTC</span>
+                <BTCLogo />
+                <KeyboardDownIcon
+                  className="cursor-pointer"
+                  onClick={() => setShowAssetSelector(true)}
+                />
+              </div>
             </div>
           </div>
           <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
