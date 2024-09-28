@@ -6,6 +6,7 @@ import {
   KeyboardDownIcon,
   RadioCheckedIcon,
   TimerIcon,
+  Typography,
 } from "@gardenfi/garden-book";
 import { useState } from "react";
 import { useConnect } from "wagmi";
@@ -63,7 +64,9 @@ export const Swap = () => {
           className={`flex flex-col gap-3 absolute top-0 ${showAssetSelector ? "left-0" : "left-full"} z-10 h-full w-full p-3 transition-all`}
         >
           <div className="flex justify-between items-center p-1">
-            <span className="font-bold text-sm">Token select</span>
+            <Typography size="h4" weight="bold">
+              Token select
+            </Typography>
             <ArrowLeftIcon
               className="cursor-pointer"
               onClick={() => setShowAssetSelector(false)}
@@ -71,17 +74,25 @@ export const Swap = () => {
           </div>
           <div className="flex gap-3">
             <Chip className="pl-3 pr-2 py-1 cursor-pointer">
-              Bitcoin
+              <Typography size="h3" weight="medium">
+                Bitcoin
+              </Typography>
               <RadioCheckedIcon />
             </Chip>
             <Chip className="bg-opacity-50 px-3 py-1 cursor-pointer">
-              Ethereum
+              <Typography size="h3" weight="medium">
+                Ethereum
+              </Typography>
             </Chip>
             <Chip className="bg-opacity-50 px-3 py-1 cursor-pointer">
-              Arbitrum
+              <Typography size="h3" weight="medium">
+                Arbitrum
+              </Typography>
             </Chip>
             <Chip className="bg-opacity-50 px-3 py-1 cursor-pointer">
-              Solana
+              <Typography size="h3" weight="medium">
+                Solana
+              </Typography>
             </Chip>
           </div>
         </div>
@@ -91,24 +102,30 @@ export const Swap = () => {
           <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
             <div className="flex justify-between">
               <div className="flex gap-3">
-                <span className="font-semibold text-xs">Send</span>
-                <span className="text-xs">~224.51 USD</span>
-              </div>
-              <div className="flex gap-1 items-center">
-                <TimerIcon className="h-4" />
-                <span className="text-xs">~2m 30s</span>
+                <Typography size="h5" weight="bold">
+                  Send
+                </Typography>
+                <Typography size="h5" weight="medium">
+                  ~224.51 USD
+                </Typography>
               </div>
             </div>
             <div className="flex justify-between">
-              <input
-                className="text-xl flex-grow outline-none"
-                type="text"
-                value={sendAmount}
-                placeholder="0.0"
-                onChange={(e) => handleChange(e.target.value, 8, setSendAmount)}
-              />
+              <Typography size="h2" weight="bold">
+                <input
+                  className="flex-grow outline-none"
+                  type="text"
+                  value={sendAmount}
+                  placeholder="0.0"
+                  onChange={(e) =>
+                    handleChange(e.target.value, 8, setSendAmount)
+                  }
+                />
+              </Typography>
               <div className="flex items-center gap-3">
-                <span className="font-medium text-xl">BTC</span>
+                <Typography size="h2" weight="medium">
+                  BTC
+                </Typography>
                 <BTCLogo />
                 <KeyboardDownIcon
                   className="cursor-pointer"
@@ -120,26 +137,36 @@ export const Swap = () => {
           <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
             <div className="flex justify-between">
               <div className="flex gap-3">
-                <span className="font-semibold text-xs">Receive</span>
-                <span className="text-xs">~224.51 USD</span>
+                <Typography size="h5" weight="bold">
+                  Receive
+                </Typography>
+                <Typography size="h5" weight="medium">
+                  ~224.51 USD
+                </Typography>
               </div>
               <div className="flex gap-1 items-center">
                 <TimerIcon className="h-4" />
-                <span className="text-xs">~2m 30s</span>
+                <Typography size="h5" weight="medium">
+                  ~2m 30s
+                </Typography>
               </div>
             </div>
             <div className="flex justify-between">
-              <input
-                className="text-xl flex-grow outline-none"
-                type="text"
-                value={receiveAmount}
-                placeholder="0.0"
-                onChange={(e) =>
-                  handleChange(e.target.value, 8, setReceiveAmount)
-                }
-              />
+              <Typography size="h2" weight="bold">
+                <input
+                  className="flex-grow outline-none"
+                  type="text"
+                  value={receiveAmount}
+                  placeholder="0.0"
+                  onChange={(e) =>
+                    handleChange(e.target.value, 8, setReceiveAmount)
+                  }
+                />
+              </Typography>
               <div className="flex items-center gap-3">
-                <span className="font-medium text-xl">WBTC</span>
+                <Typography size="h2" weight="medium">
+                  WBTC
+                </Typography>
                 <BTCLogo />
                 <KeyboardDownIcon
                   className="cursor-pointer"
@@ -149,16 +176,24 @@ export const Swap = () => {
             </div>
           </div>
           <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
-            <span className="font-semibold text-xs">Refund address</span>
-            <input
-              className="text-base flex-grow outline-none"
-              type="text"
-              placeholder="Your Bitcoin address"
-            />
+            <Typography size="h5" weight="bold">
+              Refund address
+            </Typography>
+            <Typography size="h3" weight="medium">
+              <input
+                className="flex-grow outline-none"
+                type="text"
+                placeholder="Your Bitcoin address"
+              />
+            </Typography>
           </div>
           <div className="flex flex-col gap-2 bg-white/50 rounded-2xl p-4">
-            <span className="font-semibold text-xs">Fees</span>
-            <span className="font-semibold text-base">0.0003256 SEED</span>
+            <Typography size="h5" weight="bold">
+              Fees
+            </Typography>
+            <Typography size="h3" weight="bold">
+              0.0003256 BTC
+            </Typography>
           </div>
           <Button size="lg">Swap</Button>
         </div>
