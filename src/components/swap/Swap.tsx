@@ -17,13 +17,18 @@ export const Swap = () => {
           {connector.name}
         </button>
       ))}
-      <div className="relative bg-white/50 rounded-[20px] w-full max-w-[424px] mx-auto p-3 overflow-hidden">
+      <div
+        className={`bg-white/50 ${showAssetSelector ? "bg-white/20 duration-700" : "duration-150"} rounded-[20px]
+          relative overflow-hidden
+          w-full max-w-[424px] mx-auto
+          transition-colors`}
+      >
         <AssetSelector
           visible={showAssetSelector}
           hide={() => setShowAssetSelector(false)}
         />
         <div
-          className={`${showAssetSelector && "opacity-0"} flex flex-col gap-4 transition-opacity`}
+          className={`${showAssetSelector ? "opacity-0" : "delay-150"} flex flex-col gap-4 p-3 transition-opacity`}
         >
           <SwapInput
             type="Send"

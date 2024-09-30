@@ -61,7 +61,11 @@ export const AssetSelector: FC<AssetSelectorProps> = ({ visible, hide }) => {
 
   return (
     <div
-      className={`flex flex-col gap-3 absolute top-0 ${visible ? "left-0" : "left-full"} z-10 h-full w-full p-3 transition-all`}
+      className={`flex flex-col gap-3
+        bg-white/30 rounded-[20px]
+        absolute top-0 ${visible ? "left-0 opacity-100" : "left-full opacity-0"} z-10
+        h-full w-full p-3
+        [transition:left_700ms,opacity_150ms] ease-in-out`}
     >
       <div className="flex justify-between items-center p-1">
         <Typography size="h4" weight="bold">
