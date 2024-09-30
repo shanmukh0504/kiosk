@@ -28,7 +28,7 @@ export const SupportedChains = [
 ] as const;
 
 export type Asset = {
-  icon: JSX.Element;
+  icon: React.ReactNode;
   ticker: string;
   name: string;
   chain: string;

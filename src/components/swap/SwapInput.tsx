@@ -1,4 +1,9 @@
-import { KeyboardDownIcon, TimerIcon, Typography } from "@gardenfi/garden-book";
+import {
+  KeyboardDownIcon,
+  TimerIcon,
+  TokenInfo,
+  Typography,
+} from "@gardenfi/garden-book";
 import { FC, useState } from "react";
 import { Asset } from "../../constants/constants";
 import { AssetSelector } from "./AssetSelector";
@@ -108,16 +113,11 @@ export const SwapInput: FC<SwapInputProps> = ({
               }
             />
           </Typography>
-          <div
-            className="flex items-center gap-3 cursor-pointer"
+          <TokenInfo
+            symbol={asset.ticker}
+            tokenLogo={asset.icon}
             onClick={() => handleShowAssetSelector(true)}
-          >
-            <Typography size="h2" weight="medium">
-              {asset.ticker}
-            </Typography>
-            {asset.icon}
-            <KeyboardDownIcon />
-          </div>
+          />
         </div>
       </div>
     </>
