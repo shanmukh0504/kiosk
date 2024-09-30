@@ -17,7 +17,7 @@ export const Swap = () => {
           {connector.name}
         </button>
       ))}
-      <div className="relative bg-white/50 rounded-[20px] w-full max-w-[424px] mx-auto p-3">
+      <div className="relative bg-white/50 rounded-[20px] w-full max-w-[424px] mx-auto p-3 overflow-hidden">
         <AssetSelector
           visible={showAssetSelector}
           hide={() => setShowAssetSelector(false)}
