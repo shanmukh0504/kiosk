@@ -1,26 +1,27 @@
 import { KeyboardDownIcon, TimerIcon, Typography } from "@gardenfi/garden-book";
 import { FC, useState } from "react";
-import { SupportedAssets } from "../../constants/constants";
+import { Asset } from "../../constants/constants";
 import { AssetSelector } from "./AssetSelector";
 
 type SwapInputProps = {
   type: "Send" | "Receive";
   amount: string;
+  asset: Asset;
   fadeOutClass: string;
-  onChange: React.Dispatch<React.SetStateAction<string>>;
+  setAmount: React.Dispatch<React.SetStateAction<string>>;
+  setAsset: React.Dispatch<React.SetStateAction<Asset>>;
   setIsAssetSelectorVisible: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const SwapInput: FC<SwapInputProps> = ({
   type,
   amount,
+  asset,
   fadeOutClass,
-  onChange,
+  setAmount,
+  setAsset,
   setIsAssetSelectorVisible,
 }) => {
-  const [asset, setAsset] = useState(
-    type === "Send" ? SupportedAssets.BTC : SupportedAssets.WBTC,
-  );
   const [showAssetSelector, setShowAssetSelector] = useState(false);
 
   const handleChange = (
@@ -99,7 +100,12 @@ export const SwapInput: FC<SwapInputProps> = ({
               type="text"
               value={amount}
               placeholder="0.0"
-              onChange={(e) => handleChange(e.target.value, 8, onChange)}
+              onChange={(e) =>
+                // TODO: Decide if we want to use asset.decimals here, e.g. if
+                // the user is swapping ETH should we let them input 18
+                // decimals?
+                handleChange(e.target.value, asset.decimals, setAmount)
+              }
             />
           </Typography>
           <div

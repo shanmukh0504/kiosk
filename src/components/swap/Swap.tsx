@@ -2,9 +2,12 @@ import { Button, Typography } from "@gardenfi/garden-book";
 import { useState } from "react";
 import { useConnect } from "wagmi";
 import { SwapInput } from "./SwapInput";
+import { SupportedAssets } from "../../constants/constants";
 
 export const Swap = () => {
   const { connectors, connect } = useConnect();
+  const [sendAsset, setSendAsset] = useState(SupportedAssets.BTC);
+  const [receiveAsset, setReceiveAsset] = useState(SupportedAssets.WBTC);
   const [sendAmount, setSendAmount] = useState("");
   const [receiveAmount, setReceiveAmount] = useState("");
   const [isAssetSelectorVisible, setIsAssetSelectorVisible] = useState(false);
@@ -25,15 +28,19 @@ export const Swap = () => {
           <SwapInput
             type="Send"
             amount={sendAmount}
+            asset={sendAsset}
             fadeOutClass={fadeOutClass}
-            onChange={setSendAmount}
+            setAmount={setSendAmount}
+            setAsset={setSendAsset}
             setIsAssetSelectorVisible={setIsAssetSelectorVisible}
           />
           <SwapInput
             type="Receive"
             amount={receiveAmount}
+            asset={receiveAsset}
             fadeOutClass={fadeOutClass}
-            onChange={setReceiveAmount}
+            setAmount={setReceiveAmount}
+            setAsset={setReceiveAsset}
             setIsAssetSelectorVisible={setIsAssetSelectorVisible}
           />
           <div

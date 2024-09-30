@@ -32,6 +32,7 @@ export type Asset = {
   ticker: string;
   name: string;
   chain: string;
+  decimals: number;
 };
 
 export const SupportedAssets: Record<string, Asset> = {
@@ -40,17 +41,20 @@ export const SupportedAssets: Record<string, Asset> = {
     ticker: "BTC",
     name: "Bitcoin",
     chain: "Bitcoin",
+    decimals: 8,
   },
   WBTC: {
     icon: <BTCLogo />,
     ticker: "WBTC",
     name: "Wrapped Bitcoin",
     chain: "Ethereum",
+    decimals: 8,
   },
   ETH: {
     icon: <BTCLogo />,
     ticker: "ETH",
     name: "Ethereum",
     chain: "Ethereum",
+    decimals: 18,
   },
 };
