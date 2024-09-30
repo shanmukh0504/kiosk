@@ -22,11 +22,8 @@ export const SwapInput: FC<SwapInputProps> = ({
 }) => {
   const [showAssetSelector, setShowAssetSelector] = useState(false);
 
-  const handleChange = (
-    input: string,
-    maxDecimals: number,
-    setInput: React.Dispatch<React.SetStateAction<string>>,
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value;
     const parts = input.split(".");
     // Check if the last character is a digit or a dot.
     if (
@@ -37,18 +34,18 @@ export const SwapInput: FC<SwapInputProps> = ({
     ) {
       const decimals = (parts[1] || "").length;
       // If there are more than the maximum decimals after the point.
-      if (decimals > maxDecimals && parts[1]) {
-        // Trim decimals to only keep the maximum amount..
-        setInput(parts[0] + "." + parts[1].slice(0, maxDecimals));
+      if (decimals > asset.decimals && parts[1]) {
+        // Trim decimals to only keep the maximum amount.
+        setAmount(parts[0] + "." + parts[1].slice(0, asset.decimals));
       } else {
         // Otherwise, just set the input.
-        setInput(input);
+        setAmount(input);
       }
       return;
     }
     // If it's an empty string, just set the input.
     else if (input.length === 0) {
-      setInput(input);
+      setAmount(input);
     }
     // If the last character is not a numerical digit or a dot, and the string
     // is not empty, do nothing and return.
@@ -91,17 +88,12 @@ export const SwapInput: FC<SwapInputProps> = ({
         <div className="flex justify-between">
           <Typography size="h2" weight="bold">
             <input
-              // TODO: Check why the placeholder is not working
+              // TODO: Check why the placeholder color is not working
               className="flex-grow outline-none placeholder:text-mid-grey"
               type="text"
               value={amount}
               placeholder="0.0"
-              onChange={(e) =>
-                // TODO: Decide if we want to use asset.decimals here, e.g. if
-                // the user is swapping ETH should we let them input 18
-                // decimals?
-                handleChange(e.target.value, asset.decimals, setAmount)
-              }
+              onChange={handleChange}
             />
           </Typography>
           <TokenInfo

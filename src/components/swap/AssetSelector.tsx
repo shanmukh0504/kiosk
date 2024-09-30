@@ -88,11 +88,11 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
         <div className="flex-grow">
           <Typography size="h4" weight="medium">
             <input
-              // TODO: Check why the placeholder is not working
+              // TODO: Check why the placeholder color is not working
               className="w-full outline-none placeholder:text-mid-grey"
               type="text"
               value={input}
-              placeholder="Swap by name or ticker"
+              placeholder="Search by name or ticker"
               onChange={handleSearch}
             />
           </Typography>

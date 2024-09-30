@@ -1,14 +1,16 @@
-import { Button, Typography } from "@gardenfi/garden-book";
+import { Button } from "@gardenfi/garden-book";
 import { useState } from "react";
 import { SwapInput } from "./SwapInput";
 import { SupportedAssets } from "../../constants/constants";
 import { SwapDetails } from "./SwapDetails";
+import { SwapAddress } from "./SwapAddress";
 
 export const Swap = () => {
   const [sendAsset, setSendAsset] = useState(SupportedAssets.BTC);
   const [receiveAsset, setReceiveAsset] = useState(SupportedAssets.WBTC);
   const [sendAmount, setSendAmount] = useState("");
   const [receiveAmount, setReceiveAmount] = useState("");
+  const [address, setAddress] = useState("");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   return (
@@ -40,7 +42,7 @@ export const Swap = () => {
             setAsset={setReceiveAsset}
             setIsPopupOpen={setIsPopupOpen}
           />
-          <SwapAddress />
+          <SwapAddress address={address} setAddress={setAddress} />
           <SwapDetails setIsPopupOpen={setIsPopupOpen} />
           <Button size="lg">Swap</Button>
         </div>
