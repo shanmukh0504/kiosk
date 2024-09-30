@@ -35,26 +35,14 @@ export const Swap = () => {
 
     const supportedChains: Chain[] = [];
     const supportedAssets: Asset[] = [];
-    let i = 0;
     for (const [, chainInfo] of Object.entries(networks)) {
       if (chainInfo.networkType !== "mainnet") {
         continue;
       }
-      let name = "";
-      if (i == 0) {
-        name = "Bitcoin";
-      }
-      if (i == 1) {
-        name = "Ethereum";
-      }
-      if (i == 2) {
-        name = "Arbitrum";
-      }
-      i++
       supportedChains.push({
         icon: chainInfo.networkLogo,
         chainId: chainInfo.chainId,
-        name: name, // TODO: Update this once new field has been created
+        name: "Ethereum", // TODO: Update this once new field has been created
       });
       for (const asset of chainInfo.assetConfig) {
         supportedAssets.push({
