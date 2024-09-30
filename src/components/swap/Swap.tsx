@@ -59,14 +59,37 @@ export const Swap = () => {
             </Typography>
           </div>
           <div
-            className={`flex flex-col gap-2 bg-white/50 rounded-2xl p-4 ${fadeOutClass}`}
+            className={`flex flex-col gap-1 bg-white/50 rounded-2xl pt-4 pb-3 px-4 ${fadeOutClass}`}
           >
             <Typography size="h5" weight="bold">
-              Fees
+              Details
             </Typography>
-            <Typography size="h3" weight="bold">
-              0.0003256 BTC
-            </Typography>
+            <div className="flex justify-between">
+              <Typography size="h5" weight="medium">
+                Fees
+              </Typography>
+              <div className="flex gap-5 py-1">
+                <Typography size="h4" weight="medium">
+                  0.00101204 BTC
+                </Typography>
+                <Typography size="h4" weight="medium">
+                  56.56 USD
+                </Typography>
+              </div>
+            </div>
+            <div className="flex justify-between">
+              <Typography size="h5" weight="medium">
+                Saved
+              </Typography>
+              <div className="flex gap-5 py-1">
+                <Typography size="h4" weight="medium">
+                  14m 30s
+                </Typography>
+                <Typography size="h4" weight="medium">
+                  96.56 USD
+                </Typography>
+              </div>
+            </div>
           </div>
           <Button className={fadeOutClass} size="lg">
             Swap
