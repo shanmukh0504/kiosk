@@ -1,9 +1,4 @@
-import {
-  KeyboardDownIcon,
-  TimerIcon,
-  TokenInfo,
-  Typography,
-} from "@gardenfi/garden-book";
+import { TimerIcon, TokenInfo, Typography } from "@gardenfi/garden-book";
 import { FC, useState } from "react";
 import { Asset } from "../../constants/constants";
 import { AssetSelector } from "./AssetSelector";
@@ -12,20 +7,18 @@ type SwapInputProps = {
   type: "Send" | "Receive";
   amount: string;
   asset: Asset;
-  fadeOutClass: string;
   setAmount: React.Dispatch<React.SetStateAction<string>>;
   setAsset: React.Dispatch<React.SetStateAction<Asset>>;
-  setFadeContents: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsPopupOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const SwapInput: FC<SwapInputProps> = ({
   type,
   amount,
   asset,
-  fadeOutClass,
   setAmount,
   setAsset,
-  setFadeContents,
+  setIsPopupOpen,
 }) => {
   const [showAssetSelector, setShowAssetSelector] = useState(false);
 
@@ -64,9 +57,9 @@ export const SwapInput: FC<SwapInputProps> = ({
     }
   };
 
-  const handleShowAssetSelector = (show: boolean) => {
-    setShowAssetSelector(show);
-    setFadeContents(show);
+  const handleShowAssetSelector = (visible: boolean) => {
+    setShowAssetSelector(visible);
+    setIsPopupOpen(visible);
   };
 
   return (
@@ -76,9 +69,7 @@ export const SwapInput: FC<SwapInputProps> = ({
         hide={() => handleShowAssetSelector(false)}
         setAsset={setAsset}
       />
-      <div
-        className={`flex flex-col gap-2 bg-white rounded-2xl p-4 ${fadeOutClass}`}
-      >
+      <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
         <div className="flex justify-between">
           <div className="flex gap-3">
             <Typography size="h5" weight="bold">

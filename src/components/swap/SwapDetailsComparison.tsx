@@ -1,12 +1,15 @@
 import { ArrowLeftIcon, Typography } from "@gardenfi/garden-book";
 import { FC } from "react";
 
-type ComparisonProps = {
+type SwapDetailsComparisonProps = {
   visible: boolean;
   hide: () => void;
 };
 
-export const Comparison: FC<ComparisonProps> = ({ visible, hide }) => {
+export const SwapDetailsComparison: FC<SwapDetailsComparisonProps> = ({
+  visible,
+  hide,
+}) => {
   return (
     <div
       className={`flex flex-col gap-3

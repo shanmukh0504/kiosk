@@ -70,20 +70,18 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
       </div>
       <div className="flex gap-3">
         {chains.map((c, i) => (
-          <>
-            {/* TODO: Check why the hover state is not working */}
-            <Chip
-              key={i}
-              className={`${c !== chain && "bg-opacity-50"} px-3 py-1 cursor-pointer transition-colors hover:bg-opacity-100`}
-              onClick={() => (c === chain ? setChain("") : setChain(c))}
-            >
-              <Typography size="h3" weight="medium">
-                {c}
-              </Typography>
-              {/* TODO: Check why the fill is not working */}
-              {c === chain && <RadioCheckedIcon fill="button-primary" />}
-            </Chip>
-          </>
+          <Chip
+            key={i}
+            // TODO: Check why the hover state is not working
+            className={`${c !== chain && "bg-opacity-50"} px-3 py-1 cursor-pointer transition-colors hover:bg-opacity-100`}
+            onClick={() => (c === chain ? setChain("") : setChain(c))}
+          >
+            <Typography size="h3" weight="medium">
+              {c}
+            </Typography>
+            {/* TODO: Check why the fill is not working */}
+            {c === chain && <RadioCheckedIcon fill="button-primary" />}
+          </Chip>
         ))}
       </div>
       <div className="flex justify-between items-center bg-white rounded-2xl w-full px-4 py-2">

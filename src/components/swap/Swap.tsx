@@ -1,115 +1,48 @@
 import { Button, Typography } from "@gardenfi/garden-book";
 import { useState } from "react";
-import { useConnect } from "wagmi";
 import { SwapInput } from "./SwapInput";
 import { SupportedAssets } from "../../constants/constants";
-import { Comparison } from "./Comparison";
+import { SwapDetails } from "./SwapDetails";
 
 export const Swap = () => {
-  const { connectors, connect } = useConnect();
   const [sendAsset, setSendAsset] = useState(SupportedAssets.BTC);
   const [receiveAsset, setReceiveAsset] = useState(SupportedAssets.WBTC);
   const [sendAmount, setSendAmount] = useState("");
   const [receiveAmount, setReceiveAmount] = useState("");
-  const [showComparison, setShowComparison] = useState(false);
-  const [fadeContents, setFadeContents] = useState(false);
-
-  const fadeOutClass = `${fadeContents && "opacity-40"} transition-[opacity,background-color] duration-500`;
-
-  const handleShowComparison = (show: boolean) => {
-    setShowComparison(show);
-    setFadeContents(show);
-  };
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   return (
     <div className="flex flex-col">
-      {connectors.map((connector) => (
-        <button key={connector.uid} onClick={() => connect({ connector })}>
-          {connector.name}
-        </button>
-      ))}
       <div
-        className={`bg-white/50 rounded-[20px] relative overflow-hidden w-full max-w-[424px] mx-auto`}
+        className={`bg-white/50 rounded-[20px]
+          relative overflow-hidden
+          w-full max-w-[424px] mx-auto
+          before:content-[""] before:bg-black before:bg-opacity-0
+          before:absolute before:top-0 before:left-0
+          before:h-full before:w-full
+          before:pointer-events-none before:transition-colors before:duration-700
+          ${isPopupOpen && "before:bg-opacity-10"}`}
       >
-        <div className={`flex flex-col gap-4 p-3 transition-opacity`}>
+        <div className="flex flex-col gap-4 p-3 transition-opacity">
           <SwapInput
             type="Send"
             amount={sendAmount}
             asset={sendAsset}
-            fadeOutClass={fadeOutClass}
             setAmount={setSendAmount}
             setAsset={setSendAsset}
-            setFadeContents={setFadeContents}
+            setIsPopupOpen={setIsPopupOpen}
           />
           <SwapInput
             type="Receive"
             amount={receiveAmount}
             asset={receiveAsset}
-            fadeOutClass={fadeOutClass}
             setAmount={setReceiveAmount}
             setAsset={setReceiveAsset}
-            setFadeContents={setFadeContents}
+            setIsPopupOpen={setIsPopupOpen}
           />
-          <div
-            className={`flex flex-col gap-2 bg-white rounded-2xl p-4 ${fadeOutClass}`}
-          >
-            <Typography size="h5" weight="bold">
-              Refund address
-            </Typography>
-            <Typography size="h3" weight="medium">
-              <input
-                // TODO: Check why the placeholder is not working
-                className="flex-grow outline-none placeholder:text-mid-grey"
-                type="text"
-                placeholder="Your Bitcoin address"
-              />
-            </Typography>
-          </div>
-          <Comparison
-            visible={showComparison}
-            hide={() => handleShowComparison(false)}
-          />
-          <div
-            className={`flex flex-col gap-1
-              bg-white/50 rounded-2xl
-              pt-4 pb-3 px-4
-              cursor-pointer hover:bg-white
-              ${fadeOutClass}`}
-            onClick={() => handleShowComparison(true)}
-          >
-            <Typography size="h5" weight="bold">
-              Details
-            </Typography>
-            <div className="flex justify-between">
-              <Typography size="h5" weight="medium">
-                Fees
-              </Typography>
-              <div className="flex gap-5 py-1">
-                <Typography size="h4" weight="medium">
-                  0.00101204 BTC
-                </Typography>
-                <Typography size="h4" weight="medium">
-                  56.56 USD
-                </Typography>
-              </div>
-            </div>
-            <div className="flex justify-between">
-              <Typography size="h5" weight="medium">
-                Saved
-              </Typography>
-              <div className="flex gap-5 py-1">
-                <Typography size="h4" weight="medium">
-                  14m 30s
-                </Typography>
-                <Typography size="h4" weight="medium">
-                  96.56 USD
-                </Typography>
-              </div>
-            </div>
-          </div>
-          <Button className={fadeOutClass} size="lg">
-            Swap
-          </Button>
+          <SwapAddress />
+          <SwapDetails setIsPopupOpen={setIsPopupOpen} />
+          <Button size="lg">Swap</Button>
         </div>
       </div>
     </div>
