@@ -2,13 +2,14 @@ import { Button, Typography } from "@gardenfi/garden-book";
 import { useState } from "react";
 import { useConnect } from "wagmi";
 import { SwapInput } from "./SwapInput";
-import { AssetSelector } from "./AssetSelector";
 
 export const Swap = () => {
   const { connectors, connect } = useConnect();
   const [sendAmount, setSendAmount] = useState("");
   const [receiveAmount, setReceiveAmount] = useState("");
-  const [showAssetSelector, setShowAssetSelector] = useState(false);
+  const [isAssetSelectorVisible, setIsAssetSelectorVisible] = useState(false);
+
+  const fadeOutClass = `${isAssetSelectorVisible && "opacity-40"} transition-opacity duration-500`;
 
   return (
     <div className="flex flex-col">
@@ -18,31 +19,26 @@ export const Swap = () => {
         </button>
       ))}
       <div
-        className={`bg-white/50 ${showAssetSelector ? "bg-white/20 duration-700" : "duration-150"} rounded-[20px]
-          relative overflow-hidden
-          w-full max-w-[424px] mx-auto
-          transition-colors`}
+        className={`bg-white/50 rounded-[20px] relative overflow-hidden w-full max-w-[424px] mx-auto`}
       >
-        <AssetSelector
-          visible={showAssetSelector}
-          hide={() => setShowAssetSelector(false)}
-        />
-        <div
-          className={`${showAssetSelector ? "opacity-0" : "delay-150"} flex flex-col gap-4 p-3 transition-opacity`}
-        >
+        <div className={`flex flex-col gap-4 p-3 transition-opacity`}>
           <SwapInput
             type="Send"
             amount={sendAmount}
+            fadeOutClass={fadeOutClass}
             onChange={setSendAmount}
-            setShowAssetSelector={setShowAssetSelector}
+            setIsAssetSelectorVisible={setIsAssetSelectorVisible}
           />
           <SwapInput
             type="Receive"
             amount={receiveAmount}
+            fadeOutClass={fadeOutClass}
             onChange={setReceiveAmount}
-            setShowAssetSelector={setShowAssetSelector}
+            setIsAssetSelectorVisible={setIsAssetSelectorVisible}
           />
-          <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
+          <div
+            className={`flex flex-col gap-2 bg-white rounded-2xl p-4 ${fadeOutClass}`}
+          >
             <Typography size="h5" weight="bold">
               Refund address
             </Typography>
@@ -55,7 +51,9 @@ export const Swap = () => {
               />
             </Typography>
           </div>
-          <div className="flex flex-col gap-2 bg-white/50 rounded-2xl p-4">
+          <div
+            className={`flex flex-col gap-2 bg-white/50 rounded-2xl p-4 ${fadeOutClass}`}
+          >
             <Typography size="h5" weight="bold">
               Fees
             </Typography>
@@ -63,7 +61,9 @@ export const Swap = () => {
               0.0003256 BTC
             </Typography>
           </div>
-          <Button size="lg">Swap</Button>
+          <Button className={fadeOutClass} size="lg">
+            Swap
+          </Button>
         </div>
       </div>
     </div>

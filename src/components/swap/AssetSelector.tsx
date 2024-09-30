@@ -1,6 +1,5 @@
 import {
   ArrowLeftIcon,
-  BTCLogo,
   Chip,
   RadioCheckedIcon,
   SearchIcon,
@@ -8,45 +7,26 @@ import {
   Typography,
 } from "@gardenfi/garden-book";
 import { FC, useState } from "react";
+import { Asset, SupportedAssets } from "../../constants/constants";
 
 type AssetSelectorProps = {
   visible: boolean;
   hide: () => void;
+  setAsset: React.Dispatch<React.SetStateAction<Asset>>;
 };
 
-type Asset = {
-  icon: FC;
-  ticker: string;
-  name: string;
-  chain: string;
-};
-
-// TODO: Replace these lists with values fetched from the API.
+// TODO: Replace this list with values fetched from the API.
 const chains = ["Bitcoin", "Ethereum", "Arbitrum", "Solana"];
 
-const assets: Asset[] = [
-  {
-    icon: BTCLogo,
-    ticker: "BTC",
-    name: "Bitcoin",
-    chain: "Bitcoin",
-  },
-  {
-    icon: BTCLogo,
-    ticker: "WBTC",
-    name: "Wrapped Bitcoin",
-    chain: "Ethereum",
-  },
-  {
-    icon: BTCLogo,
-    ticker: "ETH",
-    name: "Ethereum",
-    chain: "Ethereum",
-  },
-];
+export const AssetSelector: FC<AssetSelectorProps> = ({
+  visible,
+  hide,
+  setAsset,
+}) => {
+  const assets = Object.entries(SupportedAssets).map(([, v]) => v);
 
-export const AssetSelector: FC<AssetSelectorProps> = ({ visible, hide }) => {
   const [chain, setChain] = useState("");
+  const [input, setInput] = useState("");
   const [results, setResults] = useState(assets);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,22 +36,38 @@ export const AssetSelector: FC<AssetSelectorProps> = ({ visible, hide }) => {
         asset.name?.toLowerCase().includes(input) ||
         asset.ticker?.toLowerCase().includes(input),
     );
+    setInput(input);
     setResults(r);
+  };
+
+  const handleClick = (asset?: Asset) => {
+    if (asset) setAsset(asset);
+    hide();
+
+    // Clear inputs after delay
+    setTimeout(() => {
+      setInput("");
+      setResults(assets);
+    }, 700);
   };
 
   return (
     <div
+      // TODO: Use variable name for background color
       className={`flex flex-col gap-3
-        bg-white/30 rounded-[20px]
-        absolute top-0 ${visible ? "left-0 opacity-100" : "left-full opacity-0"} z-10
+        bg-[#def6ee] rounded-[20px]
+        absolute top-0 ${visible ? "left-0" : "left-full"} z-10
         h-full w-full p-3
-        [transition:left_700ms,opacity_150ms] ease-in-out`}
+        transition-left ease-in-out duration-700`}
     >
       <div className="flex justify-between items-center p-1">
         <Typography size="h4" weight="bold">
           Token select
         </Typography>
-        <ArrowLeftIcon className="cursor-pointer" onClick={() => hide()} />
+        <ArrowLeftIcon
+          className="cursor-pointer"
+          onClick={() => handleClick()}
+        />
       </div>
       <div className="flex gap-3">
         {chains.map((c, i) => (
@@ -98,6 +94,7 @@ export const AssetSelector: FC<AssetSelectorProps> = ({ visible, hide }) => {
               // TODO: Check why the placeholder is not working
               className="w-full outline-none placeholder:text-mid-grey"
               type="text"
+              value={input}
               placeholder="Swap by name or ticker"
               onChange={handleSearch}
             />
@@ -113,8 +110,11 @@ export const AssetSelector: FC<AssetSelectorProps> = ({ visible, hide }) => {
           (asset, i) =>
             (chain === "" || asset.chain === chain) && (
               <div key={i} className="flex justify-between">
-                <div className="flex items-center gap-2">
-                  <BTCLogo />
+                <div
+                  className="flex items-center gap-2 cursor-pointer"
+                  onClick={() => handleClick(asset)}
+                >
+                  {asset.icon}
                   <Typography size="h4" weight="medium">
                     {asset.ticker}
                   </Typography>

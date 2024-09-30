@@ -1,24 +1,28 @@
-import {
-  BTCLogo,
-  KeyboardDownIcon,
-  TimerIcon,
-  Typography,
-} from "@gardenfi/garden-book";
-import { FC } from "react";
+import { KeyboardDownIcon, TimerIcon, Typography } from "@gardenfi/garden-book";
+import { FC, useState } from "react";
+import { SupportedAssets } from "../../constants/constants";
+import { AssetSelector } from "./AssetSelector";
 
 type SwapInputProps = {
   type: "Send" | "Receive";
   amount: string;
+  fadeOutClass: string;
   onChange: React.Dispatch<React.SetStateAction<string>>;
-  setShowAssetSelector: (showAssetSelector: boolean) => void;
+  setIsAssetSelectorVisible: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const SwapInput: FC<SwapInputProps> = ({
   type,
   amount,
+  fadeOutClass,
   onChange,
-  setShowAssetSelector,
+  setIsAssetSelectorVisible,
 }) => {
+  const [asset, setAsset] = useState(
+    type === "Send" ? SupportedAssets.BTC : SupportedAssets.WBTC,
+  );
+  const [showAssetSelector, setShowAssetSelector] = useState(false);
+
   const handleChange = (
     input: string,
     maxDecimals: number,
@@ -54,48 +58,62 @@ export const SwapInput: FC<SwapInputProps> = ({
     }
   };
 
+  const handleShowAssetSelector = (show: boolean) => {
+    setShowAssetSelector(show);
+    setIsAssetSelectorVisible(show);
+  };
+
   return (
-    <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
-      <div className="flex justify-between">
-        <div className="flex gap-3">
-          <Typography size="h5" weight="bold">
-            {type}
-          </Typography>
-          <Typography size="h5" weight="medium">
-            ~224.51 USD
-          </Typography>
-        </div>
-        {type === "Receive" && (
-          <div className="flex gap-1 items-center">
-            <TimerIcon className="h-4" />
+    <>
+      <AssetSelector
+        visible={showAssetSelector}
+        hide={() => handleShowAssetSelector(false)}
+        setAsset={setAsset}
+      />
+      <div
+        className={`flex flex-col gap-2 bg-white rounded-2xl p-4 ${fadeOutClass}`}
+      >
+        <div className="flex justify-between">
+          <div className="flex gap-3">
+            <Typography size="h5" weight="bold">
+              {type}
+            </Typography>
             <Typography size="h5" weight="medium">
-              ~2m 30s
+              ~224.51 USD
             </Typography>
           </div>
-        )}
-      </div>
-      <div className="flex justify-between">
-        <Typography size="h2" weight="bold">
-          <input
-            // TODO: Check why the placeholder is not working
-            className="flex-grow outline-none placeholder:text-mid-grey"
-            type="text"
-            value={amount}
-            placeholder="0.0"
-            onChange={(e) => handleChange(e.target.value, 8, onChange)}
-          />
-        </Typography>
-        <div className="flex items-center gap-3">
-          <Typography size="h2" weight="medium">
-            BTC
+          {type === "Receive" && (
+            <div className="flex gap-1 items-center">
+              <TimerIcon className="h-4" />
+              <Typography size="h5" weight="medium">
+                ~2m 30s
+              </Typography>
+            </div>
+          )}
+        </div>
+        <div className="flex justify-between">
+          <Typography size="h2" weight="bold">
+            <input
+              // TODO: Check why the placeholder is not working
+              className="flex-grow outline-none placeholder:text-mid-grey"
+              type="text"
+              value={amount}
+              placeholder="0.0"
+              onChange={(e) => handleChange(e.target.value, 8, onChange)}
+            />
           </Typography>
-          <BTCLogo />
-          <KeyboardDownIcon
-            className="cursor-pointer"
-            onClick={() => setShowAssetSelector(true)}
-          />
+          <div
+            className="flex items-center gap-3 cursor-pointer"
+            onClick={() => handleShowAssetSelector(true)}
+          >
+            <Typography size="h2" weight="medium">
+              {asset.ticker}
+            </Typography>
+            {asset.icon}
+            <KeyboardDownIcon />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
