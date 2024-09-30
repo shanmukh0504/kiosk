@@ -1,4 +1,3 @@
-import { BTCLogo } from "@gardenfi/garden-book";
 import {
   arbitrum,
   avalanche,
@@ -27,34 +26,16 @@ export const SupportedChains = [
   avalanche,
 ] as const;
 
-export type Asset = {
-  icon: React.ReactNode;
-  ticker: string;
+export type Chain = {
+  icon: string;
+  chainId: number;
   name: string;
-  chain: string;
-  decimals: number;
 };
 
-export const SupportedAssets: Record<string, Asset> = {
-  BTC: {
-    icon: <BTCLogo />,
-    ticker: "BTC",
-    name: "Bitcoin",
-    chain: "Bitcoin",
-    decimals: 8,
-  },
-  WBTC: {
-    icon: <BTCLogo />,
-    ticker: "WBTC",
-    name: "Wrapped Bitcoin",
-    chain: "Ethereum",
-    decimals: 8,
-  },
-  ETH: {
-    icon: <BTCLogo />,
-    ticker: "ETH",
-    name: "Ethereum",
-    chain: "Ethereum",
-    decimals: 18,
-  },
+export type Asset = {
+  icon: string;
+  ticker: string;
+  name: string;
+  chainId: number;
+  decimals: number;
 };

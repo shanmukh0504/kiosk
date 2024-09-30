@@ -24,7 +24,7 @@ export const SwapDetailsComparison: FC<SwapDetailsComparisonProps> = ({
         </Typography>
         <ArrowLeftIcon className="cursor-pointer" onClick={() => hide()} />
       </div>
-      <div className="flex gap-10 bg-white rounded-2xl h-full p-4">
+      <div className="flex gap-10 bg-white rounded-2xl p-4">
         <div className="flex flex-col flex-grow gap-2">
           <Typography className="p-1" size="h5" weight="bold">
             Routes

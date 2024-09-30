@@ -1,14 +1,16 @@
 import { TimerIcon, TokenInfo, Typography } from "@gardenfi/garden-book";
 import { FC, useRef, useState } from "react";
-import { Asset } from "../../constants/constants";
+import { Asset, Chain } from "../../constants/constants";
 import { AssetSelector } from "./AssetSelector";
 
 type SwapInputProps = {
   type: "Send" | "Receive";
   amount: string;
-  asset: Asset;
+  asset?: Asset;
+  supportedChains: Chain[];
+  supportedAssets: Asset[];
   setAmount: React.Dispatch<React.SetStateAction<string>>;
-  setAsset: React.Dispatch<React.SetStateAction<Asset>>;
+  setAsset: React.Dispatch<React.SetStateAction<Asset | undefined>>;
   setIsPopupOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -16,6 +18,8 @@ export const SwapInput: FC<SwapInputProps> = ({
   type,
   amount,
   asset,
+  supportedChains,
+  supportedAssets,
   setAmount,
   setAsset,
   setIsPopupOpen,
@@ -35,7 +39,7 @@ export const SwapInput: FC<SwapInputProps> = ({
     ) {
       const decimals = (parts[1] || "").length;
       // If there are more than the maximum decimals after the point.
-      if (decimals > asset.decimals && parts[1]) {
+      if (asset && decimals > asset.decimals && parts[1]) {
         // Trim decimals to only keep the maximum amount.
         setAmount(parts[0] + "." + parts[1].slice(0, asset.decimals));
       } else {
@@ -63,6 +67,8 @@ export const SwapInput: FC<SwapInputProps> = ({
   return (
     <>
       <AssetSelector
+        chains={supportedChains}
+        assets={supportedAssets}
         visible={showAssetSelector}
         hide={() => handleShowAssetSelector(false)}
         setAsset={setAsset}
@@ -102,11 +108,13 @@ export const SwapInput: FC<SwapInputProps> = ({
               onChange={handleChange}
             />
           </Typography>
-          <TokenInfo
-            symbol={asset.ticker}
-            tokenLogo={asset.icon}
-            onClick={() => handleShowAssetSelector(true)}
-          />
+          {asset && (
+            <TokenInfo
+              symbol={asset.ticker}
+              tokenLogo={asset.icon}
+              onClick={() => handleShowAssetSelector(true)}
+            />
+          )}
         </div>
       </div>
     </>

@@ -6,28 +6,32 @@ import {
   StarIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { FC, useState } from "react";
-import { Asset, SupportedAssets } from "../../constants/constants";
+import { FC, useEffect, useState } from "react";
+import { Asset, Chain } from "../../constants/constants";
 
 type AssetSelectorProps = {
+  assets: Asset[];
+  chains: Chain[];
   visible: boolean;
   hide: () => void;
-  setAsset: React.Dispatch<React.SetStateAction<Asset>>;
+  setAsset: React.Dispatch<React.SetStateAction<Asset | undefined>>;
 };
 
-// TODO: Replace this list with values fetched from the API.
-const chains = ["Bitcoin", "Ethereum", "Arbitrum", "Solana"];
-
 export const AssetSelector: FC<AssetSelectorProps> = ({
+  assets,
+  chains,
   visible,
   hide,
   setAsset,
 }) => {
-  const assets = Object.entries(SupportedAssets).map(([, v]) => v);
-
-  const [chain, setChain] = useState("");
+  const [chain, setChain] = useState<Chain>();
   const [input, setInput] = useState("");
   const [results, setResults] = useState(assets);
+
+  // Set initial results once assets list has loaded
+  useEffect(() => {
+    setResults(assets);
+  }, [assets]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
@@ -46,6 +50,7 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
 
     // Clear inputs after delay
     setTimeout(() => {
+      setChain(undefined);
       setInput("");
       setResults(assets);
     }, 700);
@@ -69,15 +74,15 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
         />
       </div>
       <div className="flex gap-3">
-        {chains.map((c, i) => (
+        {chains?.map((c, i) => (
           <Chip
             key={i}
             // TODO: Check why the hover state is not working
-            className={`${c !== chain && "bg-opacity-50"} px-3 py-1 cursor-pointer transition-colors hover:bg-opacity-100`}
-            onClick={() => (c === chain ? setChain("") : setChain(c))}
+            className={`${(!chain || c.chainId !== chain.chainId) && "bg-opacity-50"} px-3 py-1 cursor-pointer transition-colors hover:bg-opacity-100`}
+            onClick={() => (c === chain ? setChain(undefined) : setChain(c))}
           >
             <Typography size="h3" weight="medium">
-              {c}
+              {c.name}
             </Typography>
             {/* TODO: Check why the fill is not working */}
             {c === chain && <RadioCheckedIcon fill="button-primary" />}
@@ -103,15 +108,15 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
         <Typography size="h5" weight="bold">
           Assets
         </Typography>
-        {results.map(
+        {results?.map(
           (asset, i) =>
-            (chain === "" || asset.chain === chain) && (
+            (!chain || asset.chainId === chain.chainId) && (
               <div key={i} className="flex justify-between">
                 <div
                   className="flex items-center gap-2 cursor-pointer"
                   onClick={() => handleClick(asset)}
                 >
-                  {asset.icon}
+                  <img src={asset.icon} className="w-5 h-5" />
                   <Typography size="h4" weight="medium">
                     {asset.ticker}
                   </Typography>
