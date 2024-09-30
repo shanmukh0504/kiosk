@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useRef } from "react";
 import { Typography } from "@gardenfi/garden-book";
 
 type SwapAddressProps = {
@@ -7,6 +7,8 @@ type SwapAddressProps = {
 };
 
 export const SwapAddress: FC<SwapAddressProps> = ({ address, setAddress }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value;
     if (!/^[a-zA-Z0-9]$/.test(input.at(-1)!)) {
@@ -17,11 +19,16 @@ export const SwapAddress: FC<SwapAddressProps> = ({ address, setAddress }) => {
 
   return (
     <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
-      <Typography size="h5" weight="bold">
+      <Typography
+        size="h5"
+        weight="bold"
+        onClick={() => inputRef.current!.focus()}
+      >
         Refund address
       </Typography>
       <Typography size="h3" weight="medium">
         <input
+          ref={inputRef}
           // TODO: Check why the placeholder color is not working
           className="w-full outline-none placeholder:text-mid-grey"
           type="text"

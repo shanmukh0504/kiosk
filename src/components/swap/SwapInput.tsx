@@ -1,5 +1,5 @@
 import { TimerIcon, TokenInfo, Typography } from "@gardenfi/garden-book";
-import { FC, useState } from "react";
+import { FC, useRef, useState } from "react";
 import { Asset } from "../../constants/constants";
 import { AssetSelector } from "./AssetSelector";
 
@@ -20,6 +20,7 @@ export const SwapInput: FC<SwapInputProps> = ({
   setAsset,
   setIsPopupOpen,
 }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
   const [showAssetSelector, setShowAssetSelector] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,7 +70,11 @@ export const SwapInput: FC<SwapInputProps> = ({
       <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
         <div className="flex justify-between">
           <div className="flex gap-3">
-            <Typography size="h5" weight="bold">
+            <Typography
+              size="h5"
+              weight="bold"
+              onClick={() => inputRef.current!.focus()}
+            >
               {type}
             </Typography>
             <Typography size="h5" weight="medium">
@@ -88,6 +93,7 @@ export const SwapInput: FC<SwapInputProps> = ({
         <div className="flex justify-between">
           <Typography size="h2" weight="bold">
             <input
+              ref={inputRef}
               // TODO: Check why the placeholder color is not working
               className="flex-grow outline-none placeholder:text-mid-grey"
               type="text"
