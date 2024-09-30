@@ -14,10 +14,17 @@ type AssetSelectorProps = {
   hide: () => void;
 };
 
+type Asset = {
+  icon: FC;
+  ticker: string;
+  name: string;
+  chain: string;
+};
+
 // TODO: Replace these lists with values fetched from the API.
 const chains = ["Bitcoin", "Ethereum", "Arbitrum", "Solana"];
 
-const assets = [
+const assets: Asset[] = [
   {
     icon: BTCLogo,
     ticker: "BTC",
@@ -40,10 +47,16 @@ const assets = [
 
 export const AssetSelector: FC<AssetSelectorProps> = ({ visible, hide }) => {
   const [chain, setChain] = useState("");
+  const [results, setResults] = useState(assets);
 
-  const handleSearch = () => {
-    // FIXME: Implement search
-    return;
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value;
+    const r = assets.filter(
+      (asset) =>
+        asset.name?.toLowerCase().includes(input) ||
+        asset.ticker?.toLowerCase().includes(input),
+    );
+    setResults(r);
   };
 
   return (
@@ -63,7 +76,7 @@ export const AssetSelector: FC<AssetSelectorProps> = ({ visible, hide }) => {
             <Chip
               key={i}
               className={`${c !== chain && "bg-opacity-50"} px-3 py-1 cursor-pointer transition-colors hover:bg-opacity-100`}
-              onClick={() => setChain(c)}
+              onClick={() => (c === chain ? setChain("") : setChain(c))}
             >
               <Typography size="h3" weight="medium">
                 {c}
@@ -92,9 +105,9 @@ export const AssetSelector: FC<AssetSelectorProps> = ({ visible, hide }) => {
         <Typography size="h5" weight="bold">
           Assets
         </Typography>
-        {assets.map(
+        {results.map(
           (asset, i) =>
-            asset.chain === chain && (
+            (chain === "" || asset.chain === chain) && (
               <div key={i} className="flex justify-between">
                 <div className="flex items-center gap-2">
                   <BTCLogo />
