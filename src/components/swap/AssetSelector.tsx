@@ -53,7 +53,6 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
 
   return (
     <div
-      // TODO: Use variable name for background color
       className={`flex flex-col gap-3
         bg-primary-lighter rounded-[20px]
         absolute top-0 ${visible ? "left-0" : "left-full"} z-10

@@ -10,7 +10,7 @@ type SwapInputProps = {
   fadeOutClass: string;
   setAmount: React.Dispatch<React.SetStateAction<string>>;
   setAsset: React.Dispatch<React.SetStateAction<Asset>>;
-  setIsAssetSelectorVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  setFadeContents: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const SwapInput: FC<SwapInputProps> = ({
@@ -20,7 +20,7 @@ export const SwapInput: FC<SwapInputProps> = ({
   fadeOutClass,
   setAmount,
   setAsset,
-  setIsAssetSelectorVisible,
+  setFadeContents,
 }) => {
   const [showAssetSelector, setShowAssetSelector] = useState(false);
 
@@ -61,7 +61,7 @@ export const SwapInput: FC<SwapInputProps> = ({
 
   const handleShowAssetSelector = (show: boolean) => {
     setShowAssetSelector(show);
-    setIsAssetSelectorVisible(show);
+    setFadeContents(show);
   };
 
   return (

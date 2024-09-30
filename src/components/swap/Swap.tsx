@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useConnect } from "wagmi";
 import { SwapInput } from "./SwapInput";
 import { SupportedAssets } from "../../constants/constants";
+import { Comparison } from "./Comparison";
 
 export const Swap = () => {
   const { connectors, connect } = useConnect();
@@ -10,9 +11,15 @@ export const Swap = () => {
   const [receiveAsset, setReceiveAsset] = useState(SupportedAssets.WBTC);
   const [sendAmount, setSendAmount] = useState("");
   const [receiveAmount, setReceiveAmount] = useState("");
-  const [isAssetSelectorVisible, setIsAssetSelectorVisible] = useState(false);
+  const [showComparison, setShowComparison] = useState(false);
+  const [fadeContents, setFadeContents] = useState(false);
 
-  const fadeOutClass = `${isAssetSelectorVisible && "opacity-40"} transition-opacity duration-500`;
+  const fadeOutClass = `${fadeContents && "opacity-40"} transition-[opacity,background-color] duration-500`;
+
+  const handleShowComparison = (show: boolean) => {
+    setShowComparison(show);
+    setFadeContents(show);
+  };
 
   return (
     <div className="flex flex-col">
@@ -32,7 +39,7 @@ export const Swap = () => {
             fadeOutClass={fadeOutClass}
             setAmount={setSendAmount}
             setAsset={setSendAsset}
-            setIsAssetSelectorVisible={setIsAssetSelectorVisible}
+            setFadeContents={setFadeContents}
           />
           <SwapInput
             type="Receive"
@@ -41,7 +48,7 @@ export const Swap = () => {
             fadeOutClass={fadeOutClass}
             setAmount={setReceiveAmount}
             setAsset={setReceiveAsset}
-            setIsAssetSelectorVisible={setIsAssetSelectorVisible}
+            setFadeContents={setFadeContents}
           />
           <div
             className={`flex flex-col gap-2 bg-white rounded-2xl p-4 ${fadeOutClass}`}
@@ -58,8 +65,17 @@ export const Swap = () => {
               />
             </Typography>
           </div>
+          <Comparison
+            visible={showComparison}
+            hide={() => handleShowComparison(false)}
+          />
           <div
-            className={`flex flex-col gap-1 bg-white/50 rounded-2xl pt-4 pb-3 px-4 ${fadeOutClass}`}
+            className={`flex flex-col gap-1
+              bg-white/50 rounded-2xl
+              pt-4 pb-3 px-4
+              cursor-pointer hover:bg-white
+              ${fadeOutClass}`}
+            onClick={() => handleShowComparison(true)}
           >
             <Typography size="h5" weight="bold">
               Details
