@@ -17,6 +17,7 @@ export default {
     createThemes({
       swap: {
         primary: "#7BDCBA",
+        "primary-lighter": "#DEF6EE",
       },
       quests: {
         primary: "#D8BEFF",
