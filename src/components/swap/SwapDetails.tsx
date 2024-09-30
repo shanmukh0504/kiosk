@@ -39,7 +39,7 @@ export const SwapDetails: FC<SwapDetailsProps> = ({ setIsPopupOpen }) => {
               0.00101204 BTC
             </Typography>
             <Typography size="h4" weight="medium">
-              56.56 USD
+              $56.56
             </Typography>
           </div>
         </div>
@@ -52,7 +52,7 @@ export const SwapDetails: FC<SwapDetailsProps> = ({ setIsPopupOpen }) => {
               14m 30s
             </Typography>
             <Typography size="h4" weight="medium">
-              96.56 USD
+              $96.56
             </Typography>
           </div>
         </div>
