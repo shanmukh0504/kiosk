@@ -43,7 +43,8 @@ export const Swap = () => {
             </Typography>
             <Typography size="h3" weight="medium">
               <input
-                className="flex-grow outline-none"
+                // TODO: Check why the placeholder is not working
+                className="flex-grow outline-none placeholder:text-mid-grey"
                 type="text"
                 placeholder="Your Bitcoin address"
               />

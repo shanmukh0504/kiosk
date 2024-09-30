@@ -6,11 +6,10 @@ export default {
   content: ["./index.html", "./src/**/*.{jsx,tsx,js,ts}"],
   theme: {
     extend: {
-      fontFamily: {
-        satoshi: ["Satoshi", ...defaultTheme.fontFamily.sans],
-      },
       colors: {
-        grey: "#554B6A",
+        // TODO: Move these to garden-book
+        "mid-grey": "#817A90",
+        "light-grey": "#E3E0EB",
       },
     },
   },

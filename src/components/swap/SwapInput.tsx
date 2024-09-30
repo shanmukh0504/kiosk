@@ -77,7 +77,8 @@ export const SwapInput: FC<SwapInputProps> = ({
       <div className="flex justify-between">
         <Typography size="h2" weight="bold">
           <input
-            className="flex-grow outline-none"
+            // TODO: Check why the placeholder is not working
+            className="flex-grow outline-none placeholder:text-mid-grey"
             type="text"
             value={amount}
             placeholder="0.0"
