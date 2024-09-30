@@ -36,10 +36,11 @@ export const SwapDetails: FC<SwapDetailsProps> = ({ setIsPopupOpen }) => {
           </Typography>
           <div className="flex gap-5 py-1">
             <Typography size="h4" weight="medium">
-              0.00101204 BTC
+              {/* TODO: Show fee in selected asset */}
             </Typography>
             <Typography size="h4" weight="medium">
-              $56.56
+              {/* TODO: Show fee in USD */}
+              --
             </Typography>
           </div>
         </div>
@@ -49,10 +50,11 @@ export const SwapDetails: FC<SwapDetailsProps> = ({ setIsPopupOpen }) => {
           </Typography>
           <div className="flex gap-5 py-1">
             <Typography size="h4" weight="medium">
-              14m 30s
+              {/* TODO: Show time saved */}
             </Typography>
             <Typography size="h4" weight="medium">
-              $96.56
+              {/* TODO: Show fee saved USD */}
+              --
             </Typography>
           </div>
         </div>

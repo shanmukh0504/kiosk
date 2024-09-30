@@ -84,14 +84,15 @@ export const SwapInput: FC<SwapInputProps> = ({
               {type}
             </Typography>
             <Typography size="h5" weight="medium">
-              ~224.51 USD
+              {/* TODO: Show value in USD */}
             </Typography>
           </div>
           {type === "Receive" && (
             <div className="flex gap-1 items-center">
               <TimerIcon className="h-4" />
               <Typography size="h5" weight="medium">
-                ~2m 30s
+                {/* TODO: Fetch time estimate */}
+                ~30s
               </Typography>
             </div>
           )}
