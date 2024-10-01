@@ -36,6 +36,6 @@
     }
 
     .react-tooltip.tooltip {
-        @apply text-[100%] bg-dark-grey rounded-2xl w-60;
+        @apply text-[100%] bg-dark-grey rounded-2xl w-60 p-3;
     }
 }
