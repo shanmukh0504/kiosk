@@ -3,10 +3,12 @@ import { SwapDetailsComparison } from "./SwapDetailsComparison";
 import { Typography } from "@gardenfi/garden-book";
 
 type SwapDetailsProps = {
+  sendAmount: string;
+  receiveAmount: string;
   setIsPopupOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const SwapDetails: FC<SwapDetailsProps> = ({ setIsPopupOpen }) => {
+export const SwapDetails: FC<SwapDetailsProps> = ({ sendAmount, receiveAmount, setIsPopupOpen }) => {
   const [showComparison, setShowComparison] = useState(false);
 
   const handleShowComparison = (visible: boolean) => {
@@ -15,6 +17,7 @@ export const SwapDetails: FC<SwapDetailsProps> = ({ setIsPopupOpen }) => {
   };
 
   return (
+    (sendAmount || receiveAmount) &&
     <>
       <SwapDetailsComparison
         visible={showComparison}

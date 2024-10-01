@@ -1,12 +1,15 @@
 import { FC, useRef } from "react";
 import { Typography } from "@gardenfi/garden-book";
+import { Asset } from "../../constants/constants";
 
 type SwapAddressProps = {
+  sendAsset: Asset | undefined;
+  receiveAsset: Asset | undefined;
   address: string;
   setAddress: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export const SwapAddress: FC<SwapAddressProps> = ({ address, setAddress }) => {
+export const SwapAddress: FC<SwapAddressProps> = ({ sendAsset, receiveAsset, address, setAddress }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,14 +20,18 @@ export const SwapAddress: FC<SwapAddressProps> = ({ address, setAddress }) => {
     setAddress(input);
   };
 
+  const isSendBitcoin = sendAsset && sendAsset.ticker === "BTC";
+  const isReceiveBitcoin = receiveAsset && receiveAsset.ticker === "BTC";
+
   return (
+    (isSendBitcoin || isReceiveBitcoin) &&
     <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
       <Typography
         size="h5"
         weight="bold"
         onClick={() => inputRef.current!.focus()}
       >
-        Refund address
+        {isSendBitcoin ? "Recovery" : "Receive"} address
       </Typography>
       <Typography size="h3" weight="medium">
         <input

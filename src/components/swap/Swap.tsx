@@ -57,8 +57,8 @@ export const Swap = () => {
           setAsset={setReceiveAsset}
           setIsPopupOpen={setIsPopupOpen}
         />
-        <SwapAddress address={address} setAddress={setAddress} />
-        <SwapDetails setIsPopupOpen={setIsPopupOpen} />
+        <SwapAddress sendAsset={sendAsset} receiveAsset={receiveAsset} address={address} setAddress={setAddress} />
+        <SwapDetails sendAmount={sendAmount} receiveAmount={receiveAmount} setIsPopupOpen={setIsPopupOpen} />
         <Button size="lg">Swap</Button>
       </div>
     </div>
