@@ -39,3 +39,11 @@ export type Asset = {
   chainId: number;
   decimals: number;
 };
+
+export const BTC: Asset = {
+  icon: "https://garden-finance.imgix.net/token-images/bitcoin.svg",
+  ticker: "BTC",
+  name: "Bitcoin",
+  chainId: 1,
+  decimals: 8,
+}

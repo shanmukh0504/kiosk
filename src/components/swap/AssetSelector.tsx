@@ -6,36 +6,72 @@ import {
   StarIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { Asset, Chain } from "../../constants/constants";
+import { assetInfoStore } from "../../store/assetInfoStore";
 
 type AssetSelectorProps = {
-  assets: Asset[];
-  chains: Chain[];
   visible: boolean;
   hide: () => void;
   setAsset: React.Dispatch<React.SetStateAction<Asset | undefined>>;
 };
 
 export const AssetSelector: FC<AssetSelectorProps> = ({
-  assets,
-  chains,
   visible,
   hide,
   setAsset,
 }) => {
+  const { assetsData, fetchAssetsData } = assetInfoStore();
+
+  const networks = useMemo(() => {
+    if (assetsData) {
+      return assetsData.data.networks;
+    }
+  }, [assetsData]);
+
+  const [supportedChains, setSupportedChains] = useState<Chain[]>([]);
+  const [supportedAssets, setSupportedAssets] = useState<Asset[]>([]);
   const [chain, setChain] = useState<Chain>();
   const [input, setInput] = useState("");
-  const [results, setResults] = useState(assets);
+  const [results, setResults] = useState<Asset[]>([]);
 
-  // Set initial results once assets list has loaded
   useEffect(() => {
-    setResults(assets);
-  }, [assets]);
+    void fetchAssetsData();
+  }, [fetchAssetsData]);
+
+  // Once the data has been fetched, initialise the supported chains and assets
+  useEffect(() => {
+    if (!networks) return;
+
+    const supportedChains: Chain[] = [];
+    const supportedAssets: Asset[] = [];
+    for (const [, chainInfo] of Object.entries(networks)) {
+      if (chainInfo.networkType !== "mainnet") {
+        continue;
+      }
+      supportedChains.push({
+        icon: chainInfo.networkLogo,
+        chainId: chainInfo.chainId,
+        name: "Ethereum", // TODO: Update this once new field has been created
+      });
+      for (const asset of chainInfo.assetConfig) {
+        supportedAssets.push({
+          icon: asset.logo,
+          ticker: asset.symbol,
+          name: asset.name,
+          chainId: chainInfo.chainId,
+          decimals: asset.decimals,
+        });
+      }
+    }
+    setSupportedChains(supportedChains);
+    setSupportedAssets(supportedAssets);
+    setResults(supportedAssets);
+  }, [networks]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
-    const r = assets.filter(
+    const r = supportedAssets.filter(
       (asset) =>
         asset.name?.toLowerCase().includes(input) ||
         asset.ticker?.toLowerCase().includes(input),
@@ -52,7 +88,7 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
     setTimeout(() => {
       setChain(undefined);
       setInput("");
-      setResults(assets);
+      setResults(supportedAssets);
     }, 700);
   };
 
@@ -74,7 +110,7 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
         />
       </div>
       <div className="flex gap-3">
-        {chains?.map((c, i) => (
+        {supportedChains?.map((c, i) => (
           // TODO: Chip component should ideally have a `checked` prop that
           // automatically adds the below styles
           <Chip

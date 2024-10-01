@@ -1,4 +1,4 @@
-import { TimerIcon, TokenInfo, Typography } from "@gardenfi/garden-book";
+import { KeyboardDownIcon, TimerIcon, TokenInfo, Typography } from "@gardenfi/garden-book";
 import { FC, useRef, useState } from "react";
 import { Asset, Chain } from "../../constants/constants";
 import { AssetSelector } from "./AssetSelector";
@@ -7,8 +7,6 @@ type SwapInputProps = {
   type: "Send" | "Receive";
   amount: string;
   asset?: Asset;
-  supportedChains: Chain[];
-  supportedAssets: Asset[];
   setAmount: React.Dispatch<React.SetStateAction<string>>;
   setAsset: React.Dispatch<React.SetStateAction<Asset | undefined>>;
   setIsPopupOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -18,8 +16,6 @@ export const SwapInput: FC<SwapInputProps> = ({
   type,
   amount,
   asset,
-  supportedChains,
-  supportedAssets,
   setAmount,
   setAsset,
   setIsPopupOpen,
@@ -67,8 +63,6 @@ export const SwapInput: FC<SwapInputProps> = ({
   return (
     <>
       <AssetSelector
-        chains={supportedChains}
-        assets={supportedAssets}
         visible={showAssetSelector}
         hide={() => handleShowAssetSelector(false)}
         setAsset={setAsset}
@@ -109,13 +103,25 @@ export const SwapInput: FC<SwapInputProps> = ({
               onChange={handleChange}
             />
           </Typography>
-          {asset && (
+          {asset ? (
             <TokenInfo
               symbol={asset.ticker}
               tokenLogo={asset.icon}
               onClick={() => handleShowAssetSelector(true)}
             />
-          )}
+          ) :
+            <div
+              className="flex items-center gap-2 cursor-pointer"
+              onClick={() => handleShowAssetSelector(true)}
+            >
+              <Typography size="h2" weight="medium">
+                Select token
+              </Typography>
+              <div className="flex justify-center w-5">
+                <KeyboardDownIcon />
+              </div>
+            </div>
+          }
         </div>
       </div>
     </>
