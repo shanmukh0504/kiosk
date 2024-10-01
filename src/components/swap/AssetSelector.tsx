@@ -75,6 +75,8 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
       </div>
       <div className="flex gap-3">
         {chains?.map((c, i) => (
+          // TODO: Chip component should ideally have a `checked` prop that
+          // automatically adds the below styles
           <Chip
             key={i}
             // TODO: Check why the hover state is not working
