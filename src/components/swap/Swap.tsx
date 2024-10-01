@@ -65,11 +65,10 @@ export const Swap = () => {
   }, [networks]);
 
   return (
-    <div className="flex flex-col">
       <div
         className={`bg-white/50 rounded-[20px]
           relative overflow-hidden
-          w-full max-w-[424px] mx-auto
+          w-full max-w-[424px] mx-auto mt-10
           before:content-[""] before:bg-black before:bg-opacity-0
           before:absolute before:top-0 before:left-0
           before:h-full before:w-full
@@ -100,7 +99,6 @@ export const Swap = () => {
           <SwapAddress address={address} setAddress={setAddress} />
           <SwapDetails setIsPopupOpen={setIsPopupOpen} />
           <Button size="lg">Swap</Button>
-        </div>
       </div>
     </div>
   );

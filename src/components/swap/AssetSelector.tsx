@@ -78,14 +78,14 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
           <Chip
             key={i}
             // TODO: Check why the hover state is not working
-            className={`${(!chain || c.chainId !== chain.chainId) && "bg-opacity-50"} px-3 py-1 cursor-pointer transition-colors hover:bg-opacity-100`}
+            className={`${(!chain || c.chainId !== chain.chainId) ? "bg-opacity-50 pr-1" : "pr-2"} pl-3 py-1 cursor-pointer transition-colors hover:bg-opacity-100`}
             onClick={() => (c === chain ? setChain(undefined) : setChain(c))}
           >
             <Typography size="h3" weight="medium">
               {c.name}
             </Typography>
             {/* TODO: Check why the fill is not working */}
-            {c === chain && <RadioCheckedIcon fill="button-primary" />}
+            <RadioCheckedIcon className={`${c === chain ? "w-full" : "w-0"} transition-all`} fill="rose" />
           </Chip>
         ))}
       </div>
@@ -104,7 +104,7 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
         </div>
         <SearchIcon />
       </div>
-      <div className="flex flex-col gap-3 bg-white rounded-2xl p-4">
+      <div className="flex flex-col gap-3 bg-white rounded-2xl h-full p-4">
         <Typography size="h5" weight="bold">
           Assets
         </Typography>

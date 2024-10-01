@@ -7,6 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
+        rose: "#E36492",
         "mid-grey": "#817A90",
         "light-grey": "#E3E0EB",
       },
