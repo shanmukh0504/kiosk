@@ -34,4 +34,8 @@
         -webkit-appearance: none;
         margin: 0;
     }
+
+    .react-tooltip.tooltip {
+        @apply text-[100%] bg-dark-grey rounded-2xl w-60;
+    }
 }

@@ -8,6 +8,7 @@ export default {
     extend: {
       colors: {
         rose: "#E36492",
+        "dark-grey": "#554B6A",
         "mid-grey": "#817A90",
         "light-grey": "#E3E0EB",
       },

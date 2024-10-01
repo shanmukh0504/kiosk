@@ -1,5 +1,6 @@
-import { FC, useRef } from "react";
+import { FC, useId, useRef } from "react";
 import { Typography } from "@gardenfi/garden-book";
+import { Tooltip } from "react-tooltip";
 import { Asset } from "../../constants/constants";
 
 type SwapAddressProps = {
@@ -11,6 +12,7 @@ type SwapAddressProps = {
 
 export const SwapAddress: FC<SwapAddressProps> = ({ sendAsset, receiveAsset, address, setAddress }) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const tooltipId = useId();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value;
@@ -20,18 +22,19 @@ export const SwapAddress: FC<SwapAddressProps> = ({ sendAsset, receiveAsset, add
     setAddress(input);
   };
 
-  const isSendBitcoin = sendAsset && sendAsset.ticker === "BTC";
-  const isReceiveBitcoin = receiveAsset && receiveAsset.ticker === "BTC";
+  const isRecoveryAddress = sendAsset?.ticker === "BTC";
+  const isReceiveAddress = receiveAsset?.ticker === "BTC";
 
   return (
-    (isSendBitcoin || isReceiveBitcoin) &&
+    (isRecoveryAddress || isReceiveAddress) &&
     <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
       <Typography
+        data-tooltip-id={isRecoveryAddress ? tooltipId : ""}
         size="h5"
         weight="bold"
         onClick={() => inputRef.current!.focus()}
       >
-        {isSendBitcoin ? "Recovery" : "Receive"} address
+        {isRecoveryAddress ? "Recovery" : "Receive"} address
       </Typography>
       <Typography size="h3" weight="medium">
         <input
@@ -42,6 +45,16 @@ export const SwapAddress: FC<SwapAddressProps> = ({ sendAsset, receiveAsset, add
           value={address}
           placeholder="Your Bitcoin address"
           onChange={handleChange}
+        />
+      </Typography>
+
+      {/* Tooltip */}
+      <Typography size="h5" weight="medium">
+        <Tooltip
+          id={tooltipId}
+          className="tooltip"
+          place="right"
+          content="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt."
         />
       </Typography>
     </div>
