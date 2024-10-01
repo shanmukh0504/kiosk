@@ -142,7 +142,7 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
         </div>
         <SearchIcon />
       </div>
-      <div className="flex flex-col gap-3 bg-white rounded-2xl h-full p-4">
+      <div className="flex flex-col gap-3 bg-white rounded-2xl h-full p-4 overflow-scroll">
         <Typography size="h5" weight="bold">
           Assets
         </Typography>
