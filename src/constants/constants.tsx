@@ -26,6 +26,7 @@ export const SupportedChains = [
   avalanche,
 ] as const;
 
+// TODO: Create a types directory for these
 export type Chain = {
   icon: string;
   chainId: number;
@@ -46,4 +47,13 @@ export const BTC: Asset = {
   name: "Bitcoin",
   chainId: 1,
   decimals: 8,
+}
+
+// TODO: This will likely be removed in favor of a type from GardenJS
+export type ISwapDetails = {
+  sendAsset: Asset;
+  receiveAsset: Asset;
+  sendAmount: string;
+  receiveAmount: string;
+  address: string;
 }
