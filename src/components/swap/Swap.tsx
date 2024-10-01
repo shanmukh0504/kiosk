@@ -1,4 +1,4 @@
-import { Button } from "@gardenfi/garden-book";
+import { Button, ExchangeIcon } from "@gardenfi/garden-book";
 import { useEffect, useMemo, useState } from "react";
 import { SwapInput } from "./SwapInput";
 import { Asset, Chain } from "../../constants/constants";
@@ -64,6 +64,11 @@ export const Swap = () => {
     }
   }, [networks]);
 
+  const swapAssets = () => {
+    setSendAsset(receiveAsset);
+    setReceiveAsset(sendAsset);
+  }
+
   return (
       <div
         className={`bg-white/50 rounded-[20px]
@@ -86,6 +91,15 @@ export const Swap = () => {
             setAsset={setSendAsset}
             setIsPopupOpen={setIsPopupOpen}
           />
+        <div
+          // TODO: Check why translate is not working
+          className="bg-white border border-light-grey rounded-full
+        absolute top-[94px] left-1/2 -translate-x-1/2
+        p-1.5 cursor-pointer"
+          onClick={swapAssets}
+        >
+          <ExchangeIcon />
+        </div>
           <SwapInput
             type="Receive"
             amount={receiveAmount}
