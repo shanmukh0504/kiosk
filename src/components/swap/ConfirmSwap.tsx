@@ -1,7 +1,8 @@
 import { ArrowLeftIcon, Button, CheckIcon, CopyIcon, Typography } from "@gardenfi/garden-book";
 import { FC, useState } from "react";
 import { SwapDetails } from "../../constants/constants";
-import { SwapPreview } from "./SwapPreview";
+import { SwapInfo } from "../../common/SwapInfo";
+import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 
 type ConfirmSwapProps = {
     swap: SwapDetails;
@@ -12,10 +13,6 @@ export const ConfirmSwap: FC<ConfirmSwapProps> = ({ swap, goBack }) => {
     const [copied, setCopied] = useState(false);
     const isRecoveryAddress = swap.sendAsset.ticker === "BTC";
     const depositAddress = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh";
-
-    const truncateAddress = (address: string): string => {
-        return address.substring(0, 6) + "..." + address.substring(address.length - 4, address.length);
-    }
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(depositAddress);
@@ -32,7 +29,7 @@ export const ConfirmSwap: FC<ConfirmSwapProps> = ({ swap, goBack }) => {
                 <Typography size="h5" weight="bold">
                     Transaction
                 </Typography>
-                <SwapPreview
+                <SwapInfo
                     sendAsset={swap.sendAsset}
                     receiveAsset={swap.receiveAsset}
                     sendAmount={swap.sendAmount}
@@ -45,7 +42,7 @@ export const ConfirmSwap: FC<ConfirmSwapProps> = ({ swap, goBack }) => {
                 </Typography>
                 <div className="flex justify-between items-center">
                     <Typography size="h3" weight="bold">
-                        {truncateAddress(depositAddress)}
+                        {getTrimmedAddress(depositAddress)}
                     </Typography>
                     {/* TODO: Use a Lottie animation to make this smoother */}
                     {copied ?
@@ -80,7 +77,7 @@ export const ConfirmSwap: FC<ConfirmSwapProps> = ({ swap, goBack }) => {
                         {isRecoveryAddress ? "Recovery" : "Receive"} address
                     </Typography>
                     <Typography size="h4" weight="medium">
-                        {truncateAddress(swap.address)}
+                        {getTrimmedAddress(swap.address)}
                     </Typography>
                 </div>
             </div>

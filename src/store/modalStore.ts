@@ -16,7 +16,7 @@ type ModalState = {
 
 export const modalStore = create<ModalState>((set) => ({
   modalName: {
-    connectWallet: true,
+    connectWallet: false,
   },
   setOpenModal: (name) => {
     set((state) => ({

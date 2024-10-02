@@ -1,15 +1,15 @@
 import { ArrowRightIcon, Typography } from "@gardenfi/garden-book";
 import { FC } from "react";
-import { Asset } from "../../constants/constants";
+import { Asset } from "../constants/constants";
 
-type SwapPreviewProps = {
+type SwapInfoProps = {
     sendAsset: Asset;
     receiveAsset: Asset;
     sendAmount: string;
     receiveAmount: string;
 };
 
-export const SwapPreview: FC<SwapPreviewProps> = ({
+export const SwapInfo: FC<SwapInfoProps> = ({
     sendAsset,
     receiveAsset,
     sendAmount,

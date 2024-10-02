@@ -1,7 +1,7 @@
 import { ArrowLeftIcon, Typography } from "@gardenfi/garden-book";
 import { FC } from "react";
 import { SwapDetails } from "../../constants/constants";
-import { SwapPreview } from "./SwapPreview";
+import { SwapInfo } from "../../common/SwapInfo";
 
 type SwapFeesComparisonProps = {
   swap: SwapDetails;
@@ -29,7 +29,7 @@ export const SwapFeesComparison: FC<SwapFeesComparisonProps> = ({
         <ArrowLeftIcon className="cursor-pointer" onClick={() => hide()} />
       </div>
       <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
-        <SwapPreview
+        <SwapInfo
           sendAmount={swap.sendAmount}
           receiveAmount={swap.receiveAmount}
           sendAsset={swap.sendAsset}

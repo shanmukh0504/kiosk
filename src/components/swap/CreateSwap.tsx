@@ -28,7 +28,7 @@ export const CreateSwap: FC<CreateSwapProps> = ({ swap, createSwap }) => {
 
     return (
         <div
-            className={`before:content-[""] before:bg-black before:bg-opacity-0
+            className={`before:content-[''] before:bg-black before:bg-opacity-0
           before:absolute before:top-0 before:left-0
           before:h-full before:w-full
           before:pointer-events-none before:transition-colors before:duration-700
