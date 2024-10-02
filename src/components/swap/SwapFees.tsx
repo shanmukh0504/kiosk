@@ -1,14 +1,14 @@
 import { FC, useState } from "react";
-import { SwapDetailsComparison } from "./SwapDetailsComparison";
+import { SwapFeesComparison } from "./SwapFeesComparison";
 import { Typography } from "@gardenfi/garden-book";
+import { SwapDetails } from "../../constants/constants";
 
-type SwapDetailsProps = {
-  sendAmount: string;
-  receiveAmount: string;
+type SwapFeesProps = {
+  swap: SwapDetails,
   setIsPopupOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const SwapDetails: FC<SwapDetailsProps> = ({ sendAmount, receiveAmount, setIsPopupOpen }) => {
+export const SwapFees: FC<SwapFeesProps> = ({ swap, setIsPopupOpen }) => {
   const [showComparison, setShowComparison] = useState(false);
 
   const handleShowComparison = (visible: boolean) => {
@@ -17,9 +17,9 @@ export const SwapDetails: FC<SwapDetailsProps> = ({ sendAmount, receiveAmount, s
   };
 
   return (
-    (sendAmount || receiveAmount) &&
     <>
-      <SwapDetailsComparison
+      <SwapFeesComparison
+        swap={swap}
         visible={showComparison}
         hide={() => handleShowComparison(false)}
       />

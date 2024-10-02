@@ -50,7 +50,7 @@ export const BTC: Asset = {
 }
 
 // TODO: This will likely be removed in favor of a type from GardenJS
-export type ISwapDetails = {
+export type SwapDetails = {
   sendAsset: Asset;
   receiveAsset: Asset;
   sendAmount: string;

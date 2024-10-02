@@ -1,6 +1,6 @@
 import { KeyboardDownIcon, TimerIcon, TokenInfo, Typography } from "@gardenfi/garden-book";
 import { FC, useRef, useState } from "react";
-import { Asset, Chain } from "../../constants/constants";
+import { Asset } from "../../constants/constants";
 import { AssetSelector } from "./AssetSelector";
 
 type SwapInputProps = {

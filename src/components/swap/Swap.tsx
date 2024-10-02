@@ -1,23 +1,26 @@
 import { useState } from "react";
 import { ConfirmSwap } from "./ConfirmSwap";
 import { CreateSwap } from "./CreateSwap";
-import { ISwapDetails } from "../../constants/constants";
+import { SwapDetails } from "../../constants/constants";
 
 export const Swap = () => {
-  const [swap, setSwap] = useState<ISwapDetails>();
+  const [swap, setSwap] = useState<SwapDetails>();
   const [confirmSwap, setConfirmSwap] = useState<boolean>(false);
 
-  const createSwap = (swap: ISwapDetails) => {
+  const createSwap = (swap: SwapDetails) => {
     setSwap(swap);
     setConfirmSwap(true);
   }
 
   return (
-    // We use a simple boolean state value to switch between the `CreateSwap`
-    // and `ConfirmSwap` components
-    swap && confirmSwap ?
-      <ConfirmSwap swap={swap} goBack={() => setConfirmSwap(false)} />
-      :
-      <CreateSwap swap={swap} createSwap={createSwap} />
+    <div className="bg-white/50 rounded-[20px]
+    relative overflow-hidden
+    w-full max-w-[424px] mx-auto mt-10">
+      {swap && confirmSwap ?
+        <ConfirmSwap swap={swap} goBack={() => setConfirmSwap(false)} />
+        :
+        <CreateSwap swap={swap} createSwap={createSwap} />
+      }
+    </div>
   );
 };

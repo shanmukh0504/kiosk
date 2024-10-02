@@ -1,13 +1,13 @@
 import { Button, ExchangeIcon } from "@gardenfi/garden-book";
 import { FC, useState } from "react";
 import { SwapInput } from "./SwapInput";
-import { Asset, BTC, ISwapDetails } from "../../constants/constants";
-import { SwapDetails } from "./SwapDetails";
+import { Asset, BTC, SwapDetails } from "../../constants/constants";
+import { SwapFees } from "./SwapFees";
 import { SwapAddress } from "./SwapAddress";
 
 type CreateSwapProps = {
-    swap: ISwapDetails | undefined;
-    createSwap: (swap: ISwapDetails) => void;
+    swap: SwapDetails | undefined;
+    createSwap: (swap: SwapDetails) => void;
 };
 
 export const CreateSwap: FC<CreateSwapProps> = ({ swap, createSwap }) => {
@@ -28,10 +28,7 @@ export const CreateSwap: FC<CreateSwapProps> = ({ swap, createSwap }) => {
 
     return (
         <div
-            className={`bg-white/50 rounded-[20px]
-          relative overflow-hidden
-          w-full max-w-[424px] mx-auto mt-10
-          before:content-[""] before:bg-black before:bg-opacity-0
+            className={`before:content-[""] before:bg-black before:bg-opacity-0
           before:absolute before:top-0 before:left-0
           before:h-full before:w-full
           before:pointer-events-none before:transition-colors before:duration-700
@@ -63,13 +60,35 @@ export const CreateSwap: FC<CreateSwapProps> = ({ swap, createSwap }) => {
                     setAsset={setReceiveAsset}
                     setIsPopupOpen={setIsPopupOpen}
                 />
-                <SwapAddress sendAsset={sendAsset} receiveAsset={receiveAsset} address={address} setAddress={setAddress} />
-                <SwapDetails sendAmount={sendAmount} receiveAmount={receiveAmount} setIsPopupOpen={setIsPopupOpen} />
+                <SwapAddress
+                    sendAsset={sendAsset}
+                    receiveAsset={receiveAsset}
+                    address={address}
+                    setAddress={setAddress}
+                />
+                {validSwap &&
+                    <SwapFees
+                        swap={{
+                            sendAsset,
+                            receiveAsset,
+                            sendAmount,
+                            receiveAmount,
+                            address,
+                        }}
+                        setIsPopupOpen={setIsPopupOpen}
+                    />
+                }
                 <Button
                     className="transition-colors duration-500"
                     variant={validSwap ? "primary" : "disabled"}
                     size="lg"
-                    onClick={() => validSwap && createSwap({ sendAsset, receiveAsset, sendAmount, receiveAmount, address })}
+                    onClick={() => validSwap && createSwap({
+                        sendAsset,
+                        receiveAsset,
+                        sendAmount,
+                        receiveAmount,
+                        address,
+                    })}
                 >
                     Swap
                 </Button>

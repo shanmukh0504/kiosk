@@ -1,12 +1,16 @@
 import { ArrowLeftIcon, Typography } from "@gardenfi/garden-book";
 import { FC } from "react";
+import { SwapDetails } from "../../constants/constants";
+import { SwapPreview } from "./SwapPreview";
 
-type SwapDetailsComparisonProps = {
+type SwapFeesComparisonProps = {
+  swap: SwapDetails;
   visible: boolean;
   hide: () => void;
 };
 
-export const SwapDetailsComparison: FC<SwapDetailsComparisonProps> = ({
+export const SwapFeesComparison: FC<SwapFeesComparisonProps> = ({
+  swap,
   visible,
   hide,
 }) => {
@@ -23,6 +27,14 @@ export const SwapDetailsComparison: FC<SwapDetailsComparisonProps> = ({
           Cost & speed comparison
         </Typography>
         <ArrowLeftIcon className="cursor-pointer" onClick={() => hide()} />
+      </div>
+      <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
+        <SwapPreview
+          sendAmount={swap.sendAmount}
+          receiveAmount={swap.receiveAmount}
+          sendAsset={swap.sendAsset}
+          receiveAsset={swap.receiveAsset}
+        />
       </div>
       <div className="flex gap-10 bg-white rounded-2xl p-4">
         <div className="flex flex-col flex-grow gap-2">
