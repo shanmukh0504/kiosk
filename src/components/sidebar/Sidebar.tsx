@@ -21,10 +21,11 @@ export const Sidebar = () => {
     };
 
     return (
-        <div className={`bg-dark-grey ${visible ? "bg-opacity-40" : "bg-opacity-0"}
+        <div className={`bg-dark-grey
         absolute top-0 left-0
         h-full w-full
-        transition-colors duration-700`}>
+        transition-colors duration-700
+        ${visible ? "bg-opacity-40" : "bg-opacity-0 pointer-events-none"}`}>
             <div
                 ref={sliderRef}
                 className={`flex flex-col gap-8
