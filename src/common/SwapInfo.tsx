@@ -31,7 +31,7 @@ export const SwapInfo: FC<SwapInfoProps> = ({
                     {receiveAmount}
                 </Typography>
                 <Typography size="h3" weight="medium">
-                    <img src={receiveAsset.icon} />
+                    <img src={receiveAsset.icon} className="w-5" />
                 </Typography>
             </div>
         </div>
