@@ -17,7 +17,7 @@ export const CreateSwap: FC<CreateSwapProps> = ({ swap, createSwap }) => {
     const [receiveAmount, setReceiveAmount] = useState(swap?.receiveAmount || "");
     const [address, setAddress] = useState(swap?.address || "");
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const validSwap = sendAsset && receiveAsset && sendAmount && receiveAmount;
+    const validSwap = sendAsset && receiveAsset && sendAmount && receiveAmount && address;
 
     const swapAssets = () => {
         setSendAsset(receiveAsset);
