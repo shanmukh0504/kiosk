@@ -11,18 +11,18 @@ export const SidebarMenu = () => {
                         {getTrimmedAddress(address)}
                     </Typography>
                 </div>
-                <div className="flex items-center bg-white/50 rounded-full p-1.5 cursor-pointer">
+                <div className="flex items-center bg-white/50 rounded-full p-1.5 cursor-pointer transition-colors hover:bg-white">
                     <AddIcon className="w-5 h-3" />
                 </div>
             </div>
             <div className="flex gap-3">
-                <div className="flex items-center bg-white/50 rounded-full p-1.5 cursor-pointer">
+                <div className="flex items-center bg-white/50 rounded-full p-1.5 cursor-pointer transition-colors hover:bg-white">
                     <LanguageIcon className="w-5 h-4" />
                 </div>
-                <div className="flex items-center bg-white/50 rounded-full p-1.5 cursor-pointer">
+                <div className="flex items-center bg-white/50 rounded-full p-1.5 cursor-pointer transition-colors hover:bg-white">
                     <ReferralIcon className="w-5 h-4" />
                 </div>
-                <div className="flex items-center bg-white/50 rounded-full p-1.5 cursor-pointer">
+                <div className="flex items-center bg-white/50 rounded-full p-1.5 cursor-pointer transition-colors hover:bg-white">
                     <LogoutIcon className="w-5 h-4" />
                 </div>
             </div>
