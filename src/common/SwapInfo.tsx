@@ -17,7 +17,7 @@ export const SwapInfo: FC<SwapInfoProps> = ({
 }) => {
     return (
         <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
+            <div className="flex grow basis-0 items-center gap-2">
                 <Typography size="h3" weight="medium">
                     {sendAmount}
                 </Typography>
@@ -26,7 +26,7 @@ export const SwapInfo: FC<SwapInfoProps> = ({
                 </Typography>
             </div>
             <ArrowRightIcon />
-            <div className="flex items-center gap-2">
+            <div className="flex grow basis-0 justify-end items-center gap-2">
                 <Typography size="h3" weight="medium">
                     {receiveAmount}
                 </Typography>
