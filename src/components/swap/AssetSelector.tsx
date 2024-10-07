@@ -109,7 +109,7 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
           onClick={() => handleClick()}
         />
       </div>
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         {supportedChains?.map((c, i) => (
           // TODO: Chip component should ideally have a `checked` prop that
           // automatically adds the below styles
