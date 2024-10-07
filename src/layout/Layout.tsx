@@ -14,7 +14,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
   return (
     <Opacity
       level={"medium"}
-      className={`${theme} relative bg-primary overflow-hidden`}
+      className={`${theme} z-10 relative bg-primary overflow-hidden`}
     >
       <Modal />
       <Navbar />
