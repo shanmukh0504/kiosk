@@ -1,7 +1,7 @@
 import { FC, useId, useRef } from "react";
 import { Typography } from "@gardenfi/garden-book";
-import { Tooltip } from "react-tooltip";
 import { Asset } from "../../constants/constants";
+import { Tooltip } from "../../common/Tooltip";
 
 type SwapAddressProps = {
   sendAsset: Asset | undefined;
@@ -47,16 +47,12 @@ export const SwapAddress: FC<SwapAddressProps> = ({ sendAsset, receiveAsset, add
           onChange={handleChange}
         />
       </Typography>
-
-      {/* Tooltip */}
-      <Typography size="h5" weight="medium">
-        <Tooltip
-          id={tooltipId}
-          className="tooltip"
-          place="right"
-          content="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt."
-        />
-      </Typography>
+      <Tooltip
+        id={tooltipId}
+        place="right"
+        content="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt."
+        multiline={true}
+      />
     </div>
   );
 };
