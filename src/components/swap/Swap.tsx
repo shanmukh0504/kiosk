@@ -18,7 +18,7 @@ export const Swap = () => {
     <div className="w-full max-w-[424px] mx-auto">
       {toast &&
         <div className="mt-6">
-          <Toast content={toast} />
+          <Toast content={toast} link="https://garden.finance" />
         </div>
       }
       <div
