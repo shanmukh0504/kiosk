@@ -16,7 +16,7 @@ export const Notification: FC<NotificationProps> = ({ title, description, image,
             className={`bg-white/50 backdrop-blur-[20px]
             fixed left-10 bottom-10 duration-300
             ${visible ?
-                    "rounded-2xl w-[440px] h-24 p-4 transition-[border-radius,width,height]" :
+                    "rounded-2xl w-[490px] h-24 p-4 transition-[border-radius,width,height]" :
                     "flex justify-center items-center rounded-3xl w-12 h-12 cursor-pointer transition-[border-radius,width,height,transform] hover:scale-105"
                 }`
             }
@@ -43,7 +43,7 @@ export const Notification: FC<NotificationProps> = ({ title, description, image,
                     }`
                 }
             >
-                <img src={image} className="w-16 object-cover" />
+                <img src={image} className="rounded-lg w-[114px] object-cover" />
                 <div className={`flex gap-1`}>
                     <div className="flex flex-col gap-1">
                         <Link to={link} target="_blank" className="leading-4">
