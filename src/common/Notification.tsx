@@ -16,15 +16,15 @@ export const Notification: FC<NotificationProps> = ({ title, description, image,
             className={`bg-white/50 backdrop-blur-[20px]
             fixed left-10 bottom-10 duration-300
             ${visible ?
-                    "rounded-2xl w-[490px] h-24 p-4 transition-[border-radius,width,height]" :
-                    "flex justify-center items-center rounded-3xl w-12 h-12 cursor-pointer transition-[border-radius,width,height,transform] hover:scale-105"
+                    "rounded-2xl w-[490px] h-24 p-4 transition-[border-radius,width,height] ease-cubic-in-out" :
+                    "flex justify-center items-center rounded-3xl w-12 h-12 cursor-pointer transition-[border-radius,width,height,transform] ease-cubic-in-out hover:scale-105"
                 }`
             }
             onClick={() => !visible && setVisible(true)}
         >
             {/* TODO: Replace with bell icon once added to garden-book */}
             <div
-                className={`transition-opacity
+                className={`transition-opacity ease-cubic-in-out
                 ${visible ?
                         "opacity-0 h-0 duration-150" :
                         "opacity-100 duration-150 delay-150"
@@ -36,7 +36,7 @@ export const Notification: FC<NotificationProps> = ({ title, description, image,
                 </svg>
             </div>
             <div
-                className={`flex gap-3 transition-opacity
+                className={`flex gap-3 transition-opacity ease-cubic-in-out
                 ${visible ?
                         "opacity-100 duration-300 delay-300" :
                         "opacity-0 w-0 h-0 overflow-hidden"

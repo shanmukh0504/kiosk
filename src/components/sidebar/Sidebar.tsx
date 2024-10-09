@@ -24,7 +24,7 @@ export const Sidebar = () => {
         <div className={`bg-dark-grey
         absolute top-0 left-0 z-10
         h-full w-full
-        transition-colors duration-700
+        transition-colors ease-cubic-in-out duration-700
         ${visible ? "bg-opacity-40" : "bg-opacity-0 pointer-events-none"}`}>
             <div
                 ref={sliderRef}
@@ -32,7 +32,7 @@ export const Sidebar = () => {
                 bg-white/50 backdrop-blur-[20px]
                 fixed top-0 ${visible ? "right-0" : "right-[-480px]"}
                 w-[480px] h-full p-6
-                transition-right duration-700`}
+                transition-right ease-cubic-in-out duration-700`}
             >
                 <div className="flex justify-end">
                     <CloseIcon

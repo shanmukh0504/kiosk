@@ -98,7 +98,7 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
         bg-primary-lighter rounded-[20px]
         absolute top-0 ${visible ? "left-0" : "left-full"} z-10
         h-full w-full p-3
-        transition-left ease-in-out duration-700`}
+        transition-left ease-cubic-in-out duration-700`}
     >
       <div className="flex justify-between items-center p-1">
         <Typography size="h4" weight="bold">
@@ -116,7 +116,7 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
           <Chip
             key={i}
             // TODO: Check why the hover state is not working
-            className={`${(!chain || c.chainId !== chain.chainId) ? "bg-opacity-50 pr-1" : "pr-2"} pl-3 py-1 cursor-pointer transition-colors hover:bg-opacity-100`}
+            className={`${(!chain || c.chainId !== chain.chainId) ? "bg-opacity-50 pr-1" : "pr-2"} pl-3 py-1 cursor-pointer transition-colors ease-cubic-in-out hover:bg-opacity-100`}
             onClick={() => (c === chain ? setChain(undefined) : setChain(c))}
           >
             <Typography size="h3" weight="medium">
