@@ -52,7 +52,7 @@ export const Notification: FC<NotificationProps> = ({ title, description, image,
                             </Typography>
                         </Link>
                         <Typography
-                            className="inline-block w-[306px] mb-1 whitespace-nowrap overflow-hidden text-ellipsis"
+                            className="text-mid-grey inline-block w-[306px] mb-1 whitespace-nowrap overflow-hidden text-ellipsis"
                             size="h5"
                             weight="medium"
                         >
