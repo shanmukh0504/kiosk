@@ -14,20 +14,21 @@ export const Notification: FC<NotificationProps> = ({ title, description, image,
     return (
         <div
             className={`bg-white/50 backdrop-blur-[20px]
-            fixed left-10 bottom-10 duration-300
+            fixed left-10 bottom-10
+            p-4 duration-300
             ${visible ?
-                    "rounded-2xl w-[490px] h-24 p-4 transition-[border-radius,width,height] ease-cubic-in-out" :
-                    "flex justify-center items-center rounded-3xl w-12 h-12 cursor-pointer transition-[border-radius,width,height,transform] ease-cubic-in-out hover:scale-105"
+                    "rounded-2xl w-[490px] h-24 transition-[border-radius,width,height] ease-cubic-in-out" :
+                    "rounded-3xl w-12 h-12 cursor-pointer transition-[border-radius,width,height,transform] ease-cubic-in-out hover:scale-105"
                 }`
             }
             onClick={() => !visible && setVisible(true)}
         >
             {/* TODO: Replace with bell icon once added to garden-book */}
             <div
-                className={`transition-opacity ease-cubic-in-out
+                className={`flex justify-center items-center transition-[opacity,height] ease-cubic-in-out
                 ${visible ?
-                        "opacity-0 h-0 duration-150" :
-                        "opacity-100 duration-150 delay-150"
+                        "opacity-0 h-0" :
+                        "opacity-100 h-full delay-150"
                     }`
                 }
             >
@@ -36,14 +37,16 @@ export const Notification: FC<NotificationProps> = ({ title, description, image,
                 </svg>
             </div>
             <div
-                className={`flex gap-3 transition-opacity ease-cubic-in-out
+                className={`flex gap-3 ease-cubic-in-out
                 ${visible ?
-                        "opacity-100 duration-300 delay-300" :
-                        "opacity-0 w-0 h-0 overflow-hidden"
+                        "opacity-100 w-full h-full [transition:opacity_300ms_300ms,width_150ms,height_150ms]" :
+                        "opacity-0 w-0 h-0 pointer-events-none [transition:opacity_150ms,width_150ms_150ms,height_150ms_150ms]"
                     }`
                 }
             >
-                <img src={image} className="rounded-lg w-[114px] object-cover" />
+                <Link to={link} target="_blank">
+                    <img src={image} className="rounded-lg h-16 object-cover" />
+                </Link>
                 <div className={`flex gap-1`}>
                     <div className="flex flex-col gap-1">
                         <Link to={link} target="_blank" className="leading-4">
