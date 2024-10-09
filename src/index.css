@@ -41,4 +41,8 @@
     .react-tooltip.tooltip.multiline {
         @apply w-60 p-3;
     }
+
+    .shine:before {
+        @apply content-[''] bg-gradient-to-r from-transparent from-[20%] via-white/30 via-50% to-transparent to-[80%] rounded-2xl absolute top-0 left-0 w-full h-full skew-x-[-140deg] animate-shine
+    }
 }

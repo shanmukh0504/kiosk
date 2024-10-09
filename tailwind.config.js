@@ -13,6 +13,16 @@ export default {
         "light-grey": "#E3E0EB",
         "off-white": "#F4F0FC",
       },
+      keyframes: {
+        shine: {
+          "0%, 30%": { transform: "translateX(-100%)" },
+          "70%, 100%": { transform: "translateX(200%)" },
+        },
+      },
+      animation: {
+        // Change `infinite` to `forwards` to have the animation run only once
+        shine: "shine 3s ease-in-out infinite",
+      },
     },
   },
   plugins: [
