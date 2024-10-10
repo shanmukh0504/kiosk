@@ -39,7 +39,7 @@ export const Notification: FC<NotificationProps> = ({ title, description, image,
                 </svg>
             </div>
             <div
-                className={`flex gap-3 ease-cubic-in-out
+                className={`flex gap-3
                 ${visible ?
                         // On open, fade in the content once the notification has expanded
                         "opacity-100 w-full h-full transition-opacity duration-300 delay-300" :
