@@ -5,7 +5,7 @@ import { SwapDetails } from "../../constants/constants";
 import { Toast } from "../../common/Toast";
 
 export const Swap = () => {
-  const [toast, setToast] = useState("Successfully swapped 0.1 BTC to WBTC!");
+  const [toast, _] = useState("Successfully swapped 0.1 BTC to WBTC!");
   const [swap, setSwap] = useState<SwapDetails>();
   const [confirmSwap, setConfirmSwap] = useState<boolean>(false);
 
