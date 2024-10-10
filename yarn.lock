@@ -358,9 +358,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/garden-book@npm:^0.0.36":
-  version: 0.0.36
-  resolution: "@gardenfi/garden-book@npm:0.0.36"
+"@gardenfi/garden-book@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "@gardenfi/garden-book@npm:0.1.2"
   dependencies:
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^2.1.1"
@@ -371,7 +371,7 @@ __metadata:
   peerDependencies:
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 10c0/ec600d796302772c2b970ccba6ca146a96062b464e1c0847deb565d0dc4014c3a69eca9c42cc0020d7f388d45a130a0595e07c9e1bc1117200bc94ebdb3adb02
+  checksum: 10c0/e092b2181d2a401ff6f260b8307176ec12449adc6588451b4f3f481960693c3aee2ca56d8013da8dc93eaea3fb57aa6ae66c6716434d4ba5253551fb96977518
   languageName: node
   linkType: hard
 
@@ -4457,7 +4457,7 @@ __metadata:
   resolution: "garden-kiosk@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.8.0"
-    "@gardenfi/garden-book": "npm:^0.0.36"
+    "@gardenfi/garden-book": "npm:^0.1.2"
     "@tanstack/react-query": "npm:^5.51.23"
     "@types/react": "npm:^18.3.3"
     "@types/react-dom": "npm:^18.3.0"
