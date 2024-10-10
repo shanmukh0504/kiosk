@@ -22,14 +22,12 @@ export default {
       },
       keyframes: {
         shine: {
-          // The actual animation will only run for 1/5 of the specified duration
-          "0%, 40%": { transform: "translateX(-100%) skew(240deg)" },
-          "60%, 100%": { transform: "translateX(100%) skew(240deg)" },
+          "0%": { transform: "translateX(-100%) skew(30deg)" },
+          "100%": { left: "100%", transform: "skew(30deg)" },
         },
       },
       animation: {
-        // Change `infinite` to `forwards` to have the animation run only once
-        shine: `shine 5s ${cubicInOut} infinite`,
+        shine: `shine 1s ${cubicInOut} infinite`,
       },
     },
   },

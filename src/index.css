@@ -44,6 +44,6 @@
 
     /* TODO: Consider moving this animation to garden-book */
     .shine:before {
-        @apply content-[''] bg-gradient-to-r from-transparent from-[20%] via-white/30 via-50% to-transparent to-[80%] rounded-2xl absolute top-0 left-0 w-full h-full animate-shine
+        @apply content-[''] bg-gradient-to-r from-transparent via-white/50 via-50% to-transparent absolute top-0 left-0 w-[168px] h-full animate-shine
     }
 }
