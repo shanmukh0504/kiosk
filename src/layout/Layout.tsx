@@ -3,21 +3,26 @@ import { FC } from "react";
 import { Orb } from "../common/Orb";
 import { getCurrentTheme } from "../utils/utils";
 import { Navbar } from "../components/navbar/Navbar";
-import { Modal } from "../components/modal/Modal";
 import { Notification } from "../common/Notification";
+import { ConnectWallet } from "../components/navbar/ConnectWalletModal";
+import { modalNames, modalStore } from "../store/modalStore";
 
 type LayoutProps = {
   children: React.ReactNode;
 };
 
 export const Layout: FC<LayoutProps> = ({ children }) => {
+  const { modalName, setCloseModal } = modalStore(); // TODO: Why do we need a store for this?
   const theme = getCurrentTheme();
   return (
     <Opacity
       level={"medium"}
       className={`${theme} z-10 relative bg-primary overflow-hidden`}
     >
-      <Modal />
+      <ConnectWallet
+        open={modalName.connectWallet}
+        onClose={() => setCloseModal(modalNames.connectWallet)}
+      />
       <Navbar />
       <div className="min-h-[100vh]">{children}</div>
       {theme === "swap" &&

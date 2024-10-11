@@ -1,6 +1,8 @@
-import { ArrowNorthEastIcon, Chip, GMXLogo, RadioCheckedIcon, RadioUncheckedIcon, Typography } from "@gardenfi/garden-book";
-import { FC } from "react";
+import { ArrowNorthEastIcon, Chip, GMXLogo, OpenInFullIcon, RadioCheckedIcon, RadioUncheckedIcon, Typography } from "@gardenfi/garden-book";
+import { FC, useState } from "react";
 import { Link } from "react-router-dom";
+import { PartnerChip } from "./PartnerChip";
+import { QuestModal } from "./QuestModal";
 
 type QuestProps = {
     partner: string,
@@ -8,6 +10,7 @@ type QuestProps = {
     link: string,
     amount: number;
     featured?: boolean;
+    expandable?: boolean;
 };
 
 export const Quest: FC<QuestProps> = ({
@@ -16,22 +19,36 @@ export const Quest: FC<QuestProps> = ({
     amount,
     link,
     featured,
+    expandable,
 }) => {
+    const [showModal, setShowModal] = useState(false);
     return (
-        <div className={`flex flex-col grow-0 shrink-0 ${featured ? "basis-2/3" : "basis-1/3"} bg-white/50 backdrop-blur-[20px] rounded-2xl p-6`}>
+        <div
+            className={`flex flex-col
+            ${featured ? "lg:basis-2/3 lg:grow-0 lg:shrink-0" : ""}
+            bg-white/50 backdrop-blur-[20px] rounded-2xl p-6`}
+        >
             <div className="flex justify-between">
-                <Chip className="px-2 py-1.5">
-                    {/* TODO: Make this logo customisable */}
-                    <GMXLogo />
-                    <Typography size="h3" weight="medium">
-                        {partner}
-                    </Typography>
-                    <RadioCheckedIcon />
-                </Chip>
+                <PartnerChip name={partner} />
                 <div className="flex justify-center items-center w-6 h-6">
-                    <Link to={link} target="_blank">
-                        <ArrowNorthEastIcon className="w-[15px] h-full" />
-                    </Link>
+                    {expandable ?
+                        <>
+                            <OpenInFullIcon
+                                className="w-[18px] h-full cursor-pointer"
+                                onClick={() => setShowModal(true)}
+                            />
+                            <QuestModal
+                                partner={partner}
+                                description={description}
+                                open={showModal}
+                                onClose={() => setShowModal(false)}
+                            />
+                        </>
+                        :
+                        <Link to={link} target="_blank">
+                            <ArrowNorthEastIcon className="w-[15px] h-full" />
+                        </Link>
+                    }
                 </div>
             </div>
             <div className="grow mt-5">
