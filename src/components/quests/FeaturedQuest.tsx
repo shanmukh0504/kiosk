@@ -8,7 +8,7 @@ type FeaturedQuestProps = {
     logo: React.ReactNode;
     amount: number;
     link?: string;
-    logoLink?: string;
+    logoLink: string;
 };
 
 export const FeaturedQuest: FC<FeaturedQuestProps> = ({

@@ -9,7 +9,7 @@ type QuestProps = {
     logo: React.ReactNode;
     amount: number;
     link?: string;
-    logoLink?: string;
+    logoLink: string;
     featured?: boolean;
     showModal?: () => void;
 };
@@ -31,13 +31,9 @@ export const Quest: FC<QuestProps> = ({
             bg-white/50 backdrop-blur-[20px] rounded-2xl p-6`}
         >
             <div className="flex justify-between">
-                {logoLink ?
-                    <Link to={logoLink} target="_blank">
-                        <PartnerChip name={partner} logo={logo} />
-                    </Link>
-                    :
+                <Link to={logoLink} target="_blank">
                     <PartnerChip name={partner} logo={logo} />
-                }
+                </Link>
                 <div className="flex justify-center items-center w-6 h-6">
                     {showModal ?
                         <OpenInFullIcon

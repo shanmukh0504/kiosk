@@ -6,7 +6,7 @@ export enum Partner {
     Radiant = "radiant",
     Garden = "garden",
     Camelot = "camelot",
-    TraderJoe = "traderjoe",
+    LFG = "traderjoe",
     Pancake = "pancake",
     ArkDigital = "arkdigital",
     Dodo = "dodo",
@@ -20,7 +20,7 @@ export type QuestInfo = {
     amount: number;
     partner: Partner;
     link?: string;
-    logoLink?: string;
+    logoLink: string;
 };
 
 export const QuestsInfo: QuestInfo[] = [
@@ -30,6 +30,7 @@ export const QuestsInfo: QuestInfo[] = [
         logo: <GardenLogo />,
         amount: 20,
         partner: Partner.Garden,
+        logoLink: "https://garden.finance",
     },
     {
         name: "Solv",
@@ -71,13 +72,14 @@ export const QuestsInfo: QuestInfo[] = [
             "https://pancakeswap.finance/info/v3/arb/pairs/0x4bfc22A4dA7f31F8a912a79A7e44a822398b4390?chain=arb",
     },
     {
-        name: "Trader Joe",
+        name: "Let's F***ing Joe",
         description:
             "Deposit WBTC-ETH into CLMM LP pool to earn yield and SEED rewards.",
         logo: <GMXLogo />,
         amount: 20,
-        partner: Partner.TraderJoe,
+        partner: Partner.LFG,
         link: "https://garden.finance/blogs/season-3-quests/",
+        logoLink: "https://lfj.gg",
     },
     {
         name: "Camelot",
@@ -87,6 +89,7 @@ export const QuestsInfo: QuestInfo[] = [
         amount: 20,
         partner: Partner.Camelot,
         link: "https://garden.finance/blogs/season-3-quests/",
+        logoLink: "https://camelot.exchange",
     },
     {
         name: "GMX",
@@ -96,6 +99,7 @@ export const QuestsInfo: QuestInfo[] = [
         amount: 20,
         partner: Partner.Gmx,
         link: "https://garden.finance/blogs/season-3-quests/",
+        logoLink: "https://gmx.io",
     },
     {
         name: "Vertex",
@@ -105,6 +109,7 @@ export const QuestsInfo: QuestInfo[] = [
         amount: 20,
         partner: Partner.Vertex,
         link: "https://garden.finance/blogs/season-3-quests/",
+        logoLink: "https://vertexprotocol.com",
     },
     {
         name: "Radiant",
@@ -114,5 +119,6 @@ export const QuestsInfo: QuestInfo[] = [
         amount: 20,
         partner: Partner.Radiant,
         link: "https://garden.finance/blogs/season-3-quests/",
+        logoLink: "https://radiant.capital",
     },
 ];
