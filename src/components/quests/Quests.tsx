@@ -6,14 +6,21 @@ import { Partner, QuestsInfo } from "../../constants/quests";
 
 export const Quests = () => {
     const [showModal, setShowModal] = useState(false);
+
+    // Set featured quest and get its index
+    const featuredPartner = Partner.Solv;
+    const featuredIndex = QuestsInfo.findIndex(quest => quest.partner === featuredPartner);
+
     return (
         <div className="w-full max-w-[1600px] mx-auto mt-10 px-10">
             <FeaturedQuest
-                image="https://wbtc-garden.ghost.io/content/images/size/w1000/2024/08/season3_review-1.png"
-                partner="GMX"
-                description="Deposit WBTC into Radiant and borrow & loop USDC to leverage your deposit and gain enhanced yield."
-                link="https://garden.finance"
-                amount={20}
+                image="https://wbtc-garden.ghost.io/content/images/size/w1000/2024/08/season3_review-1.png" // TODO: This should not be hard coded
+                partner={QuestsInfo[featuredIndex].name}
+                description={QuestsInfo[featuredIndex].description}
+                logo={QuestsInfo[featuredIndex].logo}
+                amount={QuestsInfo[featuredIndex].amount}
+                link={QuestsInfo[featuredIndex].link}
+                logoLink={QuestsInfo[featuredIndex].logoLink}
             />
             <div className="grid gap-6 mt-10 sm:grid-cols-2 lg:grid-cols-3">
                 {QuestsInfo?.map(

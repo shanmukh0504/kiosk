@@ -5,16 +5,20 @@ type FeaturedQuestProps = {
     image: string,
     partner: string,
     description: string,
-    link: string,
+    logo: React.ReactNode;
     amount: number;
+    link?: string;
+    logoLink?: string;
 };
 
 export const FeaturedQuest: FC<FeaturedQuestProps> = ({
     image,
     partner,
     description,
+    logo,
     amount,
     link,
+    logoLink,
 }) => {
     return (
         <div className="flex flex-col md:flex-row md:items-stretch gap-6 bg-white/30 backdrop-blur-[20px] rounded-2xl p-6">
@@ -22,8 +26,10 @@ export const FeaturedQuest: FC<FeaturedQuestProps> = ({
             <Quest
                 partner={partner}
                 description={description}
-                link={link}
+                logo={logo}
                 amount={amount}
+                link={link}
+                logoLink={logoLink}
                 featured={true}
             />
         </div>
