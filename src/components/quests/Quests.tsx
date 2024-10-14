@@ -4,6 +4,7 @@ import { Quest } from "./Quest";
 import { QuestModal } from "./QuestModal";
 
 export const Quests = () => {
+    const [showModal, setShowModal] = useState(false);
     return (
         <div className="w-full max-w-[1600px] mx-auto mt-10 px-10">
             <FeaturedQuest
@@ -19,7 +20,7 @@ export const Quests = () => {
                     description="Follow us on 𝕏 and join our garden townhall to earn 20 SEED!"
                     link="https://garden.finance"
                     amount={20}
-                    expandable={true}
+                    showModal={() => setShowModal(true)}
                 />
                 <Quest
                     partner="GMX"
@@ -46,6 +47,13 @@ export const Quests = () => {
                     amount={20}
                 />
             </div>
+            {/* TODO: Ensure this is not hard coded once the API has been integrated */}
+            <QuestModal
+                partner="Garden"
+                description="Follow us on 𝕏 and join our garden townhall to earn 20 SEED!"
+                open={showModal}
+                onClose={() => setShowModal(false)}
+            />
         </div>
     );
 };

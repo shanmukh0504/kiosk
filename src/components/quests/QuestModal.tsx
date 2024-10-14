@@ -1,4 +1,4 @@
-import { Button, CloseIcon, Modal, RadiantLogo, TrustWallet, Typography } from "@gardenfi/garden-book";
+import { Button, CloseIcon, Modal, TrustWallet, Typography } from "@gardenfi/garden-book";
 import React, { useId } from "react";
 import { PartnerChip } from "./PartnerChip";
 import { Tooltip } from "../../common/Tooltip";

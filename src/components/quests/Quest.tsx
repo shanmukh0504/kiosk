@@ -1,8 +1,7 @@
-import { ArrowNorthEastIcon, Chip, GMXLogo, OpenInFullIcon, RadioCheckedIcon, RadioUncheckedIcon, Typography } from "@gardenfi/garden-book";
-import { FC, useState } from "react";
+import { ArrowNorthEastIcon, Chip, OpenInFullIcon, RadioUncheckedIcon, Typography } from "@gardenfi/garden-book";
+import { FC } from "react";
 import { Link } from "react-router-dom";
 import { PartnerChip } from "./PartnerChip";
-import { QuestModal } from "./QuestModal";
 
 type QuestProps = {
     partner: string,
@@ -10,7 +9,7 @@ type QuestProps = {
     link: string,
     amount: number;
     featured?: boolean;
-    expandable?: boolean;
+    showModal?: () => void;
 };
 
 export const Quest: FC<QuestProps> = ({
@@ -19,9 +18,8 @@ export const Quest: FC<QuestProps> = ({
     amount,
     link,
     featured,
-    expandable,
+    showModal,
 }) => {
-    const [showModal, setShowModal] = useState(false);
     return (
         <div
             className={`flex flex-col
@@ -31,19 +29,11 @@ export const Quest: FC<QuestProps> = ({
             <div className="flex justify-between">
                 <PartnerChip name={partner} />
                 <div className="flex justify-center items-center w-6 h-6">
-                    {expandable ?
-                        <>
-                            <OpenInFullIcon
-                                className="w-[18px] h-full cursor-pointer"
-                                onClick={() => setShowModal(true)}
-                            />
-                            <QuestModal
-                                partner={partner}
-                                description={description}
-                                open={showModal}
-                                onClose={() => setShowModal(false)}
-                            />
-                        </>
+                    {showModal ?
+                        <OpenInFullIcon
+                            className="w-[18px] h-full cursor-pointer"
+                            onClick={() => showModal()}
+                        />
                         :
                         <Link to={link} target="_blank">
                             <ArrowNorthEastIcon className="w-[15px] h-full" />
