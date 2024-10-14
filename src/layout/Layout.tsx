@@ -1,4 +1,4 @@
-import { Footer, Opacity } from "@gardenfi/garden-book";
+import { Footer } from "@gardenfi/garden-book";
 import { FC } from "react";
 import { Orb } from "../common/Orb";
 import { getCurrentTheme } from "../utils/utils";
@@ -13,9 +13,8 @@ type LayoutProps = {
 export const Layout: FC<LayoutProps> = ({ children }) => {
   const theme = getCurrentTheme();
   return (
-    <Opacity
-      level={"medium"}
-      className={`${theme} z-10 relative bg-primary overflow-hidden`}
+    <div
+      className={`${theme} z-10 relative bg-primary bg-opacity-50 overflow-hidden`}
     >
       <Modal />
       <Navbar />
@@ -28,6 +27,6 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
       />
       <Footer className={"mt-auto"} />
       <Orb />
-    </Opacity>
+    </div>
   );
 };
