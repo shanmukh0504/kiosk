@@ -1,4 +1,4 @@
-import { Footer, Opacity } from "@gardenfi/garden-book";
+import { Footer } from "@gardenfi/garden-book";
 import { FC } from "react";
 import { Orb } from "../common/Orb";
 import { getCurrentTheme } from "../utils/utils";
@@ -15,9 +15,8 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
   const { modalName, setCloseModal } = modalStore(); // TODO: Why do we need a store for this?
   const theme = getCurrentTheme();
   return (
-    <Opacity
-      level={"medium"}
-      className={`${theme} z-10 relative bg-primary overflow-hidden`}
+    <div
+      className={`${theme} z-10 relative bg-primary bg-opacity-50 overflow-hidden`}
     >
       <ConnectWallet
         open={modalName.connectWallet}
@@ -35,6 +34,6 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
       }
       <Footer className={"mt-auto"} />
       <Orb />
-    </Opacity>
+    </div>
   );
 };
