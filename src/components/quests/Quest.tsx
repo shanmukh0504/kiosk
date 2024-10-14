@@ -4,10 +4,12 @@ import { Link } from "react-router-dom";
 import { PartnerChip } from "./PartnerChip";
 
 type QuestProps = {
-    partner: string,
-    description: string,
-    link: string,
+    partner: string;
+    description: string;
+    logo: React.ReactNode;
     amount: number;
+    link?: string;
+    logoLink?: string;
     featured?: boolean;
     showModal?: () => void;
 };
@@ -15,8 +17,10 @@ type QuestProps = {
 export const Quest: FC<QuestProps> = ({
     partner,
     description,
+    logo,
     amount,
     link,
+    logoLink,
     featured,
     showModal,
 }) => {
@@ -27,7 +31,13 @@ export const Quest: FC<QuestProps> = ({
             bg-white/50 backdrop-blur-[20px] rounded-2xl p-6`}
         >
             <div className="flex justify-between">
-                <PartnerChip name={partner} />
+                {logoLink ?
+                    <Link to={logoLink} target="_blank">
+                        <PartnerChip name={partner} logo={logo} />
+                    </Link>
+                    :
+                    <PartnerChip name={partner} logo={logo} />
+                }
                 <div className="flex justify-center items-center w-6 h-6">
                     {showModal ?
                         <OpenInFullIcon
@@ -35,6 +45,7 @@ export const Quest: FC<QuestProps> = ({
                             onClick={() => showModal()}
                         />
                         :
+                        link &&
                         <Link to={link} target="_blank">
                             <ArrowNorthEastIcon className="w-[15px] h-full" />
                         </Link>

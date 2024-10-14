@@ -6,6 +6,7 @@ import { Tooltip } from "../../common/Tooltip";
 type QuestModalProps = {
     partner: string;
     description: string;
+    logo: React.ReactNode;
     open: boolean;
     onClose: () => void;
 };
@@ -13,6 +14,7 @@ type QuestModalProps = {
 export const QuestModal: React.FC<QuestModalProps> = ({
     partner,
     description,
+    logo,
     open,
     onClose,
 }) => {
@@ -22,7 +24,7 @@ export const QuestModal: React.FC<QuestModalProps> = ({
         <Modal open={open} onClose={onClose}>
             <div className="flex flex-col gap-6 bg-white/50 backdrop-blur-[20px] rounded-2xl w-[600px] p-6">
                 <div className="flex justify-between items-center">
-                    <PartnerChip name={partner} />
+                    <PartnerChip name={partner} logo={logo} />
                     <CloseIcon
                         className="w-6 h-[14px] cursor-pointer"
                         onClick={onClose}
