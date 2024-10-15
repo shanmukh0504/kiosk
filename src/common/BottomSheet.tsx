@@ -12,7 +12,7 @@ export const BottomSheet: FC<BottomSheetProps> = ({ children, open, onOpenChange
         <Drawer.Root open={open} onOpenChange={onOpenChange}>
             <Drawer.Portal>
                 <Drawer.Content className="bg-white/50 backdrop-blur-[20px] rounded-xl w-full h-fit p-4 fixed bottom-0 z-10 outline-none">
-                    <div className="bg-white/30 rounded-full w-12 h-1.5 mx-auto mb-8" />
+                    <div className="bg-white/30 rounded-full w-[60px] h-1 mx-auto mb-5" />
                     {children}
                 </Drawer.Content>
             </Drawer.Portal>
