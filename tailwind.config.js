@@ -1,6 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-const defaultTheme = require("tailwindcss/defaultTheme");
-const { createThemes } = require("tw-colors");
+import { createThemes } from "tw-colors";
 
 const cubicInOut = "cubic-bezier(0.66, 0.00, 0.34, 1.00)";
 
