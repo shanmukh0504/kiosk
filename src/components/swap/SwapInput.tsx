@@ -96,7 +96,7 @@ export const SwapInput: FC<SwapInputProps> = ({
             <input
               ref={inputRef}
               // TODO: Check why the placeholder color is not working
-              className="flex-grow outline-none placeholder:text-mid-grey"
+              className="flex-grow w-full outline-none placeholder:text-mid-grey"
               type="text"
               value={amount}
               placeholder="0.0"
@@ -111,7 +111,7 @@ export const SwapInput: FC<SwapInputProps> = ({
             />
           ) :
             <div
-              className="flex items-center gap-2 cursor-pointer"
+              className="flex items-center gap-2 text-nowrap cursor-pointer"
               onClick={() => handleShowAssetSelector(true)}
             >
               <Typography size="h2" weight="medium">
