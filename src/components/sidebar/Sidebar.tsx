@@ -30,9 +30,9 @@ export const Sidebar = () => {
                 ref={sliderRef}
                 className={`flex flex-col gap-8
                 bg-white/50 backdrop-blur-[20px]
-                fixed top-0 ${visible ? "right-0" : "right-[-480px]"}
-                w-[480px] h-full p-6
-                transition-right ease-cubic-in-out duration-700`}
+                fixed ${visible ? "bottom-0 sm:right-0" : "bottom-[-650px] sm:right-[-480px]"}
+                w-full sm:w-[480px] h-full max-h-[650px] sm:max-h-none p-6
+                transition-all ease-cubic-in-out duration-700`}
             >
                 <div className="flex justify-end">
                     <CloseIcon
