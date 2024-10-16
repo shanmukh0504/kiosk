@@ -12,25 +12,25 @@ export const Swap = () => {
   const createSwap = (swap: SwapDetails) => {
     setSwap(swap);
     setConfirmSwap(true);
-  }
+  };
 
   return (
     <div className="w-full max-w-[424px] mx-auto">
-      {toast &&
+      {toast && (
         <div className="mt-6">
           <Toast content={toast} link="https://garden.finance" />
         </div>
-      }
+      )}
       <div
         className={`bg-white/50 rounded-[20px]
         relative overflow-hidden
         ${toast ? "mt-4" : "mt-20"}`}
       >
-        {swap && confirmSwap ?
+        {swap && confirmSwap ? (
           <ConfirmSwap swap={swap} goBack={() => setConfirmSwap(false)} />
-          :
+        ) : (
           <CreateSwap swap={swap} createSwap={createSwap} />
-        }
+        )}
       </div>
     </div>
   );

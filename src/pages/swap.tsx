@@ -1,5 +1,4 @@
 import { Swap } from "../components/swap/Swap";
-import { Sidebar } from "../components/sidebar/Sidebar";
 import { Meta } from "../layout/Meta";
 
 export const SwapPage = () => {
@@ -10,7 +9,6 @@ export const SwapPage = () => {
         description="Experience fast, secure, and trustless BTC bridging across most blockchains, including Arbitrum, Ethereum, Avalanche, Optimism, and Binance."
       />
       <Swap />
-      <Sidebar />
     </div>
   );
 };

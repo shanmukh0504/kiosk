@@ -47,7 +47,7 @@ export const BTC: Asset = {
   name: "Bitcoin",
   chainId: 1,
   decimals: 8,
-}
+};
 
 // TODO: This will likely be removed in favor of a type from GardenJS
 export type SwapDetails = {
@@ -56,4 +56,4 @@ export type SwapDetails = {
   sendAmount: string;
   receiveAmount: string;
   address: string;
-}
+};
