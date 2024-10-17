@@ -1,4 +1,4 @@
-import { ArrowNorthEastIcon, Chip, OpenInFullIcon, RadioUncheckedIcon, Typography } from "@gardenfi/garden-book";
+import { ArrowNorthEastIcon, Chip, OpenInFullIcon, Typography } from "@gardenfi/garden-book";
 import { FC } from "react";
 import { Link } from "react-router-dom";
 import { PartnerChip } from "./PartnerChip";

@@ -6,7 +6,7 @@ import { Partner, QuestsInfo } from "../../constants/quests";
 import { questStore } from "../../store/questStore";
 
 export const Quests = () => {
-    const { _, fetchQuestData } = questStore();
+    const { fetchQuestData } = questStore();
     const [showModal, setShowModal] = useState(false);
 
     // Set featured quest and get its index
