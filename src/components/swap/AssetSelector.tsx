@@ -111,8 +111,6 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
       </div>
       <div className="flex flex-wrap gap-3">
         {supportedChains?.map((c, i) => (
-          // TODO: Chip component should ideally have a `checked` prop that
-          // automatically adds the below styles
           <Chip
             key={i}
             // TODO: Check why the hover state is not working
@@ -122,8 +120,7 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
             <Typography size="h3" weight="medium">
               {c.name}
             </Typography>
-            {/* TODO: Check why the fill is not working */}
-            <RadioCheckedIcon className={`${c === chain ? "w-4" : "w-0"} transition-all`} fill="rose" />
+            <RadioCheckedIcon className={`${c === chain ? "w-4" : "w-0"} transition-all`} fill="#E36492" />
           </Chip>
         ))}
       </div>
@@ -131,8 +128,7 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
         <div className="flex-grow">
           <Typography size="h4" weight="medium">
             <input
-              // TODO: Check why the placeholder color is not working
-              className="w-full outline-none placeholder:text-mid-grey"
+              className="w-full focus:outline-none placeholder:text-mid-grey"
               type="text"
               value={input}
               placeholder="Search by name or ticker"
@@ -169,7 +165,6 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
                     {asset.name}
                   </Typography>
                 </div>
-                {/* TODO: Check why the fill is not working */}
                 <StarIcon fill="light-grey" />
               </div>
             ),

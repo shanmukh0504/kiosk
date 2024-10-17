@@ -95,8 +95,7 @@ export const SwapInput: FC<SwapInputProps> = ({
           <Typography size="h2" weight="bold">
             <input
               ref={inputRef}
-              // TODO: Check why the placeholder color is not working
-              className="flex-grow w-full outline-none placeholder:text-mid-grey"
+              className="flex-grow w-full focus:outline-none placeholder:text-mid-grey"
               type="text"
               value={amount}
               placeholder="0.0"

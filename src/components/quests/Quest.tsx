@@ -58,7 +58,7 @@ export const Quest: FC<QuestProps> = ({
                     <Typography size="h3" weight="medium">
                         {amount} SEED
                     </Typography>
-                    <RadioUncheckedIcon />
+                    <Chip.CheckBox checked={false} />
                 </Chip>
             </div>
         </div>

@@ -39,8 +39,7 @@ export const SwapAddress: FC<SwapAddressProps> = ({ sendAsset, receiveAsset, add
       <Typography size="h3" weight="medium">
         <input
           ref={inputRef}
-          // TODO: Check why the placeholder color is not working
-          className="w-full outline-none placeholder:text-mid-grey"
+          className="w-full focus:outline-none placeholder:text-mid-grey"
           type="text"
           value={address}
           placeholder="Your Bitcoin address"

@@ -44,31 +44,28 @@ export const SidebarMenu = () => {
                         className="flex items-center bg-white/50 rounded-full p-1.5 cursor-pointer transition-colors hover:bg-white"
                     >
                         <LogoutIcon className="w-5 h-4" />
-                        {/* TODO: These tooltips are temporarily placed within this `div` as they
-                        are causing styling issues placed elsewhere. They should be moved once
-                        the `garden` wrapper classes are removed. */}
-                        <Tooltip
-                            id={addTooltipId}
-                            place="top"
-                            content="Wallet"
-                        />
-                        <Tooltip
-                            id={languageTooltipId}
-                            place="top"
-                            content="Language"
-                        />
-                        <Tooltip
-                            id={referralTooltipId}
-                            place="top"
-                            content="Referrals"
-                        />
-                        <Tooltip
-                            id={logoutTooltipId}
-                            place="top"
-                            content="Logout"
-                        />
                     </div>
                 </div>
+                <Tooltip
+                    id={addTooltipId}
+                    place="top"
+                    content="Wallet"
+                />
+                <Tooltip
+                    id={languageTooltipId}
+                    place="top"
+                    content="Language"
+                />
+                <Tooltip
+                    id={referralTooltipId}
+                    place="top"
+                    content="Referrals"
+                />
+                <Tooltip
+                    id={logoutTooltipId}
+                    place="top"
+                    content="Logout"
+                />
             </div>
         </>
     );

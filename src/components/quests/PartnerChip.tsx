@@ -1,4 +1,4 @@
-import { Chip, RadioCheckedIcon, Typography } from "@gardenfi/garden-book";
+import { Chip, Typography } from "@gardenfi/garden-book";
 import { FC } from "react";
 
 type PartnerChipProps = {
@@ -9,11 +9,13 @@ type PartnerChipProps = {
 export const PartnerChip: FC<PartnerChipProps> = ({ name, logo }) => {
     return (
         <Chip className="bg-white/50 px-2 py-1.5">
-            {logo}
+            <Chip.Logo>
+                {logo}
+            </Chip.Logo>
             <Typography size="h3" weight="medium">
                 {name}
             </Typography>
-            <RadioCheckedIcon />
+            <Chip.CheckBox checked />
         </Chip>
     );
 };
