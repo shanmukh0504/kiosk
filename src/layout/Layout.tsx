@@ -12,9 +12,14 @@ type LayoutProps = {
 
 export const Layout: FC<LayoutProps> = ({ children }) => {
   const theme = getCurrentTheme();
+
   return (
-    <div className="bg-opacity-50">
-      <div className={`${theme} z-10 relative bg-primary overflow-hidden`}>
+    <div className={`${theme} relative overflow-hidden bg-opacity-50`}>
+      <div className="absolute inset-0 z-[-30] bg-primary"></div>
+
+      <Orb />
+
+      <div className="relative z-10 bg-white bg-opacity-50">
         <Modal />
         <Navbar />
         <div className="min-h-[100vh]">{children}</div>
@@ -25,7 +30,6 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
           link="https://garden.finance"
         />
         <Footer className={"mt-auto"} />
-        <Orb />
       </div>
     </div>
   );
