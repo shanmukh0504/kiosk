@@ -1,16 +1,11 @@
-import { FC, useId, useRef } from "react";
+import { useId, useRef } from "react";
 import { Typography } from "@gardenfi/garden-book";
-import { Asset } from "../../constants/constants";
 import { Tooltip } from "../../common/Tooltip";
+import { swapStore } from "../../store/swapStore";
+import { isBitcoin } from "@gardenfi/orderbook";
 
-type SwapAddressProps = {
-  sendAsset: Asset | undefined;
-  receiveAsset: Asset | undefined;
-  address: string;
-  setAddress: React.Dispatch<React.SetStateAction<string>>;
-};
-
-export const SwapAddress: FC<SwapAddressProps> = ({ sendAsset, receiveAsset, address, setAddress }) => {
+export const SwapAddress = () => {
+  const { inputAsset, outputAsset, btcAddress, setBtcAddress } = swapStore();
   const inputRef = useRef<HTMLInputElement>(null);
   const tooltipId = useId();
 
@@ -19,11 +14,11 @@ export const SwapAddress: FC<SwapAddressProps> = ({ sendAsset, receiveAsset, add
     if (!/^[a-zA-Z0-9]$/.test(input.at(-1)!)) {
       input = input.slice(0, -1);
     }
-    setAddress(input);
+    setBtcAddress(input);
   };
 
-  const isRecoveryAddress = sendAsset?.ticker === "BTC";
-  const isReceiveAddress = receiveAsset?.ticker === "BTC";
+  const isRecoveryAddress = inputAsset && isBitcoin(inputAsset.chain);
+  const isReceiveAddress = outputAsset && isBitcoin(outputAsset.chain);
 
   return (
     (isRecoveryAddress || isReceiveAddress) &&

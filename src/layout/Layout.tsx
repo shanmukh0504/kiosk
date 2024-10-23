@@ -14,6 +14,7 @@ type LayoutProps = {
 export const Layout: FC<LayoutProps> = ({ children }) => {
   const { modalName, setCloseModal } = modalStore(); // TODO: Why do we need a store for this?
   const theme = getCurrentTheme();
+
   return (
     <div
       className={`${theme} z-10 relative bg-primary bg-opacity-50 overflow-hidden`}
