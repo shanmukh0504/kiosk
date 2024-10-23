@@ -6,62 +6,55 @@ import {
   StarIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { FC, useEffect, useMemo, useState } from "react";
-import { Asset, Chain } from "../../constants/constants";
-import { assetInfoStore } from "../../store/assetInfoStore";
+import { useEffect, useMemo, useState } from "react";
+import { Asset, isBitcoin } from "@gardenfi/orderbook";
+import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
+import { swapStore } from "../../store/swapStore";
+import { constructAsset } from "../../utils/utils";
 
-type AssetSelectorProps = {
-  visible: boolean;
-  hide: () => void;
-  setAsset: React.Dispatch<React.SetStateAction<Asset | undefined>>;
-};
+export const AssetSelector = () => {
+  const [supportedChains, setSupportedChains] = useState<ChainData[]>([]);
+  const [supportedAssets, setSupportedAssets] = useState<Asset[]>([]);
+  const [chain, setChain] = useState<ChainData>();
+  const [input, setInput] = useState<string>();
+  const [results, setResults] = useState<Asset[]>([]);
 
-export const AssetSelector: FC<AssetSelectorProps> = ({
-  visible,
-  hide,
-  setAsset,
-}) => {
-  const { assetsData, fetchAssetsData } = assetInfoStore();
+  const {
+    fetchAssetsData,
+    isAssetSelectorOpen,
+    assetsData,
+    setCloseAssetSelector,
+  } = assetInfoStore();
+  const { setAsset } = swapStore();
 
   const networks = useMemo(() => {
     if (assetsData) {
-      return assetsData.data.networks;
+      return assetsData;
     }
   }, [assetsData]);
 
-  const [supportedChains, setSupportedChains] = useState<Chain[]>([]);
-  const [supportedAssets, setSupportedAssets] = useState<Asset[]>([]);
-  const [chain, setChain] = useState<Chain>();
-  const [input, setInput] = useState("");
-  const [results, setResults] = useState<Asset[]>([]);
+  //setInputAsset once assets are fetched
+  useEffect(() => {
+    if (!assetsData) return;
+    const bitcoin = supportedAssets.find((asset) => isBitcoin(asset.chain));
+    if (!bitcoin) return;
+    setAsset(isAssetSelectorOpen.type, bitcoin);
+  }, [assetsData]);
 
   useEffect(() => {
     void fetchAssetsData();
   }, [fetchAssetsData]);
 
-  // Once the data has been fetched, initialise the supported chains and assets
+  // Once the data has been fetched, initialize the supported chains and assets
   useEffect(() => {
     if (!networks) return;
 
-    const supportedChains: Chain[] = [];
+    const supportedChains: ChainData[] = [];
     const supportedAssets: Asset[] = [];
-    for (const [, chainInfo] of Object.entries(networks)) {
-      if (chainInfo.networkType !== "mainnet") {
-        continue;
-      }
-      supportedChains.push({
-        icon: chainInfo.networkLogo,
-        chainId: chainInfo.chainId,
-        name: "Ethereum", // TODO: Update this once new field has been created
-      });
+    for (const chainInfo of Object.values(networks)) {
+      supportedChains.push(chainInfo);
       for (const asset of chainInfo.assetConfig) {
-        supportedAssets.push({
-          icon: asset.logo,
-          ticker: asset.symbol,
-          name: asset.name,
-          chainId: chainInfo.chainId,
-          decimals: asset.decimals,
-        });
+        supportedAssets.push(constructAsset(asset, chainInfo.identifier));
       }
     }
     setSupportedChains(supportedChains);
@@ -74,16 +67,16 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
     const r = supportedAssets.filter(
       (asset) =>
         asset.name?.toLowerCase().includes(input) ||
-        asset.ticker?.toLowerCase().includes(input),
+        asset.symbol?.toLowerCase().includes(input),
     );
     setInput(input);
     setResults(r);
   };
 
   const handleClick = (asset?: Asset) => {
-    if (asset) setAsset(asset);
-    hide();
+    if (asset) setAsset(isAssetSelectorOpen.type, asset);
 
+    setCloseAssetSelector();
     // Clear inputs after delay
     setTimeout(() => {
       setChain(undefined);
@@ -96,7 +89,9 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
     <div
       className={`flex flex-col gap-3
         bg-primary-lighter rounded-[20px]
-        absolute top-0 ${visible ? "left-0" : "left-full"} z-10
+        absolute top-0 ${
+          isAssetSelectorOpen.isOpen ? "left-0" : "left-full"
+        } z-10
         h-full w-full p-3
         transition-left ease-cubic-in-out duration-700`}
     >
@@ -115,15 +110,21 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
           // automatically adds the below styles
           <Chip
             key={i}
-            // TODO: Check why the hover state is not working
-            className={`${(!chain || c.chainId !== chain.chainId) ? "bg-opacity-50 pr-1" : "pr-2"} pl-3 py-1 cursor-pointer transition-colors ease-cubic-in-out hover:bg-opacity-100`}
+            className={`${
+              !chain || c.chainId !== chain.chainId
+                ? "bg-opacity-50 pr-1"
+                : "pr-2"
+            } pl-3 py-1 cursor-pointer transition-colors ease-cubic-in-out hover:bg-opacity-50`}
             onClick={() => (c === chain ? setChain(undefined) : setChain(c))}
           >
             <Typography size="h3" weight="medium">
               {c.name}
             </Typography>
-            {/* TODO: Check why the fill is not working */}
-            <RadioCheckedIcon className={`${c === chain ? "w-4" : "w-0"} transition-all`} fill="rose" />
+            <RadioCheckedIcon
+              className={`${
+                c === chain ? "w-4" : "w-0"
+              } transition-all fill-rose`}
+            />
           </Chip>
         ))}
       </div>
@@ -142,24 +143,33 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
         </div>
         <SearchIcon />
       </div>
-      <div className="flex flex-col bg-white rounded-2xl h-full overflow-scroll">
+      <div className="flex flex-col bg-white rounded-2xl h-full overflow-auto">
         <div className="px-4 pt-4 pb-1.5">
           <Typography size="h5" weight="bold">
             Assets
           </Typography>
         </div>
-        {results?.map(
-          (asset, i) =>
-            (!chain || asset.chainId === chain.chainId) && (
+        {results?.map((asset, i) => {
+          const network = !isBitcoin(asset.chain) && assetsData?.[asset.chain];
+          return (
+            (!chain || asset.chain === chain.identifier) && (
               <div
                 key={i}
                 className="flex justify-between items-center px-4 py-1.5 cursor-pointer hover:bg-off-white"
                 onClick={() => handleClick(asset)}
               >
                 <div className="flex items-center gap-2">
-                  <img src={asset.icon} className="w-5 h-5" />
+                  <div className="relative">
+                    <img src={asset.logo} className="w-5 h-5" />
+                    {network && (
+                      <img
+                        src={network.networkLogo}
+                        className="absolute w-3 h-3 bottom-0 right-0"
+                      />
+                    )}
+                  </div>
                   <Typography size="h4" weight="medium">
-                    {asset.ticker}
+                    {asset.symbol}
                   </Typography>
                   <Typography
                     className="text-mid-grey"
@@ -169,11 +179,11 @@ export const AssetSelector: FC<AssetSelectorProps> = ({
                     {asset.name}
                   </Typography>
                 </div>
-                {/* TODO: Check why the fill is not working */}
-                <StarIcon fill="light-grey" />
+                <StarIcon className="fill-light-grey" />
               </div>
-            ),
-        )}
+            )
+          );
+        })}
       </div>
     </div>
   );

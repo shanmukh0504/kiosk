@@ -16,13 +16,13 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
   return (
     <div className={`${theme} relative overflow-hidden bg-opacity-50`}>
       <div className="absolute inset-0 z-[-30] bg-primary"></div>
-
       <Orb />
-
       <div className="relative z-10 bg-white bg-opacity-50">
         <Modal />
-        <Navbar />
-        <div className="min-h-[100vh]">{children}</div>
+        <div className="min-h-[100vh]">
+          <Navbar />
+          {children}
+        </div>
         <Notification
           title="Season 3 ended! Collect your reward on 15th June!"
           description="Deposit WBTC into Radiant and borrow & loop USDC to leverage lorem ipsum dolor sit amet."

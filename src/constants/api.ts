@@ -1,25 +1,28 @@
-const protocol = "https://";
-const DATA_URL = import.meta.env.VITE_DATA_URL as string;
-const QUESTS_URL = import.meta.env.VITE_QUESTS_URL as string;
-const ORDERBOOK_URL = import.meta.env.VITE_ORDERBOOK_URL as string;
+const REQUIRED_ENV_VARS = {
+  DATA_URL: import.meta.env.VITE_DATA_URL,
+  QUESTS_URL: import.meta.env.VITE_QUESTS_URL,
+  ORDERBOOK_URL: import.meta.env.VITE_ORDERBOOK_URL,
+  QUOTE_URL: import.meta.env.VITE_QUOTE_URL,
+} as const;
 
 export const API = () => {
-  if (!DATA_URL) {
-    throw new Error("Missing VITE_DATA_URL in env");
-  }
-  if (!QUESTS_URL) {
-    throw new Error("Missing VITE_QUESTS_URL in env");
-  }
-
-  if (!ORDERBOOK_URL) {
-    throw new Error("Missing VITE_ORDERBOOK_URL in env");
-  }
+  Object.entries(REQUIRED_ENV_VARS).forEach(([key, value]) => {
+    if (!value) throw new Error(`Missing ${key} in env`);
+  });
 
   return {
     home: "https://garden.finance",
-    assets: protocol + DATA_URL + "/assets",
-    quests: protocol + QUESTS_URL + "/quests",
+    data: {
+      data: REQUIRED_ENV_VARS.DATA_URL,
+      assets: REQUIRED_ENV_VARS.DATA_URL + "/assets",
+    },
+    leaderboard: REQUIRED_ENV_VARS.QUESTS_URL,
     buildId: "/build-id.json",
-    orderbook: ORDERBOOK_URL,
+    orderbook: REQUIRED_ENV_VARS.ORDERBOOK_URL,
+    quote: REQUIRED_ENV_VARS.QUOTE_URL,
+    mempool: {
+      testnet: "https://mempool.space/testnet",
+      mainnet: "https://mempool.space",
+    },
   };
 };

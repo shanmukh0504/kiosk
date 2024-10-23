@@ -1,35 +1,146 @@
 import { Button, ExchangeIcon } from "@gardenfi/garden-book";
-import { FC, useState } from "react";
 import { SwapInput } from "./SwapInput";
-import { Asset, BTC, SwapDetails } from "../../constants/constants";
-import { SwapFees } from "./SwapFees";
+import { IOType } from "../../constants/constants";
 import { SwapAddress } from "./SwapAddress";
+import { swapStore } from "../../store/swapStore";
+import { assetInfoStore } from "../../store/assetInfoStore";
+import { AssetSelector } from "./AssetSelector";
+import { useGarden } from "@gardenfi/react-hooks";
+import BigNumber from "bignumber.js";
+import { useEffect, useState } from "react";
+import { isBitcoin } from "@gardenfi/orderbook";
 
-type CreateSwapProps = {
-  swap: SwapDetails | undefined;
-  createSwap: (swap: SwapDetails) => void;
-};
+export const CreateSwap = () => {
+  const [strategy, setStrategy] = useState<string>();
+  const [isSwapping, setIsSwapping] = useState(false);
+  const { isAssetSelectorOpen } = assetInfoStore();
+  const {
+    btcAddress,
+    inputAmount,
+    outputAmount,
+    inputAsset,
+    setAmount,
+    swapAssets,
+    outputAsset,
+    setShowConfirmSwap,
+  } = swapStore();
+  const { swap, getQuote, initializeSecretManager, garden } = useGarden();
 
-export const CreateSwap: FC<CreateSwapProps> = ({ swap, createSwap }) => {
-  const [sendAsset, setSendAsset] = useState<Asset | undefined>(
-    swap ? swap.sendAsset : BTC,
-  );
-  const [receiveAsset, setReceiveAsset] = useState<Asset | undefined>(
-    swap?.receiveAsset,
-  );
-  const [sendAmount, setSendAmount] = useState(swap?.sendAmount ?? "");
-  const [receiveAmount, setReceiveAmount] = useState(swap?.receiveAmount ?? "");
-  const [address, setAddress] = useState(swap?.address ?? "");
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const validSwap =
-    sendAsset && receiveAsset && sendAmount && receiveAmount && address;
+  const handleInputAmountChange = async (amount: string) => {
+    setAmount(IOType.input, amount);
 
-  const swapAssets = () => {
-    setSendAsset(receiveAsset);
-    setReceiveAsset(sendAsset);
-    setSendAmount(receiveAmount);
-    setReceiveAmount(sendAmount);
+    if (!getQuote || !inputAsset || !outputAsset || !Number(amount)) return;
+
+    const amountInDecimals = new BigNumber(amount).multipliedBy(
+      10 ** inputAsset.decimals,
+    );
+    const quote = await getQuote({
+      fromAsset: inputAsset,
+      toAsset: outputAsset,
+      amount: amountInDecimals.toNumber(),
+      isExactOut: false,
+    });
+    if (quote.error) {
+      setAmount(IOType.output, "0");
+      return;
+    }
+
+    const [strategy, quoteAmount] = Object.entries(quote.val.quotes)[0];
+    setStrategy(strategy);
+    const quoteAmountInDecimals = new BigNumber(quoteAmount).div(
+      Math.pow(10, outputAsset.decimals),
+    );
+
+    setAmount(IOType.output, quoteAmountInDecimals.toFixed(8));
   };
+
+  const handleOutputAmountChange = async (amount: string) => {
+    setAmount(IOType.output, amount);
+
+    if (!getQuote || !inputAsset || !outputAsset || !Number(amount)) return;
+
+    const amountInDecimals = new BigNumber(amount).multipliedBy(
+      10 ** inputAsset.decimals,
+    );
+    const quote = await getQuote({
+      fromAsset: inputAsset,
+      toAsset: outputAsset,
+      amount: amountInDecimals.toNumber(),
+      isExactOut: true,
+    });
+    if (quote.error) {
+      setAmount(IOType.input, "0");
+      return;
+    }
+
+    const [strategy, quoteAmount] = Object.entries(quote.val.quotes)[0];
+    setStrategy(strategy);
+    const quoteAmountInDecimals = new BigNumber(quoteAmount).div(
+      Math.pow(10, inputAsset.decimals),
+    );
+
+    setAmount(IOType.input, quoteAmountInDecimals.toFixed(8));
+  };
+
+  const handleSwapClick = async () => {
+    if (
+      !validSwap ||
+      !swap ||
+      !inputAsset ||
+      !outputAsset ||
+      !strategy ||
+      !initializeSecretManager
+    )
+      return;
+    setIsSwapping(true);
+
+    const inputAmountInDecimals = new BigNumber(inputAmount)
+      .multipliedBy(10 ** inputAsset.decimals)
+      .toString();
+    const outputAmountInDecimals = new BigNumber(outputAmount)
+      .multipliedBy(10 ** outputAsset.decimals)
+      .toString();
+
+    const res = await swap({
+      fromAsset: inputAsset,
+      toAsset: outputAsset,
+      sendAmount: inputAmountInDecimals,
+      receiveAmount: outputAmountInDecimals,
+      additionalData: {
+        strategyId: strategy,
+        btcAddress,
+      },
+    });
+    setIsSwapping(false);
+    if (res.error) {
+      console.error("failed to create order ❌", res.error);
+      return;
+    }
+
+    console.log("orderCreated ✅", res.val);
+
+    if (isBitcoin(res.val.source_swap.chain)) {
+      setShowConfirmSwap({
+        isOpen: true,
+        order: res.val,
+      });
+    }
+  };
+
+  const _validSwap = inputAsset && outputAmount && inputAmount && outputAmount;
+  const validSwap =
+    inputAsset &&
+    outputAsset &&
+    (isBitcoin(inputAsset.chain) || isBitcoin(outputAsset.chain))
+      ? _validSwap && btcAddress
+      : _validSwap;
+
+  useEffect(() => {
+    if (!garden) return;
+    garden.on("error", (order, error) => {
+      console.error("error", order.create_order.create_id, error);
+    });
+  }, []);
 
   return (
     <div
@@ -37,68 +148,39 @@ export const CreateSwap: FC<CreateSwapProps> = ({ swap, createSwap }) => {
           before:absolute before:top-0 before:left-0
           before:h-full before:w-full
           before:pointer-events-none before:transition-colors before:duration-700
-          ${isPopupOpen && "before:bg-opacity-10"}`}
+          ${isAssetSelectorOpen.isOpen && "before:bg-opacity-10"}`}
     >
+      <AssetSelector />
       <div className="flex flex-col gap-4 p-3">
         <SwapInput
-          type="Send"
-          amount={sendAmount}
-          asset={sendAsset}
-          setAmount={setSendAmount}
-          setAsset={setSendAsset}
-          setIsPopupOpen={setIsPopupOpen}
+          type={IOType.input}
+          amount={inputAmount}
+          asset={inputAsset}
+          onChange={handleInputAmountChange}
         />
         <div
-          // TODO: Check why translate is not working
-          className="bg-white border border-light-grey rounded-full
-        absolute top-[94px] left-1/2 -translate-x-1/2
+          //TODO: fix the y position of the ExchangeIcon
+          className="absolute bg-white border border-light-grey rounded-full
+          left-1/2 -translate-x-1/2 top-[88px]
         p-1.5 cursor-pointer"
           onClick={swapAssets}
         >
           <ExchangeIcon />
         </div>
         <SwapInput
-          type="Receive"
-          amount={receiveAmount}
-          asset={receiveAsset}
-          setAmount={setReceiveAmount}
-          setAsset={setReceiveAsset}
-          setIsPopupOpen={setIsPopupOpen}
+          type={IOType.output}
+          amount={outputAmount}
+          asset={outputAsset}
+          onChange={handleOutputAmountChange}
         />
-        <SwapAddress
-          sendAsset={sendAsset}
-          receiveAsset={receiveAsset}
-          address={address}
-          setAddress={setAddress}
-        />
-        {validSwap && (
-          <SwapFees
-            swap={{
-              sendAsset,
-              receiveAsset,
-              sendAmount,
-              receiveAmount,
-              address,
-            }}
-            setIsPopupOpen={setIsPopupOpen}
-          />
-        )}
+        <SwapAddress />
         <Button
           className="transition-colors duration-500"
-          variant={validSwap ? "primary" : "disabled"}
+          variant={isSwapping ? "ternary" : validSwap ? "primary" : "disabled"}
           size="lg"
-          onClick={() =>
-            validSwap &&
-            createSwap({
-              sendAsset,
-              receiveAsset,
-              sendAmount,
-              receiveAmount,
-              address,
-            })
-          }
+          onClick={handleSwapClick}
         >
-          Swap
+          {isSwapping ? "Swapping" : "Swap"}
         </Button>
       </div>
     </div>
