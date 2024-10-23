@@ -1,43 +1,24 @@
-import { FC } from "react";
-import {
-  AddIcon,
-  LanguageIcon,
-  LogoutIcon,
-  ReferralIcon,
-  Typography,
-} from "@gardenfi/garden-book";
+import { AddIcon, LanguageIcon, LogoutIcon, ReferralIcon, Typography } from "@gardenfi/garden-book";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { useId } from "react";
 import { Tooltip } from "../../common/Tooltip";
-import { useEVMWallet } from "../../hooks/useEVMWallet";
 
-type SideBarMenuProps = {
-  onClose: () => void;
-};
-
-export const SidebarMenu: FC<SideBarMenuProps> = ({ onClose }) => {
-  const { address, disconnect } = useEVMWallet();
-  const addTooltipId = useId();
-  const languageTooltipId = useId();
-  const referralTooltipId = useId();
-  const logoutTooltipId = useId();
-
-  const handleDisconnectClick = () => {
-    disconnect();
-    onClose();
-  };
+export const SidebarMenu = () => {
+    const addTooltipId = useId();
+    const languageTooltipId = useId();
+    const referralTooltipId = useId();
+    const logoutTooltipId = useId();
+    const address = "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5";
 
     return (
         <>
             <div className="flex justify-between">
                 <div className="flex gap-3">
-                    {address && (
-                      <div className="bg-white/50 rounded-full px-3 py-1">
-                          <Typography size="h3" weight="medium">
-                              {getTrimmedAddress(address)}
-                          </Typography>
-                      </div>
-                    )}
+                    <div className="bg-white/50 rounded-full px-3 py-1">
+                        <Typography size="h3" weight="medium">
+                            {getTrimmedAddress(address)}
+                        </Typography>
+                    </div>
                     <div
                         data-tooltip-id={addTooltipId}
                         className="flex items-center bg-white/50 rounded-full p-1.5 cursor-pointer transition-colors hover:bg-white"

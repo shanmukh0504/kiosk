@@ -1,11 +1,18 @@
+import { useState } from "react";
 import { ConfirmSwap } from "./ConfirmSwap";
 import { CreateSwap } from "./CreateSwap";
-import { swapStore } from "../../store/swapStore";
-import { useGarden } from "@gardenfi/react-hooks";
+import { SwapDetails } from "../../constants/constants";
+import { Toast } from "../../common/Toast";
 
 export const Swap = () => {
-  const { confirmSwap } = swapStore();
-  const { initializeSecretManager } = useGarden();
+  const [toast, _] = useState("Successfully swapped 0.1 BTC to WBTC!");
+  const [swap, setSwap] = useState<SwapDetails>();
+  const [confirmSwap, setConfirmSwap] = useState<boolean>(false);
+
+  const createSwap = (swap: SwapDetails) => {
+    setSwap(swap);
+    setConfirmSwap(true);
+  }
 
   return (
     <div className="w-full max-w-[424px] mx-auto px-4 sm:px-0">
@@ -17,9 +24,13 @@ export const Swap = () => {
       <div
         className={`bg-white/50 rounded-[20px]
         relative overflow-hidden
-        mt-20`}
+        ${toast ? "mt-4" : "mt-20"}`}
       >
-        {confirmSwap.isOpen ? <ConfirmSwap /> : <CreateSwap />}
+        {swap && confirmSwap ?
+          <ConfirmSwap swap={swap} goBack={() => setConfirmSwap(false)} />
+          :
+          <CreateSwap swap={swap} createSwap={createSwap} />
+        }
       </div>
     </div>
   );

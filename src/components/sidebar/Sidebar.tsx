@@ -1,4 +1,4 @@
-import { useEffect, useRef, FC, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SidebarMenu } from "./SidebarMenu";
 import { Transactions } from "./Transactions";
 import { CloseIcon } from "@gardenfi/garden-book";

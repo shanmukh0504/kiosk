@@ -1,39 +1,29 @@
-import {
-  KeyboardDownIcon,
-  TimerIcon,
-  TokenInfo,
-  Typography,
-} from "@gardenfi/garden-book";
-import { FC, useMemo, useRef } from "react";
-import { IOType } from "../../constants/constants";
-import { assetInfoStore } from "../../store/assetInfoStore";
-import { Asset } from "@gardenfi/orderbook";
-import { isBitcoin } from "../../utils/utils";
+import { KeyboardDownIcon, TimerIcon, TokenInfo, Typography } from "@gardenfi/garden-book";
+import { FC, useRef, useState } from "react";
+import { Asset } from "../../constants/constants";
+import { AssetSelector } from "./AssetSelector";
 
 type SwapInputProps = {
-  type: IOType;
+  type: "Send" | "Receive";
   amount: string;
-  onChange: (amount: string) => void;
   asset?: Asset;
+  setAmount: React.Dispatch<React.SetStateAction<string>>;
+  setAsset: React.Dispatch<React.SetStateAction<Asset | undefined>>;
+  setIsPopupOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const SwapInput: FC<SwapInputProps> = ({
   type,
   amount,
   asset,
-  onChange,
+  setAmount,
+  setAsset,
+  setIsPopupOpen,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { setOpenAssetSelector, assetsData } = assetInfoStore();
+  const [showAssetSelector, setShowAssetSelector] = useState(false);
 
-  const network = useMemo(() => {
-    if (asset && isBitcoin(asset)) return;
-    return asset && assetsData && assetsData[asset.chain];
-  }, [asset, asset?.chain]);
-
-  const label = type === IOType.input ? "Send" : "Receive";
-
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
     const parts = input.split(".");
     // Check if the last character is a digit or a dot.
@@ -47,16 +37,16 @@ export const SwapInput: FC<SwapInputProps> = ({
       // If there are more than the maximum decimals after the point.
       if (asset && decimals > asset.decimals && parts[1]) {
         // Trim decimals to only keep the maximum amount.
-        onChange(parts[0] + "." + parts[1].slice(0, asset.decimals));
+        setAmount(parts[0] + "." + parts[1].slice(0, asset.decimals));
       } else {
         // Otherwise, just set the input.
-        onChange(input);
+        setAmount(input);
       }
       return;
     }
     // If it's an empty string, just set the input.
     else if (input.length === 0) {
-      onChange(input);
+      setAmount(input);
     }
     // If the last character is not a numerical digit or a dot, and the string
     // is not empty, do nothing and return.
@@ -65,10 +55,18 @@ export const SwapInput: FC<SwapInputProps> = ({
     }
   };
 
-  const handleOpenAssetSelector = () => setOpenAssetSelector(type);
+  const handleShowAssetSelector = (visible: boolean) => {
+    setShowAssetSelector(visible);
+    setIsPopupOpen(visible);
+  };
 
   return (
     <>
+      <AssetSelector
+        visible={showAssetSelector}
+        hide={() => handleShowAssetSelector(false)}
+        setAsset={setAsset}
+      />
       <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
         <div className="flex justify-between">
           <div className="flex gap-3">
@@ -77,13 +75,13 @@ export const SwapInput: FC<SwapInputProps> = ({
               weight="bold"
               onClick={() => inputRef.current!.focus()}
             >
-              {label}
+              {type}
             </Typography>
             <Typography size="h5" weight="medium">
               {/* TODO: Show value in USD */}
             </Typography>
           </div>
-          {type === IOType.output && (
+          {type === "Receive" && (
             <div className="flex gap-1 items-center">
               <TimerIcon className="h-4" />
               <Typography size="h5" weight="medium">
@@ -101,17 +99,16 @@ export const SwapInput: FC<SwapInputProps> = ({
               type="text"
               value={amount}
               placeholder="0.0"
-              onChange={handleAmountChange}
+              onChange={handleChange}
             />
           </Typography>
           {asset ? (
             <TokenInfo
-              symbol={asset.symbol}
-              tokenLogo={asset.logo}
-              chainLogo={network && network.networkLogo}
-              onClick={handleOpenAssetSelector}
+              symbol={asset.ticker}
+              tokenLogo={asset.icon}
+              onClick={() => handleShowAssetSelector(true)}
             />
-          ) : (
+          ) :
             <div
               className="flex items-center gap-2 text-nowrap cursor-pointer"
               onClick={() => handleShowAssetSelector(true)}
@@ -119,9 +116,11 @@ export const SwapInput: FC<SwapInputProps> = ({
               <Typography size="h2" weight="medium">
                 Select token
               </Typography>
-              <KeyboardDownIcon className="w-5" />
+              <div className="flex justify-center w-5">
+                <KeyboardDownIcon />
+              </div>
             </div>
-          )}
+          }
         </div>
       </div>
     </>
