@@ -41,6 +41,16 @@ export const BTC: Asset = {
   tokenAddress: "primary",
 };
 
+export const ETH: Asset = {
+  logo: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=035",
+  symbol: "ETH",
+  name: "Ether",
+  decimals: 18,
+  chain: "ethereum",
+  atomicSwapAddress: "",
+  tokenAddress: ""
+}
+
 export enum IOType {
   input = "input",
   output = "output",
