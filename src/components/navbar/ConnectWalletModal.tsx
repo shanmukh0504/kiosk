@@ -32,7 +32,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({
       });
       if (!walletClient?.account) return;
 
-      const auth = new Siwe(new Url(API().orderbook), walletClient);
+      const auth = new Siwe(new Url(API().orderbook), walletClient, {
+        store: localStorage,
+      });
       const authToken = await auth.getToken();
 
       if (authToken.val && !authToken.error) {
