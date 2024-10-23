@@ -1,8 +1,10 @@
 import { create } from "zustand";
 import { API } from "../constants/api";
 import axios from "axios";
+import { IOType } from "../constants/constants";
+import { Chain } from "@gardenfi/orderbook";
 
-type AssetData = {
+export type AssetData = {
   name: string;
   decimals: number;
   symbol: string;
@@ -13,30 +15,38 @@ type AssetData = {
   atomicSwapAddress: string;
 };
 
-type ChainData = {
+export type ChainData = {
   chainId: number;
   fillerAddresses: string[];
   explorer: string;
   networkLogo: string;
   networkType: string;
   assetConfig: AssetData[];
+  name: string;
+  identifier: Chain;
 };
 
-type AssetsData = {
-  data: {
-    networks: Map<string, ChainData>;
-  };
-};
+type AssetsData = Record<Chain, ChainData>;
 
 type AssetInfoState = {
   assetsData: AssetsData | null;
   isLoading: boolean;
+  isAssetSelectorOpen: {
+    isOpen: boolean;
+    type: IOType;
+  };
   error: string | null;
   fetchAssetsData: () => Promise<void>;
+  setOpenAssetSelector: (type: IOType) => void;
+  setCloseAssetSelector: () => void;
 };
 
 export const assetInfoStore = create<AssetInfoState>((set) => ({
   assetsData: null,
+  isAssetSelectorOpen: {
+    isOpen: false,
+    type: IOType.input,
+  },
   isLoading: false,
   error: null,
 
@@ -44,11 +54,12 @@ export const assetInfoStore = create<AssetInfoState>((set) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const api = API();
-      const response = await axios.get<AssetsData>(api.assets);
+      const response = await axios.get<{ data: { networks: AssetsData } }>(
+        API().data.assets,
+      );
 
       if (response.status === 200) {
-        set({ assetsData: response.data });
+        set({ assetsData: response.data.data.networks });
       } else {
         set({ error: "Failed to fetch assets info" });
       }
@@ -59,4 +70,19 @@ export const assetInfoStore = create<AssetInfoState>((set) => ({
       set({ isLoading: false });
     }
   },
+  setOpenAssetSelector: (type) =>
+    set({
+      isAssetSelectorOpen: {
+        isOpen: true,
+        type,
+      },
+    }),
+
+  setCloseAssetSelector: () =>
+    set({
+      isAssetSelectorOpen: {
+        isOpen: false,
+        type: IOType.input,
+      },
+    }),
 }));

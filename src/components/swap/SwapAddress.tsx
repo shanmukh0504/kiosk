@@ -1,16 +1,11 @@
-import { FC, useId, useRef } from "react";
+import { useId, useRef } from "react";
 import { Typography } from "@gardenfi/garden-book";
-import { Asset } from "../../constants/constants";
 import { Tooltip } from "../../common/Tooltip";
+import { swapStore } from "../../store/swapStore";
+import { isBitcoin } from "@gardenfi/orderbook";
 
-type SwapAddressProps = {
-  sendAsset: Asset | undefined;
-  receiveAsset: Asset | undefined;
-  address: string;
-  setAddress: React.Dispatch<React.SetStateAction<string>>;
-};
-
-export const SwapAddress: FC<SwapAddressProps> = ({ sendAsset, receiveAsset, address, setAddress }) => {
+export const SwapAddress = () => {
+  const { inputAsset, outputAsset, btcAddress, setBtcAddress } = swapStore();
   const inputRef = useRef<HTMLInputElement>(null);
   const tooltipId = useId();
 
@@ -19,40 +14,41 @@ export const SwapAddress: FC<SwapAddressProps> = ({ sendAsset, receiveAsset, add
     if (!/^[a-zA-Z0-9]$/.test(input.at(-1)!)) {
       input = input.slice(0, -1);
     }
-    setAddress(input);
+    setBtcAddress(input);
   };
 
-  const isRecoveryAddress = sendAsset?.ticker === "BTC";
-  const isReceiveAddress = receiveAsset?.ticker === "BTC";
+  const isRecoveryAddress = inputAsset && isBitcoin(inputAsset.chain);
+  const isReceiveAddress = outputAsset && isBitcoin(outputAsset.chain);
 
   return (
-    (isRecoveryAddress || isReceiveAddress) &&
-    <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
-      <Typography
-        data-tooltip-id={isRecoveryAddress ? tooltipId : ""}
-        size="h5"
-        weight="bold"
-        onClick={() => inputRef.current!.focus()}
-      >
-        {isRecoveryAddress ? "Recovery" : "Receive"} address
-      </Typography>
-      <Typography size="h3" weight="medium">
-        <input
-          ref={inputRef}
-          // TODO: Check why the placeholder color is not working
-          className="w-full outline-none placeholder:text-mid-grey"
-          type="text"
-          value={address}
-          placeholder="Your Bitcoin address"
-          onChange={handleChange}
-        />
-      </Typography>
-      <Tooltip
-        id={tooltipId}
-        place="right"
-        content="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt."
-        multiline={true}
-      />
-    </div>
+    (isRecoveryAddress || isReceiveAddress) && (
+      <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
+        <Typography
+          data-tooltip-id={isRecoveryAddress ? tooltipId : ""}
+          size="h5"
+          weight="bold"
+          onClick={() => inputRef.current!.focus()}
+          className="w-fit"
+        >
+          {isRecoveryAddress ? "Recovery" : "Receive"} address
+        </Typography>
+        <Typography size="h3" weight="medium">
+          <input
+            ref={inputRef}
+            className="w-full outline-none placeholder:text-mid-grey"
+            type="text"
+            value={btcAddress}
+            placeholder="Your Bitcoin address"
+            onChange={handleChange}
+          />
+          <Tooltip
+            id={tooltipId}
+            place="right"
+            content="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt."
+            multiline={true}
+          />
+        </Typography>
+      </div>
+    )
   );
 };
