@@ -1,53 +1,48 @@
 import { Typography } from "@gardenfi/garden-book";
 import { SwapInfo } from "../../common/SwapInfo";
 import { BTC, ETH } from "../../constants/constants";
-import { CreateOrder } from "@gardenfi/orderbook";
 
 const getDayDifference = (date: Date) => {
+    date = new Date(date);
     const today = new Date();
     const timeDifference = today.getTime() - date.getTime();
     const dayDifference = Math.floor(timeDifference / (1000 * 3600 * 24));
     const hourDifference = Math.floor(timeDifference / (1000 * 3600));
     const minuteDifference = Math.floor(timeDifference / (1000 * 60));
 
-    return {
-        days: dayDifference,
-        hours: hourDifference,
-        minutes: minuteDifference,
-    };
-};
-
-const formatTimeDifference = (updatedAt: string) => {
-    const lastEditedData = getDayDifference(new Date(updatedAt));
-
-    if (lastEditedData.days > 3) {
-        return "on " + new Date(updatedAt).toLocaleDateString();
-    } else if (lastEditedData.days > 0) {
-        return `${lastEditedData.days} days ago`;
-    } else if (lastEditedData.hours > 0) {
-        return `${lastEditedData.hours} hours ago`;
-    } else if (lastEditedData.minutes > 0) {
-        return `${lastEditedData.minutes} minutes ago`;
+    if (dayDifference > 3) {
+        return "on " + new Date(date).toLocaleDateString();
+    } else if (dayDifference > 0) {
+        if (dayDifference === 1) return "1 day ago";
+        return `${dayDifference} days ago`;
+    } else if (hourDifference > 0) {
+        if (hourDifference === 1) return `1 hour ago`;
+        return `${hourDifference} hours ago`;
+    } else if (minuteDifference > 0) {
+        if (minuteDifference === 1) return `1 minute ago`;
+        return `${minuteDifference} minutes ago`;
     } else {
         return "just now";
     }
 };
 
-export const Transaction = ({ order }: { order: CreateOrder }) => {
+export const Transaction = ({ order }: { order: any }) => {
+    const { create_order } = order;
+
     return (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 pb-4">
             <SwapInfo
-                sendAsset={order.source_asset === "ETH" ? ETH : BTC}
-                receiveAsset={order.destination_asset === "BTC" ? BTC : ETH}
-                sendAmount={order.source_amount}
-                receiveAmount={order.destination_amount}
+                sendAsset={create_order.source_chain === "primary" || create_order.source_chain === "bitcoin_testnet" ? BTC : ETH}
+                receiveAsset={create_order.destination_chain === "primary" || create_order.destination_chain === "bitcoin_testnet" ? BTC : ETH} 
+                sendAmount={create_order.source_amount}
+                receiveAmount={create_order.destination_amount}
             />
             <div className="flex justify-between">
                 <Typography size="h5" weight="medium">
-                    {order.deleted_at ? "Cancelled" : "Completed"}
+                    {create_order.deleted_at ? "Cancelled" : "Completed"}
                 </Typography>
                 <Typography size="h5" weight="medium">
-                    {formatTimeDifference(order.updated_at)}
+                    {getDayDifference(create_order.updated_at)}
                 </Typography>
             </div>
         </div>
