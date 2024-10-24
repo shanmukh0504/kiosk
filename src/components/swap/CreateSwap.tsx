@@ -107,11 +107,13 @@ export const CreateSwap = () => {
 
     const inputAmountInDecimals = new BigNumber(inputAmount)
       .multipliedBy(10 ** inputAsset.decimals)
-      .toString();
+      .toFixed();
     const outputAmountInDecimals = new BigNumber(outputAmount)
       .multipliedBy(10 ** outputAsset.decimals)
-      .toString();
+      .toFixed();
 
+    console.log("inputAmountInDecimals :", inputAmountInDecimals);
+    console.log("outputAmountInDecimals :", outputAmountInDecimals);
     const additionalData = isBitcoinSwap
       ? {
           strategyId: strategy,
