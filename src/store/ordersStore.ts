@@ -1,25 +1,24 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 import { MatchedOrder } from "@gardenfi/orderbook";
 
-type OrdersState = {
+interface OrdersState {
   orders: MatchedOrder[];
-  page: number;
+  totalItems: number;
   perPage: number;
-  hasMore: boolean;
-  setOrders: (newOrders: MatchedOrder[]) => void;
-  loadMoreOrders: (additionalOrders: MatchedOrder[]) => void;
-  incrementPage: () => void;
-  setHasMore: (value: boolean) => void;
-};
+  isLoading: boolean;
+  setOrders: (orders: MatchedOrder[]) => void;
+  setTotalItems: (total: number) => void;
+  incrementPerPage: () => void;
+  setIsLoading: (loading: boolean) => void;
+}
 
 export const useOrdersStore = create<OrdersState>((set) => ({
   orders: [],
-  page: 1,
-  perPage: 5,
-  hasMore: true,
-  setOrders: (newOrders) => set({ orders: newOrders }),
-  loadMoreOrders: (additionalOrders) =>
-    set((state) => ({ orders: [...state.orders, ...additionalOrders] })),
-  incrementPage: () => set((state) => ({ page: state.page + 1 })),
-  setHasMore: (value: boolean) => set({ hasMore: value }),
+  totalItems: 0,
+  perPage: 4,
+  isLoading: false,
+  setOrders: (orders) => set({ orders }),
+  setTotalItems: (totalItems) => set({ totalItems }),
+  incrementPerPage: () => set((state) => ({ perPage: state.perPage + 4 })),
+  setIsLoading: (isLoading) => set({ isLoading })
 }));

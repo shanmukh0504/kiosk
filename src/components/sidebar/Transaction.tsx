@@ -1,6 +1,17 @@
 import { Typography } from "@gardenfi/garden-book";
 import { SwapInfo } from "../../common/SwapInfo";
 import { BTC, ETH } from "../../constants/constants";
+import BigNumber from "bignumber.js";
+
+const formatAmount = (amount: string | number) => {
+    const bigAmount = new BigNumber(amount);
+    
+    if (bigAmount.isGreaterThan(1e10)) {
+        return bigAmount.toExponential(2);
+    }
+    
+    return bigAmount.toString();
+};
 
 const getDayDifference = (date: Date) => {
     date = new Date(date);
@@ -33,9 +44,9 @@ export const Transaction = ({ order }: { order: any }) => {
         <div className="flex flex-col gap-1 pb-4">
             <SwapInfo
                 sendAsset={create_order.source_chain === "primary" || create_order.source_chain === "bitcoin_testnet" ? BTC : ETH}
-                receiveAsset={create_order.destination_chain === "primary" || create_order.destination_chain === "bitcoin_testnet" ? BTC : ETH} 
-                sendAmount={create_order.source_amount}
-                receiveAmount={create_order.destination_amount}
+                receiveAsset={create_order.destination_chain === "primary" || create_order.destination_chain === "bitcoin_testnet" ? BTC : ETH}
+                sendAmount={formatAmount(create_order.source_amount)}
+                receiveAmount={formatAmount(create_order.destination_amount)}
             />
             <div className="flex justify-between">
                 <Typography size="h5" weight="medium">
