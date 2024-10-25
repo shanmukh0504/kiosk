@@ -15,11 +15,5 @@ export const API = () => {
     assets: protocol + DATA_URL + "/assets",
     quests: protocol + QUESTS_URL + "/quests",
     buildId: "/build-id.json",
-    orderbook: REQUIRED_ENV_VARS.ORDERBOOK_URL,
-    quote: REQUIRED_ENV_VARS.QUOTE_URL,
-    mempool: {
-      testnet: "https://mempool.space/testnet4/api",
-      mainnet: "https://mempool.space",
-    },
   };
 };

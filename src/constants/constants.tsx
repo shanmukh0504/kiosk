@@ -57,3 +57,8 @@ export type SwapDetails = {
   receiveAmount: string;
   address: string;
 }
+
+export enum IOType {
+  input = "input",
+  output = "output",
+}

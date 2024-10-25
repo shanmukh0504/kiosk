@@ -1,9 +1,13 @@
 import { Button, ExchangeIcon } from "@gardenfi/garden-book";
-import { FC, useState } from "react";
+import { useState, useEffect } from "react";
 import { SwapInput } from "./SwapInput";
-import { Asset, BTC, SwapDetails } from "../../constants/constants";
-import { SwapFees } from "./SwapFees";
+import { SwapDetails } from "../../constants/constants";
 import { SwapAddress } from "./SwapAddress";
+import { swapStore } from "../../store/swapStore";
+import { useGarden } from "@gardenfi/react-hooks";
+import { isBitcoin } from "@gardenfi/orderbook";
+import { IOType } from "../../constants/constants";
+import BigNumber from "bignumber.js";
 
 type CreateSwapProps = {
     swap: SwapDetails | undefined;
@@ -13,7 +17,6 @@ type CreateSwapProps = {
 export const CreateSwap = () => {
   const [strategy, setStrategy] = useState<string>();
   const [isSwapping, setIsSwapping] = useState(false);
-  const { isAssetSelectorOpen } = assetInfoStore();
   const {
     outputAmount,
     inputAmount,
