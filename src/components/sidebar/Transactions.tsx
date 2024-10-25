@@ -62,7 +62,7 @@ export const Transactions = () => {
             {orders.map((order, index) => (
             <div key={index}>
                 <Transaction order={order} />
-                <div className="bg-white/50 w-full mt-4 h-[1px]"></div>
+                <div className="bg-white/50 w-full h-[1px]"></div>
             </div>
             ))}
             

@@ -26,7 +26,7 @@ export type ChainData = {
   identifier: Chain;
 };
 
-type AssetsData = Record<Chain, ChainData>;
+export type AssetsData = Record<Chain, ChainData>;
 
 type AssetInfoState = {
   assetsData: AssetsData | null;
