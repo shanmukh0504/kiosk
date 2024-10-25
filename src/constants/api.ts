@@ -21,7 +21,7 @@ export const API = () => {
     orderbook: REQUIRED_ENV_VARS.ORDERBOOK_URL,
     quote: REQUIRED_ENV_VARS.QUOTE_URL,
     mempool: {
-      testnet: "https://mempool.space/testnet/api",
+      testnet: "https://mempool.space/testnet4/api",
       mainnet: "https://mempool.space",
     },
   };

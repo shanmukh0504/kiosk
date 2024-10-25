@@ -112,8 +112,6 @@ export const CreateSwap = () => {
       .multipliedBy(10 ** outputAsset.decimals)
       .toFixed();
 
-    console.log("inputAmountInDecimals :", inputAmountInDecimals);
-    console.log("outputAmountInDecimals :", outputAmountInDecimals);
     const additionalData = isBitcoinSwap
       ? {
           strategyId: strategy,

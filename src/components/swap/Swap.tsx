@@ -1,10 +1,10 @@
-import { ConfirmSwap } from "./ConfirmSwap";
+import { BTCInit } from "./BTCInit";
 import { CreateSwap } from "./CreateSwap";
 import { swapStore } from "../../store/swapStore";
 import { useGarden } from "@gardenfi/react-hooks";
 
 export const Swap = () => {
-  const { confirmSwap } = swapStore();
+  const { btcInitModal } = swapStore();
   const { initializeSecretManager } = useGarden();
 
   return (
@@ -23,7 +23,7 @@ export const Swap = () => {
         relative overflow-hidden
         mt-20`}
       >
-        {confirmSwap.isOpen ? <ConfirmSwap /> : <CreateSwap />}
+        {btcInitModal.isOpen ? <BTCInit /> : <CreateSwap />}
       </div>
     </div>
   );
