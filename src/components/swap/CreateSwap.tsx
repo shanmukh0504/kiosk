@@ -13,10 +13,12 @@ type CreateSwapProps = {
     swap: SwapDetails | undefined;
     createSwap: (swap: SwapDetails) => void;
 };
+import { Toast } from "../toast/Toast";
 
 export const CreateSwap = () => {
   const [strategy, setStrategy] = useState<string>();
   const [isSwapping, setIsSwapping] = useState(false);
+  const { isAssetSelectorOpen, assetsData } = assetInfoStore();
   const {
     outputAmount,
     inputAmount,
@@ -156,12 +158,27 @@ export const CreateSwap = () => {
     garden.on("log", (orderId, log) => {
       console.log("garden log", orderId, log);
     });
-    garden.on("success", (order, action, result) => {
-      console.log(
-        "garden success ✅",
-        order.create_order.create_id,
-        action,
-        result,
+    garden.on("success", (order) => {
+      if (!assetsData) return;
+      const inputChainAssets = assetsData[order.source_swap.chain];
+      const outputChainAssets = assetsData[order.destination_swap.chain];
+      const inputAsset = inputChainAssets.assetConfig.find(
+        (asset) => asset.atomicSwapAddress === order.source_swap.asset,
+      );
+      const outputAsset = outputChainAssets.assetConfig.find(
+        (asset) => asset.atomicSwapAddress === order.destination_swap.asset,
+      );
+      if (!inputAsset || !outputAsset) return;
+
+      const inputAmount = new BigNumber(order.source_swap.amount)
+        .dividedBy(10 ** inputAsset.decimals)
+        .toFixed(4);
+      const outputAmount = new BigNumber(order.destination_swap.amount)
+        .dividedBy(10 ** outputAsset.decimals)
+        .toFixed(4);
+
+      Toast.success(
+        `Successfully swapped ${inputAmount} ${inputAsset.symbol} to ${outputAmount} ${outputAsset.symbol}`,
       );
     });
   }, [garden]);
