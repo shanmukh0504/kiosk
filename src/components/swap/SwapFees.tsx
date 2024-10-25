@@ -1,15 +1,13 @@
 import { FC, useState } from "react";
-import { SwapFeesComparison } from "./SwapFeesComparison";
+// import { SwapFeesComparison } from "./SwapFeesComparison";
 import { Typography } from "@gardenfi/garden-book";
-import { SwapDetails } from "../../constants/constants";
 
 type SwapFeesProps = {
-  swap: SwapDetails,
   setIsPopupOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const SwapFees: FC<SwapFeesProps> = ({ swap, setIsPopupOpen }) => {
-  const [showComparison, setShowComparison] = useState(false);
+export const SwapFees: FC<SwapFeesProps> = ({ setIsPopupOpen }) => {
+  const [_, setShowComparison] = useState(false);
 
   const handleShowComparison = (visible: boolean) => {
     setShowComparison(visible);
@@ -18,11 +16,11 @@ export const SwapFees: FC<SwapFeesProps> = ({ swap, setIsPopupOpen }) => {
 
   return (
     <>
-      <SwapFeesComparison
+      {/* <SwapFeesComparison
         swap={swap}
         visible={showComparison}
         hide={() => handleShowComparison(false)}
-      />
+      /> */}
       <div
         className="flex flex-col gap-1
         bg-white/50 rounded-2xl

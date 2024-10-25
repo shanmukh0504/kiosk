@@ -10,21 +10,158 @@ type CreateSwapProps = {
     createSwap: (swap: SwapDetails) => void;
 };
 
-export const CreateSwap: FC<CreateSwapProps> = ({ swap, createSwap }) => {
-    const [sendAsset, setSendAsset] = useState<Asset | undefined>(swap ? swap.sendAsset : BTC);
-    const [receiveAsset, setReceiveAsset] = useState<Asset | undefined>(swap?.receiveAsset);
-    const [sendAmount, setSendAmount] = useState(swap?.sendAmount || "");
-    const [receiveAmount, setReceiveAmount] = useState(swap?.receiveAmount || "");
-    const [address, setAddress] = useState(swap?.address || "");
-    const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const validSwap = sendAsset && receiveAsset && sendAmount && receiveAmount && address;
+export const CreateSwap = () => {
+  const [strategy, setStrategy] = useState<string>();
+  const [isSwapping, setIsSwapping] = useState(false);
+  const { isAssetSelectorOpen } = assetInfoStore();
+  const {
+    outputAmount,
+    inputAmount,
+    btcAddress,
+    inputAsset,
+    setAmount,
+    swapAssets,
+    outputAsset,
+    setShowConfirmSwap,
+  } = swapStore();
+  const { swap, getQuote, initializeSecretManager, garden } = useGarden();
 
-    const swapAssets = () => {
-        setSendAsset(receiveAsset);
-        setReceiveAsset(sendAsset);
-        setSendAmount(receiveAmount);
-        setReceiveAmount(sendAmount);
+  const _validSwap = inputAsset && outputAmount && inputAmount && outputAmount;
+  const isBitcoinSwap =
+    inputAsset &&
+    outputAsset &&
+    (isBitcoin(inputAsset.chain) || isBitcoin(outputAsset.chain));
+  const validSwap = isBitcoinSwap ? _validSwap && btcAddress : _validSwap;
+
+  const handleInputAmountChange = async (amount: string) => {
+    setAmount(IOType.input, amount);
+    if (!amount) {
+      setAmount(IOType.output, "0");
+      return;
     }
+
+    if (!getQuote || !inputAsset || !outputAsset || !Number(amount)) return;
+
+    const amountInDecimals = new BigNumber(amount).multipliedBy(
+      10 ** inputAsset.decimals,
+    );
+    const quote = await getQuote({
+      fromAsset: inputAsset,
+      toAsset: outputAsset,
+      amount: amountInDecimals.toNumber(),
+      isExactOut: false,
+    });
+    if (quote.error) {
+      setAmount(IOType.output, "0");
+      return;
+    }
+
+    const [strategy, quoteAmount] = Object.entries(quote.val.quotes)[0];
+    setStrategy(strategy);
+    const quoteAmountInDecimals = new BigNumber(quoteAmount).div(
+      Math.pow(10, outputAsset.decimals),
+    );
+
+    setAmount(IOType.output, quoteAmountInDecimals.toFixed(8));
+  };
+
+  const handleOutputAmountChange = async (amount: string) => {
+    setAmount(IOType.output, amount);
+
+    if (!getQuote || !inputAsset || !outputAsset || !Number(amount)) return;
+
+    const amountInDecimals = new BigNumber(amount).multipliedBy(
+      10 ** inputAsset.decimals,
+    );
+    const quote = await getQuote({
+      fromAsset: inputAsset,
+      toAsset: outputAsset,
+      amount: amountInDecimals.toNumber(),
+      isExactOut: true,
+    });
+    if (quote.error) {
+      setAmount(IOType.input, "0");
+      return;
+    }
+
+    const [strategy, quoteAmount] = Object.entries(quote.val.quotes)[0];
+    setStrategy(strategy);
+    const quoteAmountInDecimals = new BigNumber(quoteAmount).div(
+      Math.pow(10, inputAsset.decimals),
+    );
+
+    setAmount(IOType.input, quoteAmountInDecimals.toFixed(8));
+  };
+
+  const handleSwapClick = async () => {
+    if (
+      !validSwap ||
+      !swap ||
+      !inputAsset ||
+      !outputAsset ||
+      !strategy ||
+      !initializeSecretManager
+    )
+      return;
+    setIsSwapping(true);
+
+    const inputAmountInDecimals = new BigNumber(inputAmount)
+      .multipliedBy(10 ** inputAsset.decimals)
+      .toFixed();
+    const outputAmountInDecimals = new BigNumber(outputAmount)
+      .multipliedBy(10 ** outputAsset.decimals)
+      .toFixed();
+
+    const additionalData = isBitcoinSwap
+      ? {
+          strategyId: strategy,
+          btcAddress,
+        }
+      : {
+          strategyId: strategy,
+        };
+
+    const res = await swap({
+      fromAsset: inputAsset,
+      toAsset: outputAsset,
+      sendAmount: inputAmountInDecimals,
+      receiveAmount: outputAmountInDecimals,
+      additionalData,
+    });
+    setIsSwapping(false);
+    if (res.error) {
+      console.error("failed to create order ❌", res.error);
+      return;
+    }
+
+    //TODO: add a notification here and clear all amounts and addresses
+    console.log("orderCreated ✅", res.val);
+
+    if (isBitcoin(res.val.source_swap.chain)) {
+      setShowConfirmSwap({
+        isOpen: true,
+        order: res.val,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!garden) return;
+    garden.on("error", (order, error) => {
+      console.error("garden error", order.create_order.create_id, error);
+    });
+    garden.on("log", (orderId, log) => {
+      console.log("garden log", orderId, log);
+    });
+    garden.on("success", (order, action, result) => {
+      console.log(
+        "garden success ✅",
+        order.create_order.create_id,
+        action,
+        result,
+      );
+    });
+  }, [garden]);
 
     return (
         <div
@@ -48,51 +185,28 @@ export const CreateSwap: FC<CreateSwapProps> = ({ swap, createSwap }) => {
                     className="bg-white border border-light-grey rounded-full
         absolute top-[94px] left-1/2 -translate-x-1/2
         p-1.5 cursor-pointer"
-                    onClick={swapAssets}
-                >
-                    <ExchangeIcon />
-                </div>
-                <SwapInput
-                    type="Receive"
-                    amount={receiveAmount}
-                    asset={receiveAsset}
-                    setAmount={setReceiveAmount}
-                    setAsset={setReceiveAsset}
-                    setIsPopupOpen={setIsPopupOpen}
-                />
-                <SwapAddress
-                    sendAsset={sendAsset}
-                    receiveAsset={receiveAsset}
-                    address={address}
-                    setAddress={setAddress}
-                />
-                {validSwap &&
-                    <SwapFees
-                        swap={{
-                            sendAsset,
-                            receiveAsset,
-                            sendAmount,
-                            receiveAmount,
-                            address,
-                        }}
-                        setIsPopupOpen={setIsPopupOpen}
-                    />
-                }
-                <Button
-                    className="transition-colors duration-500"
-                    variant={validSwap ? "primary" : "disabled"}
-                    size="lg"
-                    onClick={() => validSwap && createSwap({
-                        sendAsset,
-                        receiveAsset,
-                        sendAmount,
-                        receiveAmount,
-                        address,
-                    })}
-                >
-                    Swap
-                </Button>
-            </div>
+          onClick={swapAssets}
+        >
+          <ExchangeIcon />
         </div>
-    );
+        <SwapInput
+          type={IOType.output}
+          amount={outputAmount}
+          asset={outputAsset}
+          onChange={handleOutputAmountChange}
+        />
+        <SwapAddress />
+        <Button
+          className={`transition-colors duration-500 ${
+            isSwapping ? "cursor-not-allowed" : ""
+          }`}
+          variant={isSwapping ? "ternary" : validSwap ? "primary" : "disabled"}
+          size="lg"
+          onClick={handleSwapClick}
+        >
+          {isSwapping ? "Swapping..." : "Swap"}
+        </Button>
+      </div>
+    </div>
+  );
 };
