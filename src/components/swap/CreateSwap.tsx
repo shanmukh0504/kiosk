@@ -166,8 +166,15 @@ export const CreateSwap = () => {
       );
       if (!inputAsset || !outputAsset) return;
 
+      const inputAmount = new BigNumber(order.source_swap.amount)
+        .dividedBy(10 ** inputAsset.decimals)
+        .toFixed(4);
+      const outputAmount = new BigNumber(order.destination_swap.amount)
+        .dividedBy(10 ** outputAsset.decimals)
+        .toFixed(4);
+
       Toast.success(
-        `Successfully swapped ${inputAsset.symbol} to ${outputAsset.symbol}`,
+        `Successfully swapped ${inputAmount} ${inputAsset.symbol} to ${outputAmount} ${outputAsset.symbol}`,
       );
     });
   }, [garden]);
