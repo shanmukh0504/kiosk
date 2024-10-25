@@ -9,11 +9,12 @@ import { useGarden } from "@gardenfi/react-hooks";
 import BigNumber from "bignumber.js";
 import { useEffect, useState } from "react";
 import { isBitcoin } from "@gardenfi/orderbook";
+import { Toast } from "../toast/Toast";
 
 export const CreateSwap = () => {
   const [strategy, setStrategy] = useState<string>();
   const [isSwapping, setIsSwapping] = useState(false);
-  const { isAssetSelectorOpen } = assetInfoStore();
+  const { isAssetSelectorOpen, assetsData } = assetInfoStore();
   const {
     outputAmount,
     inputAmount,
@@ -153,12 +154,20 @@ export const CreateSwap = () => {
     garden.on("log", (orderId, log) => {
       console.log("garden log", orderId, log);
     });
-    garden.on("success", (order, action, result) => {
-      console.log(
-        "garden success ✅",
-        order.create_order.create_id,
-        action,
-        result,
+    garden.on("success", (order) => {
+      if (!assetsData) return;
+      const inputChainAssets = assetsData[order.source_swap.chain];
+      const outputChainAssets = assetsData[order.destination_swap.chain];
+      const inputAsset = inputChainAssets.assetConfig.find(
+        (asset) => asset.atomicSwapAddress === order.source_swap.asset,
+      );
+      const outputAsset = outputChainAssets.assetConfig.find(
+        (asset) => asset.atomicSwapAddress === order.destination_swap.asset,
+      );
+      if (!inputAsset || !outputAsset) return;
+
+      Toast.success(
+        `Successfully swapped ${inputAsset.symbol} to ${outputAsset.symbol}`,
       );
     });
   }, [garden]);
