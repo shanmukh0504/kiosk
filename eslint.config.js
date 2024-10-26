@@ -12,6 +12,7 @@ export default tseslint.config(
       ...tseslint.configs.recommended,
       "plugin:react/recommended",
       "plugin:@typescript-eslint/recommended",
+      "plugin:react-hooks/recommended",
     ],
     files: ["**/*.{ts,tsx}"],
     languageOptions: {

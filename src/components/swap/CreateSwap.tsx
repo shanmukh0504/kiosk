@@ -9,25 +9,37 @@ import { useGarden } from "@gardenfi/react-hooks";
 import BigNumber from "bignumber.js";
 import { useEffect, useState } from "react";
 import { isBitcoin } from "@gardenfi/orderbook";
+import { Toast } from "../toast/Toast";
 
 export const CreateSwap = () => {
   const [strategy, setStrategy] = useState<string>();
   const [isSwapping, setIsSwapping] = useState(false);
-  const { isAssetSelectorOpen } = assetInfoStore();
+  const { isAssetSelectorOpen, assetsData } = assetInfoStore();
   const {
-    btcAddress,
-    inputAmount,
     outputAmount,
+    inputAmount,
+    btcAddress,
     inputAsset,
     setAmount,
     swapAssets,
     outputAsset,
     setShowConfirmSwap,
   } = swapStore();
-  const { swap, getQuote, initializeSecretManager, garden } = useGarden();
+  const { swap, getQuote, garden } = useGarden();
+
+  const _validSwap = inputAsset && outputAmount && inputAmount && outputAmount;
+  const isBitcoinSwap =
+    inputAsset &&
+    outputAsset &&
+    (isBitcoin(inputAsset.chain) || isBitcoin(outputAsset.chain));
+  const validSwap = isBitcoinSwap ? _validSwap && btcAddress : _validSwap;
 
   const handleInputAmountChange = async (amount: string) => {
     setAmount(IOType.input, amount);
+    if (!amount) {
+      setAmount(IOType.output, "0");
+      return;
+    }
 
     if (!getQuote || !inputAsset || !outputAsset || !Number(amount)) return;
 
@@ -83,33 +95,31 @@ export const CreateSwap = () => {
   };
 
   const handleSwapClick = async () => {
-    if (
-      !validSwap ||
-      !swap ||
-      !inputAsset ||
-      !outputAsset ||
-      !strategy ||
-      !initializeSecretManager
-    )
-      return;
+    if (!validSwap || !swap || !inputAsset || !outputAsset || !strategy) return;
     setIsSwapping(true);
 
     const inputAmountInDecimals = new BigNumber(inputAmount)
       .multipliedBy(10 ** inputAsset.decimals)
-      .toString();
+      .toFixed();
     const outputAmountInDecimals = new BigNumber(outputAmount)
       .multipliedBy(10 ** outputAsset.decimals)
-      .toString();
+      .toFixed();
+
+    const additionalData = isBitcoinSwap
+      ? {
+          strategyId: strategy,
+          btcAddress,
+        }
+      : {
+          strategyId: strategy,
+        };
 
     const res = await swap({
       fromAsset: inputAsset,
       toAsset: outputAsset,
       sendAmount: inputAmountInDecimals,
       receiveAmount: outputAmountInDecimals,
-      additionalData: {
-        strategyId: strategy,
-        btcAddress,
-      },
+      additionalData,
     });
     setIsSwapping(false);
     if (res.error) {
@@ -117,6 +127,7 @@ export const CreateSwap = () => {
       return;
     }
 
+    //TODO: add a notification here and clear all amounts and addresses
     console.log("orderCreated ✅", res.val);
 
     if (isBitcoin(res.val.source_swap.chain)) {
@@ -127,20 +138,38 @@ export const CreateSwap = () => {
     }
   };
 
-  const _validSwap = inputAsset && outputAmount && inputAmount && outputAmount;
-  const validSwap =
-    inputAsset &&
-    outputAsset &&
-    (isBitcoin(inputAsset.chain) || isBitcoin(outputAsset.chain))
-      ? _validSwap && btcAddress
-      : _validSwap;
-
   useEffect(() => {
     if (!garden) return;
     garden.on("error", (order, error) => {
-      console.error("error", order.create_order.create_id, error);
+      console.error("garden error", order.create_order.create_id, error);
     });
-  }, []);
+    garden.on("log", (orderId, log) => {
+      console.log("garden log", orderId, log);
+    });
+    garden.on("success", (order) => {
+      if (!assetsData) return;
+      const inputChainAssets = assetsData[order.source_swap.chain];
+      const outputChainAssets = assetsData[order.destination_swap.chain];
+      const inputAsset = inputChainAssets.assetConfig.find(
+        (asset) => asset.atomicSwapAddress === order.source_swap.asset,
+      );
+      const outputAsset = outputChainAssets.assetConfig.find(
+        (asset) => asset.atomicSwapAddress === order.destination_swap.asset,
+      );
+      if (!inputAsset || !outputAsset) return;
+
+      const inputAmount = new BigNumber(order.source_swap.amount)
+        .dividedBy(10 ** inputAsset.decimals)
+        .toFixed(4);
+      const outputAmount = new BigNumber(order.destination_swap.amount)
+        .dividedBy(10 ** outputAsset.decimals)
+        .toFixed(4);
+
+      Toast.success(
+        `Successfully swapped ${inputAmount} ${inputAsset.symbol} to ${outputAmount} ${outputAsset.symbol}`,
+      );
+    });
+  }, [garden]);
 
   return (
     <div
@@ -175,12 +204,14 @@ export const CreateSwap = () => {
         />
         <SwapAddress />
         <Button
-          className="transition-colors duration-500"
+          className={`transition-colors duration-500 ${
+            isSwapping ? "cursor-not-allowed" : ""
+          }`}
           variant={isSwapping ? "ternary" : validSwap ? "primary" : "disabled"}
           size="lg"
           onClick={handleSwapClick}
         >
-          {isSwapping ? "Swapping" : "Swap"}
+          {isSwapping ? "Swapping..." : "Swap"}
         </Button>
       </div>
     </div>

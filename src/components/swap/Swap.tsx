@@ -1,29 +1,20 @@
-import { ConfirmSwap } from "./ConfirmSwap";
+import { BTCInit } from "./BTCInit";
 import { CreateSwap } from "./CreateSwap";
 import { swapStore } from "../../store/swapStore";
-import { useGarden } from "@gardenfi/react-hooks";
+import { ToastContainer } from "../toast/Toast";
 
 export const Swap = () => {
-  const { confirmSwap } = swapStore();
-  const { initializeSecretManager } = useGarden();
+  const { btcInitModal } = swapStore();
 
   return (
     <div className="w-full max-w-[424px] mx-auto">
-      <div
-        className="cursor-pointer"
-        onClick={async () => {
-          if (!initializeSecretManager) return;
-          await initializeSecretManager();
-        }}
-      >
-        initializeSecretManager
-      </div>
+      <ToastContainer />
       <div
         className={`bg-white/50 rounded-[20px]
         relative overflow-hidden
         mt-20`}
       >
-        {confirmSwap.isOpen ? <ConfirmSwap /> : <CreateSwap />}
+        {btcInitModal.isOpen ? <BTCInit /> : <CreateSwap />}
       </div>
     </div>
   );

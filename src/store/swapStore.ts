@@ -8,7 +8,7 @@ type SwapState = {
   inputAmount: string;
   outputAmount: string;
   btcAddress: string;
-  confirmSwap: { isOpen: boolean; order: MatchedOrder | null };
+  btcInitModal: { isOpen: boolean; order: MatchedOrder | null };
   setAsset: (ioType: IOType, asset: Asset) => void;
   setAmount: (ioType: IOType, amount: string) => void;
   setBtcAddress: (btcAddress: string) => void;
@@ -17,7 +17,7 @@ type SwapState = {
     isOpen: boolean;
     order: MatchedOrder;
   }) => void;
-  clearOrder: () => void;
+  closeBTCInitModal: () => void;
   clearAmounts: () => void;
 };
 
@@ -25,7 +25,7 @@ export const swapStore = create<SwapState>((set) => ({
   inputAmount: "",
   outputAmount: "",
   btcAddress: "",
-  confirmSwap: {
+  btcInitModal: {
     isOpen: false,
     order: null,
   },
@@ -56,17 +56,17 @@ export const swapStore = create<SwapState>((set) => ({
       outputAmount: state.inputAmount,
     }));
   },
-  setShowConfirmSwap: (confirmSwap) => {
+  setShowConfirmSwap: (btcInitModal) => {
     set(
       (state) =>
         (state = {
           ...state,
-          confirmSwap,
+          btcInitModal,
         }),
     );
   },
-  clearOrder: () => {
-    set({ confirmSwap: { isOpen: false, order: null } });
+  closeBTCInitModal: () => {
+    set({ btcInitModal: { isOpen: false, order: null } });
   },
   clearAmounts: () => {
     set({ inputAmount: "", outputAmount: "" });

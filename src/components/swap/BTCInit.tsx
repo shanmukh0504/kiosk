@@ -5,27 +5,30 @@ import {
   CopyIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SwapInfo } from "../../common/SwapInfo";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { swapStore } from "../../store/swapStore";
 import { isBitcoin } from "@gardenfi/orderbook";
+import { useGarden } from "@gardenfi/react-hooks";
 
-export const ConfirmSwap = () => {
+export const BTCInit = () => {
   const [copied, setCopied] = useState(false);
+  const [isInitiatedDetected, setIsInitiatedDetected] = useState(false);
   const {
     inputAsset,
     outputAsset,
     inputAmount,
     outputAmount,
     btcAddress,
-    confirmSwap,
-    clearOrder,
+    btcInitModal,
+    closeBTCInitModal,
   } = swapStore();
   const isRecoveryAddress = inputAsset && isBitcoin(inputAsset?.chain);
-  const depositAddress = confirmSwap.order
-    ? confirmSwap.order.source_swap.swap_id
+  const depositAddress = btcInitModal.order
+    ? btcInitModal.order.source_swap.swap_id
     : "";
+  const { orderBook } = useGarden();
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(depositAddress);
@@ -36,9 +39,33 @@ export const ConfirmSwap = () => {
     }, 1500);
   };
 
-  const goBack = () => clearOrder();
+  const goBack = () => closeBTCInitModal();
 
-  return confirmSwap.order ? (
+  useEffect(() => {
+    if (!btcInitModal.order || !orderBook) return;
+
+    const fetchOrder = async () => {
+      if (!btcInitModal.order) return;
+      const order = await orderBook.getOrder(
+        btcInitModal.order.create_order.create_id,
+        true,
+      );
+      if (order.error) return;
+      //initiate detected
+      if (order.val.source_swap.initiate_tx_hash) {
+        //initiated
+        if (Number(order.val.source_swap.initiate_block_number)) goBack();
+        setIsInitiatedDetected(true);
+      }
+    };
+
+    void fetchOrder();
+    const intervalId = setInterval(fetchOrder, 5000);
+
+    return () => clearInterval(intervalId);
+  }, [btcInitModal.order, orderBook]);
+
+  return btcInitModal.order ? (
     <div className="flex flex-col gap-4 p-3">
       <div className="flex flex-col gap-2 bg-white/50 rounded-2xl p-4">
         <Typography size="h5" weight="bold">
@@ -100,7 +127,7 @@ export const ConfirmSwap = () => {
       </div>
       <div className="flex gap-2">
         <Button variant="disabled" size="lg" className="w-full">
-          Awaiting Deposit
+          Awaiting {isInitiatedDetected ? "Confirmation" : "Deposit"}
         </Button>
         <div
           className="flex items-center bg-dark-grey rounded-2xl p-3 cursor-pointer"
