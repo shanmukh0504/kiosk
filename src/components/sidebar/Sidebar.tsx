@@ -38,20 +38,24 @@ export const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
     >
       <div
         ref={sliderRef}
-        className={`flex flex-col gap-8
-                bg-white/50 backdrop-blur-[20px]
-                fixed top-0 ${open ? "right-0" : "right-[-480px]"}
-                w-[480px] h-full p-6
-                transition-right ease-cubic-in-out duration-500`}
+        className={`flex flex-col bg-white/50 backdrop-blur-[20px] fixed top-0
+          ${open ? "right-0" : "right-[-480px]"}
+          w-[480px] h-full transition-right ease-cubic-in-out duration-500`}
       >
-        <div className="flex justify-end">
+        {/* Header with Close Button */}
+        <div className="flex justify-end p-6">
           <CloseIcon
             className="w-6 h-[14px] cursor-pointer"
             onClick={handleCloseIconClick}
           />
         </div>
-        <div className="flex flex-col gap-5">
+
+        {/* Scrollable Content */}
+        <div className="flex flex-col gap-5 px-6 pb-6 overflow-y-auto max-h-[calc(100vh-72px)]">
+          {/* Sidebar Menu */}
           <SidebarMenu onClose={onClose} />
+
+          {/* Transactions */}
           <Transactions />
         </div>
       </div>

@@ -1,4 +1,3 @@
-import { Asset } from "@gardenfi/orderbook";
 import {
   arbitrum,
   arbitrumSepolia,
@@ -30,16 +29,6 @@ export const SupportedChains = [
   arbitrumSepolia,
   sepolia,
 ] as const;
-
-export const BTC: Asset = {
-  logo: "https://garden-finance.imgix.net/token-images/bitcoin.svg",
-  symbol: "BTC",
-  name: "Bitcoin",
-  decimals: 8,
-  chain: "bitcoin",
-  atomicSwapAddress: "primary",
-  tokenAddress: "primary",
-};
 
 export enum IOType {
   input = "input",
