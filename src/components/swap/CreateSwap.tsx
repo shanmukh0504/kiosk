@@ -25,7 +25,7 @@ export const CreateSwap = () => {
     outputAsset,
     setShowConfirmSwap,
   } = swapStore();
-  const { swap, getQuote, initializeSecretManager, garden } = useGarden();
+  const { swap, getQuote, garden } = useGarden();
 
   const _validSwap = inputAsset && outputAmount && inputAmount && outputAmount;
   const isBitcoinSwap =
@@ -95,15 +95,7 @@ export const CreateSwap = () => {
   };
 
   const handleSwapClick = async () => {
-    if (
-      !validSwap ||
-      !swap ||
-      !inputAsset ||
-      !outputAsset ||
-      !strategy ||
-      !initializeSecretManager
-    )
-      return;
+    if (!validSwap || !swap || !inputAsset || !outputAsset || !strategy) return;
     setIsSwapping(true);
 
     const inputAmountInDecimals = new BigNumber(inputAmount)

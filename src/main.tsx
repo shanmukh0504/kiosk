@@ -25,8 +25,9 @@ createRoot(document.getElementById("root")!).render(
                 orderBookUrl: api.orderbook,
                 quoteUrl: api.quote,
                 store: localStorage,
-                bitcoinNetwork: BitcoinNetwork.Testnet,
+                network: BitcoinNetwork.Testnet,
                 bitcoinRPCUrl: api.mempool.testnet,
+                blockNumberFetcherUrl: api.data.data,
               }}
             >
               <App />

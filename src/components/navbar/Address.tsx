@@ -3,14 +3,57 @@ import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { useGarden } from "@gardenfi/react-hooks";
-import Spinner from "./../../../public/spinner.json";
+import Spinner from "./../../constants/spinner.json";
 import Lottie from "react-lottie-player";
+import { useEffect } from "react";
+import axios from "axios";
+import { API } from "../../constants/api";
+import { Chain } from "@gardenfi/orderbook";
+import { OrderActions, parseAction } from "@gardenfi/core";
 
 export const Address = () => {
   const { address } = useEVMWallet();
   const { setOpenModal } = modalStore();
-  const { pendingOrders } = useGarden();
+  const { pendingOrders, isExecuting } = useGarden();
   const handleAddressClick = () => setOpenModal(modalNames.transactionsSideBar);
+
+  useEffect(() => {
+    if (!pendingOrders || !pendingOrders.length || isExecuting) return;
+
+    const fetchBlockNumbers = async () => {
+      try {
+        const blockNumber = await axios.get<{
+          [key in Chain]: number;
+        }>(API().data.data + "/blocknumber/testnet");
+
+        return blockNumber.data;
+      } catch (error) {
+        console.error("Error fetching block numbers", error);
+      }
+    };
+
+    fetchBlockNumbers().then((blockNumbers) => {
+      if (!blockNumbers) return;
+
+      const executableOrders = pendingOrders.filter((order) => {
+        const sourceBlockNumber = blockNumbers[order.source_swap.chain];
+        const destinationBlockNumber =
+          blockNumbers[order.destination_swap.chain];
+
+        if (!sourceBlockNumber || !destinationBlockNumber) return;
+
+        const action = parseAction(
+          order,
+          sourceBlockNumber,
+          destinationBlockNumber,
+        );
+        return action === OrderActions.Redeem || action === OrderActions.Refund;
+      });
+
+      if (executableOrders && executableOrders.length > 0)
+        setOpenModal(modalNames.transactionsSideBar);
+    });
+  }, [pendingOrders]);
 
   return (
     <Opacity
