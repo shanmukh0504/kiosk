@@ -1,6 +1,12 @@
 import { create } from "zustand";
 import { IOType } from "../constants/constants";
 import { Asset, Chain } from "@gardenfi/orderbook";
+import { API } from "../constants/api";
+import axios from "axios";
+
+export type Networks = {
+  [chain in Chain]: ChainData & { assetConfig: Omit<Asset, "chain">[] };
+};
 
 export type ChainData = {
   chainId: number;
@@ -25,10 +31,7 @@ type AssetInfoState = {
   error: string | null;
   setOpenAssetSelector: (type: IOType) => void;
   CloseAssetSelector: () => void;
-  setAssets: (assets: Assets) => void;
-  setChains: (chains: Chains) => void;
-  setError: (error: string) => void;
-  setLoading: (isLoading: boolean) => void;
+  fetchAndSetAssetsAndChains: () => Promise<void>;
 };
 
 export const assetInfoStore = create<AssetInfoState>((set) => ({
@@ -57,23 +60,38 @@ export const assetInfoStore = create<AssetInfoState>((set) => ({
       },
     }),
 
-  setAssets: (assets) =>
-    set({
-      assets,
-    }),
+  fetchAndSetAssetsAndChains: async () => {
+    try {
+      set({ isLoading: true });
+      const res = await axios.get<{
+        data: { networks: Networks };
+      }>(API().data.assets);
+      const assetsData = res.data.data.networks;
 
-  setChains: (chains) =>
-    set({
-      chains,
-    }),
+      const assets: Assets = {};
+      const chains: Chains = {};
 
-  setError: (error) =>
-    set({
-      error,
-    }),
-
-  setLoading: (isLoading) =>
-    set({
-      isLoading,
-    }),
+      for (const chainInfo of Object.values(assetsData)) {
+        chains[chainInfo.identifier] = {
+          chainId: chainInfo.chainId,
+          explorer: chainInfo.explorer,
+          networkLogo: chainInfo.networkLogo,
+          networkType: chainInfo.networkType,
+          name: chainInfo.name,
+          identifier: chainInfo.identifier,
+        };
+        for (const asset of chainInfo.assetConfig) {
+          assets[`${chainInfo.identifier}_${asset.atomicSwapAddress}`] = {
+            ...asset,
+            chain: chainInfo.identifier,
+          };
+        }
+      }
+      set({ assets, chains });
+    } catch (error) {
+      set({ error: "Failed to fetch assets data" });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 }));

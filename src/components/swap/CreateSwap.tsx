@@ -4,7 +4,7 @@ import { IOType } from "../../constants/constants";
 import { SwapAddress } from "./SwapAddress";
 import { swapStore } from "../../store/swapStore";
 import { assetInfoStore } from "../../store/assetInfoStore";
-import { AssetSelector } from "./AssetSelector/AssetSelector";
+import { AssetSelector } from "./AssetSelector";
 import { useGarden } from "@gardenfi/react-hooks";
 import BigNumber from "bignumber.js";
 import { useEffect, useState } from "react";

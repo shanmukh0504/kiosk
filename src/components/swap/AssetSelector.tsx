@@ -8,9 +8,9 @@ import {
 } from "@gardenfi/garden-book";
 import { useEffect, useState } from "react";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
-import { assetInfoStore, ChainData } from "../../../store/assetInfoStore";
-import { swapStore } from "../../../store/swapStore";
-import { IOType } from "../../../constants/constants";
+import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
+import { swapStore } from "../../store/swapStore";
+import { IOType } from "../../constants/constants";
 
 export const AssetSelector = () => {
   const [chain, setChain] = useState<ChainData>();

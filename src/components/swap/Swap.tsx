@@ -4,25 +4,13 @@ import { swapStore } from "../../store/swapStore";
 import { ToastContainer } from "../toast/Toast";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { useEffect } from "react";
-import { fetchAssetsData } from "./AssetSelector/fetchAssets";
 
 export const Swap = () => {
   const { btcInitModal } = swapStore();
-  const { setAssets, setChains, setError, setLoading } = assetInfoStore();
+  const { fetchAndSetAssetsAndChains } = assetInfoStore();
 
   useEffect(() => {
-    setLoading(true);
-    fetchAssetsData()
-      .then(({ assets, chains }) => {
-        setAssets(assets);
-        setChains(chains);
-      })
-      .catch((error) => {
-        setError(error.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    fetchAndSetAssetsAndChains();
   }, []);
 
   return (
