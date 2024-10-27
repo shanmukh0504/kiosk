@@ -1,6 +1,17 @@
 import { ArrowRightIcon, Typography } from "@gardenfi/garden-book";
-import { Asset } from "@gardenfi/orderbook";
+import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { FC } from "react";
+import { assetInfoStore } from "../store/assetInfoStore";
+import BigNumber from "bignumber.js";
+
+const formatAmount = (
+  amount: string | number,
+  decimals: number,
+  toFixed = 4,
+) => {
+  const bigAmount = new BigNumber(amount);
+  return bigAmount.dividedBy(10 ** decimals).toFixed(toFixed);
+};
 
 type SwapInfoProps = {
   sendAsset: Asset;
@@ -15,24 +26,32 @@ export const SwapInfo: FC<SwapInfoProps> = ({
   sendAmount,
   receiveAmount,
 }) => {
+  const { chains } = assetInfoStore();
+  const sendChain =
+    chains && !isBitcoin(sendAsset.chain) ? chains[sendAsset.chain] : undefined;
+  const receiveChain =
+    chains && !isBitcoin(receiveAsset.chain)
+      ? chains[receiveAsset.chain]
+      : undefined;
+
   return (
     <div className="flex justify-between items-center">
       <div className="flex grow basis-0 items-center gap-2">
         <Typography size="h3" weight="medium">
-          {sendAmount}
+          {formatAmount(sendAmount, sendAsset.decimals)}
         </Typography>
-        <Typography size="h3" weight="medium">
-          <img src={sendAsset.logo} className="w-5" />
-        </Typography>
+        <img src={sendAsset.logo} className="w-5" />
+        {sendChain ? <img src={sendChain.networkLogo} className="w-5" /> : null}
       </div>
       <ArrowRightIcon />
       <div className="flex grow basis-0 justify-end items-center gap-2">
         <Typography size="h3" weight="medium">
-          {receiveAmount}
+          {formatAmount(receiveAmount, receiveAsset.decimals)}
         </Typography>
-        <Typography size="h3" weight="medium">
-          <img src={receiveAsset.logo} className="w-5" />
-        </Typography>
+        <img src={receiveAsset.logo} className="w-5" />
+        {receiveChain ? (
+          <img src={receiveChain.networkLogo} className="w-5" />
+        ) : null}
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import { IOType } from "../../constants/constants";
 import { SwapAddress } from "./SwapAddress";
 import { swapStore } from "../../store/swapStore";
 import { assetInfoStore } from "../../store/assetInfoStore";
-import { AssetSelector } from "./AssetSelector";
+import { AssetSelector } from "./AssetSelector/AssetSelector";
 import { useGarden } from "@gardenfi/react-hooks";
 import BigNumber from "bignumber.js";
 import { useEffect, useState } from "react";
@@ -14,7 +14,7 @@ import { Toast } from "../toast/Toast";
 export const CreateSwap = () => {
   const [strategy, setStrategy] = useState<string>();
   const [isSwapping, setIsSwapping] = useState(false);
-  const { isAssetSelectorOpen, assetsData } = assetInfoStore();
+  const { isAssetSelectorOpen, assets } = assetInfoStore();
   const {
     outputAmount,
     inputAmount,
@@ -147,15 +147,13 @@ export const CreateSwap = () => {
       console.log("garden log", orderId, log);
     });
     garden.on("success", (order) => {
-      if (!assetsData) return;
-      const inputChainAssets = assetsData[order.source_swap.chain];
-      const outputChainAssets = assetsData[order.destination_swap.chain];
-      const inputAsset = inputChainAssets.assetConfig.find(
-        (asset) => asset.atomicSwapAddress === order.source_swap.asset,
-      );
-      const outputAsset = outputChainAssets.assetConfig.find(
-        (asset) => asset.atomicSwapAddress === order.destination_swap.asset,
-      );
+      if (!assets) return;
+      const inputAsset =
+        assets[`${order.source_swap.chain}_${order.source_swap.asset}`];
+      const outputAsset =
+        assets[
+          `${order.destination_swap.chain}_${order.destination_swap.asset}`
+        ];
       if (!inputAsset || !outputAsset) return;
 
       const inputAmount = new BigNumber(order.source_swap.amount)
@@ -181,27 +179,29 @@ export const CreateSwap = () => {
     >
       <AssetSelector />
       <div className="flex flex-col gap-4 p-3">
-        <SwapInput
-          type={IOType.input}
-          amount={inputAmount}
-          asset={inputAsset}
-          onChange={handleInputAmountChange}
-        />
-        <div
-          //TODO: fix the y position of the ExchangeIcon
-          className="absolute bg-white border border-light-grey rounded-full
-          left-1/2 -translate-x-1/2 top-[88px]
-        p-1.5 cursor-pointer"
-          onClick={swapAssets}
-        >
-          <ExchangeIcon />
+        <div className="relative flex flex-col gap-4">
+          <SwapInput
+            type={IOType.input}
+            amount={inputAmount}
+            asset={inputAsset}
+            onChange={handleInputAmountChange}
+          />
+          <div
+            //TODO: fix the y position of the ExchangeIcon
+            className="absolute bg-white border border-light-grey rounded-full
+            -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 transition-transform hover:scale-[1.1]
+            p-1.5 cursor-pointer"
+            onClick={swapAssets}
+          >
+            <ExchangeIcon />
+          </div>
+          <SwapInput
+            type={IOType.output}
+            amount={outputAmount}
+            asset={outputAsset}
+            onChange={handleOutputAmountChange}
+          />
         </div>
-        <SwapInput
-          type={IOType.output}
-          amount={outputAmount}
-          asset={outputAsset}
-          onChange={handleOutputAmountChange}
-        />
         <SwapAddress />
         <Button
           className={`transition-colors duration-500 ${

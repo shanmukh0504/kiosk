@@ -1,9 +1,9 @@
 import { FC } from "react";
 import {
   AddIcon,
-  LanguageIcon,
+  // LanguageIcon,
+  // ReferralIcon,
   LogoutIcon,
-  ReferralIcon,
   Typography,
 } from "@gardenfi/garden-book";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
@@ -46,7 +46,7 @@ export const SidebarMenu: FC<SideBarMenuProps> = ({ onClose }) => {
           </div>
         </div>
         <div className="flex gap-3">
-          <div
+          {/* <div
             data-tooltip-id={languageTooltipId}
             className="flex items-center bg-white/50 rounded-full p-1.5 cursor-pointer transition-colors hover:bg-white"
           >
@@ -57,7 +57,7 @@ export const SidebarMenu: FC<SideBarMenuProps> = ({ onClose }) => {
             className="flex items-center bg-white/50 rounded-full p-1.5 cursor-pointer transition-colors hover:bg-white"
           >
             <ReferralIcon className="w-5 h-4" />
-          </div>
+          </div> */}
           <div
             data-tooltip-id={logoutTooltipId}
             className="flex items-center bg-white/50 rounded-full p-1.5 cursor-pointer transition-colors hover:bg-white"

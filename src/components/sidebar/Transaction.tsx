@@ -1,60 +1,86 @@
-import { Typography } from "@gardenfi/garden-book";
+import { FC } from "react";
+import { Button, Typography } from "@gardenfi/garden-book";
 import { SwapInfo } from "../../common/SwapInfo";
-import BigNumber from "bignumber.js";
-import { assetInfoStore, AssetsData } from "../../store/assetInfoStore";
-import { useEffect } from "react";
+import { isEVM, MatchedOrder } from "@gardenfi/orderbook";
+import { getAssetFromSwap, getDayDifference } from "../../utils/utils";
+import { OrderStatus } from "@gardenfi/core";
+import { useGarden } from "@gardenfi/react-hooks";
 
-const formatAmount = (amount: string | number) => {
-    const bigAmount = new BigNumber(amount);
-    return bigAmount.isGreaterThan(1e10)
-        ? bigAmount.toExponential(2)
-        : bigAmount.toString();
+type TransactionProps = {
+  order: MatchedOrder;
+  status?: OrderStatus;
 };
 
-const getDayDifference = (date: Date) => {
-    const now = new Date();
-    const differenceInMs = now.getTime() - new Date(date).getTime();
-    const dayDifference = Math.floor(differenceInMs / (1000 * 3600 * 24));
-    const hourDifference = Math.floor(differenceInMs / (1000 * 3600));
-    const minuteDifference = Math.floor(differenceInMs / (1000 * 60));
+enum StatusLabel {
+  Completed = "Completed",
+  Pending = "In progress...",
+  Expired = "Expired",
+  Initiate = "Awaiting initiate",
+}
 
-    if (dayDifference > 3) return `on ${new Date(date).toLocaleDateString()}`;
-    if (dayDifference > 0) return `${dayDifference} day${dayDifference > 1 ? "s" : ""} ago`;
-    if (hourDifference > 0) return `${hourDifference} hour${hourDifference > 1 ? "s" : ""} ago`;
-    if (minuteDifference > 0) return `${minuteDifference} minute${minuteDifference > 1 ? "s" : ""} ago`;
-    return "just now";
+const getOrderStatusLabel = (status: OrderStatus) => {
+  switch (status) {
+    case OrderStatus.Redeemed:
+    case OrderStatus.Refunded:
+    case OrderStatus.CounterPartyRedeemed:
+    case OrderStatus.CounterPartyRedeemDetected:
+      return StatusLabel.Completed;
+    case OrderStatus.Matched:
+      return StatusLabel.Initiate;
+    case OrderStatus.DeadLineExceeded:
+      return StatusLabel.Expired;
+    default:
+      return StatusLabel.Pending;
+  }
 };
 
-export const Transaction = ({ order }: { order: any }) => {
-    const { create_order } = order;
-    const { assetsData, fetchAssetsData } = assetInfoStore();
+export const Transaction: FC<TransactionProps> = ({ order, status }) => {
+  const { evmInitiate } = useGarden();
+  const { create_order, source_swap, destination_swap } = order;
 
-    useEffect(() => {
-        if (!assetsData) fetchAssetsData();
-    }, [assetsData, fetchAssetsData]);
+  const sendAsset = getAssetFromSwap(source_swap);
+  const receiveAsset = getAssetFromSwap(destination_swap);
+  const statusLabel = status && getOrderStatusLabel(status);
+  const shouldInitiate =
+    isEVM(order.source_swap.chain) && status === OrderStatus.Matched;
 
-    if (!assetsData) return null;
+  const handleInitiate = async () => {
+    if (!evmInitiate) return;
+    const res = await evmInitiate(order);
+    if (res.ok) {
+      console.log("Initiated");
+      status = OrderStatus.InitiateDetected;
+    } else {
+      console.log("Failed to initiate");
+    }
+  };
 
-    const { source_chain: sourceChain, destination_chain: destinationChain } = create_order;
-
-    if (!assetsData[sourceChain as keyof AssetsData] || !assetsData[destinationChain as keyof AssetsData]) return null;
-
-    return (
-        <div className="flex flex-col gap-1 pb-4">
-            <SwapInfo
-                sendChain={assetsData[sourceChain as keyof AssetsData]}
-                receiveChain={assetsData[destinationChain as keyof AssetsData]}
-                sendAmount={formatAmount(create_order.source_amount)}
-                receiveAmount={formatAmount(create_order.destination_amount)}
-            />
-            <div className="flex justify-between">
-                <Typography size="h5" weight="medium">
-                    {create_order.deleted_at ? "Cancelled" : "Completed"}
-                </Typography>
-                <Typography size="h5" weight="medium">
-                    {getDayDifference(create_order.updated_at)}
-                </Typography>
-            </div>
+  return sendAsset && receiveAsset ? (
+    <div className="flex flex-col gap-1 pb-4">
+      <SwapInfo
+        sendAsset={sendAsset}
+        receiveAsset={receiveAsset}
+        sendAmount={create_order.source_amount}
+        receiveAmount={create_order.destination_amount}
+      />
+      {shouldInitiate ? (
+        <Button
+          variant="primary"
+          onClick={handleInitiate}
+          className={"my-3 w-10 ml-auto"}
+        >
+          Initiate
+        </Button>
+      ) : (
+        <div className="flex justify-between">
+          <Typography size="h5" weight="medium">
+            {statusLabel}
+          </Typography>
+          <Typography size="h5" weight="medium">
+            {getDayDifference(create_order.updated_at)}
+          </Typography>
         </div>
-    );
+      )}
+    </div>
+  ) : null;
 };

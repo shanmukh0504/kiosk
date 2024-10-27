@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { execSync } from "child_process";
 import { viteStaticCopy } from "vite-plugin-static-copy";
-import path from "path"; // Import the path module
+import path from "path";
 import fs from "fs";
 import wasm from "vite-plugin-wasm";
 import { nodePolyfills } from "vite-plugin-node-polyfills";

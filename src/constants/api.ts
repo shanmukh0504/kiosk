@@ -15,6 +15,8 @@ export const API = () => {
     data: {
       data: REQUIRED_ENV_VARS.DATA_URL,
       assets: REQUIRED_ENV_VARS.DATA_URL + "/assets",
+      blockNumbers: (network: "mainnet" | "testnet") =>
+        REQUIRED_ENV_VARS.DATA_URL + "/blocknumber/" + network,
     },
     leaderboard: REQUIRED_ENV_VARS.QUESTS_URL,
     buildId: "/build-id.json",

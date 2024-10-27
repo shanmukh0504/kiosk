@@ -1,6 +1,6 @@
 import { INTERNAL_ROUTES, THEMES } from "../constants/constants";
-import { AssetData } from "../store/assetInfoStore";
-import { Asset, Chain } from "@gardenfi/orderbook";
+import { assetInfoStore } from "../store/assetInfoStore";
+import { Swap } from "@gardenfi/orderbook";
 
 export const isProduction = () => {
   return import.meta.env.VITE_ENVIRONMENT === "production";
@@ -13,19 +13,24 @@ export const getCurrentTheme = () => {
   throw new Error("Invalid theme");
 };
 
-export const constructAsset = (asset: AssetData, chain: Chain) => {
-  const data: Asset = {
-    logo: asset.logo,
-    symbol: asset.symbol,
-    name: asset.name,
-    decimals: asset.decimals,
-    chain,
-    atomicSwapAddress: asset.atomicSwapAddress,
-    tokenAddress: asset.tokenAddress,
-  };
-  return data;
+export const getAssetFromSwap = (swap: Swap) => {
+  const { assets } = assetInfoStore();
+  return assets && assets[`${swap.chain}_${swap.asset}`];
 };
 
-export const isBitcoin = (asset: Asset) => {
-  return asset.symbol === "BTC";
+export const getDayDifference = (date: string) => {
+  const now = new Date();
+  const differenceInMs = now.getTime() - new Date(date).getTime();
+  const dayDifference = Math.floor(differenceInMs / (1000 * 3600 * 24));
+  const hourDifference = Math.floor(differenceInMs / (1000 * 3600));
+  const minuteDifference = Math.floor(differenceInMs / (1000 * 60));
+
+  if (dayDifference > 3) return `on ${new Date(date).toLocaleDateString()}`;
+  if (dayDifference > 0)
+    return `${dayDifference} day${dayDifference > 1 ? "s" : ""} ago`;
+  if (hourDifference > 0)
+    return `${hourDifference} hour${hourDifference > 1 ? "s" : ""} ago`;
+  if (minuteDifference > 0)
+    return `${minuteDifference} minute${minuteDifference > 1 ? "s" : ""} ago`;
+  return "just now";
 };

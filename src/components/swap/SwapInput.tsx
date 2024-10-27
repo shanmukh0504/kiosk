@@ -7,8 +7,7 @@ import {
 import { FC, useMemo, useRef } from "react";
 import { IOType } from "../../constants/constants";
 import { assetInfoStore } from "../../store/assetInfoStore";
-import { Asset } from "@gardenfi/orderbook";
-import { isBitcoin } from "../../utils/utils";
+import { Asset, isBitcoin } from "@gardenfi/orderbook";
 
 type SwapInputProps = {
   type: IOType;
@@ -24,11 +23,12 @@ export const SwapInput: FC<SwapInputProps> = ({
   onChange,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { setOpenAssetSelector, assetsData } = assetInfoStore();
+  const { setOpenAssetSelector, chains } = assetInfoStore();
 
   const network = useMemo(() => {
-    if (asset && isBitcoin(asset)) return;
-    return asset && assetsData && assetsData[asset.chain];
+    if (!chains || (asset && isBitcoin(asset.chain))) return;
+    if (!asset) return;
+    return chains && chains[asset.chain];
   }, [asset, asset?.chain]);
 
   const label = type === IOType.input ? "Send" : "Receive";
@@ -39,7 +39,7 @@ export const SwapInput: FC<SwapInputProps> = ({
     // Check if the last character is a digit or a dot.
     if (
       // If it's a digit
-      /^[0-9]$/.test(input.at(-1)!) ||
+      /^[0-9]$/.test(input[input.length - 1]!) ||
       // or it's a dot and there is only one dot in the entire string
       (input.at(-1) === "." && parts.length - 1 === 1)
     ) {

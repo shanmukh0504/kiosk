@@ -6,65 +6,39 @@ import {
   StarIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
-import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
-import { swapStore } from "../../store/swapStore";
-import { constructAsset } from "../../utils/utils";
+import { assetInfoStore, ChainData } from "../../../store/assetInfoStore";
+import { swapStore } from "../../../store/swapStore";
+import { IOType } from "../../../constants/constants";
 
 export const AssetSelector = () => {
-  const [supportedChains, setSupportedChains] = useState<ChainData[]>([]);
-  const [supportedAssets, setSupportedAssets] = useState<Asset[]>([]);
   const [chain, setChain] = useState<ChainData>();
   const [input, setInput] = useState<string>();
-  const [results, setResults] = useState<Asset[]>([]);
+  const [results, setResults] = useState<Asset[]>();
 
   const {
-    fetchAssetsData,
     isAssetSelectorOpen,
-    assetsData,
-    setCloseAssetSelector,
+    CloseAssetSelector: setCloseAssetSelector,
+    assets,
+    chains,
   } = assetInfoStore();
   const { setAsset } = swapStore();
 
-  const networks = useMemo(() => {
-    if (assetsData) {
-      return assetsData;
-    }
-  }, [assetsData]);
-
-  //setInputAsset once assets are fetched
   useEffect(() => {
-    if (!assetsData) return;
-    const bitcoin = supportedAssets.find((asset) => isBitcoin(asset.chain));
-    if (!bitcoin) return;
-    setAsset(isAssetSelectorOpen.type, bitcoin);
-  }, [assetsData]);
-
-  useEffect(() => {
-    void fetchAssetsData();
-  }, [fetchAssetsData]);
-
-  // Once the data has been fetched, initialize the supported chains and assets
-  useEffect(() => {
-    if (!networks) return;
-
-    const supportedChains: ChainData[] = [];
-    const supportedAssets: Asset[] = [];
-    for (const chainInfo of Object.values(networks)) {
-      supportedChains.push(chainInfo);
-      for (const asset of chainInfo.assetConfig) {
-        supportedAssets.push(constructAsset(asset, chainInfo.identifier));
-      }
-    }
-    setSupportedChains(supportedChains);
-    setSupportedAssets(supportedAssets);
-    setResults(supportedAssets);
-  }, [networks]);
+    if (!assets) return;
+    setResults(Object.values(assets));
+    const bitcoinAsset = Object.values(assets).find((asset) =>
+      isBitcoin(asset.chain),
+    );
+    if (bitcoinAsset) setAsset(IOType.input, bitcoinAsset);
+  }, [assets]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!assets) return;
+
     const input = e.target.value;
-    const r = supportedAssets.filter(
+    const r = Object.values(assets).filter(
       (asset) =>
         asset.name?.toLowerCase().includes(input) ||
         asset.symbol?.toLowerCase().includes(input),
@@ -81,7 +55,7 @@ export const AssetSelector = () => {
     setTimeout(() => {
       setChain(undefined);
       setInput("");
-      setResults(supportedAssets);
+      if (assets) setResults(Object.values(assets));
     }, 700);
   };
 
@@ -105,34 +79,34 @@ export const AssetSelector = () => {
         />
       </div>
       <div className="flex flex-wrap gap-3">
-        {supportedChains?.map((c, i) => (
-          // TODO: Chip component should ideally have a `checked` prop that
-          // automatically adds the below styles
-          <Chip
-            key={i}
-            className={`${
-              !chain || c.chainId !== chain.chainId
-                ? "bg-opacity-50 pr-1"
-                : "pr-2"
-            } pl-3 py-1 cursor-pointer transition-colors ease-cubic-in-out hover:bg-opacity-50`}
-            onClick={() => (c === chain ? setChain(undefined) : setChain(c))}
-          >
-            <Typography size="h3" weight="medium">
-              {c.name}
-            </Typography>
-            <RadioCheckedIcon
+        {chains &&
+          Object.values(chains).map((c, i) => (
+            // TODO: Chip component should ideally have a `checked` prop that
+            // automatically adds the below styles
+            <Chip
+              key={i}
               className={`${
-                c === chain ? "w-4" : "w-0"
-              } transition-all fill-rose`}
-            />
-          </Chip>
-        ))}
+                !chain || c.chainId !== chain.chainId
+                  ? "bg-opacity-50 pr-1"
+                  : "pr-2"
+              } pl-3 py-1 cursor-pointer transition-colors ease-cubic-in-out hover:bg-opacity-50`}
+              onClick={() => (c === chain ? setChain(undefined) : setChain(c))}
+            >
+              <Typography size="h3" weight="medium">
+                {c.name}
+              </Typography>
+              <RadioCheckedIcon
+                className={`${
+                  c === chain ? "w-4" : "w-0"
+                } transition-all fill-rose`}
+              />
+            </Chip>
+          ))}
       </div>
       <div className="flex justify-between items-center bg-white rounded-2xl w-full px-4 py-2">
         <div className="flex-grow">
           <Typography size="h4" weight="medium">
             <input
-              // TODO: Check why the placeholder color is not working
               className="w-full outline-none placeholder:text-mid-grey"
               type="text"
               value={input}
@@ -150,7 +124,7 @@ export const AssetSelector = () => {
           </Typography>
         </div>
         {results?.map((asset, i) => {
-          const network = !isBitcoin(asset.chain) && assetsData?.[asset.chain];
+          const network = !isBitcoin(asset.chain) && chains?.[asset.chain];
           return (
             (!chain || asset.chain === chain.identifier) && (
               <div

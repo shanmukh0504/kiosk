@@ -1,90 +1,88 @@
 import { Typography } from "@gardenfi/garden-book";
 import { Transaction } from "./Transaction";
 import { useGarden } from "@gardenfi/react-hooks";
-import { useEffect } from "react";
-import { PaginationConfig } from "@gardenfi/orderbook";
+import { useEffect, FC, useState } from "react";
 import { useOrdersStore } from "../../store/ordersStore";
 import { Button } from "@gardenfi/garden-book";
+import blockNumberStore from "../../store/blockNumberStore";
+import { MatchedOrder } from "@gardenfi/orderbook";
+import { ParseOrderStatus } from "@gardenfi/core";
 
-export const Transactions = () => {
+type TransactionsProps = {
+  isSidebarOpen: boolean;
+};
+
+export const Transactions: FC<TransactionsProps> = ({ isSidebarOpen }) => {
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const { orderBook } = useGarden();
-  const { 
-    orders, 
-    perPage, 
-    totalItems,
-    isLoading,
-    setOrders, 
-    setTotalItems, 
-    incrementPerPage,
-    setIsLoading 
-  } = useOrdersStore();
-
-  const fetchOrders = async () => {
-    if (!orderBook) return;
-    
-    setIsLoading(true);
-    const paginationConfig = {
-      page: 1,
-      per_page: perPage
-    } as PaginationConfig;
-
-    orderBook.subscribeOrders(
-      "0xd53D4f100AaBA314bF033f99f86a312BfbdDF113",
-      true,
-      100000,
-      async (fetchedOrders) => {
-        setOrders(fetchedOrders.data);
-        setTotalItems(fetchedOrders.total_items);
-        setIsLoading(false);
-      },
-      false,
-      paginationConfig
-    );
-  };
-
-  useEffect(() => {
-    fetchOrders();
-  }, [orderBook, perPage]);
-
-  const handleLoadMore = () => {
-    incrementPerPage();
-  };
+  const { orders, totalItems, fetchAndSetOrders, loadMore } = useOrdersStore();
+  const { fetchAndSetBlockNumbers, blockNumbers } = blockNumberStore();
 
   const showLoadMore = orders.length < totalItems;
 
+  const handleLoadMore = async () => {
+    if (!orderBook) return;
+    setIsLoadingMore(true);
+    await loadMore(orderBook);
+    setIsLoadingMore(false);
+  };
+
+  const parseStatus = (order: MatchedOrder) => {
+    if (!blockNumbers) return;
+    const { source_swap, destination_swap } = order;
+    const sourceBlockNumber = blockNumbers[source_swap.chain];
+    const destinationBlockNumber = blockNumbers[destination_swap.chain];
+    if (!sourceBlockNumber || !destinationBlockNumber) return;
+
+    return ParseOrderStatus(order, sourceBlockNumber, destinationBlockNumber);
+  };
+
+  useEffect(() => {
+    if (!orderBook || !isSidebarOpen) return;
+
+    const fetchOrdersAndBlockNumbers = async () => {
+      await fetchAndSetOrders(orderBook);
+      await fetchAndSetBlockNumbers();
+    };
+
+    setIsLoadingOrders(true);
+    fetchOrdersAndBlockNumbers().then(() => setIsLoadingOrders(false));
+    const intervalId = setInterval(fetchOrdersAndBlockNumbers, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [orderBook, isSidebarOpen]);
+
   return (
     <>
-        <div className="flex flex-col bg-white/50 rounded-2xl p-4 gap-4">
+      <div className="flex flex-col bg-white/50 rounded-2xl p-4 gap-4">
         <Typography size="h5" weight="bold">
-            Transactions
+          Transactions
         </Typography>
-        <div className="flex flex-col gap-4">
-            {orders.map((order, index) => (
-            <div key={index}>
-                <Transaction order={order} />
-                <div className="bg-white/50 w-full h-[1px]"></div>
-            </div>
-            ))}
-            
-            {isLoading && (
-            <div className="text-center py-2">
-                Loading...
-            </div>
-            )}
-            
+        <div className="flex flex-col gap-4 overflow-auto">
+          {isLoadingOrders ? (
+            <div className="text-center py-2">Loading...</div>
+          ) : (
+            orders.map((order, index) => (
+              <div key={index}>
+                <Transaction order={order} status={parseStatus(order)} />
+                {index !== orders.length - 1 ? (
+                  <div className="bg-white/50 w-full h-px"></div>
+                ) : null}
+              </div>
+            ))
+          )}
         </div>
-        </div>
-        <div className="flex justify-center">
-            {showLoadMore && !isLoading && (
-            <Button
-                onClick={handleLoadMore}
-                variant="secondary"
-                className="w-1/4"
-            >
-                Load More
-            </Button>
-            )}
-        </div>
+      </div>
+      {showLoadMore && (
+        <Button
+          onClick={handleLoadMore}
+          variant={isLoadingMore ? "disabled" : "secondary"}
+          className="w-1/4 mx-auto"
+        >
+          {isLoadingMore ? "Loading..." : "Load More"}
+        </Button>
+      )}
     </>
   );
 };

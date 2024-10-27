@@ -31,7 +31,7 @@ export const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
   return (
     <div
       className={`bg-dark-grey
-        absolute top-0 left-0 z-10
+        absolute top-0 left-0 z-20
         h-full w-full
         transition-colors ease-cubic-in-out duration-500
         ${open ? "bg-opacity-40" : "bg-opacity-0 pointer-events-none"}`}
@@ -42,7 +42,6 @@ export const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
           ${open ? "right-0" : "right-[-480px]"}
           w-[480px] h-full transition-right ease-cubic-in-out duration-500`}
       >
-        {/* Header with Close Button */}
         <div className="flex justify-end p-6">
           <CloseIcon
             className="w-6 h-[14px] cursor-pointer"
@@ -51,12 +50,9 @@ export const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex flex-col gap-5 px-6 pb-6 overflow-y-auto max-h-[calc(100vh-72px)]">
-          {/* Sidebar Menu */}
+        <div className="flex flex-col gap-5 px-6 pb-6 overflow-y-auto max-h-[100vh]">
           <SidebarMenu onClose={onClose} />
-
-          {/* Transactions */}
-          <Transactions />
+          <Transactions isSidebarOpen={open} />
         </div>
       </div>
     </div>
