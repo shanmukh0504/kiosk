@@ -3,6 +3,7 @@ import { IOType } from "../constants/constants";
 import { Asset, Chain } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
+import { IQuote, Strategies } from "@gardenfi/core";
 
 export type Networks = {
   [chain in Chain]: ChainData & { assetConfig: Omit<Asset, "chain">[] };
@@ -29,12 +30,18 @@ type AssetInfoState = {
     type: IOType;
   };
   error: string | null;
+  strategies: {
+    val: Strategies | null;
+    error: string | null;
+    isLoading: boolean;
+  };
   setOpenAssetSelector: (type: IOType) => void;
   CloseAssetSelector: () => void;
   fetchAndSetAssetsAndChains: () => Promise<void>;
+  fetchAndSetStrategies: (quote: IQuote) => Promise<void>;
 };
 
-export const assetInfoStore = create<AssetInfoState>((set) => ({
+export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   assets: null,
   chains: null,
   isAssetSelectorOpen: {
@@ -43,6 +50,11 @@ export const assetInfoStore = create<AssetInfoState>((set) => ({
   },
   isLoading: false,
   error: null,
+  strategies: {
+    val: null,
+    error: null,
+    isLoading: false,
+  },
 
   setOpenAssetSelector: (type) =>
     set({
@@ -55,8 +67,8 @@ export const assetInfoStore = create<AssetInfoState>((set) => ({
   CloseAssetSelector: () =>
     set({
       isAssetSelectorOpen: {
+        type: get().isAssetSelectorOpen.type,
         isOpen: false,
-        type: IOType.input,
       },
     }),
 
@@ -92,6 +104,22 @@ export const assetInfoStore = create<AssetInfoState>((set) => ({
       set({ error: "Failed to fetch assets data" });
     } finally {
       set({ isLoading: false });
+    }
+  },
+  fetchAndSetStrategies: async (quote) => {
+    try {
+      set({ strategies: { ...get().strategies, isLoading: true } });
+      const res = await quote.getStrategies();
+      if (res.error) return;
+      set({ strategies: { val: res.val, isLoading: false, error: null } });
+    } catch (error) {
+      set({
+        strategies: {
+          ...get().strategies,
+          error: "Failed to fetch strategies",
+          isLoading: false,
+        },
+      });
     }
   },
 }));

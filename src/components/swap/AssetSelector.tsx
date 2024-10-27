@@ -11,6 +11,7 @@ import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { swapStore } from "../../store/swapStore";
 import { IOType } from "../../constants/constants";
+import { constructOrderPair } from "@gardenfi/core";
 
 export const AssetSelector = () => {
   const [chain, setChain] = useState<ChainData>();
@@ -19,20 +20,40 @@ export const AssetSelector = () => {
 
   const {
     isAssetSelectorOpen,
-    CloseAssetSelector: setCloseAssetSelector,
+    CloseAssetSelector,
     assets,
     chains,
+    strategies,
   } = assetInfoStore();
-  const { setAsset } = swapStore();
+  const { setAsset, inputAsset, outputAsset } = swapStore();
+
+  const comparisonToken =
+    isAssetSelectorOpen.type === IOType.input ? outputAsset : inputAsset;
 
   useEffect(() => {
-    if (!assets) return;
-    setResults(Object.values(assets));
-    const bitcoinAsset = Object.values(assets).find((asset) =>
-      isBitcoin(asset.chain),
-    );
-    if (bitcoinAsset) setAsset(IOType.input, bitcoinAsset);
-  }, [assets]);
+    if (!assets || !strategies.val) return;
+    if (!comparisonToken) setResults(Object.values(assets));
+    else {
+      const supportedTokens = Object.values(assets).filter((asset) => {
+        const op =
+          isAssetSelectorOpen.type === IOType.input
+            ? constructOrderPair(
+                asset.chain,
+                asset.atomicSwapAddress,
+                comparisonToken.chain,
+                comparisonToken.atomicSwapAddress,
+              )
+            : constructOrderPair(
+                comparisonToken.chain,
+                comparisonToken.atomicSwapAddress,
+                asset.chain,
+                asset.atomicSwapAddress,
+              );
+        return strategies.val && strategies.val[op] !== undefined;
+      });
+      setResults(supportedTokens);
+    }
+  }, [assets, strategies.val, isAssetSelectorOpen.type]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!assets) return;
@@ -50,7 +71,7 @@ export const AssetSelector = () => {
   const handleClick = (asset?: Asset) => {
     if (asset) setAsset(isAssetSelectorOpen.type, asset);
 
-    setCloseAssetSelector();
+    CloseAssetSelector();
     // Clear inputs after delay
     setTimeout(() => {
       setChain(undefined);
