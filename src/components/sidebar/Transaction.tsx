@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Button, Typography } from "@gardenfi/garden-book";
 import { SwapInfo } from "../../common/SwapInfo";
 import { isEVM, MatchedOrder } from "@gardenfi/orderbook";
@@ -35,6 +35,8 @@ const getOrderStatusLabel = (status: OrderStatus) => {
 };
 
 export const Transaction: FC<TransactionProps> = ({ order, status }) => {
+  const [isInitiating, setIsInitiating] = useState(false);
+
   const { evmInitiate } = useGarden();
   const { create_order, source_swap, destination_swap } = order;
 
@@ -46,6 +48,7 @@ export const Transaction: FC<TransactionProps> = ({ order, status }) => {
 
   const handleInitiate = async () => {
     if (!evmInitiate) return;
+    setIsInitiating(true);
     const res = await evmInitiate(order);
     if (res.ok) {
       console.log("Initiated");
@@ -53,6 +56,7 @@ export const Transaction: FC<TransactionProps> = ({ order, status }) => {
     } else {
       console.log("Failed to initiate");
     }
+    setIsInitiating(false);
   };
 
   return sendAsset && receiveAsset ? (
@@ -65,11 +69,11 @@ export const Transaction: FC<TransactionProps> = ({ order, status }) => {
       />
       {shouldInitiate ? (
         <Button
-          variant="primary"
+          variant={isInitiating ? "disabled" : "primary"}
           onClick={handleInitiate}
           className={"my-3 w-10 ml-auto"}
         >
-          Initiate
+          {isInitiating ? "Initiating..." : "Initiate"}
         </Button>
       ) : (
         <div className="flex justify-between">
