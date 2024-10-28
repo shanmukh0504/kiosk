@@ -13,7 +13,7 @@ export const GardenSupportedEVMWallets: Record<
   GardenSupportedEVMWallets
 > = {
   metamask: {
-    id: "io.metamask",
+    id: "metaMaskSDK",
     name: "Metamask",
     logo: "https://garden-finance.imgix.net/wallets/metamask.svg",
     installLink: "https://metamask.io/download/",
