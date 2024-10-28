@@ -1,39 +1,49 @@
 import { ArrowRightIcon, Typography } from "@gardenfi/garden-book";
+import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { FC } from "react";
-import { Asset } from "../constants/constants";
+import { assetInfoStore } from "../store/assetInfoStore";
+import { formatAmount } from "../utils/utils";
 
 type SwapInfoProps = {
-    sendAsset: Asset;
-    receiveAsset: Asset;
-    sendAmount: string;
-    receiveAmount: string;
+  sendAsset: Asset;
+  receiveAsset: Asset;
+  sendAmount: string;
+  receiveAmount: string;
 };
 
 export const SwapInfo: FC<SwapInfoProps> = ({
-    sendAsset,
-    receiveAsset,
-    sendAmount,
-    receiveAmount,
+  sendAsset,
+  receiveAsset,
+  sendAmount,
+  receiveAmount,
 }) => {
-    return (
-        <div className="flex justify-between items-center">
-            <div className="flex grow basis-0 items-center gap-2">
-                <Typography size="h3" weight="medium">
-                    {sendAmount}
-                </Typography>
-                <Typography size="h3" weight="medium">
-                    <img src={sendAsset.icon} className="w-5" />
-                </Typography>
-            </div>
-            <ArrowRightIcon />
-            <div className="flex grow basis-0 justify-end items-center gap-2">
-                <Typography size="h3" weight="medium">
-                    {receiveAmount}
-                </Typography>
-                <Typography size="h3" weight="medium">
-                    <img src={receiveAsset.icon} className="w-5" />
-                </Typography>
-            </div>
-        </div>
-    );
+  const { chains } = assetInfoStore();
+  const sendChain =
+    chains && !isBitcoin(sendAsset.chain) ? chains[sendAsset.chain] : undefined;
+  const receiveChain =
+    chains && !isBitcoin(receiveAsset.chain)
+      ? chains[receiveAsset.chain]
+      : undefined;
+
+  return (
+    <div className="flex justify-between items-center">
+      <div className="flex grow basis-0 items-center gap-2">
+        <Typography size="h3" weight="medium">
+          {formatAmount(sendAmount, sendAsset.decimals)}
+        </Typography>
+        <img src={sendAsset.logo} className="w-5" />
+        {sendChain ? <img src={sendChain.networkLogo} className="w-5" /> : null}
+      </div>
+      <ArrowRightIcon />
+      <div className="flex grow basis-0 justify-end items-center gap-2">
+        <Typography size="h3" weight="medium">
+          {formatAmount(receiveAmount, receiveAsset.decimals)}
+        </Typography>
+        <img src={receiveAsset.logo} className="w-5" />
+        {receiveChain ? (
+          <img src={receiveChain.networkLogo} className="w-5" />
+        ) : null}
+      </div>
+    </div>
+  );
 };
