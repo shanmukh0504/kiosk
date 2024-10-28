@@ -649,9 +649,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/core@npm:^0.2.0-beta.57":
-  version: 0.2.0-beta.57
-  resolution: "@gardenfi/core@npm:0.2.0-beta.57"
+"@gardenfi/core@npm:^0.2.0-beta.58":
+  version: 0.2.0-beta.58
+  resolution: "@gardenfi/core@npm:0.2.0-beta.58"
   dependencies:
     "@catalogfi/utils": "npm:^0.1.6"
     "@catalogfi/wallets": "npm:^0.2.51"
@@ -662,7 +662,7 @@ __metadata:
     tiny-secp256k1: "npm:^2.2.3"
     varuint-bitcoin: "npm:^1.1.2"
     viem: "npm:^2.21.15"
-  checksum: 10c0/e674950906bb6c853f93ef6fa564ba94699a70f58deffa5dc10dba65a4f4b16ca36ff69d051977c8c4b41cb73481b0d75353d539e4189df31ce1c15ed134f7d3
+  checksum: 10c0/1fbc1a4a0fb3ff87a41655acec7f30a95c12f9752fa04ba29b12b1d5729237c49c4eb1ddf56897aa6bdff3ad1a5cc0e2defeede74aad05e26a861e96c988d0a4
   languageName: node
   linkType: hard
 
@@ -698,19 +698,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/react-hooks@npm:^0.0.1-beta.78":
-  version: 0.0.1-beta.78
-  resolution: "@gardenfi/react-hooks@npm:0.0.1-beta.78"
+"@gardenfi/react-hooks@npm:^0.0.1-beta.79":
+  version: 0.0.1-beta.79
+  resolution: "@gardenfi/react-hooks@npm:0.0.1-beta.79"
   dependencies:
     "@catalogfi/utils": "npm:^0.1.6"
     "@catalogfi/wallets": "npm:^0.2.51"
-    "@gardenfi/core": "npm:^0.2.0-beta.57"
+    "@gardenfi/core": "npm:^0.2.0-beta.58"
     "@gardenfi/orderbook": "npm:^0.2.0-beta.14"
     "@gardenfi/utils": "npm:^0.0.1-beta.18"
     react: "npm:^18.3.1"
     viem: "npm:^2.21.15"
     wagmi: "npm:^2.12.16"
-  checksum: 10c0/7fcd91a3657a4c5a98407e6a5f1859be14657272af85cc41b710f706efd27c5546ce9ee707f0dd33806889572475fb68761ebd9ab3b41f1b5ce50c1eacdea45a
+  checksum: 10c0/ca6183ebd66ca8931150ff127aa5644c1fafc365170183750583ddd0156dcfd45d1a4866e7f4dd14d98e88ebbfd25cf526e54047d9ea9822df07ba7ac434ad17
   languageName: node
   linkType: hard
 
@@ -5738,7 +5738,7 @@ __metadata:
     "@gardenfi/core": "npm:^0.2.0-beta.49"
     "@gardenfi/garden-book": "npm:^0.1.36"
     "@gardenfi/orderbook": "npm:^0.2.0-beta.14"
-    "@gardenfi/react-hooks": "npm:^0.0.1-beta.78"
+    "@gardenfi/react-hooks": "npm:^0.0.1-beta.79"
     "@gardenfi/utils": "npm:^0.0.1-beta.11"
     "@tanstack/react-query": "npm:^5.51.23"
     "@types/node": "npm:^22.8.1"
