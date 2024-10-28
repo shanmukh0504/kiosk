@@ -17,7 +17,7 @@ import { formatAmount } from "../../utils/utils";
 export const CreateSwap = () => {
   const [strategy, setStrategy] = useState<string>();
   const [isSwapping, setIsSwapping] = useState(false);
-  const { isAssetSelectorOpen, assets, strategies } = assetInfoStore();
+  const { isAssetSelectorOpen, assets } = assetInfoStore();
   const {
     outputAmount,
     inputAmount,
