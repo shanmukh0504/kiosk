@@ -1,62 +1,125 @@
 import { create } from "zustand";
+import { IOType } from "../constants/constants";
+import { Asset, Chain } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
+import { IQuote, Strategies } from "@gardenfi/core";
 
-type AssetData = {
-  name: string;
-  decimals: number;
-  symbol: string;
-  baseFees: number;
-  logo: string;
-  coinGeckoId: string;
-  tokenAddress: string;
-  atomicSwapAddress: string;
+export type Networks = {
+  [chain in Chain]: ChainData & { assetConfig: Omit<Asset, "chain">[] };
 };
 
-type ChainData = {
+export type ChainData = {
   chainId: number;
-  fillerAddresses: string[];
   explorer: string;
   networkLogo: string;
   networkType: string;
-  assetConfig: AssetData[];
+  name: string;
+  identifier: Chain;
 };
 
-type AssetsData = {
-  data: {
-    networks: Map<string, ChainData>;
-  };
-};
+export type Assets = Record<string, Asset>;
+export type Chains = Partial<Record<Chain, ChainData>>;
 
 type AssetInfoState = {
-  assetsData: AssetsData | null;
+  assets: Assets | null;
+  chains: Chains | null;
   isLoading: boolean;
+  isAssetSelectorOpen: {
+    isOpen: boolean;
+    type: IOType;
+  };
   error: string | null;
-  fetchAssetsData: () => Promise<void>;
+  strategies: {
+    val: Strategies | null;
+    error: string | null;
+    isLoading: boolean;
+  };
+  setOpenAssetSelector: (type: IOType) => void;
+  CloseAssetSelector: () => void;
+  fetchAndSetAssetsAndChains: () => Promise<void>;
+  fetchAndSetStrategies: (quote: IQuote) => Promise<void>;
 };
 
-export const assetInfoStore = create<AssetInfoState>((set) => ({
-  assetsData: null,
+export const assetInfoStore = create<AssetInfoState>((set, get) => ({
+  assets: null,
+  chains: null,
+  isAssetSelectorOpen: {
+    isOpen: false,
+    type: IOType.input,
+  },
   isLoading: false,
   error: null,
+  strategies: {
+    val: null,
+    error: null,
+    isLoading: false,
+  },
 
-  fetchAssetsData: async () => {
-    set({ isLoading: true, error: null });
+  setOpenAssetSelector: (type) =>
+    set({
+      isAssetSelectorOpen: {
+        isOpen: true,
+        type,
+      },
+    }),
 
+  CloseAssetSelector: () =>
+    set({
+      isAssetSelectorOpen: {
+        type: get().isAssetSelectorOpen.type,
+        isOpen: false,
+      },
+    }),
+
+  fetchAndSetAssetsAndChains: async () => {
     try {
-      const api = API();
-      const response = await axios.get<AssetsData>(api.assets);
+      set({ isLoading: true });
+      const res = await axios.get<{
+        data: { networks: Networks };
+      }>(API().data.assets);
+      const assetsData = res.data.data.networks;
 
-      if (response.status === 200) {
-        set({ assetsData: response.data });
-      } else {
-        set({ error: "Failed to fetch assets info" });
+      const assets: Assets = {};
+      const chains: Chains = {};
+
+      for (const chainInfo of Object.values(assetsData)) {
+        chains[chainInfo.identifier] = {
+          chainId: chainInfo.chainId,
+          explorer: chainInfo.explorer,
+          networkLogo: chainInfo.networkLogo,
+          networkType: chainInfo.networkType,
+          name: chainInfo.name,
+          identifier: chainInfo.identifier,
+        };
+        for (const asset of chainInfo.assetConfig) {
+          assets[`${chainInfo.identifier}_${asset.atomicSwapAddress}`] = {
+            ...asset,
+            chain: chainInfo.identifier,
+          };
+        }
       }
+      set({ assets, chains });
     } catch (error) {
-      console.error(error);
-      set({ error: "An error occurred while fetching assets info" });
+      set({ error: "Failed to fetch assets data" });
     } finally {
       set({ isLoading: false });
+    }
+  },
+  fetchAndSetStrategies: async (quote) => {
+    try {
+      set({ strategies: { ...get().strategies, isLoading: true } });
+      const res = await quote.getStrategies();
+      if (res.error) return;
+      set({ strategies: { val: res.val, isLoading: false, error: null } });
+    } catch (error) {
+      set({
+        strategies: {
+          ...get().strategies,
+          error: "Failed to fetch strategies",
+          isLoading: false,
+        },
+      });
     }
   },
 }));

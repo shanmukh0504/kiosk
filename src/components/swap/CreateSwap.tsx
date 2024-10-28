@@ -1,24 +1,20 @@
 import { Button, ExchangeIcon } from "@gardenfi/garden-book";
-import { useState, useEffect } from "react";
 import { SwapInput } from "./SwapInput";
-import { SwapDetails } from "../../constants/constants";
+import { IOType } from "../../constants/constants";
 import { SwapAddress } from "./SwapAddress";
 import { swapStore } from "../../store/swapStore";
+import { assetInfoStore } from "../../store/assetInfoStore";
+import { AssetSelector } from "./AssetSelector";
 import { useGarden } from "@gardenfi/react-hooks";
-import { isBitcoin } from "@gardenfi/orderbook";
-import { IOType } from "../../constants/constants";
 import BigNumber from "bignumber.js";
-
-type CreateSwapProps = {
-    swap: SwapDetails | undefined;
-    createSwap: (swap: SwapDetails) => void;
-};
+import { useEffect, useState } from "react";
+import { isBitcoin } from "@gardenfi/orderbook";
 import { Toast } from "../toast/Toast";
 
 export const CreateSwap = () => {
   const [strategy, setStrategy] = useState<string>();
   const [isSwapping, setIsSwapping] = useState(false);
-  const { isAssetSelectorOpen, assetsData } = assetInfoStore();
+  const { isAssetSelectorOpen, assets } = assetInfoStore();
   const {
     outputAmount,
     inputAmount,
@@ -29,7 +25,7 @@ export const CreateSwap = () => {
     outputAsset,
     setShowConfirmSwap,
   } = swapStore();
-  const { swap, getQuote, initializeSecretManager, garden } = useGarden();
+  const { swap, getQuote, garden } = useGarden();
 
   const _validSwap = inputAsset && outputAmount && inputAmount && outputAmount;
   const isBitcoinSwap =
@@ -99,15 +95,7 @@ export const CreateSwap = () => {
   };
 
   const handleSwapClick = async () => {
-    if (
-      !validSwap ||
-      !swap ||
-      !inputAsset ||
-      !outputAsset ||
-      !strategy ||
-      !initializeSecretManager
-    )
-      return;
+    if (!validSwap || !swap || !inputAsset || !outputAsset || !strategy) return;
     setIsSwapping(true);
 
     const inputAmountInDecimals = new BigNumber(inputAmount)
@@ -159,15 +147,13 @@ export const CreateSwap = () => {
       console.log("garden log", orderId, log);
     });
     garden.on("success", (order) => {
-      if (!assetsData) return;
-      const inputChainAssets = assetsData[order.source_swap.chain];
-      const outputChainAssets = assetsData[order.destination_swap.chain];
-      const inputAsset = inputChainAssets.assetConfig.find(
-        (asset) => asset.atomicSwapAddress === order.source_swap.asset,
-      );
-      const outputAsset = outputChainAssets.assetConfig.find(
-        (asset) => asset.atomicSwapAddress === order.destination_swap.asset,
-      );
+      if (!assets) return;
+      const inputAsset =
+        assets[`${order.source_swap.chain}_${order.source_swap.asset}`];
+      const outputAsset =
+        assets[
+          `${order.destination_swap.chain}_${order.destination_swap.asset}`
+        ];
       if (!inputAsset || !outputAsset) return;
 
       const inputAmount = new BigNumber(order.source_swap.amount)
@@ -183,38 +169,39 @@ export const CreateSwap = () => {
     });
   }, [garden]);
 
-    return (
-        <div
-            className={`before:content-[''] before:bg-black before:bg-opacity-0
+  return (
+    <div
+      className={`before:content-[''] before:bg-black before:bg-opacity-0
           before:absolute before:top-0 before:left-0
           before:h-full before:w-full
           before:pointer-events-none before:transition-colors before:duration-700
-          ${isPopupOpen && "before:bg-opacity-10"}`}
-        >
-            <div className="flex flex-col gap-4 p-3">
-                <SwapInput
-                    type="Send"
-                    amount={sendAmount}
-                    asset={sendAsset}
-                    setAmount={setSendAmount}
-                    setAsset={setSendAsset}
-                    setIsPopupOpen={setIsPopupOpen}
-                />
-                <div
-                    // TODO: Check why translate is not working
-                    className="bg-white border border-light-grey rounded-full
-        absolute top-[94px] left-1/2 -translate-x-1/2
-        p-1.5 cursor-pointer"
-          onClick={swapAssets}
-        >
-          <ExchangeIcon />
+          ${isAssetSelectorOpen.isOpen && "before:bg-opacity-10"}`}
+    >
+      <AssetSelector />
+      <div className="flex flex-col gap-4 p-3">
+        <div className="relative flex flex-col gap-4">
+          <SwapInput
+            type={IOType.input}
+            amount={inputAmount}
+            asset={inputAsset}
+            onChange={handleInputAmountChange}
+          />
+          <div
+            //TODO: fix the y position of the ExchangeIcon
+            className="absolute bg-white border border-light-grey rounded-full
+            -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 transition-transform hover:scale-[1.1]
+            p-1.5 cursor-pointer"
+            onClick={swapAssets}
+          >
+            <ExchangeIcon />
+          </div>
+          <SwapInput
+            type={IOType.output}
+            amount={outputAmount}
+            asset={outputAsset}
+            onChange={handleOutputAmountChange}
+          />
         </div>
-        <SwapInput
-          type={IOType.output}
-          amount={outputAmount}
-          asset={outputAsset}
-          onChange={handleOutputAmountChange}
-        />
         <SwapAddress />
         <Button
           className={`transition-colors duration-500 ${
