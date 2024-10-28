@@ -18,10 +18,9 @@ export const API = () => {
       blockNumbers: (network: "mainnet" | "testnet") =>
         REQUIRED_ENV_VARS.DATA_URL + "/blocknumber/" + network,
     },
-    leaderboard: REQUIRED_ENV_VARS.QUESTS_URL,
+    leaderboard: { quests: REQUIRED_ENV_VARS.QUESTS_URL + "/quests" },
     buildId: "/build-id.json",
     orderbook: REQUIRED_ENV_VARS.ORDERBOOK_URL,
-    quests: REQUIRED_ENV_VARS.QUESTS_URL + "/quests",
     quote: REQUIRED_ENV_VARS.QUOTE_URL,
     mempool: {
       testnet: "https://mempool.space/testnet4/api",

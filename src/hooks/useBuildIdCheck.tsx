@@ -27,6 +27,6 @@ export const useBuildIdCheck = () => {
 
     setInterval(() => {
       void fetchBuildId();
-    }, 10000);
+    }, 30000);
   }, [currentBuildId, setBuildId]);
 };

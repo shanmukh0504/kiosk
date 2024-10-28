@@ -4,10 +4,10 @@ import axios from "axios";
 import { Partner } from "../constants/quests";
 
 type OneTimeBonus = {
-  "user_address": string,
-  amount: string,
-  partner: Partner,
-}
+  user_address: string;
+  amount: string;
+  partner: Partner;
+};
 
 type QuestData = {
   oneTimeBonus: OneTimeBonus[];
@@ -32,8 +32,7 @@ export const questStore = create<QuestState>((set) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const api = API();
-      const response = await axios.get<QuestData>(api.quests);
+      const response = await axios.get<QuestData>(API().leaderboard.quests);
 
       if (response.status === 200) {
         set({ questData: response.data });
