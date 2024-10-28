@@ -39,7 +39,7 @@ export const getDayDifference = (date: string) => {
 export const formatAmount = (
   amount: string | number,
   decimals: number,
-  toFixed = 4,
+  toFixed = 4
 ) => {
   const bigAmount = new BigNumber(amount);
   return bigAmount.dividedBy(10 ** decimals).toFixed(toFixed);

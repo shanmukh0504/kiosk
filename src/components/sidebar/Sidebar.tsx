@@ -17,7 +17,7 @@ export const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
         onClose();
       }
     },
-    [onClose],
+    [onClose]
   );
   const handleCloseIconClick = () => onClose();
 

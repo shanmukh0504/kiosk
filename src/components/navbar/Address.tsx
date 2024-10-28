@@ -45,7 +45,7 @@ export const Address = () => {
         const action = parseAction(
           order,
           sourceBlockNumber,
-          destinationBlockNumber,
+          destinationBlockNumber
         );
         return action === OrderActions.Redeem || action === OrderActions.Refund;
       });

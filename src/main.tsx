@@ -36,5 +36,5 @@ createRoot(document.getElementById("root")!).render(
         </WagmiProvider>
       </HelmetProvider>
     </BrowserRouter>
-  </StrictMode>,
+  </StrictMode>
 );

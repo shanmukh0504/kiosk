@@ -27,7 +27,7 @@ export const Swap = () => {
   useEffect(() => {
     if (!assets) return;
     const bitcoinAsset = Object.values(assets).find((asset) =>
-      isBitcoin(asset.chain),
+      isBitcoin(asset.chain)
     );
     if (bitcoinAsset) setAsset(IOType.input, bitcoinAsset);
   }, [assets]);

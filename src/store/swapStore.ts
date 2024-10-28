@@ -62,7 +62,7 @@ export const swapStore = create<SwapState>((set) => ({
         (state = {
           ...state,
           btcInitModal,
-        }),
+        })
     );
   },
   closeBTCInitModal: () => {

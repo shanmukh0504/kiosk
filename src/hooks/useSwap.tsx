@@ -19,7 +19,7 @@ export const useSwap = () => {
         inputAsset.chain,
         inputAsset.atomicSwapAddress,
         outputAsset.chain,
-        outputAsset.atomicSwapAddress,
+        outputAsset.atomicSwapAddress
       )
     ];
   const minAmount =

@@ -48,7 +48,7 @@ export const BTCInit = () => {
       if (!btcInitModal.order) return;
       const order = await orderBook.getOrder(
         btcInitModal.order.create_order.create_id,
-        true,
+        true
       );
       if (order.error) return;
       //initiate detected

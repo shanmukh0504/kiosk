@@ -85,7 +85,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({
                   )}
                 </div>
               </div>
-            ),
+            )
           )}
         </div>
         <div className="mb-2">

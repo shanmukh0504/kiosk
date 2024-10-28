@@ -40,7 +40,7 @@ export const CreateSwap = () => {
     if (!getQuote || !inputAsset || !outputAsset || !Number(amount)) return;
 
     const amountInDecimals = new BigNumber(amount).multipliedBy(
-      10 ** inputAsset.decimals,
+      10 ** inputAsset.decimals
     );
     const quote = await getQuote({
       fromAsset: inputAsset,
@@ -56,7 +56,7 @@ export const CreateSwap = () => {
     const [strategy, quoteAmount] = Object.entries(quote.val.quotes)[0];
     setStrategy(strategy);
     const quoteAmountInDecimals = new BigNumber(quoteAmount).div(
-      Math.pow(10, outputAsset.decimals),
+      Math.pow(10, outputAsset.decimals)
     );
 
     setAmount(IOType.output, quoteAmountInDecimals.toFixed(8));
@@ -68,7 +68,7 @@ export const CreateSwap = () => {
     if (!getQuote || !inputAsset || !outputAsset || !Number(amount)) return;
 
     const amountInDecimals = new BigNumber(amount).multipliedBy(
-      10 ** inputAsset.decimals,
+      10 ** inputAsset.decimals
     );
     const quote = await getQuote({
       fromAsset: inputAsset,
@@ -84,7 +84,7 @@ export const CreateSwap = () => {
     const [strategy, quoteAmount] = Object.entries(quote.val.quotes)[0];
     setStrategy(strategy);
     const quoteAmountInDecimals = new BigNumber(quoteAmount).div(
-      Math.pow(10, inputAsset.decimals),
+      Math.pow(10, inputAsset.decimals)
     );
 
     setAmount(IOType.input, quoteAmountInDecimals.toFixed(8));
@@ -152,22 +152,22 @@ export const CreateSwap = () => {
         assets[
           generateTokenKey(
             order.destination_swap.chain,
-            order.destination_swap.asset,
+            order.destination_swap.asset
           )
         ];
       if (!inputAsset || !outputAsset) return;
 
       const inputAmount = formatAmount(
         order.source_swap.amount,
-        inputAsset.decimals,
+        inputAsset.decimals
       );
       const outputAmount = formatAmount(
         order.destination_swap.amount,
-        outputAsset.decimals,
+        outputAsset.decimals
       );
 
       Toast.success(
-        `Successfully swapped ${inputAmount} ${inputAsset.symbol} to ${outputAmount} ${outputAsset.symbol}`,
+        `Successfully swapped ${inputAmount} ${inputAsset.symbol} to ${outputAmount} ${outputAsset.symbol}`
       );
     });
   }, [garden]);

@@ -41,13 +41,13 @@ export const AssetSelector = () => {
                 asset.chain,
                 asset.atomicSwapAddress,
                 comparisonToken.chain,
-                comparisonToken.atomicSwapAddress,
+                comparisonToken.atomicSwapAddress
               )
             : constructOrderPair(
                 comparisonToken.chain,
                 comparisonToken.atomicSwapAddress,
                 asset.chain,
-                asset.atomicSwapAddress,
+                asset.atomicSwapAddress
               );
         return strategies.val && strategies.val[op] !== undefined;
       });
@@ -62,7 +62,7 @@ export const AssetSelector = () => {
     const r = Object.values(assets).filter(
       (asset) =>
         asset.name?.toLowerCase().includes(input) ||
-        asset.symbol?.toLowerCase().includes(input),
+        asset.symbol?.toLowerCase().includes(input)
     );
     setInput(input);
     setResults(r);
