@@ -42,5 +42,8 @@ export const formatAmount = (
   toFixed = 4
 ) => {
   const bigAmount = new BigNumber(amount);
-  return bigAmount.dividedBy(10 ** decimals).toFixed(toFixed);
+  const temp = bigAmount
+    .dividedBy(10 ** decimals)
+    .toFixed(toFixed, BigNumber.ROUND_DOWN);
+  return Number(temp);
 };

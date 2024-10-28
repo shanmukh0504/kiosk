@@ -167,7 +167,7 @@ export const CreateSwap = () => {
       );
 
       Toast.success(
-        `Successfully swapped ${inputAmount} ${inputAsset.symbol} to ${outputAmount} ${outputAsset.symbol}`
+        `Swap success ${inputAmount} ${inputAsset.symbol} to ${outputAmount} ${outputAsset.symbol}`
       );
     });
   }, [garden]);

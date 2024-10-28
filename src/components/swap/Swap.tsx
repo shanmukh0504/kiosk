@@ -33,12 +33,11 @@ export const Swap = () => {
   }, [assets]);
 
   return (
-    <div className="w-full max-w-[424px] mx-auto">
+    <div className="flex flex-col gap-4 w-full max-w-[424px] mx-auto mt-20">
       <ToastContainer />
       <div
         className={`bg-white/50 rounded-[20px]
-        relative overflow-hidden
-        mt-20`}
+          relative overflow-hidden`}
       >
         {btcInitModal.isOpen ? <BTCInit /> : <CreateSwap />}
       </div>

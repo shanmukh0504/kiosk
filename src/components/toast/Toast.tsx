@@ -18,32 +18,34 @@ export const ToastContainer: FC = () => {
     }
   }, [isVisible, hideToast]);
 
-  if (!isVisible) return null;
-
   return (
-    <div
-      className={`shine flex justify-between items-center bg-white/25 backdrop-blur-[20px] rounded-2xl relative overflow-hidden px-4 py-2`}
-    >
-      <div className="flex items-center gap-2">
-        <div className="flex justify-center items-center w-5 h-5">
-          {type === "success" ? (
-            <CheckIcon />
-          ) : (
-            <span>
-              <CloseIcon />
-            </span>
+    <div className="h-10">
+      {isVisible && (
+        <div
+          className={`shine flex justify-between items-center bg-white/25 backdrop-blur-[20px] rounded-2xl relative overflow-hidden px-4 py-2`}
+        >
+          <div className="flex items-center gap-2">
+            <div className="flex justify-center items-center w-5 h-5">
+              {type === "success" ? (
+                <CheckIcon />
+              ) : (
+                <span>
+                  <CloseIcon />
+                </span>
+              )}
+            </div>
+            <Typography size="h3" weight="medium">
+              {content}
+            </Typography>
+          </div>
+          {link && (
+            <Link to={link} target="_blank">
+              <div className="flex justify-center items-center w-5 h-5">
+                <ArrowNorthEastIcon />
+              </div>
+            </Link>
           )}
         </div>
-        <Typography size="h3" weight="medium">
-          {content}
-        </Typography>
-      </div>
-      {link && (
-        <Link to={link} target="_blank">
-          <div className="flex justify-center items-center w-5 h-5">
-            <ArrowNorthEastIcon />
-          </div>
-        </Link>
       )}
     </div>
   );
