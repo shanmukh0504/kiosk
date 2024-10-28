@@ -1,6 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-const defaultTheme = require("tailwindcss/defaultTheme");
-const { createThemes } = require("tw-colors");
+import { createThemes } from "tw-colors";
 
 const cubicInOut = "cubic-bezier(0.66, 0.00, 0.34, 1.00)";
 
@@ -14,6 +13,15 @@ export default {
         "mid-grey": "#817A90",
         "light-grey": "#E3E0EB",
         "off-white": "#F4F0FC",
+      },
+      screens: {
+        xs: "360px",
+        sm: "600px",
+        md: "900px",
+        lg: "1200px",
+        xl: "1440px",
+        "2xl": "1536px",
+        // => @media (min-width: 1120px) { ... }
       },
       transitionTimingFunction: {
         "cubic-in-out": cubicInOut,
