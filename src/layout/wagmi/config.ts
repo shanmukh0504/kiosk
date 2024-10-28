@@ -1,11 +1,13 @@
 import { http, createConfig } from "wagmi";
 import {
   arbitrum,
+  arbitrumSepolia,
   avalanche,
   bsc,
   mainnet,
   optimism,
   polygon,
+  sepolia,
 } from "wagmi/chains";
 import { injected, metaMask, safe, walletConnect } from "wagmi/connectors";
 import { SupportedChains } from "../../constants/constants";
@@ -24,5 +26,7 @@ export const config = createConfig({
     [optimism.id]: http(),
     [bsc.id]: http(),
     [avalanche.id]: http(),
+    [arbitrumSepolia.id]: http(),
+    [sepolia.id]: http(),
   },
 });
