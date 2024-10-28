@@ -1,3 +1,4 @@
+import BigNumber from "bignumber.js";
 import { INTERNAL_ROUTES, THEMES } from "../constants/constants";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { Swap } from "@gardenfi/orderbook";
@@ -33,4 +34,13 @@ export const getDayDifference = (date: string) => {
   if (minuteDifference > 0)
     return `${minuteDifference} minute${minuteDifference > 1 ? "s" : ""} ago`;
   return "just now";
+};
+
+export const formatAmount = (
+  amount: string | number,
+  decimals: number,
+  toFixed = 4,
+) => {
+  const bigAmount = new BigNumber(amount);
+  return bigAmount.dividedBy(10 ** decimals).toFixed(toFixed);
 };

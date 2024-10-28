@@ -10,11 +10,14 @@ import BigNumber from "bignumber.js";
 import { useEffect, useState } from "react";
 import { isBitcoin } from "@gardenfi/orderbook";
 import { Toast } from "../toast/Toast";
+// import { constructOrderPair } from "@gardenfi/core";
+import { generateTokenKey } from "../../utils/generateTokenKey";
+import { formatAmount } from "../../utils/utils";
 
 export const CreateSwap = () => {
   const [strategy, setStrategy] = useState<string>();
   const [isSwapping, setIsSwapping] = useState(false);
-  const { isAssetSelectorOpen, assets } = assetInfoStore();
+  const { isAssetSelectorOpen, assets, strategies } = assetInfoStore();
   const {
     outputAmount,
     inputAmount,
@@ -26,6 +29,31 @@ export const CreateSwap = () => {
     setShowConfirmSwap,
   } = swapStore();
   const { swap, getQuote, garden } = useGarden();
+
+  // const swapLimits =
+  //   inputAsset &&
+  //   outputAsset &&
+  //   strategies.val &&
+  //   strategies.val[
+  //     constructOrderPair(
+  //       inputAsset.chain,
+  //       inputAsset.atomicSwapAddress,
+  //       outputAsset.chain,
+  //       outputAsset.atomicSwapAddress,
+  //     )
+  //   ];
+  // const minAmount =
+  //   swapLimits &&
+  //   inputAsset &&
+  //   new BigNumber(swapLimits.minAmount)
+  //     .dividedBy(10 ** inputAsset.decimals)
+  //     .toNumber();
+  // const maxAmount =
+  //   swapLimits &&
+  //   inputAsset &&
+  //   new BigNumber(swapLimits.maxAmount)
+  //     .dividedBy(10 ** inputAsset.decimals)
+  //     .toNumber();
 
   const _validSwap = inputAsset && outputAmount && inputAmount && outputAmount;
   const isBitcoinSwap =
@@ -149,19 +177,26 @@ export const CreateSwap = () => {
     garden.on("success", (order) => {
       if (!assets) return;
       const inputAsset =
-        assets[`${order.source_swap.chain}_${order.source_swap.asset}`];
+        assets[
+          generateTokenKey(order.source_swap.chain, order.source_swap.asset)
+        ];
       const outputAsset =
         assets[
-          `${order.destination_swap.chain}_${order.destination_swap.asset}`
+          generateTokenKey(
+            order.destination_swap.chain,
+            order.destination_swap.asset,
+          )
         ];
       if (!inputAsset || !outputAsset) return;
 
-      const inputAmount = new BigNumber(order.source_swap.amount)
-        .dividedBy(10 ** inputAsset.decimals)
-        .toFixed(4);
-      const outputAmount = new BigNumber(order.destination_swap.amount)
-        .dividedBy(10 ** outputAsset.decimals)
-        .toFixed(4);
+      const inputAmount = formatAmount(
+        order.source_swap.amount,
+        inputAsset.decimals,
+      );
+      const outputAmount = formatAmount(
+        order.destination_swap.amount,
+        outputAsset.decimals,
+      );
 
       Toast.success(
         `Successfully swapped ${inputAmount} ${inputAsset.symbol} to ${outputAmount} ${outputAsset.symbol}`,

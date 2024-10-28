@@ -2,16 +2,7 @@ import { ArrowRightIcon, Typography } from "@gardenfi/garden-book";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { FC } from "react";
 import { assetInfoStore } from "../store/assetInfoStore";
-import BigNumber from "bignumber.js";
-
-const formatAmount = (
-  amount: string | number,
-  decimals: number,
-  toFixed = 4,
-) => {
-  const bigAmount = new BigNumber(amount);
-  return bigAmount.dividedBy(10 ** decimals).toFixed(toFixed);
-};
+import { formatAmount } from "../utils/utils";
 
 type SwapInfoProps = {
   sendAsset: Asset;

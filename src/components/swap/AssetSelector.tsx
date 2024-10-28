@@ -15,7 +15,7 @@ import { constructOrderPair } from "@gardenfi/core";
 
 export const AssetSelector = () => {
   const [chain, setChain] = useState<ChainData>();
-  const [input, setInput] = useState<string>();
+  const [input, setInput] = useState<string>("");
   const [results, setResults] = useState<Asset[]>();
 
   const {
