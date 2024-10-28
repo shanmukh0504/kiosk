@@ -16,7 +16,7 @@ export const getCurrentTheme = () => {
 
 export const getAssetFromSwap = (swap: Swap) => {
   const { assets } = assetInfoStore();
-  return assets && assets[`${swap.chain}_${swap.asset}`];
+  return assets && assets[`${swap.chain}_${swap.asset.toLowerCase()}`];
 };
 
 export const getDayDifference = (date: string) => {
