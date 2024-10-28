@@ -51,7 +51,7 @@ export const Address = () => {
       });
 
       if (executableOrders && executableOrders.length > 0)
-        setOpenModal(modalNames.transactionsSideBar);
+        setOpenModal(modalNames.initializeSM);
     });
   }, [pendingOrders]);
 

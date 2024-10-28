@@ -299,6 +299,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@catalogfi/wallets@npm:^0.2.51":
+  version: 0.2.51
+  resolution: "@catalogfi/wallets@npm:0.2.51"
+  dependencies:
+    "@catalogfi/extension": "npm:^0.1.1"
+    "@catalogfi/utils": "npm:^0.1.10"
+    "@noble/hashes": "npm:^1.4.0"
+    bip32: "npm:^4.0.0"
+    bip39: "npm:^3.1.0"
+    bitcoinjs-lib: "npm:^6.1.5"
+    bufferutil: "npm:^4.0.8"
+    dotenv: "npm:^16.3.1"
+    ecpair: "npm:^2.1.0"
+    tiny-secp256k1: "npm:^2.2.3"
+    typechain: "npm:^8.3.2"
+    utf-8-validate: "npm:^6.0.3"
+    uuid: "npm:^9.0.1"
+    viem: "npm:^2.20.1"
+    yup: "npm:^1.4.0"
+  checksum: 10c0/d7ec8e68b87551802e539837a3e169ea4623671b96ecaa5d78639a127ab3be57d2b988264fbf59c14aed9e3048efaa8a659ae27bd1ab8b1018fee6586ffdf4ac
+  languageName: node
+  linkType: hard
+
 "@coinbase/wallet-sdk@npm:4.1.0":
   version: 4.1.0
   resolution: "@coinbase/wallet-sdk@npm:4.1.0"
@@ -642,12 +665,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/core@npm:^0.2.0-beta.54":
-  version: 0.2.0-beta.54
-  resolution: "@gardenfi/core@npm:0.2.0-beta.54"
+"@gardenfi/core@npm:^0.2.0-beta.55":
+  version: 0.2.0-beta.55
+  resolution: "@gardenfi/core@npm:0.2.0-beta.55"
   dependencies:
     "@catalogfi/utils": "npm:^0.1.6"
-    "@catalogfi/wallets": "npm:^0.2.50"
+    "@catalogfi/wallets": "npm:^0.2.51"
     "@gardenfi/orderbook": "npm:^0.2.0-beta.14"
     "@gardenfi/utils": "npm:^0.0.1-beta.18"
     bignumber.js: "npm:^9.1.2"
@@ -655,7 +678,7 @@ __metadata:
     tiny-secp256k1: "npm:^2.2.3"
     varuint-bitcoin: "npm:^1.1.2"
     viem: "npm:^2.21.15"
-  checksum: 10c0/feedfc49305231e640962b5e9d76fa3e5f22e2bdfe8cc61b7d00146c83a97b5e782ebe0b61cac2eb2d56714040cb2eee3545fa2edb87104be68a73b038e27ef0
+  checksum: 10c0/4ce5046210a0393d554340f698b1c8230d0764468c38596ae6509cc8489ce22723278546e61f4979d0000e9d1be2c47ef5669439f3b99e91712c06480c800df6
   languageName: node
   linkType: hard
 
@@ -691,19 +714,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/react-hooks@npm:^0.0.1-beta.75":
-  version: 0.0.1-beta.75
-  resolution: "@gardenfi/react-hooks@npm:0.0.1-beta.75"
+"@gardenfi/react-hooks@npm:^0.0.1-beta.76":
+  version: 0.0.1-beta.76
+  resolution: "@gardenfi/react-hooks@npm:0.0.1-beta.76"
   dependencies:
     "@catalogfi/utils": "npm:^0.1.6"
-    "@catalogfi/wallets": "npm:^0.2.50"
-    "@gardenfi/core": "npm:^0.2.0-beta.54"
+    "@catalogfi/wallets": "npm:^0.2.51"
+    "@gardenfi/core": "npm:^0.2.0-beta.55"
     "@gardenfi/orderbook": "npm:^0.2.0-beta.14"
     "@gardenfi/utils": "npm:^0.0.1-beta.18"
     react: "npm:^18.3.1"
     viem: "npm:^2.21.15"
     wagmi: "npm:^2.12.16"
-  checksum: 10c0/fc86a43412dc9bdca7f3ebf56b31490389717bf5466b8e65dc5cabb7dd9f217b621db9da06e0d6acf5c493afc570209b88496e11768a3287321fa642df48e0d1
+  checksum: 10c0/e291b22f45b0d9c1a02a038a807a2ef976dc58f03a8cee066c353e2d4fc6bac27aa5aa22ba24971a463a1f94263fdddfc3b715c8c02178f8d0695165009372cf
   languageName: node
   linkType: hard
 
@@ -5390,12 +5413,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "garden-kiosk@workspace:."
   dependencies:
-    "@catalogfi/wallets": "npm:^0.2.50"
     "@eslint/js": "npm:^9.8.0"
     "@gardenfi/core": "npm:^0.2.0-beta.49"
     "@gardenfi/garden-book": "npm:^0.1.36"
     "@gardenfi/orderbook": "npm:^0.2.0-beta.14"
-    "@gardenfi/react-hooks": "npm:^0.0.1-beta.75"
+    "@gardenfi/react-hooks": "npm:^0.0.1-beta.76"
     "@gardenfi/utils": "npm:^0.0.1-beta.11"
     "@tanstack/react-query": "npm:^5.51.23"
     "@types/node": "npm:^22.8.1"

@@ -13,47 +13,15 @@ import { Toast } from "../toast/Toast";
 // import { constructOrderPair } from "@gardenfi/core";
 import { generateTokenKey } from "../../utils/generateTokenKey";
 import { formatAmount } from "../../utils/utils";
+import { useSwap } from "../../hooks/useSwap";
 
 export const CreateSwap = () => {
   const [strategy, setStrategy] = useState<string>();
   const [isSwapping, setIsSwapping] = useState(false);
   const { isAssetSelectorOpen, assets } = assetInfoStore();
-  const {
-    outputAmount,
-    inputAmount,
-    btcAddress,
-    inputAsset,
-    setAmount,
-    swapAssets,
-    outputAsset,
-    setShowConfirmSwap,
-  } = swapStore();
+  const { btcAddress, setAmount, swapAssets, setShowConfirmSwap } = swapStore();
+  const { outputAmount, inputAmount, inputAsset, outputAsset } = useSwap();
   const { swap, getQuote, garden } = useGarden();
-
-  // const swapLimits =
-  //   inputAsset &&
-  //   outputAsset &&
-  //   strategies.val &&
-  //   strategies.val[
-  //     constructOrderPair(
-  //       inputAsset.chain,
-  //       inputAsset.atomicSwapAddress,
-  //       outputAsset.chain,
-  //       outputAsset.atomicSwapAddress,
-  //     )
-  //   ];
-  // const minAmount =
-  //   swapLimits &&
-  //   inputAsset &&
-  //   new BigNumber(swapLimits.minAmount)
-  //     .dividedBy(10 ** inputAsset.decimals)
-  //     .toNumber();
-  // const maxAmount =
-  //   swapLimits &&
-  //   inputAsset &&
-  //   new BigNumber(swapLimits.maxAmount)
-  //     .dividedBy(10 ** inputAsset.decimals)
-  //     .toNumber();
 
   const _validSwap = inputAsset && outputAmount && inputAmount && outputAmount;
   const isBitcoinSwap =

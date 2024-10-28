@@ -24,7 +24,7 @@ export const API = () => {
     quote: REQUIRED_ENV_VARS.QUOTE_URL,
     mempool: {
       testnet: "https://mempool.space/testnet4/api",
-      mainnet: "https://mempool.space",
+      mainnet: "https://mempool.space/api",
     },
   };
 };
