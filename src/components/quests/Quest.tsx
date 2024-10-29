@@ -4,14 +4,14 @@ import {
   OpenInFullIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { PartnerChip } from "./PartnerChip";
 
 type QuestProps = {
   partner: string;
   description: string;
-  logo: React.ReactNode;
+  logo: ReactNode;
   amount: number;
   link?: string;
   logoLink: string;

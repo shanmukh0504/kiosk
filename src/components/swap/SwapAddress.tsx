@@ -1,4 +1,4 @@
-import { useId, useRef } from "react";
+import { useId, useRef, ChangeEvent } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { Tooltip } from "../../common/Tooltip";
 import { swapStore } from "../../store/swapStore";
@@ -9,7 +9,7 @@ export const SwapAddress = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const tooltipId = useId();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value;
     if (!/^[a-zA-Z0-9]$/.test(input.at(-1)!)) {
       input = input.slice(0, -1);

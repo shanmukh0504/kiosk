@@ -51,7 +51,7 @@ export const Transactions: FC<TransactionsProps> = ({ isSidebarOpen }) => {
     const intervalId = setInterval(fetchOrdersAndBlockNumbers, 10000);
 
     return () => clearInterval(intervalId);
-  }, [orderBook, isSidebarOpen]);
+  }, [orderBook, isSidebarOpen, fetchAndSetOrders, fetchAndSetBlockNumbers]);
 
   return (
     <>

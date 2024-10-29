@@ -1,8 +1,8 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { Drawer } from "vaul";
 
 type BottomSheetProps = {
-  children: React.ReactNode;
+  children: ReactNode;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };

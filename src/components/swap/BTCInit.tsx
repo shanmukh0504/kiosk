@@ -5,7 +5,7 @@ import {
   CopyIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { SwapInfo } from "../../common/SwapInfo";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { swapStore } from "../../store/swapStore";
@@ -39,7 +39,7 @@ export const BTCInit = () => {
     }, 1500);
   };
 
-  const goBack = () => closeBTCInitModal();
+  const goBack = useCallback(() => closeBTCInitModal(), [closeBTCInitModal]);
 
   useEffect(() => {
     if (!btcInitModal.order || !orderBook) return;
@@ -63,7 +63,7 @@ export const BTCInit = () => {
     const intervalId = setInterval(fetchOrder, 5000);
 
     return () => clearInterval(intervalId);
-  }, [btcInitModal.order, orderBook]);
+  }, [btcInitModal.order, goBack, orderBook]);
 
   return btcInitModal.order ? (
     <div className="flex flex-col gap-4 p-3">

@@ -103,7 +103,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
         }
       }
       set({ assets, chains });
-    } catch (error) {
+    } catch {
       set({ error: "Failed to fetch assets data" });
     } finally {
       set({ isLoading: false });
@@ -115,7 +115,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       const res = await quote.getStrategies();
       if (res.error) return;
       set({ strategies: { val: res.val, isLoading: false, error: null } });
-    } catch (error) {
+    } catch {
       set({
         strategies: {
           ...get().strategies,

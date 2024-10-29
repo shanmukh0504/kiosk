@@ -1,7 +1,7 @@
 import { Connector } from "wagmi";
 import { GetConnectorsReturnType } from "wagmi/actions";
 
-type GardenSupportedEVMWallets = {
+type GardenSupportedEVMWalletsType = {
   id: string;
   name: string;
   logo: string;
@@ -10,7 +10,7 @@ type GardenSupportedEVMWallets = {
 
 export const GardenSupportedEVMWallets: Record<
   string,
-  GardenSupportedEVMWallets
+  GardenSupportedEVMWalletsType
 > = {
   metamask: {
     id: "metaMaskSDK",
@@ -54,13 +54,13 @@ export const GardenSupportedEVMWallets: Record<
 export const getAvailableWallets = (connectors: GetConnectorsReturnType) => {
   const available: Record<
     string,
-    GardenSupportedEVMWallets & {
+    GardenSupportedEVMWalletsType & {
       connector: Connector | undefined;
     }
   > = {};
   const unavailable: Record<
     string,
-    GardenSupportedEVMWallets & {
+    GardenSupportedEVMWalletsType & {
       connector: Connector | undefined;
     }
   > = {};

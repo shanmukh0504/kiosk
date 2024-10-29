@@ -18,6 +18,7 @@ const getRecentGitCommitHash = () => {
 };
 
 const generateBuildIdFile = () => {
+  const __dirname = path.dirname(new URL(import.meta.url).pathname);
   const buildIdPath = path.resolve(__dirname, "public/build-id.json");
   fs.writeFileSync(buildIdPath, JSON.stringify({ buildId }, null, 2));
 };
@@ -40,7 +41,10 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: path.resolve(__dirname, "build-id.json"), // Use path.resolve to resolve the file path
+          src: path.resolve(
+            path.dirname(new URL(import.meta.url).pathname),
+            "build-id.json"
+          ),
           dest: "public",
         },
       ],
@@ -56,7 +60,10 @@ export default defineConfig({
         // because vite dev server doesn't serve files from public directory as soon as they are generated.
         server.middlewares.use((req, res, next) => {
           if (req.url === "/build-id.json") {
-            const buildIdPath = path.resolve(__dirname, "public/build-id.json");
+            const buildIdPath = path.resolve(
+              path.dirname(new URL(import.meta.url).pathname),
+              "public/build-id.json"
+            );
             fs.readFile(buildIdPath, (err, data) => {
               if (err) {
                 res.statusCode = 404;

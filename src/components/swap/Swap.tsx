@@ -17,12 +17,12 @@ export const Swap = () => {
   //TODO: add a loader until assets, chains, and strategies are fetched
   useEffect(() => {
     fetchAndSetAssetsAndChains();
-  }, []);
+  }, [fetchAndSetAssetsAndChains]);
 
   useEffect(() => {
     if (!quote) return;
     fetchAndSetStrategies(quote);
-  }, [quote]);
+  }, [fetchAndSetStrategies, quote]);
 
   useEffect(() => {
     if (!assets) return;
@@ -30,7 +30,7 @@ export const Swap = () => {
       isBitcoin(asset.chain)
     );
     if (bitcoinAsset) setAsset(IOType.input, bitcoinAsset);
-  }, [assets]);
+  }, [assets, setAsset]);
 
   return (
     <div className="flex flex-col gap-4 w-full max-w-[424px] mx-auto mt-20">

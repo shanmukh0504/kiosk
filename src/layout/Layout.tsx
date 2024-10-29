@@ -1,5 +1,5 @@
 import { Footer } from "@gardenfi/garden-book";
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { Orb } from "../common/Orb";
 import { getCurrentTheme } from "../utils/utils";
 import { Navbar } from "../components/navbar/Navbar";
@@ -7,7 +7,7 @@ import { Modal } from "../components/modal/Modal";
 import { Notification } from "../common/Notification";
 
 type LayoutProps = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export const Layout: FC<LayoutProps> = ({ children }) => {

@@ -1,9 +1,9 @@
 import { Chip, Typography } from "@gardenfi/garden-book";
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 
 type PartnerChipProps = {
   name: string;
-  logo: React.ReactNode;
+  logo: ReactNode;
 };
 
 export const PartnerChip: FC<PartnerChipProps> = ({ name, logo }) => {

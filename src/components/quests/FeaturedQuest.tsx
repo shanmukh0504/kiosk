@@ -1,11 +1,11 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { Quest } from "./Quest";
 
 type FeaturedQuestProps = {
   image: string;
   partner: string;
   description: string;
-  logo: React.ReactNode;
+  logo: ReactNode;
   amount: number;
   link?: string;
   logoLink: string;

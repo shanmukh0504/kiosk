@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { GardenLogo, GMXLogo } from "@gardenfi/garden-book";
 
 export enum Partner {
@@ -16,7 +17,7 @@ export enum Partner {
 export type QuestInfo = {
   name: string;
   description: string;
-  logo: React.ReactNode;
+  logo: ReactNode;
   amount: number;
   partner: Partner;
   link?: string;

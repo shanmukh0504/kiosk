@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import React, { FC, useState } from "react";
 // import { SwapFeesComparison } from "./SwapFeesComparison";
 import { Typography } from "@gardenfi/garden-book";
 
@@ -7,7 +7,7 @@ type SwapFeesProps = {
 };
 
 export const SwapFees: FC<SwapFeesProps> = ({ setIsPopupOpen }) => {
-  const [_, setShowComparison] = useState(false);
+  const [, setShowComparison] = useState(false);
 
   const handleShowComparison = (visible: boolean) => {
     setShowComparison(visible);

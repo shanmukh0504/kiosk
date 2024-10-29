@@ -6,7 +6,7 @@ import {
   StarIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ChangeEvent } from "react";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { swapStore } from "../../store/swapStore";
@@ -53,9 +53,9 @@ export const AssetSelector = () => {
       });
       setResults(supportedTokens);
     }
-  }, [assets, strategies.val, isAssetSelectorOpen.type]);
+  }, [assets, strategies.val, isAssetSelectorOpen.type, comparisonToken]);
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     if (!assets) return;
 
     const input = e.target.value;
