@@ -18,7 +18,8 @@ import { useSwap } from "../../hooks/useSwap";
 export const CreateSwap = () => {
   const [isSwapping, setIsSwapping] = useState(false);
   const { isAssetSelectorOpen, assets } = assetInfoStore();
-  const { btcAddress, swapAssets, setShowConfirmSwap } = swapStore();
+  const { btcAddress, swapAssets, setShowConfirmSwap, clearAmounts } =
+    swapStore();
   const {
     outputAmount,
     inputAmount,
@@ -70,6 +71,7 @@ export const CreateSwap = () => {
 
     //TODO: add a notification here and clear all amounts and addresses
     console.log("orderCreated ✅", res.val);
+    clearAmounts();
 
     if (isBitcoin(res.val.source_swap.chain)) {
       setShowConfirmSwap({
