@@ -8,11 +8,9 @@ import { AssetSelector } from "./AssetSelector";
 import { useGarden } from "@gardenfi/react-hooks";
 import BigNumber from "bignumber.js";
 import { useEffect, useState } from "react";
-import { isBitcoin } from "@gardenfi/orderbook";
+import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
 import { Toast } from "../toast/Toast";
-// import { constructOrderPair } from "@gardenfi/core";
-import { generateTokenKey } from "../../utils/generateTokenKey";
-import { formatAmount } from "../../utils/utils";
+import { formatAmount, getAssetFromSwap } from "../../utils/utils";
 import { useSwap } from "../../hooks/useSwap";
 
 export const CreateSwap = () => {
@@ -83,25 +81,16 @@ export const CreateSwap = () => {
 
   useEffect(() => {
     if (!garden) return;
-    garden.on("error", (order, error) => {
+
+    const handleErrorLog = (order: MatchedOrder, error: string) => {
       console.error("garden error", order.create_order.create_id, error);
-    });
-    garden.on("log", (orderId, log) => {
+    };
+    const handleLog = (orderId: string, log: string) => {
       console.log("garden log", orderId, log);
-    });
-    garden.on("success", (order) => {
-      if (!assets) return;
-      const inputAsset =
-        assets[
-          generateTokenKey(order.source_swap.chain, order.source_swap.asset)
-        ];
-      const outputAsset =
-        assets[
-          generateTokenKey(
-            order.destination_swap.chain,
-            order.destination_swap.asset
-          )
-        ];
+    };
+    const handleSuccess = (order: MatchedOrder) => {
+      const inputAsset = getAssetFromSwap(order.source_swap);
+      const outputAsset = getAssetFromSwap(order.destination_swap);
       if (!inputAsset || !outputAsset) return;
 
       const inputAmount = formatAmount(
@@ -116,8 +105,17 @@ export const CreateSwap = () => {
       Toast.success(
         `Swap success ${inputAmount} ${inputAsset.symbol} to ${outputAmount} ${outputAsset.symbol}`
       );
-    });
-    //TODO: add cleanup function here
+    };
+
+    garden.on("error", handleErrorLog);
+    garden.on("log", handleLog);
+    garden.on("success", handleSuccess);
+
+    return () => {
+      garden.off("error", handleErrorLog);
+      garden.off("log", handleLog);
+      garden.off("success", handleSuccess);
+    };
   }, [garden, assets]);
 
   return (
