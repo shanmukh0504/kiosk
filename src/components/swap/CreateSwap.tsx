@@ -16,79 +16,24 @@ import { formatAmount } from "../../utils/utils";
 import { useSwap } from "../../hooks/useSwap";
 
 export const CreateSwap = () => {
-  const [strategy, setStrategy] = useState<string>();
   const [isSwapping, setIsSwapping] = useState(false);
   const { isAssetSelectorOpen, assets } = assetInfoStore();
-  const { btcAddress, setAmount, swapAssets, setShowConfirmSwap } = swapStore();
-  const { outputAmount, inputAmount, inputAsset, outputAsset } = useSwap();
-  const { swap, getQuote, garden } = useGarden();
-
-  const _validSwap = inputAsset && outputAmount && inputAmount && outputAmount;
-  const isBitcoinSwap =
-    inputAsset &&
-    outputAsset &&
-    (isBitcoin(inputAsset.chain) || isBitcoin(outputAsset.chain));
-  const validSwap = isBitcoinSwap ? _validSwap && btcAddress : _validSwap;
-
-  const handleInputAmountChange = async (amount: string) => {
-    setAmount(IOType.input, amount);
-    if (!amount) {
-      setAmount(IOType.output, "0");
-      return;
-    }
-
-    if (!getQuote || !inputAsset || !outputAsset || !Number(amount)) return;
-
-    const amountInDecimals = new BigNumber(amount).multipliedBy(
-      10 ** inputAsset.decimals
-    );
-    const quote = await getQuote({
-      fromAsset: inputAsset,
-      toAsset: outputAsset,
-      amount: amountInDecimals.toNumber(),
-      isExactOut: false,
-    });
-    if (quote.error) {
-      setAmount(IOType.output, "0");
-      return;
-    }
-
-    const [strategy, quoteAmount] = Object.entries(quote.val.quotes)[0];
-    setStrategy(strategy);
-    const quoteAmountInDecimals = new BigNumber(quoteAmount).div(
-      Math.pow(10, outputAsset.decimals)
-    );
-
-    setAmount(IOType.output, quoteAmountInDecimals.toFixed(8));
-  };
-
-  const handleOutputAmountChange = async (amount: string) => {
-    setAmount(IOType.output, amount);
-
-    if (!getQuote || !inputAsset || !outputAsset || !Number(amount)) return;
-
-    const amountInDecimals = new BigNumber(amount).multipliedBy(
-      10 ** inputAsset.decimals
-    );
-    const quote = await getQuote({
-      fromAsset: inputAsset,
-      toAsset: outputAsset,
-      amount: amountInDecimals.toNumber(),
-      isExactOut: true,
-    });
-    if (quote.error) {
-      setAmount(IOType.input, "0");
-      return;
-    }
-
-    const [strategy, quoteAmount] = Object.entries(quote.val.quotes)[0];
-    setStrategy(strategy);
-    const quoteAmountInDecimals = new BigNumber(quoteAmount).div(
-      Math.pow(10, inputAsset.decimals)
-    );
-
-    setAmount(IOType.input, quoteAmountInDecimals.toFixed(8));
-  };
+  const { btcAddress, swapAssets, setShowConfirmSwap } = swapStore();
+  const {
+    outputAmount,
+    inputAmount,
+    inputAsset,
+    outputAsset,
+    handleInputAmountChange,
+    handleOutputAmountChange,
+    loading,
+    strategy,
+    error,
+    tokenPrices,
+    validSwap,
+    isBitcoinSwap,
+  } = useSwap();
+  const { swap, garden } = useGarden();
 
   const handleSwapClick = async () => {
     if (!validSwap || !swap || !inputAsset || !outputAsset || !strategy) return;
@@ -170,7 +115,8 @@ export const CreateSwap = () => {
         `Swap success ${inputAmount} ${inputAsset.symbol} to ${outputAmount} ${outputAsset.symbol}`
       );
     });
-  }, [garden]);
+    //TODO: add cleanup function here
+  }, [garden, assets]);
 
   return (
     <div
@@ -188,9 +134,11 @@ export const CreateSwap = () => {
             amount={inputAmount}
             asset={inputAsset}
             onChange={handleInputAmountChange}
+            loading={loading.input}
+            price={tokenPrices.input}
+            error={error}
           />
           <div
-            //TODO: fix the y position of the ExchangeIcon
             className="absolute bg-white border border-light-grey rounded-full
             -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 transition-transform hover:scale-[1.1]
             p-1.5 cursor-pointer"
@@ -203,6 +151,8 @@ export const CreateSwap = () => {
             amount={outputAmount}
             asset={outputAsset}
             onChange={handleOutputAmountChange}
+            loading={loading.output}
+            price={tokenPrices.output}
           />
         </div>
         <SwapAddress />

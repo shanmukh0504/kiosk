@@ -9,26 +9,22 @@ import { useCallback, useEffect, useState } from "react";
 import { SwapInfo } from "../../common/SwapInfo";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { swapStore } from "../../store/swapStore";
-import { isBitcoin } from "@gardenfi/orderbook";
 import { useGarden } from "@gardenfi/react-hooks";
+import { getAssetFromSwap } from "../../utils/utils";
 
 export const BTCInit = () => {
   const [copied, setCopied] = useState(false);
   const [isInitiatedDetected, setIsInitiatedDetected] = useState(false);
-  const {
-    inputAsset,
-    outputAsset,
-    inputAmount,
-    outputAmount,
-    btcAddress,
-    btcInitModal,
-    closeBTCInitModal,
-  } = swapStore();
-  const isRecoveryAddress = inputAsset && isBitcoin(inputAsset?.chain);
-  const depositAddress = btcInitModal.order
-    ? btcInitModal.order.source_swap.swap_id
-    : "";
+  const { btcInitModal, closeBTCInitModal } = swapStore();
+  const { order } = btcInitModal;
+
+  const depositAddress = order ? order.source_swap.swap_id : "";
   const { orderBook } = useGarden();
+
+  const sendAsset = order && getAssetFromSwap(order.source_swap);
+  const receiveAsset = order && getAssetFromSwap(order.destination_swap);
+  const btcAddress =
+    order && order.create_order.additional_data.bitcoin_optional_recipient;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(depositAddress);
@@ -42,19 +38,19 @@ export const BTCInit = () => {
   const goBack = useCallback(() => closeBTCInitModal(), [closeBTCInitModal]);
 
   useEffect(() => {
-    if (!btcInitModal.order || !orderBook) return;
+    if (!order || !orderBook) return;
 
     const fetchOrder = async () => {
-      if (!btcInitModal.order) return;
-      const order = await orderBook.getOrder(
-        btcInitModal.order.create_order.create_id,
+      if (!order) return;
+      const _order = await orderBook.getOrder(
+        order.create_order.create_id,
         true
       );
-      if (order.error) return;
+      if (_order.error) return;
       //initiate detected
-      if (order.val.source_swap.initiate_tx_hash) {
+      if (_order.val.source_swap.initiate_tx_hash) {
         //initiated
-        if (Number(order.val.source_swap.initiate_block_number)) goBack();
+        if (Number(_order.val.source_swap.initiate_block_number)) goBack();
         setIsInitiatedDetected(true);
       }
     };
@@ -63,20 +59,20 @@ export const BTCInit = () => {
     const intervalId = setInterval(fetchOrder, 5000);
 
     return () => clearInterval(intervalId);
-  }, [btcInitModal.order, goBack, orderBook]);
+  }, [order, goBack, orderBook]);
 
-  return btcInitModal.order ? (
+  return order ? (
     <div className="flex flex-col gap-4 p-3">
       <div className="flex flex-col gap-2 bg-white/50 rounded-2xl p-4">
         <Typography size="h5" weight="bold">
           Transaction
         </Typography>
-        {inputAsset && outputAsset && (
+        {sendAsset && receiveAsset && (
           <SwapInfo
-            sendAsset={inputAsset}
-            receiveAsset={outputAsset}
-            sendAmount={inputAmount}
-            receiveAmount={outputAmount}
+            sendAsset={sendAsset}
+            receiveAsset={receiveAsset}
+            sendAmount={order.source_swap.amount}
+            receiveAmount={order.destination_swap.amount}
           />
         )}
       </div>
@@ -118,11 +114,13 @@ export const BTCInit = () => {
         </div>
         <div className="flex justify-between">
           <Typography size="h4" weight="medium">
-            {isRecoveryAddress ? "Recovery" : "Receive"} address
+            Recovery address
           </Typography>
-          <Typography size="h4" weight="medium">
-            {getTrimmedAddress(btcAddress)}
-          </Typography>
+          {btcAddress && (
+            <Typography size="h4" weight="medium">
+              {getTrimmedAddress(btcAddress)}
+            </Typography>
+          )}
         </div>
       </div>
       <div className="flex gap-2">
