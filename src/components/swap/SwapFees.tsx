@@ -1,28 +1,34 @@
-import React, { FC, useState } from "react";
-// import { SwapFeesComparison } from "./SwapFeesComparison";
+import { useState, FC, useMemo } from "react";
+import { SwapFeesComparison } from "./SwapFeesComparison";
 import { Typography } from "@gardenfi/garden-book";
+import { TokenPrices } from "../../hooks/useSwap";
 
 type SwapFeesProps = {
-  setIsPopupOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  tokenPrices: TokenPrices;
 };
 
-export const SwapFees: FC<SwapFeesProps> = ({ setIsPopupOpen }) => {
-  const [, setShowComparison] = useState(false);
+export const SwapFees: FC<SwapFeesProps> = ({ tokenPrices }) => {
+  const [showComparison, setIsShowComparison] = useState({
+    isOpen: false,
+    price: 0,
+  });
 
-  const handleShowComparison = (visible: boolean) => {
-    setShowComparison(visible);
-    setIsPopupOpen(visible);
-  };
+  const fees = useMemo(
+    () => Number(tokenPrices.input) - Number(tokenPrices.output),
+    [tokenPrices]
+  );
+
+  const handleShowComparison = (isOpen: boolean) =>
+    setIsShowComparison({ ...showComparison, isOpen });
 
   return (
     <>
-      {/* <SwapFeesComparison
-        swap={swap}
-        visible={showComparison}
+      <SwapFeesComparison
+        visible={showComparison.isOpen}
         hide={() => handleShowComparison(false)}
-      /> */}
+      />
       <div
-        className="flex flex-col gap-1
+        className="flex flex-col gap-3
         bg-white/50 rounded-2xl
         pt-4 pb-3 px-4
         cursor-pointer transition-[background-color] hover:bg-white"
@@ -31,32 +37,29 @@ export const SwapFees: FC<SwapFeesProps> = ({ setIsPopupOpen }) => {
         <Typography size="h5" weight="bold">
           Details
         </Typography>
-        <div className="flex justify-between">
-          <Typography size="h5" weight="medium">
-            Fees
-          </Typography>
-          <div className="flex gap-5 py-1">
-            <Typography size="h4" weight="medium">
-              {/* TODO: Show fee in selected asset */}
+        <div>
+          <div className="flex justify-between gap-0">
+            <Typography size="h5" weight="medium">
+              Fees
             </Typography>
-            <Typography size="h4" weight="medium">
-              {/* TODO: Show fee in USD */}
-              --
-            </Typography>
+            <div className="flex gap-5 py-1">
+              <Typography size="h4" weight="medium">
+                {fees ? "$ " + Number(fees.toFixed(4)) : "--"}
+              </Typography>
+            </div>
           </div>
-        </div>
-        <div className="flex justify-between">
-          <Typography size="h5" weight="medium">
-            Saved
-          </Typography>
-          <div className="flex gap-5 py-1">
-            <Typography size="h4" weight="medium">
-              {/* TODO: Show time saved */}
+          <div className="flex justify-between">
+            <Typography size="h5" weight="medium">
+              Saved
             </Typography>
-            <Typography size="h4" weight="medium">
-              {/* TODO: Show fee saved USD */}
-              --
-            </Typography>
+            <div className="flex gap-5 py-1">
+              <Typography size="h4" weight="medium">
+                {/* TODO: Show time saved */}
+              </Typography>
+              <Typography size="h4" weight="medium">
+                --
+              </Typography>
+            </div>
           </div>
         </div>
       </div>

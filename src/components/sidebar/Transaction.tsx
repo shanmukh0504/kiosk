@@ -2,7 +2,11 @@ import { FC, useState } from "react";
 import { Button, Typography } from "@gardenfi/garden-book";
 import { SwapInfo } from "../../common/SwapInfo";
 import { isEVM, MatchedOrder } from "@gardenfi/orderbook";
-import { getAssetFromSwap, getDayDifference } from "../../utils/utils";
+import {
+  formatAmount,
+  getAssetFromSwap,
+  getDayDifference,
+} from "../../utils/utils";
 import { OrderStatus } from "@gardenfi/core";
 import { useGarden } from "@gardenfi/react-hooks";
 
@@ -64,8 +68,14 @@ export const Transaction: FC<TransactionProps> = ({ order, status }) => {
       <SwapInfo
         sendAsset={sendAsset}
         receiveAsset={receiveAsset}
-        sendAmount={create_order.source_amount}
-        receiveAmount={create_order.destination_amount}
+        sendAmount={formatAmount(
+          create_order.source_amount,
+          sendAsset.decimals
+        )}
+        receiveAmount={formatAmount(
+          create_order.destination_amount,
+          receiveAsset.decimals
+        )}
       />
       {shouldInitiate ? (
         <Button

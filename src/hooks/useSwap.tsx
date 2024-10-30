@@ -7,6 +7,12 @@ import { assetInfoStore } from "../store/assetInfoStore";
 import { constructOrderPair } from "@gardenfi/core";
 import BigNumber from "bignumber.js";
 import { useGarden } from "@gardenfi/react-hooks";
+import { useEVMWallet } from "./useEVMWallet";
+
+export type TokenPrices = {
+  input: string;
+  output: string;
+};
 
 export const useSwap = () => {
   const [strategy, setStrategy] = useState<string>();
@@ -14,7 +20,7 @@ export const useSwap = () => {
     input: false,
     output: false,
   });
-  const [tokenPrices, setTokenPrices] = useState({
+  const [tokenPrices, setTokenPrices] = useState<TokenPrices>({
     input: "0",
     output: "0",
   });
@@ -30,6 +36,7 @@ export const useSwap = () => {
   } = swapStore();
   const { strategies } = assetInfoStore();
   const { getQuote } = useGarden();
+  const { address } = useEVMWallet();
 
   const _validSwap = useMemo(() => {
     return !!(
@@ -38,9 +45,18 @@ export const useSwap = () => {
       inputAmount &&
       outputAsset &&
       strategy &&
+      address &&
       !error
     );
-  }, [inputAsset, outputAmount, inputAmount, outputAsset, strategy, error]);
+  }, [
+    inputAsset,
+    outputAmount,
+    inputAmount,
+    outputAsset,
+    strategy,
+    error,
+    address,
+  ]);
   const isBitcoinSwap = useMemo(() => {
     return !!(
       inputAsset &&
@@ -85,13 +101,13 @@ export const useSwap = () => {
   }, [swapLimits, inputAsset]);
 
   const fetchQuote = useCallback(
-    debounce(
-      async (
-        amount: string,
-        fromAsset: Asset,
-        toAsset: Asset,
-        isExactOut: boolean
-      ) => {
+    async (
+      amount: string,
+      fromAsset: Asset,
+      toAsset: Asset,
+      isExactOut: boolean
+    ) => {
+      const debouncedFetchQuote = debounce(async () => {
         if (!getQuote) return;
         if (isExactOut) setLoading({ input: true, output: false });
         else setLoading({ input: false, output: true });
@@ -144,9 +160,9 @@ export const useSwap = () => {
           input: inputTokenPrice,
           output: outputTokenPrice,
         });
-      },
-      500
-    ),
+      }, 500);
+      debouncedFetchQuote();
+    },
     [getQuote, setAmount]
   );
 
@@ -173,7 +189,7 @@ export const useSwap = () => {
       if (!inputAsset || !outputAsset || !Number(amount)) return;
       fetchQuote(amount, inputAsset, outputAsset, false);
     },
-    [inputAsset, outputAsset, minAmount, maxAmount]
+    [inputAsset, outputAsset, minAmount, maxAmount, fetchQuote, setAmount]
   );
 
   const handleOutputAmountChange = async (amount: string) => {
@@ -191,7 +207,15 @@ export const useSwap = () => {
   useEffect(() => {
     if (!inputAsset || !outputAsset) return;
     handleInputAmountChange(inputAmount);
-  }, [inputAsset, outputAsset, handleInputAmountChange]);
+  }, [inputAsset, outputAsset, handleInputAmountChange, inputAmount]);
+
+  useEffect(() => {
+    if (!inputAmount || !outputAmount) {
+      setTokenPrices({ input: "0", output: "0" });
+      setError(undefined);
+      return;
+    }
+  }, [inputAmount, outputAmount]);
 
   useEffect(() => {
     if (!inputAmount || !minAmount || !maxAmount) return;

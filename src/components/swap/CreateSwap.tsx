@@ -12,6 +12,7 @@ import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
 import { Toast } from "../toast/Toast";
 import { formatAmount, getAssetFromSwap } from "../../utils/utils";
 import { useSwap } from "../../hooks/useSwap";
+import { SwapFees } from "./SwapFees";
 
 export const CreateSwap = () => {
   const [isSwapping, setIsSwapping] = useState(false);
@@ -156,6 +157,7 @@ export const CreateSwap = () => {
           />
         </div>
         <SwapAddress />
+        <SwapFees tokenPrices={tokenPrices} />
         <Button
           className={`transition-colors duration-500 ${
             isSwapping ? "cursor-not-allowed" : ""

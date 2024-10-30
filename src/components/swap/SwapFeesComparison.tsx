@@ -1,6 +1,7 @@
 import { ArrowLeftIcon, Typography } from "@gardenfi/garden-book";
 import { FC } from "react";
-// import { SwapInfo } from "../../common/SwapInfo";
+import { SwapInfo } from "../../common/SwapInfo";
+import { swapStore } from "../../store/swapStore";
 
 type SwapFeesComparisonProps = {
   visible: boolean;
@@ -11,6 +12,8 @@ export const SwapFeesComparison: FC<SwapFeesComparisonProps> = ({
   visible,
   hide,
 }) => {
+  const { inputAsset, outputAsset, inputAmount, outputAmount } = swapStore();
+
   return (
     <div
       className={`flex flex-col gap-3
@@ -25,15 +28,17 @@ export const SwapFeesComparison: FC<SwapFeesComparisonProps> = ({
         </Typography>
         <ArrowLeftIcon className="cursor-pointer" onClick={() => hide()} />
       </div>
-      <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
-        {/* <SwapInfo
-          sendAmount={swap.sendAmount}
-          receiveAmount={swap.receiveAmount}
-          sendAsset={swap.sendAsset}
-          receiveAsset={swap.receiveAsset}
-        /> */}
-      </div>
-      <div className="flex gap-10 bg-white rounded-2xl p-4">
+      {inputAsset && outputAsset && inputAmount && outputAmount && (
+        <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
+          <SwapInfo
+            sendAsset={inputAsset}
+            receiveAsset={outputAsset}
+            sendAmount={inputAmount}
+            receiveAmount={outputAmount}
+          />
+        </div>
+      )}
+      <div className="flex h-full gap-10 bg-white rounded-2xl p-4">
         <div className="flex flex-col flex-grow gap-2">
           <Typography className="p-1" size="h5" weight="bold">
             Routes

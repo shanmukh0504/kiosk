@@ -10,7 +10,7 @@ import { SwapInfo } from "../../common/SwapInfo";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { swapStore } from "../../store/swapStore";
 import { useGarden } from "@gardenfi/react-hooks";
-import { getAssetFromSwap } from "../../utils/utils";
+import { formatAmount, getAssetFromSwap } from "../../utils/utils";
 
 export const BTCInit = () => {
   const [copied, setCopied] = useState(false);
@@ -71,8 +71,14 @@ export const BTCInit = () => {
           <SwapInfo
             sendAsset={sendAsset}
             receiveAsset={receiveAsset}
-            sendAmount={order.source_swap.amount}
-            receiveAmount={order.destination_swap.amount}
+            sendAmount={formatAmount(
+              order.source_swap.amount,
+              sendAsset.decimals
+            )}
+            receiveAmount={formatAmount(
+              order.destination_swap.amount,
+              receiveAsset.decimals
+            )}
           />
         )}
       </div>
