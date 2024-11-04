@@ -1,15 +1,19 @@
-import { GardenFullLogo, Typography } from "@gardenfi/garden-book";
+import { Button, GardenFullLogo, Typography } from "@gardenfi/garden-book";
 import { INTERNAL_ROUTES } from "../../constants/constants";
 import { API } from "../../constants/api";
 import { modalNames, modalStore } from "../../store/modalStore";
+import { useEVMWallet } from "../../hooks/useEVMWallet";
+import { Address } from "./Address";
 
 export const Navbar = () => {
+  const { isConnected } = useEVMWallet();
+  const { setOpenModal } = modalStore();
+
   const path = window.location.pathname;
   const isCurrentRoute = (route: string) => path === route;
 
-  const { setOpenModal } = modalStore();
-
   const handleHomeLogoClick = () => window.open(API().home, "_blank");
+  const handleConnectClick = () => setOpenModal(modalNames.connectWallet);
 
   return (
     <div className={"flex items-center px-10 py-6 gap-16"}>
@@ -31,14 +35,17 @@ export const Navbar = () => {
           );
         })}
       </div>
-      <div
-        className="ml-auto"
-        onClick={() => {
-          setOpenModal(modalNames.connectWallet);
-        }}
-      >
-        Address
-      </div>
+      {isConnected ? (
+        <Address />
+      ) : (
+        <Button
+          variant="primary"
+          onClick={handleConnectClick}
+          className="ml-auto w-28 bg-red-900"
+        >
+          Connect
+        </Button>
+      )}
     </div>
   );
 };

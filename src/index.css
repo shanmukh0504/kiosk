@@ -1,3 +1,49 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: "Satoshi";
+    font-weight: 300;
+    src: url("./fonts/Satoshi-Light.woff2");
+  }
+  @font-face {
+    font-family: "Satoshi";
+    font-weight: 400;
+    src: url("./fonts/Satoshi-Regular.woff2");
+  }
+  @font-face {
+    font-family: "Satoshi";
+    font-weight: 500;
+    src: url("./fonts/Satoshi-Medium.woff2");
+  }
+  @font-face {
+    font-family: "Satoshi";
+    font-weight: 700;
+    src: url("./fonts/Satoshi-Bold.woff2");
+  }
+  @font-face {
+    font-family: "Satoshi";
+    font-weight: 800;
+    src: url("./fonts/Satoshi-Black.woff2");
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .react-tooltip.tooltip {
+    @apply text-[100%] bg-dark-grey rounded-2xl px-4 py-2;
+  }
+  .react-tooltip.tooltip.multiline {
+    @apply w-60 p-3;
+  }
+
+  /* TODO: Consider moving this animation to garden-book */
+  .shine:before {
+    @apply content-[''] bg-gradient-to-r from-transparent via-white/50 via-50% to-transparent absolute top-0 left-0 w-[168px] h-full animate-shine;
+  }
+}

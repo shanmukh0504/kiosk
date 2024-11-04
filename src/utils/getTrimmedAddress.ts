@@ -1,3 +1,3 @@
-export const getTrimmedAddress = (address: string, length = 6) => {
-  return `${address.slice(0, length)}...${address.slice(-length)}`;
+export const getTrimmedAddress = (address: string, start = 6, end = 4) => {
+  return `${address.slice(0, start)}...${address.slice(-end)}`;
 };

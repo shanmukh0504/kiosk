@@ -1,7 +1,8 @@
+import { FC } from "react";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 import { AppConfig } from "./appConfig";
-import metaImage from "../../public/metadata.png";
+import metaImage from "/metadata.png";
 
 export type IMetaProps = {
   title: string;
@@ -9,11 +10,7 @@ export type IMetaProps = {
   canonical?: string;
 };
 
-export const Meta: React.FC<IMetaProps> = ({
-  title,
-  description,
-  canonical,
-}) => {
+export const Meta: FC<IMetaProps> = ({ title, description, canonical }) => {
   const router = useLocation();
   const basePath = router.pathname.split("/")[1];
 

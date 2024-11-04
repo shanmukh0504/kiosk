@@ -2,6 +2,8 @@ import { create } from "zustand";
 
 export const modalNames = {
   connectWallet: "connectWallet",
+  transactionsSideBar: "transactionsSideBar",
+  initializeSM: "initializeSM",
 } as const;
 
 export type ModalName = keyof typeof modalNames;
@@ -16,7 +18,9 @@ type ModalState = {
 
 export const modalStore = create<ModalState>((set) => ({
   modalName: {
-    connectWallet: true,
+    connectWallet: false,
+    transactionsSideBar: false,
+    initializeSM: false,
   },
   setOpenModal: (name) => {
     set((state) => ({

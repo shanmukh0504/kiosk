@@ -4,7 +4,7 @@ import buildIdStore from "../store/buildIdStore";
 import { API } from "../constants/api";
 
 export const useBuildIdCheck = () => {
-  const currentBuildId = process.env.BUILD_ID;
+  const currentBuildId = import.meta.env.VITE_BUILD_ID;
   const { setBuildId } = buildIdStore();
 
   useEffect(() => {
@@ -27,6 +27,6 @@ export const useBuildIdCheck = () => {
 
     setInterval(() => {
       void fetchBuildId();
-    }, 10000);
+    }, 30000);
   }, [currentBuildId, setBuildId]);
 };

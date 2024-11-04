@@ -1,14 +1,28 @@
 import { http, createConfig } from "wagmi";
 import {
   arbitrum,
+  arbitrumSepolia,
   avalanche,
   bsc,
   mainnet,
   optimism,
   polygon,
+  sepolia,
+  baseSepolia,
 } from "wagmi/chains";
 import { injected, metaMask, safe, walletConnect } from "wagmi/connectors";
-import { SupportedChains } from "../../constants/constants";
+
+export const SupportedChains = [
+  mainnet,
+  arbitrum,
+  polygon,
+  optimism,
+  bsc,
+  avalanche,
+  arbitrumSepolia,
+  sepolia,
+  baseSepolia,
+] as const;
 
 const projectId = "badd60eb677f972ec3c2454256ccfbc8";
 
@@ -24,5 +38,8 @@ export const config = createConfig({
     [optimism.id]: http(),
     [bsc.id]: http(),
     [avalanche.id]: http(),
+    [arbitrumSepolia.id]: http(),
+    [sepolia.id]: http(),
+    [baseSepolia.id]: http(),
   },
 });

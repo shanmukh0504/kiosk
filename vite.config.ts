@@ -1,9 +1,12 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
 import { execSync } from "child_process";
 import { viteStaticCopy } from "vite-plugin-static-copy";
-import path from "path"; // Import the path module
+import path from "path";
 import fs from "fs";
+import wasm from "vite-plugin-wasm";
+import { nodePolyfills } from "vite-plugin-node-polyfills";
+import topLevelAwait from "vite-plugin-top-level-await";
 
 const getRecentGitCommitHash = () => {
   try {
@@ -15,6 +18,7 @@ const getRecentGitCommitHash = () => {
 };
 
 const generateBuildIdFile = () => {
+  const __dirname = path.dirname(new URL(import.meta.url).pathname);
   const buildIdPath = path.resolve(__dirname, "public/build-id.json");
   fs.writeFileSync(buildIdPath, JSON.stringify({ buildId }, null, 2));
 };
@@ -25,10 +29,22 @@ const buildId = getRecentGitCommitHash();
 export default defineConfig({
   plugins: [
     react(),
+    wasm(),
+    nodePolyfills({
+      globals: {
+        process: true,
+        Buffer: true,
+        global: true,
+      },
+    }),
+    topLevelAwait(),
     viteStaticCopy({
       targets: [
         {
-          src: path.resolve(__dirname, "build-id.json"), // Use path.resolve to resolve the file path
+          src: path.resolve(
+            path.dirname(new URL(import.meta.url).pathname),
+            "build-id.json"
+          ),
           dest: "public",
         },
       ],
@@ -44,7 +60,10 @@ export default defineConfig({
         // because vite dev server doesn't serve files from public directory as soon as they are generated.
         server.middlewares.use((req, res, next) => {
           if (req.url === "/build-id.json") {
-            const buildIdPath = path.resolve(__dirname, "public/build-id.json");
+            const buildIdPath = path.resolve(
+              path.dirname(new URL(import.meta.url).pathname),
+              "public/build-id.json"
+            );
             fs.readFile(buildIdPath, (err, data) => {
               if (err) {
                 res.statusCode = 404;
