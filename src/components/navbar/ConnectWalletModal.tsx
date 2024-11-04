@@ -34,6 +34,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({
 
       const auth = new Siwe(new Url(API().orderbook), walletClient, {
         store: localStorage,
+        domain: window.location.hostname,
       });
       const authToken = await auth.getToken();
 
