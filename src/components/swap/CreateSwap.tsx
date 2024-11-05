@@ -7,7 +7,7 @@ import { assetInfoStore } from "../../store/assetInfoStore";
 import { AssetSelector } from "./AssetSelector";
 import { useGarden } from "@gardenfi/react-hooks";
 import BigNumber from "bignumber.js";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
 import { Toast } from "../toast/Toast";
 import { formatAmount, getAssetFromSwap } from "../../utils/utils";
@@ -32,8 +32,28 @@ export const CreateSwap = () => {
     tokenPrices,
     validSwap,
     isBitcoinSwap,
+    inputTokenBalance,
+    isInsufficientBalance,
   } = useSwap();
   const { swap, garden } = useGarden();
+
+  const buttonLabel = useMemo(() => {
+    return isInsufficientBalance
+      ? "Insufficient balance"
+      : isSwapping
+      ? "Swapping..."
+      : "Swap";
+  }, [isInsufficientBalance, isSwapping]);
+
+  const buttonVariant = useMemo(() => {
+    return isInsufficientBalance
+      ? "disabled"
+      : isSwapping
+      ? "ternary"
+      : validSwap
+      ? "primary"
+      : "disabled";
+  }, [isInsufficientBalance, isSwapping, validSwap]);
 
   const handleSwapClick = async () => {
     if (!validSwap || !swap || !inputAsset || !outputAsset || !strategy) return;
@@ -138,6 +158,7 @@ export const CreateSwap = () => {
             loading={loading.input}
             price={tokenPrices.input}
             error={error}
+            balance={inputTokenBalance}
           />
           <div
             className="absolute bg-white border border-light-grey rounded-full
@@ -162,11 +183,11 @@ export const CreateSwap = () => {
           className={`transition-colors duration-500 ${
             isSwapping ? "cursor-not-allowed" : ""
           }`}
-          variant={isSwapping ? "ternary" : validSwap ? "primary" : "disabled"}
+          variant={buttonVariant}
           size="lg"
           onClick={handleSwapClick}
         >
-          {isSwapping ? "Swapping..." : "Swap"}
+          {buttonLabel}
         </Button>
       </div>
     </div>

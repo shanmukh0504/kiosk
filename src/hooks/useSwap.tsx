@@ -8,6 +8,7 @@ import { constructOrderPair } from "@gardenfi/core";
 import BigNumber from "bignumber.js";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useEVMWallet } from "./useEVMWallet";
+import { useBalances } from "./useBalances";
 
 export type TokenPrices = {
   input: string;
@@ -26,6 +27,8 @@ export const useSwap = () => {
   });
   const [error, setError] = useState<string>();
 
+  const { inputTokenBalance } = useBalances();
+
   const {
     inputAmount,
     outputAmount,
@@ -38,6 +41,11 @@ export const useSwap = () => {
   const { getQuote } = useGarden();
   const { address } = useEVMWallet();
 
+  const isInsufficientBalance = useMemo(
+    () => new BigNumber(inputAmount).gt(inputTokenBalance),
+    [inputAmount, inputTokenBalance]
+  );
+
   const _validSwap = useMemo(() => {
     return !!(
       inputAsset &&
@@ -46,7 +54,8 @@ export const useSwap = () => {
       outputAsset &&
       strategy &&
       address &&
-      !error
+      !error &&
+      !isInsufficientBalance
     );
   }, [
     inputAsset,
@@ -56,6 +65,7 @@ export const useSwap = () => {
     strategy,
     error,
     address,
+    isInsufficientBalance,
   ]);
   const isBitcoinSwap = useMemo(() => {
     return !!(
@@ -245,5 +255,7 @@ export const useSwap = () => {
     isBitcoinSwap,
     handleInputAmountChange,
     handleOutputAmountChange,
+    inputTokenBalance,
+    isInsufficientBalance,
   };
 };

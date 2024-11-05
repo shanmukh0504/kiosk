@@ -3,6 +3,7 @@ import {
   TimerIcon,
   TokenInfo,
   Typography,
+  WalletIcon,
 } from "@gardenfi/garden-book";
 import { FC, useMemo, useRef, ChangeEvent } from "react";
 import { IOType } from "../../constants/constants";
@@ -17,6 +18,7 @@ type SwapInputProps = {
   loading: boolean;
   price: string;
   error?: string;
+  balance?: number;
 };
 
 export const SwapInput: FC<SwapInputProps> = ({
@@ -27,6 +29,7 @@ export const SwapInput: FC<SwapInputProps> = ({
   loading,
   price,
   error,
+  balance,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { setOpenAssetSelector, chains } = assetInfoStore();
@@ -85,15 +88,25 @@ export const SwapInput: FC<SwapInputProps> = ({
             >
               {label}
             </Typography>
-            <Typography size="h5" weight="medium">
+            <Typography size="h5" weight="medium" className="text-mid-grey">
               {Number(price) ? `$${price}` : ""}
             </Typography>
           </div>
-          {type === IOType.input && error && (
-            <Typography size="h5" weight="medium">
-              <div className="text-red-500">{error}</div>
-            </Typography>
-          )}
+          {type === IOType.input &&
+            (error ? (
+              <Typography size="h5" weight="medium">
+                <div className="text-red-500">{error}</div>
+              </Typography>
+            ) : (
+              balance && (
+                <div className="flex items-center gap-1">
+                  <WalletIcon className="h-2.5 w-2.5" />
+                  <Typography size="h5" weight="medium">
+                    {balance}
+                  </Typography>
+                </div>
+              )
+            ))}
           {type === IOType.output && (
             <div className="flex gap-1 items-center">
               <TimerIcon className="h-4" />
