@@ -12,6 +12,7 @@ import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { swapStore } from "../../store/swapStore";
 import { IOType } from "../../constants/constants";
 import { constructOrderPair } from "@gardenfi/core";
+import { AssetChainLogos } from "../../common/AssetChainLogos";
 
 export const AssetSelector = () => {
   const [chain, setChain] = useState<ChainData>();
@@ -145,29 +146,26 @@ export const AssetSelector = () => {
           </Typography>
         </div>
         {results?.map((asset, i) => {
-          const network = !isBitcoin(asset.chain) && chains?.[asset.chain];
+          const network = !isBitcoin(asset.chain)
+            ? chains?.[asset.chain]
+            : undefined;
           return (
             (!chain || asset.chain === chain.identifier) && (
               <div
                 key={i}
-                className="flex justify-between items-center px-4 py-1.5 cursor-pointer hover:bg-off-white"
+                className="flex justify-between items-center px-4 py-1.5 cursor-pointer hover:bg-off-white w-full"
                 onClick={() => handleClick(asset)}
               >
-                <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <img src={asset.logo} className="w-5 h-5" />
-                    {network && (
-                      <img
-                        src={network.networkLogo}
-                        className="absolute w-3 h-3 bottom-0 right-0"
-                      />
-                    )}
-                  </div>
-                  <Typography size="h4" weight="medium">
+                <div className="flex items-center gap-2 w-full">
+                  <AssetChainLogos
+                    tokenLogo={asset.logo}
+                    chainLogo={network?.networkLogo}
+                  />
+                  <Typography size="h4" weight="medium" className="w-1/6">
                     {asset.symbol}
                   </Typography>
                   <Typography
-                    className="text-mid-grey"
+                    className="text-mid-grey w-1/3"
                     size="h4"
                     weight="medium"
                   >

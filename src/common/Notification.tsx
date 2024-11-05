@@ -15,7 +15,7 @@ export const Notification: FC<NotificationProps> = ({
   image,
   link,
 }) => {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
   return (
     <div
       className={`bg-white/50 backdrop-blur-[20px]

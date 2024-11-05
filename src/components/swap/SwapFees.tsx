@@ -44,7 +44,7 @@ export const SwapFees: FC<SwapFeesProps> = ({ tokenPrices }) => {
             </Typography>
             <div className="flex gap-5 py-1">
               <Typography size="h4" weight="medium">
-                {fees ? "$ " + Number(fees.toFixed(4)) : "--"}
+                {fees ? "$" + Number(fees.toFixed(4)) : "--"}
               </Typography>
             </div>
           </div>

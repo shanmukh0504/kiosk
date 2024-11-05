@@ -2,6 +2,7 @@ import { ArrowRightIcon, Typography } from "@gardenfi/garden-book";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { FC } from "react";
 import { assetInfoStore } from "../store/assetInfoStore";
+import { AssetChainLogos } from "./AssetChainLogos";
 
 type SwapInfoProps = {
   sendAsset: Asset;
@@ -30,18 +31,20 @@ export const SwapInfo: FC<SwapInfoProps> = ({
         <Typography size="h3" weight="medium">
           {sendAmount}
         </Typography>
-        <img src={sendAsset.logo} className="w-5" />
-        {sendChain ? <img src={sendChain.networkLogo} className="w-5" /> : null}
+        <AssetChainLogos
+          tokenLogo={sendAsset.logo}
+          chainLogo={sendChain?.networkLogo}
+        />
       </div>
       <ArrowRightIcon />
       <div className="flex grow basis-0 justify-end items-center gap-2">
         <Typography size="h3" weight="medium">
           {receiveAmount}
         </Typography>
-        <img src={receiveAsset.logo} className="w-5" />
-        {receiveChain ? (
-          <img src={receiveChain.networkLogo} className="w-5" />
-        ) : null}
+        <AssetChainLogos
+          tokenLogo={receiveAsset.logo}
+          chainLogo={receiveChain?.networkLogo}
+        />
       </div>
     </div>
   );

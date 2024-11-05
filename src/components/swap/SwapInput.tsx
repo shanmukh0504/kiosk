@@ -86,7 +86,7 @@ export const SwapInput: FC<SwapInputProps> = ({
               {label}
             </Typography>
             <Typography size="h5" weight="medium">
-              {Number(price) ? `~${price} USD` : ""}
+              {Number(price) ? `$${price}` : ""}
             </Typography>
           </div>
           {type === IOType.input && error && (

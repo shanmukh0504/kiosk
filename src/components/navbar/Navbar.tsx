@@ -4,16 +4,70 @@ import { API } from "../../constants/api";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { Address } from "./Address";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useGarden } from "@gardenfi/react-hooks";
+import { OrderActions, parseActionFromStatus } from "@gardenfi/core";
 
 export const Navbar = () => {
+  const [isInitiatingSM, setIsInitiatingSM] = useState(false);
+  const [shouldInitiateSM, setShouldInitiateSM] = useState(false);
+
   const { isConnected } = useEVMWallet();
   const { setOpenModal } = modalStore();
+  const { pendingOrders, isExecuting, initializeSecretManager, secretManager } =
+    useGarden();
 
-  const path = window.location.pathname;
-  const isCurrentRoute = (route: string) => path === route;
+  const isFullyConnected = useMemo(
+    () => isConnected && !shouldInitiateSM,
+    [isConnected, shouldInitiateSM]
+  );
+
+  const isCurrentRoute = (route: string) => window.location.pathname === route;
 
   const handleHomeLogoClick = () => window.open(API().home, "_blank");
-  const handleConnectClick = () => setOpenModal(modalNames.connectWallet);
+  const handleConnectClick = () => {
+    if (isFullyConnected) return;
+    if (isConnected && shouldInitiateSM) handleInitializeSM();
+    else setOpenModal(modalNames.connectWallet);
+  };
+
+  const handleInitializeSM = useCallback(async () => {
+    if (!initializeSecretManager || secretManager) return;
+    setIsInitiatingSM(true);
+    const res = await initializeSecretManager();
+    if (res.error) {
+      if (res.error.includes("User rejected the request"))
+        setShouldInitiateSM(true);
+      setIsInitiatingSM(false);
+      return;
+    }
+    setShouldInitiateSM(false);
+    setIsInitiatingSM(false);
+  }, [initializeSecretManager, secretManager]);
+
+  useEffect(() => {
+    if (
+      !pendingOrders ||
+      !pendingOrders.length ||
+      isExecuting ||
+      isInitiatingSM ||
+      shouldInitiateSM
+    )
+      return;
+    const isSMRequired = !!pendingOrders.find((order) => {
+      const action = parseActionFromStatus(order.status);
+      return action === OrderActions.Redeem || action === OrderActions.Refund;
+    });
+
+    if (isSMRequired) handleInitializeSM();
+  }, [
+    pendingOrders,
+    isExecuting,
+    setOpenModal,
+    handleInitializeSM,
+    isInitiatingSM,
+    shouldInitiateSM,
+  ]);
 
   return (
     <div className={"flex items-center px-10 py-6 gap-16"}>
@@ -35,7 +89,7 @@ export const Navbar = () => {
           );
         })}
       </div>
-      {isConnected ? (
+      {isFullyConnected ? (
         <Address />
       ) : (
         <Button
