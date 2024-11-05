@@ -14,7 +14,6 @@ export const Swap = () => {
     assetInfoStore();
   const { quote } = useGarden();
 
-  //TODO: add a loader until assets, chains, and strategies are fetched
   useEffect(() => {
     fetchAndSetAssetsAndChains();
   }, [fetchAndSetAssetsAndChains]);

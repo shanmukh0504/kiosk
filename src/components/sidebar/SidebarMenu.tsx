@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import {
   AddIcon,
   // LanguageIcon,
@@ -16,15 +16,23 @@ type SideBarMenuProps = {
 };
 
 export const SidebarMenu: FC<SideBarMenuProps> = ({ onClose }) => {
+  const [addressTooltipContent, setAddressTooltipContent] = useState("Copy");
   const { address, disconnect } = useEVMWallet();
   const addTooltipId = useId();
   const languageTooltipId = useId();
   const referralTooltipId = useId();
   const logoutTooltipId = useId();
+  const addressTooltipId = useId();
 
   const handleDisconnectClick = () => {
     disconnect();
     onClose();
+  };
+  const handleAddressClick = async () => {
+    if (address) {
+      await navigator.clipboard.writeText(address);
+      setAddressTooltipContent("Copied");
+    }
   };
 
   return (
@@ -33,7 +41,13 @@ export const SidebarMenu: FC<SideBarMenuProps> = ({ onClose }) => {
         <div className="flex gap-3">
           {address && (
             <div className="bg-white/50 rounded-full px-3 py-1">
-              <Typography size="h3" weight="medium">
+              <Typography
+                size="h3"
+                weight="medium"
+                className="cursor-pointer"
+                onClick={handleAddressClick}
+                data-tooltip-id={addressTooltipId}
+              >
                 {getTrimmedAddress(address)}
               </Typography>
             </div>
@@ -66,13 +80,16 @@ export const SidebarMenu: FC<SideBarMenuProps> = ({ onClose }) => {
               className="w-5 h-4 cursor-pointer"
               onClick={handleDisconnectClick}
             />
-            {/* TODO: These tooltips are temporarily placed within this `div` as they
-                        are causing styling issues placed elsewhere. They should be moved once
-                        the `garden` wrapper classes are removed. */}
+
             <Tooltip id={addTooltipId} place="top" content="Wallet" />
             <Tooltip id={languageTooltipId} place="top" content="Language" />
             <Tooltip id={referralTooltipId} place="top" content="Referrals" />
             <Tooltip id={logoutTooltipId} place="top" content="Logout" />
+            <Tooltip
+              id={addressTooltipId}
+              place="top"
+              content={addressTooltipContent}
+            />
           </div>
         </div>
       </div>

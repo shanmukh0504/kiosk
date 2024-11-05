@@ -11,9 +11,9 @@ export const AssetChainLogos: FC<AssetChainLogosProps> = ({
 }) => {
   return (
     <div className="flex">
-      <img src={tokenLogo} className="w-5 h-5 z-50" />
+      <img src={tokenLogo} className="w-5 h-5 z-30" />
       {chainLogo ? (
-        <img src={chainLogo} className="w-5 h-5 z-40 -translate-x-1" />
+        <img src={chainLogo} className="w-5 h-5 z-20 -translate-x-1" />
       ) : null}
     </div>
   );

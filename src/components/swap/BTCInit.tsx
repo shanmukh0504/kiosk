@@ -11,6 +11,7 @@ import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { swapStore } from "../../store/swapStore";
 import { useGarden } from "@gardenfi/react-hooks";
 import { formatAmount, getAssetFromSwap } from "../../utils/utils";
+import BigNumber from "bignumber.js";
 
 export const BTCInit = () => {
   const [copied, setCopied] = useState(false);
@@ -21,14 +22,38 @@ export const BTCInit = () => {
   const depositAddress = order ? order.source_swap.swap_id : "";
   const { orderBook } = useGarden();
 
-  const sendAsset = order && getAssetFromSwap(order.source_swap);
-  const receiveAsset = order && getAssetFromSwap(order.destination_swap);
+  const inputAsset = order && getAssetFromSwap(order.source_swap);
+  const outputAsset = order && getAssetFromSwap(order.destination_swap);
   const btcAddress =
     order && order.create_order.additional_data.bitcoin_optional_recipient;
+  const inputAmountPrice = order
+    ? new BigNumber(order.source_swap.amount)
+        .dividedBy(10 ** (inputAsset?.decimals ?? 0))
+        .multipliedBy(order.create_order.additional_data.input_token_price)
+    : new BigNumber(0);
+  const outputAmountPrice = order
+    ? new BigNumber(order.destination_swap.amount)
+        .dividedBy(10 ** (outputAsset?.decimals ?? 0))
+        .multipliedBy(order.create_order.additional_data.output_token_price)
+    : new BigNumber(0);
+  const fees = inputAmountPrice.minus(outputAmountPrice).toFixed(3);
+  const amountToFill = order
+    ? Number(
+        new BigNumber(order.source_swap.amount)
+          .dividedBy(10 ** (inputAsset?.decimals ?? 0))
+          .toFixed(inputAsset?.decimals ?? 0)
+      )
+    : 0;
+  const filledAmount = order
+    ? Number(
+        new BigNumber(order.source_swap.filled_amount)
+          .dividedBy(10 ** (inputAsset?.decimals ?? 0))
+          .toFixed(inputAsset?.decimals ?? 0)
+      )
+    : 0;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(depositAddress);
-
     setCopied(true);
     setTimeout(() => {
       setCopied(false);
@@ -67,28 +92,28 @@ export const BTCInit = () => {
         <Typography size="h5" weight="bold">
           Transaction
         </Typography>
-        {sendAsset && receiveAsset && (
+        {inputAsset && outputAsset && (
           <SwapInfo
-            sendAsset={sendAsset}
-            receiveAsset={receiveAsset}
+            sendAsset={inputAsset}
+            receiveAsset={outputAsset}
             sendAmount={formatAmount(
               order.source_swap.amount,
-              sendAsset.decimals
+              inputAsset.decimals
             )}
             receiveAmount={formatAmount(
               order.destination_swap.amount,
-              receiveAsset.decimals
+              outputAsset.decimals
             )}
           />
         )}
       </div>
-      <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
+      <div className="flex flex-col gap-2 bg-white/50 rounded-2xl p-4">
         <Typography size="h5" weight="bold">
           Deposit address
         </Typography>
         <div className="flex justify-between items-center">
           <Typography size="h3" weight="bold">
-            {getTrimmedAddress(depositAddress)}
+            {getTrimmedAddress(depositAddress, 8, 6)}
           </Typography>
           {/* TODO: Use a Lottie animation to make this smoother */}
           {copied ? (
@@ -111,12 +136,17 @@ export const BTCInit = () => {
           </Typography>
           <div className="flex gap-5">
             <Typography size="h4" weight="medium">
-              0.00101204 BTC
-            </Typography>
-            <Typography size="h4" weight="medium">
-              $56.56
+              ${fees}
             </Typography>
           </div>
+        </div>
+        <div className="flex justify-between">
+          <Typography size="h4" weight="medium">
+            Amount
+          </Typography>
+          <Typography size="h4" weight="medium">
+            {filledAmount} / {amountToFill} BTC
+          </Typography>
         </div>
         <div className="flex justify-between">
           <Typography size="h4" weight="medium">

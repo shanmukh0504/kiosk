@@ -31,7 +31,7 @@ export const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
   return (
     <div
       className={`bg-dark-grey
-        absolute top-0 left-0 z-20
+        absolute top-0 left-0 z-50
         h-full w-full
         transition-colors ease-cubic-in-out duration-500
         ${open ? "bg-opacity-40" : "bg-opacity-0 pointer-events-none"}`}
