@@ -185,12 +185,12 @@ export const useSwap = () => {
         return;
       }
       if (minAmount && amountInNumber < minAmount) {
-        setError(`min. amount is ${minAmount}`);
+        setError(`Minimum amount is ${minAmount} ${inputAsset?.symbol}`);
         setAmount(IOType.output, "0");
         return;
       }
       if (maxAmount && amountInNumber > maxAmount) {
-        setError(`max amount is ${maxAmount}`);
+        setError(`Maximum amount is ${maxAmount} ${inputAsset?.symbol}`);
         setAmount(IOType.output, "0");
         return;
       }
@@ -232,11 +232,11 @@ export const useSwap = () => {
     const amountInNumber = Number(inputAmount);
     if (!amountInNumber) return;
     if (amountInNumber < minAmount) {
-      setError(`min. amount is ${minAmount}`);
+      setError(`Minimum amount is ${minAmount} ${inputAsset?.symbol}`);
       return;
     }
     if (amountInNumber > maxAmount) {
-      setError(`max amount is ${maxAmount}`);
+      setError(`Maximum amount is ${maxAmount} ${inputAsset?.symbol}`);
       return;
     }
     setError(undefined);
