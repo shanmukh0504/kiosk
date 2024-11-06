@@ -17,6 +17,7 @@ export type TokenPrices = {
 
 export const useSwap = () => {
   const [strategy, setStrategy] = useState<string>();
+  const [isSwapping, setIsSwapping] = useState(false);
   const [loading, setLoading] = useState({
     input: false,
     output: false,
@@ -28,7 +29,6 @@ export const useSwap = () => {
   const [error, setError] = useState<string>();
 
   const { inputTokenBalance } = useBalances();
-
   const {
     inputAmount,
     outputAmount,
@@ -36,10 +36,12 @@ export const useSwap = () => {
     outputAsset,
     setAmount,
     btcAddress,
+    setShowConfirmSwap,
+    clearAmounts,
   } = swapStore();
   const { strategies } = assetInfoStore();
-  const { getQuote } = useGarden();
   const { address } = useEVMWallet();
+  const { swap, getQuote } = useGarden();
 
   const isInsufficientBalance = useMemo(
     () => new BigNumber(inputAmount).gt(inputTokenBalance),
@@ -214,6 +216,56 @@ export const useSwap = () => {
     fetchQuote(amount, inputAsset, outputAsset, true);
   };
 
+  const handleSwapClick = async () => {
+    if (!validSwap || !swap || !inputAsset || !outputAsset || !strategy) return;
+    setIsSwapping(true);
+
+    const inputAmountInDecimals = new BigNumber(inputAmount)
+      .multipliedBy(10 ** inputAsset.decimals)
+      .toFixed();
+    const outputAmountInDecimals = new BigNumber(outputAmount)
+      .multipliedBy(10 ** outputAsset.decimals)
+      .toFixed();
+
+    const additionalData = isBitcoinSwap
+      ? {
+          strategyId: strategy,
+          btcAddress,
+        }
+      : {
+          strategyId: strategy,
+        };
+
+    try {
+      const res = await swap({
+        fromAsset: inputAsset,
+        toAsset: outputAsset,
+        sendAmount: inputAmountInDecimals,
+        receiveAmount: outputAmountInDecimals,
+        additionalData,
+      });
+      setIsSwapping(false);
+      if (res.error) {
+        console.error("failed to create order ❌", res.error);
+        return;
+      }
+
+      //TODO: add a notification here and clear all amounts and addresses
+      console.log("orderCreated ✅", res.val);
+      clearAmounts();
+
+      if (isBitcoin(res.val.source_swap.chain)) {
+        setShowConfirmSwap({
+          isOpen: true,
+          order: res.val,
+        });
+      }
+    } catch (error) {
+      console.log("failed to create order ❌", error);
+      setIsSwapping(false);
+    }
+  };
+
   useEffect(() => {
     if (!inputAsset || !outputAsset) return;
     handleInputAmountChange(inputAmount);
@@ -252,10 +304,12 @@ export const useSwap = () => {
     loading,
     validSwap,
     error,
+    isSwapping,
     isBitcoinSwap,
     handleInputAmountChange,
     handleOutputAmountChange,
     inputTokenBalance,
+    handleSwapClick,
     isInsufficientBalance,
   };
 };
