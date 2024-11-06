@@ -642,6 +642,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@gardenfi/core@npm:^0.2.0-beta.80":
+  version: 0.2.0-beta.80
+  resolution: "@gardenfi/core@npm:0.2.0-beta.80"
+  dependencies:
+    "@catalogfi/utils": "npm:^0.1.6"
+    "@catalogfi/wallets": "npm:^0.2.51"
+    "@gardenfi/orderbook": "npm:^0.2.0-beta.20"
+    "@gardenfi/utils": "npm:^0.0.1-beta.18"
+    bignumber.js: "npm:^9.1.2"
+    bitcoinjs-lib: "npm:^6.1.6"
+    tiny-secp256k1: "npm:^2.2.3"
+    varuint-bitcoin: "npm:^1.1.2"
+    viem: "npm:^2.21.15"
+  checksum: 10c0/a25f965ec5299fbc3c53cd34553c0ec8bb2ac4d3e0993d73766ad9ce5ccf0bcaf60766f5ce3e66a038dd0e1e10ac6aa58b9a3f86e4ec212667d9ef475713ccd9
+  languageName: node
+  linkType: hard
+
 "@gardenfi/garden-book@npm:^0.1.39":
   version: 0.1.39
   resolution: "@gardenfi/garden-book@npm:0.1.39"
@@ -671,6 +688,21 @@ __metadata:
     viem: "npm:^2.21.15"
     ws: "npm:^8.14.2"
   checksum: 10c0/bad71f3737bd88f9692d0b7d0a98a2901e228edba9af282af742553154432d8e7493d9b7aa6057c1105daa25e26a3c16bf17bcadd1f7e32d90098e7cc9ceb431
+  languageName: node
+  linkType: hard
+
+"@gardenfi/orderbook@npm:^0.2.0-beta.20":
+  version: 0.2.0-beta.20
+  resolution: "@gardenfi/orderbook@npm:0.2.0-beta.20"
+  dependencies:
+    "@catalogfi/utils": "npm:^0.1.6"
+    "@gardenfi/utils": "npm:^0.0.1-beta.18"
+    bufferutil: "npm:^4.0.8"
+    siwe: "npm:^2.1.4"
+    utf-8-validate: "npm:^6.0.3"
+    viem: "npm:^2.21.15"
+    ws: "npm:^8.14.2"
+  checksum: 10c0/273794645c6ac8e932950aae7d252dc00aaccc004e34750f180b8bf1aad4df3dd508f7ab98ce0c6ae399f242432513f135be88157d343da310af24786ed58f5f
   languageName: node
   linkType: hard
 
@@ -5899,9 +5931,9 @@ __metadata:
   resolution: "garden-kiosk@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.13.0"
-    "@gardenfi/core": "npm:^0.2.0-beta.79"
+    "@gardenfi/core": "npm:^0.2.0-beta.80"
     "@gardenfi/garden-book": "npm:^0.1.39"
-    "@gardenfi/orderbook": "npm:^0.2.0-beta.19"
+    "@gardenfi/orderbook": "npm:^0.2.0-beta.20"
     "@gardenfi/react-hooks": "npm:^0.0.1-beta.101"
     "@gardenfi/utils": "npm:^0.0.1-beta.11"
     "@tanstack/react-query": "npm:^5.51.23"

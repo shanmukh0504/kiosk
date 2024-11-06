@@ -30,6 +30,7 @@ export const CreateSwap = () => {
     inputTokenBalance,
     isInsufficientBalance,
     isSwapping,
+    isValidBitcoinAddress,
     handleSwapClick,
   } = useSwap();
   const { garden } = useGarden();
@@ -136,7 +137,7 @@ export const CreateSwap = () => {
             price={tokenPrices.output}
           />
         </div>
-        <SwapAddress />
+        <SwapAddress isValidAddress={isValidBitcoinAddress} />
         <SwapFees tokenPrices={tokenPrices} />
         <Button
           className={`transition-colors duration-500 ${

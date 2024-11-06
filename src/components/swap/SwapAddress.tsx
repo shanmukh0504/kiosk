@@ -1,10 +1,14 @@
-import { useId, useRef, ChangeEvent } from "react";
+import { useId, useRef, ChangeEvent, FC } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { Tooltip } from "../../common/Tooltip";
 import { swapStore } from "../../store/swapStore";
 import { isBitcoin } from "@gardenfi/orderbook";
 
-export const SwapAddress = () => {
+type SwapAddressProps = {
+  isValidAddress: boolean;
+};
+
+export const SwapAddress: FC<SwapAddressProps> = ({ isValidAddress }) => {
   const { inputAsset, outputAsset, btcAddress, setBtcAddress } = swapStore();
   const inputRef = useRef<HTMLInputElement>(null);
   const tooltipId = useId();
@@ -35,7 +39,9 @@ export const SwapAddress = () => {
         <Typography size="h3" weight="medium">
           <input
             ref={inputRef}
-            className="w-full outline-none placeholder:text-mid-grey"
+            className={`w-full outline-none placeholder:text-mid-grey ${
+              !isValidAddress ? "text-red-600" : ""
+            }`}
             type="text"
             value={btcAddress}
             placeholder="Your Bitcoin address"

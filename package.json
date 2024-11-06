@@ -10,9 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@gardenfi/core": "^0.2.0-beta.79",
+    "@gardenfi/core": "^0.2.0-beta.80",
     "@gardenfi/garden-book": "^0.1.39",
-    "@gardenfi/orderbook": "^0.2.0-beta.19",
+    "@gardenfi/orderbook": "^0.2.0-beta.20",
     "@gardenfi/react-hooks": "^0.0.1-beta.101",
     "@gardenfi/utils": "^0.0.1-beta.11",
     "@tanstack/react-query": "^5.51.23",

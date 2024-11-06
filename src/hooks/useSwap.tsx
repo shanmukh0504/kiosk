@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { swapStore } from "../store/swapStore";
 import { IOType } from "../constants/constants";
-import { Asset, isBitcoin } from "@gardenfi/orderbook";
+import { Asset, isBitcoin, NetworkType } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
-import { constructOrderPair } from "@gardenfi/core";
+import { constructOrderPair, validateBTCAddress } from "@gardenfi/core";
 import BigNumber from "bignumber.js";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useEVMWallet } from "./useEVMWallet";
@@ -48,6 +48,19 @@ export const useSwap = () => {
     [inputAmount, inputTokenBalance]
   );
 
+  const isBitcoinSwap = useMemo(() => {
+    return !!(
+      inputAsset &&
+      outputAsset &&
+      (isBitcoin(inputAsset.chain) || isBitcoin(outputAsset.chain))
+    );
+  }, [inputAsset, outputAsset]);
+  const isValidBitcoinAddress = useMemo(() => {
+    if (!isBitcoinSwap) return true;
+    return btcAddress
+      ? validateBTCAddress(btcAddress, NetworkType.testnet)
+      : false;
+  }, [btcAddress, isBitcoinSwap]);
   const _validSwap = useMemo(() => {
     return !!(
       inputAsset &&
@@ -56,6 +69,7 @@ export const useSwap = () => {
       outputAsset &&
       strategy &&
       address &&
+      isValidBitcoinAddress &&
       !error &&
       !isInsufficientBalance
     );
@@ -68,14 +82,8 @@ export const useSwap = () => {
     error,
     address,
     isInsufficientBalance,
+    isValidBitcoinAddress,
   ]);
-  const isBitcoinSwap = useMemo(() => {
-    return !!(
-      inputAsset &&
-      outputAsset &&
-      (isBitcoin(inputAsset.chain) || isBitcoin(outputAsset.chain))
-    );
-  }, [inputAsset, outputAsset]);
   const validSwap = useMemo(() => {
     return isBitcoinSwap ? !!(_validSwap && btcAddress) : _validSwap;
   }, [_validSwap, isBitcoinSwap, btcAddress]);
@@ -309,6 +317,7 @@ export const useSwap = () => {
     handleInputAmountChange,
     handleOutputAmountChange,
     inputTokenBalance,
+    isValidBitcoinAddress,
     handleSwapClick,
     isInsufficientBalance,
   };
