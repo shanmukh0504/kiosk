@@ -24,6 +24,7 @@ export const SidebarMenu: FC<SideBarMenuProps> = ({ onClose }) => {
   const logoutTooltipId = useId();
   const addressTooltipId = useId();
 
+
   const handleDisconnectClick = () => {
     disconnect();
     onClose();
@@ -32,8 +33,13 @@ export const SidebarMenu: FC<SideBarMenuProps> = ({ onClose }) => {
     if (address) {
       await navigator.clipboard.writeText(address);
       setAddressTooltipContent("Copied");
+      
     }
+    setTimeout(() => {
+      setAddressTooltipContent("Copy");
+    }, 2000);
   };
+
 
   return (
     <>
