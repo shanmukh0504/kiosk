@@ -10,7 +10,6 @@ import {
 } from "viem";
 
 export const getTokenBalance = async (address: string, asset: Asset) => {
-  console.log("getting token balances");
   const balanceOfABI = {
     inputs: [{ name: "_owner", type: "address" }],
     name: "balanceOf",

@@ -141,7 +141,7 @@ export const SwapInput: FC<SwapInputProps> = ({
             />
           ) : (
             <div
-              className="flex items-center gap-2 cursor-pointer"
+              className="flex items-center gap-1 cursor-pointer"
               onClick={handleOpenAssetSelector}
             >
               <Typography size="h2" weight="medium">
