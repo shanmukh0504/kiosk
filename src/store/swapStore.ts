@@ -18,7 +18,7 @@ type SwapState = {
     order: MatchedOrder;
   }) => void;
   closeBTCInitModal: () => void;
-  clearAmounts: () => void;
+  clearSwapState: () => void;
 };
 
 const BTC = {
@@ -80,7 +80,11 @@ export const swapStore = create<SwapState>((set) => ({
   closeBTCInitModal: () => {
     set({ btcInitModal: { isOpen: false, order: null } });
   },
-  clearAmounts: () => {
-    set({ inputAmount: "", outputAmount: "" });
+  clearSwapState: () => {
+    set({
+      inputAmount: "",
+      outputAmount: "",
+      btcAddress: "",
+    });
   },
 }));

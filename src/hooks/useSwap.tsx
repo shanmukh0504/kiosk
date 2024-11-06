@@ -37,7 +37,7 @@ export const useSwap = () => {
     setAmount,
     btcAddress,
     setShowConfirmSwap,
-    clearAmounts,
+    clearSwapState,
   } = swapStore();
   const { strategies } = assetInfoStore();
   const { address } = useEVMWallet();
@@ -260,7 +260,7 @@ export const useSwap = () => {
 
       //TODO: add a notification here and clear all amounts and addresses
       console.log("orderCreated ✅", res.val);
-      clearAmounts();
+      clearSwapState();
 
       if (isBitcoin(res.val.source_swap.chain)) {
         setShowConfirmSwap({
