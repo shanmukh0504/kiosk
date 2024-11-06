@@ -75,28 +75,33 @@ export const CreateSwap = () => {
           strategyId: strategy,
         };
 
-    const res = await swap({
-      fromAsset: inputAsset,
-      toAsset: outputAsset,
-      sendAmount: inputAmountInDecimals,
-      receiveAmount: outputAmountInDecimals,
-      additionalData,
-    });
-    setIsSwapping(false);
-    if (res.error) {
-      console.error("failed to create order ❌", res.error);
-      return;
-    }
-
-    //TODO: add a notification here and clear all amounts and addresses
-    console.log("orderCreated ✅", res.val);
-    clearAmounts();
-
-    if (isBitcoin(res.val.source_swap.chain)) {
-      setShowConfirmSwap({
-        isOpen: true,
-        order: res.val,
+    try {
+      const res = await swap({
+        fromAsset: inputAsset,
+        toAsset: outputAsset,
+        sendAmount: inputAmountInDecimals,
+        receiveAmount: outputAmountInDecimals,
+        additionalData,
       });
+      setIsSwapping(false);
+      if (res.error) {
+        console.error("failed to create order ❌", res.error);
+        return;
+      }
+
+      //TODO: add a notification here and clear all amounts and addresses
+      console.log("orderCreated ✅", res.val);
+      clearAmounts();
+
+      if (isBitcoin(res.val.source_swap.chain)) {
+        setShowConfirmSwap({
+          isOpen: true,
+          order: res.val,
+        });
+      }
+    } catch (error) {
+      console.log("failed to create order ❌", error);
+      setIsSwapping(false);
     }
   };
 
