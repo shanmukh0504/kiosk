@@ -55,34 +55,36 @@ export const Transactions: FC<TransactionsProps> = ({ isSidebarOpen }) => {
 
   return (
     <>
-      <div className="flex flex-col bg-white/50 rounded-2xl p-4 gap-4">
-        <Typography size="h5" weight="bold">
-          Transactions
-        </Typography>
-        <div className="flex flex-col gap-4 overflow-auto">
-          {isLoadingOrders ? (
-            <div className="text-center py-2">Loading...</div>
-          ) : (
-            orders.map((order, index) => (
-              <div key={index}>
-                <Transaction order={order} status={parseStatus(order)} />
-                {index !== orders.length - 1 ? (
-                  <div className="bg-white/50 w-full h-px"></div>
-                ) : null}
-              </div>
-            ))
-          )}
+      <div className="overflow-y-auto pb-6 flex flex-col gap-5 scrollbar-hide rounded-2xl">
+        <div className="flex flex-col bg-white/50 rounded-2xl p-4 gap-4 ">
+          <Typography size="h5" weight="bold">
+            Transactions
+          </Typography>
+          <div className="flex flex-col gap-4 overflow-auto">
+            {isLoadingOrders ? (
+              <div className="text-center py-2">Loading...</div>
+            ) : (
+              orders.map((order, index) => (
+                <div key={index}>
+                  <Transaction order={order} status={parseStatus(order)} />
+                  {index !== orders.length - 1 ? (
+                    <div className="bg-white/50 w-full h-px"></div>
+                  ) : null}
+                </div>
+              ))
+            )}
+          </div>
         </div>
+        {showLoadMore && (
+          <Button
+            onClick={handleLoadMore}
+            variant={isLoadingMore ? "disabled" : "secondary"}
+            className="w-1/4 mx-auto min-h-10"
+          >
+            {isLoadingMore ? "Loading..." : "Load More"}
+          </Button>
+        )}
       </div>
-      {showLoadMore && (
-        <Button
-          onClick={handleLoadMore}
-          variant={isLoadingMore ? "disabled" : "secondary"}
-          className="w-1/4 mx-auto"
-        >
-          {isLoadingMore ? "Loading..." : "Load More"}
-        </Button>
-      )}
     </>
   );
 };

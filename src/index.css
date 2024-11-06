@@ -47,3 +47,12 @@
     @apply content-[''] bg-gradient-to-r from-transparent via-white/50 via-50% to-transparent absolute top-0 left-0 w-[168px] h-full animate-shine;
   }
 }
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;  
+  scrollbar-width: none;  
+}
