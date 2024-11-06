@@ -10,7 +10,7 @@ import BigNumber from "bignumber.js";
 import { useEffect, useMemo, useState } from "react";
 import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
 import { Toast } from "../toast/Toast";
-import { formatAmount, getAssetFromSwap } from "../../utils/utils";
+import { formatAmount } from "../../utils/utils";
 import { useSwap } from "../../hooks/useSwap";
 import { SwapFees } from "./SwapFees";
 
@@ -115,8 +115,15 @@ export const CreateSwap = () => {
       console.log("garden log", orderId, log);
     };
     const handleSuccess = (order: MatchedOrder) => {
-      const inputAsset = getAssetFromSwap(order.source_swap);
-      const outputAsset = getAssetFromSwap(order.destination_swap);
+      const { source_swap, destination_swap } = order;
+      const inputAsset =
+        assets &&
+        assets[`${source_swap.chain}_${source_swap.asset.toLowerCase()}`];
+      const outputAsset =
+        assets &&
+        assets[
+          `${destination_swap.chain}_${destination_swap.asset.toLowerCase()}`
+        ];
       if (!inputAsset || !outputAsset) return;
 
       const inputAmount = formatAmount(
@@ -127,7 +134,7 @@ export const CreateSwap = () => {
         order.destination_swap.amount,
         outputAsset.decimals
       );
-
+      console.log("success order ✅", order.create_order.create_id);
       Toast.success(
         `Swap success ${inputAmount} ${inputAsset.symbol} to ${outputAmount} ${outputAsset.symbol}`
       );
@@ -191,6 +198,7 @@ export const CreateSwap = () => {
           variant={buttonVariant}
           size="lg"
           onClick={handleSwapClick}
+          disabled={isSwapping || !validSwap || isInsufficientBalance}
         >
           {buttonLabel}
         </Button>
