@@ -6,7 +6,8 @@
     "tailwindcss",
     "tanstack",
     "tseslint",
-    "viem"
+    "viem",
+    "Waitlist"
   ],
   "prettier.semi": true,
   "prettier.singleQuote": false,

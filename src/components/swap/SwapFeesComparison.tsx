@@ -18,7 +18,7 @@ export const SwapFeesComparison: FC<SwapFeesComparisonProps> = ({
     <div
       className={`flex flex-col gap-3
         bg-primary-lighter rounded-[20px]
-        absolute top-0 ${visible ? "left-0" : "left-full"} z-10
+        absolute top-0 ${visible ? "left-0" : "left-full"} z-30
         h-full w-full p-3
         transition-left ease-in-out duration-700`}
     >
