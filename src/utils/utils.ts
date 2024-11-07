@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { INTERNAL_ROUTES, THEMES } from "../constants/constants";
-import { assetInfoStore, Assets } from "../store/assetInfoStore";
+import { Assets } from "../store/assetInfoStore";
 import { Swap } from "@gardenfi/orderbook";
 
 export const isProduction = () => {
