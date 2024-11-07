@@ -32,9 +32,7 @@ export const Address = () => {
         {getTrimmedAddress(address ?? "")}
       </Typography>
 
-      <div className="sm:hidden justify-center flex items-center ">
-        <WalletIcon />
-      </div>
+      <WalletIcon className="sm:hidden justify-center flex items-center " />
 
       {actualPendingOrders?.length ? (
         <div className="relative">

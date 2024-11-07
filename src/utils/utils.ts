@@ -51,3 +51,6 @@ export const formatAmount = (
     .toFixed(toFixed, BigNumber.ROUND_DOWN);
   return Number(temp);
 };
+
+export const isCurrentRoute = (route: string) =>
+  window.location.pathname === route;
