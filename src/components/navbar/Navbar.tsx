@@ -7,6 +7,8 @@ import { Address } from "./Address";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useGarden } from "@gardenfi/react-hooks";
 import { OrderActions, parseActionFromStatus } from "@gardenfi/core";
+import { isCurrentRoute } from "../../utils/utils";
+import { MobileMenu } from "./MobileMenu";
 
 export const Navbar = () => {
   const [isInitiatingSM, setIsInitiatingSM] = useState(false);
@@ -21,8 +23,6 @@ export const Navbar = () => {
     () => isConnected && !shouldInitiateSM,
     [isConnected, shouldInitiateSM]
   );
-
-  const isCurrentRoute = (route: string) => window.location.pathname === route;
 
   const handleHomeLogoClick = () => window.open(API().home, "_blank");
   const handleConnectClick = () => {
@@ -70,24 +70,26 @@ export const Navbar = () => {
   ]);
 
   return (
-    <div className={"flex items-center px-10 py-6 gap-16"}>
-      <GardenFullLogo
-        onClick={handleHomeLogoClick}
-        className="cursor-pointer"
-      />
-      <div className="flex gap-12">
-        {Object.values(INTERNAL_ROUTES).map((route) => {
-          return (
-            <a key={route.path} href={route.path}>
-              <Typography
-                size="h2"
-                weight={isCurrentRoute(route.path) ? "bold" : "medium"}
-              >
-                {route.name}
-              </Typography>
-            </a>
-          );
-        })}
+    <div className={"flex items-center justify-between px-10 py-6 gap-3"}>
+      <div className="flex items-center gap-16">
+        <GardenFullLogo
+          onClick={handleHomeLogoClick}
+          className="cursor-pointer "
+        />
+        <div className="hidden sm:flex  sm:items-center gap-12">
+          {Object.values(INTERNAL_ROUTES).map((route) => {
+            return (
+              <a key={route.path} href={route.path}>
+                <Typography
+                  size="h2"
+                  weight={isCurrentRoute(route.path) ? "bold" : "medium"}
+                >
+                  {route.name}
+                </Typography>
+              </a>
+            );
+          })}
+        </div>
       </div>
       {isFullyConnected ? (
         <Address />
@@ -100,6 +102,7 @@ export const Navbar = () => {
           Connect
         </Button>
       )}
+      <MobileMenu />
     </div>
   );
 };

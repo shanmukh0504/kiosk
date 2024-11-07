@@ -1,4 +1,4 @@
-import { Opacity, Typography } from "@gardenfi/garden-book";
+import { Opacity, Typography, WalletIcon } from "@gardenfi/garden-book";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
@@ -25,12 +25,15 @@ export const Address = () => {
   return (
     <Opacity
       level="medium"
-      className="flex items-center gap-2 ml-auto py-3 px-4 rounded-full cursor-pointer"
+      className="flex items-center justify-center gap-2 ml-auto min-h-8 min-w-8 sm:py-3 sm:px-4 rounded-full cursor-pointer"
       onClick={handleAddressClick}
     >
-      <Typography size="h3" weight="bold">
+      <Typography size="h3" weight="bold" className="hidden sm:block">
         {getTrimmedAddress(address ?? "")}
       </Typography>
+
+      <WalletIcon className="sm:hidden justify-center flex items-center " />
+
       {actualPendingOrders?.length ? (
         <div className="relative">
           <Lottie
