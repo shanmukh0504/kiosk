@@ -639,7 +639,6 @@ __metadata:
     varuint-bitcoin: "npm:^1.1.2"
     viem: "npm:^2.21.15"
   checksum: 10c0/e48ff7bbdc6d6c724b77b7cc0a659789fdffce2b8b189fb2ec4b3271be8bdf5b89155c5bf318e64306ac7f73ccbcbbb38140534234b43a976c2d590ac1150fab
-
   languageName: node
   linkType: hard
 
