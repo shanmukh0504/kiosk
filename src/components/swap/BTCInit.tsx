@@ -12,18 +12,20 @@ import { swapStore } from "../../store/swapStore";
 import { useGarden } from "@gardenfi/react-hooks";
 import { formatAmount, getAssetFromSwap } from "../../utils/utils";
 import BigNumber from "bignumber.js";
+import { assetInfoStore } from "../../store/assetInfoStore";
 
 export const BTCInit = () => {
   const [copied, setCopied] = useState(false);
   const [isInitiatedDetected, setIsInitiatedDetected] = useState(false);
   const { btcInitModal, closeBTCInitModal } = swapStore();
+  const { assets } = assetInfoStore();
   const { order } = btcInitModal;
 
   const depositAddress = order ? order.source_swap.swap_id : "";
   const { orderBook } = useGarden();
 
-  const inputAsset = order && getAssetFromSwap(order.source_swap);
-  const outputAsset = order && getAssetFromSwap(order.destination_swap);
+  const inputAsset = order && getAssetFromSwap(order.source_swap, assets);
+  const outputAsset = order && getAssetFromSwap(order.destination_swap, assets);
   const btcAddress =
     order && order.create_order.additional_data.bitcoin_optional_recipient;
   const inputAmountPrice = order

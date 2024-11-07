@@ -3,6 +3,7 @@ const REQUIRED_ENV_VARS = {
   QUESTS_URL: import.meta.env.VITE_QUESTS_URL,
   ORDERBOOK_URL: import.meta.env.VITE_ORDERBOOK_URL,
   QUOTE_URL: import.meta.env.VITE_QUOTE_URL,
+  WHITELIST: import.meta.env.VITE_WHITELIST_URL,
 } as const;
 
 export const API = () => {
@@ -26,5 +27,7 @@ export const API = () => {
       testnet: "https://mempool.space/testnet4/api",
       mainnet: "https://mempool.space/api",
     },
+    whitelist: (address: string) =>
+      REQUIRED_ENV_VARS.WHITELIST + `whitelist/${address}`,
   };
 };

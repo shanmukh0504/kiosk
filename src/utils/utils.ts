@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { INTERNAL_ROUTES, THEMES } from "../constants/constants";
-import { assetInfoStore } from "../store/assetInfoStore";
+import { Assets } from "../store/assetInfoStore";
 import { Swap } from "@gardenfi/orderbook";
 
 export const isProduction = () => {
@@ -14,8 +14,12 @@ export const getCurrentTheme = () => {
   throw new Error("Invalid theme");
 };
 
-export const getAssetFromSwap = (swap: Swap) => {
-  const { assets } = assetInfoStore();
+/**
+ * Gets the {Asset} from assets in store using the swap object
+ * @param {Swap} swap
+ * @returns
+ */
+export const getAssetFromSwap = (swap: Swap, assets: Assets | null) => {
   return assets && assets[`${swap.chain}_${swap.asset.toLowerCase()}`];
 };
 

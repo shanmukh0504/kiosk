@@ -41,7 +41,7 @@ export const useSwap = () => {
   } = swapStore();
   const { strategies } = assetInfoStore();
   const { address } = useEVMWallet();
-  const { swap, getQuote } = useGarden();
+  const { swapAndInitiate, getQuote } = useGarden();
 
   const isInsufficientBalance = useMemo(
     () => new BigNumber(inputAmount).gt(inputTokenBalance),
@@ -225,7 +225,14 @@ export const useSwap = () => {
   };
 
   const handleSwapClick = async () => {
-    if (!validSwap || !swap || !inputAsset || !outputAsset || !strategy) return;
+    if (
+      !validSwap ||
+      !swapAndInitiate ||
+      !inputAsset ||
+      !outputAsset ||
+      !strategy
+    )
+      return;
     setIsSwapping(true);
 
     const inputAmountInDecimals = new BigNumber(inputAmount)
@@ -245,7 +252,7 @@ export const useSwap = () => {
         };
 
     try {
-      const res = await swap({
+      const res = await swapAndInitiate({
         fromAsset: inputAsset,
         toAsset: outputAsset,
         sendAmount: inputAmountInDecimals,
@@ -300,7 +307,7 @@ export const useSwap = () => {
       return;
     }
     setError(undefined);
-  }, [inputAmount, minAmount, maxAmount]);
+  }, [inputAmount, minAmount, maxAmount, inputAsset?.symbol]);
 
   return {
     inputAmount,

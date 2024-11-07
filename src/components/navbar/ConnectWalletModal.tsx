@@ -9,6 +9,8 @@ import { config } from "../../layout/wagmi/config";
 import { API } from "../../constants/api";
 import { WalletClient } from "viem";
 import authStore from "../../store/authStore";
+import { checkIfWhitelisted } from "../../utils/checkIfWhitelisted";
+import { modalNames, modalStore } from "../../store/modalStore";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -22,6 +24,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({
   const [connectingWallet, setConnectingWallet] = useState<string | null>(null);
   const { connectors } = useEVMWallet();
   const { setAuth } = authStore();
+  const { setOpenModal } = modalStore();
 
   const handleConnect = async (connector: Connector, id: string) => {
     try {
@@ -31,6 +34,14 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({
         connector: connector,
       });
       if (!walletClient?.account) return;
+
+      const whitelisted = await checkIfWhitelisted(
+        walletClient.account.address
+      );
+      if (!whitelisted) {
+        setOpenModal(modalNames.whiteList);
+        return;
+      }
 
       const auth = new Siwe(new Url(API().orderbook), walletClient, {
         store: localStorage,

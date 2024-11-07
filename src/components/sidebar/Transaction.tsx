@@ -1,14 +1,14 @@
-import { FC, useState } from "react";
-import { Button, Typography } from "@gardenfi/garden-book";
+import { FC, useMemo } from "react";
+import { Typography } from "@gardenfi/garden-book";
 import { SwapInfo } from "../../common/SwapInfo";
-import { isEVM, MatchedOrder } from "@gardenfi/orderbook";
+import { MatchedOrder } from "@gardenfi/orderbook";
 import {
   formatAmount,
   getAssetFromSwap,
   getDayDifference,
 } from "../../utils/utils";
 import { OrderStatus } from "@gardenfi/core";
-import { useGarden } from "@gardenfi/react-hooks";
+import { assetInfoStore } from "../../store/assetInfoStore";
 
 type TransactionProps = {
   order: MatchedOrder;
@@ -25,7 +25,9 @@ enum StatusLabel {
 const getOrderStatusLabel = (status: OrderStatus) => {
   switch (status) {
     case OrderStatus.Redeemed:
+    case OrderStatus.RedeemDetected:
     case OrderStatus.Refunded:
+    case OrderStatus.RefundDetected:
     case OrderStatus.CounterPartyRedeemed:
     case OrderStatus.CounterPartyRedeemDetected:
       return StatusLabel.Completed;
@@ -39,62 +41,56 @@ const getOrderStatusLabel = (status: OrderStatus) => {
 };
 
 export const Transaction: FC<TransactionProps> = ({ order, status }) => {
-  const [isInitiating, setIsInitiating] = useState(false);
-
-  const { evmInitiate } = useGarden();
   const { create_order, source_swap, destination_swap } = order;
+  const { assets } = assetInfoStore();
 
-  const sendAsset = getAssetFromSwap(source_swap);
-  const receiveAsset = getAssetFromSwap(destination_swap);
-  const statusLabel = status && getOrderStatusLabel(status);
-  const shouldInitiate =
-    isEVM(order.source_swap.chain) && status === OrderStatus.Matched;
+  const sendAsset = useMemo(
+    () => getAssetFromSwap(source_swap, assets),
+    [source_swap, assets]
+  );
+  const receiveAsset = useMemo(
+    () => getAssetFromSwap(destination_swap, assets),
+    [destination_swap, assets]
+  );
+  const statusLabel = useMemo(
+    () => status && getOrderStatusLabel(status),
+    [status]
+  );
+  const sendAmount = useMemo(
+    () => formatAmount(create_order.source_amount, sendAsset?.decimals ?? 0),
+    [create_order.source_amount, sendAsset?.decimals]
+  );
+  const receiveAmount = useMemo(
+    () =>
+      formatAmount(
+        create_order.destination_amount,
+        receiveAsset?.decimals ?? 0
+      ),
+    [create_order.destination_amount, receiveAsset?.decimals]
+  );
+  const dayDifference = useMemo(
+    () => getDayDifference(create_order.updated_at),
+    [create_order.updated_at]
+  );
 
-  const handleInitiate = async () => {
-    if (!evmInitiate) return;
-    setIsInitiating(true);
-    const res = await evmInitiate(order);
-    if (res.ok) {
-      console.log("Initiated");
-      status = OrderStatus.InitiateDetected;
-    } else {
-      console.log("Failed to initiate");
-    }
-    setIsInitiating(false);
-  };
+  if (!sendAsset || !receiveAsset) return null;
 
-  return sendAsset && receiveAsset ? (
+  return (
     <div className="flex flex-col gap-1 pb-4">
       <SwapInfo
         sendAsset={sendAsset}
         receiveAsset={receiveAsset}
-        sendAmount={formatAmount(
-          create_order.source_amount,
-          sendAsset.decimals
-        )}
-        receiveAmount={formatAmount(
-          create_order.destination_amount,
-          receiveAsset.decimals
-        )}
+        sendAmount={sendAmount}
+        receiveAmount={receiveAmount}
       />
-      {shouldInitiate ? (
-        <Button
-          variant={isInitiating ? "disabled" : "primary"}
-          onClick={handleInitiate}
-          className={"my-3 w-10 ml-auto"}
-        >
-          {isInitiating ? "Initiating..." : "Initiate"}
-        </Button>
-      ) : (
-        <div className="flex justify-between">
-          <Typography size="h5" weight="medium">
-            {statusLabel}
-          </Typography>
-          <Typography size="h5" weight="medium">
-            {getDayDifference(create_order.updated_at)}
-          </Typography>
-        </div>
-      )}
+      <div className="flex justify-between">
+        <Typography size="h5" weight="medium">
+          {statusLabel}
+        </Typography>
+        <Typography size="h5" weight="medium">
+          {dayDifference}
+        </Typography>
+      </div>
     </div>
-  ) : null;
+  );
 };
