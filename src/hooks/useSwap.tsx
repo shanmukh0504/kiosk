@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { swapStore } from "../store/swapStore";
 import { IOType } from "../constants/constants";
-import { Asset, isBitcoin } from "@gardenfi/orderbook";
+import { Asset, isBitcoin, NetworkType } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
-import { constructOrderPair } from "@gardenfi/core";
+import { constructOrderPair, validateBTCAddress } from "@gardenfi/core";
 import BigNumber from "bignumber.js";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useEVMWallet } from "./useEVMWallet";
@@ -17,6 +17,7 @@ export type TokenPrices = {
 
 export const useSwap = () => {
   const [strategy, setStrategy] = useState<string>();
+  const [isSwapping, setIsSwapping] = useState(false);
   const [loading, setLoading] = useState({
     input: false,
     output: false,
@@ -28,7 +29,6 @@ export const useSwap = () => {
   const [error, setError] = useState<string>();
 
   const { inputTokenBalance } = useBalances();
-
   const {
     inputAmount,
     outputAmount,
@@ -36,16 +36,31 @@ export const useSwap = () => {
     outputAsset,
     setAmount,
     btcAddress,
+    setShowConfirmSwap,
+    clearSwapState,
   } = swapStore();
   const { strategies } = assetInfoStore();
-  const { getQuote } = useGarden();
   const { address } = useEVMWallet();
+  const { swap, getQuote } = useGarden();
 
   const isInsufficientBalance = useMemo(
     () => new BigNumber(inputAmount).gt(inputTokenBalance),
     [inputAmount, inputTokenBalance]
   );
 
+  const isBitcoinSwap = useMemo(() => {
+    return !!(
+      inputAsset &&
+      outputAsset &&
+      (isBitcoin(inputAsset.chain) || isBitcoin(outputAsset.chain))
+    );
+  }, [inputAsset, outputAsset]);
+  const isValidBitcoinAddress = useMemo(() => {
+    if (!isBitcoinSwap) return true;
+    return btcAddress
+      ? validateBTCAddress(btcAddress, NetworkType.testnet)
+      : false;
+  }, [btcAddress, isBitcoinSwap]);
   const _validSwap = useMemo(() => {
     return !!(
       inputAsset &&
@@ -54,6 +69,7 @@ export const useSwap = () => {
       outputAsset &&
       strategy &&
       address &&
+      isValidBitcoinAddress &&
       !error &&
       !isInsufficientBalance
     );
@@ -66,14 +82,8 @@ export const useSwap = () => {
     error,
     address,
     isInsufficientBalance,
+    isValidBitcoinAddress,
   ]);
-  const isBitcoinSwap = useMemo(() => {
-    return !!(
-      inputAsset &&
-      outputAsset &&
-      (isBitcoin(inputAsset.chain) || isBitcoin(outputAsset.chain))
-    );
-  }, [inputAsset, outputAsset]);
   const validSwap = useMemo(() => {
     return isBitcoinSwap ? !!(_validSwap && btcAddress) : _validSwap;
   }, [_validSwap, isBitcoinSwap, btcAddress]);
@@ -185,12 +195,12 @@ export const useSwap = () => {
         return;
       }
       if (minAmount && amountInNumber < minAmount) {
-        setError(`min. amount is ${minAmount}`);
+        setError(`Minimum amount is ${minAmount} ${inputAsset?.symbol}`);
         setAmount(IOType.output, "0");
         return;
       }
       if (maxAmount && amountInNumber > maxAmount) {
-        setError(`max amount is ${maxAmount}`);
+        setError(`Maximum amount is ${maxAmount} ${inputAsset?.symbol}`);
         setAmount(IOType.output, "0");
         return;
       }
@@ -214,6 +224,56 @@ export const useSwap = () => {
     fetchQuote(amount, inputAsset, outputAsset, true);
   };
 
+  const handleSwapClick = async () => {
+    if (!validSwap || !swap || !inputAsset || !outputAsset || !strategy) return;
+    setIsSwapping(true);
+
+    const inputAmountInDecimals = new BigNumber(inputAmount)
+      .multipliedBy(10 ** inputAsset.decimals)
+      .toFixed();
+    const outputAmountInDecimals = new BigNumber(outputAmount)
+      .multipliedBy(10 ** outputAsset.decimals)
+      .toFixed();
+
+    const additionalData = isBitcoinSwap
+      ? {
+          strategyId: strategy,
+          btcAddress,
+        }
+      : {
+          strategyId: strategy,
+        };
+
+    try {
+      const res = await swap({
+        fromAsset: inputAsset,
+        toAsset: outputAsset,
+        sendAmount: inputAmountInDecimals,
+        receiveAmount: outputAmountInDecimals,
+        additionalData,
+      });
+      setIsSwapping(false);
+      if (res.error) {
+        console.error("failed to create order ❌", res.error);
+        return;
+      }
+
+      //TODO: add a notification here and clear all amounts and addresses
+      console.log("orderCreated ✅", res.val);
+      clearSwapState();
+
+      if (isBitcoin(res.val.source_swap.chain)) {
+        setShowConfirmSwap({
+          isOpen: true,
+          order: res.val,
+        });
+      }
+    } catch (error) {
+      console.log("failed to create order ❌", error);
+      setIsSwapping(false);
+    }
+  };
+
   useEffect(() => {
     if (!inputAsset || !outputAsset) return;
     handleInputAmountChange(inputAmount);
@@ -232,11 +292,11 @@ export const useSwap = () => {
     const amountInNumber = Number(inputAmount);
     if (!amountInNumber) return;
     if (amountInNumber < minAmount) {
-      setError(`min. amount is ${minAmount}`);
+      setError(`Minimum amount is ${minAmount} ${inputAsset?.symbol}`);
       return;
     }
     if (amountInNumber > maxAmount) {
-      setError(`max amount is ${maxAmount}`);
+      setError(`Maximum amount is ${maxAmount} ${inputAsset?.symbol}`);
       return;
     }
     setError(undefined);
@@ -252,10 +312,13 @@ export const useSwap = () => {
     loading,
     validSwap,
     error,
+    isSwapping,
     isBitcoinSwap,
     handleInputAmountChange,
     handleOutputAmountChange,
     inputTokenBalance,
+    isValidBitcoinAddress,
+    handleSwapClick,
     isInsufficientBalance,
   };
 };

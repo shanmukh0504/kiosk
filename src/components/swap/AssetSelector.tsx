@@ -87,7 +87,7 @@ export const AssetSelector = () => {
         bg-primary-lighter rounded-[20px]
         absolute top-0 ${
           isAssetSelectorOpen.isOpen ? "left-0" : "left-full"
-        } z-10
+        } z-40
         h-full w-full p-3
         transition-left ease-cubic-in-out duration-700`}
     >

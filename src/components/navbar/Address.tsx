@@ -5,12 +5,22 @@ import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { useGarden } from "@gardenfi/react-hooks";
 import Spinner from "./../../constants/spinner.json";
 import Lottie from "react-lottie-player";
+import { OrderStatus } from "@gardenfi/core";
+import { useMemo } from "react";
 
 export const Address = () => {
   const { address } = useEVMWallet();
   const { setOpenModal } = modalStore();
   const { pendingOrders } = useGarden();
   const handleAddressClick = () => setOpenModal(modalNames.transactionsSideBar);
+
+  const actualPendingOrders = useMemo(
+    () =>
+      pendingOrders?.filter(
+        (order) => order.status !== OrderStatus.RedeemDetected
+      ),
+    [pendingOrders]
+  );
 
   return (
     <Opacity
@@ -21,7 +31,7 @@ export const Address = () => {
       <Typography size="h3" weight="bold">
         {getTrimmedAddress(address ?? "")}
       </Typography>
-      {pendingOrders?.length ? (
+      {actualPendingOrders?.length ? (
         <div className="relative">
           <Lottie
             loop
@@ -31,7 +41,7 @@ export const Address = () => {
             style={{ width: 26, height: 26 }}
           />
           <div className="absolute text-rose text-sm font-bold top-[12%] left-[33%]">
-            {pendingOrders.length}
+            {actualPendingOrders.length}
           </div>
         </div>
       ) : (

@@ -6,19 +6,16 @@ import { swapStore } from "../../store/swapStore";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { AssetSelector } from "./AssetSelector";
 import { useGarden } from "@gardenfi/react-hooks";
-import BigNumber from "bignumber.js";
-import { useEffect, useMemo, useState } from "react";
-import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
+import { useEffect, useMemo } from "react";
+import { MatchedOrder } from "@gardenfi/orderbook";
 import { Toast } from "../toast/Toast";
 import { formatAmount } from "../../utils/utils";
 import { useSwap } from "../../hooks/useSwap";
 import { SwapFees } from "./SwapFees";
 
 export const CreateSwap = () => {
-  const [isSwapping, setIsSwapping] = useState(false);
   const { isAssetSelectorOpen, assets } = assetInfoStore();
-  const { btcAddress, swapAssets, setShowConfirmSwap, clearAmounts } =
-    swapStore();
+  const { swapAssets } = swapStore();
   const {
     outputAmount,
     inputAmount,
@@ -27,15 +24,16 @@ export const CreateSwap = () => {
     handleInputAmountChange,
     handleOutputAmountChange,
     loading,
-    strategy,
     error,
     tokenPrices,
     validSwap,
-    isBitcoinSwap,
     inputTokenBalance,
     isInsufficientBalance,
+    isSwapping,
+    isValidBitcoinAddress,
+    handleSwapClick,
   } = useSwap();
-  const { swap, garden } = useGarden();
+  const { garden } = useGarden();
 
   const buttonLabel = useMemo(() => {
     return isInsufficientBalance
@@ -54,56 +52,6 @@ export const CreateSwap = () => {
       ? "primary"
       : "disabled";
   }, [isInsufficientBalance, isSwapping, validSwap]);
-
-  const handleSwapClick = async () => {
-    if (!validSwap || !swap || !inputAsset || !outputAsset || !strategy) return;
-    setIsSwapping(true);
-
-    const inputAmountInDecimals = new BigNumber(inputAmount)
-      .multipliedBy(10 ** inputAsset.decimals)
-      .toFixed();
-    const outputAmountInDecimals = new BigNumber(outputAmount)
-      .multipliedBy(10 ** outputAsset.decimals)
-      .toFixed();
-
-    const additionalData = isBitcoinSwap
-      ? {
-          strategyId: strategy,
-          btcAddress,
-        }
-      : {
-          strategyId: strategy,
-        };
-
-    try {
-      const res = await swap({
-        fromAsset: inputAsset,
-        toAsset: outputAsset,
-        sendAmount: inputAmountInDecimals,
-        receiveAmount: outputAmountInDecimals,
-        additionalData,
-      });
-      setIsSwapping(false);
-      if (res.error) {
-        console.error("failed to create order ❌", res.error);
-        return;
-      }
-
-      //TODO: add a notification here and clear all amounts and addresses
-      console.log("orderCreated ✅", res.val);
-      clearAmounts();
-
-      if (isBitcoin(res.val.source_swap.chain)) {
-        setShowConfirmSwap({
-          isOpen: true,
-          order: res.val,
-        });
-      }
-    } catch (error) {
-      console.log("failed to create order ❌", error);
-      setIsSwapping(false);
-    }
-  };
 
   useEffect(() => {
     if (!garden) return;
@@ -189,7 +137,7 @@ export const CreateSwap = () => {
             price={tokenPrices.output}
           />
         </div>
-        <SwapAddress />
+        <SwapAddress isValidAddress={isValidBitcoinAddress} />
         <SwapFees tokenPrices={tokenPrices} />
         <Button
           className={`transition-colors duration-500 ${
