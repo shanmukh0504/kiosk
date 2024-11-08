@@ -19,7 +19,7 @@ export const Notification: FC<NotificationProps> = ({
   return (
     <div
       className={`bg-white/50 backdrop-blur-[20px]
-            fixed left-10 bottom-10 p-4
+            fixed left-10 bottom-10 p-4 z-[9999]
             transition-[border-radius,width,height,transform] ease-cubic-in-out duration-300
             ${
               visible
