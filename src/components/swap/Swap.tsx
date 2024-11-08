@@ -32,7 +32,7 @@ export const Swap = () => {
   }, [assets, setAsset]);
 
   return (
-    <div className="flex flex-col gap-4 w-full max-w-[424px] mx-auto mt-20">
+    <div className="flex flex-col gap-4 w-full max-w-[424px] mx-auto mt-10">
       <ToastContainer />
       <div
         className={`bg-white/50 rounded-[20px]

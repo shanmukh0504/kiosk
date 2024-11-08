@@ -19,6 +19,7 @@ type SwapInputProps = {
   price: string;
   error?: string;
   balance?: number;
+  timeEstimate?: string;
 };
 
 export const SwapInput: FC<SwapInputProps> = ({
@@ -30,6 +31,7 @@ export const SwapInput: FC<SwapInputProps> = ({
   price,
   error,
   balance,
+  timeEstimate,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { setOpenAssetSelector, chains } = assetInfoStore();
@@ -107,12 +109,11 @@ export const SwapInput: FC<SwapInputProps> = ({
                 </div>
               )
             ))}
-          {type === IOType.output && (
+          {type === IOType.output && timeEstimate && (
             <div className="flex gap-1 items-center">
               <TimerIcon className="h-4" />
               <Typography size="h5" weight="medium">
-                {/* TODO: Fetch time estimate */}
-                ~30s
+                {timeEstimate}
               </Typography>
             </div>
           )}

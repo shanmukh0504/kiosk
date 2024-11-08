@@ -47,12 +47,14 @@ export const SwapAddress: FC<SwapAddressProps> = ({ isValidAddress }) => {
             placeholder="Your Bitcoin address"
             onChange={handleChange}
           />
-          <Tooltip
-            id={tooltipId}
-            place="right"
-            content="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt."
-            multiline={true}
-          />
+          {isRecoveryAddress && (
+            <Tooltip
+              id={tooltipId}
+              place="right"
+              content="In case your swap expires, your Bitcoin will be automatically refunded to this address."
+              multiline={true}
+            />
+          )}
         </Typography>
       </div>
     )
