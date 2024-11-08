@@ -1,5 +1,5 @@
 import { useState, FC, useMemo } from "react";
-import { SwapFeesComparison } from "./SwapFeesComparison";
+// import { SwapFeesComparison } from "./SwapFeesComparison";
 import { Typography } from "@gardenfi/garden-book";
 import { TokenPrices } from "../../hooks/useSwap";
 
@@ -23,10 +23,10 @@ export const SwapFees: FC<SwapFeesProps> = ({ tokenPrices }) => {
 
   return (
     <>
-      <SwapFeesComparison
+      {/* <SwapFeesComparison
         visible={showComparison.isOpen}
         hide={() => handleShowComparison(false)}
-      />
+      /> */}
       <div
         className="flex flex-col gap-3
         bg-white/50 rounded-2xl
