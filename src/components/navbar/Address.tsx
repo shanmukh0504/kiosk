@@ -12,7 +12,7 @@ export const Address = () => {
   const { address } = useEVMWallet();
   const { setOpenModal } = modalStore();
   const { pendingOrders } = useGarden();
-  const handleAddressClick = () => setOpenModal(modalNames.transactionsSideBar);
+  const handleAddressClick = () => setOpenModal(modalNames.transactions);
 
   const actualPendingOrders = useMemo(
     () =>

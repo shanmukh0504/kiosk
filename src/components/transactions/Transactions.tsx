@@ -1,18 +1,18 @@
 import { Typography } from "@gardenfi/garden-book";
-import { Transaction } from "./Transaction";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useEffect, FC, useState, useMemo } from "react";
-import { useOrdersStore } from "../../store/ordersStore";
 import { Button } from "@gardenfi/garden-book";
-import blockNumberStore from "../../store/blockNumberStore";
 import { MatchedOrder } from "@gardenfi/orderbook";
 import { ParseOrderStatus } from "@gardenfi/core";
+import { useOrdersStore } from "../../store/ordersStore";
+import blockNumberStore from "../../store/blockNumberStore";
+import { TransactionRow } from "./TransactionRow";
 
 type TransactionsProps = {
-  isSidebarOpen: boolean;
+  isOpen: boolean;
 };
 
-export const Transactions: FC<TransactionsProps> = ({ isSidebarOpen }) => {
+export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const { orderBook } = useGarden();
@@ -42,7 +42,7 @@ export const Transactions: FC<TransactionsProps> = ({ isSidebarOpen }) => {
   };
 
   useEffect(() => {
-    if (!orderBook || !isSidebarOpen) return;
+    if (!orderBook || !isOpen) return;
 
     const fetchOrdersAndBlockNumbers = async () => {
       await fetchAndSetOrders(orderBook);
@@ -54,7 +54,7 @@ export const Transactions: FC<TransactionsProps> = ({ isSidebarOpen }) => {
     const intervalId = setInterval(fetchOrdersAndBlockNumbers, 10000);
 
     return () => clearInterval(intervalId);
-  }, [orderBook, isSidebarOpen, fetchAndSetOrders, fetchAndSetBlockNumbers]);
+  }, [orderBook, isOpen, fetchAndSetOrders, fetchAndSetBlockNumbers]);
 
   return (
     <>
@@ -69,7 +69,7 @@ export const Transactions: FC<TransactionsProps> = ({ isSidebarOpen }) => {
             ) : (
               orders.map((order, index) => (
                 <div key={index}>
-                  <Transaction order={order} status={parseStatus(order)} />
+                  <TransactionRow order={order} status={parseStatus(order)} />
                   {index !== orders.length - 1 ? (
                     <div className="bg-white/50 w-full h-px"></div>
                   ) : null}
