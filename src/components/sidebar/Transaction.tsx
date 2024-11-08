@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react";
+import { FC, useId, useMemo, useState } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { SwapInfo } from "../../common/SwapInfo";
 import { MatchedOrder } from "@gardenfi/orderbook";
@@ -9,6 +9,8 @@ import {
 } from "../../utils/utils";
 import { OrderStatus } from "@gardenfi/core";
 import { assetInfoStore } from "../../store/assetInfoStore";
+import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
+import { Tooltip } from "react-tooltip";
 
 type TransactionProps = {
   order: MatchedOrder;
@@ -19,7 +21,8 @@ enum StatusLabel {
   Completed = "Completed",
   Pending = "In progress...",
   Expired = "Expired",
-  Initiate = "Awaiting initiate",
+  Initiate = "Awaiting deposit",
+  InitiateDetected = "Deposit detected(0/1)",
 }
 
 const getOrderStatusLabel = (status: OrderStatus) => {
@@ -35,12 +38,16 @@ const getOrderStatusLabel = (status: OrderStatus) => {
       return StatusLabel.Initiate;
     case OrderStatus.DeadLineExceeded:
       return StatusLabel.Expired;
+    case OrderStatus.InitiateDetected:
+      return StatusLabel.InitiateDetected;
     default:
       return StatusLabel.Pending;
   }
 };
 
 export const Transaction: FC<TransactionProps> = ({ order, status }) => {
+  const [idTooltipContent, setIdTooltipContent] = useState("Copy");
+  const idTooltip = useId();
   const { create_order, source_swap, destination_swap } = order;
   const { assets } = assetInfoStore();
 
@@ -73,10 +80,28 @@ export const Transaction: FC<TransactionProps> = ({ order, status }) => {
     [create_order.updated_at]
   );
 
+  const handleIdClick = () => {
+    navigator.clipboard.writeText(idTooltip);
+    setIdTooltipContent("Copied");
+
+    setTimeout(() => {
+      setIdTooltipContent("Copy");
+    }, 2000);
+  };
+
   if (!sendAsset || !receiveAsset) return null;
 
   return (
     <div className="flex flex-col gap-1 pb-4">
+      <Typography
+        size="h5"
+        className="bg-white/50 w-fit p-1 px-2 rounded-full cursor-pointer mb-1"
+        onClick={handleIdClick}
+        data-tooltip-id={idTooltip}
+      >
+        {getTrimmedAddress(create_order.create_id, 4, 3)}
+      </Typography>
+      <Tooltip id={idTooltip} place="top" content={idTooltipContent} />
       <SwapInfo
         sendAsset={sendAsset}
         receiveAsset={receiveAsset}
