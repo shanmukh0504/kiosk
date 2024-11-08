@@ -30,8 +30,8 @@ export default {
       },
       keyframes: {
         shine: {
-          "0%": { transform: "translateX(-100%) skewX(30deg)" },
-          "100%": { left: "100%", transform: "skewX(30deg)" },
+          "0%": { transform: "translateX(-100%) skewX(30deg)", opacity: 1 },
+          "100%": { left: "100%", transform: "skewX(30deg)", opacity: 1 },
         },
       },
       animation: {

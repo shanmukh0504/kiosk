@@ -40,6 +40,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({
       );
       if (!whitelisted) {
         setOpenModal(modalNames.whiteList);
+        onClose();
         return;
       }
 
