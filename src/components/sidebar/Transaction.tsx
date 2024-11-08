@@ -10,7 +10,7 @@ import {
 import { OrderStatus } from "@gardenfi/core";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
-import { Tooltip } from "react-tooltip";
+import { Tooltip } from "../../common/Tooltip";
 
 type TransactionProps = {
   order: MatchedOrder;

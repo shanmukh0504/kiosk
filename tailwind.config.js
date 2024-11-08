@@ -35,7 +35,7 @@ export default {
         },
       },
       animation: {
-        shine: `shine 1s ${cubicInOut} infinite`,
+        shine: `shine 1s ${cubicInOut}`,
       },
     },
   },
