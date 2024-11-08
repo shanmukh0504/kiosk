@@ -24,17 +24,11 @@ enum StatusLabel {
   ShouldInitiate = "Awaiting deposit",
   InitiateDetected = "Deposit detected(0/1)",
   Initiated = "Deposit detected",
+  Redeeming = "Redeeming",
 }
 
 const getOrderStatusLabel = (status: OrderStatus) => {
   switch (status) {
-    case OrderStatus.Redeemed:
-    case OrderStatus.RedeemDetected:
-    case OrderStatus.Refunded:
-    case OrderStatus.RefundDetected:
-    case OrderStatus.CounterPartyRedeemed:
-    case OrderStatus.CounterPartyRedeemDetected:
-      return StatusLabel.Completed;
     case OrderStatus.Matched:
       return StatusLabel.ShouldInitiate;
     case OrderStatus.DeadLineExceeded:
@@ -43,6 +37,16 @@ const getOrderStatusLabel = (status: OrderStatus) => {
       return StatusLabel.InitiateDetected;
     case OrderStatus.Initiated:
       return StatusLabel.Initiated;
+    case OrderStatus.CounterPartyInitiateDetected:
+    case OrderStatus.CounterPartyInitiated:
+      return StatusLabel.Redeeming;
+    case OrderStatus.Redeemed:
+    case OrderStatus.RedeemDetected:
+    case OrderStatus.Refunded:
+    case OrderStatus.RefundDetected:
+    case OrderStatus.CounterPartyRedeemed:
+    case OrderStatus.CounterPartyRedeemDetected:
+      return StatusLabel.Completed;
     default:
       return StatusLabel.Pending;
   }
