@@ -6,7 +6,7 @@ import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { Address } from "./Address";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useGarden } from "@gardenfi/react-hooks";
-import { OrderActions, parseActionFromStatus } from "@gardenfi/core";
+import { OrderStatus } from "@gardenfi/core";
 import { isCurrentRoute } from "../../utils/utils";
 import { MobileMenu } from "./MobileMenu";
 
@@ -55,8 +55,15 @@ export const Navbar = () => {
     )
       return;
     const isSMRequired = !!pendingOrders.find((order) => {
-      const action = parseActionFromStatus(order.status);
-      return action === OrderActions.Redeem || action === OrderActions.Refund;
+      const status = order.status;
+      return (
+        status === OrderStatus.InitiateDetected ||
+        status === OrderStatus.Initiated ||
+        status === OrderStatus.CounterPartyInitiateDetected ||
+        status === OrderStatus.CounterPartyInitiated ||
+        status === OrderStatus.RedeemDetected ||
+        status === OrderStatus.Expired
+      );
     });
 
     if (isSMRequired) handleInitializeSM();
@@ -97,7 +104,7 @@ export const Navbar = () => {
         <Button
           variant="primary"
           onClick={handleConnectClick}
-          className="ml-auto w-28 bg-red-900"
+          className="ml-auto w-28"
         >
           Connect
         </Button>

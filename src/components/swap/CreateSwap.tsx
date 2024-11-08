@@ -1,6 +1,6 @@
 import { Button, ExchangeIcon } from "@gardenfi/garden-book";
 import { SwapInput } from "./SwapInput";
-import { IOType } from "../../constants/constants";
+import { getTimeEstimates, IOType } from "../../constants/constants";
 import { SwapAddress } from "./SwapAddress";
 import { swapStore } from "../../store/swapStore";
 import { assetInfoStore } from "../../store/assetInfoStore";
@@ -52,6 +52,11 @@ export const CreateSwap = () => {
       ? "primary"
       : "disabled";
   }, [isInsufficientBalance, isSwapping, validSwap]);
+
+  const timeEstimate = useMemo(() => {
+    if (!inputAsset || !outputAsset) return "";
+    return getTimeEstimates(inputAsset);
+  }, [inputAsset, outputAsset]);
 
   useEffect(() => {
     if (!garden) return;
@@ -135,6 +140,7 @@ export const CreateSwap = () => {
             onChange={handleOutputAmountChange}
             loading={loading.output}
             price={tokenPrices.output}
+            timeEstimate={timeEstimate}
           />
         </div>
         <SwapAddress isValidAddress={isValidBitcoinAddress} />
