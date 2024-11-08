@@ -19,11 +19,11 @@ export const Notification: FC<NotificationProps> = ({
   return (
     <div
       className={`bg-white/50 backdrop-blur-[20px]
-            fixed left-10 bottom-10 p-4
+            fixed left-2 right-2 sm:left-10 bottom-10 p-4 z-50
             transition-[border-radius,width,height,transform] ease-cubic-in-out duration-300
             ${
               visible
-                ? "rounded-2xl w-[490px] h-24"
+                ? "rounded-2xl max-w-[490px] h-24"
                 : "rounded-3xl w-12 h-12 cursor-pointer hover:scale-105"
             }`}
       onClick={() => !visible && setVisible(true)}
@@ -63,17 +63,20 @@ export const Notification: FC<NotificationProps> = ({
                 }`}
       >
         <Link to={link} target="_blank">
-          <img src={image} className="rounded-lg h-16 object-cover" />
+          <img
+            src={image}
+            className="rounded-lg h-16 max-w-[113px] object-cover"
+          />
         </Link>
-        <div className={`flex gap-1`}>
-          <div className="flex flex-col gap-1">
+        <div className={`flex gap-1 `}>
+          <div className="flex flex-col gap-1 max-w-[306px] ">
             <Link to={link} target="_blank" className="leading-4">
               <Typography size="h4" weight="bold">
                 {title}
               </Typography>
             </Link>
             <Typography
-              className="text-mid-grey inline-block w-[306px] mb-1 whitespace-nowrap overflow-hidden text-ellipsis"
+              className="text-mid-grey inline-block  mb-1 whitespace-wrap overflow-hidden text-ellipsis"
               size="h5"
               weight="medium"
             >
@@ -82,7 +85,7 @@ export const Notification: FC<NotificationProps> = ({
           </div>
           <div className="flex justify-center items-center w-[22px] h-5">
             <CloseIcon
-              className="cursor-pointer"
+              className="cursor-pointer "
               onClick={() => setVisible(false)}
             />
           </div>
