@@ -1,7 +1,7 @@
 import { Typography } from "@gardenfi/garden-book";
 import { Transaction } from "./Transaction";
 import { useGarden } from "@gardenfi/react-hooks";
-import { useEffect, FC, useState } from "react";
+import { useEffect, FC, useState, useMemo } from "react";
 import { useOrdersStore } from "../../store/ordersStore";
 import { Button } from "@gardenfi/garden-book";
 import blockNumberStore from "../../store/blockNumberStore";
@@ -19,7 +19,10 @@ export const Transactions: FC<TransactionsProps> = ({ isSidebarOpen }) => {
   const { orders, totalItems, fetchAndSetOrders, loadMore } = useOrdersStore();
   const { fetchAndSetBlockNumbers, blockNumbers } = blockNumberStore();
 
-  const showLoadMore = orders.length < totalItems;
+  const showLoadMore = useMemo(
+    () => orders.length < totalItems,
+    [orders.length, totalItems]
+  );
 
   const handleLoadMore = async () => {
     if (!orderBook) return;

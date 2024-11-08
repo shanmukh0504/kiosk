@@ -21,8 +21,9 @@ enum StatusLabel {
   Completed = "Completed",
   Pending = "In progress...",
   Expired = "Expired",
-  Initiate = "Awaiting deposit",
+  ShouldInitiate = "Awaiting deposit",
   InitiateDetected = "Deposit detected(0/1)",
+  Initiated = "Deposit detected",
 }
 
 const getOrderStatusLabel = (status: OrderStatus) => {
@@ -35,11 +36,13 @@ const getOrderStatusLabel = (status: OrderStatus) => {
     case OrderStatus.CounterPartyRedeemDetected:
       return StatusLabel.Completed;
     case OrderStatus.Matched:
-      return StatusLabel.Initiate;
+      return StatusLabel.ShouldInitiate;
     case OrderStatus.DeadLineExceeded:
       return StatusLabel.Expired;
     case OrderStatus.InitiateDetected:
       return StatusLabel.InitiateDetected;
+    case OrderStatus.Initiated:
+      return StatusLabel.Initiated;
     default:
       return StatusLabel.Pending;
   }
@@ -81,7 +84,7 @@ export const Transaction: FC<TransactionProps> = ({ order, status }) => {
   );
 
   const handleIdClick = () => {
-    navigator.clipboard.writeText(idTooltip);
+    navigator.clipboard.writeText(create_order.create_id);
     setIdTooltipContent("Copied");
 
     setTimeout(() => {
