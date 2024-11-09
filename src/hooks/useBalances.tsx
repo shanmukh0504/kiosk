@@ -18,6 +18,10 @@ export const useBalances = () => {
   );
 
   useEffect(() => {
+    if (!address) {
+      setBalances({});
+      return;
+    }
     if (!inputAsset || isBitcoin(inputAsset.chain) || !address) return;
     const chain = evmToViemChainMap[inputAsset.chain];
     if (!chain) return;

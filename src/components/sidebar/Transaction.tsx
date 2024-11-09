@@ -22,7 +22,7 @@ enum StatusLabel {
   Pending = "In progress...",
   Expired = "Expired",
   ShouldInitiate = "Awaiting deposit",
-  InitiateDetected = "Deposit detected(0/1)",
+  InitiateDetected = "Deposit detected (0/1)",
   Initiated = "Deposit detected",
   Redeeming = "Redeeming",
 }
