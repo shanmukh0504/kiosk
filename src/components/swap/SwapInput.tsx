@@ -6,9 +6,10 @@ import {
   WalletIcon,
 } from "@gardenfi/garden-book";
 import { FC, useMemo, useRef, ChangeEvent } from "react";
-import { IOType } from "../../constants/constants";
+import { BREAKPOINTS, IOType } from "../../constants/constants";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
+import { useViewport } from "../../hooks/useViewport";
 
 type SwapInputProps = {
   type: IOType;
@@ -35,6 +36,7 @@ export const SwapInput: FC<SwapInputProps> = ({
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { setOpenAssetSelector, chains } = assetInfoStore();
+  const { width } = useViewport();
 
   const network = useMemo(() => {
     if (!chains || (asset && isBitcoin(asset.chain))) return;
@@ -81,7 +83,7 @@ export const SwapInput: FC<SwapInputProps> = ({
   return (
     <>
       <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
-        <div className="flex justify-between">
+        <div className="flex justify-between ">
           <div className="flex gap-3">
             <Typography
               size="h5"
@@ -118,14 +120,17 @@ export const SwapInput: FC<SwapInputProps> = ({
             </div>
           )}
         </div>
-        <div className="flex justify-between">
+        <div className="flex justify-between h-6">
           {loading ? (
             <div className="text-mid-grey">loading...</div>
           ) : (
-            <Typography size="h2" weight="bold">
+            <Typography
+              size={width < BREAKPOINTS.sm ? "h3" : "h2"}
+              weight="bold"
+            >
               <input
                 ref={inputRef}
-                className="flex-grow outline-none placeholder:text-mid-grey"
+                className="max-w-[150px] outline-none placeholder:text-mid-grey"
                 type="text"
                 value={amount}
                 placeholder="0.0"
@@ -139,13 +144,17 @@ export const SwapInput: FC<SwapInputProps> = ({
               tokenLogo={asset.logo}
               chainLogo={network && network.networkLogo}
               onClick={handleOpenAssetSelector}
+              className="!text-base"
             />
           ) : (
             <div
               className="flex items-center gap-1 cursor-pointer"
               onClick={handleOpenAssetSelector}
             >
-              <Typography size="h2" weight="medium">
+              <Typography
+                size={width < BREAKPOINTS.sm ? "h3" : "h2"}
+                weight="medium"
+              >
                 Select token
               </Typography>
               <KeyboardDownIcon className="w-5" />
