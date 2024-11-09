@@ -19,6 +19,13 @@ export const Transactions: FC<TransactionsProps> = ({ isSidebarOpen }) => {
   const { orders, totalItems, fetchAndSetOrders, loadMore } = useOrdersStore();
   const { fetchAndSetBlockNumbers, blockNumbers } = blockNumberStore();
 
+  // orders which are initiated
+  const filteredOrders = useMemo(() => {
+    return orders.filter((order) => {
+      return order.source_swap.initiate_tx_hash !== "";
+    });
+  }, [orders]);
+
   const showLoadMore = useMemo(
     () => orders.length < totalItems,
     [orders.length, totalItems]
@@ -67,10 +74,10 @@ export const Transactions: FC<TransactionsProps> = ({ isSidebarOpen }) => {
             {isLoadingOrders ? (
               <div className="text-center py-2">Loading...</div>
             ) : (
-              orders.map((order, index) => (
+              filteredOrders.map((order, index) => (
                 <div key={index}>
                   <Transaction order={order} status={parseStatus(order)} />
-                  {index !== orders.length - 1 ? (
+                  {index !== filteredOrders.length - 1 ? (
                     <div className="bg-white/50 w-full h-px"></div>
                   ) : null}
                 </div>

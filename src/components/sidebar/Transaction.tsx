@@ -96,8 +96,7 @@ export const Transaction: FC<TransactionProps> = ({ order, status }) => {
     }, 2000);
   };
 
-  if (!sendAsset || !receiveAsset || status === OrderStatus.Matched)
-    return null;
+  if (!sendAsset || !receiveAsset) return null;
 
   return (
     <div className="flex flex-col gap-1 pb-4">
