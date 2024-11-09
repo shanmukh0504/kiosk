@@ -17,7 +17,9 @@ export const Address = () => {
   const actualPendingOrders = useMemo(
     () =>
       pendingOrders?.filter(
-        (order) => order.status !== OrderStatus.RedeemDetected
+        (order) =>
+          order.status !== OrderStatus.RedeemDetected &&
+          order.status !== OrderStatus.Matched
       ),
     [pendingOrders]
   );
