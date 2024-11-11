@@ -1,8 +1,8 @@
 import { modalNames, modalStore } from "../../store/modalStore";
 import { ConnectWallet } from "../navbar/ConnectWalletModal";
 import { Sidebar } from "../sidebar/Sidebar";
+import { WhiteList } from "../whitelist/WhiteList";
 import { InitializeSMModal } from "./InitializeSMModal";
-import { WhiteListModal } from "./WhitelistModal";
 
 export const Modal = () => {
   const { modalName, setCloseModal } = modalStore();
@@ -21,7 +21,7 @@ export const Modal = () => {
         open={modalName.initializeSM}
         onClose={() => setCloseModal(modalNames.initializeSM)}
       />
-      <WhiteListModal
+      <WhiteList
         open={modalName.whiteList}
         onClose={() => setCloseModal(modalNames.whiteList)}
       />
