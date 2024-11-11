@@ -13,10 +13,8 @@ import { swapStore } from "../../store/swapStore";
 import { IOType } from "../../constants/constants";
 import { constructOrderPair } from "@gardenfi/core";
 import { AssetChainLogos } from "../../common/AssetChainLogos";
-import { useFavorites } from "../../hooks/useFavourites";
 
 type props = {
-  open: boolean;
   onClose: () => void;
 };
 
@@ -24,7 +22,6 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const [chain, setChain] = useState<ChainData>();
   const [input, setInput] = useState<string>("");
   const [results, setResults] = useState<Asset[]>();
-  const { toggleFavorite, isFavorite, sortAssetsByFavorites } = useFavorites();
 
   const {
     isAssetSelectorOpen,
@@ -35,22 +32,15 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   } = assetInfoStore();
   const { setAsset, inputAsset, outputAsset } = swapStore();
 
-  const desiredOrder = [
-    "Bitcoin Testnet",
-    "Ethereum Sepolia",
-    "Base Sepolia",
-    "Arbitrum Sepolia",
-  ];
-
-  const orderedChains = chains
-    ? Object.values(chains).sort((a, b) => {
-        const indexA = desiredOrder.indexOf(a.name.trim());
-        const indexB = desiredOrder.indexOf(b.name.trim());
-        if (indexA === -1) return 1;
-        if (indexB === -1) return -1;
-        return indexA - indexB;
-      })
-    : [];
+  const orderedChains = useMemo(() => {
+    return chains
+      ? Object.values(chains).sort((a, b) => {
+          if (a.name.toLowerCase().includes("bitcoin")) return -1;
+          if (b.name.toLowerCase().includes("bitcoin")) return 1;
+          return 0;
+        })
+      : [];
+  }, [chains]);
 
   const comparisonToken = useMemo(
     () =>
@@ -61,8 +51,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   useEffect(() => {
     if (!assets || !strategies.val) return;
     if (!comparisonToken) {
-      const sortedAssets = sortAssetsByFavorites(Object.values(assets));
-      setResults(sortedAssets);
+      setResults(Object.values(assets));
     } else {
       const supportedTokens = Object.values(assets).filter((asset) => {
         const op =
@@ -81,8 +70,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
               );
         return strategies.val && strategies.val[op] !== undefined;
       });
-      const sortedSupportedTokens = sortAssetsByFavorites(supportedTokens);
-      setResults(sortedSupportedTokens);
+      setResults(supportedTokens);
     }
   }, [assets, comparisonToken, isAssetSelectorOpen.type, strategies.val]);
 
@@ -94,9 +82,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         asset.name?.toLowerCase().includes(input) ||
         asset.symbol?.toLowerCase().includes(input)
     );
-    const sortedFilteredAssets = sortAssetsByFavorites(filteredAssets);
     setInput(input);
-    setResults(sortedFilteredAssets);
+    setResults(filteredAssets);
   };
 
   const handleClick = (asset?: Asset) => {
@@ -106,15 +93,14 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
       setChain(undefined);
       setInput("");
       if (assets) {
-        const sortedAssets = sortAssetsByFavorites(Object.values(assets));
-        setResults(sortedAssets);
+        setResults(Object.values(assets));
       }
     }, 700);
     onClose();
   };
 
   return (
-    <div className="flex flex-col gap-3 bg-primary-lighter rounded-[20px] top-60 left-auto z-40 min-h-[452px]  w-[480px] p-3 transition-left ease-cubic-in-out duration-700">
+    <div className="flex flex-col gap-3 rounded-[20px] top-60 left-auto z-40 transition-left ease-cubic-in-out duration-700">
       <div className="flex justify-between items-center p-1">
         <Typography size="h4" weight="bold">
           Token select
@@ -205,15 +191,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                     {asset.name}
                   </Typography>
                 </div>
-                <StarIcon
-                  className={`cursor-pointer ${
-                    isFavorite(asset) ? "fill-yellow-400" : "fill-light-grey"
-                  }`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFavorite(asset);
-                  }}
-                />
+                <StarIcon className={`fill-light-grey`} />
               </div>
             )
           );
