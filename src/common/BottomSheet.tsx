@@ -4,7 +4,7 @@ import { Drawer } from "vaul";
 type BottomSheetProps = {
   children: ReactNode;
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange?: (open: boolean) => void;
 };
 
 export const BottomSheet: FC<BottomSheetProps> = ({
