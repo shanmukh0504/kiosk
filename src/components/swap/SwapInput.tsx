@@ -123,14 +123,20 @@ export const SwapInput: FC<SwapInputProps> = ({
             </div>
           )}
         </div>
-        <div className="flex justify-between">
+        <div className="flex justify-between h-6">
           {loading ? (
             <div className="text-mid-grey">loading...</div>
           ) : (
-            <Typography size="h2" weight="bold">
+            <Typography
+              size={"h3"}
+              breakpoints={{
+                sm: "h2",
+              }}
+              weight="bold"
+            >
               <input
                 ref={inputRef}
-                className="flex-grow outline-none placeholder:text-mid-grey"
+                className="max-w-[150px] outline-none placeholder:text-mid-grey"
                 type="text"
                 value={amount}
                 placeholder="0.0"
@@ -150,7 +156,13 @@ export const SwapInput: FC<SwapInputProps> = ({
               className="flex items-center gap-1 cursor-pointer"
               onClick={handleOpenAssetSelector}
             >
-              <Typography size="h2" weight="medium">
+              <Typography
+                size={"h3"}
+                breakpoints={{
+                  sm: "h2",
+                }}
+                weight="medium"
+              >
                 Select token
               </Typography>
               <KeyboardDownIcon className="w-5" />

@@ -199,8 +199,11 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                     {asset.symbol}
                   </Typography>
                   <Typography
-                    className="text-mid-grey w-1/3"
-                    size="h4"
+                    className="!text-mid-grey w-2/3 "
+                    size={"h5"}
+                    breakpoints={{
+                      sm: "h4",
+                    }}
                     weight="medium"
                   >
                     {asset.name}

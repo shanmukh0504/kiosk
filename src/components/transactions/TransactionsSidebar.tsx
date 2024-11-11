@@ -1,14 +1,14 @@
 import { useEffect, useRef, FC, useCallback } from "react";
-import { SidebarMenu } from "./SidebarMenu";
 import { Transactions } from "./Transactions";
 import { CloseIcon } from "@gardenfi/garden-book";
+import { AddressMenu } from "./AddressMenu";
 
 type SidebarProps = {
   open: boolean;
   onClose: () => void;
 };
 
-export const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
+export const TransactionsSidebar: FC<SidebarProps> = ({ open, onClose }) => {
   const sliderRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = useCallback(
@@ -50,9 +50,9 @@ export const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex flex-col gap-5 px-6 pb-6 overflow-y-auto max-h-[100vh]">
-          <SidebarMenu onClose={onClose} />
-          <Transactions isSidebarOpen={open} />
+        <div className="flex flex-col gap-5 px-6  overflow-y-auto max-h-[100vh]">
+          <AddressMenu onClose={onClose} />
+          <Transactions isOpen={open} />
         </div>
       </div>
     </div>
