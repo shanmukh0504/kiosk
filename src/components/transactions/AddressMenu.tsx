@@ -6,16 +6,17 @@ import {
   LogoutIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
+
 import { useId } from "react";
 import { Tooltip } from "../../common/Tooltip";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
+import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 
-type SideBarMenuProps = {
+type AddressMenuProps = {
   onClose: () => void;
 };
 
-export const SidebarMenu: FC<SideBarMenuProps> = ({ onClose }) => {
+export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const [addressTooltipContent, setAddressTooltipContent] = useState("Copy");
   const { address, disconnect } = useEVMWallet();
   const addTooltipId = useId();
@@ -23,7 +24,6 @@ export const SidebarMenu: FC<SideBarMenuProps> = ({ onClose }) => {
   const referralTooltipId = useId();
   const logoutTooltipId = useId();
   const addressTooltipId = useId();
-
 
   const handleDisconnectClick = () => {
     disconnect();
@@ -33,13 +33,11 @@ export const SidebarMenu: FC<SideBarMenuProps> = ({ onClose }) => {
     if (address) {
       await navigator.clipboard.writeText(address);
       setAddressTooltipContent("Copied");
-      
     }
     setTimeout(() => {
       setAddressTooltipContent("Copy");
     }, 2000);
   };
-
 
   return (
     <>

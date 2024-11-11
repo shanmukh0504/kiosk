@@ -52,7 +52,7 @@ const getOrderStatusLabel = (status: OrderStatus) => {
   }
 };
 
-export const Transaction: FC<TransactionProps> = ({ order, status }) => {
+export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
   const [idTooltipContent, setIdTooltipContent] = useState("Copy");
   const idTooltip = useId();
   const { create_order, source_swap, destination_swap } = order;

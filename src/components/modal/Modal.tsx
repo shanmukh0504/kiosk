@@ -1,6 +1,6 @@
 import { modalNames, modalStore } from "../../store/modalStore";
 import { ConnectWallet } from "../navbar/ConnectWalletModal";
-import { Sidebar } from "../sidebar/Sidebar";
+import { TransactionsComponent } from "../transactions/TransactionsComponent";
 import { WhiteList } from "../whitelist/WhiteList";
 import { InitializeSMModal } from "./InitializeSMModal";
 
@@ -13,9 +13,9 @@ export const Modal = () => {
         open={modalName.connectWallet}
         onClose={() => setCloseModal(modalNames.connectWallet)}
       />
-      <Sidebar
-        open={modalName.transactionsSideBar}
-        onClose={() => setCloseModal(modalNames.transactionsSideBar)}
+      <TransactionsComponent
+        open={modalName.transactions}
+        onClose={() => setCloseModal(modalNames.transactions)}
       />
       <InitializeSMModal
         open={modalName.initializeSM}
