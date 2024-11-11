@@ -6,18 +6,26 @@ import {
   StarIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { useEffect, useState, ChangeEvent } from "react";
+import { FC, useState, ChangeEvent, useEffect } from "react";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { swapStore } from "../../store/swapStore";
 import { IOType } from "../../constants/constants";
 import { constructOrderPair } from "@gardenfi/core";
 import { AssetChainLogos } from "../../common/AssetChainLogos";
+import { useFavorites } from "../../hooks/useFavourites";
 
-export const AssetSelector = () => {
+type props = {
+  open: boolean;
+  onClose: () => void;
+};
+
+export const AssetSelector: FC<props> = ({ onClose }) => {
   const [chain, setChain] = useState<ChainData>();
   const [input, setInput] = useState<string>("");
   const [results, setResults] = useState<Asset[]>();
+  const { favorites, toggleFavorite, isFavorite, sortAssetsByFavorites } =
+    useFavorites();
 
   const {
     isAssetSelectorOpen,
@@ -28,13 +36,32 @@ export const AssetSelector = () => {
   } = assetInfoStore();
   const { setAsset, inputAsset, outputAsset } = swapStore();
 
+  const desiredOrder = [
+    "Bitcoin Testnet",
+    "Ethereum Sepolia",
+    "Base Sepolia",
+    "Arbitrum Sepolia",
+  ];
+
+  const orderedChains = chains
+    ? Object.values(chains).sort((a, b) => {
+        const indexA = desiredOrder.indexOf(a.name.trim());
+        const indexB = desiredOrder.indexOf(b.name.trim());
+        if (indexA === -1) return 1;
+        if (indexB === -1) return -1;
+        return indexA - indexB;
+      })
+    : [];
+
   const comparisonToken =
     isAssetSelectorOpen.type === IOType.input ? outputAsset : inputAsset;
 
   useEffect(() => {
     if (!assets || !strategies.val) return;
-    if (!comparisonToken) setResults(Object.values(assets));
-    else {
+    if (!comparisonToken) {
+      const sortedAssets = sortAssetsByFavorites(Object.values(assets));
+      setResults(sortedAssets);
+    } else {
       const supportedTokens = Object.values(assets).filter((asset) => {
         const op =
           isAssetSelectorOpen.type === IOType.input
@@ -52,57 +79,62 @@ export const AssetSelector = () => {
               );
         return strategies.val && strategies.val[op] !== undefined;
       });
-      setResults(supportedTokens);
+      const sortedSupportedTokens = sortAssetsByFavorites(supportedTokens);
+      setResults(sortedSupportedTokens);
     }
-  }, [assets, strategies.val, isAssetSelectorOpen.type, comparisonToken]);
+  }, [
+    assets,
+    strategies.val,
+    isAssetSelectorOpen.type,
+    comparisonToken,
+    favorites,
+  ]);
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     if (!assets) return;
-
-    const input = e.target.value;
-    const r = Object.values(assets).filter(
+    const input = e.target.value.toLowerCase();
+    const filteredAssets = Object.values(assets).filter(
       (asset) =>
         asset.name?.toLowerCase().includes(input) ||
         asset.symbol?.toLowerCase().includes(input)
     );
+    const sortedFilteredAssets = sortAssetsByFavorites(filteredAssets);
     setInput(input);
-    setResults(r);
+    setResults(sortedFilteredAssets);
   };
 
   const handleClick = (asset?: Asset) => {
     if (asset) setAsset(isAssetSelectorOpen.type, asset);
-
     CloseAssetSelector();
-    // Clear inputs after delay
     setTimeout(() => {
       setChain(undefined);
       setInput("");
-      if (assets) setResults(Object.values(assets));
+      if (assets) {
+        const sortedAssets = sortAssetsByFavorites(Object.values(assets));
+        setResults(sortedAssets);
+      }
     }, 700);
+    onClose();
   };
 
   return (
-    <div
-      className={`flex flex-col gap-3
-        bg-primary-lighter rounded-[20px]
-        absolute top-0 ${
-          isAssetSelectorOpen.isOpen ? "left-0" : "left-full"
-        } z-40
-        h-full w-full p-3
-        transition-left ease-cubic-in-out duration-700`}
-    >
+    <div className="flex flex-col gap-3 bg-primary-lighter rounded-[20px] absolute top-60 left-auto z-40 min-h-[452px]  w-[480px] p-3 transition-left ease-cubic-in-out duration-700">
       <div className="flex justify-between items-center p-1">
         <Typography size="h4" weight="bold">
           Token select
         </Typography>
-        <ArrowLeftIcon
-          className="cursor-pointer"
-          onClick={() => handleClick()}
-        />
+        <ArrowLeftIcon className="cursor-pointer" onClick={onClose} />
       </div>
+
       <div className="flex flex-wrap gap-3">
-        {chains &&
-          Object.values(chains).map((c, i) => (
+        {orderedChains
+          .filter((c) => {
+            const assetsForChain = results?.filter(
+              (asset) => asset.chain === c.identifier
+            );
+            return assetsForChain && assetsForChain.length > 0;
+          })
+          .map((c, i) => (
             // TODO: Chip component should ideally have a `checked` prop that
             // automatically adds the below styles
             <Chip
@@ -139,28 +171,30 @@ export const AssetSelector = () => {
         </div>
         <SearchIcon />
       </div>
-      <div className="flex flex-col bg-white rounded-2xl h-full overflow-auto">
+      <div className="flex flex-col min-h-[288px] bg-white rounded-2xl h-full overflow-auto">
         <div className="px-4 pt-4 pb-1.5">
           <Typography size="h5" weight="bold">
             Assets
           </Typography>
         </div>
-        {results?.map((asset, i) => {
+        {results?.map((asset) => {
           const network = !isBitcoin(asset.chain)
             ? chains?.[asset.chain]
             : undefined;
           return (
             (!chain || asset.chain === chain.identifier) && (
               <div
-                key={i}
+                key={`${asset.chain}-${asset.atomicSwapAddress}`}
                 className="flex justify-between items-center px-4 py-1.5 cursor-pointer hover:bg-off-white w-full"
                 onClick={() => handleClick(asset)}
               >
                 <div className="flex items-center gap-2 w-full">
-                  <AssetChainLogos
-                    tokenLogo={asset.logo}
-                    chainLogo={network?.networkLogo}
-                  />
+                  <div className="w-10">
+                    <AssetChainLogos
+                      tokenLogo={asset.logo}
+                      chainLogo={network?.networkLogo}
+                    />
+                  </div>
                   <Typography size="h4" weight="medium" className="w-1/6">
                     {asset.symbol}
                   </Typography>
@@ -172,7 +206,15 @@ export const AssetSelector = () => {
                     {asset.name}
                   </Typography>
                 </div>
-                <StarIcon className="fill-light-grey" />
+                <StarIcon
+                  className={`cursor-pointer ${
+                    isFavorite(asset) ? "fill-yellow-400" : "fill-light-grey"
+                  }`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavorite(asset);
+                  }}
+                />
               </div>
             )
           );
@@ -181,3 +223,5 @@ export const AssetSelector = () => {
     </div>
   );
 };
+
+export default AssetSelector;

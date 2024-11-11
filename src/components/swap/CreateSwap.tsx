@@ -4,7 +4,6 @@ import { getTimeEstimates, IOType } from "../../constants/constants";
 import { SwapAddress } from "./SwapAddress";
 import { swapStore } from "../../store/swapStore";
 import { assetInfoStore } from "../../store/assetInfoStore";
-import { AssetSelector } from "./AssetSelector";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useEffect, useMemo } from "react";
 import { MatchedOrder } from "@gardenfi/orderbook";
@@ -14,7 +13,7 @@ import { useSwap } from "../../hooks/useSwap";
 import { SwapFees } from "./SwapFees";
 
 export const CreateSwap = () => {
-  const { isAssetSelectorOpen, assets } = assetInfoStore();
+  const { assets } = assetInfoStore();
   const { swapAssets } = swapStore();
   const {
     outputAmount,
@@ -110,9 +109,9 @@ export const CreateSwap = () => {
           before:absolute before:top-0 before:left-0
           before:h-full before:w-full
           before:pointer-events-none before:transition-colors before:duration-700
-          ${isAssetSelectorOpen.isOpen && "before:bg-opacity-10"}`}
+          `}
     >
-      <AssetSelector />
+      {/* <AssetSelector /> */}
       <div className="flex flex-col gap-4 p-3">
         <div className="relative flex flex-col gap-4">
           <SwapInput

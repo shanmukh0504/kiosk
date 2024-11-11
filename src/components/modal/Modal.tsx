@@ -1,8 +1,10 @@
 import { modalNames, modalStore } from "../../store/modalStore";
 import { ConnectWallet } from "../navbar/ConnectWalletModal";
 import { Sidebar } from "../sidebar/Sidebar";
+import { AssetList } from "./AssetList";
 import { InitializeSMModal } from "./InitializeSMModal";
 import { WhiteListModal } from "./WhitelistModal";
+// import { WhiteListModal } from "./WhitelistModal";
 
 export const Modal = () => {
   const { modalName, setCloseModal } = modalStore();
@@ -24,6 +26,10 @@ export const Modal = () => {
       <WhiteListModal
         open={modalName.whiteList}
         onClose={() => setCloseModal(modalNames.whiteList)}
+      />
+      <AssetList
+        open={modalName.assetList}
+        onClose={() => setCloseModal(modalNames.assetList)}
       />
     </>
   );

@@ -9,6 +9,7 @@ import { FC, useMemo, useRef, ChangeEvent } from "react";
 import { IOType } from "../../constants/constants";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
+import { modalNames, modalStore } from "../../store/modalStore";
 
 type SwapInputProps = {
   type: IOType;
@@ -35,6 +36,7 @@ export const SwapInput: FC<SwapInputProps> = ({
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { setOpenAssetSelector, chains } = assetInfoStore();
+  const { setOpenModal } = modalStore();
 
   const network = useMemo(() => {
     if (!chains || (asset && isBitcoin(asset.chain))) return;
@@ -76,7 +78,10 @@ export const SwapInput: FC<SwapInputProps> = ({
     }
   };
 
-  const handleOpenAssetSelector = () => setOpenAssetSelector(type);
+  const handleOpenAssetSelector = () => {
+    setOpenAssetSelector(type);
+    setOpenModal(modalNames.assetList);
+  };
 
   return (
     <>
