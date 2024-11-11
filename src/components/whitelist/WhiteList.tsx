@@ -5,12 +5,12 @@ import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { checkIfWhitelisted } from "../../utils/checkIfWhitelisted";
 
-type WhiteListModalProps = {
+type WhiteListProps = {
   open: boolean;
   onClose: () => void;
 };
 
-export const WhiteListModal: FC<WhiteListModalProps> = ({ open }) => {
+export const WhiteList: FC<WhiteListProps> = ({ open }) => {
   const { address } = useEVMWallet();
   const { setOpenModal } = modalStore();
 
@@ -40,7 +40,7 @@ export const WhiteListModal: FC<WhiteListModalProps> = ({ open }) => {
           Secure your spot on the waitlist to be among the first
           <br /> to experience it and help shape the future of Garden!
         </Typography>
-        <Button className="mt-2" onClick={handleJoinWaitlist}>
+        <Button className="mt-2" size="lg" onClick={handleJoinWaitlist}>
           Join the waitlist
         </Button>
       </Modal.Children>
