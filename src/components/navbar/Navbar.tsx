@@ -77,7 +77,9 @@ export const Navbar = () => {
   ]);
 
   return (
-    <div className={"flex items-center justify-between px-10 py-6 gap-3"}>
+    <div
+      className={"flex items-center justify-between px-6 sm:px-10 py-6 gap-3"}
+    >
       <div className="flex items-center gap-16">
         <GardenFullLogo
           onClick={handleHomeLogoClick}
