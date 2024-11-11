@@ -22,8 +22,8 @@ export const BREAKPOINTS = {
   lg: 1200,
   xl: 1440,
   "2xl": 1536,
-}
-        
+};
+
 export const getTimeEstimates = (inputAsset: Asset) => {
   if (isEVM(inputAsset.chain)) {
     return "~30s";
