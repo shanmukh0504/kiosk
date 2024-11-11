@@ -1,6 +1,6 @@
 import { modalNames, modalStore } from "../../store/modalStore";
-import { ConnectWallet } from "../navbar/ConnectWalletModal";
 import { AssetList } from "./AssetList";
+import { ConnectWallet } from "../navbar/ConnectWallet";
 import { TransactionsComponent } from "../transactions/TransactionsComponent";
 import { WhiteList } from "../whitelist/WhiteList";
 import { InitializeSMModal } from "./InitializeSMModal";
