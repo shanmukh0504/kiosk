@@ -3,7 +3,7 @@ import { formatAmount } from "./utils";
 
 describe("utils", () => {
   it("formatNumber", () => {
-    const number = formatAmount("99800", 8);
+    const number = formatAmount("5000", 8);
     console.log("number :", number);
   });
 });

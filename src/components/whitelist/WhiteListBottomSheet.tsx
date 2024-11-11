@@ -1,17 +1,19 @@
 import { FC } from "react";
 import { BottomSheet } from "../../common/BottomSheet";
 import blossomTestnet from "/blossom-testnet-mobile.svg";
-import { Modal, Typography, Button } from "@gardenfi/garden-book";
+import { Modal, Typography, Button, LogoutIcon } from "@gardenfi/garden-book";
 
 type BottomSheetProps = {
   open: boolean;
   onClose: () => void;
   handleJoinWaitlist: () => void;
+  handleDisconnect: () => void;
 };
 
 export const WhiteListBottomSheet: FC<BottomSheetProps> = ({
   open,
   handleJoinWaitlist,
+  handleDisconnect,
 }) => {
   return (
     <div
@@ -33,9 +35,21 @@ export const WhiteListBottomSheet: FC<BottomSheetProps> = ({
                 experience it and help shape the future of Garden!
               </Typography>
             </div>
-            <Button className=" mb-12 " size="lg" onClick={handleJoinWaitlist}>
-              Join the waitlist
-            </Button>
+            <div className="flex mt-2 gap-2 items-center">
+              <Button
+                className="w-11/12"
+                size="lg"
+                onClick={handleJoinWaitlist}
+              >
+                Join the waitlist
+              </Button>
+              <div
+                className="h-full bg-dark-grey p-4 rounded-2xl cursor-pointer"
+                onClick={handleDisconnect}
+              >
+                <LogoutIcon className="w-5 cursor-pointer fill-white" />
+              </div>
+            </div>
           </BottomSheet>
         </Modal.Children>
       </Modal>

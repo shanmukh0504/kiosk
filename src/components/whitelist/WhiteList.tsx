@@ -13,13 +13,18 @@ type WhiteListProps = {
 };
 
 export const WhiteList: FC<WhiteListProps> = ({ open, onClose }) => {
-  const { address } = useEVMWallet();
+  const { address, disconnect } = useEVMWallet();
   const { setOpenModal } = modalStore();
   const { width } = useViewport();
   const isSmall = useMemo(() => width < BREAKPOINTS.sm, [width]);
 
   const handleJoinWaitlist = () =>
     window.open("https://waitlist.garden.finance", "_blank");
+
+  const handleDisconnect = () => {
+    disconnect();
+    onClose();
+  };
 
   useEffect(() => {
     if (!address) return;
@@ -37,12 +42,14 @@ export const WhiteList: FC<WhiteListProps> = ({ open, onClose }) => {
           open={open}
           onClose={onClose}
           handleJoinWaitlist={handleJoinWaitlist}
+          handleDisconnect={handleDisconnect}
         />
       ) : (
         <WhiteListModal
           open={open}
           onClose={onClose}
           handleJoinWaitlist={handleJoinWaitlist}
+          handleDisconnect={handleDisconnect}
         />
       )}
     </div>

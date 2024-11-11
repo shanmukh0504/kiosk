@@ -9,6 +9,7 @@ import {
   polygon,
   sepolia,
   baseSepolia,
+  base,
 } from "wagmi/chains";
 import { injected, metaMask, safe, walletConnect } from "wagmi/connectors";
 
@@ -22,6 +23,7 @@ export const SupportedChains = [
   arbitrumSepolia,
   sepolia,
   baseSepolia,
+  base,
 ] as const;
 
 const projectId = "badd60eb677f972ec3c2454256ccfbc8";
@@ -41,5 +43,6 @@ export const config = createConfig({
     [arbitrumSepolia.id]: http(),
     [sepolia.id]: http(),
     [baseSepolia.id]: http(),
+    [base.id]: http(),
   },
 });
