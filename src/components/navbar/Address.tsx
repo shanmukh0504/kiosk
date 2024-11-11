@@ -17,7 +17,9 @@ export const Address = () => {
   const actualPendingOrders = useMemo(
     () =>
       pendingOrders?.filter(
-        (order) => order.status !== OrderStatus.RedeemDetected
+        (order) =>
+          order.status !== OrderStatus.RedeemDetected &&
+          order.status !== OrderStatus.Matched
       ),
     [pendingOrders]
   );
@@ -25,7 +27,7 @@ export const Address = () => {
   return (
     <Opacity
       level="medium"
-      className="flex items-center justify-center gap-2 ml-auto min-h-8 min-w-8 sm:py-3 sm:px-4 rounded-full cursor-pointer"
+      className="flex items-center justify-center px-2 gap-2 ml-auto min-h-8 min-w-8 sm:py-3 sm:px-4 rounded-full cursor-pointer"
       onClick={handleAddressClick}
     >
       <Typography size="h3" weight="bold" className="hidden sm:block">
