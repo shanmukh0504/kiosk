@@ -8,7 +8,7 @@ type SidebarProps = {
   onClose: () => void;
 };
 
-export const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
+export const TransactionsSidebar: FC<SidebarProps> = ({ open, onClose }) => {
   const sliderRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = useCallback(

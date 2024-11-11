@@ -1,7 +1,7 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { useViewport } from "../../hooks/useViewport";
 import { TransactionsBottomSheet } from "./TransactionsBottomSheet";
-import { Sidebar } from "./Sidebar";
+import { TransactionsSidebar } from "./TransactionsSidebar";
 import { BREAKPOINTS } from "../../constants/constants";
 
 type TransactionsViewProps = {
@@ -14,14 +14,14 @@ export const TransactionsComponent: FC<TransactionsViewProps> = ({
   onClose,
 }) => {
   const { width } = useViewport();
-  const isSmall = width < BREAKPOINTS.sm;
+  const isSmall = useMemo(() => width < BREAKPOINTS.sm, [width]);
 
   return (
     <div>
       {isSmall ? (
         <TransactionsBottomSheet open={open} onClose={onClose} />
       ) : (
-        <Sidebar open={open} onClose={onClose} />
+        <TransactionsSidebar open={open} onClose={onClose} />
       )}
     </div>
   );
