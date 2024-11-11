@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { IOType } from "../constants/constants";
-import { Asset, MatchedOrder } from "@gardenfi/orderbook";
+import { IOType, network } from "../constants/constants";
+import { Asset, Chains, MatchedOrder } from "@gardenfi/orderbook";
 
 type SwapState = {
   inputAsset?: Asset;
@@ -29,7 +29,7 @@ const BTC = {
   logo: "https://garden-finance.imgix.net/token-images/bitcoin.svg",
   tokenAddress: "primary",
   atomicSwapAddress: "primary",
-  chain: "bitcoin_testnet" as const,
+  chain: network === "mainnet" ? Chains.bitcoin : Chains.bitcoin_testnet,
 };
 
 export const swapStore = create<SwapState>((set) => ({

@@ -659,21 +659,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/orderbook@npm:^0.2.0-beta.21":
-  version: 0.2.0-beta.21
-  resolution: "@gardenfi/orderbook@npm:0.2.0-beta.21"
-  dependencies:
-    "@catalogfi/utils": "npm:^0.1.6"
-    "@gardenfi/utils": "npm:^0.0.1-beta.18"
-    bufferutil: "npm:^4.0.8"
-    siwe: "npm:^2.1.4"
-    utf-8-validate: "npm:^6.0.3"
-    viem: "npm:^2.21.15"
-    ws: "npm:^8.14.2"
-  checksum: 10c0/7ebc886a73a5fa06a426bfba04a21f75cf67e7888f41e4327e0f304daa3151ecd5715809f62592cbd3a6c5c4014c9772da24584e35e8a35aa9ee1d92cca0ffb9
-  languageName: node
-  linkType: hard
-
 "@gardenfi/orderbook@npm:^0.2.0-beta.24":
   version: 0.2.0-beta.24
   resolution: "@gardenfi/orderbook@npm:0.2.0-beta.24"
@@ -689,9 +674,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/react-hooks@npm:^0.0.1-beta.108":
-  version: 0.0.1-beta.108
-  resolution: "@gardenfi/react-hooks@npm:0.0.1-beta.108"
+"@gardenfi/react-hooks@npm:^0.0.1-beta.111":
+  version: 0.0.1-beta.111
+  resolution: "@gardenfi/react-hooks@npm:0.0.1-beta.111"
   dependencies:
     "@catalogfi/utils": "npm:^0.1.6"
     "@catalogfi/wallets": "npm:^0.2.51"
@@ -701,7 +686,7 @@ __metadata:
     react: "npm:^18.3.1"
     viem: "npm:^2.21.15"
     wagmi: "npm:^2.12.16"
-  checksum: 10c0/fec2f0426ce86fb35fbbd4cb885bb439951d108fd31b8d6352cd6c07ec189f4e93fdbaab2d5aa90ca471c9663a6ab2fa86761db517e6b3cd5a85d7249cf03b39
+  checksum: 10c0/ec612bdde16fe2eda2d7079e194d8356b71ababa6f09294b179ad15b2bebc8fea75a7e7b91bed40544aedc6e5365692035b516cb2ad7888f6636f10db0b24f86
   languageName: node
   linkType: hard
 
@@ -5916,8 +5901,8 @@ __metadata:
     "@eslint/js": "npm:^9.13.0"
     "@gardenfi/core": "npm:^0.2.0-beta.85"
     "@gardenfi/garden-book": "npm:^0.1.42"
-    "@gardenfi/orderbook": "npm:^0.2.0-beta.21"
-    "@gardenfi/react-hooks": "npm:^0.0.1-beta.108"
+    "@gardenfi/orderbook": "npm:^0.2.0-beta.24"
+    "@gardenfi/react-hooks": "npm:^0.0.1-beta.111"
     "@gardenfi/utils": "npm:^0.0.1-beta.18"
     "@tanstack/react-query": "npm:^5.51.23"
     "@types/lodash.debounce": "npm:^4"

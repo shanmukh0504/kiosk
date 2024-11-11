@@ -8,11 +8,10 @@ import { config } from "./layout/wagmi/config.ts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 import "@gardenfi/garden-book/style.css";
-import { BitcoinNetwork, GardenProvider } from "@gardenfi/react-hooks";
-import { API } from "./constants/api.ts";
+import { GardenProvider } from "@gardenfi/react-hooks";
+import { network } from "./constants/constants.tsx";
 
 const queryClient = new QueryClient();
-const api = API();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -22,12 +21,8 @@ createRoot(document.getElementById("root")!).render(
           <QueryClientProvider client={queryClient}>
             <GardenProvider
               config={{
-                orderBookUrl: api.orderbook,
-                quoteUrl: api.quote,
                 store: localStorage,
-                network: BitcoinNetwork.Testnet,
-                bitcoinRPCUrl: api.mempool.testnet,
-                blockNumberFetcherUrl: api.data.data,
+                environment: network,
               }}
             >
               <App />

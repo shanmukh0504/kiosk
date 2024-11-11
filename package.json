@@ -12,8 +12,8 @@
   "dependencies": {
     "@gardenfi/core": "^0.2.0-beta.85",
     "@gardenfi/garden-book": "^0.1.42",
-    "@gardenfi/orderbook": "^0.2.0-beta.21",
-    "@gardenfi/react-hooks": "^0.0.1-beta.108",
+    "@gardenfi/orderbook": "^0.2.0-beta.24",
+    "@gardenfi/react-hooks": "^0.0.1-beta.111",
     "@gardenfi/utils": "^0.0.1-beta.18",
     "@tanstack/react-query": "^5.51.23",
     "axios": "^1.7.6",

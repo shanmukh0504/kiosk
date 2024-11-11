@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { swapStore } from "../store/swapStore";
-import { IOType } from "../constants/constants";
+import { IOType, network } from "../constants/constants";
 import { Asset, isBitcoin, NetworkType } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
@@ -58,7 +58,7 @@ export const useSwap = () => {
   const isValidBitcoinAddress = useMemo(() => {
     if (!isBitcoinSwap) return true;
     return btcAddress
-      ? validateBTCAddress(btcAddress, NetworkType.testnet)
+      ? validateBTCAddress(btcAddress, network as unknown as NetworkType)
       : false;
   }, [btcAddress, isBitcoinSwap]);
   const _validSwap = useMemo(() => {
