@@ -6,7 +6,7 @@ import {
   StarIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { useEffect, useState, ChangeEvent } from "react";
+import { FC, useState, ChangeEvent, useEffect, useMemo } from "react";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { swapStore } from "../../store/swapStore";
@@ -14,7 +14,11 @@ import { IOType } from "../../constants/constants";
 import { constructOrderPair } from "@gardenfi/core";
 import { AssetChainLogos } from "../../common/AssetChainLogos";
 
-export const AssetSelector = () => {
+type props = {
+  onClose: () => void;
+};
+
+export const AssetSelector: FC<props> = ({ onClose }) => {
   const [chain, setChain] = useState<ChainData>();
   const [input, setInput] = useState<string>("");
   const [results, setResults] = useState<Asset[]>();
@@ -28,13 +32,27 @@ export const AssetSelector = () => {
   } = assetInfoStore();
   const { setAsset, inputAsset, outputAsset } = swapStore();
 
-  const comparisonToken =
-    isAssetSelectorOpen.type === IOType.input ? outputAsset : inputAsset;
+  const orderedChains = useMemo(() => {
+    return chains
+      ? Object.values(chains).sort((a, b) => {
+          if (a.name.toLowerCase().includes("bitcoin")) return -1;
+          if (b.name.toLowerCase().includes("bitcoin")) return 1;
+          return 0;
+        })
+      : [];
+  }, [chains]);
+
+  const comparisonToken = useMemo(
+    () =>
+      isAssetSelectorOpen.type === IOType.input ? outputAsset : inputAsset,
+    [isAssetSelectorOpen.type, inputAsset, outputAsset]
+  );
 
   useEffect(() => {
     if (!assets || !strategies.val) return;
-    if (!comparisonToken) setResults(Object.values(assets));
-    else {
+    if (!comparisonToken) {
+      setResults(Object.values(assets));
+    } else {
       const supportedTokens = Object.values(assets).filter((asset) => {
         const op =
           isAssetSelectorOpen.type === IOType.input
@@ -54,55 +72,51 @@ export const AssetSelector = () => {
       });
       setResults(supportedTokens);
     }
-  }, [assets, strategies.val, isAssetSelectorOpen.type, comparisonToken]);
+  }, [assets, comparisonToken, isAssetSelectorOpen.type, strategies.val]);
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     if (!assets) return;
-
-    const input = e.target.value;
-    const r = Object.values(assets).filter(
+    const input = e.target.value.toLowerCase();
+    const filteredAssets = Object.values(assets).filter(
       (asset) =>
         asset.name?.toLowerCase().includes(input) ||
         asset.symbol?.toLowerCase().includes(input)
     );
     setInput(input);
-    setResults(r);
+    setResults(filteredAssets);
   };
 
   const handleClick = (asset?: Asset) => {
     if (asset) setAsset(isAssetSelectorOpen.type, asset);
-
     CloseAssetSelector();
-    // Clear inputs after delay
     setTimeout(() => {
       setChain(undefined);
       setInput("");
-      if (assets) setResults(Object.values(assets));
+      if (assets) {
+        setResults(Object.values(assets));
+      }
     }, 700);
+    onClose();
   };
 
   return (
-    <div
-      className={`flex flex-col gap-3
-        bg-primary-lighter rounded-[20px]
-        absolute top-0 ${
-          isAssetSelectorOpen.isOpen ? "left-0" : "left-full"
-        } z-40
-        h-full w-full p-3
-        transition-left ease-cubic-in-out duration-700`}
-    >
+    <div className="flex flex-col gap-3 rounded-[20px] top-60 left-auto z-40 transition-left ease-cubic-in-out duration-700">
       <div className="flex justify-between items-center p-1">
         <Typography size="h4" weight="bold">
           Token select
         </Typography>
-        <ArrowLeftIcon
-          className="cursor-pointer"
-          onClick={() => handleClick()}
-        />
+        <ArrowLeftIcon className="cursor-pointer" onClick={onClose} />
       </div>
+
       <div className="flex flex-wrap gap-3">
-        {chains &&
-          Object.values(chains).map((c, i) => (
+        {orderedChains
+          .filter((c) => {
+            const assetsForChain = results?.filter(
+              (asset) => asset.chain === c.identifier
+            );
+            return assetsForChain && assetsForChain.length > 0;
+          })
+          .map((c, i) => (
             // TODO: Chip component should ideally have a `checked` prop that
             // automatically adds the below styles
             <Chip
@@ -139,28 +153,30 @@ export const AssetSelector = () => {
         </div>
         <SearchIcon />
       </div>
-      <div className="flex flex-col bg-white rounded-2xl h-full overflow-auto">
+      <div className="flex flex-col min-h-[288px] bg-white rounded-2xl h-full overflow-auto">
         <div className="px-4 pt-4 pb-1.5">
           <Typography size="h5" weight="bold">
             Assets
           </Typography>
         </div>
-        {results?.map((asset, i) => {
+        {results?.map((asset) => {
           const network = !isBitcoin(asset.chain)
             ? chains?.[asset.chain]
             : undefined;
           return (
             (!chain || asset.chain === chain.identifier) && (
               <div
-                key={i}
+                key={`${asset.chain}-${asset.atomicSwapAddress}`}
                 className="flex justify-between items-center px-4 py-1.5 cursor-pointer hover:bg-off-white w-full"
                 onClick={() => handleClick(asset)}
               >
                 <div className="flex items-center gap-2 w-full">
-                  <AssetChainLogos
-                    tokenLogo={asset.logo}
-                    chainLogo={network?.networkLogo}
-                  />
+                  <div className="w-10">
+                    <AssetChainLogos
+                      tokenLogo={asset.logo}
+                      chainLogo={network?.networkLogo}
+                    />
+                  </div>
                   <Typography size="h4" weight="medium" className="w-1/6">
                     {asset.symbol}
                   </Typography>
@@ -175,7 +191,7 @@ export const AssetSelector = () => {
                     {asset.name}
                   </Typography>
                 </div>
-                <StarIcon className="fill-light-grey" />
+                <StarIcon className={`fill-light-grey`} />
               </div>
             )
           );
@@ -184,3 +200,5 @@ export const AssetSelector = () => {
     </div>
   );
 };
+
+export default AssetSelector;
