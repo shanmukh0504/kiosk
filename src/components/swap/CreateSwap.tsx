@@ -111,7 +111,6 @@ export const CreateSwap = () => {
           before:pointer-events-none before:transition-colors before:duration-700
           `}
     >
-      {/* <AssetSelector /> */}
       <div className="flex flex-col gap-4 p-3">
         <div className="relative flex flex-col gap-4">
           <SwapInput

@@ -6,7 +6,7 @@ import {
   StarIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { FC, useState, ChangeEvent, useEffect } from "react";
+import { FC, useState, ChangeEvent, useEffect, useMemo } from "react";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { swapStore } from "../../store/swapStore";
@@ -24,8 +24,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const [chain, setChain] = useState<ChainData>();
   const [input, setInput] = useState<string>("");
   const [results, setResults] = useState<Asset[]>();
-  const { favorites, toggleFavorite, isFavorite, sortAssetsByFavorites } =
-    useFavorites();
+  const { toggleFavorite, isFavorite, sortAssetsByFavorites } = useFavorites();
 
   const {
     isAssetSelectorOpen,
@@ -53,8 +52,11 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
       })
     : [];
 
-  const comparisonToken =
-    isAssetSelectorOpen.type === IOType.input ? outputAsset : inputAsset;
+  const comparisonToken = useMemo(
+    () =>
+      isAssetSelectorOpen.type === IOType.input ? outputAsset : inputAsset,
+    [isAssetSelectorOpen.type, inputAsset, outputAsset]
+  );
 
   useEffect(() => {
     if (!assets || !strategies.val) return;
@@ -82,13 +84,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
       const sortedSupportedTokens = sortAssetsByFavorites(supportedTokens);
       setResults(sortedSupportedTokens);
     }
-  }, [
-    assets,
-    strategies.val,
-    isAssetSelectorOpen.type,
-    comparisonToken,
-    favorites,
-  ]);
+  }, [assets, comparisonToken, isAssetSelectorOpen.type, strategies.val]);
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     if (!assets) return;
@@ -118,7 +114,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   };
 
   return (
-    <div className="flex flex-col gap-3 bg-primary-lighter rounded-[20px] absolute top-60 left-auto z-40 min-h-[452px]  w-[480px] p-3 transition-left ease-cubic-in-out duration-700">
+    <div className="flex flex-col gap-3 bg-primary-lighter rounded-[20px] top-60 left-auto z-40 min-h-[452px]  w-[480px] p-3 transition-left ease-cubic-in-out duration-700">
       <div className="flex justify-between items-center p-1">
         <Typography size="h4" weight="bold">
           Token select
