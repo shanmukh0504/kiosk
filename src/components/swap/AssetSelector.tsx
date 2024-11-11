@@ -10,17 +10,14 @@ import { useEffect, useState, ChangeEvent } from "react";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { swapStore } from "../../store/swapStore";
-import { BREAKPOINTS, IOType } from "../../constants/constants";
+import { IOType } from "../../constants/constants";
 import { constructOrderPair } from "@gardenfi/core";
 import { AssetChainLogos } from "../../common/AssetChainLogos";
-import { useViewport } from "../../hooks/useViewport";
 
 export const AssetSelector = () => {
   const [chain, setChain] = useState<ChainData>();
   const [input, setInput] = useState<string>("");
   const [results, setResults] = useState<Asset[]>();
-
-  const { width } = useViewport();
 
   const {
     isAssetSelectorOpen,
@@ -164,16 +161,15 @@ export const AssetSelector = () => {
                     tokenLogo={asset.logo}
                     chainLogo={network?.networkLogo}
                   />
-                  <Typography
-                    size="h4"
-                    weight="medium"
-                    className="w-1/6 text-dark-grey"
-                  >
+                  <Typography size="h4" weight="medium" className="w-1/6">
                     {asset.symbol}
                   </Typography>
                   <Typography
                     className="!text-mid-grey w-2/3 "
-                    size={width < BREAKPOINTS.sm ? "h5" : "h4"}
+                    size={"h5"}
+                    breakpoints={{
+                      sm: "h4",
+                    }}
                     weight="medium"
                   >
                     {asset.name}

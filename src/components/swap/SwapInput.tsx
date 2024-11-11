@@ -6,10 +6,9 @@ import {
   WalletIcon,
 } from "@gardenfi/garden-book";
 import { FC, useMemo, useRef, ChangeEvent } from "react";
-import { BREAKPOINTS, IOType } from "../../constants/constants";
+import { IOType } from "../../constants/constants";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
-import { useViewport } from "../../hooks/useViewport";
 
 type SwapInputProps = {
   type: IOType;
@@ -36,7 +35,6 @@ export const SwapInput: FC<SwapInputProps> = ({
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { setOpenAssetSelector, chains } = assetInfoStore();
-  const { width } = useViewport();
 
   const network = useMemo(() => {
     if (!chains || (asset && isBitcoin(asset.chain))) return;
@@ -83,7 +81,7 @@ export const SwapInput: FC<SwapInputProps> = ({
   return (
     <>
       <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
-        <div className="flex justify-between ">
+        <div className="flex justify-between">
           <div className="flex gap-3">
             <Typography
               size="h5"
@@ -125,7 +123,10 @@ export const SwapInput: FC<SwapInputProps> = ({
             <div className="text-mid-grey">loading...</div>
           ) : (
             <Typography
-              size={width < BREAKPOINTS.sm ? "h3" : "h2"}
+              size={"h3"}
+              breakpoints={{
+                sm: "h2",
+              }}
               weight="bold"
             >
               <input
@@ -144,7 +145,6 @@ export const SwapInput: FC<SwapInputProps> = ({
               tokenLogo={asset.logo}
               chainLogo={network && network.networkLogo}
               onClick={handleOpenAssetSelector}
-              className="!text-base"
             />
           ) : (
             <div
@@ -152,7 +152,10 @@ export const SwapInput: FC<SwapInputProps> = ({
               onClick={handleOpenAssetSelector}
             >
               <Typography
-                size={width < BREAKPOINTS.sm ? "h3" : "h2"}
+                size={"h3"}
+                breakpoints={{
+                  sm: "h2",
+                }}
                 weight="medium"
               >
                 Select token
