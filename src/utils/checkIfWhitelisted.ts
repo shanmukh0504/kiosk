@@ -1,6 +1,3 @@
-import axios from "axios";
-import { API } from "../constants/api";
-
-export const checkIfWhitelisted = async (address: string) => {
+export const checkIfWhitelisted = async (_: string) => {
   return true;
 };
