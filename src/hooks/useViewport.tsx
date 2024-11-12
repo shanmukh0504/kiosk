@@ -7,8 +7,8 @@ type Viewport = {
 
 export const useViewport = (): Viewport => {
   const [viewport, setViewport] = useState<Viewport>({
-    width: -1,
-    height: -1,
+    width: typeof window !== "undefined" ? window.innerWidth : 0,
+    height: typeof window !== "undefined" ? window.innerHeight : 0,
   });
 
   const handleResize = useCallback(() => {
@@ -19,7 +19,7 @@ export const useViewport = (): Viewport => {
   }, []);
 
   useEffect(() => {
-    if (!window) return;
+    if (typeof window === "undefined") return;
     handleResize();
     window.addEventListener("resize", handleResize);
 
