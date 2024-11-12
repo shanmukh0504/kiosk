@@ -8,7 +8,7 @@ import { useGarden } from "@gardenfi/react-hooks";
 
 export const Swap = () => {
   const { btcInitModal } = swapStore();
-  const { fetchAndSetAssetsAndChains, fetchAndSetStrategies, assets } =
+  const { fetchAndSetAssetsAndChains, fetchAndSetStrategies } =
     assetInfoStore();
   const { quote } = useGarden();
 
