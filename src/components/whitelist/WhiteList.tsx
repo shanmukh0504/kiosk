@@ -16,7 +16,9 @@ export const WhiteList: FC<WhiteListProps> = ({ open, onClose }) => {
   const { address, disconnect } = useEVMWallet();
   const { setOpenModal } = modalStore();
   const { width } = useViewport();
-  const isSmall = useMemo(() => width < BREAKPOINTS.sm, [width]);
+  const isSmall = useMemo(() => {
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || width < BREAKPOINTS.sm;
+  }, [width]);
 
   const handleJoinWaitlist = () =>
     window.open("https://waitlist.garden.finance", "_blank");

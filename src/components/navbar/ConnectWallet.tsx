@@ -107,12 +107,17 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
 
 export const ConnectWallet: FC<ConnectWalletProps> = ({ open, onClose }) => {
   const { width } = useViewport();
-  const isMobile = useMemo(() => width < BREAKPOINTS.sm, [width]);
+  const isMobile = useMemo(() => {
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || width < BREAKPOINTS.sm;
+  }, [width]);
 
   return (
     <>
       {isMobile ? (
-        <BottomSheet open={open} onOpenChange={onClose}>
+        <BottomSheet
+          open={open}
+          onOpenChange={onClose}
+        >
           <ConnectWalletComponent open={open} onClose={onClose} />
         </BottomSheet>
       ) : (

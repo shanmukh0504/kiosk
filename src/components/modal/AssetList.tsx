@@ -12,7 +12,9 @@ type AssetListProps = {
 
 export const AssetList: FC<AssetListProps> = ({ open, onClose }) => {
   const { width } = useViewport();
-  const isMobile = useMemo(() => width < BREAKPOINTS.sm, [width]);
+  const isMobile = useMemo(() => {
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || width < BREAKPOINTS.sm;
+  }, [width]);
 
   return (
     <>

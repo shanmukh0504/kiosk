@@ -14,7 +14,9 @@ export const TransactionsComponent: FC<TransactionsViewProps> = ({
   onClose,
 }) => {
   const { width } = useViewport();
-  const isSmall = useMemo(() => width < BREAKPOINTS.sm, [width]);
+  const isSmall = useMemo(() => {
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || width < BREAKPOINTS.sm;
+  }, [width]);
 
   return (
     <div>
