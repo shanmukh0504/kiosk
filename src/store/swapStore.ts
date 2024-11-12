@@ -25,16 +25,26 @@ const BTC = {
   name: "Bitcoin",
   decimals: 8,
   symbol: "BTC",
-  baseFees: 1000,
   logo: "https://garden-finance.imgix.net/token-images/bitcoin.svg",
   tokenAddress: "primary",
   atomicSwapAddress: "primary",
   chain: network === "mainnet" ? Chains.bitcoin : Chains.bitcoin_testnet,
 };
 
+const USDC = {
+  name: "USD Coin",
+  decimals: 6,
+  symbol: "USDC",
+  logo: "https://garden-finance.imgix.net/token-images/usdc.svg",
+  tokenAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  atomicSwapAddress: "0x00ab86f54F436CfE15253845F139955ae0C00bAf",
+  chain: Chains.base,
+};
+
 export const swapStore = create<SwapState>((set) => ({
-  inputAsset: BTC,
-  inputAmount: "",
+  inputAsset: USDC,
+  outputAsset: BTC,
+  inputAmount: "5",
   outputAmount: "",
   btcAddress: "",
   btcInitModal: {

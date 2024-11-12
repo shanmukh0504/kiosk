@@ -104,15 +104,15 @@ export const SwapInput: FC<SwapInputProps> = ({
               <Typography size="h5" weight="medium">
                 <div className="text-red-500">{error}</div>
               </Typography>
+            ) : balance ? (
+              <div className="flex items-center gap-1">
+                <WalletIcon className="h-2.5 w-2.5" />
+                <Typography size="h5" weight="medium">
+                  {balance}
+                </Typography>
+              </div>
             ) : (
-              balance && (
-                <div className="flex items-center gap-1">
-                  <WalletIcon className="h-2.5 w-2.5" />
-                  <Typography size="h5" weight="medium">
-                    {balance}
-                  </Typography>
-                </div>
-              )
+              <></>
             ))}
           {type === IOType.output && timeEstimate && (
             <div className="flex gap-1 items-center">
