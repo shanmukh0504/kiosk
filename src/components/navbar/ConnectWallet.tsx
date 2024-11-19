@@ -1,7 +1,6 @@
 import { CloseIcon, Modal, Typography } from "@gardenfi/garden-book";
 import React, { useState, FC, useMemo } from "react";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { getAvailableWallets } from "../../constants/supportedEVMWallets";
 import { Connector } from "wagmi";
 import { Siwe, Url } from "@gardenfi/utils";
 import { getWalletClient } from "@wagmi/core";
@@ -77,26 +76,24 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
         <CloseIcon className="w-6 h-[14px] cursor-pointer" onClick={onClose} />
       </div>
       <div className="flex flex-col gap-1 bg-white/50 rounded-2xl p-4">
-        {Object.entries(getAvailableWallets(connectors)).map(
-          ([, wallet], i) => (
-            <div
-              key={i}
-              className={`flex items-center gap-4 p-4 cursor-pointer hover:bg-off-white rounded-xl`}
-              onClick={async () => {
-                if (!wallet.connector) return;
-                await handleConnect(wallet.connector, wallet.id);
-              }}
-            >
-              <img src={wallet.logo} alt={"icon"} className="w-8 h-8" />
-              <div className="flex justify-between w-full">
-                <Typography size="h2" weight="medium">
-                  {wallet.name}
-                </Typography>
-                {connectingWallet === wallet.id && <Loader />}
-              </div>
+        {connectors.map((wallet, i) => (
+          <div
+            key={i}
+            className={`flex items-center gap-4 p-4 cursor-pointer hover:bg-off-white rounded-xl`}
+            onClick={async () => {
+              if (!wallet.connector) return;
+              await handleConnect(wallet, wallet.id);
+            }}
+          >
+            <img src={wallet.icon} alt={"icon"} className="w-8 h-8" />
+            <div className="flex justify-between w-full">
+              <Typography size="h2" weight="medium">
+                {wallet.name}
+              </Typography>
+              {connectingWallet === wallet.id && <Loader />}
             </div>
-          )
-        )}
+          </div>
+        ))}
       </div>
       <div className="mb-2">
         <Typography size="h4" weight="medium">
