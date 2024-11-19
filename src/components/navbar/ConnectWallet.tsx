@@ -59,7 +59,6 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
       }
     } catch (error) {
       console.warn("error :", error);
-      window.alert(String(error));
       setConnectingWallet(null);
     } finally {
       setConnectingWallet(null);
