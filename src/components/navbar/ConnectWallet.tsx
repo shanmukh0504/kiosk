@@ -24,28 +24,30 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
   onClose,
 }) => {
   const [connectingWallet, setConnectingWallet] = useState<string | null>(null);
-  const { connectors } = useEVMWallet();
+  const { connectors, connectAsync } = useEVMWallet();
   const { setAuth } = authStore();
   const { setOpenModal } = modalStore();
 
   const handleConnect = async (connector: Connector, id: string) => {
-    console.log("connector :", connector);
     try {
       setConnectingWallet(id);
-      await connector.connect();
-      const walletClient: WalletClient = await getWalletClient(config, {
-        connector: connector,
+      const res = await connectAsync({
+        connector,
       });
-      if (!walletClient?.account) return;
+      const address = res.accounts[0];
+      if (!address) return;
 
-      const whitelisted = await checkIfWhitelisted(
-        walletClient.account.address
-      );
+      const whitelisted = await checkIfWhitelisted(address);
       if (!whitelisted) {
         setOpenModal(modalNames.whiteList);
         onClose();
         return;
       }
+
+      const walletClient: WalletClient = await getWalletClient(config, {
+        connector,
+      });
+      if (!walletClient) return;
 
       const auth = new Siwe(new Url(API().orderbook), walletClient, {
         store: localStorage,
