@@ -14,7 +14,6 @@ import { BottomSheet } from "../../common/BottomSheet";
 import { useViewport } from "../../hooks/useViewport";
 import { BREAKPOINTS } from "../../constants/constants";
 import { Loader } from "../../common/Loader";
-import { Toast } from "../toast/Toast";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -26,11 +25,11 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
 }) => {
   const [connectingWallet, setConnectingWallet] = useState<string | null>(null);
   const { connectors } = useEVMWallet();
-  console.log("connectors :", connectors);
   const { setAuth } = authStore();
   const { setOpenModal } = modalStore();
 
   const handleConnect = async (connector: Connector, id: string) => {
+    console.log("connector :", connector);
     try {
       setConnectingWallet(id);
       await connector.connect();
@@ -60,7 +59,7 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
       }
     } catch (error) {
       console.warn("error :", error);
-      Toast.success(error as string);
+      window.alert(String(error));
       setConnectingWallet(null);
     } finally {
       setConnectingWallet(null);
@@ -81,7 +80,7 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
             key={i}
             className={`flex items-center gap-4 p-4 cursor-pointer hover:bg-off-white rounded-xl`}
             onClick={async () => {
-              if (!wallet.connector) return;
+              if (!wallet) return;
               await handleConnect(wallet, wallet.id);
             }}
           >
