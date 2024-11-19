@@ -15,6 +15,7 @@ import { BottomSheet } from "../../common/BottomSheet";
 import { useViewport } from "../../hooks/useViewport";
 import { BREAKPOINTS } from "../../constants/constants";
 import { Loader } from "../../common/Loader";
+import { Toast } from "../toast/Toast";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -26,6 +27,7 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
 }) => {
   const [connectingWallet, setConnectingWallet] = useState<string | null>(null);
   const { connectors } = useEVMWallet();
+  console.log("connectors :", connectors);
   const { setAuth } = authStore();
   const { setOpenModal } = modalStore();
 
@@ -59,6 +61,7 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
       }
     } catch (error) {
       console.warn("error :", error);
+      Toast.success(error as string);
       setConnectingWallet(null);
     } finally {
       setConnectingWallet(null);
@@ -108,16 +111,16 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
 export const ConnectWallet: FC<ConnectWalletProps> = ({ open, onClose }) => {
   const { width } = useViewport();
   const isMobile = useMemo(() => {
-    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || width < BREAKPOINTS.sm;
+    return (
+      /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+      width < BREAKPOINTS.sm
+    );
   }, [width]);
 
   return (
     <>
       {isMobile ? (
-        <BottomSheet
-          open={open}
-          onOpenChange={onClose}
-        >
+        <BottomSheet open={open} onOpenChange={onClose}>
           <ConnectWalletComponent open={open} onClose={onClose} />
         </BottomSheet>
       ) : (
