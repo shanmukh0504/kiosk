@@ -26,7 +26,6 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
 }) => {
   const [connectingWallet, setConnectingWallet] = useState<string | null>(null);
   const { connectors, connectAsync } = useEVMWallet();
-  console.log("connectors :", connectors);
   const { setAuth } = authStore();
   const { setOpenModal } = modalStore();
 
