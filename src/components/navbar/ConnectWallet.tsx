@@ -14,6 +14,7 @@ import { BottomSheet } from "../../common/BottomSheet";
 import { useViewport } from "../../hooks/useViewport";
 import { BREAKPOINTS } from "../../constants/constants";
 import { Loader } from "../../common/Loader";
+import { WalletLogos } from "../../constants/supportedEVMWallets";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -25,6 +26,7 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
 }) => {
   const [connectingWallet, setConnectingWallet] = useState<string | null>(null);
   const { connectors, connectAsync } = useEVMWallet();
+  console.log("connectors :", connectors);
   const { setAuth } = authStore();
   const { setOpenModal } = modalStore();
 
@@ -85,10 +87,14 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
               await handleConnect(wallet, wallet.id);
             }}
           >
-            <img src={wallet.icon} alt={"icon"} className="w-8 h-8" />
+            <img
+              src={WalletLogos[wallet.id] || wallet.icon}
+              alt={"icon"}
+              className="w-8 h-8"
+            />
             <div className="flex justify-between w-full">
               <Typography size="h2" weight="medium">
-                {wallet.name}
+                {wallet.name === "Injected" ? "Browser Wallet" : wallet.name}
               </Typography>
               {connectingWallet === wallet.id && <Loader />}
             </div>

@@ -11,7 +11,7 @@ import {
   baseSepolia,
   base,
 } from "wagmi/chains";
-import { injected, metaMask, walletConnect } from "wagmi/connectors";
+import { injected, metaMask } from "wagmi/connectors";
 
 export const SupportedChains = [
   mainnet,
@@ -26,11 +26,9 @@ export const SupportedChains = [
   base,
 ] as const;
 
-const projectId = "badd60eb677f972ec3c2454256ccfbc8";
-
 export const config = createConfig({
   chains: SupportedChains,
-  connectors: [injected(), walletConnect({ projectId }), metaMask()],
+  connectors: [injected(), metaMask()],
   transports: {
     [mainnet.id]: http(),
     [arbitrum.id]: http(),
