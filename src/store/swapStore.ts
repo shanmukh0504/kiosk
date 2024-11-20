@@ -60,13 +60,18 @@ export const swapStore = create<SwapState>((set) => ({
     }));
   },
   swapAssets: () => {
-    set((state) => ({
-      ...state,
-      inputAsset: state.outputAsset,
-      outputAsset: state.inputAsset,
-      inputAmount: state.outputAmount,
-      outputAmount: state.inputAmount,
-    }));
+    set((state) => {
+      const newInputAmount = !state.outputAmount ? "" : state.outputAmount;
+
+      const newOutputAmount = !state.inputAmount ? "" : state.outputAmount;
+      return {
+        ...state,
+        inputAsset: state.outputAsset,
+        outputAsset: state.inputAsset,
+        inputAmount: newInputAmount,
+        outputAmount: newOutputAmount,
+      };
+    });
   },
   setShowConfirmSwap: (btcInitModal) => {
     set(

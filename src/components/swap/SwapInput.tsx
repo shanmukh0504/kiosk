@@ -138,7 +138,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                 ref={inputRef}
                 className="max-w-[150px] outline-none placeholder:text-mid-grey"
                 type="text"
-                value={amount}
+                value={type == IOType.output && amount == "0" ? "" : amount}
                 placeholder="0.0"
                 onChange={handleAmountChange}
               />
