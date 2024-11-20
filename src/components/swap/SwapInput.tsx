@@ -105,7 +105,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                 <div className="text-red-500">{error}</div>
               </Typography>
             ) : (
-              balance && (
+              balance !== undefined && (
                 <div className="flex items-center gap-1">
                   <WalletIcon className="h-2.5 w-2.5" />
                   <Typography size="h5" weight="medium">

@@ -61,9 +61,15 @@ export const swapStore = create<SwapState>((set) => ({
   },
   swapAssets: () => {
     set((state) => {
-      const newInputAmount = !state.outputAmount ? "" : state.outputAmount;
+      const newInputAmount =
+        !state.outputAmount || state.outputAmount === "0"
+          ? ""
+          : state.outputAmount;
 
-      const newOutputAmount = !state.inputAmount ? "" : state.outputAmount;
+      const newOutputAmount =
+        !state.inputAmount || state.inputAmount === "0"
+          ? ""
+          : state.outputAmount;
       return {
         ...state,
         inputAsset: state.outputAsset,
