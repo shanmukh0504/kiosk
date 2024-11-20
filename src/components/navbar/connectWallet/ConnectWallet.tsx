@@ -1,20 +1,20 @@
 import { CloseIcon, Modal, Typography } from "@gardenfi/garden-book";
 import React, { useState, FC, useMemo } from "react";
-import { useEVMWallet } from "../../hooks/useEVMWallet";
+import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { Connector } from "wagmi";
 import { Siwe, Url } from "@gardenfi/utils";
 import { getWalletClient } from "@wagmi/core";
-import { config } from "../../layout/wagmi/config";
-import { API } from "../../constants/api";
+import { config } from "../../../layout/wagmi/config";
+import { API } from "../../../constants/api";
 import { WalletClient } from "viem";
-import authStore from "../../store/authStore";
-import { checkIfWhitelisted } from "../../utils/checkIfWhitelisted";
-import { modalNames, modalStore } from "../../store/modalStore";
-import { BottomSheet } from "../../common/BottomSheet";
-import { useViewport } from "../../hooks/useViewport";
-import { BREAKPOINTS } from "../../constants/constants";
-import { Loader } from "../../common/Loader";
-import { WalletLogos } from "../../constants/supportedEVMWallets";
+import authStore from "../../../store/authStore";
+import { checkIfWhitelisted } from "../../../utils/checkIfWhitelisted";
+import { modalNames, modalStore } from "../../../store/modalStore";
+import { BottomSheet } from "../../../common/BottomSheet";
+import { useViewport } from "../../../hooks/useViewport";
+import { BREAKPOINTS } from "../../../constants/constants";
+import { Loader } from "../../../common/Loader";
+import { WalletLogos } from "../../../constants/supportedEVMWallets";
 
 type ConnectWalletProps = {
   open: boolean;

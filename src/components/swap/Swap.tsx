@@ -5,12 +5,15 @@ import { ToastContainer } from "../toast/Toast";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { useEffect } from "react";
 import { useGarden } from "@gardenfi/react-hooks";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 
 export const Swap = () => {
   const { btcInitModal } = swapStore();
   const { fetchAndSetAssetsAndChains, fetchAndSetStrategies } =
     assetInfoStore();
   const { quote } = useGarden();
+  const { walletList } = useBitcoinWallet();
+  console.log("walletList :", walletList);
 
   useEffect(() => {
     fetchAndSetAssetsAndChains();

@@ -10,6 +10,7 @@ import "./index.css";
 import "@gardenfi/garden-book/style.css";
 import { GardenProvider } from "@gardenfi/react-hooks";
 import { network } from "./constants/constants.tsx";
+import { BTCWalletProvider } from "@gardenfi/wallet-connectors";
 
 const queryClient = new QueryClient();
 
@@ -25,7 +26,9 @@ createRoot(document.getElementById("root")!).render(
                 environment: network,
               }}
             >
-              <App />
+              <BTCWalletProvider>
+                <App />
+              </BTCWalletProvider>
             </GardenProvider>
           </QueryClientProvider>
         </WagmiProvider>
