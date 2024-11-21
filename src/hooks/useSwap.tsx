@@ -283,13 +283,13 @@ export const useSwap = () => {
 
   useEffect(() => {
     if (!inputAsset || !outputAsset) return;
+    setError(undefined);
     handleInputAmountChange(inputAmount);
   }, [inputAsset, outputAsset, handleInputAmountChange, inputAmount]);
 
   useEffect(() => {
-    if (!inputAmount || !outputAmount) {
+    if (inputAmount == "0" || outputAmount == "0") {
       setTokenPrices({ input: "0", output: "0" });
-      setError(undefined);
       return;
     }
   }, [inputAmount, outputAmount]);
