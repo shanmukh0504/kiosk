@@ -7,6 +7,7 @@ import { ParseOrderStatus } from "@gardenfi/core";
 import { useOrdersStore } from "../../store/ordersStore";
 import blockNumberStore from "../../store/blockNumberStore";
 import { TransactionRow } from "./TransactionRow";
+import { TransactionsSkeleton } from "./TransactionsSkeleton";
 
 type TransactionsProps = {
   isOpen: boolean;
@@ -72,7 +73,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
           </Typography>
           <div className="flex flex-col gap-4 overflow-auto">
             {isLoadingOrders ? (
-              <div className="text-center py-2">Loading...</div>
+              <TransactionsSkeleton />
             ) : (
               filteredOrders.map((order, index) => (
                 <div key={index}>
