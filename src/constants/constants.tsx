@@ -3,7 +3,7 @@ import { environment } from "@gardenfi/react-hooks";
 
 export const INTERNAL_ROUTES = {
   swap: { name: "Swap", path: "/" },
-  quests: { name: "Quests", path: "/quests" },
+  // quests: { name: "Quests", path: "/quests" },
 } as const;
 
 export const THEMES = {
