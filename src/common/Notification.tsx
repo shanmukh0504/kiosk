@@ -53,7 +53,7 @@ export const Notification: FC<NotificationProps> = ({
         </svg>
       </div>
       <div
-        className={`flex gap-3
+        className={`flex justify-between gap-3
                 ${
                   visible
                     ? // On open, fade in the content once the notification has expanded
