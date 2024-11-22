@@ -64,8 +64,12 @@ export const Meta: FC<IMetaProps> = ({ title, description, canonical }) => {
       <meta name="keywords" content="decentralized BTC swap" />
       <meta name="keywords" content="atomic swap" />
       <meta name="keywords" content="cross-chain swap" />
-      <meta name="keywords" content="Ethereum Bitcoin bridge" />
-      <meta name="keywords" content="Arbitrum Bitcoin bridge" />
+      <meta name="keywords" content=" Bitcoin Solana bridge" />
+      <meta name="keywords" content=" Bitcoin Base bridge" />
+      <meta name="keywords" content=" Bitcoin Ethereum bridge" />
+      <meta name="keywords" content=" Bitcoin Arbitrum bridge" />
+      <meta name="keywords" content=" Bitcoin Polygon bridge" />
+      <meta name="keywords" content=" Bitcoin Binance bridge" />
       <meta name="keywords" content="secure BTC transfer" />
 
       {/* Twitter tags */}
