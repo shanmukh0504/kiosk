@@ -25,7 +25,6 @@ const BTC = {
   name: "Bitcoin",
   decimals: 8,
   symbol: "BTC",
-  baseFees: 1000,
   logo: "https://garden-finance.imgix.net/token-images/bitcoin.svg",
   tokenAddress: "primary",
   atomicSwapAddress: "primary",

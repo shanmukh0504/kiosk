@@ -1,6 +1,6 @@
-import { FC, useEffect, useMemo } from "react";
+import { FC, useEffect } from "react";
 import { useViewport } from "../../hooks/useViewport";
-import { BREAKPOINTS } from "../../constants/constants";
+
 import { WhiteListModal } from "./WhiteListModal";
 import { WhiteListBottomSheet } from "./WhiteListBottomSheet";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
@@ -15,8 +15,7 @@ type WhiteListProps = {
 export const WhiteList: FC<WhiteListProps> = ({ open, onClose }) => {
   const { address, disconnect } = useEVMWallet();
   const { setOpenModal } = modalStore();
-  const { width } = useViewport();
-  const isSmall = useMemo(() => width < BREAKPOINTS.sm, [width]);
+  const { isMobile } = useViewport();
 
   const handleJoinWaitlist = () =>
     window.open("https://waitlist.garden.finance", "_blank");
@@ -37,7 +36,7 @@ export const WhiteList: FC<WhiteListProps> = ({ open, onClose }) => {
 
   return (
     <div>
-      {isSmall ? (
+      {isMobile ? (
         <WhiteListBottomSheet
           open={open}
           onClose={onClose}

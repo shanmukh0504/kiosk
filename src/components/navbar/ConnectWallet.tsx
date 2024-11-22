@@ -1,7 +1,6 @@
 import { CloseIcon, Modal, Typography } from "@gardenfi/garden-book";
-import React, { useState, FC, useMemo } from "react";
+import React, { useState, FC } from "react";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { getAvailableWallets } from "../../constants/supportedEVMWallets";
 import { Connector } from "wagmi";
 import { Siwe, Url } from "@gardenfi/utils";
 import { getWalletClient } from "@wagmi/core";
@@ -13,8 +12,8 @@ import { checkIfWhitelisted } from "../../utils/checkIfWhitelisted";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { BottomSheet } from "../../common/BottomSheet";
 import { useViewport } from "../../hooks/useViewport";
-import { BREAKPOINTS } from "../../constants/constants";
 import { Loader } from "../../common/Loader";
+import { WalletLogos } from "../../constants/supportedEVMWallets";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -25,27 +24,30 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
   onClose,
 }) => {
   const [connectingWallet, setConnectingWallet] = useState<string | null>(null);
-  const { connectors } = useEVMWallet();
+  const { connectors, connectAsync } = useEVMWallet();
   const { setAuth } = authStore();
   const { setOpenModal } = modalStore();
 
   const handleConnect = async (connector: Connector, id: string) => {
     try {
       setConnectingWallet(id);
-      await connector.connect();
-      const walletClient: WalletClient = await getWalletClient(config, {
-        connector: connector,
+      const res = await connectAsync({
+        connector,
       });
-      if (!walletClient?.account) return;
+      const address = res.accounts[0];
+      if (!address) return;
 
-      const whitelisted = await checkIfWhitelisted(
-        walletClient.account.address
-      );
+      const whitelisted = await checkIfWhitelisted(address);
       if (!whitelisted) {
         setOpenModal(modalNames.whiteList);
         onClose();
         return;
       }
+
+      const walletClient: WalletClient = await getWalletClient(config, {
+        connector,
+      });
+      if (!walletClient) return;
 
       const auth = new Siwe(new Url(API().orderbook), walletClient, {
         store: localStorage,
@@ -74,26 +76,28 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
         <CloseIcon className="w-6 h-[14px] cursor-pointer" onClick={onClose} />
       </div>
       <div className="flex flex-col gap-1 bg-white/50 rounded-2xl p-4">
-        {Object.entries(getAvailableWallets(connectors)).map(
-          ([, wallet], i) => (
-            <div
-              key={i}
-              className={`flex items-center gap-4 p-4 cursor-pointer hover:bg-off-white rounded-xl`}
-              onClick={async () => {
-                if (!wallet.connector) return;
-                await handleConnect(wallet.connector, wallet.id);
-              }}
-            >
-              <img src={wallet.logo} alt={"icon"} className="w-8 h-8" />
-              <div className="flex justify-between w-full">
-                <Typography size="h2" weight="medium">
-                  {wallet.name}
-                </Typography>
-                {connectingWallet === wallet.id && <Loader />}
-              </div>
+        {connectors.map((wallet, i) => (
+          <div
+            key={i}
+            className={`flex items-center gap-4 p-4 cursor-pointer hover:bg-off-white rounded-xl`}
+            onClick={async () => {
+              if (!wallet) return;
+              await handleConnect(wallet, wallet.id);
+            }}
+          >
+            <img
+              src={WalletLogos[wallet.id] || wallet.icon}
+              alt={"icon"}
+              className="w-8 h-8"
+            />
+            <div className="flex justify-between w-full">
+              <Typography size="h2" weight="medium">
+                {wallet.name === "Injected" ? "Browser Wallet" : wallet.name}
+              </Typography>
+              {connectingWallet === wallet.id && <Loader />}
             </div>
-          )
-        )}
+          </div>
+        ))}
       </div>
       <div className="mb-2">
         <Typography size="h4" weight="medium">
@@ -106,8 +110,7 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
 };
 
 export const ConnectWallet: FC<ConnectWalletProps> = ({ open, onClose }) => {
-  const { width } = useViewport();
-  const isMobile = useMemo(() => width < BREAKPOINTS.sm, [width]);
+  const { isMobile } = useViewport();
 
   return (
     <>
