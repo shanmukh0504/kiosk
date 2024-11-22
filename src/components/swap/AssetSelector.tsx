@@ -92,9 +92,6 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     setTimeout(() => {
       setChain(undefined);
       setInput("");
-      if (assets) {
-        setResults(Object.values(assets));
-      }
     }, 700);
     onClose();
   };
