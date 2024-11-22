@@ -28,7 +28,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
           title="act 2 testnet is now live!"
           description="Join the early access cohort to get in on the action!"
           image={Act2}
-          link="https://testnet.garden.finance"
+          link="https://garden.finance/blog/act-2-testnet-is-live"
         />
         <Footer className={"mt-auto"} />
       </div>
