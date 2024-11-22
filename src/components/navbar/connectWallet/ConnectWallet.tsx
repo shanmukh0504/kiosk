@@ -1,5 +1,5 @@
 import { CloseIcon, Modal, Typography } from "@gardenfi/garden-book";
-import React, { useState, FC, useMemo } from "react";
+import React, { useState, FC } from "react";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { Connector } from "wagmi";
 import { Siwe, Url } from "@gardenfi/utils";
@@ -12,9 +12,8 @@ import { checkIfWhitelisted } from "../../../utils/checkIfWhitelisted";
 import { modalNames, modalStore } from "../../../store/modalStore";
 import { BottomSheet } from "../../../common/BottomSheet";
 import { useViewport } from "../../../hooks/useViewport";
-import { BREAKPOINTS } from "../../../constants/constants";
-import { Loader } from "../../../common/Loader";
 import { WalletLogos } from "../../../constants/supportedEVMWallets";
+import { Loader } from "../../../common/Loader";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -111,13 +110,7 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
 };
 
 export const ConnectWallet: FC<ConnectWalletProps> = ({ open, onClose }) => {
-  const { width } = useViewport();
-  const isMobile = useMemo(() => {
-    return (
-      /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
-      width < BREAKPOINTS.sm
-    );
-  }, [width]);
+  const { isMobile } = useViewport();
 
   return (
     <>

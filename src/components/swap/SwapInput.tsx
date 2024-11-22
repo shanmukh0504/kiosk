@@ -104,7 +104,7 @@ export const SwapInput: FC<SwapInputProps> = ({
               <Typography size="h5" weight="medium">
                 <div className="text-red-500">{error}</div>
               </Typography>
-            ) : balance ? (
+            ) : balance !== undefined ? (
               <div className="flex items-center gap-1">
                 <WalletIcon className="h-2.5 w-2.5" />
                 <Typography size="h5" weight="medium">
@@ -138,7 +138,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                 ref={inputRef}
                 className="max-w-[150px] outline-none placeholder:text-mid-grey"
                 type="text"
-                value={amount}
+                value={type == IOType.output && amount == "0" ? "" : amount}
                 placeholder="0.0"
                 onChange={handleAmountChange}
               />

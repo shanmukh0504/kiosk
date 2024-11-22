@@ -5,6 +5,7 @@ import { getCurrentTheme } from "../utils/utils";
 import { Navbar } from "../components/navbar/Navbar";
 import { Modal } from "../components/modal/Modal";
 import { Notification } from "../common/Notification";
+import Act2 from "/act2.png";
 
 type LayoutProps = {
   children: ReactNode;
@@ -24,10 +25,10 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
           {children}
         </div>
         <Notification
-          title="Season 3 ended! Collect your reward on 15th June!"
-          description="Deposit WBTC into Radiant and borrow & loop USDC to leverage."
-          image="https://wbtc-garden.ghost.io/content/images/size/w1000/2024/08/season3_review-1.png"
-          link="https://garden.finance"
+          title="act 2 testnet is now live!"
+          description="Join the early access cohort to get in on the action!"
+          image={Act2}
+          link="https://garden.finance/blog/act-2-testnet-is-live"
         />
         <Footer className={"mt-auto"} />
       </div>

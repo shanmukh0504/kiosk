@@ -94,12 +94,12 @@ export const useSwap = () => {
       outputAsset &&
       strategies.val &&
       strategies.val[
-        constructOrderPair(
-          inputAsset.chain,
-          inputAsset.atomicSwapAddress,
-          outputAsset.chain,
-          outputAsset.atomicSwapAddress
-        )
+      constructOrderPair(
+        inputAsset.chain,
+        inputAsset.atomicSwapAddress,
+        outputAsset.chain,
+        outputAsset.atomicSwapAddress
+      )
       ]
     );
   }, [inputAsset, outputAsset, strategies.val]);
@@ -107,16 +107,16 @@ export const useSwap = () => {
   const minAmount = useMemo(() => {
     return swapLimits && inputAsset
       ? new BigNumber(swapLimits.minAmount)
-          .dividedBy(10 ** inputAsset.decimals)
-          .toNumber()
+        .dividedBy(10 ** inputAsset.decimals)
+        .toNumber()
       : undefined;
   }, [swapLimits, inputAsset]);
 
   const maxAmount = useMemo(() => {
     return swapLimits && inputAsset
       ? new BigNumber(swapLimits.maxAmount)
-          .dividedBy(10 ** inputAsset.decimals)
-          .toNumber()
+        .dividedBy(10 ** inputAsset.decimals)
+        .toNumber()
       : undefined;
   }, [swapLimits, inputAsset]);
 
@@ -244,12 +244,12 @@ export const useSwap = () => {
 
     const additionalData = isBitcoinSwap
       ? {
-          strategyId: strategy,
-          btcAddress,
-        }
+        strategyId: strategy,
+        btcAddress,
+      }
       : {
-          strategyId: strategy,
-        };
+        strategyId: strategy,
+      };
 
     try {
       const res = await swapAndInitiate({
@@ -283,13 +283,13 @@ export const useSwap = () => {
 
   useEffect(() => {
     if (!inputAsset || !outputAsset) return;
+    setError(undefined);
     handleInputAmountChange(inputAmount);
   }, [inputAsset, outputAsset, handleInputAmountChange, inputAmount]);
 
   useEffect(() => {
-    if (!inputAmount || !outputAmount) {
+    if (inputAmount == "0" || outputAmount == "0") {
       setTokenPrices({ input: "0", output: "0" });
-      setError(undefined);
       return;
     }
   }, [inputAmount, outputAmount]);

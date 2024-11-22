@@ -31,20 +31,9 @@ const BTC = {
   chain: network === "mainnet" ? Chains.bitcoin : Chains.bitcoin_testnet,
 };
 
-const USDC = {
-  name: "USD Coin",
-  decimals: 6,
-  symbol: "USDC",
-  logo: "https://garden-finance.imgix.net/token-images/usdc.svg",
-  tokenAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-  atomicSwapAddress: "0x00ab86f54F436CfE15253845F139955ae0C00bAf",
-  chain: Chains.base,
-};
-
 export const swapStore = create<SwapState>((set) => ({
-  inputAsset: USDC,
-  outputAsset: BTC,
-  inputAmount: "5",
+  inputAsset: BTC,
+  inputAmount: "",
   outputAmount: "",
   btcAddress: "",
   btcInitModal: {
@@ -70,13 +59,24 @@ export const swapStore = create<SwapState>((set) => ({
     }));
   },
   swapAssets: () => {
-    set((state) => ({
-      ...state,
-      inputAsset: state.outputAsset,
-      outputAsset: state.inputAsset,
-      inputAmount: state.outputAmount,
-      outputAmount: state.inputAmount,
-    }));
+    set((state) => {
+      const newInputAmount =
+        !state.outputAmount || state.outputAmount === "0"
+          ? ""
+          : state.outputAmount;
+
+      const newOutputAmount =
+        !state.inputAmount || state.inputAmount === "0"
+          ? ""
+          : state.outputAmount;
+      return {
+        ...state,
+        inputAsset: state.outputAsset,
+        outputAsset: state.inputAsset,
+        inputAmount: newInputAmount,
+        outputAmount: newOutputAmount,
+      };
+    });
   },
   setShowConfirmSwap: (btcInitModal) => {
     set(

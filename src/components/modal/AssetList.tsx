@@ -1,8 +1,7 @@
-import { FC, useMemo } from "react";
+import { FC } from "react";
 import { AssetSelector } from "../swap/AssetSelector";
 import { Modal } from "@gardenfi/garden-book";
 import { useViewport } from "../../hooks/useViewport";
-import { BREAKPOINTS } from "../../constants/constants";
 import { BottomSheet } from "../../common/BottomSheet";
 
 type AssetListProps = {
@@ -11,10 +10,7 @@ type AssetListProps = {
 };
 
 export const AssetList: FC<AssetListProps> = ({ open, onClose }) => {
-  const { width } = useViewport();
-  const isMobile = useMemo(() => {
-    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || width < BREAKPOINTS.sm;
-  }, [width]);
+  const { isMobile } = useViewport();
 
   return (
     <>

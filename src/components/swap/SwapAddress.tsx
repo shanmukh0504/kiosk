@@ -20,9 +20,6 @@ export const SwapAddress: FC<SwapAddressProps> = ({ isValidAddress }) => {
     }
     setBtcAddress(input);
   };
-  const handleDefaultAddress = () => {
-    setBtcAddress("bc1qxtztdl8qn24axe7dnvp75xgcns6pl5ka0depc0");
-  };
 
   const isRecoveryAddress = inputAsset && isBitcoin(inputAsset.chain);
   const isReceiveAddress = outputAsset && isBitcoin(outputAsset.chain);
@@ -35,8 +32,7 @@ export const SwapAddress: FC<SwapAddressProps> = ({ isValidAddress }) => {
           size="h5"
           weight="bold"
           onClick={() => inputRef.current!.focus()}
-          className="w-fit cursor-pointer"
-          onClickCapture={handleDefaultAddress}
+          className="w-fit"
         >
           {isRecoveryAddress ? "Recovery" : "Receive"} address
         </Typography>
