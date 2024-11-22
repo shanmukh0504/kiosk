@@ -23,7 +23,7 @@ export const Notification: FC<NotificationProps> = ({
             transition-[border-radius,width,height,transform] ease-cubic-in-out duration-300
             ${
               visible
-                ? "rounded-2xl max-w-[490px] h-24"
+                ? "rounded-2xl max-w-[490px] w-fit h-24"
                 : "rounded-3xl w-12 h-12 cursor-pointer hover:scale-105"
             }`}
       onClick={() => !visible && setVisible(true)}
