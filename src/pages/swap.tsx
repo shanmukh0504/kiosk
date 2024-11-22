@@ -5,8 +5,8 @@ export const SwapPage = () => {
   return (
     <div className="w-full h-full">
       <Meta
-        title="Native Bitcoin Exchange | Garden BTC Bridge"
-        description="Experience fast, secure, and trustless BTC bridging across most blockchains, including Arbitrum, Ethereum, Avalanche, Optimism, and Binance."
+        title="Garden Finance BTC Bridge: Swap Native Bitcoin"
+        description="Effortlessly bridge native Bitcoin to chains like Solana, Ethereum, Base, Arbitrum, Avalanche, and more."
       />
       <Swap />
     </div>
