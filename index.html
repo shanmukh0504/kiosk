@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
@@ -11,13 +11,16 @@
       name="keywords"
       content="Garden, Bitcoin exchange, Bitcoin bridge, fast BTC bridge, instant BTC bridge, decentralized BTC swap, atomic swap, cross-chain swap"
     />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="/metadata.png" />
-    <meta property="og:title" content="Garden Finance BTC Bridge: Swap Native Bitcoin" />
+
+    <meta property="og:type" content="website" id="og-type" />
+    <meta property="og:image" content="/metadata.png" id="og-image" />
+    <meta property="og:title" content="Default Title" id="og-title" />
     <meta
       property="og:description"
-      content="Effortlessly bridge native Bitcoin to chains like Solana, Ethereum, Base, Arbitrum, Avalanche, and more."
+      content="Default description"
+      id="og-description"
     />
+
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="garden.finance" />
     <meta name="twitter:creator" content="@garden_finance" />
@@ -27,5 +30,47 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      const routeMetaData = {
+        "/": {
+          ogImage: "/metadata.png",
+          ogTitle: "Garden Finance BTC Bridge: Swap Native Bitcoin",
+          ogDescription:
+            "Effortlessly bridge native Bitcoin to chains like Solana, Ethereum, Base, Arbitrum, Avalanche, and more.",
+        },
+      };
+      function updateMetaTags(route) {
+        const defaultMeta = {
+          ogTitle: "Garden Finance BTC Bridge",
+          ogDescription: "Effortlessly bridge Bitcoin to multiple blockchains.",
+          ogImage: "/metadata.png",
+        };
+
+        const metaData = routeMetaData[route] || defaultMeta;
+        const basePath = window.location.origin;
+        const fullOgImageUrl = basePath + metaData.ogImage;
+
+        updateMetaTag("og-title", metaData.ogTitle);
+        updateMetaTag("og-description", metaData.ogDescription);
+        updateMetaTag("og-image", fullOgImageUrl);
+      }
+      function updateMetaTag(id, content) {
+        const metaTag = document.getElementById(id);
+        if (metaTag) {
+          metaTag.setAttribute("content", content);
+        }
+      }
+      function initMetaTags() {
+        const currentRoute = window.location.pathname;
+        updateMetaTags(currentRoute);
+      }
+
+      window.addEventListener("load", initMetaTags);
+
+      window.addEventListener("popstate", () => {
+        const currentRoute = window.location.pathname;
+        updateMetaTags(currentRoute);
+      });
+    </script>
   </body>
 </html>
