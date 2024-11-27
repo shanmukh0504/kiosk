@@ -1,5 +1,4 @@
 import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./pages/index.tsx";
 import { HelmetProvider } from "react-helmet-async";
@@ -10,10 +9,11 @@ import "./index.css";
 import "@gardenfi/garden-book/style.css";
 import { GardenProvider } from "@gardenfi/react-hooks";
 import { network } from "./constants/constants.tsx";
+import ReactDOM from "react-dom/client";
 
 const queryClient = new QueryClient();
-
-createRoot(document.getElementById("root")!).render(
+ReactDOM.hydrateRoot(
+  document.getElementById("root") as HTMLElement, (
   <StrictMode>
     <BrowserRouter>
       <HelmetProvider>
@@ -32,4 +32,5 @@ createRoot(document.getElementById("root")!).render(
       </HelmetProvider>
     </BrowserRouter>
   </StrictMode>
-);
+)
+)

@@ -3,74 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="description"
-      content="Effortlessly bridge native Bitcoin to chains like Solana, Ethereum, Base, Arbitrum, Avalanche, and more."
-    />
+
+    <!-- Dynamic Meta Tags: These will be replaced by the SSR logic -->
+    <meta name="description" content="<!--meta-description-->" />
     <meta
       name="keywords"
       content="Garden, Bitcoin exchange, Bitcoin bridge, fast BTC bridge, instant BTC bridge, decentralized BTC swap, atomic swap, cross-chain swap"
     />
 
-    <meta property="og:type" content="website" id="og-type" />
-    <meta property="og:image" content="/metadata.png" id="og-image" />
-    <meta property="og:title" content="Default Title" id="og-title" />
-    <meta
-      property="og:description"
-      content="Default description"
-      id="og-description"
-    />
+    <!-- Open Graph Tags for Social Sharing -->
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="<!--meta-og-image-->" />
+    <meta property="og:title" content="<!--meta-title-->" />
+    <meta property="og:description" content="<!--meta-description-->" />
 
+    <!-- Twitter Card meta tags -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="garden.finance" />
     <meta name="twitter:creator" content="@garden_finance" />
-    <title>Garden Finance BTC Bridge</title>
+
+    <title><!--meta-title--></title>
+    <!-- Dynamic title -->
+
     <link rel="icon" href="/favicon.ico" />
   </head>
   <body>
-    <div id="root"></div>
+    <!-- This is where the SSR content will be injected -->
+    <div id="root"><!--ssr-outlet--></div>
+
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      const routeMetaData = {
-        "/": {
-          ogImage: "/metadata.png",
-          ogTitle: "Garden Finance BTC Bridge: Swap Native Bitcoin",
-          ogDescription:
-            "Effortlessly bridge native Bitcoin to chains like Solana, Ethereum, Base, Arbitrum, Avalanche, and more.",
-        },
-      };
-      function updateMetaTags(route) {
-        const defaultMeta = {
-          ogTitle: "Garden Finance BTC Bridge",
-          ogDescription: "Effortlessly bridge Bitcoin to multiple blockchains.",
-          ogImage: "/metadata.png",
-        };
-
-        const metaData = routeMetaData[route] || defaultMeta;
-        const basePath = window.location.origin;
-        const fullOgImageUrl = basePath + metaData.ogImage;
-
-        updateMetaTag("og-title", metaData.ogTitle);
-        updateMetaTag("og-description", metaData.ogDescription);
-        updateMetaTag("og-image", fullOgImageUrl);
-      }
-      function updateMetaTag(id, content) {
-        const metaTag = document.getElementById(id);
-        if (metaTag) {
-          metaTag.setAttribute("content", content);
-        }
-      }
-      function initMetaTags() {
-        const currentRoute = window.location.pathname;
-        updateMetaTags(currentRoute);
-      }
-
-      window.addEventListener("load", initMetaTags);
-
-      window.addEventListener("popstate", () => {
-        const currentRoute = window.location.pathname;
-        updateMetaTags(currentRoute);
-      });
-    </script>
   </body>
 </html>

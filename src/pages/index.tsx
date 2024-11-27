@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
-import { Layout } from "../layout/Layout";
-import { INTERNAL_ROUTES } from "../constants/constants";
-import { SwapPage } from "./swap";
+import { Layout } from "../layout/Layout.tsx";
+import { INTERNAL_ROUTES } from "../constants/constants.tsx";
+import { SwapPage } from "./swap.tsx";
 // import { QuestsPage } from "./quests";
 
 function App() {

@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import { execSync } from "child_process";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 import path from "path";
-import fs from "fs";
+// import fs from "fs";
 import wasm from "vite-plugin-wasm";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import topLevelAwait from "vite-plugin-top-level-await";
@@ -17,11 +17,11 @@ const getRecentGitCommitHash = () => {
   }
 };
 
-const generateBuildIdFile = () => {
-  const __dirname = path.dirname(new URL(import.meta.url).pathname);
-  const buildIdPath = path.resolve(__dirname, "public/build-id.json");
-  fs.writeFileSync(buildIdPath, JSON.stringify({ buildId }, null, 2));
-};
+// const generateBuildIdFile = () => {
+//   const __dirname = path.dirname(new URL(import.meta.url).pathname);
+//   const buildIdPath = path.resolve(__dirname, "public/build-id.json");
+//   fs.writeFileSync(buildIdPath, JSON.stringify({ buildId }, null, 2));
+// };
 
 const buildId = getRecentGitCommitHash();
 
@@ -49,36 +49,37 @@ export default defineConfig({
         },
       ],
     }),
-    {
-      name: "generate-build-id",
-      buildEnd() {
-        generateBuildIdFile();
-      },
-      configureServer(server) {
-        generateBuildIdFile();
-        // Have to write a custom middleware to serve the build Id file,
-        // because vite dev server doesn't serve files from public directory as soon as they are generated.
-        server.middlewares.use((req, res, next) => {
-          if (req.url === "/build-id.json") {
-            const buildIdPath = path.resolve(
-              path.dirname(new URL(import.meta.url).pathname),
-              "public/build-id.json"
-            );
-            fs.readFile(buildIdPath, (err, data) => {
-              if (err) {
-                res.statusCode = 404;
-                res.end("Build ID not found");
-              } else {
-                res.setHeader("Content-Type", "application/json");
-                res.end(data);
-              }
-            });
-          } else {
-            next();
-          }
-        });
-      },
-    },
+
+    // {
+    //   name: "generate-build-id",
+    //   buildEnd() {
+    //     generateBuildIdFile();
+    //   },
+    //   configureServer(server) {
+    //     generateBuildIdFile();
+    //     // Have to write a custom middleware to serve the build Id file,
+    //     // because vite dev server doesn't serve files from public directory as soon as they are generated.
+    //     server.middlewares.use((req, res, next) => {
+    //       if (req.url === "/build-id.json") {
+    //         const buildIdPath = path.resolve(
+    //           path.dirname(new URL(import.meta.url).pathname),
+    //           "public/build-id.json"
+    //         );
+    //         fs.readFile(buildIdPath, (err, data) => {
+    //           if (err) {
+    //             res.statusCode = 404;
+    //             res.end("Build ID not found");
+    //           } else {
+    //             res.setHeader("Content-Type", "application/json");
+    //             res.end(data);
+    //           }
+    //         });
+    //       } else {
+    //         next();
+    //       }
+    //     });
+    //   },
+    // },
   ],
   define: {
     "process.env.BUILD_ID": JSON.stringify(buildId),

@@ -36,3 +36,4 @@ export const getTimeEstimates = (inputAsset: Asset) => {
 };
 
 export const network: environment = import.meta.env.VITE_NETWORK;
+
