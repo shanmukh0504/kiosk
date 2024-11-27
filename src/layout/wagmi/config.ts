@@ -10,6 +10,7 @@ import {
   sepolia,
   baseSepolia,
   base,
+  berachainTestnetbArtio,
 } from "wagmi/chains";
 import { injected, metaMask } from "wagmi/connectors";
 
@@ -24,6 +25,7 @@ export const SupportedChains = [
   sepolia,
   baseSepolia,
   base,
+  berachainTestnetbArtio,
 ] as const;
 
 export const config = createConfig({
@@ -40,5 +42,6 @@ export const config = createConfig({
     [sepolia.id]: http(),
     [baseSepolia.id]: http(),
     [base.id]: http(),
+    [berachainTestnetbArtio.id]: http(),
   },
 });

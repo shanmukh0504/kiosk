@@ -1,8 +1,6 @@
 import { FC } from "react";
 import { Helmet } from "react-helmet-async";
-import { useLocation } from "react-router-dom";
 import { AppConfig } from "./appConfig";
-import metaImage from "/metadata.png";
 
 export type IMetaProps = {
   title: string;
@@ -11,8 +9,7 @@ export type IMetaProps = {
 };
 
 export const Meta: FC<IMetaProps> = ({ title, description, canonical }) => {
-  const router = useLocation();
-  const basePath = router.pathname.split("/")[1];
+  const basePath = `${window.location.protocol}//${window.location.host}`;
 
   return (
     <Helmet>
@@ -46,10 +43,14 @@ export const Meta: FC<IMetaProps> = ({ title, description, canonical }) => {
       <title key="title">{title}</title>
       <meta name="description" content={description} />
 
-      <meta property="og:type" content={"image/png"} />
-      <meta property="og:image" content={metaImage} />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
+      <meta property="og:type" content={"website"} key={"og:type"} />
+      <meta property="og:image" content={`${basePath}/metadata.png`} />
+      <meta property="og:title" content={title} key={"og:title"} />
+      <meta
+        property="og:description"
+        content={description}
+        key={"og:description"}
+      />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
       <meta property="og:locale" content={AppConfig.locale} />
@@ -64,8 +65,12 @@ export const Meta: FC<IMetaProps> = ({ title, description, canonical }) => {
       <meta name="keywords" content="decentralized BTC swap" />
       <meta name="keywords" content="atomic swap" />
       <meta name="keywords" content="cross-chain swap" />
-      <meta name="keywords" content="Ethereum Bitcoin bridge" />
-      <meta name="keywords" content="Arbitrum Bitcoin bridge" />
+      <meta name="keywords" content=" Bitcoin Solana bridge" />
+      <meta name="keywords" content=" Bitcoin Base bridge" />
+      <meta name="keywords" content=" Bitcoin Ethereum bridge" />
+      <meta name="keywords" content=" Bitcoin Arbitrum bridge" />
+      <meta name="keywords" content=" Bitcoin Polygon bridge" />
+      <meta name="keywords" content=" Bitcoin Binance bridge" />
       <meta name="keywords" content="secure BTC transfer" />
 
       {/* Twitter tags */}

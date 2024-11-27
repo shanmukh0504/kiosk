@@ -1,6 +1,6 @@
 import {
-  ArrowLeftIcon,
   Chip,
+  CloseIcon,
   RadioCheckedIcon,
   SearchIcon,
   StarIcon,
@@ -92,9 +92,6 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     setTimeout(() => {
       setChain(undefined);
       setInput("");
-      if (assets) {
-        setResults(Object.values(assets));
-      }
     }, 700);
     onClose();
   };
@@ -105,7 +102,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         <Typography size="h4" weight="bold">
           Token select
         </Typography>
-        <ArrowLeftIcon className="cursor-pointer" onClick={onClose} />
+        <CloseIcon className="cursor-pointer" onClick={onClose} />
       </div>
 
       <div className="flex flex-wrap gap-3">
