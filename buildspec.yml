@@ -1,0 +1,43 @@
+version: 0.2
+
+env:
+  secrets-manager:
+    SECRET_VALUE: "arn:aws:secretsmanager:ap-southeast-1:351138146362:secret:prod/kiosk-secrets-LPzhdI"
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20.10.0
+  build:
+    commands:
+      - echo "Cloning the bare repository..."
+      - git clone --bare https://${GITHUB_USERNAME}:${GITHUB_PAT}@github.com/catalogfi/${REPO_NAME}.git .git
+      - echo "Writing secrets manager variables to json file..."
+      - echo $SECRET_VALUE > env.json
+      - echo "Listing files in the scripts directory..."
+      - ls -al ./scripts # Add this to list files in the scripts directory
+      - chmod +x ./scripts/convert_json_to_env.sh # Ensure the script is executable
+      - ./scripts/convert_json_to_env.sh
+      - echo Installing Corepack...
+      - npm install -g corepack
+      - echo Enabling Corepack...
+      - corepack enable
+      - echo Installing dependencies and building the project...
+      - yarn set version 4.5.1
+      - yarn
+      - yarn build
+      - echo Build completed on `date`
+      - ls -al
+
+artifacts:
+  files:
+    - "**/*"
+  exclude:
+    - ".git/**"
+    - "node_modules/**"
+    - "*.log"
+    - "*.env"
+
+cache:
+  paths:
+    - node_modules/**/*
