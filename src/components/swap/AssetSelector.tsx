@@ -35,10 +35,10 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const orderedChains = useMemo(() => {
     return chains
       ? Object.values(chains).sort((a, b) => {
-        if (a.name.toLowerCase().includes("bitcoin")) return -1;
-        if (b.name.toLowerCase().includes("bitcoin")) return 1;
-        return 0;
-      })
+          if (a.name.toLowerCase().includes("bitcoin")) return -1;
+          if (b.name.toLowerCase().includes("bitcoin")) return 1;
+          return 0;
+        })
       : [];
   }, [chains]);
 
@@ -57,17 +57,17 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         const op =
           isAssetSelectorOpen.type === IOType.input
             ? constructOrderPair(
-              asset.chain,
-              asset.atomicSwapAddress,
-              comparisonToken.chain,
-              comparisonToken.atomicSwapAddress
-            )
+                asset.chain,
+                asset.atomicSwapAddress,
+                comparisonToken.chain,
+                comparisonToken.atomicSwapAddress
+              )
             : constructOrderPair(
-              comparisonToken.chain,
-              comparisonToken.atomicSwapAddress,
-              asset.chain,
-              asset.atomicSwapAddress
-            );
+                comparisonToken.chain,
+                comparisonToken.atomicSwapAddress,
+                asset.chain,
+                asset.atomicSwapAddress
+              );
         return strategies.val && strategies.val[op] !== undefined;
       });
       setResults(supportedTokens);
@@ -92,9 +92,6 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     setTimeout(() => {
       setChain(undefined);
       setInput("");
-      if (assets) {
-        setResults(Object.values(assets));
-      }
     }, 700);
     onClose();
   };
@@ -121,18 +118,20 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             // automatically adds the below styles
             <Chip
               key={i}
-              className={`${!chain || c.chainId !== chain.chainId
-                ? "bg-opacity-50 pr-1"
-                : "pr-2"
-                } pl-3 py-1 cursor-pointer transition-colors ease-cubic-in-out hover:bg-opacity-50`}
+              className={`${
+                !chain || c.chainId !== chain.chainId
+                  ? "bg-opacity-50 pr-1"
+                  : "pr-2"
+              } pl-3 py-1 cursor-pointer transition-colors ease-cubic-in-out hover:bg-opacity-50`}
               onClick={() => (c === chain ? setChain(undefined) : setChain(c))}
             >
               <Typography size="h3" weight="medium">
                 {c.name}
               </Typography>
               <RadioCheckedIcon
-                className={`${c === chain ? "w-4" : "w-0"
-                  } transition-all fill-rose`}
+                className={`${
+                  c === chain ? "w-4" : "w-0"
+                } transition-all fill-rose`}
               />
             </Chip>
           ))}
