@@ -22,14 +22,14 @@ export const Notification: FC<NotificationProps> = ({
             fixed left-2 right-2 sm:left-10 bottom-10 p-4 z-50
             transition-[border-radius,width,height,transform] ease-cubic-in-out duration-300
             ${visible
-          ? "rounded-2xl max-w-[490px] w-fit h-24"
+          ? "rounded-2xl w-[344px] h-24 sm:w-[440px] "
           : "rounded-3xl w-12 h-12 cursor-pointer hover:scale-105"
         }`}
       onClick={() => !visible && setVisible(true)}
     >
       {/* TODO: Replace with bell icon once added to garden-book */}
       <div
-        className={`flex justify-center items-center transition-[opacity,height] ease-cubic-in-out
+        className={`flex justify-center items-center transition-[opacity,height,width] ease-cubic-in-out
                 ${visible
             ? // On open, fade out the bell icon
             "opacity-0 h-0"
@@ -62,16 +62,14 @@ export const Notification: FC<NotificationProps> = ({
         <Link to={link} target="_blank">
           <img
             src={image}
-            className="rounded-lg h-16 max-w-[113px] object-cover"
+            className="rounded-lg h-16 w-[113px]  object-cover"
           />
         </Link>
         <div className={`flex gap-1 `}>
-          <div className="flex flex-col gap-1 max-w-[306px] ">
-            <Link to={link} target="_blank" className="leading-4">
-              <Typography size="h4" weight="bold">
-                {title}
-              </Typography>
-            </Link>
+          <Link to={link} target="_blank" className="leading-4 flex flex-col gap-1 max-w-[306px] w-fit ">
+            <Typography size="h4" weight="bold">
+              {title}
+            </Typography>
             <Typography
               className="text-mid-grey inline-block  mb-1 whitespace-wrap overflow-hidden text-ellipsis"
               size="h5"
@@ -79,7 +77,7 @@ export const Notification: FC<NotificationProps> = ({
             >
               {description}
             </Typography>
-          </div>
+          </Link>
           <div className="flex justify-center items-center w-[22px] h-5">
             <CloseIcon
               className="cursor-pointer "
