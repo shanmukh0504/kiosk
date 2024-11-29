@@ -1,6 +1,6 @@
-import { useState, FC, useMemo } from "react";
+import { useState, FC, useMemo, useEffect } from "react";
 // import { SwapFeesComparison } from "./SwapFeesComparison";
-import { Typography } from "@gardenfi/garden-book";
+import { ScaleY, Typography } from "@gardenfi/garden-book";
 import { TokenPrices } from "../../hooks/useSwap";
 
 type SwapFeesProps = {
@@ -20,6 +20,15 @@ export const SwapFees: FC<SwapFeesProps> = ({ tokenPrices }) => {
 
   const handleShowComparison = (isOpen: boolean) =>
     setIsShowComparison({ ...showComparison, isOpen });
+
+  const [triggerFeesAnimation, setTriggerFeesAnimation] = useState(false);
+
+  useEffect(() => {
+    if (fees) {
+      setTriggerFeesAnimation(false);
+      setTimeout(() => setTriggerFeesAnimation(true), 0);
+    }
+  }, [fees]);
 
   return (
     <>
@@ -42,10 +51,12 @@ export const SwapFees: FC<SwapFeesProps> = ({ tokenPrices }) => {
             <Typography size="h5" weight="medium">
               Fees
             </Typography>
-            <div className="flex gap-5 py-1">
-              <Typography size="h4" weight="medium">
-                {fees ? "$" + Number(fees.toFixed(4)) : "--"}
-              </Typography>
+            <div className="flex gap-5 py-1 mt-[-8px]">
+              <ScaleY triggerAnimation={triggerFeesAnimation}>
+                <Typography size="h4" weight="medium" >
+                  {fees ? "$" + Number(fees.toFixed(4)) : "--"}
+                </Typography>
+              </ScaleY>
             </div>
           </div>
           <div className="flex justify-between">

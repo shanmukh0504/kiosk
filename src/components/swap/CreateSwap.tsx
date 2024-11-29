@@ -141,8 +141,10 @@ export const CreateSwap = () => {
             timeEstimate={timeEstimate}
           />
         </div>
-        <SwapAddress isValidAddress={isValidBitcoinAddress} />
-        <SwapFees tokenPrices={tokenPrices} />
+        <div className={`flex flex-col gap-4 transition-all opacity-0 duration-200 ease-in-out ${inputAsset && outputAsset && inputAmount ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0 mb-[-16px]'}`}>
+          <SwapAddress isValidAddress={isValidBitcoinAddress} />
+          <SwapFees tokenPrices={tokenPrices} />
+        </div>
         <Button
           className={`transition-colors duration-500 ${isSwapping ? "cursor-not-allowed" : ""
             }`}
