@@ -13,7 +13,8 @@ import { modalNames, modalStore } from "../../store/modalStore";
 import { BottomSheet } from "../../common/BottomSheet";
 import { useViewport } from "../../hooks/useViewport";
 import { Loader } from "../../common/Loader";
-import { WalletLogos } from "../../constants/supportedEVMWallets";
+// import { WalletLogos } from "../../constants/supportedEVMWallets";
+import { SUPPORTED_WALLETS } from "../../constants/constants";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -27,6 +28,18 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
   const { connectors, connectAsync } = useEVMWallet();
   const { setAuth } = authStore();
   const { setOpenModal } = modalStore();
+  console.log(connectors)
+
+  const sortedWallets = Object.entries(SUPPORTED_WALLETS)
+    .sort(([keyA, walletA], [keyB, walletB]) => {
+      console.log("Sorting bhai")
+      if (keyA === "Injected") return -1;
+      if (keyB === "Injected") return 1;
+
+      const isAAvailable = connectors.some((c) => c.name === walletA.name);
+      const isBAvailable = connectors.some((c) => c.name === walletB.name);
+      return isAAvailable === isBAvailable ? 0 : isAAvailable ? -1 : 1;
+    });
 
   const handleConnect = async (connector: Connector, id: string) => {
     try {
@@ -76,32 +89,40 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
         <CloseIcon className="w-6 h-[14px] cursor-pointer" onClick={onClose} />
       </div>
       <div className="flex flex-col gap-1 bg-white/50 rounded-2xl p-4">
-        {connectors.map((wallet, i) => (
-          <div
-            key={i}
-            className={`flex items-center gap-4 p-4 cursor-pointer hover:bg-off-white rounded-xl`}
-            onClick={async () => {
-              if (!wallet) return;
-              await handleConnect(wallet, wallet.id);
-            }}
-          >
-            <img
-              src={WalletLogos[wallet.id] || wallet.icon}
-              alt={"icon"}
-              className="w-8 h-8"
-            />
-            <div className="flex justify-between w-full">
-              <Typography size="h2" weight="medium">
-                {wallet.name === "Injected" ? "Browser Wallet" : wallet.name}
-              </Typography>
-              {connectingWallet === wallet.id && <Loader />}
+        {sortedWallets.map(([key, wallet]) => {
+
+          const connector = connectors.find((connector) => (connector.name === key));
+          const isDisabled = !connector;
+
+          return (
+            <div
+              key={key}
+              className={`flex items-center gap-4 p-4 rounded-xl ${isDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-off-white"
+                }`}
+              onClick={async () => {
+                if (!isDisabled && connector) {
+                  await handleConnect(connector, key);
+                }
+              }}
+            >
+              <img
+                src={wallet.imgSrc}
+                alt={`${wallet.name} icon`}
+                className="w-8 h-8"
+              />
+              <div className="flex justify-between w-full">
+                <Typography size="h2" weight="medium">
+                  {wallet.name}
+                </Typography>
+                {connectingWallet === key && <Loader />}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <div className="mb-2">
         <Typography size="h4" weight="medium">
-          By connecting a wallet, you agree to Garden’s Terms of Service and
+          By connecting a wallet, you agree to Garden&apos;s Terms of Service and
           Privacy Policy.
         </Typography>
       </div>
