@@ -1,7 +1,6 @@
 import { StrictMode } from "react";
 import { BrowserRouter } from "react-router-dom";
 import App from "./pages/index.tsx";
-import { HelmetProvider } from "react-helmet-async";
 import { WagmiProvider } from "wagmi";
 import { config } from "./layout/wagmi/config.ts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -16,20 +15,18 @@ ReactDOM.hydrateRoot(
   document.getElementById("root") as HTMLElement, (
   <StrictMode>
     <BrowserRouter>
-      <HelmetProvider>
-        <WagmiProvider config={config}>
-          <QueryClientProvider client={queryClient}>
-            <GardenProvider
-              config={{
-                store: localStorage,
-                environment: network,
-              }}
-            >
-              <App />
-            </GardenProvider>
-          </QueryClientProvider>
-        </WagmiProvider>
-      </HelmetProvider>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          <GardenProvider
+            config={{
+              store: localStorage,
+              environment: network,
+            }}
+          >
+            <App />
+          </GardenProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
     </BrowserRouter>
   </StrictMode>
 )
