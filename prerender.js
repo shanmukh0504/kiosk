@@ -21,19 +21,14 @@ const generatePageMetadata = (path) => {
       canonical: "/",
     },
     "/quest": {
-      title:"Native Bitcoin Exchange | Garden BTC Bridge",
-      description:"Experience fast, secure, and trustless BTC bridging across most blockchains, including Arbitrum, Ethereum, Avalanche, Optimism, and Binance.",
+      title:"Garden Finance Quests",
+      description:"Get involved in the Garden ecosystem and earn SEED tokens by completing quests.",
       keywords: [
-        "Garden",
-        "Bitcoin exchange",
-        "Bitcoin bridge",
-        "fast BTC bridge",
-        "instant BTC bridge",
-        "decentralized BTC swap",
-        "atomic swap",
-        "cross-chain swap",
+        "Earn SEED tokens",
+        "SEED token rewards",
+        "SEED token airdrop",
       ],
-      ogImage: "/act2.png",
+      ogImage: "/quest.png",
         canonical:"/quest"
     }
     // Add more routes as needed
