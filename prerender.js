@@ -33,38 +33,33 @@ const generatePageMetadata = (path) => {
   };
 };
 
-// Create the necessary path resolver (for ES module compatibility)
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const toAbsolute = (p) => path.resolve(__dirname, p);
 
-// Read the template HTML file that will be used for each route
-const template = fs.readFileSync(toAbsolute("dist/static/index.html"), "utf-8");
+// Read the HTML template to inject metadata
+const template = fs.readFileSync(toAbsolute("dist/index.html"), "utf-8");
 
-// Determine routes to pre-render by reading the `src/pages` directory
-const routesToPrerender = fs
-  .readdirSync(toAbsolute("src/pages"))
-  .map((file) => {
-    const name = file.replace(/\.tsx$/, "").toLowerCase();
-    return name === "home" ? "/" : `/${name}`;
-  });
+// Explicit list of routes to pre-render (including "/swap" and "/quest")
+const routesToPrerender = ["/"];
 
+// Function to pre-render the HTML for each route
 (async () => {
-  // Pre-render each route and generate a static HTML file for it
   for (const url of routesToPrerender) {
-    // Generate the metadata for the current route
+    // Generate metadata for the current route
     const metadata = generatePageMetadata(url);
 
-    // Inject the appropriate metadata into the HTML template
+    // Inject metadata into the template
     const html = template
-      .replace("<!--meta-title-->", metadata.title) // Inject meta title
-      .replace("<!--meta-description-->", metadata.description) // Inject meta description
+      .replace("<!--meta-title-->", metadata.title) // Inject title
+      .replace("<!--meta-description-->", metadata.description)
+      .replace("<!--meta-og-description-->", metadata.ogDescription || metadata.description) // Inject description
       .replace("<!--meta-og-image-->", metadata.ogImage || "/metadata.png"); // Inject Open Graph image
 
-    // Determine the correct file path for the static HTML output
-    const filePath = `dist/static${url === "/" ? "/index" : url}.html`;
+    // Define the file path where the pre-rendered HTML will be saved
+    const filePath = `dist${url === "/" ? "/index" : url}.html`;
 
     // Write the generated HTML to a file
     fs.writeFileSync(toAbsolute(filePath), html);
-    console.log(`Prerendered: ${filePath}`); // Log each prerendered file path
+    console.log(`Prerendered: ${filePath}`); // Log the rendered file path
   }
 })();

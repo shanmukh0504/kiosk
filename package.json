@@ -6,11 +6,9 @@
   "scripts": {
     "dev": "vite",
     "lint": "eslint .",
-    "build": "tsc -b && yarn build:client && yarn build:server",
-    "build:client": "vite build --outDir dist/client",
-    "build:server": "vite build --ssr src/entry-server.tsx --outDir dist/server",
-    "generate": "vite build --outDir dist/static && yarn build:server && ts-node prerender",
-    "serve": "cross-env NODE_ENV=production node server"
+    "build": "tsc -b && vite build && yarn generate ",
+    "generate": "ts-node prerender",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@gardenfi/core": "^0.2.0-beta.86",
@@ -64,5 +62,5 @@
     "vite-plugin-wasm": "^3.3.0",
     "vitest": "^2.1.4"
   },
-  "packageManager": "yarn@4.4.0"
+  "packageManager": "yarn@4.5.1"
 }
