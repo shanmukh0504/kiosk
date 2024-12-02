@@ -58,6 +58,8 @@ export const WalletLogos: Record<string, string> = {
   "com.coinbase.wallet":
     "https://garden-finance.imgix.net/wallets/coinbase.svg",
   "com.okex.wallet": "https://garden-finance.imgix.net/wallets/okx.svg",
+  OKX_WALLET: "https://garden-finance.imgix.net/wallets/okx.svg",
+  UNISAT: "https://garden-finance.imgix.net/wallets/unisat.svg",
   "org.uniswap.app": "https://garden-finance.imgix.net/wallets/uniswap.svg",
   injected: "https://garden-finance.imgix.net/wallets/injected.svg",
 };

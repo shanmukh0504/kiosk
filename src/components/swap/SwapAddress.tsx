@@ -1,8 +1,9 @@
-import { useId, useRef, ChangeEvent, FC } from "react";
+import { useId, useRef, ChangeEvent, FC, useEffect } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { Tooltip } from "../../common/Tooltip";
 import { swapStore } from "../../store/swapStore";
 import { isBitcoin } from "@gardenfi/orderbook";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 
 type SwapAddressProps = {
   isValidAddress: boolean;
@@ -12,6 +13,7 @@ export const SwapAddress: FC<SwapAddressProps> = ({ isValidAddress }) => {
   const { inputAsset, outputAsset, btcAddress, setBtcAddress } = swapStore();
   const inputRef = useRef<HTMLInputElement>(null);
   const tooltipId = useId();
+  const { account } = useBitcoinWallet();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value;
@@ -23,6 +25,12 @@ export const SwapAddress: FC<SwapAddressProps> = ({ isValidAddress }) => {
 
   const isRecoveryAddress = inputAsset && isBitcoin(inputAsset.chain);
   const isReceiveAddress = outputAsset && isBitcoin(outputAsset.chain);
+
+  useEffect(() => {
+    if (account) {
+      setBtcAddress(account);
+    }
+  }, [account, setBtcAddress]);
 
   return (
     (isRecoveryAddress || isReceiveAddress) && (

@@ -9,6 +9,7 @@ import BigNumber from "bignumber.js";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useEVMWallet } from "./useEVMWallet";
 import { useBalances } from "./useBalances";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 
 export type TokenPrices = {
   input: string;
@@ -42,6 +43,7 @@ export const useSwap = () => {
   const { strategies } = assetInfoStore();
   const { address } = useEVMWallet();
   const { swapAndInitiate, getQuote } = useGarden();
+  const { provider } = useBitcoinWallet();
 
   const isInsufficientBalance = useMemo(
     () => new BigNumber(inputAmount).gt(inputTokenBalance),
@@ -265,15 +267,31 @@ export const useSwap = () => {
         return;
       }
 
-      //TODO: add a notification here and clear all amounts and addresses
+      //TODO: add a notification here
       console.log("orderCreated ✅", res.val);
       clearSwapState();
 
       if (isBitcoin(res.val.source_swap.chain)) {
-        setShowConfirmSwap({
-          isOpen: true,
-          order: res.val,
-        });
+        const order = res.val;
+
+        if (provider) {
+          const res = await provider.sendBitcoin(
+            order.source_swap.swap_id,
+            Number(order.source_swap.amount)
+          );
+          if (res.error) {
+            console.error("failed to send bitcoin ❌", res.error);
+            setShowConfirmSwap({
+              isOpen: true,
+              order,
+            });
+          }
+        } else {
+          setShowConfirmSwap({
+            isOpen: true,
+            order,
+          });
+        }
       }
     } catch (error) {
       console.log("failed to create order ❌", error);

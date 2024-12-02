@@ -1,7 +1,6 @@
 import { Button, GardenFullLogo, Typography } from "@gardenfi/garden-book";
 import { INTERNAL_ROUTES } from "../../constants/constants";
 import { API } from "../../constants/api";
-import { modalNames, modalStore } from "../../store/modalStore";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { Address } from "./Address";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -9,13 +8,14 @@ import { useGarden } from "@gardenfi/react-hooks";
 import { OrderStatus } from "@gardenfi/core";
 import { isCurrentRoute } from "../../utils/utils";
 import { MobileMenu } from "./MobileMenu";
+import { connectWalletStore } from "../../store/connectWalletStore";
 
 export const Navbar = () => {
   const [isInitiatingSM, setIsInitiatingSM] = useState(false);
   const [shouldInitiateSM, setShouldInitiateSM] = useState(false);
 
   const { isConnected } = useEVMWallet();
-  const { setOpenModal } = modalStore();
+  const { setIsOpen } = connectWalletStore();
   const { pendingOrders, isExecuting, initializeSecretManager, secretManager } =
     useGarden();
 
@@ -28,7 +28,7 @@ export const Navbar = () => {
   const handleConnectClick = () => {
     if (isFullyConnected) return;
     if (isConnected && shouldInitiateSM) handleInitializeSM();
-    else setOpenModal(modalNames.connectWallet);
+    else setIsOpen();
   };
 
   const handleInitializeSM = useCallback(async () => {
@@ -70,7 +70,6 @@ export const Navbar = () => {
   }, [
     pendingOrders,
     isExecuting,
-    setOpenModal,
     handleInitializeSM,
     isInitiatingSM,
     shouldInitiateSM,
