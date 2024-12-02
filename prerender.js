@@ -20,6 +20,22 @@ const generatePageMetadata = (path) => {
       ogImage: "/metadata.png",
       canonical: "/",
     },
+    "/quest": {
+      title:"Native Bitcoin Exchange | Garden BTC Bridge",
+      description:"Experience fast, secure, and trustless BTC bridging across most blockchains, including Arbitrum, Ethereum, Avalanche, Optimism, and Binance.",
+      keywords: [
+        "Garden",
+        "Bitcoin exchange",
+        "Bitcoin bridge",
+        "fast BTC bridge",
+        "instant BTC bridge",
+        "decentralized BTC swap",
+        "atomic swap",
+        "cross-chain swap",
+      ],
+      ogImage: "/act2.png",
+        canonical:"/quest"
+    }
     // Add more routes as needed
   };
 
@@ -40,7 +56,7 @@ const toAbsolute = (p) => path.resolve(__dirname, p);
 const template = fs.readFileSync(toAbsolute("dist/index.html"), "utf-8");
 
 // Explicit list of routes to pre-render (including "/swap" and "/quest")
-const routesToPrerender = ["/"];
+const routesToPrerender = ["/" , "/quest"];
 
 // Function to pre-render the HTML for each route
 (async () => {
