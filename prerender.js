@@ -66,16 +66,17 @@ const routesToPrerender = ["/" , "/quest"];
 
     // Inject metadata into the template
     const html = template
-      .replace("<!--meta-title-->", metadata.title) // Inject title
+      .replace("<!--meta-title-->", metadata.title) 
+      .replace("<!--meta-og-title-->", metadata.title)
       .replace("<!--meta-description-->", metadata.description)
-      .replace("<!--meta-og-description-->", metadata.ogDescription || metadata.description) // Inject description
-      .replace("<!--meta-og-image-->", metadata.ogImage || "/metadata.png"); // Inject Open Graph image
+      .replace("<!--meta-og-description-->", metadata.ogDescription || metadata.description) 
+      .replace("<!--meta-og-image-->", metadata.ogImage || "/metadata.png") 
+      .replace("<!--meta-twt-image-->" , metadata.ogImage || "/metadata.png");
 
-    // Define the file path where the pre-rendered HTML will be saved
     const filePath = `dist${url === "/" ? "/index" : url}.html`;
 
     // Write the generated HTML to a file
     fs.writeFileSync(toAbsolute(filePath), html);
-    console.log(`Prerendered: ${filePath}`); // Log the rendered file path
+    console.log(`Prerendered: ${filePath}`);
   }
 })();
