@@ -48,6 +48,9 @@ export default {
       quests: {
         primary: "#D8BEFF",
       },
+      stake: {
+        primary: "#FFCD82",
+      }
     }),
   ],
 };

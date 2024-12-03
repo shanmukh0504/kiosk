@@ -22,10 +22,10 @@ export const Modal = () => {
         open={modalName.initializeSM}
         onClose={() => setCloseModal(modalNames.initializeSM)}
       />
-      <WhiteList
+      {/* <WhiteList
         open={modalName.whiteList}
         onClose={() => setCloseModal(modalNames.whiteList)}
-      />
+      /> */}
       <AssetList
         open={modalName.assetList}
         onClose={() => setCloseModal(modalNames.assetList)}

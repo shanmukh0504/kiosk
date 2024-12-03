@@ -4,6 +4,7 @@ import { getCurrentTheme } from "../utils/utils";
 const ORB_COLORS = {
   swap: "#9BC8FF",
   quests: "#FFD89C",
+  stake: "#E36492"
 };
 
 export const Orb = () => {
@@ -36,7 +37,7 @@ export const Orb = () => {
           gradientTransform="translate(1012 1012) rotate(90) scale(1012)"
         >
           <stop offset="0.526115" stopColor={orbColor} />
-          <stop offset="1" stopColor={orbColor} stopOpacity="0.2" />
+          <stop offset="1" stopColor={orbColor} stopOpacity="0.04" />
         </radialGradient>
       </defs>
     </svg>

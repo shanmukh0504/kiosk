@@ -1,20 +1,23 @@
 import { useEffect, useMemo, useState } from "react";
 import { swapStore } from "../store/swapStore";
-import { isBitcoin } from "@gardenfi/orderbook";
+import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { evmToViemChainMap } from "@gardenfi/core";
 import { useEVMWallet } from "./useEVMWallet";
 import { getTokenBalance } from "../utils/getTokenBalance";
 
-export const useBalances = () => {
+export const useBalances = (asset?: Asset) => {
   const [balances, setBalances] = useState<Record<string, number>>({});
   const { address } = useEVMWallet();
   const { inputAsset } = swapStore();
+
+  const inputToken = asset || inputAsset;
+
   const inputTokenBalance = useMemo(
     () =>
       balances[
-        `${inputAsset?.chain}_${inputAsset?.tokenAddress.toLowerCase()}`
+      `${inputToken?.chain}_${inputToken?.tokenAddress.toLowerCase()}`
       ],
-    [balances, inputAsset]
+    [balances, inputToken]
   );
 
   useEffect(() => {
@@ -22,16 +25,17 @@ export const useBalances = () => {
       setBalances({});
       return;
     }
-    if (!inputAsset || isBitcoin(inputAsset.chain) || !address) return;
-    const chain = evmToViemChainMap[inputAsset.chain];
+
+    if (!inputToken || isBitcoin(inputToken.chain) || !address) return;
+
+    const chain = evmToViemChainMap[inputToken.chain];
     if (!chain) return;
 
     const fetchBalance = async () => {
-      const balance = await getTokenBalance(address, inputAsset);
+      const balance = await getTokenBalance(address, inputToken);
       setBalances((prev) => ({
         ...prev,
-        [`${inputAsset.chain}_${inputAsset.tokenAddress.toLowerCase()}`]:
-          balance,
+        [`${inputToken.chain}_${inputToken.tokenAddress.toLowerCase()}`]: balance,
       }));
     };
 
@@ -39,7 +43,7 @@ export const useBalances = () => {
     const intervalId = setInterval(fetchBalance, 10000);
 
     return () => clearInterval(intervalId);
-  }, [address, inputAsset]);
+  }, [address, inputToken]);
 
   return { balances, inputTokenBalance };
 };
