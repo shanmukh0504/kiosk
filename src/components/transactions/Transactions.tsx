@@ -74,6 +74,10 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
           <div className="flex flex-col gap-4 overflow-auto">
             {isLoadingOrders ? (
               <TransactionsSkeleton />
+            ) : filteredOrders.length === 0 ? (
+              <Typography size="h5" className="text-center">
+                No Transactions Found.
+              </Typography>
             ) : (
               filteredOrders.map((order, index) => (
                 <div key={index}>
