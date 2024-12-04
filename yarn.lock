@@ -692,7 +692,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/react-hooks@npm:^0.0.1-beta.123":
+"@gardenfi/react-hooks@npm:^0.0.1-beta.112":
   version: 0.0.1-beta.123
   resolution: "@gardenfi/react-hooks@npm:0.0.1-beta.123"
   dependencies:

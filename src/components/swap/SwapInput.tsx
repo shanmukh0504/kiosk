@@ -4,8 +4,9 @@ import {
   TokenInfo,
   Typography,
   WalletIcon,
+  ScaleY
 } from "@gardenfi/garden-book";
-import { FC, useMemo, useRef, ChangeEvent } from "react";
+import { FC, useMemo, useRef, ChangeEvent, useState, useEffect } from "react";
 import { IOType } from "../../constants/constants";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
@@ -37,6 +38,46 @@ export const SwapInput: FC<SwapInputProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const { setOpenAssetSelector, chains } = assetInfoStore();
   const { setOpenModal } = modalStore();
+  const [triggerPriceAnimation, setTriggerPriceAnimation] = useState(false);
+  const [triggerBalanceAnimation, setTriggerBalanceAnimation] = useState(false);
+  const [triggerTimeEstimateAnimation, setTriggerTimeEstimateAnimation] = useState(false);
+  const [triggerAmountAnimation, setTriggerAmountAnimation] = useState(false);
+  const [isInitialRender, setIsInitialRender] = useState(true);
+
+  useEffect(() => {
+    if (isInitialRender) {
+      setTriggerAmountAnimation(true)
+      setTimeout(() => setIsInitialRender(false), 0);
+    }
+  }, [isInitialRender]);
+
+  useEffect(() => {
+    if (!isInitialRender && amount) {
+      setTriggerAmountAnimation(false);
+      setTimeout(() => setTriggerAmountAnimation(true), 0);
+    }
+  }, [amount, isInitialRender]);
+
+  useEffect(() => {
+    if (price) {
+      setTriggerPriceAnimation(false);
+      setTimeout(() => setTriggerPriceAnimation(true), 0);
+    }
+  }, [price]);
+
+  useEffect(() => {
+    if (balance !== undefined) {
+      setTriggerBalanceAnimation(false);
+      setTimeout(() => setTriggerBalanceAnimation(true), 0);
+    }
+  }, [balance]);
+
+  useEffect(() => {
+    if (timeEstimate) {
+      setTriggerTimeEstimateAnimation(false);
+      setTimeout(() => setTriggerTimeEstimateAnimation(true), 0);
+    }
+  }, [timeEstimate]);
 
   const network = useMemo(() => {
     if (!chains || (asset && isBitcoin(asset.chain))) return;
@@ -78,6 +119,13 @@ export const SwapInput: FC<SwapInputProps> = ({
     }
   };
 
+  const handleBalanceClick = () => {
+    if (type === IOType.input && balance) {
+      const balanceStr = balance.toString();
+      onChange(balanceStr);
+    }
+  };
+
   const handleOpenAssetSelector = () => {
     setOpenAssetSelector(type);
     setOpenModal(modalNames.assetList);
@@ -95,9 +143,11 @@ export const SwapInput: FC<SwapInputProps> = ({
             >
               {label}
             </Typography>
-            <Typography size="h5" weight="medium" className="text-mid-grey">
-              {Number(price) ? `$${price}` : ""}
-            </Typography>
+            <ScaleY triggerAnimation={triggerPriceAnimation}>
+              <Typography size="h5" weight="medium" className="text-mid-grey absolute ">
+                {Number(price) ? `$${price}` : ""}
+              </Typography>
+            </ScaleY>
           </div>
           {type === IOType.input &&
             (error ? (
@@ -105,27 +155,50 @@ export const SwapInput: FC<SwapInputProps> = ({
                 <div className="text-red-500">{error}</div>
               </Typography>
             ) : balance !== undefined ? (
-              <div className="flex items-center gap-1">
-                <WalletIcon className="h-2.5 w-2.5" />
-                <Typography size="h5" weight="medium">
-                  {balance}
-                </Typography>
-              </div>
+              <ScaleY triggerAnimation={triggerBalanceAnimation}>
+                <div className="flex items-center gap-1 cursor-pointer" onClick={handleBalanceClick}>
+                  <WalletIcon className="h-2.5 w-2.5" />
+                  <Typography size="h5" weight="medium">
+                    {balance}
+                  </Typography>
+                </div>
+              </ScaleY>
             ) : (
               <></>
             ))}
           {type === IOType.output && timeEstimate && (
-            <div className="flex gap-1 items-center">
-              <TimerIcon className="h-4" />
-              <Typography size="h5" weight="medium">
-                {timeEstimate}
-              </Typography>
-            </div>
+            <ScaleY triggerAnimation={triggerTimeEstimateAnimation}>
+              <div className="flex gap-1 items-center">
+                <TimerIcon className="h-4" />
+                <Typography size="h5" weight="medium">
+                  {timeEstimate}
+                </Typography>
+              </div>
+            </ScaleY>
           )}
         </div>
         <div className="flex justify-between h-6">
           {loading ? (
             <div className="text-mid-grey">loading...</div>
+          ) : type === IOType.output ? (
+            <ScaleY triggerAnimation={triggerAmountAnimation}>
+              <Typography
+                size={"h3"}
+                breakpoints={{
+                  sm: "h2",
+                }}
+                weight="bold"
+              >
+                <input
+                  ref={inputRef}
+                  className="max-w-[150px] outline-none placeholder:text-mid-grey"
+                  type="text"
+                  value={amount === "0" ? "" : amount}
+                  placeholder="0.0"
+                  onChange={handleAmountChange}
+                />
+              </Typography>
+            </ScaleY>
           ) : (
             <Typography
               size={"h3"}
@@ -138,7 +211,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                 ref={inputRef}
                 className="max-w-[150px] outline-none placeholder:text-mid-grey"
                 type="text"
-                value={type == IOType.output && amount == "0" ? "" : amount}
+                value={amount === "0" ? "" : amount}
                 placeholder="0.0"
                 onChange={handleAmountChange}
               />

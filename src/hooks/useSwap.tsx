@@ -127,61 +127,58 @@ export const useSwap = () => {
       toAsset: Asset,
       isExactOut: boolean
     ) => {
-      const debouncedFetchQuote = debounce(async () => {
-        if (!getQuote) return;
-        if (isExactOut) setLoading({ input: true, output: false });
-        else setLoading({ input: false, output: true });
+      if (!getQuote) return;
+      if (isExactOut) setLoading({ input: true, output: false });
+      else setLoading({ input: false, output: true });
 
-        const amountInDecimals = new BigNumber(amount).multipliedBy(
-          10 ** fromAsset.decimals
-        );
-        const quote = await getQuote({
-          fromAsset,
-          toAsset,
-          amount: amountInDecimals.toNumber(),
-          isExactOut,
-        });
-        if (quote.error) {
-          setAmount(isExactOut ? IOType.input : IOType.output, "0");
-          setLoading({ input: false, output: false });
-          setStrategy("");
-          setTokenPrices({ input: "0", output: "0" });
-          return;
-        }
-
-        const [_strategy, quoteAmount] = Object.entries(quote.val.quotes)[0];
-        setStrategy(_strategy);
+      const amountInDecimals = new BigNumber(amount).multipliedBy(
+        10 ** fromAsset.decimals
+      );
+      const quote = await getQuote({
+        fromAsset,
+        toAsset,
+        amount: amountInDecimals.toNumber(),
+        isExactOut,
+      });
+      if (quote.error) {
+        setAmount(isExactOut ? IOType.input : IOType.output, "0");
         setLoading({ input: false, output: false });
-        const assetToChange = isExactOut ? fromAsset : toAsset;
-        const quoteAmountInDecimals = new BigNumber(quoteAmount).div(
-          Math.pow(10, assetToChange.decimals)
-        );
-        setAmount(
-          isExactOut ? IOType.input : IOType.output,
-          Number(
-            quoteAmountInDecimals.toFixed(8, BigNumber.ROUND_DOWN)
-          ).toString()
-        );
+        setStrategy("");
+        setTokenPrices({ input: "0", output: "0" });
+        return;
+      }
 
-        const inputAmount = isExactOut
-          ? quoteAmountInDecimals
-          : new BigNumber(amount);
-        const outputAmount = isExactOut
-          ? new BigNumber(amount)
-          : quoteAmountInDecimals;
-        const inputTokenPrice = inputAmount
-          .multipliedBy(quote.val.input_token_price)
-          .toFixed(2);
-        const outputTokenPrice = outputAmount
-          .multipliedBy(quote.val.output_token_price)
-          .toFixed(2);
+      const [_strategy, quoteAmount] = Object.entries(quote.val.quotes)[0];
+      setStrategy(_strategy);
+      setLoading({ input: false, output: false });
+      const assetToChange = isExactOut ? fromAsset : toAsset;
+      const quoteAmountInDecimals = new BigNumber(quoteAmount).div(
+        Math.pow(10, assetToChange.decimals)
+      );
+      setAmount(
+        isExactOut ? IOType.input : IOType.output,
+        Number(
+          quoteAmountInDecimals.toFixed(8, BigNumber.ROUND_DOWN)
+        ).toString()
+      );
 
-        setTokenPrices({
-          input: inputTokenPrice,
-          output: outputTokenPrice,
-        });
-      }, 500);
-      debouncedFetchQuote();
+      const inputAmount = isExactOut
+        ? quoteAmountInDecimals
+        : new BigNumber(amount);
+      const outputAmount = isExactOut
+        ? new BigNumber(amount)
+        : quoteAmountInDecimals;
+      const inputTokenPrice = inputAmount
+        .multipliedBy(quote.val.input_token_price)
+        .toFixed(2);
+      const outputTokenPrice = outputAmount
+        .multipliedBy(quote.val.output_token_price)
+        .toFixed(2);
+
+      setTokenPrices({
+        input: inputTokenPrice,
+        output: outputTokenPrice,
+      });
     },
     [getQuote, setAmount]
   );
@@ -207,10 +204,14 @@ export const useSwap = () => {
       setError(undefined);
 
       if (!inputAsset || !outputAsset || !Number(amount)) return;
-      fetchQuote(amount, inputAsset, outputAsset, false);
+      debouncedFetch(amount, inputAsset, outputAsset, false);
     },
     [inputAsset, outputAsset, minAmount, maxAmount, fetchQuote, setAmount]
   );
+  const debouncedFetch =
+    debounce(async (amount: string, fromAsset: Asset, toAsset: Asset, isExactOut: boolean) => {
+      fetchQuote(amount, fromAsset, toAsset, isExactOut);
+    }, 500);
 
   const handleOutputAmountChange = async (amount: string) => {
     setAmount(IOType.output, amount);
