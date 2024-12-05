@@ -1,4 +1,9 @@
-import { CloseIcon, Modal, Typography } from "@gardenfi/garden-book";
+import {
+  ArrowLeftIcon,
+  CloseIcon,
+  Modal,
+  Typography,
+} from "@gardenfi/garden-book";
 import React, { useState, FC, useMemo } from "react";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { Connector } from "wagmi";
@@ -10,7 +15,7 @@ import {
   useBitcoinWallet,
 } from "@gardenfi/wallet-connectors";
 import { WalletRow } from "./WalletRow";
-import { evmToBTCid } from "./constants";
+import { btcToEVMid, evmToBTCid } from "./constants";
 import { MultiWalletConnection } from "./MultiWalletConnection";
 import { handleEVMConnect } from "./handleConnect";
 import { modalNames, modalStore } from "../../../store/modalStore";
@@ -38,16 +43,34 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
   const { setAuth } = authStore();
 
   const showIsEVMMandatory = useMemo(
-    () => isBTCWallets && !!(account && !address),
+    () => !isBTCWallets && account && !address,
     [isBTCWallets, account, address]
   );
 
+  const evmWalletIds = useMemo(
+    () => connectors.map((wallet) => wallet.id),
+    [connectors]
+  );
+
+  const btcWallets = isBTCWallets
+    ? availableWallets
+    : Object.fromEntries(
+        Object.entries(availableWallets).filter(([name]) => {
+          return !evmWalletIds.includes(btcToEVMid[name]);
+        })
+      );
+
   const handleClose = () => {
+    if (address) onClose();
+
     setConnectingWallet(null);
     setMultiWalletConnector(undefined);
-    if (address && account) {
-      onClose();
-    }
+  };
+
+  const close = () => {
+    onClose();
+    setConnectingWallet(null);
+    setMultiWalletConnector(undefined);
   };
 
   const handleConnect = async (connector: Connector, id: string) => {
@@ -92,10 +115,15 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
         <Typography size="h4" weight="bold">
           Connect a wallet
         </Typography>
-        <CloseIcon
-          className="w-6 h-[14px] cursor-pointer"
-          onClick={handleClose}
-        />
+        <div className="flex gap-4">
+          {multiWalletConnector && (
+            <ArrowLeftIcon
+              className="w-6 h-[14px] cursor-pointer"
+              onClick={handleClose}
+            />
+          )}
+          <CloseIcon className="w-6 h-[14px] cursor-pointer" onClick={close} />
+        </div>
       </div>
       {multiWalletConnector ? (
         <MultiWalletConnection
@@ -119,31 +147,32 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
                 isEVMWallet
               />
             ))}
-          {Object.entries(availableWallets).map(([name, wallet], i) => (
-            <WalletRow
-              key={i}
-              name={name}
-              logo={WalletLogos[name]}
-              onClick={async () => {
-                handleConnectBTCWallet(wallet, name);
-              }}
-              isConnecting={connectingWallet === name}
-              isConnected={provider?.id === wallet.id}
-              isBitcoinWallet
-            />
-          ))}
+          {Object.entries(availableWallets).length > 0 ? (
+            Object.entries(btcWallets).map(([name, wallet], i) => (
+              <WalletRow
+                key={i}
+                name={name}
+                logo={WalletLogos[name]}
+                onClick={async () => {
+                  handleConnectBTCWallet(wallet, name);
+                }}
+                isConnecting={connectingWallet === name}
+                isConnected={provider?.id === wallet.id}
+                isBitcoinWallet
+              />
+            ))
+          ) : (
+            <Typography size="h3">No bitcoin wallets found</Typography>
+          )}
+          {showIsEVMMandatory && (
+            <Typography size="h5" weight="medium" className="!text-red-600">
+              * EVM wallet connection is mandatory
+            </Typography>
+          )}
         </div>
       )}
 
       <div className="mb-2">
-        {showIsEVMMandatory && (
-          <>
-            <Typography size="h5" weight="medium" className="!text-red-600">
-              * EVM wallet connection is mandatory
-            </Typography>
-            <br />
-          </>
-        )}
         <Typography size="h4" weight="medium">
           By connecting a wallet, you agree to Garden’s Terms of Service and
           Privacy Policy.
@@ -171,7 +200,7 @@ export const ConnectWallet: FC<ConnectWalletProps> = ({
           />
         </BottomSheet>
       ) : (
-        <Modal open={open} onClose={onClose}>
+        <Modal open={open}>
           <Modal.Children
             opacityLevel={"medium"}
             className="flex flex-col gap-6 backdrop-blur-[20px] rounded-2xl w-[600px] p-6"

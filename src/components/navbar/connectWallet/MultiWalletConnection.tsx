@@ -52,13 +52,19 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
     setLoading(true);
 
     const res = await handleEVMConnect(connectors.evm, connectAsync);
+
+    if (!res) {
+      setLoading(false);
+      handleClose();
+      return;
+    }
+
     if (res && !res.isWhitelisted) {
       setOpenModal(modalNames.whiteList);
       handleClose();
+      return;
     }
-    if (res && res.auth) {
-      setAuth(res.auth);
-    }
+    if (res && res.auth) setAuth(res.auth);
 
     if (!checked.bitcoin) {
       setLoading(false);
@@ -70,22 +76,24 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
     if (!bitcoinConnectRes.error) {
       setLoading(false);
       handleClose();
+      return;
     }
     setLoading(false);
-    // handleClose();
   };
 
   return (
     <div className="flex flex-col gap-5">
-      <div>{connectors.btc.id}</div>
-      <div className="flex flex-col gap-1 bg-white/50 rounded-2xl p-4">
-        <Typography size="h5" weight="bold">
+      <div className="bg-white py-1 px-3 rounded-full w-fit">
+        {connectors.btc.id}
+      </div>
+      <div className="flex flex-col gap-1 bg-white/50 rounded-2xl py-4">
+        <Typography size="h5" weight="bold" className="px-4">
           Select ecosystems
         </Typography>
         {Object.entries(ecosystems).map(([key, ecosystem], i) => (
           <div
             key={i}
-            className="flex items-center gap-4 p-4 cursor-pointer hover:bg-off-white rounded-xl"
+            className="flex items-center gap-4 px-4 py-4 cursor-pointer hover:bg-off-white rounded-xl"
             onClick={() => {
               handleCheck(key);
             }}

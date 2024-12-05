@@ -1,7 +1,9 @@
-export const btcSupportedWallets = ["com.okex.wallet", ""];
-
 export const evmToBTCid: Record<string, string> = {
   "com.okex.wallet": "okx",
+} as const;
+
+export const btcToEVMid: Record<string, string> = {
+  okx: "com.okex.wallet",
 } as const;
 
 export const ecosystems = {
