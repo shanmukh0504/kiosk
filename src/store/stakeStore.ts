@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { Asset } from "@gardenfi/orderbook";
+import { DURATION } from "../constants/stake";
 
 const SEED: Asset = {
   name: "Seed",
@@ -14,11 +15,19 @@ const SEED: Asset = {
 interface StakeStoreState {
   asset: Asset;
   inputAmount: string;
+  selectedDuration: DURATION;
   setInputAmount: (value: string) => void;
+  setSelectedDuration: (duration: DURATION) => void;
+  loading: boolean;
+  setLoading: (isLoading: boolean) => void;
 }
 
 export const stakeStore = create<StakeStoreState>((set) => ({
   asset: SEED,
   inputAmount: "",
+  selectedDuration: 6,
   setInputAmount: (value: string) => set({ inputAmount: value }),
+  setSelectedDuration: (duration) => set({ selectedDuration: duration }),
+  loading: false,
+  setLoading: (isLoading: boolean) => set({ loading: isLoading }),
 }));

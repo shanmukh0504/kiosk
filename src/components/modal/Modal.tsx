@@ -2,8 +2,9 @@ import { modalNames, modalStore } from "../../store/modalStore";
 import { AssetList } from "./AssetList";
 import { ConnectWallet } from "../navbar/ConnectWallet";
 import { TransactionsComponent } from "../transactions/TransactionsComponent";
-import { WhiteList } from "../whitelist/WhiteList";
+// import { WhiteList } from "../whitelist/WhiteList";
 import { InitializeSMModal } from "./InitializeSMModal";
+import { StakeSeedModal } from "./StakeSeedModal";
 
 export const Modal = () => {
   const { modalName, setCloseModal } = modalStore();
@@ -29,6 +30,10 @@ export const Modal = () => {
       <AssetList
         open={modalName.assetList}
         onClose={() => setCloseModal(modalNames.assetList)}
+      />
+      <StakeSeedModal
+        open={modalName.stakeSeed}
+        onClose={() => setCloseModal(modalNames.stakeSeed)}
       />
     </>
   );

@@ -17,9 +17,10 @@ export const Stake: FC = () => {
         }
     };
 
-    const handleStakeButtonClick = () => {
-        console.log("staking started")
-    }
+
+    const handleOpenAssetSelector = () => {
+        setOpenModal(modalNames.stakeSeed);
+    };
 
     return (
         <div className="flex flex-col p-4 gap-8 w-full sm:max-w-[424px] max-w-[328px] mx-auto mt-10 rounded-2xl bg-opacity-50 bg-white">
@@ -61,7 +62,7 @@ export const Stake: FC = () => {
                 <StakeInput />
                 <Button
                     size="lg"
-                    onClick={address ? handleStakeButtonClick : handleConnectClick}
+                    onClick={address ? handleOpenAssetSelector : handleConnectClick}
                 >
                     {address ? "Stake" : "Connect"}
                 </Button>

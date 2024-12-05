@@ -1,4 +1,5 @@
 const REQUIRED_ENV_VARS = {
+  STAKING_URL: import.meta.env.VITE_STAKING_URL,
   DATA_URL: import.meta.env.VITE_DATA_URL,
   QUESTS_URL: import.meta.env.VITE_QUESTS_URL,
   ORDERBOOK_URL: import.meta.env.VITE_ORDERBOOK_URL,

@@ -6,6 +6,7 @@ export const modalNames = {
   initializeSM: "initializeSM",
   whiteList: "whiteList",
   assetList: "assetList",
+  stakeSeed: "stakeSeed",
 } as const;
 
 export type ModalName = keyof typeof modalNames;
@@ -25,6 +26,7 @@ export const modalStore = create<ModalState>((set) => ({
     initializeSM: false,
     whiteList: false,
     assetList: false,
+    stakeSeed: false,
   },
   setOpenModal: (name) => {
     set((state) => ({
