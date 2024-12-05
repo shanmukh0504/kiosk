@@ -7,6 +7,9 @@ type WalletRowProps = {
   logo: string;
   onClick: () => void;
   isConnecting: boolean;
+  isConnected: boolean;
+  isEVMWallet?: boolean;
+  isBitcoinWallet?: boolean;
 };
 
 export const WalletRow: FC<WalletRowProps> = ({
@@ -14,6 +17,9 @@ export const WalletRow: FC<WalletRowProps> = ({
   logo,
   onClick,
   isConnecting,
+  isConnected,
+  isEVMWallet,
+  isBitcoinWallet,
 }) => {
   return (
     <div
@@ -23,10 +29,22 @@ export const WalletRow: FC<WalletRowProps> = ({
       <img src={logo} alt={"icon"} className="w-8 h-8" />
       <div className="flex justify-between w-full">
         <Typography size="h2" weight="medium">
-          {name}
+          {name === "Injected" ? "Browser Wallet" : name}
         </Typography>
         {isConnecting && <Loader />}
       </div>
+      {isConnected && (
+        <div className="flex gap-1">
+          <div className="flex gap-1 items-center bg-white/50 text-dark-grey p-0.5 rounded-full px-1.5 text-[10px]">
+            <div className="w-1.5 h-1.5 bg-green-300 rounded-full" />
+            Connected
+          </div>
+          <div className="flex gap-1 items-center bg-white/50 p-0.5 text-dark-grey rounded-full px-1.5 text-[10px]">
+            {isEVMWallet && "evm"}
+            {isBitcoinWallet && "bitcoin"}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

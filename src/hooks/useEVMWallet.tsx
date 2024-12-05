@@ -2,7 +2,7 @@ import { useAccount, useConnect, useDisconnect, useWalletClient } from "wagmi";
 
 export const useEVMWallet = () => {
   const { data: walletClient } = useWalletClient();
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, connector } = useAccount();
   const { disconnect: disconnectWallet } = useDisconnect();
   const { status, connectors, isPending, connectAsync } = useConnect();
 
@@ -16,6 +16,7 @@ export const useEVMWallet = () => {
     address,
     connectors,
     isPending,
+    connector,
     isConnected,
     status,
     disconnect,

@@ -11,6 +11,7 @@ import { Toast } from "../toast/Toast";
 import { formatAmount } from "../../utils/utils";
 import { useSwap } from "../../hooks/useSwap";
 import { SwapFees } from "./SwapFees";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 
 export const CreateSwap = () => {
   const { assets } = assetInfoStore();
@@ -33,6 +34,7 @@ export const CreateSwap = () => {
     handleSwapClick,
   } = useSwap();
   const { garden } = useGarden();
+  const { account: btcAddress } = useBitcoinWallet();
 
   const buttonLabel = useMemo(() => {
     return isInsufficientBalance
@@ -141,7 +143,7 @@ export const CreateSwap = () => {
             timeEstimate={timeEstimate}
           />
         </div>
-        <SwapAddress isValidAddress={isValidBitcoinAddress} />
+        {!btcAddress && <SwapAddress isValidAddress={isValidBitcoinAddress} />}
         <SwapFees tokenPrices={tokenPrices} />
         <Button
           className={`transition-colors duration-500 ${

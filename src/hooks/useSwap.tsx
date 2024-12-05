@@ -39,11 +39,12 @@ export const useSwap = () => {
     btcAddress,
     setShowConfirmSwap,
     clearSwapState,
+    setBtcAddress,
   } = swapStore();
   const { strategies } = assetInfoStore();
   const { address } = useEVMWallet();
   const { swapAndInitiate, getQuote } = useGarden();
-  const { provider } = useBitcoinWallet();
+  const { provider, account } = useBitcoinWallet();
 
   const isInsufficientBalance = useMemo(
     () => new BigNumber(inputAmount).gt(inputTokenBalance),
@@ -326,6 +327,12 @@ export const useSwap = () => {
     }
     setError(undefined);
   }, [inputAmount, minAmount, maxAmount, inputAsset?.symbol]);
+
+  useEffect(() => {
+    if (account) {
+      setBtcAddress(account);
+    }
+  }, [account, setBtcAddress]);
 
   return {
     inputAmount,

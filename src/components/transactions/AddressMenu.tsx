@@ -57,7 +57,7 @@ type AddressMenuProps = {
 
 export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const { address, disconnect } = useEVMWallet();
-  const { account: btcAddress } = useBitcoinWallet();
+  const { account: btcAddress, disconnect: btcDisconnect } = useBitcoinWallet();
   const { setOpenBTCwallets } = connectWalletStore();
   const addTooltipId = useId();
   const languageTooltipId = useId();
@@ -71,6 +71,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const handleDisconnectClick = () => {
     disconnect();
     onClose();
+    btcDisconnect();
   };
 
   const handleBTCWalletClick = () => {

@@ -1,8 +1,11 @@
 import { Button, CheckBox, Typography } from "@gardenfi/garden-book";
-import { bitcoinWallets, EcosystemKeys, ecosystems } from "./constants";
+import { EcosystemKeys, ecosystems } from "./constants";
 import { useState, FC } from "react";
 import { Connector } from "wagmi";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import {
+  IInjectedBitcoinProvider,
+  useBitcoinWallet,
+} from "@gardenfi/wallet-connectors";
 import { handleEVMConnect } from "./handleConnect";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { authStore } from "../../../store/authStore";
@@ -10,12 +13,15 @@ import { modalNames, modalStore } from "../../../store/modalStore";
 
 type Checked = Record<EcosystemKeys, boolean>;
 type MultiWalletConnectionProps = {
-  connector: Connector;
+  connectors: {
+    evm: Connector;
+    btc: IInjectedBitcoinProvider;
+  };
   handleClose: () => void;
 };
 
 export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
-  connector,
+  connectors,
   handleClose,
 }) => {
   const [checked, setChecked] = useState(
@@ -27,7 +33,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   );
   const [loading, setLoading] = useState(false);
 
-  const { availableWallets, connect } = useBitcoinWallet();
+  const { connect } = useBitcoinWallet();
   const { connectAsync } = useEVMWallet();
   const { setOpenModal } = modalStore();
   const { setAuth } = authStore();
@@ -45,7 +51,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   const handleConnect = async () => {
     setLoading(true);
 
-    const res = await handleEVMConnect(connector, connectAsync);
+    const res = await handleEVMConnect(connectors.evm, connectAsync);
     if (res && !res.isWhitelisted) {
       setOpenModal(modalNames.whiteList);
       handleClose();
@@ -60,16 +66,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
       return;
     }
 
-    const bitcoinWalletKey =
-      bitcoinWallets[connector.id as keyof typeof bitcoinWallets];
-    const bitcoinWallet = availableWallets[bitcoinWalletKey];
-    if (!bitcoinWallet) {
-      setLoading(false);
-      handleClose();
-      return;
-    }
-
-    const bitcoinConnectRes = await connect(bitcoinWallet);
+    const bitcoinConnectRes = await connect(connectors.btc);
     if (!bitcoinConnectRes.error) {
       setLoading(false);
       handleClose();
@@ -80,7 +77,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
 
   return (
     <div className="flex flex-col gap-5">
-      <div>{connector.id}</div>
+      <div>{connectors.btc.id}</div>
       <div className="flex flex-col gap-1 bg-white/50 rounded-2xl p-4">
         <Typography size="h5" weight="bold">
           Select ecosystems

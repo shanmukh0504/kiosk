@@ -1,5 +1,5 @@
 import { CloseIcon, Modal, Typography } from "@gardenfi/garden-book";
-import React, { useState, FC } from "react";
+import React, { useState, FC, useMemo } from "react";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { Connector } from "wagmi";
 import { BottomSheet } from "../../../common/BottomSheet";
@@ -10,7 +10,7 @@ import {
   useBitcoinWallet,
 } from "@gardenfi/wallet-connectors";
 import { WalletRow } from "./WalletRow";
-import { btcSupportedWallets } from "./constants";
+import { evmToBTCid } from "./constants";
 import { MultiWalletConnection } from "./MultiWalletConnection";
 import { handleEVMConnect } from "./handleConnect";
 import { modalNames, modalStore } from "../../../store/modalStore";
@@ -27,21 +27,36 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
   onClose,
 }) => {
   const [connectingWallet, setConnectingWallet] = useState<string | null>(null);
-  const [isMultiWallet, setIsMultiWallet] = useState<Connector>();
-  const { connectors, connectAsync } = useEVMWallet();
-  const { availableWallets, connect } = useBitcoinWallet();
+  const [multiWalletConnector, setMultiWalletConnector] = useState<{
+    evm: Connector;
+    btc: IInjectedBitcoinProvider;
+  }>();
+  const { connectors, connectAsync, connector, address } = useEVMWallet();
+  const { availableWallets, connect, provider, account } = useBitcoinWallet();
+
   const { setOpenModal } = modalStore();
   const { setAuth } = authStore();
 
+  const showIsEVMMandatory = useMemo(
+    () => isBTCWallets && !!(account && !address),
+    [isBTCWallets, account, address]
+  );
+
   const handleClose = () => {
-    onClose();
     setConnectingWallet(null);
-    setIsMultiWallet(undefined);
+    setMultiWalletConnector(undefined);
+    if (address && account) {
+      onClose();
+    }
   };
 
   const handleConnect = async (connector: Connector, id: string) => {
-    if (btcSupportedWallets.includes(id)) {
-      setIsMultiWallet(connector);
+    const btcId = evmToBTCid[id];
+    if (btcId && availableWallets[btcId]) {
+      setMultiWalletConnector({
+        evm: connector,
+        btc: availableWallets[btcId],
+      });
       return;
     }
 
@@ -82,43 +97,53 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
           onClick={handleClose}
         />
       </div>
-      {isMultiWallet ? (
+      {multiWalletConnector ? (
         <MultiWalletConnection
-          connector={isMultiWallet}
+          connectors={multiWalletConnector}
           handleClose={handleClose}
         />
       ) : (
         <div className="flex flex-col gap-1 bg-white/50 rounded-2xl p-4">
-          {isBTCWallets
-            ? Object.entries(availableWallets).map(([name, wallet], i) => (
-                <WalletRow
-                  key={i}
-                  name={name}
-                  logo={WalletLogos[name]}
-                  onClick={async () => {
-                    handleConnectBTCWallet(wallet, name);
-                  }}
-                  isConnecting={connectingWallet === name}
-                />
-              ))
-            : connectors.map((wallet, i) => (
-                <WalletRow
-                  key={i}
-                  name={
-                    wallet.name === "Injected" ? "Browser Wallet" : wallet.name
-                  }
-                  logo={WalletLogos[wallet.id] ?? wallet.icon}
-                  onClick={async () => {
-                    if (!wallet) return;
-                    await handleConnect(wallet, wallet.id);
-                  }}
-                  isConnecting={connectingWallet === wallet.id}
-                />
-              ))}
+          {!isBTCWallets &&
+            connectors.map((wallet, i) => (
+              <WalletRow
+                key={i}
+                name={wallet.name}
+                logo={WalletLogos[wallet.id] ?? wallet.icon}
+                onClick={async () => {
+                  if (!wallet) return;
+                  await handleConnect(wallet, wallet.id);
+                }}
+                isConnecting={connectingWallet === wallet.id}
+                isConnected={connector?.id === wallet.id}
+                isEVMWallet
+              />
+            ))}
+          {Object.entries(availableWallets).map(([name, wallet], i) => (
+            <WalletRow
+              key={i}
+              name={name}
+              logo={WalletLogos[name]}
+              onClick={async () => {
+                handleConnectBTCWallet(wallet, name);
+              }}
+              isConnecting={connectingWallet === name}
+              isConnected={provider?.id === wallet.id}
+              isBitcoinWallet
+            />
+          ))}
         </div>
       )}
 
       <div className="mb-2">
+        {showIsEVMMandatory && (
+          <>
+            <Typography size="h5" weight="medium" className="!text-red-600">
+              * EVM wallet connection is mandatory
+            </Typography>
+            <br />
+          </>
+        )}
         <Typography size="h4" weight="medium">
           By connecting a wallet, you agree to Garden’s Terms of Service and
           Privacy Policy.
