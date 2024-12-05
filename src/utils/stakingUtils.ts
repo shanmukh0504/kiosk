@@ -53,3 +53,20 @@ export const checkAllowanceApproveSeed = async (
   };
   return handleStakeSeed();
 };
+
+export const getMultiplier = (
+  stakeStartDate: Date,
+  stakeEndDate: Date
+): number => {
+  const monthsDifference = (startDate: Date, endDate: Date): number => {
+    const yearsDifference = endDate.getFullYear() - startDate.getFullYear();
+    const monthsDifference = endDate.getMonth() - startDate.getMonth();
+    return yearsDifference * 12 + monthsDifference;
+  };
+  const monthsBetween = monthsDifference(stakeEndDate, stakeStartDate);
+  const key = monthsBetween as keyof typeof DURATION_MAP;
+  if (DURATION_MAP[key]) {
+    return DURATION_MAP[key].votes;
+  }
+  return 0;
+};

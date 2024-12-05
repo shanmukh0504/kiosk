@@ -1,4 +1,6 @@
 import { MaxUint256 } from "@ethersproject/constants";
+import { StakingPosition } from "../store/stakeStore";
+import BigNumber from "bignumber.js";
 
 export const STAKING_CONFIG = {
   11155111: {
@@ -42,3 +44,25 @@ export const SEED_FOR_MINTING_NFT = 21000;
 export const MIN_WITHDRAWAL_AMOUNT = "10000000000000000";
 export const MIN_DELEGATE_STAKE = 2100;
 export const MIN_DEPOSIT = 100;
+export const TEN_THOUSAND = 10000;
+
+export const isPermanentStake = (stakePos: StakingPosition) => {
+  const totalStakes = new BigNumber(stakePos.amount)
+    .dividedBy(1e18)
+    .dividedBy(2100);
+
+  return stakePos.votes / 7 === Number(totalStakes);
+};
+
+export const getNearestMultiple = (value: number) =>
+  Math.floor(value / MIN_DELEGATE_STAKE) * MIN_DELEGATE_STAKE;
+
+export const isDurationExceeded = (
+  time: string,
+  hours = 0,
+  minutes = 0,
+  seconds = 0
+) =>
+  (new Date().getTime() - new Date(time).getTime()) / 1000 >
+  hours * 3600 + minutes * 60 + seconds;
+export const DAYS_IN_MONTH = 30;

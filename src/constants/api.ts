@@ -24,6 +24,8 @@ export const API = () => {
     buildId: "/build-id.json",
     orderbook: REQUIRED_ENV_VARS.ORDERBOOK_URL,
     quote: REQUIRED_ENV_VARS.QUOTE_URL,
+    stakePosition: (userId: string) =>
+      REQUIRED_ENV_VARS.STAKING_URL + "/stakes?userId=" + userId,
     mempool: {
       testnet: "https://mempool.space/testnet4/api",
       mainnet: "https://mempool.space/api",

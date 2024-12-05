@@ -10,7 +10,7 @@ import { Hex } from "viem";
 
 export const StakeSubmissionCard: FC = () => {
     const {
-        loading, inputAmount, selectedDuration
+        isLoading, inputAmount, selectedDuration, isStake, isExtend, stakeToExtend
     } = stakeStore();
     const { isPending, data: transactionHash, error, writeContractAsync } = useWriteContract();
 
@@ -38,6 +38,23 @@ export const StakeSubmissionCard: FC = () => {
         }
     };
 
+    const handleExtendStake = async () => {
+        try {
+            const result = await checkAllowanceApproveSeed(inputAmount, selectedDuration);
+            console.log(result);
+            const tx = await writeContractAsync({
+                address: result.config.STAKING_CONTRACT_ADDRESS as Hex,
+                abi: stakingABI,
+                functionName: "extend",
+                args: [stakeToExtend?.id, result.lockDuration]
+            })
+            console.log(tx)
+            console.log(transactionHash)
+            console.log(error)
+        } catch (error) {
+            console.error("Error during extending the stake:", error);
+        }
+    }
 
     return (
         <div className="p-4 flex flex-col gap-3 bg-white bg-opacity-25 rounded-2xl">
@@ -45,12 +62,12 @@ export const StakeSubmissionCard: FC = () => {
             <div className="flex items-center justify-between gap-4">
                 <DurationMenu />
                 <Button
-                    loading={loading}
-                    disabled={loading}
-                    onClick={handleStakeSeed}
+                    loading={isLoading}
+                    disabled={isLoading}
+                    onClick={isStake ? handleStakeSeed : isExtend ? handleExtendStake : handleStakeSeed}
                     size="lg"
                 >
-                    Stake
+                    {isStake ? "Stake" : isExtend ? "Extend" : "Stake"}
                 </Button>
             </div>
         </div>
