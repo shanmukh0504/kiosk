@@ -107,6 +107,7 @@ export const Navbar = () => {
           variant="primary"
           onClick={handleConnectClick}
           className="ml-auto w-28"
+          size="sm"
         >
           Connect
         </Button>
