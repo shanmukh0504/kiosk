@@ -49,36 +49,36 @@ export default defineConfig({
         },
       ],
     }),
-    // {
-    //   name: "generate-build-id",
-    //   buildEnd() {
-    //     generateBuildIdFile();
-    //   },
-    //   configureServer(server) {
-    //     generateBuildIdFile();
-    //     // Have to write a custom middleware to serve the build Id file,
-    //     // because vite dev server doesn't serve files from public directory as soon as they are generated.
-    //     server.middlewares.use((req, res, next) => {
-    //       if (req.url === "/build-id.json") {
-    //         const buildIdPath = path.resolve(
-    //           path.dirname(new URL(import.meta.url).pathname),
-    //           "public/build-id.json"
-    //         );
-    //         fs.readFile(buildIdPath, (err, data) => {
-    //           if (err) {
-    //             res.statusCode = 404;
-    //             res.end("Build ID not found");
-    //           } else {
-    //             res.setHeader("Content-Type", "application/json");
-    //             res.end(data);
-    //           }
-    //         });
-    //       } else {
-    //         next();
-    //       }
-    //     });
-    //   },
-    // },
+    {
+      name: "generate-build-id",
+      buildEnd() {
+        generateBuildIdFile();
+      },
+      configureServer(server) {
+        generateBuildIdFile();
+        // Have to write a custom middleware to serve the build Id file,
+        // because vite dev server doesn't serve files from public directory as soon as they are generated.
+        server.middlewares.use((req, res, next) => {
+          if (req.url === "/build-id.json") {
+            const buildIdPath = path.resolve(
+              path.dirname(new URL(import.meta.url).pathname),
+              "public/build-id.json"
+            );
+            fs.readFile(buildIdPath, (err, data) => {
+              if (err) {
+                res.statusCode = 404;
+                res.end("Build ID not found");
+              } else {
+                res.setHeader("Content-Type", "application/json");
+                res.end(data);
+              }
+            });
+          } else {
+            next();
+          }
+        });
+      },
+    },
   ],
   define: {
     "process.env.BUILD_ID": JSON.stringify(buildId),
