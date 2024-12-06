@@ -29,7 +29,9 @@ export const WalletRow: FC<WalletRowProps> = ({
       <img src={logo} alt={"icon"} className="w-8 h-8" />
       <div className="flex justify-between w-full">
         <Typography size="h2" weight="medium">
-          {name === "Injected" ? "Browser Wallet" : name}
+          {name === "Injected"
+            ? "Browser Wallet"
+            : name.charAt(0).toUpperCase() + name.slice(1)}
         </Typography>
         {isConnecting && <Loader />}
       </div>
