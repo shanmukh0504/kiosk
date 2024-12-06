@@ -33,11 +33,18 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const { setAsset, inputAsset, outputAsset } = swapStore();
 
   const orderedChains = useMemo(() => {
+    const order = ["bitcoin", "ethereum", "base", "arbitrum"];
     return chains
       ? Object.values(chains).sort((a, b) => {
-          if (a.name.toLowerCase().includes("bitcoin")) return -1;
-          if (b.name.toLowerCase().includes("bitcoin")) return 1;
-          return 0;
+          const indexA = order.findIndex((name) =>
+            a.name.toLowerCase().includes(name)
+          );
+          const indexB = order.findIndex((name) =>
+            b.name.toLowerCase().includes(name)
+          );
+          if (indexA === -1) return 1;
+          if (indexB === -1) return -1;
+          return indexA - indexB;
         })
       : [];
   }, [chains]);
