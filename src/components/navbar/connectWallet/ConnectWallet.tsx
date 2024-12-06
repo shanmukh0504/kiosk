@@ -174,8 +174,25 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
 
       <div className="mb-2">
         <Typography size="h4" weight="medium">
-          By connecting a wallet, you agree to Garden’s Terms of Service and
-          Privacy Policy.
+          By connecting a wallet, you agree to Garden’s{" "}
+          <a
+            href="https://garden.finance/terms.pdf"
+            target="_blank"
+            rel="noreferrer"
+            className="font-bold"
+          >
+            Terms of Service{" "}
+          </a>
+          and{" "}
+          <a
+            href="https://garden.finance/privacy.pdf"
+            target="_blank"
+            rel="noreferrer"
+            className="font-bold"
+          >
+            Privacy Policy
+          </a>
+          .
         </Typography>
       </div>
     </>
