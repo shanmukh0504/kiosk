@@ -6,6 +6,7 @@ type props = {
     value: string;
     isPink?: boolean;
     isStakePos?: boolean;
+    className?: string;
 }
 
 export const StakeInfoCard: FC<props> = ({
@@ -13,11 +14,12 @@ export const StakeInfoCard: FC<props> = ({
     value,
     isPink = false,
     isStakePos = false,
+    className
 }) => {
     const textColor = isPink ? "!text-rose" : "!text-dark-grey";
 
     return (
-        <div className="flex flex-col items-start justify-center gap-y-1">
+        <div className={`flex flex-col items-start justify-center gap-y-1 ${className}`}>
             <Typography
                 size={isStakePos ? "h5" : "h4"}
                 weight={isStakePos ? "medium" : "bold"}

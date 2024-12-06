@@ -5,6 +5,7 @@ const REQUIRED_ENV_VARS = {
   ORDERBOOK_URL: import.meta.env.VITE_ORDERBOOK_URL,
   QUOTE_URL: import.meta.env.VITE_QUOTE_URL,
   WHITELIST: import.meta.env.VITE_WHITELIST_URL,
+  REWARD: import.meta.env.VITE_REWARD_URL,
 } as const;
 
 export const API = () => {
@@ -26,6 +27,7 @@ export const API = () => {
     quote: REQUIRED_ENV_VARS.QUOTE_URL,
     stakePosition: (userId: string) =>
       REQUIRED_ENV_VARS.STAKING_URL + "/stakes?userId=" + userId,
+    reward: (userId: string) => REQUIRED_ENV_VARS.REWARD + userId,
     mempool: {
       testnet: "https://mempool.space/testnet4/api",
       mainnet: "https://mempool.space/api",

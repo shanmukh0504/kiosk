@@ -7,10 +7,13 @@ import { ETH_BLOCKS_PER_DAY, isPermanentStake, SEED_DECIMALS, TEN_THOUSAND } fro
 import { StakeInfoCard } from "./StakeInfoCard";
 import { getMultiplier } from "../../utils/stakingUtils";
 import { modalNames, modalStore } from "../../store/modalStore";
+import { useViewport } from "../../hooks/useViewport";
 type props = {
     stakePos: StakingPosition;
+    isLast: boolean;
 }
-export const StakeDetails: FC<props> = ({ stakePos }) => {
+export const StakeDetails: FC<props> = ({ stakePos, isLast }) => {
+    const { isMobile, isTab } = useViewport();
     const [showDetails, setShowDetails] = useState(false);
     const stakeAmount = formatAmount(stakePos.amount, SEED_DECIMALS, 8);
     const formattedAmount = stakeAmount >= TEN_THOUSAND
@@ -48,11 +51,11 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
     }
 
     return (
-        <div className="py-4 flex flex-col gap-5">
+        <div className="py-4 flex flex-col gap-5" onClick={() => setShowDetails((p) => !p)}>
             <div className="flex justify-between items-center">
-                <div className="flex gap-8">
-                    <Typography size="h3" weight="medium">{formattedAmount} SEED</Typography>
-                    <Typography size="h4" weight="medium" className="flex items-center">
+                <div className="flex items-center">
+                    <Typography size={isMobile ? "h4" : "h3"} weight="medium" className="w-[120px]">{formattedAmount} SEED</Typography>
+                    <Typography size={isMobile ? "h4" : "h3"} weight="medium" className="flex items-center w-[120px]">
                         {hasExpired ? (
                             "Expired"
                         ) : (
@@ -60,33 +63,39 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
                                 {isPermaStake ? (
                                     <img src={infinity} alt="infinity" className="mr-2" />
                                 ) : (
-                                    `${daysPassedSinceStake}/${expiryInDays}`
+                                    `${daysPassedSinceStake} / ${expiryInDays}`
                                 )}
                                 <span className="ml-2">days</span>
                             </>
                         )}
                     </Typography>
 
-                    <Typography size="h4" weight="medium" >
-                        {stakePos.votes} Votes
-                    </Typography>
+                    {isTab ? (
+                        <Typography size="h4" weight="medium" className="pl-10" >
+                            {stakePos.votes} Votes
+                        </Typography>
+                    ) : ""}
                 </div>
-                {showDetails ? <KeyboardUpIcon className="mr-2" onClick={() => setShowDetails((p) => !p)} /> : <KeyboardDownIcon className="mr-2" onClick={() => setShowDetails((p) => !p)} />}
+                {showDetails ? <KeyboardUpIcon className="mr-2" /> : <KeyboardDownIcon className="mr-2" />}
             </div>
             {
                 showDetails && (
                     <div className="flex flex-col md:flex-row gap-4 justify-between ">
-                        <div className="flex gap-10">
-                            <StakeInfoCard title={"Rewards"} value={"0.018BTC"} isStakePos />
-                            <StakeInfoCard title={"Multiplier"} value={`${multiplier}x`} isStakePos />
-                            <StakeInfoCard title={"APY"} value={"108%"} isStakePos />
-                            <StakeInfoCard title={"EndDate"} value={`${stakeEndDateString}`} isStakePos />
+                        <div className="flex flex-col md:flex-row gap-4 sm:gap-10">
+                            <div className=" flex gap-10">
+                                <StakeInfoCard title={"Rewards"} value={"0.018BTC"} isStakePos className={"w-[120px] md:w-[76px]"} />
+                                <StakeInfoCard title={"Multiplier"} value={`${multiplier}x`} isStakePos className={"w-[160px] md:w-[54px]"} />
+                            </div>
+                            <div className=" flex gap-10">
+                                <StakeInfoCard title={"APY"} value={"108%"} isStakePos className={"w-[120px] md:w-[42px]"} />
+                                <StakeInfoCard title={"EndDate"} value={`${stakeEndDateString}`} isStakePos className={"w-[160px]"} />
+                            </div>
                         </div>
                         <Button variant="secondary" size="sm" onClick={handleExtend}>Extend</Button>
                     </div>
                 )
             }
-            <div className="border border-white w-full"></div>
+            {!isLast && <div className="bg-white h-[1px] w-full"></div>}
         </div >
     )
 }

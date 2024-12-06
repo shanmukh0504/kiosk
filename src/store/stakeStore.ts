@@ -20,20 +20,22 @@ interface StakeStoreState {
   selectedDuration: DURATION;
   isStake: boolean;
   isExtend: boolean;
-  isLoading: boolean;
   error: string | null;
+  reward: number;
   totalStakedAmount: number;
   totalVotes: number;
   stakePosData: StakingPositionApiResponse | null;
   stakeToExtend: StakingPosition | null;
   setInputAmount: (value: string) => void;
   setSelectedDuration: (duration: DURATION) => void;
-  fetchStakePosData: (address?: string) => Promise<void>;
+  fetchStakePosData: (address: string) => Promise<void>;
+  fetchStakeReward: (address: string) => Promise<StakingReward>;
   setIsStake: (value: boolean) => void;
   setIsExtend: (value: boolean) => void;
   setStakeToExtend: (value: StakingPosition) => void;
   setTotalStakedAmount: (value: number) => void;
   setTotalVotes: (value: number) => void;
+  setRewards: (value: number) => void;
 }
 
 export enum StakePositionStatus {
@@ -41,6 +43,16 @@ export enum StakePositionStatus {
   expired = "expired",
   unstaked = "unstaked",
 }
+
+export type StakingReward = {
+  last_epoch: string;
+  address: string;
+  cumulative_payout_usd: string;
+  cumulative_payout_wbtc: number;
+  nonce: number;
+  current_votes: number;
+  claim_signature: string;
+};
 
 export type StakingPosition = {
   id: string;
@@ -64,21 +76,19 @@ export const stakeStore = create<StakeStoreState>((set) => ({
   selectedDuration: 6,
   isStake: false,
   isExtend: false,
-  isLoading: false,
   error: null,
   stakePosData: null,
   stakeToExtend: null,
   totalStakedAmount: 0,
   totalVotes: 0,
+  reward: 0,
   setInputAmount: (value: string) => set({ inputAmount: value }),
   setSelectedDuration: (duration: DURATION) =>
     set({ selectedDuration: duration }),
-  fetchStakePosData: async (address?: string) => {
+  fetchStakePosData: async (address: string) => {
     try {
       const response = await axios.get<StakingPositionApiResponse>(
-        API().stakePosition(
-          address ? address : "0xeb7e1c4b16203187d2f46071203494662b4ee5c6"
-        )
+        API().stakePosition(address)
       );
       console.log(response);
       if (response.status === 200 && response.data) {
@@ -89,8 +99,22 @@ export const stakeStore = create<StakeStoreState>((set) => ({
     } catch (error) {
       console.error(error);
       set({ error: "An error occurred while fetching staking position data" });
-    } finally {
-      set({ isLoading: false });
+    }
+  },
+  fetchStakeReward: async (address: string) => {
+    try {
+      const response = await axios.get<StakingReward>(API().reward(address));
+      console.log(response);
+      if (response.status === 200 && response.data) {
+        return response.data;
+      } else {
+        set({ error: "Unexpected response format from server" });
+        throw new Error("Unexpected response format from server");
+      }
+    } catch (error) {
+      console.error(error);
+      set({ error: "An error occurred while fetching staking reward data" });
+      throw error;
     }
   },
   setIsStake: (value) => set({ isStake: value }),
@@ -98,4 +122,5 @@ export const stakeStore = create<StakeStoreState>((set) => ({
   setStakeToExtend: (value) => set({ stakeToExtend: value }),
   setTotalStakedAmount: (value) => set({ totalStakedAmount: value }),
   setTotalVotes: (value) => set({ totalVotes: value }),
+  setRewards: (value) => set({ reward: value }),
 }));

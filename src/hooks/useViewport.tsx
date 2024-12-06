@@ -5,6 +5,7 @@ type Viewport = {
   width: number;
   height: number;
   isMobile: boolean;
+  isTab: boolean;
 };
 
 export const useViewport = (): Viewport => {
@@ -19,6 +20,11 @@ export const useViewport = (): Viewport => {
       viewport.width < BREAKPOINTS.sm
     );
   }, [viewport.width]);
+
+  const isTab = useMemo(() => {
+    return viewport.width >= BREAKPOINTS.md;
+  }, [viewport.width]);
+
 
   const handleResize = useCallback(() => {
     setViewport({
@@ -38,5 +44,5 @@ export const useViewport = (): Viewport => {
     };
   }, [handleResize]);
 
-  return { ...viewport, isMobile };
+  return { ...viewport, isMobile, isTab };
 };

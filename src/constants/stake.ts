@@ -30,6 +30,9 @@ export const INFINITE = "INFINITE";
 export const MAINNET_SEED_TOKEN_ADDRESS =
   "0x5eed99d066a8CaF10f3E4327c1b3D8b673485eED";
 
+export const DISTRIBUTER_CONTRACT =
+  "0xaF29EDdCbFc103AB632e803D625AE91E7515562D";
+
 export const DURATION_MAP = {
   6: { votes: 1, lockDuration: 180 },
   12: { votes: 2, lockDuration: 365 },

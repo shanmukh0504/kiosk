@@ -5,14 +5,15 @@ import { StakeDetails } from "./StakeDetails";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { formatAmount } from "../../utils/utils";
 import { SEED_DECIMALS } from "../../constants/stake";
+import { Hex } from "viem";
 
 export const StakePositions = () => {
     const { fetchStakePosData, stakePosData, setTotalStakedAmount, setTotalVotes } = stakeStore();
     const { address } = useEVMWallet();
 
     useEffect(() => {
-        fetchStakePosData();
-    }, [address]);
+        fetchStakePosData(address as Hex);
+    }, [address, fetchStakePosData]);
 
     useEffect(() => {
         const totalStakes = stakePosData?.data?.reduce((acc, item) => {
@@ -30,11 +31,11 @@ export const StakePositions = () => {
         }, 0);
         setTotalStakedAmount(Number(totalStakes));
         setTotalVotes(Number(totalVotes));
-    }, [stakePosData, setTotalStakedAmount]);
+    }, [stakePosData, setTotalStakedAmount, setTotalVotes]);
 
 
     return (
-        <div className="w-[328px] sm:w-[424px] md:w-[740px] rounded-[15px] bg-opacity-50 bg-white mx-auto p-6 flex flex-col">
+        <div className="w-[328px] sm:w-[424px] md:w-[740px] mb-8 rounded-[15px] bg-opacity-50 bg-white mx-auto p-6 flex flex-col">
             <Typography size="h5" weight="bold">Staking Positions</Typography>
             {stakePosData?.data?.length === 0 ? (
                 <Typography size="h5" weight="medium" className="mt-4 text-center">
@@ -45,7 +46,8 @@ export const StakePositions = () => {
                     if (item.status === StakePositionStatus.unstaked) {
                         return null;
                     } else {
-                        return <StakeDetails key={index} stakePos={item} />;
+                        const isLast = index === stakePosData.data.length - 1;
+                        return <StakeDetails key={index} stakePos={item} isLast={isLast} />;
                     }
                 })
             )}

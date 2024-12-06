@@ -7,11 +7,25 @@ import { modalNames, modalStore } from "../../store/modalStore";
 import { StakePositions } from "./StakePositions";
 import { stakeStore } from "../../store/stakeStore";
 import { StakeOverview, } from "./StakeOverview";
+import { useBalances } from "../../hooks/useBalances";
+import { MIN_DELEGATE_STAKE } from "../../constants/stake";
 
 export const Stake: FC = () => {
     const { address, isConnected } = useEVMWallet();
     const { setOpenModal } = modalStore();
     const { setIsExtend, setIsStake } = stakeStore();
+    const { asset, inputAmount } = stakeStore();
+    const balances = useBalances(asset);
+    const balance = balances.inputTokenBalance
+        ? balances.inputTokenBalance.toFixed(3)
+        : "0.000";
+
+    const hasSufficientBalance = Number(inputAmount) <= Number(balance);
+    const isMinimumStake = Number(inputAmount) >= MIN_DELEGATE_STAKE;
+    const isZeroAmount = Number(inputAmount) === 0;
+    const isValidAmount = Number(inputAmount) % MIN_DELEGATE_STAKE === 0;
+    const isStakeable = isMinimumStake && hasSufficientBalance && isValidAmount && !isZeroAmount;
+
 
     const handleConnectClick = () => {
         if (!isConnected) {
@@ -29,7 +43,7 @@ export const Stake: FC = () => {
     };
 
     return (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-6">
             <div className="flex flex-col p-4 gap-8 w-full sm:max-w-[424px] max-w-[328px] mx-auto mt-10 rounded-2xl bg-opacity-50 bg-white">
                 <div className="flex flex-col gap-3 ">
                     <Typography size="h5" weight="bold">
@@ -69,10 +83,12 @@ export const Stake: FC = () => {
                     <StakeInput />
                     <Button
                         size="lg"
-                        onClick={address ? handleOpenAssetSelector : handleConnectClick}
+                        variant={isStakeable ? "primary" : "disabled"}
+                        onClick={address ? (isStakeable ? handleOpenAssetSelector : undefined) : handleConnectClick}
                     >
                         {address ? "Stake" : "Connect"}
                     </Button>
+
                 </div>
             </div>
             <StakeOverview />
