@@ -112,6 +112,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                 <div className="text-red-500">{error}</div>
               </Typography>
             ) : balance !== undefined ? (
+
               <div className="flex items-center gap-1 cursor-pointer" onClick={handleBalanceClick}>
                 <WalletIcon className="h-2.5 w-2.5" />
                 <Typography size="h5" weight="medium">

@@ -99,7 +99,7 @@ export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
   if (!sendAsset || !receiveAsset) return null;
 
   return (
-    <div className="flex flex-col gap-1 pb-4">
+    <div className={`flex flex-col gap-1 pb-4 ${statusLabel === StatusLabel.Completed ? "opacity-50" : ""}`}>
       <Typography
         size="h5"
         className="bg-white/50 w-fit p-1 px-2 rounded-full cursor-pointer mb-1"
