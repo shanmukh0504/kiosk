@@ -13,9 +13,12 @@ import { Hex } from "viem";
 export const StakeOverview = () => {
     const { totalStakedAmount, totalVotes, fetchStakeReward, reward, setRewards } = stakeStore();
     const { writeContractAsync } = useWriteContract();
-    const formattedAmount = totalStakedAmount >= TEN_THOUSAND
-        ? totalStakedAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-        : totalStakedAmount.toString();
+    const formattedAmount = totalStakedAmount === undefined
+        ? "0"
+        : totalStakedAmount >= TEN_THOUSAND
+            ? totalStakedAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            : totalStakedAmount.toString();
+
     const { isMobile } = useViewport();
     const [rewardResponse, setRewardResponse] = useState<StakingReward | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -83,7 +86,7 @@ export const StakeOverview = () => {
                     </div>
                     <div className="flex flex-col gap-1 justify-between">
                         <Typography size={"h5"} weight="bold" >Votes</Typography>
-                        <Typography size={isMobile ? "h3" : "h2"} weight="medium" className="w-[50px]">{isLoading ? "Loading..." : totalVotes}</Typography>
+                        <Typography size={isMobile ? "h3" : "h2"} weight="medium" className="w-[50px]">{isLoading ? "Loading..." : totalVotes !== undefined ? totalVotes : 0}</Typography>
                     </div>
                     <div className="flex flex-col gap-1 justify-between">
                         <Typography size={"h5"} weight="bold" className="!text-rose">Staking rewards</Typography>
