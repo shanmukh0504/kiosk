@@ -3,6 +3,7 @@ import { FC, useState } from "react";
 import { Link } from "react-router-dom";
 
 type NotificationProps = {
+  id: string;
   title: string;
   description: string;
   image: string;
@@ -10,12 +11,21 @@ type NotificationProps = {
 };
 
 export const Notification: FC<NotificationProps> = ({
+  id,
   title,
   description,
   image,
   link,
 }) => {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(() => {
+    const savedNotificationId = localStorage.getItem("notificationId");
+    return savedNotificationId !== id;
+  });
+
+  const handleClose = () => {
+    localStorage.setItem("notificationId", id);
+    setVisible(false);
+  };
   return (
     <div
       className={`bg-white/50 backdrop-blur-[20px]
@@ -81,7 +91,7 @@ export const Notification: FC<NotificationProps> = ({
           <div className="flex justify-center items-center w-[22px] h-5">
             <CloseIcon
               className="cursor-pointer "
-              onClick={() => setVisible(false)}
+              onClick={handleClose}
             />
           </div>
         </div>
