@@ -38,18 +38,18 @@ export const CreateSwap = () => {
     return isInsufficientBalance
       ? "Insufficient balance"
       : isSwapping
-      ? "Signing..."
-      : "Swap";
+        ? "Signing..."
+        : "Swap";
   }, [isInsufficientBalance, isSwapping]);
 
   const buttonVariant = useMemo(() => {
     return isInsufficientBalance
       ? "disabled"
       : isSwapping
-      ? "ternary"
-      : validSwap
-      ? "primary"
-      : "disabled";
+        ? "ternary"
+        : validSwap
+          ? "primary"
+          : "disabled";
   }, [isInsufficientBalance, isSwapping, validSwap]);
 
   const timeEstimate = useMemo(() => {
@@ -74,7 +74,7 @@ export const CreateSwap = () => {
       const outputAsset =
         assets &&
         assets[
-          `${destination_swap.chain}_${destination_swap.asset.toLowerCase()}`
+        `${destination_swap.chain}_${destination_swap.asset.toLowerCase()}`
         ];
       if (!inputAsset || !outputAsset) return;
 
@@ -141,14 +141,11 @@ export const CreateSwap = () => {
             timeEstimate={timeEstimate}
           />
         </div>
-        <div className={`flex flex-col gap-4 transition-all opacity-0 duration-200 ease-in-out ${inputAsset && outputAsset && inputAmount ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0 mb-[-16px]'}`}>
-          <SwapAddress isValidAddress={isValidBitcoinAddress} />
-          <SwapFees tokenPrices={tokenPrices} />
-        </div>
+        <SwapAddress isValidAddress={isValidBitcoinAddress} />
+        <SwapFees tokenPrices={tokenPrices} />
         <Button
-          className={`transition-colors duration-500 ${
-            isSwapping ? "cursor-not-allowed" : ""
-          }`}
+          className={`transition-colors duration-500 ${isSwapping ? "cursor-not-allowed" : ""
+            }`}
           variant={buttonVariant}
           size="lg"
           onClick={handleSwapClick}
