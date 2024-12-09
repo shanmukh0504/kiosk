@@ -27,7 +27,10 @@ createRoot(document.getElementById("root")!).render(
                 environment: network as environment,
               }}
             >
-              <BTCWalletProvider network={Network.TESTNET} store={localStorage}>
+              <BTCWalletProvider
+                network={network as Network}
+                store={localStorage}
+              >
                 <App />
               </BTCWalletProvider>
             </GardenProvider>
