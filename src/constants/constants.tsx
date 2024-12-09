@@ -16,6 +16,10 @@ export enum IOType {
   output = "output",
 }
 
+export const LOCAL_STORAGE_KEYS = {
+  notification: "notificationId",
+};
+
 export const BREAKPOINTS = {
   xs: 360,
   sm: 600,
