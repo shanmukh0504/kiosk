@@ -29,7 +29,7 @@ export const useBalances = () => {
         const balance = await provider.getBalance();
         if (balance.error || !balance.val) return;
 
-        const bal = new BigNumber(balance.val.confirmed)
+        const bal = new BigNumber(balance.val.total)
           .dividedBy(10 ** inputAsset.decimals)
           .toNumber();
         setBalances((prev) => ({
