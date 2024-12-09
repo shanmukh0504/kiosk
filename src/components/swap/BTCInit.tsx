@@ -13,6 +13,7 @@ import { useGarden } from "@gardenfi/react-hooks";
 import { formatAmount, getAssetFromSwap } from "../../utils/utils";
 import BigNumber from "bignumber.js";
 import { assetInfoStore } from "../../store/assetInfoStore";
+import QRCode from "react-qr-code";
 
 export const BTCInit = () => {
   const [copied, setCopied] = useState(false);
@@ -109,24 +110,27 @@ export const BTCInit = () => {
           />
         )}
       </div>
-      <div className="flex flex-col gap-2 bg-white/50 rounded-2xl p-4">
-        <Typography size="h5" weight="bold">
-          Deposit address
-        </Typography>
-        <div className="flex justify-between items-center">
-          <Typography size="h3" weight="bold">
-            {getTrimmedAddress(depositAddress, 8, 6)}
+      <div className="flex justify-between bg-white/50 rounded-2xl p-4">
+        <div className="flex flex-col gap-2">
+          <Typography size="h5" weight="bold">
+            Deposit address
           </Typography>
-          {/* TODO: Use a Lottie animation to make this smoother */}
-          {copied ? (
-            <CheckIcon className="w-6 h-3" />
-          ) : (
-            <CopyIcon
-              className="w-6 h-5 cursor-pointer"
-              onClick={copyToClipboard}
-            />
-          )}
+          <div className="flex gap-2 items-center">
+            <Typography size="h3" weight="bold">
+              {getTrimmedAddress(depositAddress, 8, 6)}
+            </Typography>
+            {/* TODO: Use a Lottie animation to make this smoother */}
+            {copied ? (
+              <CheckIcon className="w-6 h-3" />
+            ) : (
+              <CopyIcon
+                className="w-6 h-5 cursor-pointer"
+                onClick={copyToClipboard}
+              />
+            )}
+          </div>
         </div>
+        <QRCode value={depositAddress} size={48} fgColor="#554B6A" />
       </div>
       <div className="flex flex-col gap-3 bg-white/50 rounded-2xl p-4">
         <Typography size="h5" weight="bold">
