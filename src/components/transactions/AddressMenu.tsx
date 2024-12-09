@@ -13,6 +13,7 @@ import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { connectWalletStore } from "../../store/connectWalletStore";
 import { swapStore } from "../../store/swapStore";
+import { balanceStore } from "../../store/balanceStore";
 
 type AddressProps = {
   address: string;
@@ -61,6 +62,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const { account: btcAddress, disconnect: btcDisconnect } = useBitcoinWallet();
   const { setOpenBTCwallets } = connectWalletStore();
   const { clearSwapState } = swapStore();
+  const { clearBalances } = balanceStore();
   const addTooltipId = useId();
   const languageTooltipId = useId();
   const referralTooltipId = useId();
@@ -75,6 +77,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
     disconnect();
     onClose();
     btcDisconnect();
+    clearBalances();
   };
 
   const handleBTCWalletClick = () => {
