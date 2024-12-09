@@ -12,6 +12,7 @@ import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { connectWalletStore } from "../../store/connectWalletStore";
+import { swapStore } from "../../store/swapStore";
 
 type AddressProps = {
   address: string;
@@ -59,6 +60,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const { address, disconnect } = useEVMWallet();
   const { account: btcAddress, disconnect: btcDisconnect } = useBitcoinWallet();
   const { setOpenBTCwallets } = connectWalletStore();
+  const { clearSwapState } = swapStore();
   const addTooltipId = useId();
   const languageTooltipId = useId();
   const referralTooltipId = useId();
@@ -69,6 +71,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   }, [address, btcAddress]);
 
   const handleDisconnectClick = () => {
+    clearSwapState();
     disconnect();
     onClose();
     btcDisconnect();

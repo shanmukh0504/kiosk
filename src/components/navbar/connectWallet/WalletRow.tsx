@@ -1,15 +1,18 @@
 import { Typography } from "@gardenfi/garden-book";
 import { FC } from "react";
 import { Loader } from "../../../common/Loader";
+import { EcosystemKeys } from "./constants";
 
 type WalletRowProps = {
   name: string;
   logo: string;
   onClick: () => void;
   isConnecting: boolean;
-  isConnected: boolean;
-  isEVMWallet?: boolean;
-  isBitcoinWallet?: boolean;
+  isConnected: IsConnected;
+};
+
+type IsConnected = {
+  [key in EcosystemKeys]: boolean;
 };
 
 export const WalletRow: FC<WalletRowProps> = ({
@@ -18,8 +21,6 @@ export const WalletRow: FC<WalletRowProps> = ({
   onClick,
   isConnecting,
   isConnected,
-  isEVMWallet,
-  isBitcoinWallet,
 }) => {
   return (
     <div
@@ -35,16 +36,23 @@ export const WalletRow: FC<WalletRowProps> = ({
         </Typography>
         {isConnecting && <Loader />}
       </div>
-      {isConnected && (
+      {Object.values(isConnected).some((value) => value) && (
         <div className="flex gap-1">
           <div className="flex gap-1 items-center bg-white/50 text-dark-grey p-0.5 rounded-full px-1.5 text-[10px]">
             <div className="w-1.5 h-1.5 bg-green-300 rounded-full" />
             Connected
           </div>
-          <div className="flex gap-1 items-center bg-white/50 p-0.5 text-dark-grey rounded-full px-1.5 text-[10px]">
-            {isEVMWallet && "evm"}
-            {isBitcoinWallet && "bitcoin"}
-          </div>
+          {Object.entries(isConnected).map(
+            ([ecosystem, isConnected]) =>
+              isConnected && (
+                <div
+                  key={ecosystem}
+                  className="flex gap-1 items-center bg-white/50 p-0.5 text-dark-grey rounded-full px-1.5 text-[10px]"
+                >
+                  {ecosystem}
+                </div>
+              )
+          )}
         </div>
       )}
     </div>

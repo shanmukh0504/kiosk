@@ -95,6 +95,9 @@ export const swapStore = create<SwapState>((set) => ({
       inputAmount: "",
       outputAmount: "",
       btcAddress: "",
+      btcInitModal: { isOpen: false, order: null },
+      outputAsset: undefined,
+      inputAsset: BTC,
     });
   },
 }));

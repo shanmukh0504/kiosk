@@ -143,8 +143,12 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
                   await handleConnect(wallet, wallet.id);
                 }}
                 isConnecting={connectingWallet === wallet.id}
-                isConnected={connector?.id === wallet.id}
-                isEVMWallet
+                isConnected={{
+                  evm: connector?.id === wallet.id,
+                  bitcoin: !!(
+                    provider?.id && provider.id === evmToBTCid[wallet.id]
+                  ),
+                }}
               />
             ))}
           {Object.entries(availableWallets).length > 0 ? (
@@ -157,8 +161,10 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
                   handleConnectBTCWallet(wallet, name);
                 }}
                 isConnecting={connectingWallet === name}
-                isConnected={provider?.id === wallet.id}
-                isBitcoinWallet
+                isConnected={{
+                  evm: connector?.id === wallet.id,
+                  bitcoin: provider?.id === wallet.id,
+                }}
               />
             ))
           ) : (
