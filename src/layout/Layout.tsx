@@ -25,7 +25,8 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
           {children}
         </div>
         <Notification
-          title="act 2 testnet is now live!"
+          id="act2-testnet"
+          title="act 2 testnet is now live! "
           description="Join the early access cohort to get in on the action!"
           image={Act2}
           link="https://garden.finance/blog/act-2-testnet-is-live"
