@@ -627,9 +627,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/core@npm:0.3.0-beta.11, @gardenfi/core@npm:^0.3.0-beta.11":
-  version: 0.3.0-beta.11
-  resolution: "@gardenfi/core@npm:0.3.0-beta.11"
+"@gardenfi/core@npm:0.3.0-beta.12, @gardenfi/core@npm:^0.3.0-beta.12":
+  version: 0.3.0-beta.12
+  resolution: "@gardenfi/core@npm:0.3.0-beta.12"
   dependencies:
     "@catalogfi/utils": "npm:^0.1.6"
     "@catalogfi/wallets": "npm:^0.2.51"
@@ -640,7 +640,7 @@ __metadata:
     tiny-secp256k1: "npm:^2.2.3"
     varuint-bitcoin: "npm:^1.1.2"
     viem: "npm:^2.21.15"
-  checksum: 10c0/12ca354baeed610ba57db6cfed77472802c7aa6c05cf99b9397421a88cf33e141207ef7be599d197c7d12e54e9e2386aeedbb70a40ae80729206cef8c521889f
+  checksum: 10c0/b4ed52641741752b861e3c91ec722d91c085ec597f41f3d78a70b314820ed7a8302bfaf16b8809bdfdfb9cbd9c952b7a221ff29eb0dcc7d7813f4b7740725bdb
   languageName: node
   linkType: hard
 
@@ -677,19 +677,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/react-hooks@npm:^0.0.1-beta.132":
-  version: 0.0.1-beta.132
-  resolution: "@gardenfi/react-hooks@npm:0.0.1-beta.132"
+"@gardenfi/react-hooks@npm:^0.0.1-beta.133":
+  version: 0.0.1-beta.133
+  resolution: "@gardenfi/react-hooks@npm:0.0.1-beta.133"
   dependencies:
     "@catalogfi/utils": "npm:^0.1.6"
     "@catalogfi/wallets": "npm:^0.2.51"
-    "@gardenfi/core": "npm:^0.3.0-beta.11"
+    "@gardenfi/core": "npm:^0.3.0-beta.12"
     "@gardenfi/orderbook": "npm:^0.2.0-beta.39"
     "@gardenfi/utils": "npm:^0.0.1-beta.19"
     react: "npm:^18.3.1"
     viem: "npm:^2.21.15"
     wagmi: "npm:^2.12.16"
-  checksum: 10c0/5e7d8a4ef87c6661aff5deb082075952b237035497d7b5bf3a563a23c3bd2a78609d003c8ddf719b41f1a00421a6f12e97c14e15217798fbd67df68441306eb4
+  checksum: 10c0/6eef25ccbe05c7948039c75eeedb32109007ba26baa1a8fc0c59bab9c6b78e9ccc18bed10d0fc817774bb9a5f767f337df548cfcd99c03d05c624573454fbc89
   languageName: node
   linkType: hard
 
@@ -5964,10 +5964,10 @@ __metadata:
   resolution: "garden-kiosk@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.13.0"
-    "@gardenfi/core": "npm:0.3.0-beta.11"
+    "@gardenfi/core": "npm:0.3.0-beta.12"
     "@gardenfi/garden-book": "npm:^0.1.55"
     "@gardenfi/orderbook": "npm:^0.2.0-beta.39"
-    "@gardenfi/react-hooks": "npm:^0.0.1-beta.132"
+    "@gardenfi/react-hooks": "npm:^0.0.1-beta.133"
     "@gardenfi/utils": "npm:^0.0.1-beta.19"
     "@gardenfi/wallet-connectors": "npm:^0.1.0-beta.9"
     "@tanstack/react-query": "npm:^5.51.23"
