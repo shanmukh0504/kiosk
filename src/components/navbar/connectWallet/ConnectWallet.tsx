@@ -162,8 +162,10 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
                 }}
               />
             ))
-          ) : (
+          ) : isBTCWallets ? (
             <Typography size="h3">No bitcoin wallets found</Typography>
+          ) : (
+            <></>
           )}
         </div>
       )}

@@ -9,15 +9,19 @@ import { OrderStatus } from "@gardenfi/core";
 import { isCurrentRoute } from "../../utils/utils";
 import { MobileMenu } from "./MobileMenu";
 import { connectWalletStore } from "../../store/connectWalletStore";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 
 export const Navbar = () => {
   const [isInitiatingSM, setIsInitiatingSM] = useState(false);
   const [shouldInitiateSM, setShouldInitiateSM] = useState(false);
 
-  const { isConnected } = useEVMWallet();
+  const { isConnected, address } = useEVMWallet();
   const { setIsOpen } = connectWalletStore();
+  const { account } = useBitcoinWallet();
   const { pendingOrders, isExecuting, initializeSecretManager, secretManager } =
     useGarden();
+
+  const isEVMConnect = !address && !!account;
 
   const isFullyConnected = useMemo(
     () => isConnected && !shouldInitiateSM,
@@ -108,7 +112,7 @@ export const Navbar = () => {
           className="ml-auto w-28"
           size="sm"
         >
-          Connect
+          {isEVMConnect ? "ConnectEVM" : "Connect"}
         </Button>
       )}
       <MobileMenu />

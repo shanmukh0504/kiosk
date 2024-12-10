@@ -76,7 +76,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
               <TransactionsSkeleton />
             ) : filteredOrders.length === 0 ? (
               <Typography size="h5" className="text-center">
-                No Transactions Found.
+                No transactions found.
               </Typography>
             ) : (
               filteredOrders.map((order, index) => (
