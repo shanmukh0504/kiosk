@@ -37,15 +37,10 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
     btc: IInjectedBitcoinProvider;
   }>();
   const { connectors, connectAsync, connector, address } = useEVMWallet();
-  const { availableWallets, connect, provider, account } = useBitcoinWallet();
+  const { availableWallets, connect, provider } = useBitcoinWallet();
 
   const { setOpenModal } = modalStore();
   const { setAuth } = authStore();
-
-  const showIsEVMMandatory = useMemo(
-    () => !isBTCWallets && account && !address,
-    [isBTCWallets, account, address]
-  );
 
   const evmWalletIds = useMemo(
     () => connectors.map((wallet) => wallet.id),
@@ -144,10 +139,10 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
                 }}
                 isConnecting={connectingWallet === wallet.id}
                 isConnected={{
-                  evm: connector?.id === wallet.id,
                   bitcoin: !!(
                     provider?.id && provider.id === evmToBTCid[wallet.id]
                   ),
+                  evm: connector?.id === wallet.id,
                 }}
               />
             ))}
@@ -162,18 +157,13 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
                 }}
                 isConnecting={connectingWallet === name}
                 isConnected={{
-                  evm: connector?.id === wallet.id,
                   bitcoin: provider?.id === wallet.id,
+                  evm: connector?.id === wallet.id,
                 }}
               />
             ))
           ) : (
             <Typography size="h3">No bitcoin wallets found</Typography>
-          )}
-          {showIsEVMMandatory && (
-            <Typography size="h5" weight="medium" className="!text-red-600">
-              * EVM wallet connection is mandatory
-            </Typography>
           )}
         </div>
       )}
