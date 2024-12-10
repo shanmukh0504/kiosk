@@ -4,7 +4,7 @@ import { useViewport } from "../../hooks/useViewport";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { checkIfWhitelisted } from "../../utils/checkIfWhitelisted";
-import blossomTestnet from "/blossom-testnet.svg";
+import blossomTestnet from "/blossom-testnet.png";
 import blossomMainnet from "/blossom-mainnet.png";
 import { Button, LogoutIcon, Modal, Typography } from "@gardenfi/garden-book";
 import { BottomSheet } from "../../common/BottomSheet";
