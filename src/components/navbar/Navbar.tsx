@@ -112,7 +112,7 @@ export const Navbar = () => {
           className="ml-auto w-28"
           size="sm"
         >
-          {isEVMConnect ? "ConnectEVM" : "Connect"}
+          {isEVMConnect ? "Connect EVM" : "Connect"}
         </Button>
       )}
       <MobileMenu />
