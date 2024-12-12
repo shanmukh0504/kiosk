@@ -77,7 +77,7 @@ export const SwapInProgress = () => {
     <div className="flex flex-col gap-3 p-3">
       <div className="flex justify-between items-center p-1">
         <Typography size="h4" weight="bold">
-          Swap in progress
+          Swap progress
         </Typography>
         <CloseIcon className="w-3 h-3 m-1 cursor-pointer" onClick={goBack} />
       </div>
