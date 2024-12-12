@@ -19,7 +19,7 @@ type OrderStatusProps = {
 };
 
 export const OrderStatus: FC<OrderStatusProps> = ({ order }) => {
-  const [dropdown, setDropdown] = useState(true);
+  const [dropdown, setDropdown] = useState(false);
   const [currentState, setCurrentState] = useState(0);
   const { simplifiedStatus } = useOrderStatus(order);
   const { assets } = assetInfoStore();
