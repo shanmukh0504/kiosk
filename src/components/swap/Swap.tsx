@@ -1,4 +1,4 @@
-import { BTCInit } from "./BTCInit";
+import { SwapInProgress } from "./swapInProgress/SwapInProgress";
 import { CreateSwap } from "./CreateSwap";
 import { swapStore } from "../../store/swapStore";
 import { ToastContainer } from "../toast/Toast";
@@ -9,7 +9,7 @@ import { isBitcoin } from "@gardenfi/orderbook";
 import { IOType } from "../../constants/constants";
 
 export const Swap = () => {
-  const { btcInitModal, setAsset } = swapStore();
+  const { swapInProgress, setAsset } = swapStore();
   const { fetchAndSetAssetsAndChains, fetchAndSetStrategies, assets } =
     assetInfoStore();
   const { quote } = useGarden();
@@ -38,7 +38,7 @@ export const Swap = () => {
         className={`bg-white/50 rounded-[20px]
           relative overflow-hidden`}
       >
-        {btcInitModal.isOpen ? <BTCInit /> : <CreateSwap />}
+        {swapInProgress.isOpen ? <SwapInProgress /> : <CreateSwap />}
       </div>
     </div>
   );

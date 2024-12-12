@@ -29,7 +29,7 @@ export const useSwap = () => {
     setAmount,
     setError,
     setIsFetchingQuote,
-    setShowConfirmSwap,
+    setSwapInProgress,
     setTokenPrices,
     clearSwapState,
     setBtcAddress,
@@ -269,32 +269,20 @@ export const useSwap = () => {
         return;
       }
 
-      //TODO: add a notification here
       console.log("orderCreated ✅", res.val);
       clearSwapState();
 
-      if (isBitcoin(res.val.source_swap.chain)) {
+      if (isBitcoin(res.val.source_swap.chain) && provider) {
         const order = res.val;
-
-        if (provider) {
-          const res = await provider.sendBitcoin(
-            order.source_swap.swap_id,
-            Number(order.source_swap.amount)
-          );
-          if (res.error) {
-            console.error("failed to send bitcoin ❌", res.error);
-            setShowConfirmSwap({
-              isOpen: true,
-              order,
-            });
-          }
-        } else {
-          setShowConfirmSwap({
-            isOpen: true,
-            order,
-          });
+        const bitcoinRes = await provider.sendBitcoin(
+          order.source_swap.swap_id,
+          Number(order.source_swap.amount)
+        );
+        if (bitcoinRes.error) {
+          console.error("failed to send bitcoin ❌", bitcoinRes.error);
         }
       }
+      setSwapInProgress({ isOpen: true, order: res.val });
     } catch (error) {
       console.log("failed to create order ❌", error);
       setIsSwapping(false);

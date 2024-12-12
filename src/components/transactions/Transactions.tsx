@@ -5,7 +5,7 @@ import { Button } from "@gardenfi/garden-book";
 import { MatchedOrder } from "@gardenfi/orderbook";
 import { ParseOrderStatus } from "@gardenfi/core";
 import { useOrdersStore } from "../../store/ordersStore";
-import blockNumberStore from "../../store/blockNumberStore";
+import { blockNumberStore } from "../../store/blockNumberStore";
 import { TransactionRow } from "./TransactionRow";
 import { TransactionsSkeleton } from "./TransactionsSkeleton";
 
