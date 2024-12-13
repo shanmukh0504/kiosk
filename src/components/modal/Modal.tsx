@@ -18,8 +18,7 @@ export const Modal = () => {
       }
     };
 
-
-    window.addEventListener("keydown", handleKeyDown)
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
@@ -33,7 +32,6 @@ export const Modal = () => {
         onClose={() => closeConnectWallet()}
         isBTCWallets={isBTCwallets}
       />
-      {/* Esc */}
       <TransactionsComponent
         open={modalName.transactions}
         onClose={() => setCloseModal(modalNames.transactions)}

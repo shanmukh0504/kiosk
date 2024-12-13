@@ -22,7 +22,7 @@ type Status = {
   status: "completed" | "inProgress" | "pending";
 };
 export type OrderProgress = {
-  [key in 1 | 2 | 3 | 4]: Status;
+  readonly [key in 1 | 2 | 3 | 4]: Status;
 };
 
 export const useOrderStatus = () => {

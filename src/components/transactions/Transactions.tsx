@@ -20,13 +20,6 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   const { orders, totalItems, fetchAndSetOrders, loadMore } = useOrdersStore();
   const { fetchAndSetBlockNumbers, blockNumbers } = blockNumberStore();
 
-  // orders which are initiated
-  // const filteredOrders = useMemo(() => {
-  //   return orders.filter((order) => {
-  //     return order.source_swap.initiate_tx_hash !== "";
-  //   });
-  // }, [orders]);
-
   const showLoadMore = useMemo(
     () => orders.length < totalItems,
     [orders.length, totalItems]

@@ -1,7 +1,7 @@
 import { FC, useId, useMemo, useState } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { SwapInfo } from "../../common/SwapInfo";
-import { MatchedOrder } from "@gardenfi/orderbook";
+import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
 import {
   formatAmount,
   getAssetFromSwap,
@@ -13,6 +13,7 @@ import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { Tooltip } from "../../common/Tooltip";
 import { swapStore } from "../../store/swapStore";
 import { modalNames, modalStore } from "../../store/modalStore";
+import { useGarden } from "@gardenfi/react-hooks";
 
 type TransactionProps = {
   order: MatchedOrder;
@@ -61,6 +62,7 @@ export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
   const { assets } = assetInfoStore();
   const { setSwapInProgress } = swapStore();
   const { setCloseModal } = modalStore();
+  const { evmInitiate } = useGarden();
 
   const sendAsset = useMemo(
     () => getAssetFromSwap(source_swap, assets),
@@ -100,9 +102,17 @@ export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
     }, 2000);
   };
 
-  const handleTransactionClick = () => {
+  const handleTransactionClick = async () => {
     setSwapInProgress({ isOpen: true, order });
     setCloseModal(modalNames.transactions);
+
+    if (!isBitcoin(order.source_swap.chain) && status === OrderStatus.Matched) {
+      if (!evmInitiate) return;
+      const res = await evmInitiate(order);
+      if (res.error) {
+        console.error("failed to initiate swap ❌", res.error);
+      }
+    }
   };
 
   if (!sendAsset || !receiveAsset) return null;
