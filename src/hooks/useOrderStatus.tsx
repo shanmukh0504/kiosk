@@ -3,42 +3,173 @@ import { MatchedOrder } from "@gardenfi/orderbook";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useEffect, useMemo, useState } from "react";
 import { blockNumberStore } from "../store/blockNumberStore";
+import { assetInfoStore } from "../store/assetInfoStore";
+import { getAssetFromSwap } from "../utils/utils";
 
 export enum SimplifiedOrderStatus {
   orderCreated = "Order created",
-  detectingDeposit = "Detecting deposit",
+  awaitingDeposit = "Awaiting deposit",
   depositDetected = "Deposit detected",
-  redeemingWBTC = "Redeeming ",
+  depositConfirmed = "Deposit confirmed",
+  redeeming = "Redeeming ",
+  redeemed = "Redeemed ",
   swapCompleted = "Swap completed",
 }
+
+type Status = {
+  title: string;
+  status: "completed" | "inProgress" | "pending";
+};
 
 export const useOrderStatus = (_order: MatchedOrder | null) => {
   const [status, setStatus] = useState<OrderStatus>();
   const [order, setOrder] = useState(_order);
   const { orderBook } = useGarden();
   const { fetchAndSetBlockNumbers, blockNumbers } = blockNumberStore();
+  const { assets } = assetInfoStore();
 
-  const simplifiedStatus = useMemo(() => {
-    if (!status) return;
+  const outputAsset = order && getAssetFromSwap(order.destination_swap, assets);
+  const initBlockNumber = Number(order?.source_swap.initiate_block_number);
 
+  const confirmationsString = useMemo(() => {
+    return order && status === OrderStatus.InitiateDetected && blockNumbers
+      ? " (" +
+          Math.abs(
+            initBlockNumber
+              ? blockNumbers[order.source_swap.chain] - initBlockNumber
+              : 0
+          ) +
+          "/" +
+          order.source_swap.required_confirmations +
+          ")"
+      : "";
+  }, [blockNumbers, order, initBlockNumber, status]);
+
+  const simplifiedStatus: {
+    [key in 1 | 2 | 3 | 4]: Status;
+  } = useMemo(() => {
     switch (status) {
       case OrderStatus.Created:
-        return SimplifiedOrderStatus.orderCreated;
+        return {
+          1: { title: SimplifiedOrderStatus.orderCreated, status: "completed" },
+          2: {
+            title: SimplifiedOrderStatus.awaitingDeposit,
+            status: "pending",
+          },
+          3: {
+            title: SimplifiedOrderStatus.redeeming + outputAsset?.symbol,
+            status: "pending",
+          },
+          4: {
+            title: SimplifiedOrderStatus.swapCompleted,
+            status: "pending",
+          },
+        };
       case OrderStatus.Matched:
-        return SimplifiedOrderStatus.detectingDeposit;
+        return {
+          1: { title: SimplifiedOrderStatus.orderCreated, status: "completed" },
+          2: {
+            title: SimplifiedOrderStatus.awaitingDeposit,
+            status: "inProgress",
+          },
+          3: {
+            title: SimplifiedOrderStatus.redeeming + outputAsset?.symbol,
+            status: "pending",
+          },
+          4: {
+            title: SimplifiedOrderStatus.swapCompleted,
+            status: "pending",
+          },
+        };
       case OrderStatus.InitiateDetected:
+        return {
+          1: {
+            title: SimplifiedOrderStatus.orderCreated,
+            status: "completed",
+          },
+          2: {
+            title: SimplifiedOrderStatus.depositDetected + confirmationsString,
+            status: "inProgress",
+          },
+          3: {
+            title: SimplifiedOrderStatus.redeeming + outputAsset?.symbol,
+            status: "pending",
+          },
+          4: {
+            title: SimplifiedOrderStatus.swapCompleted,
+            status: "pending",
+          },
+        };
       case OrderStatus.Initiated:
-        return SimplifiedOrderStatus.depositDetected;
+        return {
+          1: {
+            title: SimplifiedOrderStatus.orderCreated,
+            status: "completed",
+          },
+          2: {
+            title: SimplifiedOrderStatus.depositConfirmed,
+            status: "completed",
+          },
+          3: {
+            title: SimplifiedOrderStatus.redeeming + outputAsset?.symbol,
+            status: "pending",
+          },
+          4: {
+            title: SimplifiedOrderStatus.swapCompleted,
+            status: "pending",
+          },
+        };
       case OrderStatus.CounterPartyInitiateDetected:
       case OrderStatus.CounterPartyInitiated:
-        return SimplifiedOrderStatus.redeemingWBTC;
+        return {
+          1: {
+            title: SimplifiedOrderStatus.orderCreated,
+            status: "completed",
+          },
+          2: {
+            title: SimplifiedOrderStatus.depositConfirmed,
+            status: "completed",
+          },
+          3: {
+            title: SimplifiedOrderStatus.redeeming + outputAsset?.symbol,
+            status: "inProgress",
+          },
+          4: {
+            title: SimplifiedOrderStatus.swapCompleted,
+            status: "pending",
+          },
+        };
       case OrderStatus.RedeemDetected:
       case OrderStatus.Redeemed:
       case OrderStatus.CounterPartyRedeemDetected:
       case OrderStatus.CounterPartyRedeemed:
-        return SimplifiedOrderStatus.swapCompleted;
+        return {
+          1: {
+            title: SimplifiedOrderStatus.orderCreated,
+            status: "completed",
+          },
+          2: {
+            title: SimplifiedOrderStatus.depositConfirmed,
+            status: "completed",
+          },
+          3: {
+            title: SimplifiedOrderStatus.redeemed + outputAsset?.symbol,
+            status: "completed",
+          },
+          4: {
+            title: SimplifiedOrderStatus.swapCompleted,
+            status: "completed",
+          },
+        };
+      default:
+        return {
+          1: { title: "", status: "pending" },
+          2: { title: "", status: "pending" },
+          3: { title: "", status: "pending" },
+          4: { title: "", status: "pending" },
+        };
     }
-  }, [status]);
+  }, [confirmationsString, outputAsset?.symbol, status]);
 
   useEffect(() => {
     if (!orderBook) return;
@@ -71,5 +202,8 @@ export const useOrderStatus = (_order: MatchedOrder | null) => {
     );
   }, [blockNumbers, order]);
 
-  return { status, simplifiedStatus };
+  return {
+    status,
+    simplifiedStatus,
+  };
 };
