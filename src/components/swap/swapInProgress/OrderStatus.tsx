@@ -11,7 +11,7 @@ type OrderStatusProps = {
 };
 
 export const OrderStatus: FC<OrderStatusProps> = ({ orderProgress }) => {
-  const [dropdown, setDropdown] = useState(true);
+  const [dropdown, setDropdown] = useState(false);
 
   const handleDropdown = () => setDropdown(!dropdown);
 
@@ -72,7 +72,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({ orderProgress }) => {
                   Object.values(orderProgress)[index + 1].status !==
                     "pending" && (
                     <span
-                      className="absolute -left-[1px] top-2 h-full border-l-[1px] z-10 border-dark-grey"
+                      className="absolute top-2 h-full border-l-[1px] z-10 border-dark-grey"
                       style={{
                         height: "calc(100% + 8px)",
                         borderImage:
@@ -84,15 +84,15 @@ export const OrderStatus: FC<OrderStatusProps> = ({ orderProgress }) => {
                     />
                   )}
                 {step.status === "completed" && (
-                  <span className="z-50 relative flex items-center justify-center -translate-x-[4.5px] bg-white rounded-full w-2 h-2 border border-dark-grey">
+                  <span className="z-50 relative flex items-center justify-center -translate-x-[3.5px] bg-white rounded-full w-2 h-2 border border-dark-grey">
                     <RadioCheckedIcon className="absolute w-2 h-2" />
                   </span>
                 )}
                 {step.status === "inProgress" && (
-                  <div className="w-2 h-2 rounded-full bg-rose -translate-x-[4.5px] z-50" />
+                  <div className="w-2 h-2 rounded-full bg-rose -translate-x-[3.5px] z-50" />
                 )}
                 {step.status === "pending" && (
-                  <div className="w-2 h-2 border-[1px] border-dark-grey rounded-full -translate-x-[4.5px]" />
+                  <div className="w-2 h-2 border-[1px] border-dark-grey rounded-full -translate-x-[3.5px]" />
                 )}
                 <Typography
                   size="h3"
