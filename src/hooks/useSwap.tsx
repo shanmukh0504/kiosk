@@ -29,7 +29,7 @@ export const useSwap = () => {
     setAmount,
     setError,
     setIsFetchingQuote,
-    setShowConfirmSwap,
+    setSwapInProgress,
     setTokenPrices,
     clearSwapState,
     setBtcAddress,
@@ -90,12 +90,12 @@ export const useSwap = () => {
       outputAsset &&
       strategies.val &&
       strategies.val[
-      constructOrderPair(
-        inputAsset.chain,
-        inputAsset.atomicSwapAddress,
-        outputAsset.chain,
-        outputAsset.atomicSwapAddress
-      )
+        constructOrderPair(
+          inputAsset.chain,
+          inputAsset.atomicSwapAddress,
+          outputAsset.chain,
+          outputAsset.atomicSwapAddress
+        )
       ]
     );
   }, [inputAsset, outputAsset, strategies.val]);
@@ -103,16 +103,16 @@ export const useSwap = () => {
   const minAmount = useMemo(() => {
     return swapLimits && inputAsset
       ? new BigNumber(swapLimits.minAmount)
-        .dividedBy(10 ** inputAsset.decimals)
-        .toNumber()
+          .dividedBy(10 ** inputAsset.decimals)
+          .toNumber()
       : undefined;
   }, [swapLimits, inputAsset]);
 
   const maxAmount = useMemo(() => {
     return swapLimits && inputAsset
       ? new BigNumber(swapLimits.maxAmount)
-        .dividedBy(10 ** inputAsset.decimals)
-        .toNumber()
+          .dividedBy(10 ** inputAsset.decimals)
+          .toNumber()
       : undefined;
   }, [swapLimits, inputAsset]);
 
@@ -248,12 +248,12 @@ export const useSwap = () => {
 
     const additionalData = isBitcoinSwap
       ? {
-        strategyId: strategy,
-        btcAddress,
-      }
+          strategyId: strategy,
+          btcAddress,
+        }
       : {
-        strategyId: strategy,
-      };
+          strategyId: strategy,
+        };
 
     try {
       const res = await swapAndInitiate({
@@ -269,32 +269,20 @@ export const useSwap = () => {
         return;
       }
 
-      //TODO: add a notification here
       console.log("orderCreated ✅", res.val);
       clearSwapState();
 
-      if (isBitcoin(res.val.source_swap.chain)) {
+      if (isBitcoin(res.val.source_swap.chain) && provider) {
         const order = res.val;
-
-        if (provider) {
-          const res = await provider.sendBitcoin(
-            order.source_swap.swap_id,
-            Number(order.source_swap.amount)
-          );
-          if (res.error) {
-            console.error("failed to send bitcoin ❌", res.error);
-            setShowConfirmSwap({
-              isOpen: true,
-              order,
-            });
-          }
-        } else {
-          setShowConfirmSwap({
-            isOpen: true,
-            order,
-          });
+        const bitcoinRes = await provider.sendBitcoin(
+          order.source_swap.swap_id,
+          Number(order.source_swap.amount)
+        );
+        if (bitcoinRes.error) {
+          console.error("failed to send bitcoin ❌", bitcoinRes.error);
         }
       }
+      setSwapInProgress({ isOpen: true, order: res.val });
     } catch (error) {
       console.log("failed to create order ❌", error);
       setIsSwapping(false);

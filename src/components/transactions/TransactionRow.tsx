@@ -1,7 +1,7 @@
 import { FC, useId, useMemo, useState } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { SwapInfo } from "../../common/SwapInfo";
-import { MatchedOrder } from "@gardenfi/orderbook";
+import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
 import {
   formatAmount,
   getAssetFromSwap,
@@ -11,6 +11,9 @@ import { OrderStatus } from "@gardenfi/core";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { Tooltip } from "../../common/Tooltip";
+import { swapStore } from "../../store/swapStore";
+import { modalNames, modalStore } from "../../store/modalStore";
+import { useGarden } from "@gardenfi/react-hooks";
 
 type TransactionProps = {
   order: MatchedOrder;
@@ -57,6 +60,9 @@ export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
   const idTooltip = useId();
   const { create_order, source_swap, destination_swap } = order;
   const { assets } = assetInfoStore();
+  const { setSwapInProgress } = swapStore();
+  const { setCloseModal } = modalStore();
+  const { evmInitiate } = useGarden();
 
   const sendAsset = useMemo(
     () => getAssetFromSwap(source_swap, assets),
@@ -96,6 +102,19 @@ export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
     }, 2000);
   };
 
+  const handleTransactionClick = async () => {
+    setSwapInProgress({ isOpen: true, order });
+    setCloseModal(modalNames.transactions);
+
+    if (!isBitcoin(order.source_swap.chain) && status === OrderStatus.Matched) {
+      if (!evmInitiate) return;
+      const res = await evmInitiate(order);
+      if (res.error) {
+        console.error("failed to initiate swap ❌", res.error);
+      }
+    }
+  };
+
   if (!sendAsset || !receiveAsset) return null;
 
   return (
@@ -109,19 +128,24 @@ export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
         {getTrimmedAddress(create_order.create_id, 4, 3)}
       </Typography>
       <Tooltip id={idTooltip} place="top" content={idTooltipContent} />
-      <SwapInfo
-        sendAsset={sendAsset}
-        receiveAsset={receiveAsset}
-        sendAmount={sendAmount}
-        receiveAmount={receiveAmount}
-      />
-      <div className="flex justify-between">
-        <Typography size="h5" weight="medium">
-          {statusLabel}
-        </Typography>
-        <Typography size="h5" weight="medium">
-          {dayDifference}
-        </Typography>
+      <div
+        className="flex flex-col gap-1 cursor-pointer"
+        onClick={handleTransactionClick}
+      >
+        <SwapInfo
+          sendAsset={sendAsset}
+          receiveAsset={receiveAsset}
+          sendAmount={sendAmount}
+          receiveAmount={receiveAmount}
+        />
+        <div className="flex justify-between">
+          <Typography size="h5" weight="medium">
+            {statusLabel}
+          </Typography>
+          <Typography size="h5" weight="medium">
+            {dayDifference}
+          </Typography>
+        </div>
       </div>
     </div>
   );

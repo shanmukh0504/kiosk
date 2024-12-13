@@ -11,7 +11,7 @@ type BlockNumberStore = {
   fetchAndSetBlockNumbers: () => Promise<void>;
 };
 
-const blockNumberStore = create<BlockNumberStore>()((set) => ({
+export const blockNumberStore = create<BlockNumberStore>()((set) => ({
   blockNumbers: null,
   isLoading: false,
   error: "",
@@ -29,5 +29,3 @@ const blockNumberStore = create<BlockNumberStore>()((set) => ({
     }
   },
 }));
-
-export default blockNumberStore;

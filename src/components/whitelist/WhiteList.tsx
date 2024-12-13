@@ -9,6 +9,9 @@ import blossomMainnet from "/blossom-mainnet.png";
 import { Button, LogoutIcon, Modal, Typography } from "@gardenfi/garden-book";
 import { BottomSheet } from "../../common/BottomSheet";
 import { network } from "../../constants/constants";
+import { swapStore } from "../../store/swapStore";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { balanceStore } from "../../store/balanceStore";
 
 type WhiteListProps = {
   open: boolean;
@@ -17,7 +20,9 @@ type WhiteListProps = {
 
 const WhitelistComponent: FC<Omit<WhiteListProps, "open">> = ({ onClose }) => {
   const { disconnect } = useEVMWallet();
-
+  const { clearSwapState } = swapStore();
+  const { disconnect: btcDisconnect } = useBitcoinWallet();
+  const { clearBalances } = balanceStore();
   const image = useMemo(
     () => (network === "mainnet" ? blossomMainnet : blossomTestnet),
     []
@@ -27,15 +32,18 @@ const WhitelistComponent: FC<Omit<WhiteListProps, "open">> = ({ onClose }) => {
     window.open("https://waitlist.garden.finance", "_blank");
 
   const handleDisconnect = () => {
+    clearSwapState();
     disconnect();
     onClose();
+    btcDisconnect();
+    clearBalances();
   };
 
   return (
     <div className="flex flex-col gap-5 rounded-2xl p-1 mt-2">
       <img src={image} alt="whitelist" />
       <Typography size="h4">
-        <b>Blossom {network}</b> is currently invite-only.
+        <b>Bloom {network}</b> is currently invite-only.
         <br />
         Secure your spot on the waitlist to be among the first
         <br /> to experience it and help shape the future of Garden!
@@ -62,6 +70,7 @@ export const WhiteList: FC<WhiteListProps> = ({ open, onClose }) => {
 
   useEffect(() => {
     if (!address) return;
+
     checkIfWhitelisted(address).then((isWhitelisted) => {
       if (!isWhitelisted) {
         setOpenModal(modalNames.whiteList);
