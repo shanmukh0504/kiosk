@@ -14,18 +14,17 @@ export const Modal = () => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setCloseModal(modalNames.transactions);
+        if (modalName.transactions) setCloseModal(modalNames.transactions);
       }
     };
 
-    if (modalName.transactions) {
-      window.addEventListener("keydown", handleKeyDown);
-    }
+
+    window.addEventListener("keydown", handleKeyDown)
+
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [modalName.transactions]);
+  }, [modalName.transactions, setCloseModal]);
 
   return (
     <>
