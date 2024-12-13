@@ -1,18 +1,19 @@
-import { BTCInit } from "./BTCInit";
+import { SwapInProgress } from "./swapInProgress/SwapInProgress";
 import { CreateSwap } from "./CreateSwap";
 import { swapStore } from "../../store/swapStore";
-import { ToastContainer } from "../toast/Toast";
+import { Toast, ToastContainer } from "../toast/Toast";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { useEffect } from "react";
 import { useGarden } from "@gardenfi/react-hooks";
-import { isBitcoin } from "@gardenfi/orderbook";
+import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
 import { IOType } from "../../constants/constants";
+import { formatAmount } from "../../utils/utils";
 
 export const Swap = () => {
-  const { btcInitModal, setAsset } = swapStore();
+  const { swapInProgress, setAsset } = swapStore();
   const { fetchAndSetAssetsAndChains, fetchAndSetStrategies, assets } =
     assetInfoStore();
-  const { quote } = useGarden();
+  const { quote, garden } = useGarden();
 
   useEffect(() => {
     fetchAndSetAssetsAndChains();
@@ -31,6 +32,52 @@ export const Swap = () => {
     if (bitcoinAsset) setAsset(IOType.input, bitcoinAsset);
   }, [assets, setAsset]);
 
+  useEffect(() => {
+    if (!garden) return;
+
+    const handleErrorLog = (order: MatchedOrder, error: string) => {
+      console.error("garden error", order.create_order.create_id, error);
+    };
+    const handleLog = (orderId: string, log: string) => {
+      console.log("garden log", orderId, log);
+    };
+    const handleSuccess = (order: MatchedOrder) => {
+      const { source_swap, destination_swap } = order;
+      const inputAsset =
+        assets &&
+        assets[`${source_swap.chain}_${source_swap.asset.toLowerCase()}`];
+      const outputAsset =
+        assets &&
+        assets[
+          `${destination_swap.chain}_${destination_swap.asset.toLowerCase()}`
+        ];
+      if (!inputAsset || !outputAsset) return;
+
+      const inputAmount = formatAmount(
+        order.source_swap.amount,
+        inputAsset.decimals
+      );
+      const outputAmount = formatAmount(
+        order.destination_swap.amount,
+        outputAsset.decimals
+      );
+      console.log("success order ✅", order.create_order.create_id);
+      Toast.success(
+        `Swap success ${inputAmount} ${inputAsset.symbol} to ${outputAmount} ${outputAsset.symbol}`
+      );
+    };
+
+    garden.on("error", handleErrorLog);
+    garden.on("log", handleLog);
+    garden.on("success", handleSuccess);
+
+    return () => {
+      garden.off("error", handleErrorLog);
+      garden.off("log", handleLog);
+      garden.off("success", handleSuccess);
+    };
+  }, [garden, assets]);
+
   return (
     <div className="flex flex-col gap-4 w-full sm:max-w-[424px] max-w-[328px] mx-auto mt-10">
       <ToastContainer />
@@ -38,7 +85,7 @@ export const Swap = () => {
         className={`bg-white/50 rounded-[20px]
           relative overflow-hidden`}
       >
-        {btcInitModal.isOpen ? <BTCInit /> : <CreateSwap />}
+        {swapInProgress.isOpen ? <SwapInProgress /> : <CreateSwap />}
       </div>
     </div>
   );

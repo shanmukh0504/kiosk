@@ -11,6 +11,8 @@ import { OrderStatus } from "@gardenfi/core";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { Tooltip } from "../../common/Tooltip";
+import { swapStore } from "../../store/swapStore";
+import { modalNames, modalStore } from "../../store/modalStore";
 
 type TransactionProps = {
   order: MatchedOrder;
@@ -57,6 +59,8 @@ export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
   const idTooltip = useId();
   const { create_order, source_swap, destination_swap } = order;
   const { assets } = assetInfoStore();
+  const { setSwapInProgress } = swapStore();
+  const { setCloseModal } = modalStore();
 
   const sendAsset = useMemo(
     () => getAssetFromSwap(source_swap, assets),
@@ -96,6 +100,11 @@ export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
     }, 2000);
   };
 
+  const handleTransactionClick = () => {
+    setSwapInProgress({ isOpen: true, order });
+    setCloseModal(modalNames.transactions);
+  };
+
   if (!sendAsset || !receiveAsset) return null;
 
   return (
@@ -109,19 +118,24 @@ export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
         {getTrimmedAddress(create_order.create_id, 4, 3)}
       </Typography>
       <Tooltip id={idTooltip} place="top" content={idTooltipContent} />
-      <SwapInfo
-        sendAsset={sendAsset}
-        receiveAsset={receiveAsset}
-        sendAmount={sendAmount}
-        receiveAmount={receiveAmount}
-      />
-      <div className="flex justify-between">
-        <Typography size="h5" weight="medium">
-          {statusLabel}
-        </Typography>
-        <Typography size="h5" weight="medium">
-          {dayDifference}
-        </Typography>
+      <div
+        className="flex flex-col gap-1 cursor-pointer"
+        onClick={handleTransactionClick}
+      >
+        <SwapInfo
+          sendAsset={sendAsset}
+          receiveAsset={receiveAsset}
+          sendAmount={sendAmount}
+          receiveAmount={receiveAmount}
+        />
+        <div className="flex justify-between">
+          <Typography size="h5" weight="medium">
+            {statusLabel}
+          </Typography>
+          <Typography size="h5" weight="medium">
+            {dayDifference}
+          </Typography>
+        </div>
       </div>
     </div>
   );

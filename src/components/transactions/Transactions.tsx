@@ -5,7 +5,7 @@ import { Button } from "@gardenfi/garden-book";
 import { MatchedOrder } from "@gardenfi/orderbook";
 import { ParseOrderStatus } from "@gardenfi/core";
 import { useOrdersStore } from "../../store/ordersStore";
-import blockNumberStore from "../../store/blockNumberStore";
+import { blockNumberStore } from "../../store/blockNumberStore";
 import { TransactionRow } from "./TransactionRow";
 import { TransactionsSkeleton } from "./TransactionsSkeleton";
 
@@ -21,11 +21,11 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   const { fetchAndSetBlockNumbers, blockNumbers } = blockNumberStore();
 
   // orders which are initiated
-  const filteredOrders = useMemo(() => {
-    return orders.filter((order) => {
-      return order.source_swap.initiate_tx_hash !== "";
-    });
-  }, [orders]);
+  // const filteredOrders = useMemo(() => {
+  //   return orders.filter((order) => {
+  //     return order.source_swap.initiate_tx_hash !== "";
+  //   });
+  // }, [orders]);
 
   const showLoadMore = useMemo(
     () => orders.length < totalItems,
@@ -74,15 +74,15 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
           <div className="flex flex-col gap-4 overflow-y-auto w-full">
             {isLoadingOrders ? (
               <TransactionsSkeleton />
-            ) : filteredOrders.length === 0 ? (
+            ) : orders.length === 0 ? (
               <Typography size="h5" className="text-center">
                 No transactions found.
               </Typography>
             ) : (
-              filteredOrders.map((order, index) => (
+              orders.map((order, index) => (
                 <div key={index} className="w-full">
                   <TransactionRow order={order} status={parseStatus(order)} />
-                  {index !== filteredOrders.length - 1 ? (
+                  {index !== orders.length - 1 ? (
                     <div className="bg-white/50 w-full h-px"></div>
                   ) : null}
                 </div>
