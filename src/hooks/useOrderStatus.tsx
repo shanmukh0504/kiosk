@@ -200,7 +200,7 @@ export const useOrderStatus = () => {
     const intervalId = setInterval(fetchOrderAndBlockNumbers, 5000);
 
     return () => clearInterval(intervalId);
-  }, [fetchAndSetBlockNumbers, order, orderBook, status, setSwapInProgress]);
+  }, [fetchAndSetBlockNumbers, orderBook, status, setSwapInProgress]);
 
   useEffect(() => {
     if (!order || !blockNumbers) return;

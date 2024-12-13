@@ -4,6 +4,7 @@ export const mergeOrders = (
   currentOrder: MatchedOrder,
   updatedOrder: MatchedOrder
 ): MatchedOrder => {
+  if (!currentOrder) return currentOrder;
   if (currentOrder.source_swap.initiate_tx_hash) {
     if (!updatedOrder.source_swap.initiate_tx_hash) return currentOrder;
   }
