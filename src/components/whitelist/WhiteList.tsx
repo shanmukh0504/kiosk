@@ -9,6 +9,9 @@ import blossomMainnet from "/blossom-mainnet.png";
 import { Button, LogoutIcon, Modal, Typography } from "@gardenfi/garden-book";
 import { BottomSheet } from "../../common/BottomSheet";
 import { network } from "../../constants/constants";
+import { swapStore } from "../../store/swapStore";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { balanceStore } from "../../store/balanceStore";
 
 type WhiteListProps = {
   open: boolean;
@@ -17,7 +20,9 @@ type WhiteListProps = {
 
 const WhitelistComponent: FC<Omit<WhiteListProps, "open">> = ({ onClose }) => {
   const { disconnect } = useEVMWallet();
-
+  const { clearSwapState } = swapStore();
+  const { disconnect: btcDisconnect } = useBitcoinWallet();
+  const { clearBalances } = balanceStore();
   const image = useMemo(
     () => (network === "mainnet" ? blossomMainnet : blossomTestnet),
     []
@@ -27,8 +32,11 @@ const WhitelistComponent: FC<Omit<WhiteListProps, "open">> = ({ onClose }) => {
     window.open("https://waitlist.garden.finance", "_blank");
 
   const handleDisconnect = () => {
+    clearSwapState();
     disconnect();
     onClose();
+    btcDisconnect();
+    clearBalances();
   };
 
   return (

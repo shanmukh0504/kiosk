@@ -77,7 +77,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({ orderProgress }) => {
                     />
                   )}
                 {step.status === "completed" && (
-                  <span className="z-50 relative flex items-center justify-center -translate-x-[3.5px] bg-white rounded-full w-2 h-2 border border-dark-grey">
+                  <span className="z-20 relative flex items-center justify-center -translate-x-[3.5px] bg-white rounded-full w-2 h-2 border border-dark-grey">
                     <RadioCheckedIcon className="absolute w-2 h-2" />
                   </span>
                 )}

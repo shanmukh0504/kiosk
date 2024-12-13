@@ -80,7 +80,7 @@ export const SwapInProgress = () => {
   );
 
   return order ? (
-    <div className="flex flex-col gap-3 p-3">
+    <div className="flex flex-col gap-3 p-3 animate-fade-out">
       <div className="flex justify-between items-center p-1">
         <Typography size="h4" weight="bold">
           Swap progress
