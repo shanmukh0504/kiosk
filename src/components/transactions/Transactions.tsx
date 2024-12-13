@@ -71,7 +71,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
           <Typography size="h5" weight="bold">
             Transactions
           </Typography>
-          <div className="flex flex-col gap-4 overflow-auto">
+          <div className="flex flex-col gap-4 overflow-y-auto w-full">
             {isLoadingOrders ? (
               <TransactionsSkeleton />
             ) : filteredOrders.length === 0 ? (
@@ -80,7 +80,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
               </Typography>
             ) : (
               filteredOrders.map((order, index) => (
-                <div key={index}>
+                <div key={index} className="w-full">
                   <TransactionRow order={order} status={parseStatus(order)} />
                   {index !== filteredOrders.length - 1 ? (
                     <div className="bg-white/50 w-full h-px"></div>
