@@ -2,7 +2,7 @@ import { ArrowRightIcon, Typography } from "@gardenfi/garden-book";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { FC } from "react";
 import { assetInfoStore } from "../store/assetInfoStore";
-import { AssetChainLogos } from "./AssetChainLogos";
+import { AssetChainLogosTransaction } from "./AssetChainLogos";
 
 type SwapInfoProps = {
   sendAsset: Asset;
@@ -31,7 +31,7 @@ export const SwapInfo: FC<SwapInfoProps> = ({
         <Typography size="h3" weight="medium">
           {sendAmount}
         </Typography>
-        <AssetChainLogos
+        <AssetChainLogosTransaction
           tokenLogo={sendAsset.logo}
           chainLogo={sendChain?.networkLogo}
         />
@@ -41,7 +41,7 @@ export const SwapInfo: FC<SwapInfoProps> = ({
         <Typography size="h3" weight="medium">
           {receiveAmount}
         </Typography>
-        <AssetChainLogos
+        <AssetChainLogosTransaction
           tokenLogo={receiveAsset.logo}
           chainLogo={receiveChain?.networkLogo}
         />
