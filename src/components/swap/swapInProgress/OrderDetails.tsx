@@ -8,7 +8,7 @@ type OrderDetailsProps = {
   filledAmount: number;
   amountToFill: number;
   btcAddress?: string;
-  outputAsset: Asset | null;
+  inputAsset: Asset | null;
 };
 
 export const OrderDetails: FC<OrderDetailsProps> = ({
@@ -16,7 +16,7 @@ export const OrderDetails: FC<OrderDetailsProps> = ({
   filledAmount,
   amountToFill,
   btcAddress,
-  outputAsset,
+  inputAsset,
 }) => {
   const [dropdown, setDropdown] = useState(false);
 
@@ -62,7 +62,7 @@ export const OrderDetails: FC<OrderDetailsProps> = ({
               Amount
             </Typography>
             <Typography size="h4" weight="medium">
-              {filledAmount} / {amountToFill} {outputAsset?.symbol}
+              {filledAmount} / {amountToFill} {inputAsset?.symbol}
             </Typography>
           </div>
           {btcAddress && (

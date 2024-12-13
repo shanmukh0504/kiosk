@@ -131,7 +131,7 @@ export const SwapInProgress = () => {
         filledAmount={filledAmount}
         amountToFill={amountToFill}
         btcAddress={btcAddress}
-        outputAsset={outputAsset}
+        inputAsset={inputAsset}
       />
     </div>
   ) : (
