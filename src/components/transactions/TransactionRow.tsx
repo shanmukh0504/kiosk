@@ -11,6 +11,8 @@ import { OrderStatus } from "@gardenfi/core";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { Tooltip } from "../../common/Tooltip";
+import { swapStore } from "../../store/swapStore";
+import { modalNames, modalStore } from "../../store/modalStore";
 
 type TransactionProps = {
   order: MatchedOrder;
@@ -57,6 +59,8 @@ export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
   const idTooltip = useId();
   const { create_order, source_swap, destination_swap } = order;
   const { assets } = assetInfoStore();
+  const { setSwapInProgress } = swapStore();
+  const { setCloseModal } = modalStore();
 
   const sendAsset = useMemo(
     () => getAssetFromSwap(source_swap, assets),
@@ -96,10 +100,18 @@ export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
     }, 2000);
   };
 
+  const handleTransactionClick = () => {
+    setSwapInProgress({ isOpen: true, order });
+    setCloseModal(modalNames.transactions);
+  };
+
   if (!sendAsset || !receiveAsset) return null;
 
   return (
-    <div className="flex flex-col gap-1 pb-4">
+    <div
+      className="flex flex-col gap-1 pb-4 cursor-pointer"
+      onClick={handleTransactionClick}
+    >
       <Typography
         size="h5"
         className="bg-white/50 w-fit p-1 px-2 rounded-full cursor-pointer mb-1"

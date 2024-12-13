@@ -35,7 +35,7 @@ const WhitelistComponent: FC<Omit<WhiteListProps, "open">> = ({ onClose }) => {
     <div className="flex flex-col gap-5 rounded-2xl p-1 mt-2">
       <img src={image} alt="whitelist" />
       <Typography size="h4">
-        <b>Blossom {network}</b> is currently invite-only.
+        <b>Bloom {network}</b> is currently invite-only.
         <br />
         Secure your spot on the waitlist to be among the first
         <br /> to experience it and help shape the future of Garden!
@@ -62,6 +62,7 @@ export const WhiteList: FC<WhiteListProps> = ({ open, onClose }) => {
 
   useEffect(() => {
     if (!address) return;
+
     checkIfWhitelisted(address).then((isWhitelisted) => {
       if (!isWhitelisted) {
         setOpenModal(modalNames.whiteList);
