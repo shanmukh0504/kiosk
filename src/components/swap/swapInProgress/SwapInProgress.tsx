@@ -11,11 +11,14 @@ import { OrderStatus } from "./OrderStatus";
 import { OrderDetails } from "./OrderDetails";
 import { isBitcoin } from "@gardenfi/orderbook";
 import { CopyToClipboard } from "../../../common/CopyToClipboard";
+import { useOrderStatus } from "../../../hooks/useOrderStatus";
+import { OrderStatus as OrderStatusEnum } from "@gardenfi/core";
 
 export const SwapInProgress = () => {
   const { swapInProgress, closeSwapInProgress } = swapStore();
   const { assets } = assetInfoStore();
   const { order } = swapInProgress;
+  const { orderProgress, status } = useOrderStatus(order);
 
   const { depositAddress, inputAsset, outputAsset, btcAddress } =
     useMemo(() => {
@@ -103,23 +106,26 @@ export const SwapInProgress = () => {
           />
         )}
       </div>
-      {inputAsset && isBitcoin(inputAsset.chain) && (
-        <div className="flex justify-between bg-white rounded-2xl p-4">
-          <div className="flex flex-col gap-2">
-            <Typography size="h5" weight="bold">
-              Deposit address
-            </Typography>
-            <div className="flex gap-2 items-center">
-              <Typography size="h3" weight="bold">
-                {getTrimmedAddress(depositAddress, 8, 6)}
+      {inputAsset &&
+        isBitcoin(inputAsset.chain) &&
+        (status === OrderStatusEnum.Matched ||
+          status === OrderStatusEnum.Created) && (
+          <div className="flex justify-between bg-white rounded-2xl p-4">
+            <div className="flex flex-col gap-2">
+              <Typography size="h5" weight="bold">
+                Deposit address
               </Typography>
-              <CopyToClipboard text={depositAddress} />
+              <div className="flex gap-2 items-center">
+                <Typography size="h3" weight="bold">
+                  {getTrimmedAddress(depositAddress, 8, 6)}
+                </Typography>
+                <CopyToClipboard text={depositAddress} />
+              </div>
             </div>
+            <QRCode value={depositAddress} size={48} fgColor="#554B6A" />
           </div>
-          <QRCode value={depositAddress} size={48} fgColor="#554B6A" />
-        </div>
-      )}
-      <OrderStatus order={order} />
+        )}
+      <OrderStatus orderProgress={orderProgress} />
       <OrderDetails
         fees={fees}
         filledAmount={filledAmount}

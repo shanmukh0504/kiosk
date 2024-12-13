@@ -1,8 +1,4 @@
-import {
-  KeyboardDownIcon,
-  KeyboardUpIcon,
-  Typography,
-} from "@gardenfi/garden-book";
+import { KeyboardDownIcon, Typography } from "@gardenfi/garden-book";
 import { useState, FC } from "react";
 import { getTrimmedAddress } from "../../../utils/getTrimmedAddress";
 import { Asset } from "@gardenfi/orderbook";
@@ -29,7 +25,7 @@ export const OrderDetails: FC<OrderDetailsProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-2 justify-between bg-white/50 rounded-2xl p-4">
+    <div className="flex flex-col justify-between bg-white/50 rounded-2xl p-4">
       <div
         onClick={handleDropdown}
         className="flex w-full justify-between items-center cursor-pointer"
@@ -37,10 +33,20 @@ export const OrderDetails: FC<OrderDetailsProps> = ({
         <Typography size="h5" weight="bold">
           Details
         </Typography>
-        {dropdown ? <KeyboardUpIcon /> : <KeyboardDownIcon />}
+        <div
+          className={`transform transition-transform duration-300 ${
+            dropdown ? "rotate-180" : "rotate-0"
+          }`}
+        >
+          <KeyboardDownIcon />
+        </div>
       </div>
-      {dropdown && (
-        <div className="flex flex-col gap-3 rounded-2xl">
+      <div
+        className={`transition-all duration-300 overflow-hidden ${
+          dropdown ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="flex flex-col gap-3 rounded-2xl mt-2">
           <div className="flex justify-between">
             <Typography size="h4" weight="medium">
               Fees
@@ -70,7 +76,7 @@ export const OrderDetails: FC<OrderDetailsProps> = ({
             </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

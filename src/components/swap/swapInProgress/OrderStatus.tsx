@@ -1,34 +1,28 @@
 import {
   KeyboardDownIcon,
-  KeyboardUpIcon,
   RadioCheckedIcon,
   Typography,
 } from "@gardenfi/garden-book";
 import { useState, FC } from "react";
-import { useOrderStatus } from "../../../hooks/useOrderStatus";
-import { MatchedOrder } from "@gardenfi/orderbook";
+import { OrderProgress } from "../../../hooks/useOrderStatus";
 
 type OrderStatusProps = {
-  order: MatchedOrder;
+  orderProgress: OrderProgress;
 };
 
-export const OrderStatus: FC<OrderStatusProps> = ({ order }) => {
+export const OrderStatus: FC<OrderStatusProps> = ({ orderProgress }) => {
   const [dropdown, setDropdown] = useState(true);
-  const { simplifiedStatus } = useOrderStatus(order);
 
   const handleDropdown = () => setDropdown(!dropdown);
 
-  const NoOfSteps = simplifiedStatus
-    ? Object.values(simplifiedStatus).length
-    : 0;
+  const NoOfSteps = orderProgress ? Object.values(orderProgress).length : 0;
 
   const completedSteps =
-    simplifiedStatus &&
-    Object.values(simplifiedStatus).filter(
-      (step) => step.status === "completed"
-    ).length;
+    orderProgress &&
+    Object.values(orderProgress).filter((step) => step.status === "completed")
+      .length;
 
-  const currentStatus = Object.values(simplifiedStatus).reduce<string>(
+  const currentStatus = Object.values(orderProgress).reduce<string>(
     (acc, step, index, array) => {
       if (
         index === array.length - 1 ||
@@ -42,7 +36,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({ order }) => {
   );
 
   return (
-    <div className="flex flex-col gap-2 justify-between bg-white rounded-2xl p-4">
+    <div className="flex flex-col justify-between bg-white rounded-2xl p-4">
       <div
         onClick={handleDropdown}
         className="flex flex-col gap-2 cursor-pointer"
@@ -51,13 +45,23 @@ export const OrderStatus: FC<OrderStatusProps> = ({ order }) => {
           <Typography size="h5" weight="bold">
             Order status
           </Typography>
-          {dropdown ? <KeyboardUpIcon /> : <KeyboardDownIcon />}
+          <div
+            className={`transform transition-transform duration-300 ${
+              dropdown ? "rotate-180" : "rotate-0"
+            }`}
+          >
+            <KeyboardDownIcon />
+          </div>
         </div>
       </div>
-      {dropdown ? (
-        <ul>
-          {simplifiedStatus &&
-            Object.values(simplifiedStatus).map((step, index) => (
+      <div
+        className={`transition-all duration-300 overflow-hidden ease-in-out ${
+          dropdown ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <ul className="mt-2">
+          {orderProgress &&
+            Object.values(orderProgress).map((step, index) => (
               <li
                 key={index}
                 className={`relative flex items-center mx-1 gap-1 ${
@@ -65,14 +69,14 @@ export const OrderStatus: FC<OrderStatusProps> = ({ order }) => {
                 }`}
               >
                 {index !== NoOfSteps - 1 &&
-                  Object.values(simplifiedStatus)[index + 1].status !==
+                  Object.values(orderProgress)[index + 1].status !==
                     "pending" && (
                     <span
                       className="absolute -left-[1px] top-2 h-full border-l-[1px] z-10 border-dark-grey"
                       style={{
                         height: "calc(100% + 8px)",
                         borderImage:
-                          Object.values(simplifiedStatus)[index + 1].status ===
+                          Object.values(orderProgress)[index + 1].status ===
                           "inProgress"
                             ? "linear-gradient(to bottom, #554B6A, #e36492) 1"
                             : "",
@@ -80,7 +84,9 @@ export const OrderStatus: FC<OrderStatusProps> = ({ order }) => {
                     />
                   )}
                 {step.status === "completed" && (
-                  <RadioCheckedIcon className="relative w-2 h-2 -translate-x-[4.5px]" />
+                  <span className="z-50 relative flex items-center justify-center -translate-x-[4.5px] bg-white rounded-full w-2 h-2 border border-dark-grey">
+                    <RadioCheckedIcon className="absolute w-2 h-2" />
+                  </span>
                 )}
                 {step.status === "inProgress" && (
                   <div className="w-2 h-2 rounded-full bg-rose -translate-x-[4.5px] z-50" />
@@ -97,16 +103,26 @@ export const OrderStatus: FC<OrderStatusProps> = ({ order }) => {
               </li>
             ))}
         </ul>
-      ) : (
-        <div className="flex justify-between items-center">
+      </div>
+      <div
+        className={`overflow-hidden ${
+          !dropdown ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+        }`}
+        style={{
+          transition: dropdown
+            ? "max-height 50ms ease-in-out, opacity 300ms ease-in-out" // Opening
+            : "max-height 300ms ease-in-out 200ms, opacity 300ms ease-in-out", // Closing
+        }}
+      >
+        <div className="flex mt-2 justify-between items-center">
           <Typography size="h3" weight="bold">
             {currentStatus}
           </Typography>
           <Typography size="h5" weight="bold">
-            {completedSteps} of 4
+            {completedSteps} of {NoOfSteps}
           </Typography>
         </div>
-      )}
+      </div>
     </div>
   );
 };

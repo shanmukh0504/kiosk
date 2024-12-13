@@ -20,6 +20,9 @@ type Status = {
   title: string;
   status: "completed" | "inProgress" | "pending";
 };
+export type OrderProgress = {
+  [key in 1 | 2 | 3 | 4]: Status;
+};
 
 export const useOrderStatus = (_order: MatchedOrder | null) => {
   const [status, setStatus] = useState<OrderStatus>();
@@ -45,9 +48,7 @@ export const useOrderStatus = (_order: MatchedOrder | null) => {
       : "";
   }, [blockNumbers, order, initBlockNumber, status]);
 
-  const simplifiedStatus: {
-    [key in 1 | 2 | 3 | 4]: Status;
-  } = useMemo(() => {
+  const orderProgress: OrderProgress = useMemo(() => {
     switch (status) {
       case OrderStatus.Created:
         return {
@@ -202,6 +203,6 @@ export const useOrderStatus = (_order: MatchedOrder | null) => {
 
   return {
     status,
-    simplifiedStatus,
+    orderProgress,
   };
 };
