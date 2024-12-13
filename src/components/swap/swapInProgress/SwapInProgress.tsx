@@ -18,7 +18,7 @@ export const SwapInProgress = () => {
   const { swapInProgress, closeSwapInProgress } = swapStore();
   const { assets } = assetInfoStore();
   const { order } = swapInProgress;
-  const { orderProgress, status } = useOrderStatus(order);
+  const { orderProgress, status } = useOrderStatus();
 
   const { depositAddress, inputAsset, outputAsset, btcAddress } =
     useMemo(() => {

@@ -1,10 +1,11 @@
 import { OrderStatus, ParseOrderStatus } from "@gardenfi/core";
-import { MatchedOrder } from "@gardenfi/orderbook";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useEffect, useMemo, useState } from "react";
 import { blockNumberStore } from "../store/blockNumberStore";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { getAssetFromSwap } from "../utils/utils";
+import { swapStore } from "../store/swapStore";
+import { mergeOrders } from "../utils/mergeOrder";
 
 export enum SimplifiedOrderStatus {
   orderCreated = "Order created",
@@ -24,12 +25,13 @@ export type OrderProgress = {
   [key in 1 | 2 | 3 | 4]: Status;
 };
 
-export const useOrderStatus = (_order: MatchedOrder | null) => {
+export const useOrderStatus = () => {
   const [status, setStatus] = useState<OrderStatus>();
-  const [order, setOrder] = useState(_order);
   const { orderBook } = useGarden();
   const { fetchAndSetBlockNumbers, blockNumbers } = blockNumberStore();
   const { assets } = assetInfoStore();
+  const { swapInProgress, setSwapInProgress } = swapStore();
+  const { order } = swapInProgress;
 
   const outputAsset = order && getAssetFromSwap(order.destination_swap, assets);
   const initBlockNumber = Number(order?.source_swap.initiate_block_number);
@@ -113,7 +115,7 @@ export const useOrderStatus = (_order: MatchedOrder | null) => {
           },
           3: {
             title: SimplifiedOrderStatus.redeeming + outputAsset?.symbol,
-            status: "pending",
+            status: "inProgress",
           },
           4: {
             title: SimplifiedOrderStatus.swapCompleted,
@@ -187,19 +189,18 @@ export const useOrderStatus = (_order: MatchedOrder | null) => {
       if (!order?.create_order.create_id) return;
       const o = await orderBook.getOrder(order.create_order.create_id, true);
       if (o.error) return;
-      setOrder(o.val);
+
+      setSwapInProgress({
+        isOpen: true,
+        order: mergeOrders(order, o.val),
+      });
     };
 
     fetchOrderAndBlockNumbers();
     const intervalId = setInterval(fetchOrderAndBlockNumbers, 5000);
 
     return () => clearInterval(intervalId);
-  }, [
-    fetchAndSetBlockNumbers,
-    order?.create_order.create_id,
-    orderBook,
-    status,
-  ]);
+  }, [fetchAndSetBlockNumbers, order, orderBook, status, setSwapInProgress]);
 
   useEffect(() => {
     if (!order || !blockNumbers) return;

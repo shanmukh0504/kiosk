@@ -22,18 +22,11 @@ export const OrderStatus: FC<OrderStatusProps> = ({ orderProgress }) => {
     Object.values(orderProgress).filter((step) => step.status === "completed")
       .length;
 
-  const currentStatus = Object.values(orderProgress).reduce<string>(
-    (acc, step, index, array) => {
-      if (
-        index === array.length - 1 ||
-        (step.status === "completed" && array[index + 1].status !== "completed")
-      ) {
-        acc = step.title;
-      }
-      return acc;
-    },
-    ""
-  );
+  const currentStatus =
+    Object.values(orderProgress).find(
+      (_, index, array) =>
+        index === array.length - 1 || array[index + 1].status === "pending"
+    )?.title || "";
 
   return (
     <div className="flex flex-col justify-between bg-white rounded-2xl p-4">
