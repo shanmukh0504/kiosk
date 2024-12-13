@@ -111,7 +111,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({ orderProgress }) => {
           <Typography size="h3" weight="bold">
             {currentStatus}
           </Typography>
-          <Typography size="h5" weight="bold">
+          <Typography size="h5" weight="bold" className="my-auto">
             {completedSteps} of {NoOfSteps}
           </Typography>
         </div>
