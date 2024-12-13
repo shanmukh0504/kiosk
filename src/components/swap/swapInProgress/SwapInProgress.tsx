@@ -66,7 +66,10 @@ export const SwapInProgress = () => {
       };
     }, [inputAsset, order, outputAsset]);
 
-  const fees = inputAmountPrice.minus(outputAmountPrice).toFixed(3);
+  const fees = BigNumber.maximum(
+    inputAmountPrice.minus(outputAmountPrice),
+    0
+  ).toFixed(3);
 
   const goBack = useCallback(
     () => closeSwapInProgress(),
@@ -122,6 +125,7 @@ export const SwapInProgress = () => {
         filledAmount={filledAmount}
         amountToFill={amountToFill}
         btcAddress={btcAddress}
+        outputAsset={outputAsset}
       />
     </div>
   ) : (

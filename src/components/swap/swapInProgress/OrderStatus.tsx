@@ -88,7 +88,12 @@ export const OrderStatus: FC<OrderStatusProps> = ({ order }) => {
                 {step.status === "pending" && (
                   <div className="w-2 h-2 border-[1px] border-dark-grey rounded-full -translate-x-[4.5px]" />
                 )}
-                <Typography size="h3">{step.title}</Typography>
+                <Typography
+                  size="h3"
+                  weight={currentStatus === step.title ? "bold" : "medium"}
+                >
+                  {step.title}
+                </Typography>
               </li>
             ))}
         </ul>

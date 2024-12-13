@@ -176,10 +176,8 @@ export const useOrderStatus = (_order: MatchedOrder | null) => {
 
     const fetchOrderAndBlockNumbers = async () => {
       await fetchAndSetBlockNumbers();
-      const o = await orderBook.getOrder(
-        order?.create_order.create_id ?? "",
-        true
-      );
+      if (!order?.create_order.create_id) return;
+      const o = await orderBook.getOrder(order.create_order.create_id, true);
       if (o.error) return;
       setOrder(o.val);
     };

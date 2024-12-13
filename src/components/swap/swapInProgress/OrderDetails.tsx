@@ -5,12 +5,14 @@ import {
 } from "@gardenfi/garden-book";
 import { useState, FC } from "react";
 import { getTrimmedAddress } from "../../../utils/getTrimmedAddress";
+import { Asset } from "@gardenfi/orderbook";
 
 type OrderDetailsProps = {
   fees: string;
   filledAmount: number;
   amountToFill: number;
   btcAddress?: string;
+  outputAsset: Asset | null;
 };
 
 export const OrderDetails: FC<OrderDetailsProps> = ({
@@ -18,6 +20,7 @@ export const OrderDetails: FC<OrderDetailsProps> = ({
   filledAmount,
   amountToFill,
   btcAddress,
+  outputAsset,
 }) => {
   const [dropdown, setDropdown] = useState(false);
 
@@ -53,7 +56,7 @@ export const OrderDetails: FC<OrderDetailsProps> = ({
               Amount
             </Typography>
             <Typography size="h4" weight="medium">
-              {filledAmount} / {amountToFill} BTC
+              {filledAmount} / {amountToFill} {outputAsset?.symbol}
             </Typography>
           </div>
           {btcAddress && (
