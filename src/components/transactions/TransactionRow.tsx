@@ -108,10 +108,7 @@ export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
   if (!sendAsset || !receiveAsset) return null;
 
   return (
-    <div
-      className="flex flex-col gap-1 pb-4 cursor-pointer"
-      onClick={handleTransactionClick}
-    >
+    <div className="flex flex-col gap-1 pb-4">
       <Typography
         size="h5"
         className="bg-white/50 w-fit p-1 px-2 rounded-full cursor-pointer mb-1"
@@ -121,19 +118,24 @@ export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
         {getTrimmedAddress(create_order.create_id, 4, 3)}
       </Typography>
       <Tooltip id={idTooltip} place="top" content={idTooltipContent} />
-      <SwapInfo
-        sendAsset={sendAsset}
-        receiveAsset={receiveAsset}
-        sendAmount={sendAmount}
-        receiveAmount={receiveAmount}
-      />
-      <div className="flex justify-between">
-        <Typography size="h5" weight="medium">
-          {statusLabel}
-        </Typography>
-        <Typography size="h5" weight="medium">
-          {dayDifference}
-        </Typography>
+      <div
+        className="flex flex-col gap-1 cursor-pointer"
+        onClick={handleTransactionClick}
+      >
+        <SwapInfo
+          sendAsset={sendAsset}
+          receiveAsset={receiveAsset}
+          sendAmount={sendAmount}
+          receiveAmount={receiveAmount}
+        />
+        <div className="flex justify-between">
+          <Typography size="h5" weight="medium">
+            {statusLabel}
+          </Typography>
+          <Typography size="h5" weight="medium">
+            {dayDifference}
+          </Typography>
+        </div>
       </div>
     </div>
   );
