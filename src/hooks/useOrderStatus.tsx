@@ -173,7 +173,14 @@ export const useOrderStatus = (_order: MatchedOrder | null) => {
   }, [confirmationsString, outputAsset?.symbol, status]);
 
   useEffect(() => {
-    if (!orderBook) return;
+    if (
+      !orderBook ||
+      status === OrderStatus.Redeemed ||
+      status === OrderStatus.CounterPartyRedeemDetected ||
+      status === OrderStatus.CounterPartyRedeemed ||
+      status === OrderStatus.Completed
+    )
+      return;
 
     const fetchOrderAndBlockNumbers = async () => {
       await fetchAndSetBlockNumbers();
@@ -187,7 +194,12 @@ export const useOrderStatus = (_order: MatchedOrder | null) => {
     const intervalId = setInterval(fetchOrderAndBlockNumbers, 5000);
 
     return () => clearInterval(intervalId);
-  }, [fetchAndSetBlockNumbers, order?.create_order.create_id, orderBook]);
+  }, [
+    fetchAndSetBlockNumbers,
+    order?.create_order.create_id,
+    orderBook,
+    status,
+  ]);
 
   useEffect(() => {
     if (!order || !blockNumbers) return;
