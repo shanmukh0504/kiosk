@@ -24,9 +24,12 @@ export const TransactionsSkeleton: FC = () => {
   );
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col">
       {Array.from({ length: 4 }).map((_, index) => (
-        <div key={index} className="bg-white/50 rounded-2xl p-4">
+        <div
+          key={index}
+          className={`bg-white/50 p-4 ${index === 3 ? "rounded-b-2xl" : ""}`}
+        >
           {renderSkeletonRow()}
         </div>
       ))}
