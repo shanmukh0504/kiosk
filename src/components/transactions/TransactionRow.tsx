@@ -18,6 +18,7 @@ import { useGarden } from "@gardenfi/react-hooks";
 type TransactionProps = {
   order: MatchedOrder;
   status?: OrderStatus;
+  isLast: boolean;
 };
 
 enum StatusLabel {
@@ -55,7 +56,11 @@ const getOrderStatusLabel = (status: OrderStatus) => {
   }
 };
 
-export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
+export const TransactionRow: FC<TransactionProps> = ({
+  order,
+  status,
+  isLast,
+}) => {
   const [idTooltipContent, setIdTooltipContent] = useState("Copy");
   const idTooltip = useId();
   const { create_order, source_swap, destination_swap } = order;
@@ -120,7 +125,11 @@ export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
   if (!sendAsset || !receiveAsset) return null;
 
   return (
-    <div className="flex flex-col gap-1 pb-4">
+    <div
+      className={`flex flex-col gap-1 p-4 hover:bg-off-white ${
+        isLast ? "rounded-b-2xl" : ""
+      }`}
+    >
       <Typography
         size="h5"
         className="bg-white/50 w-fit p-1 px-2 rounded-full mb-1 cursor-pointer"

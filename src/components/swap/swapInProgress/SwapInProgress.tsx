@@ -4,7 +4,6 @@ import { SwapInfo } from "../../../common/SwapInfo";
 import { getTrimmedAddress } from "../../../utils/getTrimmedAddress";
 import { swapStore } from "../../../store/swapStore";
 import { formatAmount, getAssetFromSwap } from "../../../utils/utils";
-import BigNumber from "bignumber.js";
 import { assetInfoStore } from "../../../store/assetInfoStore";
 import QRCode from "react-qr-code";
 import { OrderStatus } from "./OrderStatus";
@@ -20,59 +19,19 @@ export const SwapInProgress = () => {
   const { order } = swapInProgress;
   const { orderProgress, status } = useOrderStatus();
 
-  const { depositAddress, inputAsset, outputAsset, btcAddress } =
-    useMemo(() => {
-      return {
-        depositAddress:
-          order && isBitcoin(order?.source_swap.chain)
-            ? order.source_swap.swap_id
-            : "",
-        inputAsset: order && getAssetFromSwap(order.source_swap, assets),
-        outputAsset: order && getAssetFromSwap(order.destination_swap, assets),
-        btcAddress: order
-          ? order.create_order.additional_data.bitcoin_optional_recipient
+  const { depositAddress, inputAsset, outputAsset } = useMemo(() => {
+    return {
+      depositAddress:
+        order && isBitcoin(order?.source_swap.chain)
+          ? order.source_swap.swap_id
           : "",
-      };
-    }, [assets, order]);
-
-  const { inputAmountPrice, outputAmountPrice, amountToFill, filledAmount } =
-    useMemo(() => {
-      return {
-        inputAmountPrice: order
-          ? new BigNumber(order.source_swap.amount)
-              .dividedBy(10 ** (inputAsset?.decimals ?? 0))
-              .multipliedBy(
-                order.create_order.additional_data.input_token_price
-              )
-          : new BigNumber(0),
-        outputAmountPrice: order
-          ? new BigNumber(order.destination_swap.amount)
-              .dividedBy(10 ** (outputAsset?.decimals ?? 0))
-              .multipliedBy(
-                order.create_order.additional_data.output_token_price
-              )
-          : new BigNumber(0),
-        amountToFill: order
-          ? Number(
-              new BigNumber(order.source_swap.amount)
-                .dividedBy(10 ** (inputAsset?.decimals ?? 0))
-                .toFixed(inputAsset?.decimals ?? 0)
-            )
-          : 0,
-        filledAmount: order
-          ? Number(
-              new BigNumber(order.source_swap.filled_amount)
-                .dividedBy(10 ** (inputAsset?.decimals ?? 0))
-                .toFixed(inputAsset?.decimals ?? 0)
-            )
-          : 0,
-      };
-    }, [inputAsset, order, outputAsset]);
-
-  const fees = BigNumber.maximum(
-    inputAmountPrice.minus(outputAmountPrice),
-    0
-  ).toFixed(3);
+      inputAsset: order && getAssetFromSwap(order.source_swap, assets),
+      outputAsset: order && getAssetFromSwap(order.destination_swap, assets),
+      btcAddress: order
+        ? order.create_order.additional_data.bitcoin_optional_recipient
+        : "",
+    };
+  }, [assets, order]);
 
   const goBack = useCallback(
     () => closeSwapInProgress(),
@@ -126,13 +85,7 @@ export const SwapInProgress = () => {
           </div>
         )}
       <OrderStatus orderProgress={orderProgress} />
-      <OrderDetails
-        fees={fees}
-        filledAmount={filledAmount}
-        amountToFill={amountToFill}
-        btcAddress={btcAddress}
-        inputAsset={inputAsset}
-      />
+      <OrderDetails order={order} />
     </div>
   ) : (
     <></>
