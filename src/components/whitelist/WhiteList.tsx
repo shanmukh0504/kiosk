@@ -20,7 +20,7 @@ type WhiteListProps = {
 
 const WhitelistComponent: FC<Omit<WhiteListProps, "open">> = ({ onClose }) => {
   const { disconnect } = useEVMWallet();
-  const { clearSwapState } = swapStore();
+  const { clear } = swapStore();
   const { disconnect: btcDisconnect } = useBitcoinWallet();
   const { clearBalances } = balanceStore();
   const image = useMemo(
@@ -32,7 +32,7 @@ const WhitelistComponent: FC<Omit<WhiteListProps, "open">> = ({ onClose }) => {
     window.open("https://waitlist.garden.finance", "_blank");
 
   const handleDisconnect = () => {
-    clearSwapState();
+    clear();
     disconnect();
     onClose();
     btcDisconnect();

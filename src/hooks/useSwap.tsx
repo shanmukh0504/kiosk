@@ -263,9 +263,10 @@ export const useSwap = () => {
         receiveAmount: outputAmountInDecimals,
         additionalData,
       });
-      setIsSwapping(false);
+
       if (res.error) {
         console.error("failed to create order ❌", res.error);
+        setIsSwapping(false);
         return;
       }
 
@@ -277,19 +278,22 @@ export const useSwap = () => {
           order.source_swap.swap_id,
           Number(order.source_swap.amount)
         );
-        if (bitcoinRes.error)
+        if (bitcoinRes.error) {
           console.error("failed to send bitcoin ❌", bitcoinRes.error);
+          setIsSwapping(false);
+        }
         const updateOrder = {
           ...order,
           source_swap: {
             ...order.source_swap,
-            initiate_tx_hash: bitcoinRes.val,
+            initiate_tx_hash: bitcoinRes.val ?? "",
           },
         };
         setSwapInProgress({ isOpen: true, order: updateOrder });
         clearSwapState();
         return;
       }
+      setIsSwapping(false);
       setSwapInProgress({ isOpen: true, order: res.val });
       clearSwapState();
     } catch (error) {

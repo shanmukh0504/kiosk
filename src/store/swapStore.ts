@@ -39,6 +39,7 @@ type SwapState = {
   setIsFetchingQuote: (isFetchingQuote: FetchingQuote) => void;
   closeSwapInProgress: () => void;
   clearSwapState: () => void;
+  clear: () => void;
 };
 
 const BTC = {
@@ -137,6 +138,26 @@ export const swapStore = create<SwapState>((set) => ({
     set({ swapInProgress: { isOpen: false, order: null } });
   },
   clearSwapState: () => {
+    set({
+      inputAmount: "",
+      outputAmount: "",
+      btcAddress: "",
+      outputAsset: undefined,
+      inputAsset: BTC,
+      isSwapping: false,
+      strategy: "",
+      tokenPrices: {
+        input: "0",
+        output: "0",
+      },
+      error: "",
+      isFetchingQuote: {
+        input: false,
+        output: false,
+      },
+    });
+  },
+  clear: () => {
     set({
       inputAmount: "",
       outputAmount: "",
