@@ -19,8 +19,9 @@ export const OrderStatus: FC<OrderStatusProps> = ({ orderProgress }) => {
 
   const completedSteps =
     orderProgress &&
-    Object.values(orderProgress).filter((step) => step.status === "completed")
-      .length;
+    Object.values(orderProgress).filter(
+      (step) => step.status === "completed" || step.status === "inProgress"
+    ).length;
 
   const currentStatus =
     Object.values(orderProgress).find(

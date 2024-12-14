@@ -103,8 +103,10 @@ export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
   };
 
   const handleTransactionClick = async () => {
-    setSwapInProgress({ isOpen: true, order });
-    setCloseModal(modalNames.transactions);
+    if (statusLabel !== StatusLabel.Expired) {
+      setSwapInProgress({ isOpen: true, order });
+      setCloseModal(modalNames.transactions);
+    }
 
     if (!isBitcoin(order.source_swap.chain) && status === OrderStatus.Matched) {
       if (!evmInitiate) return;
@@ -121,7 +123,7 @@ export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
     <div className="flex flex-col gap-1 pb-4">
       <Typography
         size="h5"
-        className="bg-white/50 w-fit p-1 px-2 rounded-full cursor-pointer mb-1"
+        className="bg-white/50 w-fit p-1 px-2 rounded-full mb-1 cursor-pointer"
         onClick={handleIdClick}
         data-tooltip-id={idTooltip}
       >
@@ -129,7 +131,9 @@ export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
       </Typography>
       <Tooltip id={idTooltip} place="top" content={idTooltipContent} />
       <div
-        className="flex flex-col gap-1 cursor-pointer"
+        className={`flex flex-col gap-1 ${
+          statusLabel !== StatusLabel.Expired ? "cursor-pointer" : ""
+        }`}
         onClick={handleTransactionClick}
       >
         <SwapInfo
