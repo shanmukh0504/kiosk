@@ -5,6 +5,7 @@ import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
 import BigNumber from "bignumber.js";
 import { getAssetFromSwap } from "../../../utils/utils";
 import { assetInfoStore } from "../../../store/assetInfoStore";
+import { CopyToClipboard } from "../../../common/CopyToClipboard";
 
 type OrderDetailsProps = {
   order: MatchedOrder;
@@ -13,17 +14,25 @@ type OrderDetailsProps = {
 type OrderDetailsRowProps = {
   title: string;
   value: string;
+  copyString?: string;
 };
 
-export const OrderDetailsRow: FC<OrderDetailsRowProps> = ({ title, value }) => {
+export const OrderDetailsRow: FC<OrderDetailsRowProps> = ({
+  title,
+  value,
+  copyString,
+}) => {
   return (
     <div className="flex justify-between">
       <Typography size="h4" weight="medium">
         {title}
       </Typography>
-      <Typography size="h4" weight="medium">
-        {value}
-      </Typography>
+      <div className="flex items-center gap-2">
+        <Typography size="h4" weight="medium">
+          {value}
+        </Typography>
+        {copyString && <CopyToClipboard text={copyString} />}
+      </div>
     </div>
   );
 };
@@ -118,8 +127,9 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
             value={`${filledAmount} / ${amountToFill} ${inputAsset?.symbol}`}
           />
           <OrderDetailsRow
-            title="Order Id"
+            title="Order ID"
             value={getTrimmedAddress(order.create_order.create_id)}
+            copyString={order.create_order.create_id}
           />
           {btcAddress && (
             <OrderDetailsRow
