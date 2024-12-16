@@ -1,6 +1,6 @@
-import { FC } from "react";
+import { FC, HTMLAttributes } from "react";
 
-type AssetChainLogosProps = {
+type AssetChainLogosProps = HTMLAttributes<HTMLDivElement> & {
   tokenLogo?: string;
   chainLogo?: string;
 };
@@ -8,12 +8,14 @@ type AssetChainLogosProps = {
 export const AssetChainLogos: FC<AssetChainLogosProps> = ({
   tokenLogo,
   chainLogo,
+  ...rest
 }) => {
   return (
     <div
       className={`relative flex items-center justify-between h-5 ${
         chainLogo ? "w-[36px]" : "w-5"
       }`}
+      {...rest}
     >
       <img
         src={tokenLogo}
