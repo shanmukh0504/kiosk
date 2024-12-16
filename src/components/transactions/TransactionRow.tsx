@@ -1,4 +1,4 @@
-import { FC, useId, useMemo, useState } from "react";
+import { FC, useMemo } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { SwapInfo } from "../../common/SwapInfo";
 import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
@@ -9,8 +9,6 @@ import {
 } from "../../utils/utils";
 import { OrderStatus } from "@gardenfi/core";
 import { assetInfoStore } from "../../store/assetInfoStore";
-import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
-import { Tooltip } from "../../common/Tooltip";
 import { swapStore } from "../../store/swapStore";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { useGarden } from "@gardenfi/react-hooks";
@@ -61,8 +59,6 @@ export const TransactionRow: FC<TransactionProps> = ({
   status,
   isLast,
 }) => {
-  const [idTooltipContent, setIdTooltipContent] = useState("Copy");
-  const idTooltip = useId();
   const { create_order, source_swap, destination_swap } = order;
   const { assets } = assetInfoStore();
   const { setSwapInProgress } = swapStore();
@@ -98,15 +94,6 @@ export const TransactionRow: FC<TransactionProps> = ({
     [create_order.updated_at]
   );
 
-  const handleIdClick = () => {
-    navigator.clipboard.writeText(create_order.create_id);
-    setIdTooltipContent("Copied");
-
-    setTimeout(() => {
-      setIdTooltipContent("Copy");
-    }, 2000);
-  };
-
   const handleTransactionClick = async () => {
     if (statusLabel !== StatusLabel.Expired) {
       setSwapInProgress({ isOpen: true, order });
@@ -126,25 +113,14 @@ export const TransactionRow: FC<TransactionProps> = ({
 
   return (
     <div
-      className={`flex flex-col gap-1 p-4 hover:bg-off-white ${
-        isLast ? "rounded-b-2xl" : ""
+      className={`flex flex-col gap-1 p-4  ${isLast ? "rounded-b-2xl" : ""} ${
+        statusLabel !== StatusLabel.Expired
+          ? "cursor-pointer hover:bg-white/50"
+          : ""
       }`}
+      onClick={handleTransactionClick}
     >
-      <Typography
-        size="h5"
-        className="bg-white/50 w-fit p-1 px-2 rounded-full mb-1 cursor-pointer"
-        onClick={handleIdClick}
-        data-tooltip-id={idTooltip}
-      >
-        {getTrimmedAddress(create_order.create_id, 4, 3)}
-      </Typography>
-      <Tooltip id={idTooltip} place="top" content={idTooltipContent} />
-      <div
-        className={`flex flex-col gap-1 ${
-          statusLabel !== StatusLabel.Expired ? "cursor-pointer" : ""
-        }`}
-        onClick={handleTransactionClick}
-      >
+      <div className={`flex flex-col gap-1 `}>
         <SwapInfo
           sendAsset={sendAsset}
           receiveAsset={receiveAsset}
