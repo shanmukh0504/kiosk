@@ -111,6 +111,7 @@ export const Navbar = () => {
           onClick={handleConnectClick}
           className="ml-auto w-28"
           size="sm"
+          breakpoints={{ md: "md" }}
         >
           {isEVMConnect ? "Connect EVM" : "Connect"}
         </Button>
