@@ -56,7 +56,7 @@ export const Swap = () => {
       const outputAsset =
         assets &&
         assets[
-          generateTokenKey(destination_swap.chain, destination_swap.asset)
+        generateTokenKey(destination_swap.chain, destination_swap.asset)
         ];
       if (!inputAsset || !outputAsset) return;
 
@@ -72,7 +72,7 @@ export const Swap = () => {
       if (
         orderInProgress &&
         orderInProgress.create_order.create_id ===
-          order.create_order.create_id &&
+        order.create_order.create_id &&
         action === OrderActions.Redeem &&
         result &&
         isOpen
