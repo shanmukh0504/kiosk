@@ -12,9 +12,8 @@ export NVM_DIR="$HOME/.nvm"
 
 # Step 2: Install Node.js version 18
 echo "Installing Node.js version 18..."
-nvm install 18
-nvm use 18
-
+nvm install 20
+nvm use 20
 # Step 3: Install Yarn
 echo "Installing Yarn..."
 npm install -g yarn
