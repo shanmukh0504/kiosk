@@ -1,4 +1,8 @@
-import { Button, GardenFullLogo, Typography } from "@gardenfi/garden-book";
+import {
+  Button,
+  //  GardenFullLogo,
+  Typography,
+} from "@gardenfi/garden-book";
 import { INTERNAL_ROUTES } from "../../constants/constants";
 import { API } from "../../constants/api";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
@@ -10,6 +14,7 @@ import { isCurrentRoute } from "../../utils/utils";
 import { MobileMenu } from "./MobileMenu";
 import { connectWalletStore } from "../../store/connectWalletStore";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import GardenChristmasLogo from "./../../../public/GardenChristmasLogo.svg";
 
 export const Navbar = () => {
   const [isInitiatingSM, setIsInitiatingSM] = useState(false);
@@ -84,9 +89,15 @@ export const Navbar = () => {
       className={"flex items-center justify-between px-6 sm:px-10 py-6 gap-3"}
     >
       <div className="flex items-center gap-16">
-        <GardenFullLogo
+        {/* <GardenFullLogo
           onClick={handleHomeLogoClick}
           className="cursor-pointer "
+        /> */}
+        <img
+          src={GardenChristmasLogo}
+          alt="Garden Christmas Logo"
+          className="cursor-pointer"
+          onClick={handleHomeLogoClick}
         />
         <div className="hidden sm:flex  sm:items-center gap-12">
           {Object.values(INTERNAL_ROUTES).map((route) => {
