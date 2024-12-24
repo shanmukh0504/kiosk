@@ -37,7 +37,7 @@ export const getDayDifference = (date: string) => {
     return `${hourDifference} hour${hourDifference > 1 ? "s" : ""} ago`;
   if (minuteDifference > 0)
     return `${minuteDifference} minute${minuteDifference > 1 ? "s" : ""} ago`;
-  return "just now";
+  return "Just now";
 };
 
 export const formatAmount = (

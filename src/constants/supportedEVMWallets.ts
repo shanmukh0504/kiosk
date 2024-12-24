@@ -55,9 +55,12 @@ export const WalletLogos: Record<string, string> = {
   metaMaskSDK: "https://garden-finance.imgix.net/wallets/metamask.svg",
   "com.brave.wallet": "https://garden-finance.imgix.net/wallets/brave.svg",
   "app.phantom": "https://garden-finance.imgix.net/wallets/phantom.svg",
+  phantom: "https://garden-finance.imgix.net/wallets/phantom.svg",
   "com.coinbase.wallet":
     "https://garden-finance.imgix.net/wallets/coinbase.svg",
   "com.okex.wallet": "https://garden-finance.imgix.net/wallets/okx.svg",
+  okx: "https://garden-finance.imgix.net/wallets/okx.svg",
+  unisat: "https://garden-finance.imgix.net/wallets/unisat.svg",
   "org.uniswap.app": "https://garden-finance.imgix.net/wallets/uniswap.svg",
   injected: "https://garden-finance.imgix.net/wallets/injected.svg",
 };
