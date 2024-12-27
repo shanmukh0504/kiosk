@@ -1,4 +1,4 @@
-import { MaxUint256 } from "@ethersproject/constants";
+import { maxInt256 } from "viem";
 import { StakingPosition } from "../store/stakeStore";
 import BigNumber from "bignumber.js";
 
@@ -38,7 +38,7 @@ export const DURATION_MAP = {
   12: { votes: 2, lockDuration: 365 },
   24: { votes: 3, lockDuration: 730 },
   48: { votes: 4, lockDuration: 1460 },
-  INFINITE: { votes: 7, lockDuration: MaxUint256 },
+  INFINITE: { votes: 7, lockDuration: maxInt256 },
 };
 
 export type DURATION = keyof typeof DURATION_MAP;

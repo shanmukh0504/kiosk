@@ -10,7 +10,7 @@ import {
   STAKING_CONFIG,
 } from "../constants/stake";
 import { checkAllowanceAndApprove } from "@gardenfi/utils";
-import { MaxUint256 } from "@ethersproject/constants";
+import { maxInt256 } from "viem";
 
 export const checkAllowanceApproveSeed = async (
   inputAmount: string,
@@ -36,7 +36,7 @@ export const checkAllowanceApproveSeed = async (
     const stakeUnits = Math.floor(stakeAmount / MIN_DELEGATE_STAKE);
     const lockDuration =
       selectedDuration === INFINITE
-        ? MaxUint256
+        ? maxInt256
         : DURATION_MAP[selectedDuration].lockDuration * ETH_BLOCKS_PER_DAY;
 
     return {
