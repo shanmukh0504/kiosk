@@ -11,9 +11,9 @@ import { Tooltip } from "../../common/Tooltip";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { connectWalletStore } from "../../store/connectWalletStore";
 import { swapStore } from "../../store/swapStore";
 import { balanceStore } from "../../store/balanceStore";
+import { modalNames, modalStore } from "../../store/modalStore";
 
 type AddressProps = {
   address: string;
@@ -60,7 +60,7 @@ type AddressMenuProps = {
 export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const { address, disconnect } = useEVMWallet();
   const { account: btcAddress, disconnect: btcDisconnect } = useBitcoinWallet();
-  const { setOpenBTCwallets } = connectWalletStore();
+  const { setOpenModal } = modalStore();
   const { clear } = swapStore();
   const { clearBalances } = balanceStore();
   const addTooltipId = useId();
@@ -82,7 +82,9 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
 
   const handleBTCWalletClick = () => {
     onClose();
-    setOpenBTCwallets();
+    setOpenModal(modalNames.connectWallet, {
+      isBTCWallets: true,
+    });
   };
 
   return (

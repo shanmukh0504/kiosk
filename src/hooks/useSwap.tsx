@@ -12,7 +12,6 @@ import { useBalances } from "./useBalances";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 
 export const useSwap = () => {
-  const { inputTokenBalance } = useBalances();
   const {
     inputAmount,
     outputAmount,
@@ -34,6 +33,7 @@ export const useSwap = () => {
     clearSwapState,
     setBtcAddress,
   } = swapStore();
+  const { tokenBalance: inputTokenBalance } = useBalances(inputAsset);
   const { strategies } = assetInfoStore();
   const { address } = useEVMWallet();
   const { swapAndInitiate, getQuote } = useGarden();

@@ -9,13 +9,28 @@ export const modalNames = {
   stakeSeed: "stakeSeed",
 } as const;
 
+export type ModalData = {
+  connectWallet: { isBTCWallets: boolean };
+  stakeSeed: {
+    isStake: boolean;
+    isExtend: boolean;
+  };
+  transactions: undefined;
+  initializeSM: undefined;
+  whiteList: undefined;
+  assetList: undefined;
+};
+
 export type ModalName = keyof typeof modalNames;
 
 type ModalState = {
   modalName: {
     [key in ModalName]: boolean;
   };
-  setOpenModal: (name: ModalName) => void;
+  modalData: {
+    [key in ModalName]?: ModalData[key];
+  };
+  setOpenModal: <T extends ModalName>(name: T, data?: ModalData[T]) => void;
   setCloseModal: (name: ModalName) => void;
 };
 
@@ -28,14 +43,17 @@ export const modalStore = create<ModalState>((set) => ({
     assetList: false,
     stakeSeed: false,
   },
-  setOpenModal: (name) => {
+  modalData: {},
+  setOpenModal: (name, data) => {
     set((state) => ({
       modalName: { ...state.modalName, [name]: true },
+      modalData: { ...state.modalData, [name]: data },
     }));
   },
   setCloseModal: (name) => {
     set((state) => ({
       modalName: { ...state.modalName, [name]: false },
+      modalData: { ...state.modalData, [name]: undefined },
     }));
   },
 }));

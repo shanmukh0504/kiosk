@@ -45,7 +45,7 @@ export type DURATION = keyof typeof DURATION_MAP;
 export const WITHDRAWAL_TIME_LIMIT = 5;
 export const SEED_FOR_MINTING_NFT = 21000;
 export const MIN_WITHDRAWAL_AMOUNT = "10000000000000000";
-export const MIN_DELEGATE_STAKE = 2100;
+export const MIN_STAKE_AMOUNT = 2100;
 export const MIN_DEPOSIT = 100;
 export const TEN_THOUSAND = 10000;
 
@@ -58,7 +58,7 @@ export const isPermanentStake = (stakePos: StakingPosition) => {
 };
 
 export const getNearestMultiple = (value: number) =>
-  Math.floor(value / MIN_DELEGATE_STAKE) * MIN_DELEGATE_STAKE;
+  Math.floor(value / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT;
 
 export const isDurationExceeded = (
   time: string,

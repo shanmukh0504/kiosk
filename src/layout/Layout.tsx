@@ -7,6 +7,7 @@ import { Modal } from "../components/modal/Modal";
 import { Notification } from "../common/Notification";
 // @ts-expect-error - Package exports types but they cannot be resolved due to package.json exports configuration
 import { SnowOverlay } from "react-snow-overlay";
+import { ViewPortListener } from "../common/ViewPortListener";
 
 type LayoutProps = {
   children: ReactNode;
@@ -19,6 +20,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
     <div className={`${theme} relative overflow-hidden bg-opacity-50`}>
       <div className="absolute inset-0 z-[-30] bg-primary"></div>
       <Orb />
+      <ViewPortListener />
       <div className="relative z-10 bg-white bg-opacity-50">
         <Modal />
         <div className="min-h-[100vh]">

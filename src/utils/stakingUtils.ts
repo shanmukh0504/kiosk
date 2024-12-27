@@ -5,7 +5,7 @@ import {
   DURATION_MAP,
   ETH_BLOCKS_PER_DAY,
   INFINITE,
-  MIN_DELEGATE_STAKE,
+  MIN_STAKE_AMOUNT,
   SEED_FOR_MINTING_NFT,
   STAKING_CONFIG,
 } from "../constants/stake";
@@ -33,7 +33,7 @@ export const checkAllowanceApproveSeed = async (
     const contract = shouldMintNFT
       ? config.FLOWER_CONTRACT_ADDRESS
       : config.STAKING_CONTRACT_ADDRESS;
-    const stakeUnits = Math.floor(stakeAmount / MIN_DELEGATE_STAKE);
+    const stakeUnits = Math.floor(stakeAmount / MIN_STAKE_AMOUNT);
     const lockDuration =
       selectedDuration === INFINITE
         ? maxInt256

@@ -1,16 +1,9 @@
 import { Button, Modal } from "@gardenfi/garden-book";
 import { useGarden } from "@gardenfi/react-hooks";
 import { FC } from "react";
+import { ModalProps } from "./Modal";
 
-type InitializeSMModalProps = {
-  open: boolean;
-  onClose: () => void;
-};
-
-export const InitializeSMModal: FC<InitializeSMModalProps> = ({
-  open,
-  onClose,
-}) => {
+export const InitializeSMModal: FC<ModalProps> = ({ open, onClose }) => {
   const { initializeSecretManager, secretManager } = useGarden();
 
   const handleInitializeSM = async () => {

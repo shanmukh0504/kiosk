@@ -1,14 +1,14 @@
-import { useViewport } from "../hooks/useViewport";
+import { viewPortStore } from "../store/viewPortStore";
 import { getCurrentTheme } from "../utils/utils";
 
 const ORB_COLORS = {
   swap: "#9BC8FF",
   quests: "#FFD89C",
-  stake: "#E36492"
+  stake: "#E36492",
 };
 
 export const Orb = () => {
-  const { width } = useViewport();
+  const { width } = viewPortStore();
   const dimension = width > 1600 ? "170%" : "2024";
   const orbColor = ORB_COLORS[getCurrentTheme()];
 

@@ -14,7 +14,7 @@ const SEED: Asset = {
   chain: "arbitrum_sepolia",
 };
 
-interface StakeStoreState {
+type StakeStoreState = {
   asset: Asset;
   inputAmount: string;
   selectedDuration: DURATION;
@@ -36,7 +36,7 @@ interface StakeStoreState {
   setTotalStakedAmount: (value: number) => void;
   setTotalVotes: (value: number) => void;
   setRewards: (value: number) => void;
-}
+};
 
 export enum StakePositionStatus {
   staked = "staked",

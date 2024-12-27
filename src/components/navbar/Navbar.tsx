@@ -12,16 +12,16 @@ import { useGarden } from "@gardenfi/react-hooks";
 import { OrderStatus } from "@gardenfi/core";
 import { isCurrentRoute } from "../../utils/utils";
 import { MobileMenu } from "./MobileMenu";
-import { connectWalletStore } from "../../store/connectWalletStore";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import GardenChristmasLogo from "./../../../public/GardenChristmasLogo.svg";
+import { modalNames, modalStore } from "../../store/modalStore";
 
 export const Navbar = () => {
   const [isInitiatingSM, setIsInitiatingSM] = useState(false);
   const [shouldInitiateSM, setShouldInitiateSM] = useState(false);
 
   const { isConnected, address } = useEVMWallet();
-  const { setIsOpen } = connectWalletStore();
+  const { setOpenModal } = modalStore();
   const { account } = useBitcoinWallet();
   const { pendingOrders, isExecuting, initializeSecretManager, secretManager } =
     useGarden();
@@ -37,7 +37,7 @@ export const Navbar = () => {
   const handleConnectClick = () => {
     if (isFullyConnected) return;
     if (isConnected && shouldInitiateSM) handleInitializeSM();
-    else setIsOpen();
+    else setOpenModal(modalNames.connectWallet);
   };
 
   const handleInitializeSM = useCallback(async () => {

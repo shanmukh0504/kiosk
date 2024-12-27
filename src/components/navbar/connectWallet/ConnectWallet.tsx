@@ -1,14 +1,7 @@
-import {
-  ArrowLeftIcon,
-  CloseIcon,
-  Modal,
-  Typography,
-} from "@gardenfi/garden-book";
-import React, { useState, FC, useMemo } from "react";
+import { ArrowLeftIcon, CloseIcon, Typography } from "@gardenfi/garden-book";
+import React, { useState, useMemo } from "react";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { Connector } from "wagmi";
-import { BottomSheet } from "../../../common/BottomSheet";
-import { useViewport } from "../../../hooks/useViewport";
 import { WalletLogos } from "../../../constants/supportedEVMWallets";
 import {
   IInjectedBitcoinProvider,
@@ -20,17 +13,9 @@ import { MultiWalletConnection } from "./MultiWalletConnection";
 import { handleEVMConnect } from "./handleConnect";
 import { modalNames, modalStore } from "../../../store/modalStore";
 import { authStore } from "../../../store/authStore";
+import { ModalProps } from "../../modal/Modal";
 
-type ConnectWalletProps = {
-  open: boolean;
-  onClose: () => void;
-  isBTCWallets: boolean;
-};
-
-export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
-  isBTCWallets,
-  onClose,
-}) => {
+export const ConnectWallet: React.FC<ModalProps> = ({ onClose }) => {
   const [connectingWallet, setConnectingWallet] = useState<string | null>(null);
   const [multiWalletConnector, setMultiWalletConnector] = useState<{
     evm: Connector;
@@ -38,6 +23,8 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
   }>();
   const { connectors, connectAsync, connector, address } = useEVMWallet();
   const { availableWallets, connect, provider } = useBitcoinWallet();
+  const { modalData } = modalStore();
+  const isBTCWallets = !!modalData.connectWallet?.isBTCWallets;
 
   const { setOpenModal } = modalStore();
   const { setAuth } = authStore();
@@ -193,41 +180,6 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
           .
         </Typography>
       </div>
-    </>
-  );
-};
-
-export const ConnectWallet: FC<ConnectWalletProps> = ({
-  open,
-  onClose,
-  isBTCWallets,
-}) => {
-  const { isMobile } = useViewport();
-
-  return (
-    <>
-      {isMobile ? (
-        <BottomSheet open={open} onOpenChange={onClose}>
-          <ConnectWalletComponent
-            open={open}
-            onClose={onClose}
-            isBTCWallets={isBTCWallets}
-          />
-        </BottomSheet>
-      ) : (
-        <Modal open={open}>
-          <Modal.Children
-            opacityLevel={"medium"}
-            className="flex flex-col gap-6 backdrop-blur-[20px] rounded-2xl w-[600px] p-6"
-          >
-            <ConnectWalletComponent
-              open={open}
-              onClose={onClose}
-              isBTCWallets={isBTCWallets}
-            />
-          </Modal.Children>
-        </Modal>
-      )}
     </>
   );
 };
