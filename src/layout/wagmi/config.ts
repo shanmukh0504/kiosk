@@ -1,3 +1,4 @@
+import { citreaTestnet } from "@gardenfi/core";
 import { http, createConfig } from "wagmi";
 import {
   arbitrum,
@@ -26,6 +27,7 @@ export const SupportedChains = [
   baseSepolia,
   base,
   berachainTestnetbArtio,
+  citreaTestnet,
 ] as const;
 
 export const config = createConfig({
@@ -43,5 +45,6 @@ export const config = createConfig({
     [baseSepolia.id]: http(),
     [base.id]: http(),
     [berachainTestnetbArtio.id]: http(),
+    [citreaTestnet.id]: http(),
   },
 });

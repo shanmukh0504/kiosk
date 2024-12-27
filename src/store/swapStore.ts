@@ -2,23 +2,44 @@ import { create } from "zustand";
 import { IOType, network } from "../constants/constants";
 import { Asset, Chains, MatchedOrder } from "@gardenfi/orderbook";
 
+export type TokenPrices = {
+  input: string;
+  output: string;
+};
+
+export type FetchingQuote = {
+  input: boolean;
+  output: boolean;
+};
+
 type SwapState = {
   inputAsset?: Asset;
   outputAsset?: Asset;
   inputAmount: string;
   outputAmount: string;
   btcAddress: string;
-  btcInitModal: { isOpen: boolean; order: MatchedOrder | null };
+  swapInProgress: { isOpen: boolean; order: MatchedOrder | null };
+  isSwapping: boolean;
+  strategy: string;
+  tokenPrices: TokenPrices;
+  error: string;
+  isFetchingQuote: FetchingQuote;
+  setTokenPrices: (tokenPrices: TokenPrices) => void;
+  setIsSwapping: (isSwapping: boolean) => void;
+  setStrategy: (strategy: string) => void;
   setAsset: (ioType: IOType, asset: Asset) => void;
   setAmount: (ioType: IOType, amount: string) => void;
   setBtcAddress: (btcAddress: string) => void;
   swapAssets: () => void;
-  setShowConfirmSwap: (confirmSwap: {
+  setSwapInProgress: (confirmSwap: {
     isOpen: boolean;
     order: MatchedOrder;
   }) => void;
-  closeBTCInitModal: () => void;
+  setError: (error: string) => void;
+  setIsFetchingQuote: (isFetchingQuote: FetchingQuote) => void;
+  closeSwapInProgress: () => void;
   clearSwapState: () => void;
+  clear: () => void;
 };
 
 const BTC = {
@@ -36,9 +57,20 @@ export const swapStore = create<SwapState>((set) => ({
   inputAmount: "",
   outputAmount: "",
   btcAddress: "",
-  btcInitModal: {
+  swapInProgress: {
     isOpen: false,
     order: null,
+  },
+  isSwapping: false,
+  strategy: "",
+  tokenPrices: {
+    input: "0",
+    output: "0",
+  },
+  error: "",
+  isFetchingQuote: {
+    input: false,
+    output: false,
   },
   setAsset: (ioType, asset) => {
     set((state) => ({
@@ -78,23 +110,72 @@ export const swapStore = create<SwapState>((set) => ({
       };
     });
   },
-  setShowConfirmSwap: (btcInitModal) => {
+  setSwapInProgress: (swapInProgress) => {
     set(
       (state) =>
         (state = {
           ...state,
-          btcInitModal,
+          swapInProgress,
         })
     );
   },
-  closeBTCInitModal: () => {
-    set({ btcInitModal: { isOpen: false, order: null } });
+  setIsSwapping: (isSwapping) => {
+    set({ isSwapping });
+  },
+  setStrategy: (strategy) => {
+    set({ strategy });
+  },
+  setTokenPrices: (tokenPrices) => {
+    set({ tokenPrices });
+  },
+  setError: (error) => {
+    set({ error });
+  },
+  setIsFetchingQuote: (isFetchingQuote) => {
+    set({ isFetchingQuote });
+  },
+  closeSwapInProgress: () => {
+    set({ swapInProgress: { isOpen: false, order: null } });
   },
   clearSwapState: () => {
     set({
       inputAmount: "",
       outputAmount: "",
       btcAddress: "",
+      outputAsset: undefined,
+      inputAsset: BTC,
+      isSwapping: false,
+      strategy: "",
+      tokenPrices: {
+        input: "0",
+        output: "0",
+      },
+      error: "",
+      isFetchingQuote: {
+        input: false,
+        output: false,
+      },
+    });
+  },
+  clear: () => {
+    set({
+      inputAmount: "",
+      outputAmount: "",
+      btcAddress: "",
+      swapInProgress: { isOpen: false, order: null },
+      outputAsset: undefined,
+      inputAsset: BTC,
+      isSwapping: false,
+      strategy: "",
+      tokenPrices: {
+        input: "0",
+        output: "0",
+      },
+      error: "",
+      isFetchingQuote: {
+        input: false,
+        output: false,
+      },
     });
   },
 }));
