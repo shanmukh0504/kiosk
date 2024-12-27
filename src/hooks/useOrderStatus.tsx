@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { blockNumberStore } from "../store/blockNumberStore";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { getAssetFromSwap } from "../utils/utils";
-import { swapStore } from "../store/swapStore";
 import { mergeOrders } from "../utils/mergeOrder";
+import { swapInProgressStore } from "../store/swapInProgressStore";
 
 export enum SimplifiedOrderStatus {
   orderCreated = "Order created",
@@ -30,8 +30,7 @@ export const useOrderStatus = () => {
   const { orderBook } = useGarden();
   const { fetchAndSetBlockNumbers, blockNumbers } = blockNumberStore();
   const { assets } = assetInfoStore();
-  const { swapInProgress, setSwapInProgress } = swapStore();
-  const { order } = swapInProgress;
+  const { order, setOrder } = swapInProgressStore();
 
   const outputAsset = order && getAssetFromSwap(order.destination_swap, assets);
   const initBlockNumber = Number(order?.source_swap.initiate_block_number);
@@ -190,17 +189,14 @@ export const useOrderStatus = () => {
       const o = await orderBook.getOrder(order.create_order.create_id, true);
       if (o.error) return;
 
-      setSwapInProgress({
-        isOpen: true,
-        order: mergeOrders(order, o.val),
-      });
+      setOrder(mergeOrders(order, o.val));
     };
 
     fetchOrderAndBlockNumbers();
     const intervalId = setInterval(fetchOrderAndBlockNumbers, 5000);
 
     return () => clearInterval(intervalId);
-  }, [fetchAndSetBlockNumbers, orderBook, status, setSwapInProgress]);
+  }, [fetchAndSetBlockNumbers, orderBook, status, setOrder, order]);
 
   useEffect(() => {
     if (!order || !blockNumbers) return;

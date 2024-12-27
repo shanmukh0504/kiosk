@@ -2,7 +2,6 @@ import { CloseIcon, Typography } from "@gardenfi/garden-book";
 import { useCallback, useMemo } from "react";
 import { SwapInfo } from "../../../common/SwapInfo";
 import { getTrimmedAddress } from "../../../utils/getTrimmedAddress";
-import { swapStore } from "../../../store/swapStore";
 import { formatAmount, getAssetFromSwap } from "../../../utils/utils";
 import { assetInfoStore } from "../../../store/assetInfoStore";
 import QRCode from "react-qr-code";
@@ -12,11 +11,11 @@ import { isBitcoin } from "@gardenfi/orderbook";
 import { CopyToClipboard } from "../../../common/CopyToClipboard";
 import { useOrderStatus } from "../../../hooks/useOrderStatus";
 import { OrderStatus as OrderStatusEnum } from "@gardenfi/core";
+import { swapInProgressStore } from "../../../store/swapInProgressStore";
 
 export const SwapInProgress = () => {
-  const { swapInProgress, closeSwapInProgress } = swapStore();
+  const { setSwapInProgress, order } = swapInProgressStore();
   const { assets } = assetInfoStore();
-  const { order } = swapInProgress;
   const { orderProgress, status } = useOrderStatus();
 
   const { depositAddress, inputAsset, outputAsset } = useMemo(() => {
@@ -34,8 +33,8 @@ export const SwapInProgress = () => {
   }, [assets, order]);
 
   const goBack = useCallback(
-    () => closeSwapInProgress(),
-    [closeSwapInProgress]
+    () => setSwapInProgress(false),
+    [setSwapInProgress]
   );
 
   return order ? (

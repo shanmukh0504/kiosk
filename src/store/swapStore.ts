@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { IOType, network } from "../constants/constants";
-import { Asset, Chains, MatchedOrder } from "@gardenfi/orderbook";
+import { Asset, Chains } from "@gardenfi/orderbook";
 
 export type TokenPrices = {
   input: string;
@@ -18,7 +18,6 @@ type SwapState = {
   inputAmount: string;
   outputAmount: string;
   btcAddress: string;
-  swapInProgress: { isOpen: boolean; order: MatchedOrder | null };
   isSwapping: boolean;
   strategy: string;
   tokenPrices: TokenPrices;
@@ -31,13 +30,8 @@ type SwapState = {
   setAmount: (ioType: IOType, amount: string) => void;
   setBtcAddress: (btcAddress: string) => void;
   swapAssets: () => void;
-  setSwapInProgress: (confirmSwap: {
-    isOpen: boolean;
-    order: MatchedOrder;
-  }) => void;
   setError: (error: string) => void;
   setIsFetchingQuote: (isFetchingQuote: FetchingQuote) => void;
-  closeSwapInProgress: () => void;
   clearSwapState: () => void;
   clear: () => void;
 };
@@ -110,15 +104,6 @@ export const swapStore = create<SwapState>((set) => ({
       };
     });
   },
-  setSwapInProgress: (swapInProgress) => {
-    set(
-      (state) =>
-        (state = {
-          ...state,
-          swapInProgress,
-        })
-    );
-  },
   setIsSwapping: (isSwapping) => {
     set({ isSwapping });
   },
@@ -133,9 +118,6 @@ export const swapStore = create<SwapState>((set) => ({
   },
   setIsFetchingQuote: (isFetchingQuote) => {
     set({ isFetchingQuote });
-  },
-  closeSwapInProgress: () => {
-    set({ swapInProgress: { isOpen: false, order: null } });
   },
   clearSwapState: () => {
     set({
@@ -162,7 +144,6 @@ export const swapStore = create<SwapState>((set) => ({
       inputAmount: "",
       outputAmount: "",
       btcAddress: "",
-      swapInProgress: { isOpen: false, order: null },
       outputAsset: undefined,
       inputAsset: BTC,
       isSwapping: false,
