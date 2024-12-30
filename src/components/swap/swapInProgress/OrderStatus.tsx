@@ -40,38 +40,35 @@ export const OrderStatus: FC<OrderStatusProps> = ({ orderProgress }) => {
             Order status
           </Typography>
           <div
-            className={`transform transition-transform duration-300 ${
-              dropdown ? "rotate-180" : "rotate-0"
-            }`}
+            className={`transform transition-transform duration-300 ${dropdown ? "rotate-180" : "rotate-0"
+              }`}
           >
             <KeyboardDownIcon />
           </div>
         </div>
       </div>
       <div
-        className={`transition-all duration-300 overflow-hidden ease-in-out ${
-          dropdown ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
-        }`}
+        className={`transition-all duration-300 overflow-hidden ease-in-out ${dropdown ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+          }`}
       >
         <ul className="mt-2">
           {orderProgress &&
             Object.values(orderProgress).map((step, index) => (
               <li
                 key={index}
-                className={`relative flex items-center mx-1 gap-1 ${
-                  index !== NoOfSteps - 1 ? "pb-4" : ""
-                }`}
+                className={`relative flex items-center mx-1 gap-1 ${index !== NoOfSteps - 1 ? "pb-4" : ""
+                  }`}
               >
                 {index !== NoOfSteps - 1 &&
                   Object.values(orderProgress)[index + 1].status !==
-                    "pending" && (
+                  "pending" && (
                     <span
                       className="absolute top-2 h-full border-l-[1px] z-10 border-dark-grey"
                       style={{
                         height: "calc(100% + 8px)",
                         borderImage:
                           Object.values(orderProgress)[index + 1].status ===
-                          "inProgress"
+                            "inProgress"
                             ? "linear-gradient(to bottom, #554B6A, #e36492) 1"
                             : "",
                       }}
@@ -83,7 +80,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({ orderProgress }) => {
                   </span>
                 )}
                 {step.status === "inProgress" && (
-                  <div className="w-2 h-2 rounded-full bg-rose -translate-x-[3.5px] z-50" />
+                  <div className="w-2 h-2 rounded-full bg-rose -translate-x-[3.5px] z-20" />
                 )}
                 {step.status === "pending" && (
                   <div className="w-2 h-2 border-[1px] border-dark-grey rounded-full -translate-x-[3.5px]" />
@@ -99,9 +96,8 @@ export const OrderStatus: FC<OrderStatusProps> = ({ orderProgress }) => {
         </ul>
       </div>
       <div
-        className={`overflow-hidden ${
-          !dropdown ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
-        }`}
+        className={`overflow-hidden ${!dropdown ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+          }`}
         style={{
           transition: dropdown
             ? "max-height 50ms ease-in-out, opacity 300ms ease-in-out" // Opening

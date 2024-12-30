@@ -68,7 +68,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
             {isLoadingOrders ? (
               <TransactionsSkeleton />
             ) : orders.length === 0 ? (
-              <Typography size="h5" className="text-center">
+              <Typography size="h5" className="text-center pb-2">
                 No transactions found.
               </Typography>
             ) : (
