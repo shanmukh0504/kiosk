@@ -29,7 +29,7 @@ const WhitelistComponent: FC<Omit<WhiteListProps, "open">> = ({ onClose }) => {
   );
 
   const handleJoinWaitlist = () =>
-    window.open("https://gardenfi.typeform.com/act2-early", "_blank");
+    window.open("https://waitlist.garden.finance", "_blank");
 
   const handleDisconnect = () => {
     clear();
