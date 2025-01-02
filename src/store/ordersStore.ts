@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { IOrderbook, MatchedOrder } from "@gardenfi/orderbook";
 
-interface OrdersState {
+type OrdersState = {
   orders: MatchedOrder[];
   totalItems: number;
   perPage: number;
@@ -9,7 +9,7 @@ interface OrdersState {
   error: string;
   fetchAndSetOrders: (orderBook: IOrderbook) => Promise<void>;
   loadMore: (orderBook: IOrderbook) => Promise<void>;
-}
+};
 
 export const useOrdersStore = create<OrdersState>((set, get) => ({
   orders: [],

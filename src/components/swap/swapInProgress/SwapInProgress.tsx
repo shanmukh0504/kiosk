@@ -11,10 +11,10 @@ import { isBitcoin } from "@gardenfi/orderbook";
 import { CopyToClipboard } from "../../../common/CopyToClipboard";
 import { useOrderStatus } from "../../../hooks/useOrderStatus";
 import { OrderStatus as OrderStatusEnum } from "@gardenfi/core";
-import { swapInProgressStore } from "../../../store/swapInProgressStore";
+import { ordersStore } from "../../../store/newOrdersStore";
 
 export const SwapInProgress = () => {
-  const { setSwapInProgress, order } = swapInProgressStore();
+  const { setOrderInProgress, orderInProgress: order } = ordersStore();
   const { assets } = assetInfoStore();
   const { orderProgress, status } = useOrderStatus();
 
@@ -33,8 +33,8 @@ export const SwapInProgress = () => {
   }, [assets, order]);
 
   const goBack = useCallback(
-    () => setSwapInProgress(false),
-    [setSwapInProgress]
+    () => setOrderInProgress(null),
+    [setOrderInProgress]
   );
 
   return order ? (

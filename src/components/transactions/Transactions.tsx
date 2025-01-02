@@ -4,10 +4,10 @@ import { useEffect, FC, useState, useMemo } from "react";
 import { Button } from "@gardenfi/garden-book";
 import { MatchedOrder } from "@gardenfi/orderbook";
 import { ParseOrderStatus } from "@gardenfi/core";
-import { useOrdersStore } from "../../store/ordersStore";
 import { blockNumberStore } from "../../store/blockNumberStore";
 import { TransactionRow } from "./TransactionRow";
 import { TransactionsSkeleton } from "./TransactionsSkeleton";
+import { ordersStore } from "../../store/newOrdersStore";
 
 type TransactionsProps = {
   isOpen: boolean;
@@ -17,7 +17,9 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const { orderBook } = useGarden();
-  const { orders, totalItems, fetchAndSetOrders, loadMore } = useOrdersStore();
+  // const { orders, totalItems, fetchAndSetOrders, loadMore } = useOrdersStore();
+  const { orders, fetchAndSetOrders, totalItems, loadMore } =
+    ordersStore().ordersHistory;
   const { fetchAndSetBlockNumbers, blockNumbers } = blockNumberStore();
 
   const showLoadMore = useMemo(
@@ -45,9 +47,18 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   useEffect(() => {
     if (!orderBook || !isOpen) return;
 
+    let isFetching = false;
+
     const fetchOrdersAndBlockNumbers = async () => {
-      await fetchAndSetOrders(orderBook);
-      await fetchAndSetBlockNumbers();
+      if (isFetching) return; // Skip if previous fetch hasn't completed
+
+      try {
+        isFetching = true;
+        await fetchAndSetOrders(orderBook);
+        await fetchAndSetBlockNumbers();
+      } finally {
+        isFetching = false;
+      }
     };
 
     setIsLoadingOrders(true);

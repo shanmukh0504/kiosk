@@ -3,23 +3,23 @@ import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { useGarden } from "@gardenfi/react-hooks";
-import { OrderStatus } from "@gardenfi/core";
-import { useMemo } from "react";
+import { useEffect } from "react";
 import { Loader } from "../../common/Loader";
+import { ordersStore } from "../../store/newOrdersStore";
 
 export const Address = () => {
   const { address } = useEVMWallet();
   const { setOpenModal } = modalStore();
   const { pendingOrders } = useGarden();
+  const { pendingOrders: pendingOrdersFromStore, setPendingOrders } =
+    ordersStore();
   const handleAddressClick = () => setOpenModal(modalNames.transactions);
 
-  const actualPendingOrders = useMemo(
-    () =>
-      pendingOrders?.filter(
-        (order) => order.status !== OrderStatus.RedeemDetected
-      ),
-    [pendingOrders]
-  );
+  useEffect(() => {
+    if (pendingOrders) {
+      setPendingOrders(pendingOrders);
+    }
+  }, [pendingOrders, setPendingOrders]);
 
   return (
     <Opacity
@@ -33,11 +33,11 @@ export const Address = () => {
 
       <WalletIcon className="sm:hidden justify-center flex items-center " />
 
-      {actualPendingOrders?.length ? (
+      {pendingOrdersFromStore?.length ? (
         <div className="relative">
           <Loader />
           <div className="absolute text-rose text-sm font-bold top-[12%] left-[32%]">
-            {actualPendingOrders.length}
+            {pendingOrdersFromStore.length}
           </div>
         </div>
       ) : (

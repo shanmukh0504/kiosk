@@ -4,13 +4,17 @@ import { IOType, network } from "../constants/constants";
 import { Asset, isBitcoin, NetworkType } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
-import { constructOrderPair, validateBTCAddress } from "@gardenfi/core";
+import {
+  constructOrderPair,
+  OrderStatus,
+  validateBTCAddress,
+} from "@gardenfi/core";
 import BigNumber from "bignumber.js";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useEVMWallet } from "./useEVMWallet";
 import { useBalances } from "./useBalances";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { swapInProgressStore } from "../store/swapInProgressStore";
+import { ordersStore } from "../store/newOrdersStore";
 
 export const useSwap = () => {
   const { inputTokenBalance } = useBalances();
@@ -35,7 +39,7 @@ export const useSwap = () => {
     setBtcAddress,
   } = swapStore();
   const { strategies } = assetInfoStore();
-  const { setSwapInProgress } = swapInProgressStore();
+  const { setOrderInProgress } = ordersStore();
   const { address } = useEVMWallet();
   const { swapAndInitiate, getQuote } = useGarden();
   const { provider, account } = useBitcoinWallet();
@@ -289,13 +293,14 @@ export const useSwap = () => {
             ...order.source_swap,
             initiate_tx_hash: bitcoinRes.val ?? "",
           },
+          status: OrderStatus.InitiateDetected,
         };
-        setSwapInProgress(true, updateOrder);
+        setOrderInProgress(updateOrder);
         clearSwapState();
         return;
       }
       setIsSwapping(false);
-      setSwapInProgress(true, res.val);
+      setOrderInProgress({ ...res.val, status: OrderStatus.Matched });
       clearSwapState();
     } catch (error) {
       console.log("failed to create order ❌", error);

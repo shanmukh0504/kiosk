@@ -5,7 +5,7 @@ import { blockNumberStore } from "../store/blockNumberStore";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { getAssetFromSwap } from "../utils/utils";
 import { mergeOrders } from "../utils/mergeOrder";
-import { swapInProgressStore } from "../store/swapInProgressStore";
+import { ordersStore } from "../store/newOrdersStore";
 
 export enum SimplifiedOrderStatus {
   orderCreated = "Order created",
@@ -21,6 +21,7 @@ type Status = {
   title: string;
   status: "completed" | "inProgress" | "pending";
 };
+
 export type OrderProgress = {
   readonly [key in 1 | 2 | 3 | 4]: Status;
 };
@@ -30,7 +31,7 @@ export const useOrderStatus = () => {
   const { orderBook } = useGarden();
   const { fetchAndSetBlockNumbers, blockNumbers } = blockNumberStore();
   const { assets } = assetInfoStore();
-  const { order, setOrder } = swapInProgressStore();
+  const { orderInProgress: order, setOrderInProgress } = ordersStore();
 
   const outputAsset = order && getAssetFromSwap(order.destination_swap, assets);
   const initBlockNumber = Number(order?.source_swap.initiate_block_number);
@@ -174,8 +175,8 @@ export const useOrderStatus = () => {
   }, [confirmationsString, outputAsset?.symbol, status]);
 
   useEffect(() => {
+    // Don't start fetching if already redeemed
     if (
-      !orderBook ||
       status === OrderStatus.Redeemed ||
       status === OrderStatus.CounterPartyRedeemDetected ||
       status === OrderStatus.CounterPartyRedeemed ||
@@ -183,32 +184,44 @@ export const useOrderStatus = () => {
     )
       return;
 
-    const fetchOrderAndBlockNumbers = async () => {
-      await fetchAndSetBlockNumbers();
+    fetchAndSetBlockNumbers();
+    const interval = setInterval(() => {
+      console.log("fetching block numbers");
+      fetchAndSetBlockNumbers();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [fetchAndSetBlockNumbers, status]);
+
+  useEffect(() => {
+    if (!orderBook || !blockNumbers || !order) return;
+
+    // we are not using setInterval
+    // fetchOrder is called when blockNumbers are updated which are in a interval
+    const fetchOrder = async () => {
       if (!order?.create_order.create_id) return;
       const o = await orderBook.getOrder(order.create_order.create_id, true);
       if (o.error) return;
 
-      setOrder(mergeOrders(order, o.val));
+      const { source_swap, destination_swap } = o.val;
+      const sourceBlockNumber = blockNumbers[source_swap.chain];
+      const destinationBlockNumber = blockNumbers[destination_swap.chain];
+      if (sourceBlockNumber && destinationBlockNumber) {
+        const _status = ParseOrderStatus(
+          o.val,
+          sourceBlockNumber,
+          destinationBlockNumber
+        );
+        setStatus(_status);
+        setOrderInProgress({
+          ...mergeOrders(order, o.val),
+          status: _status,
+        });
+      }
     };
 
-    fetchOrderAndBlockNumbers();
-    const intervalId = setInterval(fetchOrderAndBlockNumbers, 5000);
-
-    return () => clearInterval(intervalId);
-  }, [fetchAndSetBlockNumbers, orderBook, status, setOrder, order]);
-
-  useEffect(() => {
-    if (!order || !blockNumbers) return;
-    const { source_swap, destination_swap } = order;
-    const sourceBlockNumber = blockNumbers[source_swap.chain];
-    const destinationBlockNumber = blockNumbers[destination_swap.chain];
-    if (!sourceBlockNumber || !destinationBlockNumber) return;
-
-    setStatus(
-      ParseOrderStatus(order, sourceBlockNumber, destinationBlockNumber)
-    );
-  }, [blockNumbers, order]);
+    fetchOrder();
+  }, [orderBook, setOrderInProgress, blockNumbers]);
 
   return {
     status,
