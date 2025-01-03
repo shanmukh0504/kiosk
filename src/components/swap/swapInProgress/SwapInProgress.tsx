@@ -16,7 +16,7 @@ import { ordersStore } from "../../../store/newOrdersStore";
 export const SwapInProgress = () => {
   const { setOrderInProgress, orderInProgress: order } = ordersStore();
   const { assets } = assetInfoStore();
-  const { orderProgress, status } = useOrderStatus();
+  const { orderProgress } = useOrderStatus();
 
   const { depositAddress, inputAsset, outputAsset } = useMemo(() => {
     return {
@@ -66,8 +66,8 @@ export const SwapInProgress = () => {
       </div>
       {inputAsset &&
         isBitcoin(inputAsset.chain) &&
-        (status === OrderStatusEnum.Matched ||
-          status === OrderStatusEnum.Created) && (
+        (order.status === OrderStatusEnum.Matched ||
+          order.status === OrderStatusEnum.Created) && (
           <div className="flex justify-between bg-white rounded-2xl p-4">
             <div className="flex flex-col gap-2">
               <Typography size="h5" weight="bold">

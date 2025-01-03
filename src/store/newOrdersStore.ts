@@ -178,7 +178,6 @@ export const ordersStore = create<OrdersStore>((set, get) => ({
   // State updates for specific order
   updateOrder: (order) => {
     const state = get();
-    console.log("updating order");
     set({
       pendingOrders: filterPendingOrders(
         updateSingleOrder(order, state.pendingOrders)
@@ -194,6 +193,5 @@ export const ordersStore = create<OrdersStore>((set, get) => ({
         orders: updateSingleOrder(order, state.ordersHistory.orders),
       },
     });
-    console.log("now there should be no pending order");
   },
 }));

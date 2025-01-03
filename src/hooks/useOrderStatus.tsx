@@ -1,6 +1,6 @@
 import { OrderStatus, ParseOrderStatus } from "@gardenfi/core";
 import { useGarden } from "@gardenfi/react-hooks";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { blockNumberStore } from "../store/blockNumberStore";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { getAssetFromSwap } from "../utils/utils";
@@ -27,7 +27,6 @@ export type OrderProgress = {
 };
 
 export const useOrderStatus = () => {
-  const [status, setStatus] = useState<OrderStatus>();
   const { orderBook } = useGarden();
   const { fetchAndSetBlockNumbers, blockNumbers } = blockNumberStore();
   const { assets } = assetInfoStore();
@@ -37,7 +36,9 @@ export const useOrderStatus = () => {
   const initBlockNumber = Number(order?.source_swap.initiate_block_number);
 
   const confirmationsString = useMemo(() => {
-    return order && status === OrderStatus.InitiateDetected && blockNumbers
+    return order &&
+      order.status === OrderStatus.InitiateDetected &&
+      blockNumbers
       ? " (" +
           Math.abs(
             initBlockNumber
@@ -48,10 +49,10 @@ export const useOrderStatus = () => {
           order.source_swap.required_confirmations +
           ")"
       : "";
-  }, [blockNumbers, order, initBlockNumber, status]);
+  }, [blockNumbers, order, initBlockNumber]);
 
   const orderProgress: OrderProgress = useMemo(() => {
-    switch (status) {
+    switch (order?.status) {
       case OrderStatus.Created:
         return {
           1: { title: SimplifiedOrderStatus.orderCreated, status: "completed" },
@@ -172,59 +173,53 @@ export const useOrderStatus = () => {
           4: { title: "", status: "pending" },
         };
     }
-  }, [confirmationsString, outputAsset?.symbol, status]);
+  }, [confirmationsString, outputAsset?.symbol, order?.status]);
 
   useEffect(() => {
-    // Don't start fetching if already redeemed
+    if (!order || !orderBook) return;
     if (
-      status === OrderStatus.Redeemed ||
-      status === OrderStatus.CounterPartyRedeemDetected ||
-      status === OrderStatus.CounterPartyRedeemed ||
-      status === OrderStatus.Completed
+      [
+        OrderStatus.Redeemed,
+        OrderStatus.CounterPartyRedeemDetected,
+        OrderStatus.CounterPartyRedeemed,
+        OrderStatus.Completed,
+      ].includes(order.status)
     )
       return;
 
-    fetchAndSetBlockNumbers();
-    const interval = setInterval(() => {
-      console.log("fetching block numbers");
-      fetchAndSetBlockNumbers();
-    }, 5000);
+    const updateOrder = async () => {
+      if (!order) return;
 
-    return () => clearInterval(interval);
-  }, [fetchAndSetBlockNumbers, status]);
-
-  useEffect(() => {
-    if (!orderBook || !blockNumbers || !order) return;
-
-    // we are not using setInterval
-    // fetchOrder is called when blockNumbers are updated which are in a interval
-    const fetchOrder = async () => {
-      if (!order?.create_order.create_id) return;
       const o = await orderBook.getOrder(order.create_order.create_id, true);
       if (o.error) return;
+
+      const blockNumbers = await fetchAndSetBlockNumbers();
+      if (!blockNumbers) return;
 
       const { source_swap, destination_swap } = o.val;
       const sourceBlockNumber = blockNumbers[source_swap.chain];
       const destinationBlockNumber = blockNumbers[destination_swap.chain];
-      if (sourceBlockNumber && destinationBlockNumber) {
-        const _status = ParseOrderStatus(
-          o.val,
-          sourceBlockNumber,
-          destinationBlockNumber
-        );
-        setStatus(_status);
-        setOrderInProgress({
-          ...mergeOrders(order, o.val),
-          status: _status,
-        });
-      }
+
+      const _status = ParseOrderStatus(
+        o.val,
+        sourceBlockNumber,
+        destinationBlockNumber
+      );
+
+      setOrderInProgress({
+        ...mergeOrders(order, o.val),
+        status: _status,
+      });
     };
 
-    fetchOrder();
-  }, [orderBook, setOrderInProgress, blockNumbers]);
+    updateOrder();
+    const interval = setInterval(updateOrder, 10000);
+
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchAndSetBlockNumbers, orderBook, setOrderInProgress]);
 
   return {
-    status,
     orderProgress,
   };
 };

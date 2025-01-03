@@ -277,30 +277,38 @@ export const useSwap = () => {
 
       console.log("orderCreated ✅", res.val);
 
-      if (isBitcoin(res.val.source_swap.chain) && provider) {
-        const order = res.val;
-        const bitcoinRes = await provider.sendBitcoin(
-          order.source_swap.swap_id,
-          Number(order.source_swap.amount)
-        );
-        if (bitcoinRes.error) {
-          console.error("failed to send bitcoin ❌", bitcoinRes.error);
-          setIsSwapping(false);
+      if (isBitcoin(res.val.source_swap.chain)) {
+        if (provider) {
+          const order = res.val;
+          const bitcoinRes = await provider.sendBitcoin(
+            order.source_swap.swap_id,
+            Number(order.source_swap.amount)
+          );
+          if (bitcoinRes.error) {
+            console.error("failed to send bitcoin ❌", bitcoinRes.error);
+            setIsSwapping(false);
+          }
+          const updateOrder = {
+            ...order,
+            source_swap: {
+              ...order.source_swap,
+              initiate_tx_hash: bitcoinRes.val ?? "",
+            },
+            status: bitcoinRes.val
+              ? OrderStatus.InitiateDetected
+              : OrderStatus.Matched,
+          };
+          setOrderInProgress(updateOrder);
+          clearSwapState();
+          return;
         }
-        const updateOrder = {
-          ...order,
-          source_swap: {
-            ...order.source_swap,
-            initiate_tx_hash: bitcoinRes.val ?? "",
-          },
-          status: OrderStatus.InitiateDetected,
-        };
-        setOrderInProgress(updateOrder);
+        setIsSwapping(false);
+        setOrderInProgress({ ...res.val, status: OrderStatus.Matched });
         clearSwapState();
         return;
       }
       setIsSwapping(false);
-      setOrderInProgress({ ...res.val, status: OrderStatus.Matched });
+      setOrderInProgress({ ...res.val, status: OrderStatus.InitiateDetected });
       clearSwapState();
     } catch (error) {
       console.log("failed to create order ❌", error);
