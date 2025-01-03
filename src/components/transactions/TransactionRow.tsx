@@ -9,9 +9,9 @@ import {
 } from "../../utils/utils";
 import { OrderStatus } from "@gardenfi/core";
 import { assetInfoStore } from "../../store/assetInfoStore";
-import { swapStore } from "../../store/swapStore";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { useGarden } from "@gardenfi/react-hooks";
+import { swapInProgressStore } from "../../store/swapInProgressStore";
 
 type TransactionProps = {
   order: MatchedOrder;
@@ -61,7 +61,7 @@ export const TransactionRow: FC<TransactionProps> = ({
 }) => {
   const { create_order, source_swap, destination_swap } = order;
   const { assets } = assetInfoStore();
-  const { setSwapInProgress } = swapStore();
+  const { setSwapInProgress } = swapInProgressStore();
   const { setCloseModal } = modalStore();
   const { evmInitiate } = useGarden();
 
@@ -96,7 +96,7 @@ export const TransactionRow: FC<TransactionProps> = ({
 
   const handleTransactionClick = async () => {
     if (statusLabel !== StatusLabel.Expired) {
-      setSwapInProgress({ isOpen: true, order });
+      setSwapInProgress(true, order);
       setCloseModal(modalNames.transactions);
     }
 

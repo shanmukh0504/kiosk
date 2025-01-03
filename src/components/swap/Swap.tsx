@@ -10,13 +10,18 @@ import { IOType } from "../../constants/constants";
 import { formatAmount } from "../../utils/utils";
 import { OrderActions } from "@gardenfi/core";
 import { generateTokenKey } from "../../utils/generateTokenKey";
+import { swapInProgressStore } from "../../store/swapInProgressStore";
 
 export const Swap = () => {
-  const { swapInProgress, setAsset, setSwapInProgress } = swapStore();
+  const { setAsset } = swapStore();
   const { fetchAndSetAssetsAndChains, fetchAndSetStrategies, assets } =
     assetInfoStore();
   const { quote, garden } = useGarden();
-  const { order: orderInProgress, isOpen } = swapInProgress;
+  const {
+    isSwapInProgress,
+    order: orderInProgress,
+    setSwapInProgress,
+  } = swapInProgressStore();
 
   useEffect(() => {
     fetchAndSetAssetsAndChains();
@@ -56,7 +61,7 @@ export const Swap = () => {
       const outputAsset =
         assets &&
         assets[
-        generateTokenKey(destination_swap.chain, destination_swap.asset)
+          generateTokenKey(destination_swap.chain, destination_swap.asset)
         ];
       if (!inputAsset || !outputAsset) return;
 
@@ -72,10 +77,10 @@ export const Swap = () => {
       if (
         orderInProgress &&
         orderInProgress.create_order.create_id ===
-        order.create_order.create_id &&
+          order.create_order.create_id &&
         action === OrderActions.Redeem &&
         result &&
-        isOpen
+        isSwapInProgress
       ) {
         const updatedOrder = {
           ...order,
@@ -84,7 +89,7 @@ export const Swap = () => {
             redeem_tx_hash: result,
           },
         };
-        setSwapInProgress({ isOpen: true, order: updatedOrder });
+        setSwapInProgress(true, updatedOrder);
       }
       Toast.success(
         `Swap success ${inputAmount} ${inputAsset.symbol} to ${outputAmount} ${outputAsset.symbol}`
@@ -100,7 +105,7 @@ export const Swap = () => {
       garden.off("log", handleLog);
       garden.off("success", handleSuccess);
     };
-  }, [garden, assets, orderInProgress, isOpen, setSwapInProgress]);
+  }, [garden, assets, orderInProgress, isSwapInProgress, setSwapInProgress]);
 
   return (
     <div className="flex flex-col gap-4 w-full sm:max-w-[424px] max-w-[328px] mx-auto mt-10">
@@ -109,7 +114,7 @@ export const Swap = () => {
         className={`bg-white/50 rounded-[20px]
           relative overflow-hidden`}
       >
-        {swapInProgress.isOpen ? <SwapInProgress /> : <CreateSwap />}
+        {isSwapInProgress ? <SwapInProgress /> : <CreateSwap />}
       </div>
     </div>
   );

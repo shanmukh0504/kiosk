@@ -1,4 +1,8 @@
-import { Button, GardenFullLogo, Typography } from "@gardenfi/garden-book";
+import {
+  Button,
+  GardenFullLogo,
+  Typography,
+} from "@gardenfi/garden-book";
 import { INTERNAL_ROUTES } from "../../constants/constants";
 import { API } from "../../constants/api";
 import { useEVMWallet } from "../../hooks/useEVMWallet";

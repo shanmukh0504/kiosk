@@ -10,6 +10,7 @@ import { useGarden } from "@gardenfi/react-hooks";
 import { useEVMWallet } from "./useEVMWallet";
 import { useBalances } from "./useBalances";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { swapInProgressStore } from "../store/swapInProgressStore";
 
 export const useSwap = () => {
   const { inputTokenBalance } = useBalances();
@@ -29,12 +30,12 @@ export const useSwap = () => {
     setAmount,
     setError,
     setIsFetchingQuote,
-    setSwapInProgress,
     setTokenPrices,
     clearSwapState,
     setBtcAddress,
   } = swapStore();
   const { strategies } = assetInfoStore();
+  const { setSwapInProgress } = swapInProgressStore();
   const { address } = useEVMWallet();
   const { swapAndInitiate, getQuote } = useGarden();
   const { provider, account } = useBitcoinWallet();
@@ -289,12 +290,12 @@ export const useSwap = () => {
             initiate_tx_hash: bitcoinRes.val ?? "",
           },
         };
-        setSwapInProgress({ isOpen: true, order: updateOrder });
+        setSwapInProgress(true, updateOrder);
         clearSwapState();
         return;
       }
       setIsSwapping(false);
-      setSwapInProgress({ isOpen: true, order: res.val });
+      setSwapInProgress(true, res.val);
       clearSwapState();
     } catch (error) {
       console.log("failed to create order ❌", error);
