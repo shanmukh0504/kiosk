@@ -54,8 +54,8 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
 
       try {
         isFetching = true;
-        await fetchAndSetOrders(orderBook);
         await fetchAndSetBlockNumbers();
+        await fetchAndSetOrders(orderBook);
       } finally {
         isFetching = false;
       }
