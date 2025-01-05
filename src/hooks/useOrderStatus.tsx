@@ -5,7 +5,7 @@ import { blockNumberStore } from "../store/blockNumberStore";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { getAssetFromSwap } from "../utils/utils";
 import { mergeOrders } from "../utils/mergeOrder";
-import { ordersStore } from "../store/newOrdersStore";
+import { ordersStore } from "../store/ordersStore";
 
 export enum SimplifiedOrderStatus {
   orderCreated = "Order created",

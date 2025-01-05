@@ -5,7 +5,7 @@ import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useEffect } from "react";
 import { Loader } from "../../common/Loader";
-import { ordersStore } from "../../store/newOrdersStore";
+import { ordersStore } from "../../store/ordersStore";
 
 export const Address = () => {
   const { address } = useEVMWallet();

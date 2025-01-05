@@ -9,7 +9,7 @@ import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
 import { IOType } from "../../constants/constants";
 import { formatAmount, getAssetFromSwap } from "../../utils/utils";
 import { OrderActions, OrderStatus } from "@gardenfi/core";
-import { ordersStore } from "../../store/newOrdersStore";
+import { ordersStore } from "../../store/ordersStore";
 
 export const Swap = () => {
   const { setAsset } = swapStore();

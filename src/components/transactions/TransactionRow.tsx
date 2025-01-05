@@ -11,7 +11,7 @@ import { OrderStatus } from "@gardenfi/core";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { useGarden } from "@gardenfi/react-hooks";
-import { ordersStore } from "../../store/newOrdersStore";
+import { ordersStore } from "../../store/ordersStore";
 
 type TransactionProps = {
   order: MatchedOrder;

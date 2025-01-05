@@ -7,7 +7,7 @@ import { ParseOrderStatus } from "@gardenfi/core";
 import { blockNumberStore } from "../../store/blockNumberStore";
 import { TransactionRow } from "./TransactionRow";
 import { TransactionsSkeleton } from "./TransactionsSkeleton";
-import { ordersStore } from "../../store/newOrdersStore";
+import { ordersStore } from "../../store/ordersStore";
 
 type TransactionsProps = {
   isOpen: boolean;

@@ -14,7 +14,7 @@ import { useGarden } from "@gardenfi/react-hooks";
 import { useEVMWallet } from "./useEVMWallet";
 import { useBalances } from "./useBalances";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { ordersStore } from "../store/newOrdersStore";
+import { ordersStore } from "../store/ordersStore";
 
 export const useSwap = () => {
   const { inputTokenBalance } = useBalances();
