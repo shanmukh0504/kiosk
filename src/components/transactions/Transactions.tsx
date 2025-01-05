@@ -17,7 +17,6 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const { orderBook } = useGarden();
-  // const { orders, totalItems, fetchAndSetOrders, loadMore } = useOrdersStore();
   const { orders, fetchAndSetOrders, totalItems, loadMore } =
     ordersStore().ordersHistory;
   const { fetchAndSetBlockNumbers, blockNumbers } = blockNumberStore();
