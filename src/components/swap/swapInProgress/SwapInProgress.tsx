@@ -2,7 +2,6 @@ import { CloseIcon, Typography } from "@gardenfi/garden-book";
 import { useCallback, useMemo } from "react";
 import { SwapInfo } from "../../../common/SwapInfo";
 import { getTrimmedAddress } from "../../../utils/getTrimmedAddress";
-import { swapStore } from "../../../store/swapStore";
 import { formatAmount, getAssetFromSwap } from "../../../utils/utils";
 import { assetInfoStore } from "../../../store/assetInfoStore";
 import QRCode from "react-qr-code";
@@ -12,12 +11,12 @@ import { isBitcoin } from "@gardenfi/orderbook";
 import { CopyToClipboard } from "../../../common/CopyToClipboard";
 import { useOrderStatus } from "../../../hooks/useOrderStatus";
 import { OrderStatus as OrderStatusEnum } from "@gardenfi/core";
+import { ordersStore } from "../../../store/ordersStore";
 
 export const SwapInProgress = () => {
-  const { swapInProgress, closeSwapInProgress } = swapStore();
+  const { setOrderInProgress, orderInProgress: order } = ordersStore();
   const { assets } = assetInfoStore();
-  const { order } = swapInProgress;
-  const { orderProgress, status } = useOrderStatus();
+  const { orderProgress } = useOrderStatus();
 
   const { depositAddress, inputAsset, outputAsset } = useMemo(() => {
     return {
@@ -34,8 +33,8 @@ export const SwapInProgress = () => {
   }, [assets, order]);
 
   const goBack = useCallback(
-    () => closeSwapInProgress(),
-    [closeSwapInProgress]
+    () => setOrderInProgress(null),
+    [setOrderInProgress]
   );
 
   return order ? (
@@ -67,8 +66,8 @@ export const SwapInProgress = () => {
       </div>
       {inputAsset &&
         isBitcoin(inputAsset.chain) &&
-        (status === OrderStatusEnum.Matched ||
-          status === OrderStatusEnum.Created) && (
+        (order.status === OrderStatusEnum.Matched ||
+          order.status === OrderStatusEnum.Created) && (
           <div className="flex justify-between bg-white rounded-2xl p-4">
             <div className="flex flex-col gap-2">
               <Typography size="h5" weight="bold">
