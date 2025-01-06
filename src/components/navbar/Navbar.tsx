@@ -1,13 +1,9 @@
-import {
-  Button,
-  GardenFullLogo,
-  Typography,
-} from "@gardenfi/garden-book";
+import { Button, GardenFullLogo, Typography } from "@gardenfi/garden-book";
 import { INTERNAL_ROUTES } from "../../constants/constants";
 import { API } from "../../constants/api";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { Address } from "./Address";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useGarden } from "@gardenfi/react-hooks";
 import { isCurrentRoute } from "../../utils/utils";
 import { MobileMenu } from "./MobileMenu";
@@ -46,44 +42,18 @@ export const Navbar = () => {
     setIsInitiatingSM(true);
     const res = await garden.secretManager.initialize();
     if (res.error) {
-      if (res.error.includes("User rejected the request"))
-        setShouldInitiateSM(true);
+      // if (res.error.includes("User rejected the request"))
+      //   setShouldInitiateSM(true);
       setIsInitiatingSM(false);
       return;
     }
-    setShouldInitiateSM(false);
     setIsInitiatingSM(false);
   }, [garden]);
 
-  // useEffect(() => {
-  //   if (
-  //     !pendingOrders ||
-  //     !pendingOrders.length ||
-  //     isExecuting ||
-  //     isInitiatingSM ||
-  //     shouldInitiateSM
-  //   )
-  //     return;
-  //   const isSMRequired = !!pendingOrders.find((order) => {
-  //     const status = order.status;
-  //     return (
-  //       status === OrderStatus.InitiateDetected ||
-  //       status === OrderStatus.Initiated ||
-  //       status === OrderStatus.CounterPartyInitiateDetected ||
-  //       status === OrderStatus.CounterPartyInitiated ||
-  //       status === OrderStatus.RedeemDetected ||
-  //       status === OrderStatus.Expired
-  //     );
-  //   });
-
-  //   if (isSMRequired) handleInitializeSM();
-  // }, [
-  //   pendingOrders,
-  //   isExecuting,
-  //   handleInitializeSM,
-  //   isInitiatingSM,
-  //   shouldInitiateSM,
-  // ]);
+  useEffect(() => {
+    if (isInitiatingSM || !garden) return;
+    if (shouldInitiateSM) handleInitializeSM();
+  }, [isInitiatingSM, garden, shouldInitiateSM, handleInitializeSM]);
 
   return (
     <div
@@ -118,6 +88,7 @@ export const Navbar = () => {
           className="ml-auto w-28"
           size="sm"
           breakpoints={{ md: "md" }}
+          loading={isInitiatingSM}
         >
           {isEVMConnect ? "Connect EVM" : "Connect"}
         </Button>
