@@ -98,7 +98,7 @@ export const Swap = () => {
   }, [garden, assets, orderInProgress, updateOrder]);
 
   return (
-    <div className="flex flex-col gap-4 w-full sm:max-w-[424px] max-w-[328px] -translate-y-10">
+    <div className="flex flex-col gap-4 w-full sm:max-w-[424px] max-w-[328px] -translate-y-[calc(80px-0.75rem)] md:-translate-y-[calc(96px-1rem)]">
       <ToastContainer />
       <div
         className={`bg-white/50 rounded-[20px]

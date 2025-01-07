@@ -228,8 +228,10 @@ export const useSwap = () => {
         debounceFetch.cancel();
         abortFetchQuote();
         setAmount(IOType.output, "");
+        setError("");
         return;
       }
+
       if (minAmount && amountInNumber < minAmount) {
         debounceFetch.cancel();
         abortFetchQuote();
@@ -268,6 +270,7 @@ export const useSwap = () => {
     if (!amountInNumber) {
       debounceFetch.cancel();
       abortFetchQuote();
+      setError("");
       setAmount(IOType.input, "");
       return;
     }
