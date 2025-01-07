@@ -62,8 +62,8 @@ export const CreateSwap = () => {
           before:pointer-events-none before:transition-colors before:duration-700
           `}
     >
-      <div className="flex flex-col gap-4 p-3">
-        <div className="relative flex flex-col gap-4">
+      <div className="flex flex-col p-3">
+        <div className="relative flex flex-col gap-4 mb-4">
           <SwapInput
             type={IOType.input}
             amount={inputAmount}
@@ -92,16 +92,15 @@ export const CreateSwap = () => {
             timeEstimate={timeEstimate}
           />
         </div>
-        <div className={`flex flex-col gap-4 transition-all opacity-0 duration-200 ease-in-out ${inputAsset && outputAsset && (inputAmount && Number(inputAmount) !== 0) ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0 mb-[-16px]'}`}>
-          <div className={`flex flex-col gap-4 transition-all opacity-0 duration-200 ease-in-out ${isEditing || !btcAddress ? 'h-full opacity-100' : 'max-h-0 opacity-0 mb-[-16px]'}`}>
+        <div className={`flex flex-col transition-all opacity-0 duration-700 ease-in-out ${inputAsset && outputAsset && (inputAmount && Number(inputAmount) !== 0) ? 'max-h-[500px] opacity-100 pointer-events-auto' : 'max-h-0 opacity-0 pointer-events-none'}`}>
+          <div className={`transition-all opacity-0 duration-500 overflow-hidden ease-in-out ${(isEditing || !btcAddress) ? 'max-h-[120px] opacity-100 pointer-events-auto' : 'max-h-0 opacity-0 pointer-events-none'}`}>
             <SwapAddress isValidAddress={isValidBitcoinAddress} />
           </div>
           <SwapCreateDetails tokenPrices={tokenPrices} setIsEditing={setIsEditing} isEditing={isEditing} inputChain={inputAsset?.chain} outputChain={outputAsset?.chain} />
         </div>
 
         <Button
-          className={`transition-colors duration-500 ${isSwapping ? "cursor-not-allowed" : ""
-            }`}
+          className={`transition-colors duration-500 z-20 ${isSwapping ? "cursor-not-allowed" : ""}`}
           variant={buttonVariant}
           size="lg"
           onClick={handleSwapClick}

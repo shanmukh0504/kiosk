@@ -4,7 +4,6 @@ import {
   TokenInfo,
   Typography,
   WalletIcon,
-  ScaleY
 } from "@gardenfi/garden-book";
 import { FC, useMemo, useRef, ChangeEvent, useState, useEffect } from "react";
 import { IOType } from "../../constants/constants";
@@ -45,6 +44,14 @@ export const SwapInput: FC<SwapInputProps> = ({
   const [triggerAmountAnimation, setTriggerAmountAnimation] = useState(false);
   const [isInFocus, setIsInFocus] = useState(false);
 
+  const network = useMemo(() => {
+    if (!chains || (asset && isBitcoin(asset.chain))) return;
+    if (!asset) return;
+    return chains && chains[asset.chain];
+  }, [asset, chains]);
+
+  const label = type === IOType.input ? "Send" : "Receive";
+
   useEffect(() => {
     if (amount && amount !== '0.0') {
       setTriggerAmountAnimation(false);
@@ -72,14 +79,6 @@ export const SwapInput: FC<SwapInputProps> = ({
       setTimeout(() => setTriggerTimeEstimateAnimation(true), 0);
     }
   }, [timeEstimate]);
-
-  const network = useMemo(() => {
-    if (!chains || (asset && isBitcoin(asset.chain))) return;
-    if (!asset) return;
-    return chains && chains[asset.chain];
-  }, [asset, chains]);
-
-  const label = type === IOType.input ? "Send" : "Receive";
 
   const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
@@ -137,11 +136,12 @@ export const SwapInput: FC<SwapInputProps> = ({
             >
               {label}
             </Typography>
-            <ScaleY triggerAnimation={triggerPriceAnimation}>
+            {Number(price) !== 0 && <ScaleYIn triggerAnimation={triggerPriceAnimation}>
               <Typography size="h5" weight="medium" className="text-mid-grey absolute ">
-                {Number(price) ? `$${price}` : ""}
+                ${price}
               </Typography>
-            </ScaleY>
+            </ScaleYIn>
+            }
           </div>
           {type === IOType.input &&
             (error ? (
@@ -149,26 +149,26 @@ export const SwapInput: FC<SwapInputProps> = ({
                 <div className="text-red-500">{error}</div>
               </Typography>
             ) : balance !== undefined ? (
-              <ScaleY triggerAnimation={triggerBalanceAnimation}>
+              <ScaleYIn triggerAnimation={triggerBalanceAnimation}>
                 <div className="flex items-center gap-1 cursor-pointer" onClick={handleBalanceClick}>
                   <WalletIcon className="h-2.5 w-2.5" />
                   <Typography size="h5" weight="medium">
                     {balance}
                   </Typography>
                 </div>
-              </ScaleY>
+              </ScaleYIn>
             ) : (
               <></>
             ))}
           {type === IOType.output && timeEstimate && (
-            <ScaleY triggerAnimation={triggerTimeEstimateAnimation}>
+            <ScaleYIn triggerAnimation={triggerTimeEstimateAnimation}>
               <div className="flex gap-1 items-center">
                 <TimerIcon className="h-4" />
                 <Typography size="h5" weight="medium">
                   {timeEstimate}
                 </Typography>
               </div>
-            </ScaleY>
+            </ScaleYIn>
           )}
         </div>
         <div className="flex justify-between h-6">
@@ -184,13 +184,12 @@ export const SwapInput: FC<SwapInputProps> = ({
               weight="bold"
             >
               <div className="relative max-w-[150px] md:max-w-[200px]">
-                <ScaleYIn triggerAnimation={!isInFocus && amount !== "0.0" ? triggerAmountAnimation : false}>
+                <ScaleYIn triggerAnimation={!isInFocus && amount !== "0" ? triggerAmountAnimation : false}>
                   <input
                     ref={inputRef}
                     className="w-full outline-none placeholder-transparent" // Make placeholder invisible
                     type="text"
-                    value={amount === "0" ? "" : amount}
-                    placeholder="0.0"
+                    value={amount}
                     onChange={handleAmountChange}
                     onFocus={() => setIsInFocus(true)}
                     onBlur={() => {
@@ -200,7 +199,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                   />
                 </ScaleYIn>
                 {/* Placeholder as a separate element */}
-                {(!amount || amount === '0') && (
+                {(!amount) && (
                   <span className="absolute left-0 top-1/2 transform -translate-y-1/2 text-mid-grey pointer-events-none">
                     0.0
                   </span>

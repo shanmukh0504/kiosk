@@ -28,7 +28,8 @@ export const AddressDetails: FC<AddressDetailsProps> = ({ setIsEditing, isEditin
     return (
         <>
             {isBitcoin(chain!) ?
-                (btcAddress && !isEditing) && <div className="flex justify-between items-center py-1">
+                (btcAddress) &&
+                <div className={`flex justify-between items-center py-0.5 duration-300 transition-all ${!isEditing ? 'opacity-100 max-h-7 pointer-events-auto mb-0' : 'max-h-0 -mb-1 opacity-0 pointer-events-none'}`}>
                     <Typography size="h5" weight="medium">
                         {isRefund ? "Refund" : "Receive"} address
                     </Typography>
@@ -36,12 +37,12 @@ export const AddressDetails: FC<AddressDetailsProps> = ({ setIsEditing, isEditin
                         <Typography size="h4" weight="medium">
                             {getTrimmedAddress(btcAddress)}
                         </Typography>
-                        <EditIcon className="w-4 h-4 p-[2px] cursor-pointer pointer-events-auto" onClick={() => setIsEditing(true)} />
-                        <ArrowNorthEastIcon className="w-4 h-4 p-[3px] cursor-pointer pointer-events-auto" onClick={() => handleAddressRedirect(btcAddress)} />
+                        <EditIcon className="w-4 h-4 p-[2px] cursor-pointer" onClick={() => setIsEditing(true)} />
+                        <ArrowNorthEastIcon className="w-4 h-4 p-[3px] cursor-pointer" onClick={() => handleAddressRedirect(btcAddress)} />
                     </div>
                 </div>
                 :
-                (address && <div className="flex justify-between items-center py-1">
+                (address && <div className="flex justify-between items-center py-0.5">
                     <Typography size="h5" weight="medium">
                         {isRefund ? "Refund" : "Receive"} address
                     </Typography>
@@ -49,7 +50,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({ setIsEditing, isEditin
                         <Typography size="h4" weight="medium">
                             {getTrimmedAddress(address)}
                         </Typography>
-                        <ArrowNorthEastIcon className="w-4 h-4 p-[3px] cursor-pointer pointer-events-auto" onClick={() => handleAddressRedirect(address)} />
+                        <ArrowNorthEastIcon className="w-4 h-4 p-[3px] cursor-pointer" onClick={() => handleAddressRedirect(address)} />
                     </div>
                 </div>)
             }

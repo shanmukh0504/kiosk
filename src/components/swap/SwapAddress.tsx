@@ -26,7 +26,7 @@ export const SwapAddress: FC<SwapAddressProps> = ({ isValidAddress }) => {
 
   return (
     (isRecoveryAddress || isReceiveAddress) && (
-      <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
+      <div className="flex flex-col gap-2 bg-white rounded-2xl p-4 mb-4">
         <Typography
           data-tooltip-id={isRecoveryAddress ? tooltipId : ""}
           size="h5"
@@ -39,9 +39,8 @@ export const SwapAddress: FC<SwapAddressProps> = ({ isValidAddress }) => {
         <Typography size="h3" weight="medium">
           <input
             ref={inputRef}
-            className={`w-full outline-none placeholder:text-mid-grey ${
-              !isValidAddress ? "text-red-600" : ""
-            }`}
+            className={`w-full outline-none placeholder:text-mid-grey ${!isValidAddress ? "text-red-600" : ""
+              }`}
             type="text"
             value={btcAddress}
             placeholder="Your Bitcoin address"

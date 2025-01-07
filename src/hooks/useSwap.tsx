@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { swapStore } from "../store/swapStore";
 import { IOType, network } from "../constants/constants";
 import { Asset, isBitcoin, NetworkType } from "@gardenfi/orderbook";
@@ -43,6 +43,8 @@ export const useSwap = () => {
   const { address } = useEVMWallet();
   const { swapAndInitiate, getQuote } = useGarden();
   const { provider, account } = useBitcoinWallet();
+  const fetchQuoteController = useRef<(() => void) | null>(null);
+
 
   const isInsufficientBalance = useMemo(
     () => new BigNumber(inputAmount).gt(inputTokenBalance),
@@ -128,6 +130,13 @@ export const useSwap = () => {
       toAsset: Asset,
       isExactOut: boolean
     ) => {
+      let cancelled = false;
+
+      // Save the cancel function for external calls
+      fetchQuoteController.current = () => {
+        cancelled = true;
+      };
+
       const debouncedFetchQuote = debounce(async () => {
         if (!getQuote) return;
         if (isExactOut) setIsFetchingQuote({ input: true, output: false });
@@ -142,6 +151,12 @@ export const useSwap = () => {
           amount: amountInDecimals.toNumber(),
           isExactOut,
         });
+
+        if (cancelled) {
+          setIsFetchingQuote({ input: false, output: false });
+          return;
+        }
+
         if (quote.error) {
           setAmount(isExactOut ? IOType.input : IOType.output, "0");
           setIsFetchingQuote({ input: false, output: false });
@@ -176,7 +191,6 @@ export const useSwap = () => {
         const outputTokenPrice = outputAmount
           .multipliedBy(quote.val.output_token_price)
           .toFixed(2);
-
         setTokenPrices({
           input: inputTokenPrice,
           output: outputTokenPrice,
@@ -187,10 +201,23 @@ export const useSwap = () => {
     [getQuote, setAmount, setStrategy, setTokenPrices, setIsFetchingQuote]
   );
 
+  const abortFetchQuote = useCallback(() => {
+    if (fetchQuoteController.current) {
+      fetchQuoteController.current();
+      fetchQuoteController.current = null;
+      setTokenPrices({ input: "0", output: "0" });
+    }
+  }, [setTokenPrices]);
+
+  useEffect(() => {
+    return () => abortFetchQuote();
+  }, [abortFetchQuote]);
+
   const debounceFetch = useMemo(() =>
     debounce(async (amount: string, fromAsset: Asset, toAsset: Asset, isExactOut: boolean) => {
+      setAmount(isExactOut ? IOType.output : IOType.input, amount);
       fetchQuote(amount, fromAsset, toAsset, isExactOut);
-    }, 500), [fetchQuote]);
+    }, 500), [fetchQuote, setAmount]);
 
   const handleInputAmountChange = useCallback(
     async (amount: string) => {
@@ -199,25 +226,29 @@ export const useSwap = () => {
       const amountInNumber = Number(amount);
       if (!amountInNumber) {
         debounceFetch.cancel();
-        setAmount(IOType.output, "0");
+        abortFetchQuote();
+        setAmount(IOType.output, "");
         return;
       }
       if (minAmount && amountInNumber < minAmount) {
         debounceFetch.cancel();
+        abortFetchQuote();
         setError(`Minimum amount is ${minAmount} ${inputAsset?.symbol}`);
-        setAmount(IOType.output, "0");
+        setAmount(IOType.output, "");
         return;
       }
       if (maxAmount && amountInNumber > maxAmount) {
         debounceFetch.cancel();
+        abortFetchQuote();
         setError(`Maximum amount is ${maxAmount} ${inputAsset?.symbol}`);
-        setAmount(IOType.output, "0");
+        setAmount(IOType.output, "");
         return;
       }
       setError("");
 
       if (!inputAsset || !outputAsset || !Number(amount)) return;
-      debounceFetch(amount, inputAsset, outputAsset, false);
+      const trimmedAmount = amount.replace(/^0+/, '');
+      debounceFetch(trimmedAmount, inputAsset, outputAsset, false);
     },
     [
       inputAsset,
@@ -226,7 +257,8 @@ export const useSwap = () => {
       maxAmount,
       setAmount,
       setError,
-      debounceFetch
+      debounceFetch,
+      abortFetchQuote
     ]
   );
 
@@ -235,11 +267,13 @@ export const useSwap = () => {
     const amountInNumber = Number(amount);
     if (!amountInNumber) {
       debounceFetch.cancel();
-      setAmount(IOType.input, "0");
+      abortFetchQuote();
+      setAmount(IOType.input, "");
       return;
     }
 
     if (!inputAsset || !outputAsset || !Number(amount)) return;
+
     debounceFetch(amount, inputAsset, outputAsset, true);
   };
 

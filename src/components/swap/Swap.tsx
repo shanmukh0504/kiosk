@@ -18,6 +18,12 @@ export const Swap = () => {
   const { quote, garden } = useGarden();
   const { orderInProgress, updateOrder } = ordersStore();
 
+  const handleErrorLog = (order: MatchedOrder, error: string) =>
+    console.error("garden error", order.create_order.create_id, error);
+
+  const handleLog = (orderId: string, log: string) =>
+    console.log("garden log", orderId, log);
+
   useEffect(() => {
     fetchAndSetAssetsAndChains();
   }, [fetchAndSetAssetsAndChains]);
@@ -34,12 +40,6 @@ export const Swap = () => {
     );
     if (bitcoinAsset) setAsset(IOType.input, bitcoinAsset);
   }, [assets, setAsset]);
-
-  const handleErrorLog = (order: MatchedOrder, error: string) =>
-    console.error("garden error", order.create_order.create_id, error);
-
-  const handleLog = (orderId: string, log: string) =>
-    console.log("garden log", orderId, log);
 
   useEffect(() => {
     if (!garden) return;
@@ -67,7 +67,7 @@ export const Swap = () => {
       if (
         orderInProgress &&
         orderInProgress.create_order.create_id ===
-          order.create_order.create_id &&
+        order.create_order.create_id &&
         action === OrderActions.Redeem &&
         result
       ) {
@@ -98,7 +98,7 @@ export const Swap = () => {
   }, [garden, assets, orderInProgress, updateOrder]);
 
   return (
-    <div className="flex flex-col gap-4 w-full sm:max-w-[424px] max-w-[328px] mx-auto mt-10">
+    <div className="flex flex-col gap-4 w-full sm:max-w-[424px] max-w-[328px] -translate-y-10">
       <ToastContainer />
       <div
         className={`bg-white/50 rounded-[20px]

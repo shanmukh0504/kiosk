@@ -7,7 +7,7 @@ interface ScaleYInProps {
 }
 
 /**
- * ScaleY animation
+ * ScaleYIn animation
  * @param triggerAnimation - true fires the animation
  * @param children - component to animate
  * @default triggerAnimation - true
@@ -16,6 +16,7 @@ export const ScaleYIn = ({ children, triggerAnimation = true }: ScaleYInProps) =
     const animation = {
         hidden: { scaleY: 1, transformOrigin: "bottom", },
         animate: { scaleY: [0, 1], transformOrigin: "bottom", transition: { duration: .15, ease: "easeInOut", once: true, } },
+        exit: { scaleY: [1, 0], transformOrigin: "bottom", transition: { duration: .15, ease: "easeInOut", once: true, } },
     }
 
     // const controls = useAnimationControls();
@@ -37,7 +38,7 @@ export const ScaleYIn = ({ children, triggerAnimation = true }: ScaleYInProps) =
     // }, [triggerAnimation, controls]);
 
     return (
-        <motion.div initial="hidden" animate={triggerAnimation ? 'animate' : 'hidden'} variants={animation}>
+        <motion.div initial="hidden" animate={triggerAnimation ? 'animate' : 'hidden'} exit={"exit"} variants={animation}>
             {children}
         </motion.div>
     );
