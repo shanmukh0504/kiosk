@@ -3,17 +3,12 @@ import { SwapInput } from "./SwapInput";
 import { getTimeEstimates, IOType } from "../../constants/constants";
 import { SwapAddress } from "./SwapAddress";
 import { swapStore } from "../../store/swapStore";
-import { assetInfoStore } from "../../store/assetInfoStore";
-import { useGarden } from "@gardenfi/react-hooks";
-import { useEffect, useMemo } from "react";
-import { MatchedOrder } from "@gardenfi/orderbook";
-import { Toast } from "../toast/Toast";
-import { formatAmount } from "../../utils/utils";
+import { useMemo } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { SwapFees } from "./SwapFees";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 
 export const CreateSwap = () => {
-  const { assets } = assetInfoStore();
   const { swapAssets } = swapStore();
   const {
     outputAmount,
@@ -32,7 +27,7 @@ export const CreateSwap = () => {
     isValidBitcoinAddress,
     handleSwapClick,
   } = useSwap();
-  const { garden } = useGarden();
+  const { account: btcAddress } = useBitcoinWallet();
 
   const buttonLabel = useMemo(() => {
     return isInsufficientBalance
@@ -56,52 +51,6 @@ export const CreateSwap = () => {
     if (!inputAsset || !outputAsset) return "";
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
-
-  useEffect(() => {
-    if (!garden) return;
-
-    const handleErrorLog = (order: MatchedOrder, error: string) => {
-      console.error("garden error", order.create_order.create_id, error);
-    };
-    const handleLog = (orderId: string, log: string) => {
-      console.log("garden log", orderId, log);
-    };
-    const handleSuccess = (order: MatchedOrder) => {
-      const { source_swap, destination_swap } = order;
-      const inputAsset =
-        assets &&
-        assets[`${source_swap.chain}_${source_swap.asset.toLowerCase()}`];
-      const outputAsset =
-        assets &&
-        assets[
-          `${destination_swap.chain}_${destination_swap.asset.toLowerCase()}`
-        ];
-      if (!inputAsset || !outputAsset) return;
-
-      const inputAmount = formatAmount(
-        order.source_swap.amount,
-        inputAsset.decimals
-      );
-      const outputAmount = formatAmount(
-        order.destination_swap.amount,
-        outputAsset.decimals
-      );
-      console.log("success order ✅", order.create_order.create_id);
-      Toast.success(
-        `Swap success ${inputAmount} ${inputAsset.symbol} to ${outputAmount} ${outputAsset.symbol}`
-      );
-    };
-
-    garden.on("error", handleErrorLog);
-    garden.on("log", handleLog);
-    garden.on("success", handleSuccess);
-
-    return () => {
-      garden.off("error", handleErrorLog);
-      garden.off("log", handleLog);
-      garden.off("success", handleSuccess);
-    };
-  }, [garden, assets]);
 
   return (
     <div
@@ -141,7 +90,7 @@ export const CreateSwap = () => {
             timeEstimate={timeEstimate}
           />
         </div>
-        <SwapAddress isValidAddress={isValidBitcoinAddress} />
+        {!btcAddress && <SwapAddress isValidAddress={isValidBitcoinAddress} />}
         <SwapFees tokenPrices={tokenPrices} />
         <Button
           className={`transition-colors duration-500 ${

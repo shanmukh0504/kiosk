@@ -1,7 +1,7 @@
-import { FC, useId, useMemo, useState } from "react";
+import { FC, useMemo } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { SwapInfo } from "../../common/SwapInfo";
-import { MatchedOrder } from "@gardenfi/orderbook";
+import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
 import {
   formatAmount,
   getAssetFromSwap,
@@ -9,12 +9,14 @@ import {
 } from "../../utils/utils";
 import { OrderStatus } from "@gardenfi/core";
 import { assetInfoStore } from "../../store/assetInfoStore";
-import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
-import { Tooltip } from "../../common/Tooltip";
+import { modalNames, modalStore } from "../../store/modalStore";
+import { useGarden } from "@gardenfi/react-hooks";
+import { ordersStore } from "../../store/ordersStore";
 
 type TransactionProps = {
   order: MatchedOrder;
   status?: OrderStatus;
+  isLast: boolean;
 };
 
 enum StatusLabel {
@@ -52,11 +54,16 @@ const getOrderStatusLabel = (status: OrderStatus) => {
   }
 };
 
-export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
-  const [idTooltipContent, setIdTooltipContent] = useState("Copy");
-  const idTooltip = useId();
+export const TransactionRow: FC<TransactionProps> = ({
+  order,
+  status,
+  isLast,
+}) => {
   const { create_order, source_swap, destination_swap } = order;
   const { assets } = assetInfoStore();
+  const { setOrderInProgress } = ordersStore();
+  const { setCloseModal } = modalStore();
+  const { evmInitiate } = useGarden();
 
   const sendAsset = useMemo(
     () => getAssetFromSwap(source_swap, assets),
@@ -87,41 +94,47 @@ export const TransactionRow: FC<TransactionProps> = ({ order, status }) => {
     [create_order.updated_at]
   );
 
-  const handleIdClick = () => {
-    navigator.clipboard.writeText(create_order.create_id);
-    setIdTooltipContent("Copied");
+  const handleTransactionClick = async () => {
+    if (statusLabel !== StatusLabel.Expired && status) {
+      setOrderInProgress({ ...order, status: status });
+      setCloseModal(modalNames.transactions);
+    }
 
-    setTimeout(() => {
-      setIdTooltipContent("Copy");
-    }, 2000);
+    if (!isBitcoin(order.source_swap.chain) && status === OrderStatus.Matched) {
+      if (!evmInitiate) return;
+      const res = await evmInitiate(order);
+      if (res.error) {
+        console.error("failed to initiate swap ❌", res.error);
+      }
+    }
   };
 
   if (!sendAsset || !receiveAsset) return null;
 
   return (
-    <div className="flex flex-col gap-1 pb-4">
-      <Typography
-        size="h5"
-        className="bg-white/50 w-fit p-1 px-2 rounded-full cursor-pointer mb-1"
-        onClick={handleIdClick}
-        data-tooltip-id={idTooltip}
-      >
-        {getTrimmedAddress(create_order.create_id, 4, 3)}
-      </Typography>
-      <Tooltip id={idTooltip} place="top" content={idTooltipContent} />
-      <SwapInfo
-        sendAsset={sendAsset}
-        receiveAsset={receiveAsset}
-        sendAmount={sendAmount}
-        receiveAmount={receiveAmount}
-      />
-      <div className="flex justify-between">
-        <Typography size="h5" weight="medium">
-          {statusLabel}
-        </Typography>
-        <Typography size="h5" weight="medium">
-          {dayDifference}
-        </Typography>
+    <div
+      className={`flex flex-col gap-1 p-4  ${isLast ? "rounded-b-2xl" : ""} ${
+        statusLabel !== StatusLabel.Expired
+          ? "cursor-pointer hover:bg-white/50"
+          : ""
+      }`}
+      onClick={handleTransactionClick}
+    >
+      <div className={`flex flex-col gap-1 `}>
+        <SwapInfo
+          sendAsset={sendAsset}
+          receiveAsset={receiveAsset}
+          sendAmount={sendAmount}
+          receiveAmount={receiveAmount}
+        />
+        <div className="flex justify-between">
+          <Typography size="h5" weight="medium">
+            {statusLabel}
+          </Typography>
+          <Typography size="h5" weight="medium">
+            {dayDifference}
+          </Typography>
+        </div>
       </div>
     </div>
   );

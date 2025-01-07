@@ -1,7 +1,7 @@
 import { useState, FC, useMemo } from "react";
 // import { SwapFeesComparison } from "./SwapFeesComparison";
 import { Typography } from "@gardenfi/garden-book";
-import { TokenPrices } from "../../hooks/useSwap";
+import { TokenPrices } from "../../store/swapStore";
 
 type SwapFeesProps = {
   tokenPrices: TokenPrices;
