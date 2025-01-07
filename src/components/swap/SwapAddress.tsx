@@ -1,4 +1,4 @@
-import { useId, useRef, ChangeEvent, FC } from "react";
+import { useId, useRef, ChangeEvent, FC, useMemo } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { Tooltip } from "../../common/Tooltip";
 import { swapStore } from "../../store/swapStore";
@@ -21,8 +21,8 @@ export const SwapAddress: FC<SwapAddressProps> = ({ isValidAddress }) => {
     setBtcAddress(input);
   };
 
-  const isRecoveryAddress = inputAsset && isBitcoin(inputAsset.chain);
-  const isReceiveAddress = outputAsset && isBitcoin(outputAsset.chain);
+  const isRecoveryAddress = useMemo(() => inputAsset && isBitcoin(inputAsset.chain), [inputAsset]);
+  const isReceiveAddress = useMemo(() => outputAsset && isBitcoin(outputAsset.chain), [outputAsset]);
 
   return (
     (isRecoveryAddress || isReceiveAddress) && (

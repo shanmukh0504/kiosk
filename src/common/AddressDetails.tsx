@@ -1,6 +1,6 @@
 import { Chain, isBitcoin } from "@gardenfi/orderbook"
 import { getTrimmedAddress } from "../utils/getTrimmedAddress"
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { assetInfoStore } from '../store/assetInfoStore';
 import { ArrowNorthEastIcon, EditIcon } from "@gardenfi/garden-book";
 import { Typography } from "@gardenfi/garden-book";
@@ -19,11 +19,14 @@ export const AddressDetails: FC<AddressDetailsProps> = ({ setIsEditing, isEditin
     const { address } = useEVMWallet();
     const { chains } = assetInfoStore();
 
-    const redirect = chains && chain ? chains[chain] : null;
+    const redirect = useMemo(() => {
+        return chains && chain ? chains[chain] : null;
+    }, [chains, chain]);
 
-    const handleAddressRedirect = (address: string) => {
+    const handleAddressRedirect = (address: string, chain: Chain) => {
         if (!redirect) return;
-        window.open(redirect.explorer + '/address/' + address, '_blank');
+        if (isBitcoin(chain)) window.open(redirect.explorer + 'address/' + address, '_blank');
+        else window.open(redirect.explorer + '/address/' + address, '_blank');
     }
     return (
         <>
@@ -38,7 +41,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({ setIsEditing, isEditin
                             {getTrimmedAddress(btcAddress)}
                         </Typography>
                         <EditIcon className="w-4 h-4 p-[2px] cursor-pointer" onClick={() => setIsEditing(true)} />
-                        <ArrowNorthEastIcon className="w-4 h-4 p-[3px] cursor-pointer" onClick={() => handleAddressRedirect(btcAddress)} />
+                        <ArrowNorthEastIcon className="w-4 h-4 p-[3px] cursor-pointer" onClick={() => handleAddressRedirect(btcAddress, chain)} />
                     </div>
                 </div>
                 :
@@ -50,7 +53,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({ setIsEditing, isEditin
                         <Typography size="h4" weight="medium">
                             {getTrimmedAddress(address)}
                         </Typography>
-                        <ArrowNorthEastIcon className="w-4 h-4 p-[3px] cursor-pointer" onClick={() => handleAddressRedirect(address)} />
+                        <ArrowNorthEastIcon className="w-4 h-4 p-[3px] cursor-pointer" onClick={() => handleAddressRedirect(address, chain!)} />
                     </div>
                 </div>)
             }

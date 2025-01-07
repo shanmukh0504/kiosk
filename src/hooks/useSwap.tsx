@@ -132,7 +132,6 @@ export const useSwap = () => {
     ) => {
       let cancelled = false;
 
-      // Save the cancel function for external calls
       fetchQuoteController.current = () => {
         cancelled = true;
       };
