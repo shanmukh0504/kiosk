@@ -249,7 +249,9 @@ export const useSwap = () => {
       setError("");
 
       if (!inputAsset || !outputAsset || !Number(amount)) return;
-      const trimmedAmount = amount.replace(/^0+/, '');
+      const trimmedAmount = amount.includes('.')
+        ? amount.replace(/^0+/, '0')
+        : amount.replace(/^0+/, '');
       debounceFetch(trimmedAmount, inputAsset, outputAsset, false);
     },
     [
