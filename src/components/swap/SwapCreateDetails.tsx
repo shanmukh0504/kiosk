@@ -1,25 +1,23 @@
 import { useState, FC, useMemo, useEffect } from "react";
 // import { SwapFeesComparison } from "./SwapFeesComparison";
 import { ScaleY, Typography } from "@gardenfi/garden-book";
-import { TokenPrices } from "../../hooks/useSwap";
+import { TokenPrices } from "../../store/swapStore";
+import { Chain } from "@gardenfi/orderbook";
+import AddressDetails from "../../common/AddressDetails";
 
-type SwapFeesProps = {
+type SwapCreateDetailsProps = {
   tokenPrices: TokenPrices;
+  setIsEditing: (isEditing: boolean) => void;
+  isEditing: boolean;
+  inputChain: Chain | undefined;
+  outputChain: Chain | undefined;
 };
 
-export const SwapFees: FC<SwapFeesProps> = ({ tokenPrices }) => {
-  const [showComparison, setIsShowComparison] = useState({
-    isOpen: false,
-    price: 0,
-  });
-
+export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({ tokenPrices, setIsEditing, isEditing, inputChain, outputChain }) => {
   const fees = useMemo(
     () => Number(tokenPrices.input) - Number(tokenPrices.output),
     [tokenPrices]
   );
-
-  const handleShowComparison = (isOpen: boolean) =>
-    setIsShowComparison({ ...showComparison, isOpen });
 
   const [triggerFeesAnimation, setTriggerFeesAnimation] = useState(false);
 
@@ -32,22 +30,24 @@ export const SwapFees: FC<SwapFeesProps> = ({ tokenPrices }) => {
 
   return (
     <>
-      {/* <SwapFeesComparison
-        visible={showComparison.isOpen}
-        hide={() => handleShowComparison(false)}
-      /> */}
       <div
         className="flex flex-col gap-3
         bg-white/50 rounded-2xl
-        pt-4 pb-3 px-4
-        cursor-pointer transition-[background-color] hover:bg-white"
-        onClick={() => handleShowComparison(true)}
+        pt-4 pb-3 px-4"
       >
         <Typography size="h5" weight="bold">
           Details
         </Typography>
         <div>
-          <div className="flex justify-between gap-0">
+          <div className="flex justify-between items-center pb-1">
+            <Typography size="h5" weight="medium">
+              Slippage
+            </Typography>
+            <Typography size="h4" weight="medium">
+              1%
+            </Typography>
+          </div>
+          <div className="flex justify-between items-center py-1">
             <Typography size="h5" weight="medium">
               Fees
             </Typography>
@@ -59,19 +59,8 @@ export const SwapFees: FC<SwapFeesProps> = ({ tokenPrices }) => {
               </ScaleY>
             </div>
           </div>
-          <div className="flex justify-between">
-            <Typography size="h5" weight="medium">
-              Saved
-            </Typography>
-            <div className="flex gap-5 py-1">
-              <Typography size="h4" weight="medium">
-                {/* TODO: Show time saved */}
-              </Typography>
-              <Typography size="h4" weight="medium">
-                --
-              </Typography>
-            </div>
-          </div>
+          <AddressDetails isEditing={isEditing} setIsEditing={setIsEditing} chain={outputChain} />
+          <AddressDetails isEditing={isEditing} setIsEditing={setIsEditing} chain={inputChain} isRefund />
         </div>
       </div>
     </>

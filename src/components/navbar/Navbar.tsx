@@ -1,7 +1,10 @@
-import { Button, GardenFullLogo, Typography } from "@gardenfi/garden-book";
+import {
+  Button,
+  GardenFullLogo,
+  Typography,
+} from "@gardenfi/garden-book";
 import { INTERNAL_ROUTES } from "../../constants/constants";
 import { API } from "../../constants/api";
-import { modalNames, modalStore } from "../../store/modalStore";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { Address } from "./Address";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -9,15 +12,20 @@ import { useGarden } from "@gardenfi/react-hooks";
 import { OrderStatus } from "@gardenfi/core";
 import { isCurrentRoute } from "../../utils/utils";
 import { MobileMenu } from "./MobileMenu";
+import { connectWalletStore } from "../../store/connectWalletStore";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 
 export const Navbar = () => {
   const [isInitiatingSM, setIsInitiatingSM] = useState(false);
   const [shouldInitiateSM, setShouldInitiateSM] = useState(false);
 
-  const { isConnected } = useEVMWallet();
-  const { setOpenModal } = modalStore();
+  const { isConnected, address } = useEVMWallet();
+  const { setIsOpen } = connectWalletStore();
+  const { account } = useBitcoinWallet();
   const { pendingOrders, isExecuting, initializeSecretManager, secretManager } =
     useGarden();
+
+  const isEVMConnect = !address && !!account;
 
   const isFullyConnected = useMemo(
     () => isConnected && !shouldInitiateSM,
@@ -28,7 +36,7 @@ export const Navbar = () => {
   const handleConnectClick = () => {
     if (isFullyConnected) return;
     if (isConnected && shouldInitiateSM) handleInitializeSM();
-    else setOpenModal(modalNames.connectWallet);
+    else setIsOpen();
   };
 
   const handleInitializeSM = useCallback(async () => {
@@ -70,7 +78,6 @@ export const Navbar = () => {
   }, [
     pendingOrders,
     isExecuting,
-    setOpenModal,
     handleInitializeSM,
     isInitiatingSM,
     shouldInitiateSM,
@@ -108,8 +115,9 @@ export const Navbar = () => {
           onClick={handleConnectClick}
           className="ml-auto w-28"
           size="sm"
+          breakpoints={{ md: "md" }}
         >
-          Connect
+          {isEVMConnect ? "Connect EVM" : "Connect"}
         </Button>
       )}
       <MobileMenu />

@@ -4,10 +4,10 @@ import { useEffect, FC, useState, useMemo } from "react";
 import { Button } from "@gardenfi/garden-book";
 import { MatchedOrder } from "@gardenfi/orderbook";
 import { ParseOrderStatus } from "@gardenfi/core";
-import { useOrdersStore } from "../../store/ordersStore";
-import blockNumberStore from "../../store/blockNumberStore";
+import { blockNumberStore } from "../../store/blockNumberStore";
 import { TransactionRow } from "./TransactionRow";
 import { TransactionsSkeleton } from "./TransactionsSkeleton";
+import { ordersStore } from "../../store/ordersStore";
 
 type TransactionsProps = {
   isOpen: boolean;
@@ -17,15 +17,9 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const { orderBook } = useGarden();
-  const { orders, totalItems, fetchAndSetOrders, loadMore } = useOrdersStore();
+  const { orders, fetchAndSetOrders, totalItems, loadMore } =
+    ordersStore().ordersHistory;
   const { fetchAndSetBlockNumbers, blockNumbers } = blockNumberStore();
-
-  // orders which are initiated
-  const filteredOrders = useMemo(() => {
-    return orders.filter((order) => {
-      return order.source_swap.initiate_tx_hash !== "";
-    });
-  }, [orders]);
 
   const showLoadMore = useMemo(
     () => orders.length < totalItems,
@@ -52,9 +46,18 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   useEffect(() => {
     if (!orderBook || !isOpen) return;
 
+    let isFetching = false;
+
     const fetchOrdersAndBlockNumbers = async () => {
-      await fetchAndSetOrders(orderBook);
-      await fetchAndSetBlockNumbers();
+      if (isFetching) return; // Skip if previous fetch hasn't completed
+
+      try {
+        isFetching = true;
+        await fetchAndSetBlockNumbers();
+        await fetchAndSetOrders(orderBook);
+      } finally {
+        isFetching = false;
+      }
     };
 
     setIsLoadingOrders(true);
@@ -67,22 +70,26 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   return (
     <>
       <div className="overflow-y-auto pb-6 flex flex-col gap-5 scrollbar-hide rounded-2xl">
-        <div className="flex flex-col bg-white/50 rounded-2xl p-4 gap-4 ">
-          <Typography size="h5" weight="bold">
+        <div className="flex flex-col bg-white/50 rounded-2xl">
+          <Typography size="h5" weight="bold" className="p-4">
             Transactions
           </Typography>
-          <div className="flex flex-col gap-4 overflow-auto">
+          <div className="flex flex-col overflow-y-auto w-full">
             {isLoadingOrders ? (
               <TransactionsSkeleton />
-            ) : filteredOrders.length === 0 ? (
-              <Typography size="h5" className="text-center">
-                No Transactions Found.
+            ) : orders.length === 0 ? (
+              <Typography size="h5" className="text-center pb-2">
+                No transactions found.
               </Typography>
             ) : (
-              filteredOrders.map((order, index) => (
-                <div key={index}>
-                  <TransactionRow order={order} status={parseStatus(order)} />
-                  {index !== filteredOrders.length - 1 ? (
+              orders.map((order, index) => (
+                <div key={index} className="w-full">
+                  <TransactionRow
+                    order={order}
+                    status={parseStatus(order)}
+                    isLast={index === orders.length - 1}
+                  />
+                  {index !== orders.length - 1 ? (
                     <div className="bg-white/50 w-full h-px"></div>
                   ) : null}
                 </div>

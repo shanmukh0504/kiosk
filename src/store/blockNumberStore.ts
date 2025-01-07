@@ -8,10 +8,10 @@ type BlockNumberStore = {
   blockNumbers: Record<Chain, number> | null;
   isLoading: boolean;
   error: string;
-  fetchAndSetBlockNumbers: () => Promise<void>;
+  fetchAndSetBlockNumbers: () => Promise<Record<Chain, number> | null>;
 };
 
-const blockNumberStore = create<BlockNumberStore>()((set) => ({
+export const blockNumberStore = create<BlockNumberStore>()((set, get) => ({
   blockNumbers: null,
   isLoading: false,
   error: "",
@@ -27,7 +27,6 @@ const blockNumberStore = create<BlockNumberStore>()((set) => ({
     } finally {
       set({ isLoading: false });
     }
+    return get().blockNumbers;
   },
 }));
-
-export default blockNumberStore;

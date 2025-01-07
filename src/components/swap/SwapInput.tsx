@@ -11,6 +11,7 @@ import { IOType } from "../../constants/constants";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { modalNames, modalStore } from "../../store/modalStore";
+import { ScaleYIn } from "../../common/ScaleY";
 
 type SwapInputProps = {
   type: IOType;
@@ -42,21 +43,14 @@ export const SwapInput: FC<SwapInputProps> = ({
   const [triggerBalanceAnimation, setTriggerBalanceAnimation] = useState(false);
   const [triggerTimeEstimateAnimation, setTriggerTimeEstimateAnimation] = useState(false);
   const [triggerAmountAnimation, setTriggerAmountAnimation] = useState(false);
-  const [isInitialRender, setIsInitialRender] = useState(true);
+  const [isInFocus, setIsInFocus] = useState(false);
 
   useEffect(() => {
-    if (isInitialRender) {
-      setTriggerAmountAnimation(true)
-      setTimeout(() => setIsInitialRender(false), 0);
-    }
-  }, [isInitialRender]);
-
-  useEffect(() => {
-    if (!isInitialRender && amount) {
+    if (amount && amount !== '0.0') {
       setTriggerAmountAnimation(false);
       setTimeout(() => setTriggerAmountAnimation(true), 0);
     }
-  }, [amount, isInitialRender]);
+  }, [amount]);
 
   useEffect(() => {
     if (price) {
@@ -179,26 +173,8 @@ export const SwapInput: FC<SwapInputProps> = ({
         </div>
         <div className="flex justify-between h-6">
           {loading ? (
-            <div className="text-mid-grey">loading...</div>
-          ) : type === IOType.output ? (
-            <ScaleY triggerAnimation={triggerAmountAnimation}>
-              <Typography
-                size={"h3"}
-                breakpoints={{
-                  sm: "h2",
-                }}
-                weight="bold"
-              >
-                <input
-                  ref={inputRef}
-                  className="max-w-[150px] outline-none placeholder:text-mid-grey"
-                  type="text"
-                  value={amount === "0" ? "" : amount}
-                  placeholder="0.0"
-                  onChange={handleAmountChange}
-                />
-              </Typography>
-            </ScaleY>
+            // The "loading..." Text feels like a glitch as it fetches fast
+            <div className="text-mid-grey">Loading...</div>
           ) : (
             <Typography
               size={"h3"}
@@ -207,14 +183,30 @@ export const SwapInput: FC<SwapInputProps> = ({
               }}
               weight="bold"
             >
-              <input
-                ref={inputRef}
-                className="max-w-[150px] outline-none placeholder:text-mid-grey"
-                type="text"
-                value={amount === "0" ? "" : amount}
-                placeholder="0.0"
-                onChange={handleAmountChange}
-              />
+              <div className="relative max-w-[150px] md:max-w-[200px]">
+                <ScaleYIn triggerAnimation={!isInFocus && amount !== "0.0" ? triggerAmountAnimation : false}>
+                  <input
+                    ref={inputRef}
+                    className="w-full outline-none placeholder-transparent" // Make placeholder invisible
+                    type="text"
+                    value={amount === "0" ? "" : amount}
+                    placeholder="0.0"
+                    onChange={handleAmountChange}
+                    onFocus={() => setIsInFocus(true)}
+                    onBlur={() => {
+                      setIsInFocus(false);
+                      setTriggerAmountAnimation(false);
+                    }}
+                  />
+                </ScaleYIn>
+                {/* Placeholder as a separate element */}
+                {(!amount || amount === '0') && (
+                  <span className="absolute left-0 top-1/2 transform -translate-y-1/2 text-mid-grey pointer-events-none">
+                    0.0
+                  </span>
+                )}
+              </div>
+
             </Typography>
           )}
           {asset ? (

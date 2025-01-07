@@ -1,8 +1,10 @@
 import { CloseIcon, Typography } from "@gardenfi/garden-book";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { LOCAL_STORAGE_KEYS } from "../constants/constants";
 
 type NotificationProps = {
+  id: string;
   title: string;
   description: string;
   image: string;
@@ -10,16 +12,30 @@ type NotificationProps = {
 };
 
 export const Notification: FC<NotificationProps> = ({
+  id,
   title,
   description,
   image,
   link,
 }) => {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const savedNotificationId = localStorage.getItem(
+      LOCAL_STORAGE_KEYS.notification
+    );
+    if (savedNotificationId !== id) setVisible(true);
+  }, [id]);
+
+  const handleClose = () => {
+    localStorage.setItem(LOCAL_STORAGE_KEYS.notification, id);
+    setVisible(false);
+  };
+
   return (
     <div
       className={`bg-white/50 backdrop-blur-[20px]
-            fixed left-2 right-2 sm:left-10 bottom-10 p-4 z-50
+            fixed left-2 right-2 sm:left-10 bottom-10 p-4 z-40
             transition-[border-radius,width,height,transform] ease-cubic-in-out duration-300
             ${visible
           ? "rounded-2xl w-[344px] h-24 sm:w-[440px] "
@@ -66,7 +82,11 @@ export const Notification: FC<NotificationProps> = ({
           />
         </Link>
         <div className={`flex gap-1 `}>
-          <Link to={link} target="_blank" className="leading-4 flex flex-col gap-1 max-w-[306px] w-fit ">
+          <Link
+            to={link}
+            target="_blank"
+            className="leading-4 flex flex-col gap-1 max-w-[306px] w-fit "
+          >
             <Typography size="h4" weight="bold">
               {title}
             </Typography>
@@ -79,10 +99,7 @@ export const Notification: FC<NotificationProps> = ({
             </Typography>
           </Link>
           <div className="flex justify-center items-center w-[22px] h-5">
-            <CloseIcon
-              className="cursor-pointer "
-              onClick={() => setVisible(false)}
-            />
+            <CloseIcon className="cursor-pointer " onClick={handleClose} />
           </div>
         </div>
       </div>
