@@ -7,13 +7,31 @@ export const INTERNAL_ROUTES = {
 } as const;
 
 export const SUPPORTED_WALLETS = {
-  Injected: { name: "Browser Wallet", imgSrc: "https://garden-finance.imgix.net/wallets/injected.svg" },
-  MetaMask: { name: "MetaMask", imgSrc: "https://garden-finance.imgix.net/wallets/metamask.svg" },
-  "Coinbase Wallet": { name: "Coinbase Wallet", imgSrc: "https://garden-finance.imgix.net/wallets/coinbase.svg" },
-  "OKX Wallet": { name: "OKX Wallet", imgSrc: "https://garden-finance.imgix.net/wallets/okx.svg" },
-  Phantom: { name: "Phantom", imgSrc: "https://garden-finance.imgix.net/wallets/phantom.svg" },
-  "Rabby Wallet": { name: "Rabby Wallet", imgSrc: "https://garden-finance.imgix.net/wallets/rabby .svg" },
-}
+  Injected: {
+    name: "Browser Wallet",
+    imgSrc: "https://garden-finance.imgix.net/wallets/injected.svg",
+  },
+  MetaMask: {
+    name: "MetaMask",
+    imgSrc: "https://garden-finance.imgix.net/wallets/metamask.svg",
+  },
+  "Coinbase Wallet": {
+    name: "Coinbase Wallet",
+    imgSrc: "https://garden-finance.imgix.net/wallets/coinbase.svg",
+  },
+  "OKX Wallet": {
+    name: "OKX Wallet",
+    imgSrc: "https://garden-finance.imgix.net/wallets/okx.svg",
+  },
+  Phantom: {
+    name: "Phantom",
+    imgSrc: "https://garden-finance.imgix.net/wallets/phantom.svg",
+  },
+  "Rabby Wallet": {
+    name: "Rabby Wallet",
+    imgSrc: "https://garden-finance.imgix.net/wallets/rabby.svg",
+  },
+};
 
 export const THEMES = {
   swap: "swap",
