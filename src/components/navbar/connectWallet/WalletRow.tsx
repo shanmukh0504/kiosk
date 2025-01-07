@@ -9,6 +9,7 @@ type WalletRowProps = {
   onClick: () => void;
   isConnecting: boolean;
   isConnected: IsConnected;
+  isAvailable: boolean;
 };
 
 type IsConnected = {
@@ -21,10 +22,13 @@ export const WalletRow: FC<WalletRowProps> = ({
   onClick,
   isConnecting,
   isConnected,
+  isAvailable,
 }) => {
   return (
     <div
-      className={`flex items-center justify-between gap-4 p-4 cursor-pointer hover:bg-off-white rounded-xl`}
+      className={`flex items-center justify-between gap-4 p-4 rounded-xl ${
+        isAvailable ? "hover:bg-off-white cursor-pointer" : "opacity-50"
+      }`}
       onClick={onClick}
     >
       <div className="flex gap-4">

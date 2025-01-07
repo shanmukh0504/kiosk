@@ -677,9 +677,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/react-hooks@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@gardenfi/react-hooks@npm:2.0.1"
+"@gardenfi/react-hooks@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "@gardenfi/react-hooks@npm:2.0.3"
   dependencies:
     "@catalogfi/utils": "npm:^0.1.6"
     "@catalogfi/wallets": "npm:^0.2.51"
@@ -688,8 +688,7 @@ __metadata:
     "@gardenfi/utils": "npm:^2.0.0"
     react: "npm:^18.3.1"
     viem: "npm:^2.21.15"
-    wagmi: "npm:^2.12.16"
-  checksum: 10c0/b12fb8e22fe45a52eeb43f87db02edfa2a3392bcb00c577ef66287803d2a0debfaa9142bd468c0a31a8543a5991f0fce15c543bee87d09c8742a009743b25aa5
+  checksum: 10c0/2be27ae7b868dc260250ab538915a16fba6498e0dcfb2b5383677fc4ff1572df4afbc4a7811e9047214b93dc2552970e315507b3e8822eafece723edb18204e7
   languageName: node
   linkType: hard
 
@@ -705,9 +704,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/wallet-connectors@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@gardenfi/wallet-connectors@npm:2.0.0"
+"@gardenfi/wallet-connectors@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@gardenfi/wallet-connectors@npm:2.0.1"
   dependencies:
     "@catalogfi/utils": "npm:^0.1.11"
     "@catalogfi/wallets": "npm:^0.2.54"
@@ -715,7 +714,7 @@ __metadata:
     bitcoinjs-lib: "npm:^7.0.0-rc.0"
     react: "npm:^18.3.1"
     tiny-secp256k1: "npm:^2.2.3"
-  checksum: 10c0/2ce154e5d728b471a6213cc8df5847fbf8cccc003d928b80a93422c2a6a94f2483e0d79dccd7568b0f9ed3a4fe59b74ebb884b598323073ebb1fe61405a00d79
+  checksum: 10c0/4feb4ecb014dfd350e214c688194bd4c182f0dfec7b315f8d84118f38bf45cd72e3a6c8bfcd525c11e7c99ce7ced834c5b558ad1fddb82c217aa0eb5497643e2
   languageName: node
   linkType: hard
 
@@ -5820,9 +5819,9 @@ __metadata:
     "@gardenfi/core": "npm:^2.0.2"
     "@gardenfi/garden-book": "npm:^0.1.59"
     "@gardenfi/orderbook": "npm:^2.0.0"
-    "@gardenfi/react-hooks": "npm:^2.0.1"
+    "@gardenfi/react-hooks": "npm:^2.0.3"
     "@gardenfi/utils": "npm:^2.0.0"
-    "@gardenfi/wallet-connectors": "npm:^2.0.0"
+    "@gardenfi/wallet-connectors": "npm:^2.0.1"
     "@tanstack/react-query": "npm:^5.51.23"
     "@types/lodash.debounce": "npm:^4"
     "@types/node": "npm:^22.8.1"
@@ -10969,7 +10968,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wagmi@npm:^2.12.16, wagmi@npm:^2.12.5":
+"wagmi@npm:^2.12.5":
   version: 2.14.6
   resolution: "wagmi@npm:2.14.6"
   dependencies:
