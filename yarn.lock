@@ -627,9 +627,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/core@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "@gardenfi/core@npm:2.0.2"
+"@gardenfi/core@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "@gardenfi/core@npm:2.0.3"
   dependencies:
     "@catalogfi/utils": "npm:^0.1.6"
     "@catalogfi/wallets": "npm:^0.2.51"
@@ -640,7 +640,7 @@ __metadata:
     tiny-secp256k1: "npm:^2.2.3"
     varuint-bitcoin: "npm:^1.1.2"
     viem: "npm:^2.21.15"
-  checksum: 10c0/6dccb668e18dd2b54bc7c25d264b6368700d7ec918e179f198b32707278e0c653177b9f33450b800023cde61859260e06021b4caab7d78649503309185a8a1be
+  checksum: 10c0/64690f6f240e7845a9d0612bfd75e7deac68f8f91c7f9075ce458ab49b598b220ad7a8e9ea5072e15e1a5abc30e343730b25b2c9cf3e03b9207287b823591859
   languageName: node
   linkType: hard
 
@@ -678,18 +678,17 @@ __metadata:
   linkType: hard
 
 "@gardenfi/react-hooks@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@gardenfi/react-hooks@npm:2.0.1"
+  version: 2.0.4
+  resolution: "@gardenfi/react-hooks@npm:2.0.4"
   dependencies:
     "@catalogfi/utils": "npm:^0.1.6"
     "@catalogfi/wallets": "npm:^0.2.51"
-    "@gardenfi/core": "npm:^2.0.2"
+    "@gardenfi/core": "npm:^2.0.3"
     "@gardenfi/orderbook": "npm:^2.0.0"
     "@gardenfi/utils": "npm:^2.0.0"
     react: "npm:^18.3.1"
     viem: "npm:^2.21.15"
-    wagmi: "npm:^2.12.16"
-  checksum: 10c0/b12fb8e22fe45a52eeb43f87db02edfa2a3392bcb00c577ef66287803d2a0debfaa9142bd468c0a31a8543a5991f0fce15c543bee87d09c8742a009743b25aa5
+  checksum: 10c0/dcad308bed8c38fb9555108e1559be34e6bb8b4b5b24aa22821a53a370f3c3169fbb1d7bb5d89ac8ded568e5c8dd83da7ac9771103978e4a0e64fe98a2b7de61
   languageName: node
   linkType: hard
 
@@ -706,8 +705,8 @@ __metadata:
   linkType: hard
 
 "@gardenfi/wallet-connectors@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@gardenfi/wallet-connectors@npm:2.0.0"
+  version: 2.0.1
+  resolution: "@gardenfi/wallet-connectors@npm:2.0.1"
   dependencies:
     "@catalogfi/utils": "npm:^0.1.11"
     "@catalogfi/wallets": "npm:^0.2.54"
@@ -715,7 +714,7 @@ __metadata:
     bitcoinjs-lib: "npm:^7.0.0-rc.0"
     react: "npm:^18.3.1"
     tiny-secp256k1: "npm:^2.2.3"
-  checksum: 10c0/2ce154e5d728b471a6213cc8df5847fbf8cccc003d928b80a93422c2a6a94f2483e0d79dccd7568b0f9ed3a4fe59b74ebb884b598323073ebb1fe61405a00d79
+  checksum: 10c0/4feb4ecb014dfd350e214c688194bd4c182f0dfec7b315f8d84118f38bf45cd72e3a6c8bfcd525c11e7c99ce7ced834c5b558ad1fddb82c217aa0eb5497643e2
   languageName: node
   linkType: hard
 
@@ -5817,7 +5816,7 @@ __metadata:
   resolution: "garden-kiosk@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.13.0"
-    "@gardenfi/core": "npm:^2.0.2"
+    "@gardenfi/core": "npm:^2.0.3"
     "@gardenfi/garden-book": "npm:^0.1.59"
     "@gardenfi/orderbook": "npm:^2.0.0"
     "@gardenfi/react-hooks": "npm:^2.0.1"
@@ -10969,7 +10968,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wagmi@npm:^2.12.16, wagmi@npm:^2.12.5":
+"wagmi@npm:^2.12.5":
   version: 2.14.6
   resolution: "wagmi@npm:2.14.6"
   dependencies:
