@@ -12,8 +12,8 @@
   "dependencies": {
     "@gardenfi/core": "2.0.3",
     "@gardenfi/garden-book": "^0.1.59",
-    "@gardenfi/orderbook": "^0.2.0-beta.41",
-    "@gardenfi/react-hooks": "^0.0.1-beta.135",
+    "@gardenfi/orderbook": "2.0.0",
+    "@gardenfi/react-hooks": "2.0.4",
     "@gardenfi/utils": "^0.0.1-beta.19",
     "@gardenfi/wallet-connectors": "^0.1.0-beta.10",
     "@tanstack/react-query": "^5.51.23",
