@@ -29,9 +29,9 @@ type SwapState = {
   setAsset: (ioType: IOType, asset: Asset) => void;
   setAmount: (ioType: IOType, amount: string) => void;
   setBtcAddress: (btcAddress: string) => void;
-  swapAssets: () => void;
   setError: (error: string) => void;
   setIsFetchingQuote: (isFetchingQuote: FetchingQuote) => void;
+  swapAssetsAndAmounts: () => void;
   clearSwapState: () => void;
   clear: () => void;
 };
@@ -84,26 +84,6 @@ export const swapStore = create<SwapState>((set) => ({
       btcAddress,
     }));
   },
-  swapAssets: () => {
-    set((state) => {
-      const newInputAmount =
-        !state.outputAmount || state.outputAmount === "0"
-          ? ""
-          : state.outputAmount;
-
-      const newOutputAmount =
-        !state.inputAmount || state.inputAmount === "0"
-          ? ""
-          : state.outputAmount;
-      return {
-        ...state,
-        inputAsset: state.outputAsset,
-        outputAsset: state.inputAsset,
-        inputAmount: newInputAmount,
-        outputAmount: newOutputAmount,
-      };
-    });
-  },
   setIsSwapping: (isSwapping) => {
     set({ isSwapping });
   },
@@ -118,6 +98,20 @@ export const swapStore = create<SwapState>((set) => ({
   },
   setIsFetchingQuote: (isFetchingQuote) => {
     set({ isFetchingQuote });
+  },
+  swapAssetsAndAmounts: () => {
+    set((state) => {
+      if (!state.inputAsset || !state.outputAsset) {
+        return state;
+      }
+      return {
+        ...state,
+        inputAsset: state.outputAsset,
+        outputAsset: state.inputAsset,
+        inputAmount: "",
+        outputAmount: (state.inputAmount !== "" && state.inputAmount !== "0") ? state.inputAmount : "",
+      };
+    });
   },
   clearSwapState: () => {
     set({

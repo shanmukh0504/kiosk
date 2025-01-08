@@ -35,6 +35,7 @@ export const useSwap = () => {
     setError,
     setIsFetchingQuote,
     setTokenPrices,
+    swapAssetsAndAmounts,
     clearSwapState,
     setBtcAddress,
   } = swapStore();
@@ -44,7 +45,7 @@ export const useSwap = () => {
   const { swapAndInitiate, getQuote } = useGarden();
   const { provider, account } = useBitcoinWallet();
   const fetchQuoteController = useRef<(() => void) | null>(null);
-
+  const isSwappingInProgress = useRef(false);
 
   const isInsufficientBalance = useMemo(
     () => new BigNumber(inputAmount).gt(inputTokenBalance),
@@ -281,6 +282,33 @@ export const useSwap = () => {
     debounceFetch(amount, inputAsset, outputAsset, true);
   };
 
+  const handleAssetSwap = useCallback(async () => {
+    if (isSwappingInProgress.current) return;
+    isSwappingInProgress.current = true;
+
+    try {
+      if (!inputAsset || !outputAsset || !outputAmount) {
+        return;
+      }
+
+      swapAssetsAndAmounts();
+
+      if (Number(inputAmount)) {
+        await fetchQuote(
+          inputAmount,
+          outputAsset,
+          inputAsset,
+          true
+        );
+      }
+    } catch (error) {
+      console.error("Error during asset swap:", error);
+    } finally {
+      isSwappingInProgress.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inputAsset, outputAsset, inputAmount, outputAmount, fetchQuote]);
+
   const handleSwapClick = async () => {
     if (
       !validSwap ||
@@ -364,8 +392,9 @@ export const useSwap = () => {
     }
   };
 
+
   useEffect(() => {
-    if (!inputAsset || !outputAsset) return;
+    if (!inputAsset || !outputAsset || isSwappingInProgress.current) return;
     setError("");
     handleInputAmountChange(inputAmount);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -411,6 +440,7 @@ export const useSwap = () => {
     error,
     isSwapping,
     isBitcoinSwap,
+    handleAssetSwap,
     handleInputAmountChange,
     handleOutputAmountChange,
     inputTokenBalance,

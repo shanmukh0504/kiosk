@@ -10,12 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@gardenfi/core": "0.3.0-beta.14",
-    "@gardenfi/garden-book": "^0.1.59",
-    "@gardenfi/orderbook": "^0.2.0-beta.41",
-    "@gardenfi/react-hooks": "^0.0.1-beta.135",
-    "@gardenfi/utils": "^0.0.1-beta.19",
-    "@gardenfi/wallet-connectors": "^2.0.1",
+    "@gardenfi/core": "^2.0.3",
+    "@gardenfi/garden-book": "^0.1.61",
+    "@gardenfi/orderbook": "^2.0.0",
+    "@gardenfi/react-hooks": "^2.0.1",
+    "@gardenfi/utils": "^2.0.0",
+    "@gardenfi/wallet-connectors": "^2.0.0",
     "@tanstack/react-query": "^5.51.23",
     "axios": "^1.7.6",
     "bignumber.js": "^9.1.2",

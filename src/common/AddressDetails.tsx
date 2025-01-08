@@ -4,19 +4,16 @@ import { FC, useMemo } from "react";
 import { assetInfoStore } from '../store/assetInfoStore';
 import { ArrowNorthEastIcon, EditIcon } from "@gardenfi/garden-book";
 import { Typography } from "@gardenfi/garden-book";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { useEVMWallet } from "../hooks/useEVMWallet";
 
 type AddressDetailsProps = {
-    setIsEditing: (isEditing: boolean) => void;
-    isEditing: boolean;
+    setIsEditing?: (isEditing: boolean) => void;
+    isEditing?: boolean;
     chain: Chain | undefined;
-    isRefund?: boolean
+    isRefund?: boolean;
+    address?: string;
 };
 
-export const AddressDetails: FC<AddressDetailsProps> = ({ setIsEditing, isEditing, chain, isRefund }) => {
-    const { account: btcAddress } = useBitcoinWallet();
-    const { address } = useEVMWallet();
+export const AddressDetails: FC<AddressDetailsProps> = ({ setIsEditing, isEditing, chain, isRefund, address }) => {
     const { chains } = assetInfoStore();
 
     const redirect = useMemo(() => {
@@ -30,33 +27,18 @@ export const AddressDetails: FC<AddressDetailsProps> = ({ setIsEditing, isEditin
     }
     return (
         <>
-            {isBitcoin(chain!) ?
-                (btcAddress) &&
-                <div className={`flex justify-between items-center py-0.5 duration-300 transition-all ${!isEditing ? 'opacity-100 max-h-7 pointer-events-auto mb-0' : 'max-h-0 -mb-1 opacity-0 pointer-events-none'}`}>
-                    <Typography size="h5" weight="medium">
-                        {isRefund ? "Refund" : "Receive"} address
+            {address && <div className={`flex justify-between items-center py-0.5 duration-300 transition-all ${!isEditing ? 'opacity-100 max-h-7 pointer-events-auto mb-0' : 'max-h-0 -mb-1 opacity-0 pointer-events-none'}`}>
+                <Typography size="h5" weight="medium">
+                    {isRefund ? "Refund" : "Receive"} address
+                </Typography>
+                <div className="flex gap-2.5 items-center">
+                    <Typography size="h4" weight="medium">
+                        {getTrimmedAddress(address!)}
                     </Typography>
-                    <div className="flex gap-2.5 items-center">
-                        <Typography size="h4" weight="medium">
-                            {getTrimmedAddress(btcAddress)}
-                        </Typography>
-                        <EditIcon className="w-4 h-4 p-[2px] cursor-pointer" onClick={() => setIsEditing(true)} />
-                        <ArrowNorthEastIcon className="w-4 h-4 p-[3px] cursor-pointer" onClick={() => handleAddressRedirect(btcAddress, chain)} />
-                    </div>
+                    {isBitcoin(chain!) && <EditIcon className="w-4 h-4 p-[2px] cursor-pointer" onClick={() => setIsEditing && setIsEditing(true)} />}
+                    <ArrowNorthEastIcon className="w-4 h-4 p-[3px] cursor-pointer" onClick={() => handleAddressRedirect(address!, chain!)} />
                 </div>
-                :
-                (address && <div className="flex justify-between items-center py-0.5">
-                    <Typography size="h5" weight="medium">
-                        {isRefund ? "Refund" : "Receive"} address
-                    </Typography>
-                    <div className="flex gap-2.5 items-center">
-                        <Typography size="h4" weight="medium">
-                            {getTrimmedAddress(address)}
-                        </Typography>
-                        <ArrowNorthEastIcon className="w-4 h-4 p-[3px] cursor-pointer" onClick={() => handleAddressRedirect(address, chain!)} />
-                    </div>
-                </div>)
-            }
+            </div>}
         </>
     );
 }

@@ -2,14 +2,12 @@ import { Button, ExchangeIcon } from "@gardenfi/garden-book";
 import { SwapInput } from "./SwapInput";
 import { getTimeEstimates, IOType } from "../../constants/constants";
 import { SwapAddress } from "./SwapAddress";
-import { swapStore } from "../../store/swapStore";
 import { useMemo, useState } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { SwapCreateDetails } from "./SwapCreateDetails";
 
 export const CreateSwap = () => {
-  const { swapAssets } = swapStore();
   const {
     outputAmount,
     inputAmount,
@@ -17,6 +15,7 @@ export const CreateSwap = () => {
     outputAsset,
     handleInputAmountChange,
     handleOutputAmountChange,
+    handleAssetSwap,
     loading,
     error,
     tokenPrices,
@@ -78,7 +77,7 @@ export const CreateSwap = () => {
             className="absolute bg-white border border-light-grey rounded-full
             -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 transition-transform hover:scale-[1.1]
             p-1.5 cursor-pointer"
-            onClick={swapAssets}
+            onClick={handleAssetSwap}
           >
             <ExchangeIcon />
           </div>
@@ -92,7 +91,7 @@ export const CreateSwap = () => {
             timeEstimate={timeEstimate}
           />
         </div>
-        <div className={`flex flex-col transition-all opacity-0 duration-700 ease-in-out ${inputAsset && outputAsset && (inputAmount && Number(inputAmount) !== 0) ? 'max-h-[500px] opacity-100 pointer-events-auto' : 'max-h-0 opacity-0 pointer-events-none'}`}>
+        <div className={`flex flex-col transition-all opacity-0 duration-700 ease-in-out ${inputAsset && outputAsset && ((inputAmount && Number(inputAmount) !== 0) || (outputAmount && Number(outputAmount) !== 0)) ? 'max-h-[500px] opacity-100 pointer-events-auto' : 'max-h-0 opacity-0 pointer-events-none'}`}>
           <div className={`transition-all opacity-0 duration-500 overflow-hidden ease-in-out ${(isEditing || !btcAddress) ? 'max-h-[120px] opacity-100 pointer-events-auto' : 'max-h-0 opacity-0 pointer-events-none'}`}>
             <SwapAddress isValidAddress={isValidBitcoinAddress} />
           </div>
