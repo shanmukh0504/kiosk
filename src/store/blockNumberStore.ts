@@ -3,6 +3,7 @@ import axios from "axios";
 import { create } from "zustand";
 import { API } from "../constants/api";
 import { network } from "../constants/constants";
+import { Network } from "@gardenfi/utils";
 
 type BlockNumberStore = {
   blockNumbers: Record<Chain, number> | null;
@@ -20,7 +21,7 @@ export const blockNumberStore = create<BlockNumberStore>()((set, get) => ({
       set({ isLoading: true });
       const res = await axios.get<{
         [key in Chain]: number;
-      }>(API().data.blockNumbers(network));
+      }>(API().data.blockNumbers(network as Network));
       set({ blockNumbers: res.data, error: "" });
     } catch (error) {
       set({ error: (error as Error).message });

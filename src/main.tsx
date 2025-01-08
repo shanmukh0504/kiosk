@@ -8,7 +8,6 @@ import { config } from "./layout/wagmi/config.ts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 import "@gardenfi/garden-book/style.css";
-import { environment, GardenProvider } from "@gardenfi/react-hooks";
 import { network } from "./constants/constants.tsx";
 import { BTCWalletProvider } from "@gardenfi/wallet-connectors";
 import { Network } from "@gardenfi/utils";
@@ -21,19 +20,12 @@ createRoot(document.getElementById("root")!).render(
       <HelmetProvider>
         <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
-            <GardenProvider
-              config={{
-                store: localStorage,
-                environment: network as environment,
-              }}
+            <BTCWalletProvider
+              network={network as Network}
+              store={localStorage}
             >
-              <BTCWalletProvider
-                network={network as Network}
-                store={localStorage}
-              >
-                <App />
-              </BTCWalletProvider>
-            </GardenProvider>
+              <App />
+            </BTCWalletProvider>
           </QueryClientProvider>
         </WagmiProvider>
       </HelmetProvider>

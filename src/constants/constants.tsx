@@ -1,6 +1,5 @@
 import { Asset, isBitcoin, isEVM } from "@gardenfi/orderbook";
-import { environment } from "@gardenfi/react-hooks";
-import { Network } from "@gardenfi/utils";
+import { Environment, Network } from "@gardenfi/utils";
 
 export const INTERNAL_ROUTES = {
   swap: { name: "Swap", path: "/" },
@@ -40,4 +39,4 @@ export const getTimeEstimates = (inputAsset: Asset) => {
   return "";
 };
 
-export const network: environment | Network = import.meta.env.VITE_NETWORK;
+export const network: Environment | Network = import.meta.env.VITE_NETWORK;
