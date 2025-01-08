@@ -5,8 +5,6 @@ import { getCurrentTheme } from "../utils/utils";
 import { Navbar } from "../components/navbar/Navbar";
 import { Modal } from "../components/modal/Modal";
 import { Notification } from "../common/Notification";
-// @ts-expect-error - Package exports types but they cannot be resolved due to package.json exports configuration
-import { SnowOverlay } from "react-snow-overlay";
 import { ViewPortListener } from "../common/ViewPortListener";
 
 type LayoutProps = {
@@ -27,7 +25,6 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
           <Navbar />
           {children}
         </div>
-        <SnowOverlay maxParticles={300} />
         <Notification
           id="introducing-act-2"
           title="introducing act 2: bloom"

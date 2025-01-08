@@ -3,7 +3,6 @@ import { create } from "zustand";
 export const modalNames = {
   connectWallet: "connectWallet",
   transactions: "transactions",
-  initializeSM: "initializeSM",
   whiteList: "whiteList",
   assetList: "assetList",
   stakeSeed: "stakeSeed",

@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { ConnectWallet } from "../navbar/connectWallet/ConnectWallet";
 import { TransactionsComponent } from "../transactions/TransactionsComponent";
-import { InitializeSMModal } from "./InitializeSMModal";
 import { ResponsiveModal } from "./ResponsiveModal";
 import { AssetSelector } from "../swap/AssetSelector";
 import { StakeSeed } from "../stake/StakeSeed";
@@ -46,12 +45,6 @@ export const Modal = () => {
         open={modalName.transactions}
         onClose={() => setCloseModal(modalNames.transactions)}
       />
-
-      <InitializeSMModal
-        open={modalName.initializeSM}
-        onClose={() => setCloseModal(modalNames.initializeSM)}
-      />
-
       <ResponsiveModal
         open={modalName.whiteList}
         onClose={() => setCloseModal(modalNames.whiteList)}

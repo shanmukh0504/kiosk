@@ -4,12 +4,17 @@ import { IOType, network } from "../constants/constants";
 import { Asset, isBitcoin, NetworkType } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
-import { constructOrderPair, validateBTCAddress } from "@gardenfi/core";
+import {
+  constructOrderPair,
+  OrderStatus,
+  validateBTCAddress,
+} from "@gardenfi/core";
 import BigNumber from "bignumber.js";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useEVMWallet } from "./useEVMWallet";
 import { useBalances } from "./useBalances";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { ordersStore } from "../store/ordersStore";
 
 export const useSwap = () => {
   const {
@@ -28,13 +33,13 @@ export const useSwap = () => {
     setAmount,
     setError,
     setIsFetchingQuote,
-    setSwapInProgress,
     setTokenPrices,
     clearSwapState,
     setBtcAddress,
   } = swapStore();
   const { tokenBalance: inputTokenBalance } = useBalances(inputAsset);
   const { strategies } = assetInfoStore();
+  const { setOrderInProgress } = ordersStore();
   const { address } = useEVMWallet();
   const { swapAndInitiate, getQuote } = useGarden();
   const { provider, account } = useBitcoinWallet();
@@ -272,29 +277,38 @@ export const useSwap = () => {
 
       console.log("orderCreated ✅", res.val);
 
-      if (isBitcoin(res.val.source_swap.chain) && provider) {
-        const order = res.val;
-        const bitcoinRes = await provider.sendBitcoin(
-          order.source_swap.swap_id,
-          Number(order.source_swap.amount)
-        );
-        if (bitcoinRes.error) {
-          console.error("failed to send bitcoin ❌", bitcoinRes.error);
-          setIsSwapping(false);
+      if (isBitcoin(res.val.source_swap.chain)) {
+        if (provider) {
+          const order = res.val;
+          const bitcoinRes = await provider.sendBitcoin(
+            order.source_swap.swap_id,
+            Number(order.source_swap.amount)
+          );
+          if (bitcoinRes.error) {
+            console.error("failed to send bitcoin ❌", bitcoinRes.error);
+            setIsSwapping(false);
+          }
+          const updateOrder = {
+            ...order,
+            source_swap: {
+              ...order.source_swap,
+              initiate_tx_hash: bitcoinRes.val ?? "",
+            },
+            status: bitcoinRes.val
+              ? OrderStatus.InitiateDetected
+              : OrderStatus.Matched,
+          };
+          setOrderInProgress(updateOrder);
+          clearSwapState();
+          return;
         }
-        const updateOrder = {
-          ...order,
-          source_swap: {
-            ...order.source_swap,
-            initiate_tx_hash: bitcoinRes.val ?? "",
-          },
-        };
-        setSwapInProgress({ isOpen: true, order: updateOrder });
+        setIsSwapping(false);
+        setOrderInProgress({ ...res.val, status: OrderStatus.Matched });
         clearSwapState();
         return;
       }
       setIsSwapping(false);
-      setSwapInProgress({ isOpen: true, order: res.val });
+      setOrderInProgress({ ...res.val, status: OrderStatus.InitiateDetected });
       clearSwapState();
     } catch (error) {
       console.log("failed to create order ❌", error);
