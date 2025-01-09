@@ -27,7 +27,9 @@ export const WalletRow: FC<WalletRowProps> = ({
   return (
     <div
       className={`flex items-center justify-between gap-4 p-4 rounded-xl ${
-        isAvailable ? "hover:bg-off-white cursor-pointer" : "opacity-50"
+        isAvailable
+          ? "hover:bg-off-white cursor-pointer"
+          : "opacity-50 pointer-events-none"
       }`}
       onClick={onClick}
     >
