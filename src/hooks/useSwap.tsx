@@ -255,10 +255,11 @@ export const useSwap = () => {
   const handleInputAmountChange = useCallback(
     async (amount: string) => {
       setAmount(IOType.input, amount);
+      const amountInNumber = Number(amount);
+
       debounceFetch.cancel();
       abortFetchQuote();
 
-      const amountInNumber = Number(amount);
       if (!amountInNumber) {
         setAmount(IOType.output, "");
         setError(IOType.input, "");
@@ -306,9 +307,12 @@ export const useSwap = () => {
       setAmount(IOType.output, amount);
       debounceFetch.cancel();
       abortFetchQuote();
-
       const amountInNumber = Number(amount);
-      if (!amountInNumber && (!Number(inputAmount) || inputAmount === "0")) {
+      if (
+        !amountInNumber &&
+        (!Number(inputAmount) || inputAmount === "0") &&
+        !isSwappingInProgress.current
+      ) {
         setError(IOType.output, "");
         setAmount(IOType.input, "");
         return;
@@ -319,10 +323,15 @@ export const useSwap = () => {
         debounceFetch(inputAmount, inputAsset, outputAsset, false);
         return;
       }
+
       if (!Number(amount)) return;
+
+      const trimmedAmount = amount.includes(".")
+        ? amount.replace(/^0+/, "0")
+        : amount.replace(/^0+/, "");
       setError(IOType.output, "");
 
-      debounceFetch(amount, inputAsset, outputAsset, true);
+      debounceFetch(trimmedAmount, inputAsset, outputAsset, true);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
@@ -336,24 +345,32 @@ export const useSwap = () => {
   );
 
   const handleAssetSwap = useCallback(async () => {
-    if (isSwappingInProgress.current) return;
+    if (isSwappingInProgress.current && !inputAmount) {
+      console.log(inputAmount);
+      console.log(isSwappingInProgress.current);
+      return;
+    }
+    console.log(isSwappingInProgress.current);
     isSwappingInProgress.current = true;
 
     try {
-      if (!inputAsset || !outputAsset || !outputAmount) {
+      if (!inputAsset || !outputAsset) {
         return;
       }
 
-      swapAssetsAndAmounts();
-
-      if (Number(inputAmount)) {
-        await fetchQuote(inputAmount, outputAsset, inputAsset, true);
+      await swapAssetsAndAmounts();
+      if (Number(inputAmount)) await handleOutputAmountChange(inputAmount);
+      else {
+        debounceFetch.cancel();
+        abortFetchQuote();
+        return;
       }
     } catch (error) {
       console.error("Error during asset swap:", error);
     } finally {
       isSwappingInProgress.current = false;
     }
+    return "Ok";
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputAsset, outputAsset, inputAmount, outputAmount, fetchQuote]);
 
