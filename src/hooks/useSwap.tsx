@@ -99,64 +99,33 @@ export const useSwap = () => {
     return (
       inputAsset &&
       outputAsset &&
-      strategies.val && {
-        input:
-          strategies.val[
-            constructOrderPair(
-              inputAsset.chain,
-              inputAsset.atomicSwapAddress,
-              outputAsset.chain,
-              outputAsset.atomicSwapAddress
-            )
-          ],
-        output:
-          strategies.val[
-            constructOrderPair(
-              outputAsset.chain,
-              outputAsset.atomicSwapAddress,
-              inputAsset.chain,
-              inputAsset.atomicSwapAddress
-            )
-          ],
-      }
+      strategies.val &&
+      strategies.val[
+        constructOrderPair(
+          inputAsset.chain,
+          inputAsset.atomicSwapAddress,
+          outputAsset.chain,
+          outputAsset.atomicSwapAddress
+        )
+      ]
     );
   }, [inputAsset, outputAsset, strategies.val]);
 
   const minAmount = useMemo(() => {
-    let inputMin = 0;
-    let outputMin = 0;
-
-    if (swapLimits) {
-      inputMin = new BigNumber(swapLimits.input.minAmount)
-        .dividedBy(10 ** inputAsset!.decimals)
-        .toNumber();
-      outputMin = new BigNumber(swapLimits.output.minAmount)
-        .dividedBy(10 ** outputAsset!.decimals)
-        .toNumber();
-    }
-    return {
-      input: inputMin,
-      output: outputMin,
-    };
-  }, [swapLimits, inputAsset, outputAsset]);
+    return swapLimits && inputAsset
+      ? new BigNumber(swapLimits.minAmount)
+          .dividedBy(10 ** inputAsset.decimals)
+          .toNumber()
+      : undefined;
+  }, [swapLimits, inputAsset]);
 
   const maxAmount = useMemo(() => {
-    let inputMin = 0;
-    let outputMin = 0;
-
-    if (swapLimits) {
-      inputMin = new BigNumber(swapLimits.input.maxAmount)
-        .dividedBy(10 ** inputAsset!.decimals)
-        .toNumber();
-      outputMin = new BigNumber(swapLimits.output.maxAmount)
-        .dividedBy(10 ** outputAsset!.decimals)
-        .toNumber();
-    }
-    return {
-      input: inputMin,
-      output: outputMin,
-    };
-  }, [swapLimits, inputAsset, outputAsset]);
+    return swapLimits && inputAsset
+      ? new BigNumber(swapLimits.maxAmount)
+          .dividedBy(10 ** inputAsset.decimals)
+          .toNumber()
+      : undefined;
+  }, [swapLimits, inputAsset]);
 
   const fetchQuote = useCallback(
     async (
@@ -203,7 +172,6 @@ export const useSwap = () => {
           } else if (quote.error.includes("output amount too less")) {
             setError(IOType.output, "Output amount too less");
           } else {
-            setAmount(IOType.input, "");
             setAmount(isExactOut ? IOType.input : IOType.output, "");
           }
           setIsFetchingQuote({ input: false, output: false });
@@ -297,18 +265,18 @@ export const useSwap = () => {
         return;
       }
 
-      if (minAmount.input && amountInNumber < minAmount.input) {
+      if (minAmount && amountInNumber < minAmount) {
         setError(
           IOType.input,
-          `Minimum amount is ${minAmount.input} ${inputAsset?.symbol}`
+          `Minimum amount is ${minAmount} ${inputAsset?.symbol}`
         );
         setAmount(IOType.output, "");
         return;
       }
-      if (maxAmount.input && amountInNumber > maxAmount.input) {
+      if (maxAmount && amountInNumber > maxAmount) {
         setError(
           IOType.input,
-          `Maximum amount is ${maxAmount.input} ${inputAsset?.symbol}`
+          `Maximum amount is ${maxAmount} ${inputAsset?.symbol}`
         );
         setAmount(IOType.output, "");
         return;
@@ -324,8 +292,8 @@ export const useSwap = () => {
     [
       inputAsset,
       outputAsset,
-      minAmount.input,
-      maxAmount.input,
+      minAmount,
+      maxAmount,
       setAmount,
       setError,
       debounceFetch,
@@ -498,20 +466,20 @@ export const useSwap = () => {
   }, [inputAmount, outputAmount, setTokenPrices, setError]);
 
   useEffect(() => {
-    if (!inputAmount || !minAmount.input || !maxAmount.input) return;
+    if (!inputAmount || !minAmount || !maxAmount) return;
     const amountInNumber = Number(inputAmount);
     if (!amountInNumber) return;
-    if (amountInNumber < minAmount.input) {
+    if (amountInNumber < minAmount) {
       setError(
         IOType.input,
-        `Minimum amount is ${minAmount.input} ${inputAsset?.symbol}`
+        `Minimum amount is ${minAmount} ${inputAsset?.symbol}`
       );
       return;
     }
-    if (amountInNumber > maxAmount.input) {
+    if (amountInNumber > maxAmount) {
       setError(
         IOType.input,
-        `Maximum amount is ${maxAmount.input} ${inputAsset?.symbol}`
+        `Maximum amount is ${maxAmount} ${inputAsset?.symbol}`
       );
       return;
     }
@@ -519,8 +487,8 @@ export const useSwap = () => {
     setError(IOType.input, "");
   }, [
     inputAmount,
-    minAmount.input,
-    maxAmount.input,
+    minAmount,
+    maxAmount,
     inputAsset?.symbol,
     outputAsset?.symbol,
     setError,
