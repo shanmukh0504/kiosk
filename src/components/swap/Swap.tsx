@@ -67,7 +67,7 @@ export const Swap = () => {
       if (
         orderInProgress &&
         orderInProgress.create_order.create_id ===
-        order.create_order.create_id &&
+          order.create_order.create_id &&
         action === OrderActions.Redeem &&
         result
       ) {
@@ -98,7 +98,7 @@ export const Swap = () => {
   }, [garden, assets, orderInProgress, updateOrder]);
 
   return (
-    <div className="flex flex-col gap-4 w-full sm:max-w-[424px] max-w-[328px] -translate-y-[calc(80px-0.75rem)] md:-translate-y-[calc(96px-1rem)]">
+    <div className="flex flex-col gap-4 w-full sm:max-w-[424px] max-w-[328px] -translate-y-[calc(56px+28px)] md:-translate-y-[calc(56px+34px)]">
       <ToastContainer />
       <div
         className={`bg-white/50 rounded-[20px]

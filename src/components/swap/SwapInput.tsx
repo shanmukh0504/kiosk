@@ -136,12 +136,17 @@ export const SwapInput: FC<SwapInputProps> = ({
             >
               {label}
             </Typography>
-            {Number(price) !== 0 && <ScaleYIn triggerAnimation={false}>
-              <Typography size="h5" weight="medium" className="text-mid-grey absolute ">
-                ${price}
-              </Typography>
-            </ScaleYIn>
-            }
+            {Number(price) !== 0 && (
+              <ScaleYIn triggerAnimation={false}>
+                <Typography
+                  size="h5"
+                  weight="medium"
+                  className="text-mid-grey absolute "
+                >
+                  ${price}
+                </Typography>
+              </ScaleYIn>
+            )}
           </div>
           {type === IOType.input &&
             (error ? (
@@ -150,7 +155,10 @@ export const SwapInput: FC<SwapInputProps> = ({
               </Typography>
             ) : balance !== undefined ? (
               <ScaleYIn triggerAnimation={false}>
-                <div className="flex items-center gap-1 cursor-pointer" onClick={handleBalanceClick}>
+                <div
+                  className="flex items-center gap-1 cursor-pointer"
+                  onClick={handleBalanceClick}
+                >
                   <WalletIcon className="h-2.5 w-2.5" />
                   <Typography size="h5" weight="medium">
                     {balance}
@@ -160,16 +168,23 @@ export const SwapInput: FC<SwapInputProps> = ({
             ) : (
               <></>
             ))}
-          {type === IOType.output && timeEstimate && (
-            <ScaleYIn triggerAnimation={false}>
-              <div className="flex gap-1 items-center">
-                <TimerIcon className="h-4" />
-                <Typography size="h5" weight="medium">
-                  {timeEstimate}
-                </Typography>
-              </div>
-            </ScaleYIn>
-          )}
+          {type === IOType.output &&
+            (error ? (
+              <Typography size="h5" weight="medium">
+                <div className="text-red-500">{error}</div>
+              </Typography>
+            ) : (
+              timeEstimate && (
+                <ScaleYIn triggerAnimation={false}>
+                  <div className="flex gap-1 items-center">
+                    <TimerIcon className="h-4" />
+                    <Typography size="h5" weight="medium">
+                      {timeEstimate}
+                    </Typography>
+                  </div>
+                </ScaleYIn>
+              )
+            ))}
         </div>
         <div className="flex justify-between h-6">
           {loading ? (
@@ -192,11 +207,11 @@ export const SwapInput: FC<SwapInputProps> = ({
                     value={amount}
                     onChange={handleAmountChange}
                     placeholder="0.0"
-                  // onFocus={() => setIsInFocus(true)}
-                  // onBlur={() => {
-                  //   setIsInFocus(false);
-                  //   setTriggerAmountAnimation(false);
-                  // }}
+                    // onFocus={() => setIsInFocus(true)}
+                    // onBlur={() => {
+                    //   setIsInFocus(false);
+                    //   setTriggerAmountAnimation(false);
+                    // }}
                   />
                 </ScaleYIn>
                 {/* Placeholder as a separate element */}
@@ -206,7 +221,6 @@ export const SwapInput: FC<SwapInputProps> = ({
                   </span>
                 )} */}
               </div>
-
             </Typography>
           )}
           {asset ? (
@@ -234,7 +248,7 @@ export const SwapInput: FC<SwapInputProps> = ({
             </div>
           )}
         </div>
-      </div >
+      </div>
     </>
   );
 };

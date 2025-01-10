@@ -2,7 +2,7 @@ import { Button, ExchangeIcon } from "@gardenfi/garden-book";
 import { SwapInput } from "./SwapInput";
 import { getTimeEstimates, IOType } from "../../constants/constants";
 import { SwapAddress } from "./SwapAddress";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { SwapCreateDetails } from "./SwapCreateDetails";
@@ -17,7 +17,8 @@ export const CreateSwap = () => {
     handleOutputAmountChange,
     handleAssetSwap,
     loading,
-    error,
+    inputError,
+    outputError,
     tokenPrices,
     validSwap,
     inputTokenBalance,
@@ -28,24 +29,42 @@ export const CreateSwap = () => {
   } = useSwap();
   const { account: btcAddress } = useBitcoinWallet();
 
-  const [isEditing, setIsEditing] = useState(false)
+  const [isEditing, setIsEditing] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  useEffect(() => {
+    if (loading.output || loading.input) {
+      setIsAnimating(true);
+      const interval = setInterval(() => {
+        setIsAnimating((prev) => !prev);
+      }, 1000);
+      return () => clearInterval(interval);
+    } else {
+      const timeout = setTimeout(() => {
+        setIsAnimating(false);
+      }, 1000);
+      return () => clearTimeout(timeout);
+    }
+  }, [loading.output, loading.input]);
 
   const buttonLabel = useMemo(() => {
     return isInsufficientBalance
       ? "Insufficient balance"
       : isSwapping
-        ? "Signing..."
-        : "Swap";
-  }, [isInsufficientBalance, isSwapping]);
+      ? "Signing..."
+      : isAnimating
+      ? "Loading"
+      : "Swap";
+  }, [isInsufficientBalance, isSwapping, isAnimating]);
 
   const buttonVariant = useMemo(() => {
     return isInsufficientBalance
       ? "disabled"
       : isSwapping
-        ? "ternary"
-        : validSwap
-          ? "primary"
-          : "disabled";
+      ? "ternary"
+      : validSwap
+      ? "primary"
+      : "disabled";
   }, [isInsufficientBalance, isSwapping, validSwap]);
 
   const timeEstimate = useMemo(() => {
@@ -70,7 +89,7 @@ export const CreateSwap = () => {
             onChange={handleInputAmountChange}
             loading={loading.input}
             price={tokenPrices.input}
-            error={error}
+            error={inputError}
             balance={inputTokenBalance}
           />
           <div
@@ -87,27 +106,60 @@ export const CreateSwap = () => {
             asset={outputAsset}
             onChange={handleOutputAmountChange}
             loading={loading.output}
+            error={outputError}
             price={tokenPrices.output}
             timeEstimate={timeEstimate}
           />
         </div>
-        <div className={`flex flex-col transition-all opacity-0 duration-700 ease-in-out ${inputAsset && outputAsset && ((inputAmount && Number(inputAmount) !== 0) || (outputAmount && Number(outputAmount) !== 0)) ? 'max-h-[500px] opacity-100 pointer-events-auto' : 'max-h-0 opacity-0 pointer-events-none'}`}>
-          <div className={`transition-all opacity-0 duration-500 overflow-hidden ease-in-out ${(isEditing || !btcAddress) ? 'max-h-[120px] opacity-100 pointer-events-auto' : 'max-h-0 opacity-0 pointer-events-none'}`}>
+        <div
+          className={`flex flex-col transition-all opacity-0 duration-700 ease-in-out ${
+            inputAsset &&
+            outputAsset &&
+            ((inputAmount && Number(inputAmount) !== 0) ||
+              (outputAmount && Number(outputAmount) !== 0))
+              ? "max-h-[500px] opacity-100 pointer-events-auto"
+              : "max-h-0 opacity-0 pointer-events-none"
+          }`}
+        >
+          <div
+            className={`transition-all opacity-0 duration-500 overflow-hidden ease-in-out ${
+              isEditing || !btcAddress
+                ? "max-h-[120px] opacity-100 pointer-events-auto"
+                : "max-h-0 opacity-0 pointer-events-none"
+            }`}
+          >
             <SwapAddress isValidAddress={isValidBitcoinAddress} />
           </div>
-          <SwapCreateDetails tokenPrices={tokenPrices} setIsEditing={setIsEditing} isEditing={isEditing} inputChain={inputAsset?.chain} outputChain={outputAsset?.chain} />
+          <SwapCreateDetails
+            tokenPrices={tokenPrices}
+            setIsEditing={setIsEditing}
+            isEditing={isEditing}
+            inputChain={inputAsset?.chain}
+            outputChain={outputAsset?.chain}
+          />
         </div>
-
         <Button
-          className={`transition-colors duration-500 z-20 ${isSwapping ? "cursor-not-allowed" : ""}`}
+          className={`transition-colors relative duration-500 w-full z-20 overflow-hidden ${
+            isSwapping ? "cursor-not-allowed" : ""
+          }`}
           variant={buttonVariant}
           size="lg"
           onClick={handleSwapClick}
-          disabled={isSwapping || !validSwap || isInsufficientBalance}
+          disabled={
+            isSwapping ||
+            !validSwap ||
+            isInsufficientBalance ||
+            isAnimating ||
+            loading.output ||
+            loading.input
+          }
         >
-          {buttonLabel}
+          <div className={`w-full ${isAnimating ? "shine" : ""}`}>
+            {loading.output || loading.input}
+            {buttonLabel}
+          </div>
         </Button>
       </div>
-    </div >
+    </div>
   );
 };
