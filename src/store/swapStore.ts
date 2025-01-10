@@ -19,6 +19,8 @@ type SwapState = {
   outputAmount: string;
   btcAddress: string;
   isSwapping: boolean;
+  inputEditing: boolean;
+  outputEditing: boolean;
   strategy: string;
   tokenPrices: TokenPrices;
   inputError: string,
@@ -31,6 +33,7 @@ type SwapState = {
   setAmount: (ioType: IOType, amount: string) => void;
   setBtcAddress: (btcAddress: string) => void;
   setError: (ioType: IOType, error: string) => void;
+  setEditing: (ioType: IOType, editing: boolean) => void;
   setIsFetchingQuote: (isFetchingQuote: FetchingQuote) => void;
   swapAssetsAndAmounts: () => void;
   clearSwapState: () => void;
@@ -52,6 +55,8 @@ export const swapStore = create<SwapState>((set) => ({
   inputAmount: "",
   outputAmount: "",
   btcAddress: "",
+  inputEditing: false,
+  outputEditing: false,
   swapInProgress: {
     isOpen: false,
     order: null,
@@ -101,6 +106,12 @@ export const swapStore = create<SwapState>((set) => ({
       [ioType === IOType.input ? "inputError" : "outputError"]: error,
     }));
   },
+  setEditing: (ioType, edit) => {
+    set((state) => ({
+      ...state,
+      [ioType === IOType.input ? "inputEditing" : "outputEditing"]: edit,
+    }));
+  },
   setIsFetchingQuote: (isFetchingQuote) => {
     set({ isFetchingQuote });
   },
@@ -123,6 +134,8 @@ export const swapStore = create<SwapState>((set) => ({
       inputAmount: "",
       outputAmount: "",
       btcAddress: "",
+      inputEditing: false,
+      outputEditing: false,
       outputAsset: undefined,
       inputAsset: BTC,
       isSwapping: false,
@@ -144,6 +157,8 @@ export const swapStore = create<SwapState>((set) => ({
       inputAmount: "",
       outputAmount: "",
       btcAddress: "",
+      inputEditing: false,
+      outputEditing: false,
       outputAsset: undefined,
       inputAsset: BTC,
       isSwapping: false,

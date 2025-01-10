@@ -4,10 +4,11 @@ import { FC, useMemo } from "react";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { ArrowNorthEastIcon, EditIcon } from "@gardenfi/garden-book";
 import { Typography } from "@gardenfi/garden-book";
+import { IOType } from "../constants/constants";
+import { swapStore } from "../store/swapStore";
 
 type AddressDetailsProps = {
-  setIsEditing?: (isEditing: boolean) => void;
-  isEditing?: boolean;
+  setIsEditing?: (ioType: IOType, value: boolean) => void;
   chain: Chain | undefined;
   isRefund?: boolean;
   address?: string;
@@ -15,12 +16,12 @@ type AddressDetailsProps = {
 
 export const AddressDetails: FC<AddressDetailsProps> = ({
   setIsEditing,
-  isEditing,
   chain,
   isRefund,
   address,
 }) => {
   const { chains } = assetInfoStore();
+  const { inputEditing, outputEditing } = swapStore();
 
   const redirect = useMemo(() => {
     return chains && chain ? chains[chain] : null;
@@ -32,12 +33,14 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
       window.open(redirect.explorer + "address/" + address, "_blank");
     else window.open(redirect.explorer + "/address/" + address, "_blank");
   };
+
+  const show = isRefund ? !outputEditing : !inputEditing;
   return (
     <>
       {address && (
         <div
           className={`flex justify-between items-center py-0.5 duration-300 transition-all ${
-            !isEditing
+            show
               ? "opacity-100 max-h-7 pointer-events-auto mb-0"
               : "max-h-0 -mb-1 opacity-0 pointer-events-none"
           }`}
@@ -52,7 +55,10 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
             {isBitcoin(chain!) && (
               <EditIcon
                 className="w-4 h-4 p-[2px] cursor-pointer"
-                onClick={() => setIsEditing && setIsEditing(true)}
+                onClick={() =>
+                  setIsEditing &&
+                  setIsEditing(isRefund ? IOType.output : IOType.input, true)
+                }
               />
             )}
             <ArrowNorthEastIcon

@@ -6,6 +6,7 @@ import { useMemo, useState, useEffect } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { SwapCreateDetails } from "./SwapCreateDetails";
+import { swapStore } from "../../store/swapStore";
 
 export const CreateSwap = () => {
   const {
@@ -27,25 +28,10 @@ export const CreateSwap = () => {
     isValidBitcoinAddress,
     handleSwapClick,
   } = useSwap();
+  const { setEditing, inputEditing, outputEditing } = swapStore();
   const { account: btcAddress } = useBitcoinWallet();
 
-  const [isEditing, setIsEditing] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
-
-  useEffect(() => {
-    if (loading.output || loading.input) {
-      setIsAnimating(true);
-      const interval = setInterval(() => {
-        setIsAnimating((prev) => !prev);
-      }, 1000);
-      return () => clearInterval(interval);
-    } else {
-      const timeout = setTimeout(() => {
-        setIsAnimating(false);
-      }, 1000);
-      return () => clearTimeout(timeout);
-    }
-  }, [loading.output, loading.input]);
 
   const buttonLabel = useMemo(() => {
     return isInsufficientBalance
@@ -71,6 +57,21 @@ export const CreateSwap = () => {
     if (!inputAsset || !outputAsset) return "";
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
+
+  useEffect(() => {
+    if (loading.output || loading.input) {
+      setIsAnimating(true);
+      const interval = setInterval(() => {
+        setIsAnimating((prev) => !prev);
+      }, 1000);
+      return () => clearInterval(interval);
+    } else {
+      const timeout = setTimeout(() => {
+        setIsAnimating(false);
+      }, 1000);
+      return () => clearTimeout(timeout);
+    }
+  }, [loading.output, loading.input]);
 
   return (
     <div
@@ -123,7 +124,7 @@ export const CreateSwap = () => {
         >
           <div
             className={`transition-all opacity-0 duration-500 overflow-hidden ease-in-out ${
-              isEditing || !btcAddress
+              inputEditing || outputEditing || !btcAddress
                 ? "max-h-[120px] opacity-100 pointer-events-auto"
                 : "max-h-0 opacity-0 pointer-events-none"
             }`}
@@ -132,8 +133,7 @@ export const CreateSwap = () => {
           </div>
           <SwapCreateDetails
             tokenPrices={tokenPrices}
-            setIsEditing={setIsEditing}
-            isEditing={isEditing}
+            setIsEditing={setEditing}
             inputChain={inputAsset?.chain}
             outputChain={outputAsset?.chain}
           />

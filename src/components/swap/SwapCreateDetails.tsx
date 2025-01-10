@@ -7,16 +7,21 @@ import AddressDetails from "../../common/AddressDetails";
 import { ScaleYIn } from "../../common/ScaleY";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { IOType } from "../../constants/constants";
 
 type SwapCreateDetailsProps = {
   tokenPrices: TokenPrices;
-  setIsEditing: (isEditing: boolean) => void;
-  isEditing: boolean;
+  setIsEditing: (ioType: IOType, value: boolean) => void;
   inputChain: Chain | undefined;
   outputChain: Chain | undefined;
 };
 
-export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({ tokenPrices, setIsEditing, isEditing, inputChain, outputChain }) => {
+export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({
+  tokenPrices,
+  setIsEditing,
+  inputChain,
+  outputChain,
+}) => {
   const fees = useMemo(
     () => Number(tokenPrices.input) - Number(tokenPrices.output),
     [tokenPrices]
@@ -30,22 +35,21 @@ export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({ tokenPrices, set
 
   if (isBitcoin(inputChain!)) {
     if (btcAddress) {
-      refundAddress = btcAddress
-      receiveAddress = address
+      refundAddress = btcAddress;
+      receiveAddress = address;
     } else {
-      receiveAddress = address
+      receiveAddress = address;
     }
   } else if (isBitcoin(outputChain!)) {
     if (btcAddress) {
-      receiveAddress = btcAddress
-      refundAddress = address
-    }
-    else {
-      refundAddress = address
+      receiveAddress = btcAddress;
+      refundAddress = address;
+    } else {
+      refundAddress = address;
     }
   } else {
-    refundAddress = address
-    receiveAddress = address
+    refundAddress = address;
+    receiveAddress = address;
   }
 
   // const [triggerFeesAnimation, setTriggerFeesAnimation] = useState(false);
@@ -81,13 +85,22 @@ export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({ tokenPrices, set
               Fees
             </Typography>
             <ScaleYIn triggerAnimation={false}>
-              <Typography size="h4" weight="medium" >
+              <Typography size="h4" weight="medium">
                 {fees ? "$" + Number(fees.toFixed(4)) : "--"}
               </Typography>
             </ScaleYIn>
           </div>
-          <AddressDetails chain={outputChain} address={receiveAddress!} />
-          <AddressDetails isEditing={isEditing} setIsEditing={setIsEditing} chain={inputChain} address={refundAddress!} isRefund />
+          <AddressDetails
+            setIsEditing={setIsEditing}
+            chain={outputChain}
+            address={receiveAddress!}
+          />
+          <AddressDetails
+            setIsEditing={setIsEditing}
+            chain={inputChain}
+            address={refundAddress!}
+            isRefund
+          />
         </div>
       </div>
     </>
