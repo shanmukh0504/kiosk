@@ -28,7 +28,7 @@ export const CreateSwap = () => {
     isValidBitcoinAddress,
     handleSwapClick,
   } = useSwap();
-  const { setEditing, inputEditing, outputEditing } = swapStore();
+  const { inputEditing, outputEditing } = swapStore();
   const { account: btcAddress } = useBitcoinWallet();
 
   const [isAnimating, setIsAnimating] = useState(false);
@@ -131,12 +131,7 @@ export const CreateSwap = () => {
           >
             <SwapAddress isValidAddress={isValidBitcoinAddress} />
           </div>
-          <SwapCreateDetails
-            tokenPrices={tokenPrices}
-            setIsEditing={setEditing}
-            inputChain={inputAsset?.chain}
-            outputChain={outputAsset?.chain}
-          />
+          <SwapCreateDetails tokenPrices={tokenPrices} />
         </div>
         <Button
           className={`transition-colors relative duration-500 w-full z-20 overflow-hidden ${

@@ -2,25 +2,21 @@ import { FC, useMemo } from "react";
 // import { SwapFeesComparison } from "./SwapFeesComparison";
 import { Typography } from "@gardenfi/garden-book";
 import { TokenPrices } from "../../store/swapStore";
-import { Chain, isBitcoin } from "@gardenfi/orderbook";
+import { isBitcoin } from "@gardenfi/orderbook";
 import AddressDetails from "../../common/AddressDetails";
 import { ScaleYIn } from "../../common/ScaleY";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { IOType } from "../../constants/constants";
+import { useSwap } from "../../hooks/useSwap";
 
 type SwapCreateDetailsProps = {
   tokenPrices: TokenPrices;
-  setIsEditing: (ioType: IOType, value: boolean) => void;
-  inputChain: Chain | undefined;
-  outputChain: Chain | undefined;
+  // inputChain: Chain | undefined;
+  // outputChain: Chain | undefined;
 };
 
 export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({
   tokenPrices,
-  setIsEditing,
-  inputChain,
-  outputChain,
 }) => {
   const fees = useMemo(
     () => Number(tokenPrices.input) - Number(tokenPrices.output),
@@ -29,18 +25,19 @@ export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({
 
   const { account: btcAddress } = useBitcoinWallet();
   const { address } = useEVMWallet();
+  const { inputAsset, outputAsset } = useSwap();
 
   let refundAddress = null;
   let receiveAddress = null;
 
-  if (isBitcoin(inputChain!)) {
+  if (isBitcoin(inputAsset!.chain)) {
     if (btcAddress) {
       refundAddress = btcAddress;
       receiveAddress = address;
     } else {
       receiveAddress = address;
     }
-  } else if (isBitcoin(outputChain!)) {
+  } else if (isBitcoin(outputAsset!.chain)) {
     if (btcAddress) {
       receiveAddress = btcAddress;
       refundAddress = address;
@@ -90,17 +87,8 @@ export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({
               </Typography>
             </ScaleYIn>
           </div>
-          <AddressDetails
-            setIsEditing={setIsEditing}
-            chain={outputChain}
-            address={receiveAddress!}
-          />
-          <AddressDetails
-            setIsEditing={setIsEditing}
-            chain={inputChain}
-            address={refundAddress!}
-            isRefund
-          />
+          <AddressDetails address={receiveAddress!} />
+          <AddressDetails address={refundAddress!} isRefund />
         </div>
       </div>
     </>

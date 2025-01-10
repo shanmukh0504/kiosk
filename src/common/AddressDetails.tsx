@@ -6,22 +6,24 @@ import { ArrowNorthEastIcon, EditIcon } from "@gardenfi/garden-book";
 import { Typography } from "@gardenfi/garden-book";
 import { IOType } from "../constants/constants";
 import { swapStore } from "../store/swapStore";
+import { useSwap } from "../hooks/useSwap";
 
 type AddressDetailsProps = {
-  setIsEditing?: (ioType: IOType, value: boolean) => void;
-  chain: Chain | undefined;
   isRefund?: boolean;
   address?: string;
 };
 
 export const AddressDetails: FC<AddressDetailsProps> = ({
-  setIsEditing,
-  chain,
   isRefund,
   address,
 }) => {
   const { chains } = assetInfoStore();
-  const { inputEditing, outputEditing } = swapStore();
+  const { setEditing, inputEditing, outputEditing } = swapStore();
+  const { inputAsset, outputAsset } = useSwap();
+  const chain =
+    isRefund && inputAsset
+      ? inputAsset.chain
+      : outputAsset && outputAsset.chain;
 
   const redirect = useMemo(() => {
     return chains && chain ? chains[chain] : null;
@@ -56,8 +58,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
               <EditIcon
                 className="w-4 h-4 p-[2px] cursor-pointer"
                 onClick={() =>
-                  setIsEditing &&
-                  setIsEditing(isRefund ? IOType.output : IOType.input, true)
+                  setEditing(isRefund ? IOType.output : IOType.input, true)
                 }
               />
             )}
