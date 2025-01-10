@@ -52,10 +52,10 @@ export const CreateSwap = () => {
       ? "Insufficient balance"
       : isSwapping
       ? "Signing..."
-      : isAnimating
-      ? "Loading"
+      : loading.input || loading.output
+      ? "Loading..."
       : "Swap";
-  }, [isInsufficientBalance, isSwapping, isAnimating]);
+  }, [isInsufficientBalance, isSwapping, loading]);
 
   const buttonVariant = useMemo(() => {
     return isInsufficientBalance
@@ -155,7 +155,6 @@ export const CreateSwap = () => {
           }
         >
           <div className={`w-full ${isAnimating ? "shine" : ""}`}>
-            {loading.output || loading.input}
             {buttonLabel}
           </div>
         </Button>

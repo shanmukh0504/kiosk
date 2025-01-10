@@ -184,11 +184,6 @@ export const useSwap = () => {
           10 ** assetDecimals
         );
 
-        console.log(fromAsset);
-        console.log(amountInDecimals.toNumber());
-        console.log(toAsset);
-        console.log(isExactOut);
-
         const quote = await getQuote({
           fromAsset,
           toAsset,
@@ -292,19 +287,17 @@ export const useSwap = () => {
   const handleInputAmountChange = useCallback(
     async (amount: string) => {
       setAmount(IOType.input, amount);
+      debounceFetch.cancel();
+      abortFetchQuote();
 
       const amountInNumber = Number(amount);
       if (!amountInNumber) {
-        debounceFetch.cancel();
-        abortFetchQuote();
         setAmount(IOType.output, "");
         setError(IOType.input, "");
         return;
       }
 
       if (minAmount.input && amountInNumber < minAmount.input) {
-        debounceFetch.cancel();
-        abortFetchQuote();
         setError(
           IOType.input,
           `Minimum amount is ${minAmount.input} ${inputAsset?.symbol}`
@@ -313,8 +306,6 @@ export const useSwap = () => {
         return;
       }
       if (maxAmount.input && amountInNumber > maxAmount.input) {
-        debounceFetch.cancel();
-        abortFetchQuote();
         setError(
           IOType.input,
           `Maximum amount is ${maxAmount.input} ${inputAsset?.symbol}`
@@ -345,20 +336,27 @@ export const useSwap = () => {
   const handleOutputAmountChange = useCallback(
     async (amount: string) => {
       setAmount(IOType.output, amount);
+      debounceFetch.cancel();
+      abortFetchQuote();
+
       const amountInNumber = Number(amount);
-      if (!amountInNumber) {
-        debounceFetch.cancel();
-        abortFetchQuote();
+      if (!amountInNumber && (!Number(inputAmount) || inputAmount === "0")) {
         setError(IOType.output, "");
         setAmount(IOType.input, "");
         return;
       }
-      setError(IOType.output, "");
+      if (!inputAsset || !outputAsset) return;
 
-      if (!inputAsset || !outputAsset || !Number(amount)) return;
+      if (!amountInNumber && (inputAmount !== "0" || !Number(inputAmount))) {
+        debounceFetch(inputAmount, inputAsset, outputAsset, false);
+        return;
+      }
+      if (!Number(amount)) return;
+      setError(IOType.output, "");
 
       debounceFetch(amount, inputAsset, outputAsset, true);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       inputAsset,
       outputAsset,
@@ -481,6 +479,14 @@ export const useSwap = () => {
     handleInputAmountChange(inputAmount);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputAsset, handleInputAmountChange, setError]);
+
+  useEffect(() => {
+    if (!inputAsset || !outputAsset || isSwappingInProgress.current) return;
+    setError(IOType.output, "");
+    setError(IOType.input, "");
+    handleInputAmountChange(inputAmount);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [outputAsset, handleInputAmountChange, setError]);
 
   useEffect(() => {
     if (inputAmount == "0" || outputAmount == "0") {

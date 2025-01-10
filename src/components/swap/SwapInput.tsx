@@ -203,7 +203,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                   <input
                     ref={inputRef}
                     className="w-full outline-none"
-                    type="text"
+                    type="number"
                     value={amount}
                     onChange={handleAmountChange}
                     placeholder="0.0"
