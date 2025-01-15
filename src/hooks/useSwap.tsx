@@ -350,15 +350,12 @@ export const useSwap = () => {
 
   const handleAssetSwap = useCallback(async () => {
     // if (isSwappingInProgress.current && !inputAmount) return;
-    if (!inputAmount) return;
-    setError(IOType.input, "");
-    setError(IOType.output, "");
     // setAssetSwapAlternate(assetSwapAlternate + 1);
+    if (!inputAsset || !outputAsset) {
+      return;
+    }
 
     try {
-      if (!inputAsset || !outputAsset) {
-        return;
-      }
       // isSwappingInProgress.current = true;
       // if (assetSwapAlternate % 2 === 0) {
       // await swapAssetsAndAmounts(0);
