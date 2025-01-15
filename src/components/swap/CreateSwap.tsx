@@ -96,7 +96,7 @@ export const CreateSwap = () => {
           <div
             className={`absolute bg-white border border-light-grey rounded-full
             -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 transition-transform hover:scale-[1.1]
-            p-1.5`}
+            p-1.5 cursor-pointer`}
             //Inside className for swap handle
             // ${
             //   isSwappingInProgress.current
