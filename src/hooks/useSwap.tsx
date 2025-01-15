@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { swapStore } from "../store/swapStore";
 import { IOType, network } from "../constants/constants";
 import { Asset, isBitcoin, NetworkType } from "@gardenfi/orderbook";
@@ -47,6 +47,7 @@ export const useSwap = () => {
   const { provider, account } = useBitcoinWallet();
   const fetchQuoteController = useRef<(() => void) | null>(null);
   const isSwappingInProgress = useRef(false);
+  const [assetSwapAlternate, setAssetSwapAlternate] = useState(0);
 
   const isInsufficientBalance = useMemo(
     () => new BigNumber(inputAmount).gt(inputTokenBalance),
@@ -166,11 +167,13 @@ export const useSwap = () => {
         }
 
         if (quote.error) {
+          isSwappingInProgress.current = false;
           if (quote.error.includes("output amount too high")) {
             setError(IOType.output, "Output amount too high");
             setAmount(IOType.input, "");
           } else if (quote.error.includes("output amount too less")) {
             setError(IOType.output, "Output amount too less");
+            setAmount(IOType.input, "");
           } else {
             setAmount(isExactOut ? IOType.input : IOType.output, "");
           }
@@ -187,6 +190,7 @@ export const useSwap = () => {
         const quoteAmountInDecimals = new BigNumber(quoteAmount).div(
           Math.pow(10, assetToChange.decimals)
         );
+        isSwappingInProgress.current = false;
         setAmount(
           isExactOut ? IOType.input : IOType.output,
           Number(
@@ -345,30 +349,36 @@ export const useSwap = () => {
   );
 
   const handleAssetSwap = useCallback(async () => {
-    if (isSwappingInProgress.current && !inputAmount) {
-      console.log(inputAmount);
-      console.log(isSwappingInProgress.current);
-      return;
-    }
-    console.log(isSwappingInProgress.current);
+    setError(IOType.input, "");
+    setError(IOType.output, "");
+    if (isSwappingInProgress.current && !inputAmount) return;
     isSwappingInProgress.current = true;
 
     try {
       if (!inputAsset || !outputAsset) {
         return;
       }
-
-      await swapAssetsAndAmounts();
-      if (Number(inputAmount)) await handleOutputAmountChange(inputAmount);
-      else {
-        debounceFetch.cancel();
-        abortFetchQuote();
-        return;
+      if (assetSwapAlternate % 2 === 0) {
+        await swapAssetsAndAmounts(0);
+        if (Number(inputAmount)) await handleOutputAmountChange(inputAmount);
+        else {
+          debounceFetch.cancel();
+          abortFetchQuote();
+          return;
+        }
+      } else {
+        await swapAssetsAndAmounts(1);
+        if (Number(outputAmount)) await handleInputAmountChange(outputAmount);
+        else {
+          debounceFetch.cancel();
+          abortFetchQuote();
+          return;
+        }
       }
     } catch (error) {
       console.error("Error during asset swap:", error);
     } finally {
-      isSwappingInProgress.current = false;
+      setAssetSwapAlternate(assetSwapAlternate + 1);
     }
     return "Ok";
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -486,6 +496,10 @@ export const useSwap = () => {
     if (!inputAmount || !minAmount || !maxAmount) return;
     const amountInNumber = Number(inputAmount);
     if (!amountInNumber) return;
+
+    setError(IOType.output, "");
+    setError(IOType.input, "");
+
     if (amountInNumber < minAmount) {
       setError(
         IOType.input,
@@ -500,8 +514,6 @@ export const useSwap = () => {
       );
       return;
     }
-    setError(IOType.output, "");
-    setError(IOType.input, "");
   }, [
     inputAmount,
     minAmount,
@@ -529,6 +541,7 @@ export const useSwap = () => {
     inputError,
     outputError,
     isSwapping,
+    isSwappingInProgress,
     isBitcoinSwap,
     handleAssetSwap,
     handleInputAmountChange,

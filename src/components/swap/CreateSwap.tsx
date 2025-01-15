@@ -23,6 +23,7 @@ export const CreateSwap = () => {
     tokenPrices,
     validSwap,
     inputTokenBalance,
+    isSwappingInProgress,
     isInsufficientBalance,
     isSwapping,
     isValidBitcoinAddress,
@@ -38,10 +39,8 @@ export const CreateSwap = () => {
       ? "Insufficient balance"
       : isSwapping
       ? "Signing..."
-      : loading.input || loading.output
-      ? "Loading..."
       : "Swap";
-  }, [isInsufficientBalance, isSwapping, loading]);
+  }, [isInsufficientBalance, isSwapping]);
 
   const buttonVariant = useMemo(() => {
     return isInsufficientBalance
@@ -59,7 +58,7 @@ export const CreateSwap = () => {
   }, [inputAsset, outputAsset]);
 
   useEffect(() => {
-    if (loading.output || loading.input) {
+    if (loading.output || loading.input || isSwappingInProgress.current) {
       setIsAnimating(true);
       const interval = setInterval(() => {
         setIsAnimating((prev) => !prev);
@@ -71,7 +70,7 @@ export const CreateSwap = () => {
       }, 1000);
       return () => clearTimeout(timeout);
     }
-  }, [loading.output, loading.input]);
+  }, [loading.output, loading.input, isSwappingInProgress]);
 
   return (
     <div
@@ -94,9 +93,13 @@ export const CreateSwap = () => {
             balance={inputTokenBalance}
           />
           <div
-            className="absolute bg-white border border-light-grey rounded-full
+            className={`absolute bg-white border border-light-grey rounded-full
             -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 transition-transform hover:scale-[1.1]
-            p-1.5 cursor-pointer"
+            p-1.5 ${
+              isSwappingInProgress.current
+                ? "pointer-events-none scale-[0.9] opacity-80"
+                : "cursor-pointer pointer-events-auto scale-1"
+            }`}
             onClick={handleAssetSwap}
           >
             <ExchangeIcon />
