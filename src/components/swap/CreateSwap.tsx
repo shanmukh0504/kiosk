@@ -23,7 +23,7 @@ export const CreateSwap = () => {
     tokenPrices,
     validSwap,
     inputTokenBalance,
-    isSwappingInProgress,
+    // isSwappingInProgress,
     isInsufficientBalance,
     isSwapping,
     isValidBitcoinAddress,
@@ -58,7 +58,8 @@ export const CreateSwap = () => {
   }, [inputAsset, outputAsset]);
 
   useEffect(() => {
-    if (loading.output || loading.input || isSwappingInProgress.current) {
+    // if (loading.output || loading.input || isSwappingInProgress.current) {
+    if (loading.output || loading.input) {
       setIsAnimating(true);
       const interval = setInterval(() => {
         setIsAnimating((prev) => !prev);
@@ -70,7 +71,7 @@ export const CreateSwap = () => {
       }, 1000);
       return () => clearTimeout(timeout);
     }
-  }, [loading.output, loading.input, isSwappingInProgress]);
+  }, [loading.output, loading.input]);
 
   return (
     <div
@@ -95,11 +96,13 @@ export const CreateSwap = () => {
           <div
             className={`absolute bg-white border border-light-grey rounded-full
             -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 transition-transform hover:scale-[1.1]
-            p-1.5 ${
-              isSwappingInProgress.current
-                ? "pointer-events-none scale-[0.9] opacity-80"
-                : "cursor-pointer pointer-events-auto scale-1"
-            }`}
+            p-1.5`}
+            //Inside className for swap handle
+            // ${
+            //   isSwappingInProgress.current
+            //     ? "pointer-events-none scale-[0.9] opacity-80"
+            //     : "cursor-pointer pointer-events-auto scale-1"
+            // }
             onClick={handleAssetSwap}
           >
             <ExchangeIcon />
