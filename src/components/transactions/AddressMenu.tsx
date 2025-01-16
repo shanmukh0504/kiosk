@@ -119,10 +119,11 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
           <div
             data-tooltip-id={logoutTooltipId}
             className="flex items-center bg-white/50 rounded-full p-1.5 cursor-pointer transition-colors hover:bg-white"
+            onClick={handleDisconnectClick}
           >
             <LogoutIcon
               className="w-5 h-4 cursor-pointer"
-              onClick={handleDisconnectClick}
+
             />
 
             <Tooltip id={addTooltipId} place="top" content="Wallet" />
