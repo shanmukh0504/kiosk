@@ -11,8 +11,6 @@ import { useSwap } from "../../hooks/useSwap";
 
 type SwapCreateDetailsProps = {
   tokenPrices: TokenPrices;
-  // inputChain: Chain | undefined;
-  // outputChain: Chain | undefined;
 };
 
 export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({

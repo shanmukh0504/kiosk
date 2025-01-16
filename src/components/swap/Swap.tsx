@@ -20,7 +20,6 @@ export const Swap = () => {
 
   const handleErrorLog = (order: MatchedOrder, error: string) =>
     console.error("garden error", order.create_order.create_id, error);
-
   const handleLog = (orderId: string, log: string) =>
     console.log("garden log", orderId, log);
 

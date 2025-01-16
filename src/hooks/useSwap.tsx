@@ -235,10 +235,6 @@ export const useSwap = () => {
     }
   }, [setTokenPrices]);
 
-  useEffect(() => {
-    return () => abortFetchQuote();
-  }, [abortFetchQuote]);
-
   const debounceFetch = useMemo(
     () =>
       debounce(
@@ -309,9 +305,11 @@ export const useSwap = () => {
   const handleOutputAmountChange = useCallback(
     async (amount: string) => {
       setAmount(IOType.output, amount);
+      const amountInNumber = Number(amount);
+
       debounceFetch.cancel();
       abortFetchQuote();
-      const amountInNumber = Number(amount);
+
       if (
         !amountInNumber &&
         (!Number(inputAmount) || inputAmount === "0")
@@ -321,14 +319,7 @@ export const useSwap = () => {
         setAmount(IOType.input, "");
         return;
       }
-      if (!inputAsset || !outputAsset) return;
-
-      if (!amountInNumber && (inputAmount !== "0" || !Number(inputAmount))) {
-        debounceFetch(inputAmount, inputAsset, outputAsset, false);
-        return;
-      }
-
-      if (!Number(amount)) return;
+      if (!inputAsset || !outputAsset || !amountInNumber) return;
 
       const trimmedAmount = amount.includes(".")
         ? amount.replace(/^0+/, "0")
@@ -470,6 +461,10 @@ export const useSwap = () => {
       setIsSwapping(false);
     }
   };
+
+  useEffect(() => {
+    return () => abortFetchQuote();
+  }, [abortFetchQuote]);
 
   useEffect(() => {
     // if (!inputAsset || !outputAsset || isSwappingInProgress.current) return;

@@ -18,19 +18,18 @@ export const Navbar = () => {
   const { account } = useBitcoinWallet();
   const { garden, isExecuting, isExecutorRequired } = useGarden();
 
+  const isEVMConnect = !address && !!account;
   const shouldInitiateSM = useMemo(
     () => isExecutorRequired && !isExecuting,
     [isExecuting, isExecutorRequired]
   );
-
-  const isEVMConnect = !address && !!account;
-
   const isFullyConnected = useMemo(
     () => isConnected && !shouldInitiateSM,
     [isConnected, shouldInitiateSM]
   );
 
   const handleHomeLogoClick = () => window.open(API().home, "_blank");
+
   const handleConnectClick = () => {
     if (isFullyConnected) return;
     if (isConnected && shouldInitiateSM) handleInitializeSM();

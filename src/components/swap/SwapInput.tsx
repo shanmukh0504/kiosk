@@ -83,6 +83,7 @@ export const SwapInput: FC<SwapInputProps> = ({
   const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
     const parts = input.split(".");
+    if (input === "-") return;
     // Check if the last character is a digit or a dot.
     if (
       // If it's a digit
@@ -203,7 +204,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                   <input
                     ref={inputRef}
                     className="w-full outline-none"
-                    type="number"
+                    type="text"
                     value={amount}
                     onChange={handleAmountChange}
                     placeholder="0.0"
