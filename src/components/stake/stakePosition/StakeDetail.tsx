@@ -1,38 +1,37 @@
 import {
   Button,
+  InfinityIcon,
   KeyboardDownIcon,
   KeyboardUpIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { stakeStore, StakingPosition } from "../../store/stakeStore";
 import { FC, useState } from "react";
-import { formatAmount } from "../../utils/utils";
-import infinity from "../../../public/infinite.svg";
-import {
-  ETH_BLOCKS_PER_DAY,
-  isPermanentStake,
-  SEED_DECIMALS,
-  TEN_THOUSAND,
-} from "../../constants/stake";
-import { StakeInfoCard } from "./StakeInfoCard";
-import { getMultiplier } from "../../utils/stakingUtils";
-import { modalNames, modalStore } from "../../store/modalStore";
-import { viewPortStore } from "../../store/viewPortStore";
+import { stakeStore, StakingPosition } from "../../../store/stakeStore";
+import { formatAmount } from "../../../utils/utils";
+import { ETH_BLOCKS_PER_DAY, SEED_DECIMALS, TEN_THOUSAND } from "../constants";
+import { getMultiplier } from "../../../utils/stakingUtils";
+import { modalNames, modalStore } from "../../../store/modalStore";
+import { StakeStats } from "../shared/StakeStats";
 
 type props = {
   stakePos: StakingPosition;
-  isLast: boolean;
 };
-export const StakeDetails: FC<props> = ({ stakePos, isLast }) => {
-  const { isMobile, isTab } = viewPortStore();
+
+export const StakeDetails: FC<props> = ({ stakePos }) => {
   const [showDetails, setShowDetails] = useState(false);
+
+  const { setOpenModal } = modalStore();
+  const { stakeApys } = stakeStore();
+
+  const stakeApy = Number((stakeApys?.[stakePos.id] || 0).toFixed(2));
+
   const stakeAmount = formatAmount(stakePos.amount, SEED_DECIMALS, 8);
   const formattedAmount =
     stakeAmount >= TEN_THOUSAND
       ? stakeAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       : stakeAmount.toString();
 
-  const isPermaStake = isPermanentStake(stakePos);
+  const isPermaStake = stakePos.isPerma;
   const daysPassedSinceStake = Math.floor(
     (new Date().getTime() - new Date(stakePos.stakedAt).getTime()) /
       (1000 * 3600 * 24)
@@ -41,49 +40,53 @@ export const StakeDetails: FC<props> = ({ stakePos, isLast }) => {
     (stakePos.expiry - stakePos.lastStakedAtBlock) / ETH_BLOCKS_PER_DAY
   );
 
-  const stakeStartDate = new Date(stakePos.stakedAt);
   const stakeEndDate = new Date();
   stakeEndDate.setDate(
     stakeEndDate.getDate() + (expiryInDays - daysPassedSinceStake)
   );
-  const stakeEndDateString = stakeEndDate
-    .toISOString()
-    .split("T")[0]
-    .replaceAll("-", "/");
+  const stakeEndDateString = isPermaStake ? (
+    <InfinityIcon />
+  ) : (
+    stakeEndDate.toISOString().split("T")[0].replaceAll("-", "/")
+  );
 
-  const multiplier = getMultiplier(stakeEndDate, stakeStartDate);
-
+  const multiplier = getMultiplier(stakePos);
   const currentDate = new Date();
   const hasExpired = currentDate > stakeEndDate;
 
-  const { setStakeToExtend, setIsExtend, setIsStake, setInputAmount } =
-    stakeStore();
-  const { setOpenModal } = modalStore();
-
-  const handleExtend = () => {
-    setInputAmount(stakeAmount.toString());
-    setStakeToExtend(stakePos);
-    setIsExtend(true);
-    setIsStake(false);
-    setOpenModal(modalNames.stakeSeed);
+  const handleManage = () => {
+    setOpenModal(modalNames.manageStake, {
+      manage: {
+        isManage: true,
+        stakingPosition: stakePos,
+      },
+    });
   };
 
   return (
     <div
-      className="py-4 flex flex-col gap-5"
+      className="py-5 flex flex-col gap-5 cursor-pointer"
       onClick={() => setShowDetails((p) => !p)}
     >
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           <Typography
-            size={isMobile ? "h4" : "h3"}
+            size={"h4"}
+            breakpoints={{
+              sm: "h4",
+              md: "h3",
+            }}
             weight="medium"
             className="w-[120px]"
           >
             {formattedAmount} SEED
           </Typography>
           <Typography
-            size={isMobile ? "h4" : "h3"}
+            size={"h4"}
+            breakpoints={{
+              sm: "h4",
+              md: "h3",
+            }}
             weight="medium"
             className="flex items-center w-[120px]"
           >
@@ -92,7 +95,7 @@ export const StakeDetails: FC<props> = ({ stakePos, isLast }) => {
             ) : (
               <>
                 {isPermaStake ? (
-                  <img src={infinity} alt="infinity" className="mr-2" />
+                  <InfinityIcon />
                 ) : (
                   `${daysPassedSinceStake} / ${expiryInDays}`
                 )}
@@ -101,13 +104,13 @@ export const StakeDetails: FC<props> = ({ stakePos, isLast }) => {
             )}
           </Typography>
 
-          {isTab ? (
-            <Typography size="h4" weight="medium" className="pl-10">
-              {stakePos.votes} Votes
-            </Typography>
-          ) : (
-            ""
-          )}
+          <Typography
+            size="h4"
+            weight="medium"
+            className="pl-10 hidden sm:block"
+          >
+            {stakePos.votes} {stakePos.votes === 1 ? "Vote" : "Votes"}
+          </Typography>
         </div>
         {showDetails ? (
           <KeyboardUpIcon className="mr-2" />
@@ -119,40 +122,37 @@ export const StakeDetails: FC<props> = ({ stakePos, isLast }) => {
         <div className="flex flex-col md:flex-row gap-4 justify-between ">
           <div className="flex flex-col md:flex-row gap-4 sm:gap-10">
             <div className=" flex gap-10">
-              <StakeInfoCard
+              {/* <StakeStats
                 title={"Rewards"}
                 value={"0.018BTC"}
-                isStakePos
                 className={"w-[120px] md:w-[76px]"}
-              />
-              <StakeInfoCard
+              /> */}
+              <StakeStats
                 title={"Multiplier"}
                 value={`${multiplier}x`}
-                isStakePos
-                className={"w-[160px] md:w-[54px]"}
+                size="xs"
               />
+              {stakeApy ? (
+                <StakeStats
+                  title={"APY"}
+                  value={`${stakeApy || 0} %`}
+                  size="xs"
+                />
+              ) : null}
             </div>
             <div className=" flex gap-10">
-              <StakeInfoCard
-                title={"APY"}
-                value={"108%"}
-                isStakePos
-                className={"w-[120px] md:w-[42px]"}
-              />
-              <StakeInfoCard
+              <StakeStats
                 title={"EndDate"}
-                value={`${stakeEndDateString}`}
-                isStakePos
-                className={"w-[160px]"}
+                value={stakeEndDateString}
+                size="xs"
               />
             </div>
           </div>
-          <Button variant="secondary" size="sm" onClick={handleExtend}>
-            Extend
+          <Button variant="secondary" size="sm" onClick={handleManage}>
+            Manage
           </Button>
         </div>
       )}
-      {!isLast && <div className="bg-white h-[1px] w-full"></div>}
     </div>
   );
 };

@@ -13,7 +13,7 @@ export const useBalances = (asset: Asset | undefined) => {
   const { provider } = useBitcoinWallet();
 
   const tokenBalance = useMemo(
-    () => balances[`${asset?.chain}_${asset?.tokenAddress.toLowerCase()}`],
+    () => balances[`${asset?.chain}_${asset?.tokenAddress.toLowerCase()}`] || 0,
     [balances, asset]
   );
 

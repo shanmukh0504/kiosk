@@ -41,16 +41,15 @@ export const ConnectWallet: React.FC<ModalProps> = ({ onClose }) => {
           return !evmWalletIds.includes(btcToEVMid[name]);
         })
       );
-
   const handleClose = () => {
-    if (address) onClose();
+    if (address) onClose?.();
 
     setConnectingWallet(null);
     setMultiWalletConnector(undefined);
   };
 
   const close = () => {
-    onClose();
+    onClose?.();
     setConnectingWallet(null);
     setMultiWalletConnector(undefined);
   };

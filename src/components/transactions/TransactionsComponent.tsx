@@ -4,7 +4,11 @@ import { TransactionsSidebar } from "./TransactionsSidebar";
 import { ModalProps } from "../modal/Modal";
 import { viewPortStore } from "../../store/viewPortStore";
 
-export const TransactionsComponent: FC<ModalProps> = ({ open, onClose }) => {
+export const TransactionsComponent: FC<
+  ModalProps & {
+    onClose: () => void;
+  }
+> = ({ open, onClose }) => {
   const { isMobile } = viewPortStore();
 
   return (

@@ -186,4 +186,4 @@ export const distributerABI = [
     stateMutability: "nonpayable",
     type: "function",
   },
-];
+] as const;

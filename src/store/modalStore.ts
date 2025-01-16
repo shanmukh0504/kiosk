@@ -1,18 +1,25 @@
 import { create } from "zustand";
+import { StakingPosition } from "./stakeStore";
 
 export const modalNames = {
   connectWallet: "connectWallet",
   transactions: "transactions",
   whiteList: "whiteList",
   assetList: "assetList",
-  stakeSeed: "stakeSeed",
+  manageStake: "manageStake",
 } as const;
 
 export type ModalData = {
   connectWallet: { isBTCWallets: boolean };
-  stakeSeed: {
-    isStake: boolean;
-    isExtend: boolean;
+  manageStake: {
+    stake?: {
+      isStake: boolean;
+      amount: string;
+    };
+    manage?: {
+      isManage: boolean;
+      stakingPosition: StakingPosition;
+    };
   };
   transactions: undefined;
   initializeSM: undefined;
@@ -27,7 +34,7 @@ type ModalState = {
     [key in ModalName]: boolean;
   };
   modalData: {
-    [key in ModalName]?: ModalData[key];
+    [K in ModalName]?: ModalData[K];
   };
   setOpenModal: <T extends ModalName>(name: T, data?: ModalData[T]) => void;
   setCloseModal: (name: ModalName) => void;
@@ -40,9 +47,11 @@ export const modalStore = create<ModalState>((set) => ({
     initializeSM: false,
     whiteList: false,
     assetList: false,
-    stakeSeed: false,
+    manageStake: false,
   },
-  modalData: {},
+  modalData: {
+    manageStake: {},
+  },
   setOpenModal: (name, data) => {
     set((state) => ({
       modalName: { ...state.modalName, [name]: true },

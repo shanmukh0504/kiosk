@@ -16,4 +16,4 @@ export const flowerABI = [
     stateMutability: "nonpayable",
     type: "function",
   },
-];
+] as const;

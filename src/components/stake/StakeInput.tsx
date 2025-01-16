@@ -1,34 +1,54 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, useMemo } from "react";
 import { MinusIcon, PlusIcon, Typography } from "@gardenfi/garden-book";
 import { stakeStore } from "../../store/stakeStore";
-import { useBalances } from "../../hooks/useBalances";
+import { MIN_STAKE_AMOUNT } from "../../constants/stake";
 
-export const StakeInput = () => {
-  const { asset, inputAmount, setInputAmount } = stakeStore();
-  const balances = useBalances(asset);
-  const balance = balances.tokenBalance
-    ? balances.tokenBalance.toFixed(3)
-    : "0.000";
+export const StakeInput = ({ balance }: { balance: number }) => {
+  const { inputAmount, setInputAmount } = stakeStore();
+
+  const stakeableBalance = useMemo(
+    () => Math.floor(balance / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT,
+    [balance]
+  );
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputAmount(e.target.value);
   };
 
   const handleBalanceClick = () => {
-    if (!balance || balance === "0.000") {
-      return;
-    }
-    setInputAmount(balance);
+    if (!balance || balance === 0 || balance < MIN_STAKE_AMOUNT) return;
+
+    setInputAmount(stakeableBalance.toString());
   };
 
   const handleMinusClick = () => {
-    const newAmount = Math.max(Number(inputAmount) - 1, 0);
-    setInputAmount(newAmount.toString());
+    if (!inputAmount || Number(inputAmount) === 0) return;
+
+    const currentAmount = Number(inputAmount);
+    if (currentAmount % MIN_STAKE_AMOUNT === 0) {
+      setInputAmount(Math.max(currentAmount - MIN_STAKE_AMOUNT, 0).toString());
+    } else {
+      const newAmount =
+        Math.floor(currentAmount / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT;
+      setInputAmount(newAmount.toString());
+    }
   };
 
   const handlePlusClick = () => {
-    const newAmount = Number(inputAmount) + 1;
-    setInputAmount(newAmount.toString());
+    if (!balance || balance === 0 || balance < MIN_STAKE_AMOUNT) return;
+
+    const currentAmount = Number(inputAmount);
+    if (currentAmount % MIN_STAKE_AMOUNT === 0) {
+      setInputAmount(
+        Math.min(currentAmount + MIN_STAKE_AMOUNT, stakeableBalance).toString()
+      );
+    } else {
+      const newAmount =
+        Math.floor(currentAmount / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT;
+      setInputAmount(
+        Math.min(newAmount + MIN_STAKE_AMOUNT, stakeableBalance).toString()
+      );
+    }
   };
 
   return (
@@ -43,7 +63,7 @@ export const StakeInput = () => {
           className="cursor-pointer"
           onClick={handleBalanceClick}
         >
-          {balance} available
+          {balance.toFixed(3)} available
         </Typography>
       </div>
       <div className="flex justify-between">
@@ -57,8 +77,8 @@ export const StakeInput = () => {
           />
         </Typography>
         <div className="flex gap-3">
-          <MinusIcon onClick={handleMinusClick} />
-          <PlusIcon onClick={handlePlusClick} />
+          <MinusIcon onClick={handleMinusClick} className="cursor-pointer" />
+          <PlusIcon onClick={handlePlusClick} className="cursor-pointer" />
         </div>
       </div>
     </div>

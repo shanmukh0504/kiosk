@@ -1,23 +1,45 @@
 import { Button, Typography } from "@gardenfi/garden-book";
 import { stakeStore, StakingReward } from "../../store/stakeStore";
-import { DISTRIBUTER_CONTRACT, TEN_THOUSAND } from "../../constants/stake";
+import { TEN_THOUSAND } from "../../constants/stake";
 import { distributerABI } from "./abi/distributerClaim";
-import { useWriteContract } from "wagmi";
-import { useEffect, useState } from "react";
-import { useFetchClaimAmount } from "../../hooks/useFetchClaimedAmount";
+import { useReadContract, useSwitchChain, useWriteContract } from "wagmi";
+import { useEffect, useState, useMemo } from "react";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { Hex } from "viem";
-import { viewPortStore } from "../../store/viewPortStore";
+import { StakeStats } from "./shared/StakeStats";
+import axios from "axios";
+import { API } from "../../constants/api";
+import { formatAmount } from "../../utils/utils";
+import { STAKING_CHAIN } from "./constants";
+import { STAKING_CONFIG } from "./constants";
+import { waitForTransactionReceipt } from "wagmi/actions";
+import { config } from "../../layout/wagmi/config";
+import { Toast } from "../toast/Toast";
+// import { STAKING_CHAIN } from "./constants";
 
 export const StakeOverview = () => {
-  const {
-    totalStakedAmount,
-    totalVotes,
-    fetchStakeReward,
-    reward,
-    setRewards,
-  } = stakeStore();
+  const [isRewardLoading, setIsRewardLoading] = useState(false);
+  const [isClaimLoading, setIsClaimLoading] = useState(false);
+  const [rewardResponse, setRewardResponse] = useState<StakingReward>();
+
+  const { totalStakedAmount, totalVotes } = stakeStore();
   const { writeContractAsync } = useWriteContract();
+  const { address, chainId } = useEVMWallet();
+  const { switchChainAsync } = useSwitchChain();
+  // get claimed amount
+  const { data: claimedAmount, refetch: refetchClaimedAmount } =
+    useReadContract({
+      abi: distributerABI,
+      functionName: "getClaimedAmount",
+      address: STAKING_CONFIG[STAKING_CHAIN].DISTRIBUTER_CONTRACT as Hex,
+      args: [address as Hex],
+      chainId: STAKING_CHAIN,
+      query: {
+        enabled: !!address,
+        refetchInterval: 15_000,
+      },
+    });
+
   const formattedAmount =
     totalStakedAmount === undefined
       ? "0"
@@ -25,71 +47,74 @@ export const StakeOverview = () => {
       ? totalStakedAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       : totalStakedAmount.toString();
 
-  const { isMobile } = viewPortStore();
-  const [rewardResponse, setRewardResponse] = useState<StakingReward | null>(
-    null
-  );
-  const [isLoading, setIsLoading] = useState(false);
-  const [isClaimLoading, setIsClaimLoading] = useState(false);
-  const [isClaimSuccessful, setIsClaimSuccessful] = useState(false);
-  const { address } = useEVMWallet();
-  const { data: claimedAmount, refetch } = useFetchClaimAmount(address as Hex);
+  const availableReward = useMemo(() => {
+    return rewardResponse
+      ? formatAmount(
+          rewardResponse.cumulative_rewards_wbtc - Number(claimedAmount ?? 0),
+          8,
+          5
+        )
+      : 0;
+  }, [rewardResponse, claimedAmount]);
+
+  const handleRewardClick = async () => {
+    if (!chainId || !address || !rewardResponse) return;
+    const stakingConfig = STAKING_CONFIG[STAKING_CHAIN];
+    if (!stakingConfig) return;
+
+    try {
+      setIsClaimLoading(true);
+      if (chainId !== STAKING_CHAIN) {
+        await switchChainAsync({ chainId: STAKING_CHAIN });
+      }
+
+      //small workaround to make sure the chain is switched other wise the claim is failing
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const tx = await writeContractAsync({
+        abi: distributerABI,
+        functionName: "claim",
+        address: stakingConfig.DISTRIBUTER_CONTRACT as Hex,
+        args: [
+          address as Hex,
+          BigInt(rewardResponse.cumulative_rewards_wbtc),
+          BigInt(rewardResponse.nonce),
+          ("0x" + rewardResponse.claim_signature) as Hex,
+        ],
+        chainId: STAKING_CHAIN,
+      });
+      await waitForTransactionReceipt(config, {
+        hash: tx,
+      });
+      await refetchClaimedAmount();
+      Toast.success("Withdrawal successful");
+    } catch (error) {
+      console.error("Error claiming rewards:", error);
+    } finally {
+      setIsClaimLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const prefetchReward = async () => {
-      setIsLoading(true);
+    if (!address) return;
+
+    const fetchStakeReward = async () => {
       try {
-        const response = await fetchStakeReward(address as Hex);
-        setRewardResponse(response);
-        await refetch();
-        const calculatedReward =
-          response.cumulative_payout_wbtc / Math.pow(10, 8);
-        if (claimedAmount !== undefined && claimedAmount !== null) {
-          const remaining = Math.max(
-            0,
-            calculatedReward - Number(claimedAmount) / Math.pow(10, 8)
-          );
-          setRewards(remaining);
-        } else {
-          setRewards(0);
+        const resp = await axios.get<StakingReward>(API().reward(address));
+        if (resp.status === 200 && resp.data) {
+          setRewardResponse(resp.data);
         }
+        return;
       } catch (error) {
         console.error("Error fetching rewards:", error);
       }
-      setIsLoading(false);
     };
 
-    prefetchReward();
-  }, [address, claimedAmount, fetchStakeReward, refetch, setRewards]);
-
-  const handleRewardClick = async () => {
-    setIsClaimLoading(true);
-    await refetch();
-    try {
-      const tx = await writeContractAsync({
-        address: DISTRIBUTER_CONTRACT,
-        abi: distributerABI,
-        functionName: "claim",
-        args: [
-          rewardResponse?.address,
-          rewardResponse?.cumulative_payout_wbtc,
-          rewardResponse?.nonce,
-          `0x${rewardResponse?.claim_signature}`,
-        ],
-      });
-      console.log("Transaction :", tx);
-      setIsClaimSuccessful(true);
-      await refetch();
-      const remainingReward =
-        isClaimSuccessful && claimedAmount
-          ? reward - Number(claimedAmount) / Math.pow(10, 8)
-          : 0;
-      setRewards(remainingReward);
-    } catch (error) {
-      console.error("Detailed Error Information:", error);
-      setIsClaimSuccessful(false);
-    }
-    setIsClaimLoading(false);
-  };
+    setIsRewardLoading(true);
+    fetchStakeReward().finally(() => setIsRewardLoading(false));
+    const intervalId = setInterval(fetchStakeReward, 10000);
+    return () => clearInterval(intervalId);
+  }, [address]);
 
   return (
     <div className="w-[328px] sm:w-[424px] md:w-[740px] rounded-[15px] bg-opacity-50 gap-4 bg-white mx-auto p-6 flex flex-col">
@@ -98,63 +123,40 @@ export const StakeOverview = () => {
       </Typography>
       <div className="flex flex-col md:flex-row gap-4 justify-between items-center ">
         <div className="flex gap-10 justify-between w-full md:w-[328px]">
-          <div className="flex flex-col gap-1 justify-between">
-            <Typography size={"h5"} weight="bold" className="w-[70px]">
-              Staked Seed
-            </Typography>
-            <Typography
-              size={isMobile ? "h3" : "h2"}
-              weight="medium"
-              className="w-[70px]"
-            >
-              {isLoading ? "Loading..." : formattedAmount}
-            </Typography>
-          </div>
-          <div className="flex flex-col gap-1 justify-between">
-            <Typography size={"h5"} weight="bold">
-              Votes
-            </Typography>
-            <Typography
-              size={isMobile ? "h3" : "h2"}
-              weight="medium"
-              className="w-[50px]"
-            >
-              {isLoading
+          <StakeStats title={"Staked Seed"} value={formattedAmount} size="sm" />
+          <StakeStats
+            title={"Votes"}
+            value={
+              isRewardLoading
                 ? "Loading..."
                 : totalVotes !== undefined
                 ? totalVotes
-                : 0}
-            </Typography>
-          </div>
-          <div className="flex flex-col gap-1 justify-between">
-            <Typography size={"h5"} weight="bold" className="!text-rose">
-              Staking rewards
-            </Typography>
-            <Typography
-              size={isMobile ? "h3" : "h2"}
-              weight="medium"
-              className="w-[200px] !text-rose"
-            >
-              {isLoading
-                ? "Loading..."
-                : isClaimSuccessful
-                ? `${reward} WBTC`
-                : `${reward} WBTC`}
-            </Typography>
-          </div>
+                : 0
+            }
+            size="sm"
+          />
+          <StakeStats
+            title={"Staking rewards"}
+            value={isRewardLoading ? "Loading..." : `${availableReward} WBTC`}
+            size="sm"
+            isPink
+          />
         </div>
         <Button
-          variant={isClaimLoading || reward === 0 ? "disabled" : "primary"}
+          variant={
+            isClaimLoading || availableReward === 0 ? "disabled" : "primary"
+          }
           size="sm"
           className={`w-full md:w-[120px] ${
-            isClaimLoading || reward === 0
+            isClaimLoading || availableReward === 0
               ? "transition-colors duration-500 flex items-center justify-center self-center"
               : ""
           }`}
           onClick={handleRewardClick}
-          disabled={isClaimLoading || isLoading || reward === 0}
+          disabled={isClaimLoading || isRewardLoading || availableReward === 0}
+          loading={isClaimLoading}
         >
-          {isClaimLoading ? "Claiming..." : "Claim"}
+          {isClaimLoading ? "Claiming..." : "Withdraw"}
         </Button>
       </div>
     </div>

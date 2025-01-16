@@ -25,9 +25,17 @@ export const API = () => {
     buildId: "/build-id.json",
     orderbook: REQUIRED_ENV_VARS.ORDERBOOK_URL,
     quote: REQUIRED_ENV_VARS.QUOTE_URL,
-    stakePosition: (userId: string) =>
-      REQUIRED_ENV_VARS.STAKING_URL + "/stakes?userId=" + userId,
-    reward: (userId: string) => REQUIRED_ENV_VARS.REWARD + userId,
+    stake: {
+      stakePosition: (userId: string) =>
+        REQUIRED_ENV_VARS.STAKING_URL +
+        "/stakes?userId=" +
+        userId.toLowerCase(),
+      globalApy: REQUIRED_ENV_VARS.STAKING_URL + "/apy",
+      stakeApy: (address: string) =>
+        REQUIRED_ENV_VARS.STAKING_URL + "/apy/" + address.toLowerCase(),
+      stakingStats: REQUIRED_ENV_VARS.STAKING_URL + "/stakingStats",
+    },
+    reward: (userId: string) => REQUIRED_ENV_VARS.REWARD + "/reward/" + userId,
     mempool: {
       testnet: "https://mempool.space/testnet4/api",
       mainnet: "https://mempool.space/api",

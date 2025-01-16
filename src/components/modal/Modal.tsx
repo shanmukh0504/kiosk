@@ -4,12 +4,12 @@ import { ConnectWallet } from "../navbar/connectWallet/ConnectWallet";
 import { TransactionsComponent } from "../transactions/TransactionsComponent";
 import { ResponsiveModal } from "./ResponsiveModal";
 import { AssetSelector } from "../swap/AssetSelector";
-import { StakeSeed } from "../stake/StakeSeed";
 import { Whitelist } from "../whitelist/WhiteList";
+import { StakeModal } from "../stake/modal/StakeModal";
 
 export type ModalProps = {
   open: boolean;
-  onClose: () => void;
+  onClose?: () => void;
 };
 
 export const Modal = () => {
@@ -45,10 +45,7 @@ export const Modal = () => {
         open={modalName.transactions}
         onClose={() => setCloseModal(modalNames.transactions)}
       />
-      <ResponsiveModal
-        open={modalName.whiteList}
-        onClose={() => setCloseModal(modalNames.whiteList)}
-      >
+      <ResponsiveModal open={modalName.whiteList}>
         <Whitelist
           open={modalName.whiteList}
           onClose={() => setCloseModal(modalNames.whiteList)}
@@ -62,11 +59,8 @@ export const Modal = () => {
         <AssetSelector onClose={() => setCloseModal(modalNames.assetList)} />
       </ResponsiveModal>
 
-      <ResponsiveModal
-        open={modalName.stakeSeed}
-        onClose={() => setCloseModal(modalNames.stakeSeed)}
-      >
-        <StakeSeed onClose={() => setCloseModal(modalNames.stakeSeed)} />
+      <ResponsiveModal open={modalName.manageStake}>
+        <StakeModal onClose={() => setCloseModal(modalNames.manageStake)} />
       </ResponsiveModal>
     </>
   );

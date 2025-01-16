@@ -13,14 +13,9 @@ import { ordersStore } from "../../store/ordersStore";
 
 export const Swap = () => {
   const { setAsset } = swapStore();
-  const { fetchAndSetAssetsAndChains, fetchAndSetStrategies, assets } =
-    assetInfoStore();
+  const { fetchAndSetStrategies, assets } = assetInfoStore();
   const { quote, garden } = useGarden();
   const { orderInProgress, updateOrder } = ordersStore();
-
-  useEffect(() => {
-    fetchAndSetAssetsAndChains();
-  }, [fetchAndSetAssetsAndChains]);
 
   useEffect(() => {
     if (!quote) return;

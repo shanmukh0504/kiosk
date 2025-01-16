@@ -1,57 +1,63 @@
 import { create } from "zustand";
-import { Asset } from "@gardenfi/orderbook";
-import { DURATION } from "../constants/stake";
+import { Asset, Chains } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
+import { network } from "../constants/constants";
+import {
+  ETH_BLOCKS_PER_DAY,
+  SEED_DECIMALS,
+} from "../components/stake/constants";
+import { formatAmount } from "../utils/utils";
+import { CIRCULATING_SEED_SUPPLY } from "../constants/stake";
 
 const SEED: Asset = {
   name: "Seed",
   decimals: 18,
   symbol: "SEED",
   logo: "https://garden-finance.imgix.net/token-images/seed.svg",
-  tokenAddress: "0x13DCec0762EcC5E666c207ab44Dc768e5e33070F",
-  atomicSwapAddress: "0xD5FeDb4ceCB0F1D32788a190d9EB47D94D23eE4e",
-  chain: "arbitrum_sepolia",
+  tokenAddress:
+    network === "mainnet" ? "" : "0x5eedb3f5bbA7Da86b0bBa2c6450C52E27e105eeD",
+  atomicSwapAddress:
+    network === "mainnet" ? "" : "0xc09e6996459d2e9e2bb5f7727341486adee325bf",
+  chain: network === "mainnet" ? Chains.arbitrum : Chains.ethereum_sepolia,
+};
+
+type StakingStats = {
+  apy: number;
+  averageLockTime: string;
+  totalVotes: number;
+  seedLockedPercentage: string;
 };
 
 type StakeStoreState = {
   asset: Asset;
   inputAmount: string;
-  selectedDuration: DURATION;
-  isStake: boolean;
-  isExtend: boolean;
   error: string | null;
-  reward: number;
   totalStakedAmount: number;
   totalVotes: number;
-  stakePosData: StakingPositionApiResponse | null;
-  stakeToExtend: StakingPosition | null;
+  stakePosData: StakingPosition[] | null;
+  stakeApys: Record<string, number>;
+  stakingStats: StakingStats | null;
   setInputAmount: (value: string) => void;
-  setSelectedDuration: (duration: DURATION) => void;
   fetchStakePosData: (address: string) => Promise<void>;
-  fetchStakeReward: (address: string) => Promise<StakingReward>;
-  setIsStake: (value: boolean) => void;
-  setIsExtend: (value: boolean) => void;
-  setStakeToExtend: (value: StakingPosition) => void;
-  setTotalStakedAmount: (value: number) => void;
-  setTotalVotes: (value: number) => void;
-  setRewards: (value: number) => void;
+  fetchAndSetStakingStats: () => Promise<void>;
+  fetchAndSetStakeApy: (address: string) => Promise<void>;
 };
 
 export enum StakePositionStatus {
   staked = "staked",
   expired = "expired",
-  unstaked = "unstaked",
+  unStaked = "unstaked",
 }
 
 export type StakingReward = {
-  last_epoch: string;
   address: string;
-  cumulative_payout_usd: string;
-  cumulative_payout_wbtc: number;
-  nonce: number;
-  current_votes: number;
   claim_signature: string;
+  cumulative_claims_wbtc: number;
+  cumulative_rewards_usd: string;
+  cumulative_rewards_wbtc: number;
+  nonce: number;
+  votes: number;
 };
 
 export type StakingPosition = {
@@ -73,54 +79,100 @@ type StakingPositionApiResponse = {
 export const stakeStore = create<StakeStoreState>((set) => ({
   asset: SEED,
   inputAmount: "",
-  selectedDuration: 6,
-  isStake: false,
-  isExtend: false,
   error: null,
   stakePosData: null,
-  stakeToExtend: null,
   totalStakedAmount: 0,
   totalVotes: 0,
-  reward: 0,
+  stakingStats: null,
+  stakeApys: {},
   setInputAmount: (value: string) => set({ inputAmount: value }),
-  setSelectedDuration: (duration: DURATION) =>
-    set({ selectedDuration: duration }),
   fetchStakePosData: async (address: string) => {
     try {
       const response = await axios.get<StakingPositionApiResponse>(
-        API().stakePosition(address)
+        API().stake.stakePosition(address.toLowerCase())
       );
-      console.log(response);
       if (response.status === 200 && response.data) {
-        set({ stakePosData: response.data });
-      } else {
-        set({ error: "Unexpected response format from server" });
+        const stakes = response.data.data;
+        const stats = stakes.reduce(
+          (acc, stake) => {
+            if (
+              stake.status !== StakePositionStatus.expired &&
+              stake.status !== StakePositionStatus.unStaked
+            ) {
+              acc.totalVotes += stake.votes;
+              acc.totalStakedAmount += formatAmount(
+                stake.amount,
+                SEED_DECIMALS
+              );
+              return acc;
+            }
+
+            return acc;
+          },
+          {
+            totalVotes: 0,
+            totalStakedAmount: 0,
+          }
+        );
+
+        set({
+          stakePosData: stakes,
+          totalVotes: stats.totalVotes,
+          totalStakedAmount: stats.totalStakedAmount,
+        });
       }
     } catch (error) {
       console.error(error);
       set({ error: "An error occurred while fetching staking position data" });
     }
   },
-  fetchStakeReward: async (address: string) => {
+  fetchAndSetStakingStats: async () => {
     try {
-      const response = await axios.get<StakingReward>(API().reward(address));
-      console.log(response);
-      if (response.status === 200 && response.data) {
-        return response.data;
-      } else {
-        set({ error: "Unexpected response format from server" });
-        throw new Error("Unexpected response format from server");
-      }
+      const response = await axios.get<{
+        data: {
+          apy: number;
+          ast: string;
+          totalVotes: number;
+          totalStaked: string;
+        };
+      }>(API().stake.stakingStats);
+      const avgLockTime = Math.floor(
+        Number(response.data.data.ast) / ETH_BLOCKS_PER_DAY
+      );
+      const seedLockedPercentage = Number(
+        Math.min(
+          Number(response.data.data.totalStaked) / CIRCULATING_SEED_SUPPLY,
+          100
+        ).toFixed(2)
+      ).toString();
+
+      set({
+        stakingStats: {
+          apy: Number(response.data.data.apy.toFixed(2)),
+          averageLockTime: avgLockTime.toString(),
+          totalVotes: response.data.data.totalVotes,
+          seedLockedPercentage: seedLockedPercentage,
+        },
+      });
     } catch (error) {
       console.error(error);
-      set({ error: "An error occurred while fetching staking reward data" });
-      throw error;
     }
   },
-  setIsStake: (value) => set({ isStake: value }),
-  setIsExtend: (value) => set({ isExtend: value }),
-  setStakeToExtend: (value) => set({ stakeToExtend: value }),
-  setTotalStakedAmount: (value) => set({ totalStakedAmount: value }),
-  setTotalVotes: (value) => set({ totalVotes: value }),
-  setRewards: (value) => set({ reward: value }),
+  fetchAndSetStakeApy: async (address: string) => {
+    try {
+      const response = await axios.get<{
+        data: {
+          data: {
+            stakeApys: {
+              [stakeId: string]: number;
+            };
+            userApy: number;
+          };
+        };
+      }>(API().stake.stakeApy(address.toLowerCase()));
+      set({ stakeApys: response.data.data.data.stakeApys });
+    } catch (error) {
+      console.error(error);
+    }
+  },
 }));

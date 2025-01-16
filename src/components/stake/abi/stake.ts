@@ -1,4 +1,4 @@
-export const stakingABI = [
+export const stakeABI = [
   {
     inputs: [
       {
@@ -108,4 +108,4 @@ export const stakingABI = [
     stateMutability: "nonpayable",
     type: "function",
   },
-];
+] as const;
