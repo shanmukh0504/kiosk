@@ -480,7 +480,7 @@ export const useSwap = () => {
     if (!inputAsset || !outputAsset) return;
     setError(IOType.output, "");
     setError(IOType.input, "");
-    handleInputAmountChange(inputAmount);
+    handleOutputAmountChange(outputAmount);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [outputAsset, handleInputAmountChange, setError]);
 

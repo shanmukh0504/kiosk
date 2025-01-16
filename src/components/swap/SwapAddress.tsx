@@ -9,9 +9,18 @@ type SwapAddressProps = {
 };
 
 export const SwapAddress: FC<SwapAddressProps> = ({ isValidAddress }) => {
-  const { inputAsset, outputAsset, btcAddress, setBtcAddress } = swapStore();
   const inputRef = useRef<HTMLInputElement>(null);
   const tooltipId = useId();
+  const { inputAsset, outputAsset, btcAddress, setBtcAddress } = swapStore();
+
+  const isRecoveryAddress = useMemo(
+    () => inputAsset && isBitcoin(inputAsset.chain),
+    [inputAsset]
+  );
+  const isReceiveAddress = useMemo(
+    () => outputAsset && isBitcoin(outputAsset.chain),
+    [outputAsset]
+  );
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value;
@@ -20,9 +29,6 @@ export const SwapAddress: FC<SwapAddressProps> = ({ isValidAddress }) => {
     }
     setBtcAddress(input);
   };
-
-  const isRecoveryAddress = useMemo(() => inputAsset && isBitcoin(inputAsset.chain), [inputAsset]);
-  const isReceiveAddress = useMemo(() => outputAsset && isBitcoin(outputAsset.chain), [outputAsset]);
 
   return (
     (isRecoveryAddress || isReceiveAddress) && (
@@ -39,8 +45,9 @@ export const SwapAddress: FC<SwapAddressProps> = ({ isValidAddress }) => {
         <Typography size="h3" weight="medium">
           <input
             ref={inputRef}
-            className={`w-full outline-none placeholder:text-mid-grey ${!isValidAddress ? "text-red-600" : ""
-              }`}
+            className={`w-full outline-none placeholder:text-mid-grey ${
+              !isValidAddress ? "text-red-600" : ""
+            }`}
             type="text"
             value={btcAddress}
             placeholder="Your Bitcoin address"

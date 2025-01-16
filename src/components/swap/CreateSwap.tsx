@@ -9,6 +9,8 @@ import { SwapCreateDetails } from "./SwapCreateDetails";
 import { swapStore } from "../../store/swapStore";
 
 export const CreateSwap = () => {
+  const [isAnimating, setIsAnimating] = useState(false);
+
   const {
     outputAmount,
     inputAmount,
@@ -31,8 +33,6 @@ export const CreateSwap = () => {
   } = useSwap();
   const { inputEditing, outputEditing } = swapStore();
   const { account: btcAddress } = useBitcoinWallet();
-
-  const [isAnimating, setIsAnimating] = useState(false);
 
   const buttonLabel = useMemo(() => {
     return isInsufficientBalance
