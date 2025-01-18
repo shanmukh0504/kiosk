@@ -136,7 +136,7 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
           {Object.values(ecosystems).map((ecosystem, i) => (
             <Chip
               key={i}
-              className={`pl-3 pr-3 py-1 cursor-pointer transition-colors ease-cubic-in-out hover:bg-opacity-50`}
+              className={`py-1 pl-3 pr-1 cursor-pointer transition-colors ease-cubic-in-out hover:bg-opacity-50`}
               onClick={() => {
                 setSelectedEcosystem((prev) =>
                   prev === ecosystem.name ? null : ecosystem.name
