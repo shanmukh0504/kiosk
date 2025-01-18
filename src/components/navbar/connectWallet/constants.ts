@@ -78,7 +78,7 @@ export const GardenSupportedWallets: Record<
     name: "OKX Wallet",
     logo: "https://garden-finance.imgix.net/wallets/okx.svg",
     installLink: "https://www.okx.com/download",
-    isBitcoinSupported: true,
+    isBitcoinSupported: false,
     isEVMSupported: true,
   },
   "org.uniswap.app": {
