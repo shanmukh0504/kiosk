@@ -148,7 +148,7 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
               </Typography>
               <RadioCheckedIcon
                 className={`${
-                  selectedEcosystem === ecosystem.name ? "w-4" : "w-0"
+                  selectedEcosystem === ecosystem.name ? "w-4 mr-1" : "w-0"
                 } transition-all fill-rose`}
               />
             </Chip>
