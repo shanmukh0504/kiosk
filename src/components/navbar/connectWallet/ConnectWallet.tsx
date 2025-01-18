@@ -22,6 +22,7 @@ import { handleEVMConnect } from "./handleConnect";
 import { modalNames, modalStore } from "../../../store/modalStore";
 import { authStore } from "../../../store/authStore";
 import { ecosystems, evmToBTCid } from "./constants";
+import { AnimatePresence } from "framer-motion";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -116,7 +117,7 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
 
   return (
     <>
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center duration-300 ease-in-out transition-all h-full">
         <Typography size="h4" weight="bold">
           Connect a wallet
         </Typography>
@@ -162,31 +163,33 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
           handleClose={handleClose}
         />
       ) : (
-        <div className="flex flex-col gap-1 bg-white/50 rounded-2xl p-4">
-          {allAvailableWallets.length > 0 ? (
-            allAvailableWallets.map((wallet) => (
-              <WalletRow
-                key={wallet.id}
-                name={wallet.name}
-                logo={wallet.logo}
-                onClick={async () => {
-                  await handleConnect(wallet);
-                }}
-                isConnecting={connectingWallet === wallet.id}
-                isConnected={{
-                  bitcoin: !!(
-                    provider &&
-                    (provider.id === wallet.id ||
-                      provider.id === evmToBTCid[wallet.id])
-                  ),
-                  evm: !!(connector && connector.id === wallet.id),
-                }}
-                isAvailable={wallet.isAvailable}
-              />
-            ))
-          ) : (
-            <Typography size="h3">No wallets found</Typography>
-          )}
+        <div className="flex flex-col gap-1 bg-white/50 rounded-2xl p-4 duration-300 ease-in-out transition-all h-full">
+          <AnimatePresence>
+            {allAvailableWallets.length > 0 ? (
+              allAvailableWallets.map((wallet) => (
+                <WalletRow
+                  key={wallet.id}
+                  name={wallet.name}
+                  logo={wallet.logo}
+                  onClick={async () => {
+                    await handleConnect(wallet);
+                  }}
+                  isConnecting={connectingWallet === wallet.id}
+                  isConnected={{
+                    bitcoin: !!(
+                      provider &&
+                      (provider.id === wallet.id ||
+                        provider.id === evmToBTCid[wallet.id])
+                    ),
+                    evm: !!(connector && connector.id === wallet.id),
+                  }}
+                  isAvailable={wallet.isAvailable}
+                />
+              ))
+            ) : (
+              <Typography size="h3">No wallets found</Typography>
+            )}
+          </AnimatePresence>
         </div>
       )}
 
