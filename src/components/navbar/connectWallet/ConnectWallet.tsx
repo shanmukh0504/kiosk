@@ -117,7 +117,7 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
 
   return (
     <>
-      <div className="flex justify-between items-center duration-300 ease-in-out transition-all h-full">
+      <div className="flex justify-between items-center">
         <Typography size="h4" weight="bold">
           Connect a wallet
         </Typography>
@@ -163,7 +163,7 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
           handleClose={handleClose}
         />
       ) : (
-        <div className="flex flex-col gap-1 bg-white/50 rounded-2xl p-4 duration-300 ease-in-out transition-all h-full">
+        <div className="flex flex-col gap-1 bg-white/50 rounded-2xl p-4">
           <AnimatePresence>
             {allAvailableWallets.length > 0 ? (
               allAvailableWallets.map((wallet) => (
