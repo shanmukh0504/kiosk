@@ -42,6 +42,7 @@ type StakeStoreState = {
   fetchStakePosData: (address: string) => Promise<void>;
   fetchAndSetStakingStats: () => Promise<void>;
   fetchAndSetStakeApy: (address: string) => Promise<void>;
+  clearStakePosData: () => void;
 };
 
 export enum StakePositionStatus {
@@ -175,4 +176,5 @@ export const stakeStore = create<StakeStoreState>((set) => ({
       console.error(error);
     }
   },
+  clearStakePosData: () => set({ stakePosData: null }),
 }));
