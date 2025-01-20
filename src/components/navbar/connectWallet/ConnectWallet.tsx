@@ -22,6 +22,7 @@ import { handleEVMConnect } from "./handleConnect";
 import { modalNames, modalStore } from "../../../store/modalStore";
 import { authStore } from "../../../store/authStore";
 import { ecosystems, evmToBTCid } from "./constants";
+import { AnimatePresence } from "framer-motion";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -163,30 +164,32 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
         />
       ) : (
         <div className="flex flex-col gap-1 bg-white/50 rounded-2xl p-4">
-          {allAvailableWallets.length > 0 ? (
-            allAvailableWallets.map((wallet) => (
-              <WalletRow
-                key={wallet.id}
-                name={wallet.name}
-                logo={wallet.logo}
-                onClick={async () => {
-                  await handleConnect(wallet);
-                }}
-                isConnecting={connectingWallet === wallet.id}
-                isConnected={{
-                  bitcoin: !!(
-                    provider &&
-                    (provider.id === wallet.id ||
-                      provider.id === evmToBTCid[wallet.id])
-                  ),
-                  evm: !!(connector && connector.id === wallet.id),
-                }}
-                isAvailable={wallet.isAvailable}
-              />
-            ))
-          ) : (
-            <Typography size="h3">No wallets found</Typography>
-          )}
+          <AnimatePresence>
+            {allAvailableWallets.length > 0 ? (
+              allAvailableWallets.map((wallet) => (
+                <WalletRow
+                  key={wallet.id}
+                  name={wallet.name}
+                  logo={wallet.logo}
+                  onClick={async () => {
+                    await handleConnect(wallet);
+                  }}
+                  isConnecting={connectingWallet === wallet.id}
+                  isConnected={{
+                    bitcoin: !!(
+                      provider &&
+                      (provider.id === wallet.id ||
+                        provider.id === evmToBTCid[wallet.id])
+                    ),
+                    evm: !!(connector && connector.id === wallet.id),
+                  }}
+                  isAvailable={wallet.isAvailable}
+                />
+              ))
+            ) : (
+              <Typography size="h3">No wallets found</Typography>
+            )}
+          </AnimatePresence>
         </div>
       )}
 
