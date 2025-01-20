@@ -132,7 +132,7 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
         </div>
       </div>
 
-      {!showOnlyBTCWallets && (
+      {!showOnlyBTCWallets && !multiWalletConnector && (
         <div className="flex flex-wrap gap-3">
           {Object.values(ecosystems).map((ecosystem, i) => (
             <Chip

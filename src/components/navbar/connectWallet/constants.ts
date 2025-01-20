@@ -1,3 +1,6 @@
+import { Network } from "@gardenfi/utils";
+import { network } from "../../../constants/constants";
+
 export const evmToBTCid: Record<string, string> = {
   "com.okex.wallet": "okx",
 } as const;
@@ -78,7 +81,7 @@ export const GardenSupportedWallets: Record<
     name: "OKX Wallet",
     logo: "https://garden-finance.imgix.net/wallets/okx.svg",
     installLink: "https://www.okx.com/download",
-    isBitcoinSupported: false,
+    isBitcoinSupported: network === Network.MAINNET ? true : false,
     isEVMSupported: true,
   },
   "org.uniswap.app": {
