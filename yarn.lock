@@ -644,6 +644,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@gardenfi/core@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "@gardenfi/core@npm:2.0.4"
+  dependencies:
+    "@catalogfi/utils": "npm:^0.1.6"
+    "@catalogfi/wallets": "npm:^0.2.51"
+    "@gardenfi/orderbook": "npm:^2.0.1"
+    "@gardenfi/utils": "npm:^2.0.0"
+    bignumber.js: "npm:^9.1.2"
+    bitcoinjs-lib: "npm:^6.1.6"
+    tiny-secp256k1: "npm:^2.2.3"
+    varuint-bitcoin: "npm:^1.1.2"
+    viem: "npm:^2.21.15"
+  checksum: 10c0/2fc9c122586b7bae49d7dd6f41ae97d6e00582e6e2e2be2aafa914eebf1f324fcea7cdfcbf48b88c9b910899e9f288dbdb30001a1ac0530c352653dc3b8a08e4
+  languageName: node
+  linkType: hard
+
 "@gardenfi/garden-book@npm:^0.1.63":
   version: 0.1.63
   resolution: "@gardenfi/garden-book@npm:0.1.63"
@@ -677,28 +694,33 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
+"@gardenfi/orderbook@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@gardenfi/orderbook@npm:2.0.1"
+  dependencies:
+    "@catalogfi/utils": "npm:^0.1.6"
+    "@gardenfi/utils": "npm:^2.0.0"
+    bufferutil: "npm:^4.0.8"
+    siwe: "npm:^2.1.4"
+    utf-8-validate: "npm:^6.0.3"
+    viem: "npm:^2.21.15"
+    ws: "npm:^8.14.2"
+  checksum: 10c0/4fa4f0d0ce5f06089861ed524b108e17a1e98dced6bfe272b900c4df3caa7130d6c3d1ba5b66de02be857b8241fdd903d0cafafc8e984799f0867581ec8188d5
+  languageName: node
+  linkType: hard
+
 "@gardenfi/react-hooks@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "@gardenfi/react-hooks@npm:2.0.3"
-=======
-"@gardenfi/react-hooks@npm:^2.0.1":
-  version: 2.0.4
-  resolution: "@gardenfi/react-hooks@npm:2.0.4"
->>>>>>> main
+  version: 2.0.5
+  resolution: "@gardenfi/react-hooks@npm:2.0.5"
   dependencies:
     "@catalogfi/utils": "npm:^0.1.6"
     "@catalogfi/wallets": "npm:^0.2.51"
-    "@gardenfi/core": "npm:^2.0.3"
-    "@gardenfi/orderbook": "npm:^2.0.0"
+    "@gardenfi/core": "npm:^2.0.4"
+    "@gardenfi/orderbook": "npm:^2.0.1"
     "@gardenfi/utils": "npm:^2.0.0"
     react: "npm:^18.3.1"
     viem: "npm:^2.21.15"
-<<<<<<< HEAD
-  checksum: 10c0/2be27ae7b868dc260250ab538915a16fba6498e0dcfb2b5383677fc4ff1572df4afbc4a7811e9047214b93dc2552970e315507b3e8822eafece723edb18204e7
-=======
-  checksum: 10c0/dcad308bed8c38fb9555108e1559be34e6bb8b4b5b24aa22821a53a370f3c3169fbb1d7bb5d89ac8ded568e5c8dd83da7ac9771103978e4a0e64fe98a2b7de61
->>>>>>> main
+  checksum: 10c0/02206e9b825bd9e8c5d182a898a1fa231c7eb9fbd8d62777f772429178e40021be56a18719589f3e9bfbbb2ce3fb5db7337b3c88046311453b22bb700011f0e8
   languageName: node
   linkType: hard
 
@@ -714,11 +736,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "@gardenfi/wallet-connectors@npm:^2.0.1":
-=======
-"@gardenfi/wallet-connectors@npm:^2.0.0":
->>>>>>> main
   version: 2.0.1
   resolution: "@gardenfi/wallet-connectors@npm:2.0.1"
   dependencies:
