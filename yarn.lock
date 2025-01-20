@@ -628,7 +628,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/core@npm:^2.0.3, @gardenfi/core@npm:^2.0.4":
+"@gardenfi/core@npm:^2.0.4":
   version: 2.0.4
   resolution: "@gardenfi/core@npm:2.0.4"
   dependencies:
@@ -663,7 +663,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/orderbook@npm:^2.0.0, @gardenfi/orderbook@npm:^2.0.1":
+"@gardenfi/orderbook@npm:^2.0.1":
   version: 2.0.1
   resolution: "@gardenfi/orderbook@npm:2.0.1"
   dependencies:
@@ -678,7 +678,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/react-hooks@npm:^2.0.1":
+"@gardenfi/react-hooks@npm:^2.0.5":
   version: 2.0.5
   resolution: "@gardenfi/react-hooks@npm:2.0.5"
   dependencies:
@@ -705,7 +705,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/wallet-connectors@npm:^2.0.0":
+"@gardenfi/wallet-connectors@npm:^2.0.1":
   version: 2.0.1
   resolution: "@gardenfi/wallet-connectors@npm:2.0.1"
   dependencies:
@@ -5698,7 +5698,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^11.5.6":
+"framer-motion@npm:^11.18.1, framer-motion@npm:^11.5.6":
   version: 11.18.1
   resolution: "framer-motion@npm:11.18.1"
   dependencies:
@@ -5817,12 +5817,12 @@ __metadata:
   resolution: "garden-kiosk@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.13.0"
-    "@gardenfi/core": "npm:^2.0.3"
+    "@gardenfi/core": "npm:^2.0.4"
     "@gardenfi/garden-book": "npm:^0.1.63"
-    "@gardenfi/orderbook": "npm:^2.0.0"
-    "@gardenfi/react-hooks": "npm:^2.0.1"
+    "@gardenfi/orderbook": "npm:^2.0.1"
+    "@gardenfi/react-hooks": "npm:^2.0.5"
     "@gardenfi/utils": "npm:^2.0.0"
-    "@gardenfi/wallet-connectors": "npm:^2.0.0"
+    "@gardenfi/wallet-connectors": "npm:^2.0.1"
     "@tanstack/react-query": "npm:^5.51.23"
     "@types/lodash.debounce": "npm:^4"
     "@types/node": "npm:^22.8.1"
@@ -5837,6 +5837,7 @@ __metadata:
     eslint-plugin-react: "npm:^7.37.2"
     eslint-plugin-react-hooks: "npm:^5.1.0-rc.0"
     eslint-plugin-react-refresh: "npm:^0.4.9"
+    framer-motion: "npm:^11.18.1"
     globals: "npm:^15.11.0"
     lodash.debounce: "npm:^4.0.8"
     postcss: "npm:^8.4.41"
