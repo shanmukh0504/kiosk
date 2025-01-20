@@ -15,7 +15,6 @@ import { STAKING_CONFIG } from "./constants";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../../layout/wagmi/config";
 import { Toast } from "../toast/Toast";
-// import { STAKING_CHAIN } from "./constants";
 
 export const StakeOverview = () => {
   const [isRewardLoading, setIsRewardLoading] = useState(false);
@@ -96,7 +95,10 @@ export const StakeOverview = () => {
   };
 
   useEffect(() => {
-    if (!address) return;
+    if (!address) {
+      setRewardResponse(undefined);
+      return;
+    }
 
     const fetchStakeReward = async () => {
       try {
@@ -156,7 +158,7 @@ export const StakeOverview = () => {
           disabled={isClaimLoading || isRewardLoading || availableReward === 0}
           loading={isClaimLoading}
         >
-          {isClaimLoading ? "Claiming..." : "Withdraw"}
+          {isClaimLoading ? "Claiming..." : "Claim"}
         </Button>
       </div>
     </div>
