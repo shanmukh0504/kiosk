@@ -13,6 +13,7 @@ export const Address = () => {
   const { pendingOrders } = useGarden();
   const { pendingOrders: pendingOrdersFromStore, setPendingOrders } =
     ordersStore();
+
   const handleAddressClick = () => setOpenModal(modalNames.transactions);
 
   useEffect(() => {
@@ -36,7 +37,7 @@ export const Address = () => {
       {pendingOrdersFromStore?.length ? (
         <div className="relative">
           <Loader />
-          <div className="absolute text-rose text-sm font-bold top-[8%] w-full border items-center text-center">
+          <div className="absolute text-rose text-sm font-bold top-[10%] w-full items-center text-center">
             {pendingOrdersFromStore.length}
           </div>
         </div>

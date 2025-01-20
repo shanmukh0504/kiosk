@@ -16,10 +16,6 @@ type SwapCreateDetailsProps = {
 export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({
   tokenPrices,
 }) => {
-  const fees = useMemo(
-    () => Number(tokenPrices.input) - Number(tokenPrices.output),
-    [tokenPrices]
-  );
   const { account: btcAddress } = useBitcoinWallet();
   const { address } = useEVMWallet();
   const { inputAsset, outputAsset } = useSwap();
@@ -38,6 +34,10 @@ export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({
     receiveAddress = address;
   }
 
+  const fees = useMemo(
+    () => Number(tokenPrices.input) - Number(tokenPrices.output),
+    [tokenPrices]
+  );
   // const [triggerFeesAnimation, setTriggerFeesAnimation] = useState(false);
 
   // useEffect(() => {

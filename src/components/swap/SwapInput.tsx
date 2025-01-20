@@ -190,7 +190,7 @@ export const SwapInput: FC<SwapInputProps> = ({
         <div className="flex justify-between h-6">
           {loading ? (
             // The "loading..." Text feels like a glitch as it fetches fast
-            <div className="text-mid-grey"></div>
+            <div />
           ) : (
             <Typography
               size={"h3"}

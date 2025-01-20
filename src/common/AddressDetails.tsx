@@ -20,8 +20,10 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
   const { chains } = assetInfoStore();
   const { setEditing, inputEditing, outputEditing } = swapStore();
   const { inputAsset, outputAsset } = useSwap();
-  let chain: Chain | undefined;
 
+  const show = isRefund ? !outputEditing : !inputEditing;
+
+  let chain: Chain | undefined;
   if (isRefund) {
     if (inputAsset) chain = inputAsset.chain;
   } else {
@@ -39,7 +41,6 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
     else window.open(redirect.explorer + "/address/" + address, "_blank");
   };
 
-  const show = isRefund ? !outputEditing : !inputEditing;
   return (
     <>
       {address && (

@@ -25,7 +25,6 @@ export const CreateSwap = () => {
     tokenPrices,
     validSwap,
     inputTokenBalance,
-    // isSwappingInProgress,
     isInsufficientBalance,
     isSwapping,
     isValidBitcoinAddress,
@@ -56,6 +55,24 @@ export const CreateSwap = () => {
     if (!inputAsset || !outputAsset) return "";
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
+
+  const isDisabled = useMemo(() => {
+    return (
+      isSwapping ||
+      !validSwap ||
+      isInsufficientBalance ||
+      isAnimating ||
+      loading.output ||
+      loading.input
+    );
+  }, [
+    isSwapping,
+    validSwap,
+    isInsufficientBalance,
+    isAnimating,
+    loading.output,
+    loading.input,
+  ]);
 
   useEffect(() => {
     // if (loading.output || loading.input || isSwappingInProgress.current) {
@@ -97,12 +114,6 @@ export const CreateSwap = () => {
             className={`absolute bg-white border border-light-grey rounded-full
             -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 transition-transform hover:scale-[1.1]
             p-1.5 cursor-pointer`}
-            //Inside className for swap handle
-            // ${
-            //   isSwappingInProgress.current
-            //     ? "pointer-events-none scale-[0.9] opacity-80"
-            //     : "cursor-pointer pointer-events-auto scale-1"
-            // }
             onClick={handleAssetSwap}
           >
             <ExchangeIcon />
@@ -146,14 +157,7 @@ export const CreateSwap = () => {
           variant={buttonVariant}
           size="lg"
           onClick={handleSwapClick}
-          disabled={
-            isSwapping ||
-            !validSwap ||
-            isInsufficientBalance ||
-            isAnimating ||
-            loading.output ||
-            loading.input
-          }
+          disabled={isDisabled}
         >
           <div className={`w-full ${isAnimating ? "shine" : ""}`}>
             {buttonLabel}
