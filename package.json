@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@gardenfi/core": "^2.0.3",
-    "@gardenfi/garden-book": "^0.1.59",
+    "@gardenfi/garden-book": "^0.1.63",
     "@gardenfi/orderbook": "^2.0.0",
     "@gardenfi/react-hooks": "^2.0.1",
     "@gardenfi/utils": "^2.0.0",
