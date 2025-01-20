@@ -30,6 +30,9 @@ export const useSwap = () => {
     isFetchingQuote,
     inputError,
     outputError,
+    inputEditing,
+    outputEditing,
+    setEditing,
     setStrategy,
     setIsSwapping,
     setAmount,
@@ -46,8 +49,6 @@ export const useSwap = () => {
   const { swapAndInitiate, getQuote } = useGarden();
   const { provider, account } = useBitcoinWallet();
   const fetchQuoteController = useRef<(() => void) | null>(null);
-  // const isSwappingInProgress = useRef(false);
-  // const [assetSwapAlternate, setAssetSwapAlternate] = useState(0);
 
   const isInsufficientBalance = useMemo(
     () => new BigNumber(inputAmount).gt(inputTokenBalance),
@@ -140,82 +141,74 @@ export const useSwap = () => {
       fetchQuoteController.current = () => {
         cancelled = true;
       };
+      if (!getQuote) return;
+      if (isExactOut) setIsFetchingQuote({ input: true, output: false });
+      else setIsFetchingQuote({ input: false, output: true });
 
-      const debouncedFetchQuote = debounce(async () => {
-        if (!getQuote) return;
-        if (isExactOut) setIsFetchingQuote({ input: true, output: false });
-        else setIsFetchingQuote({ input: false, output: true });
+      const assetDecimals = isExactOut ? toAsset.decimals : fromAsset.decimals;
 
-        const assetDecimals = isExactOut
-          ? toAsset.decimals
-          : fromAsset.decimals;
+      const amountInDecimals = new BigNumber(amount).multipliedBy(
+        10 ** assetDecimals
+      );
 
-        const amountInDecimals = new BigNumber(amount).multipliedBy(
-          10 ** assetDecimals
-        );
+      const quote = await getQuote({
+        fromAsset,
+        toAsset,
+        amount: amountInDecimals.toNumber(),
+        isExactOut,
+      });
 
-        const quote = await getQuote({
-          fromAsset,
-          toAsset,
-          amount: amountInDecimals.toNumber(),
-          isExactOut,
-        });
-
-        if (cancelled) {
-          setIsFetchingQuote({ input: false, output: false });
-          return;
-        }
-
-        if (quote.error) {
-          // isSwappingInProgress.current = false;
-          if (quote.error.includes("output amount too high")) {
-            setError(IOType.output, "Output amount too high");
-            setAmount(IOType.input, "");
-          } else if (quote.error.includes("output amount too less")) {
-            setError(IOType.output, "Output amount too less");
-            setAmount(IOType.input, "");
-          } else {
-            setAmount(isExactOut ? IOType.input : IOType.output, "");
-          }
-          setIsFetchingQuote({ input: false, output: false });
-          setStrategy("");
-          setTokenPrices({ input: "0", output: "0" });
-          return;
-        }
-
-        const [_strategy, quoteAmount] = Object.entries(quote.val.quotes)[0];
-        setStrategy(_strategy);
+      if (cancelled) {
         setIsFetchingQuote({ input: false, output: false });
-        const assetToChange = isExactOut ? fromAsset : toAsset;
-        const quoteAmountInDecimals = new BigNumber(quoteAmount).div(
-          Math.pow(10, assetToChange.decimals)
-        );
-        // isSwappingInProgress.current = false;
-        setAmount(
-          isExactOut ? IOType.input : IOType.output,
-          Number(
-            quoteAmountInDecimals.toFixed(8, BigNumber.ROUND_DOWN)
-          ).toString()
-        );
+        return;
+      }
 
-        const inputAmount = isExactOut
-          ? quoteAmountInDecimals
-          : new BigNumber(amount);
-        const outputAmount = isExactOut
-          ? new BigNumber(amount)
-          : quoteAmountInDecimals;
-        const inputTokenPrice = inputAmount
-          .multipliedBy(quote.val.input_token_price)
-          .toFixed(2);
-        const outputTokenPrice = outputAmount
-          .multipliedBy(quote.val.output_token_price)
-          .toFixed(2);
-        setTokenPrices({
-          input: inputTokenPrice,
-          output: outputTokenPrice,
-        });
-      }, 500);
-      debouncedFetchQuote();
+      if (quote.error) {
+        if (quote.error.includes("output amount too high")) {
+          setError(IOType.output, "Output amount too high");
+          setAmount(IOType.input, "");
+        } else if (quote.error.includes("output amount too less")) {
+          setError(IOType.output, "Output amount too less");
+          setAmount(IOType.input, "");
+        } else {
+          setAmount(isExactOut ? IOType.input : IOType.output, "");
+        }
+        setIsFetchingQuote({ input: false, output: false });
+        setStrategy("");
+        setTokenPrices({ input: "0", output: "0" });
+        return;
+      }
+
+      const [_strategy, quoteAmount] = Object.entries(quote.val.quotes)[0];
+      setStrategy(_strategy);
+      setIsFetchingQuote({ input: false, output: false });
+      const assetToChange = isExactOut ? fromAsset : toAsset;
+      const quoteAmountInDecimals = new BigNumber(quoteAmount).div(
+        Math.pow(10, assetToChange.decimals)
+      );
+      setAmount(
+        isExactOut ? IOType.input : IOType.output,
+        Number(
+          quoteAmountInDecimals.toFixed(8, BigNumber.ROUND_DOWN)
+        ).toString()
+      );
+
+      const inputAmount = isExactOut
+        ? quoteAmountInDecimals
+        : new BigNumber(amount);
+      const outputAmount = isExactOut
+        ? new BigNumber(amount)
+        : quoteAmountInDecimals;
+      const inputTokenPrice = inputAmount
+        .multipliedBy(quote.val.input_token_price)
+        .toFixed(2);
+      const outputTokenPrice = outputAmount
+        .multipliedBy(quote.val.output_token_price)
+        .toFixed(2);
+      setTokenPrices({
+        input: inputTokenPrice,
+        output: outputTokenPrice,
+      });
     },
     [
       getQuote,
@@ -310,11 +303,7 @@ export const useSwap = () => {
       debounceFetch.cancel();
       abortFetchQuote();
 
-      if (
-        !amountInNumber &&
-        (!Number(inputAmount) || inputAmount === "0")
-        //&& !isSwappingInProgress.current
-      ) {
+      if (!amountInNumber) {
         setError(IOType.output, "");
         setAmount(IOType.input, "");
         return;
@@ -340,44 +329,38 @@ export const useSwap = () => {
   );
 
   const handleAssetSwap = useCallback(async () => {
-    // if (isSwappingInProgress.current && !inputAmount) return;
-    // setAssetSwapAlternate(assetSwapAlternate + 1);
     if (!inputAsset || !outputAsset) {
       return;
     }
 
+    if (inputEditing || outputEditing) {
+      setEditing(IOType.input, !inputEditing);
+      setEditing(IOType.output, !outputEditing);
+    }
+
     try {
-      // isSwappingInProgress.current = true;
-      // if (assetSwapAlternate % 2 === 0) {
-      // await swapAssetsAndAmounts(0);
       await swapAssetsAndAmounts();
       console.log("0", inputAsset);
       if (Number(inputAmount)) await handleOutputAmountChange(inputAmount);
       else {
         debounceFetch.cancel();
         abortFetchQuote();
-        // isSwappingInProgress.current = false;
         return;
       }
-      // } else {
-      //   await swapAssetsAndAmounts(1);
-      //   console.log("1", inputAsset);
-      //   if (Number(outputAmount)) await handleInputAmountChange(outputAmount);
-      //   else {
-      //     debounceFetch.cancel();
-      //     abortFetchQuote();
-      //     isSwappingInProgress.current = false;
-      //     return;
-      //   }
-      // }
     } catch (error) {
-      // isSwappingInProgress.current = false;
       console.error("Error during asset swap:", error);
     }
-    // isSwappingInProgress.current = false;
     return "Ok";
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inputAsset, outputAsset, inputAmount, outputAmount, fetchQuote]);
+  }, [
+    inputAsset,
+    outputAsset,
+    inputAmount,
+    outputAmount,
+    outputEditing,
+    inputEditing,
+    fetchQuote,
+  ]);
 
   const handleSwapClick = async () => {
     if (
@@ -467,22 +450,12 @@ export const useSwap = () => {
   }, [abortFetchQuote]);
 
   useEffect(() => {
-    // if (!inputAsset || !outputAsset || isSwappingInProgress.current) return;
     if (!inputAsset || !outputAsset) return;
     setError(IOType.output, "");
     setError(IOType.input, "");
     handleInputAmountChange(inputAmount);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputAsset, handleInputAmountChange, setError]);
-
-  useEffect(() => {
-    // if (!inputAsset || !outputAsset || isSwappingInProgress.current) return;
-    if (!inputAsset || !outputAsset) return;
-    setError(IOType.output, "");
-    setError(IOType.input, "");
-    handleOutputAmountChange(outputAmount);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [outputAsset, handleInputAmountChange, setError]);
 
   useEffect(() => {
     if (inputAmount == "0" || outputAmount == "0") {
@@ -497,6 +470,16 @@ export const useSwap = () => {
     if (!inputAmount || !minAmount || !maxAmount) return;
     const amountInNumber = Number(inputAmount);
     if (!amountInNumber) return;
+
+    if (
+      inputAsset &&
+      outputAsset &&
+      !isBitcoin(inputAsset.chain) &&
+      !isBitcoin(outputAsset?.chain)
+    ) {
+      setEditing(IOType.input, false);
+      setEditing(IOType.output, false);
+    }
 
     setError(IOType.output, "");
     setError(IOType.input, "");
@@ -515,6 +498,7 @@ export const useSwap = () => {
       );
       return;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     inputAmount,
     minAmount,

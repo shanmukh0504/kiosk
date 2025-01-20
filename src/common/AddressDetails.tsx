@@ -20,10 +20,13 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
   const { chains } = assetInfoStore();
   const { setEditing, inputEditing, outputEditing } = swapStore();
   const { inputAsset, outputAsset } = useSwap();
-  const chain =
-    isRefund && inputAsset
-      ? inputAsset.chain
-      : outputAsset && outputAsset.chain;
+  let chain: Chain | undefined;
+
+  if (isRefund) {
+    if (inputAsset) chain = inputAsset.chain;
+  } else {
+    if (outputAsset) chain = outputAsset.chain;
+  }
 
   const redirect = useMemo(() => {
     return chains && chain ? chains[chain] : null;
@@ -41,7 +44,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
     <>
       {address && (
         <div
-          className={`flex justify-between items-center py-0.5 duration-300 transition-all ${
+          className={`flex justify-between items-center py-0.5 duration-500 ease-in-out transition-all ${
             show
               ? "opacity-100 max-h-7 pointer-events-auto mb-0"
               : "max-h-0 -mb-1 opacity-0 pointer-events-none"

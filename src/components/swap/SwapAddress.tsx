@@ -14,11 +14,11 @@ export const SwapAddress: FC<SwapAddressProps> = ({ isValidAddress }) => {
   const { inputAsset, outputAsset, btcAddress, setBtcAddress } = swapStore();
 
   const isRecoveryAddress = useMemo(
-    () => inputAsset && isBitcoin(inputAsset.chain),
+    () => !!(inputAsset && isBitcoin(inputAsset.chain)),
     [inputAsset]
   );
   const isReceiveAddress = useMemo(
-    () => outputAsset && isBitcoin(outputAsset.chain),
+    () => !!(outputAsset && isBitcoin(outputAsset.chain)),
     [outputAsset]
   );
 

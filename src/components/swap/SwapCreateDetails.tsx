@@ -28,19 +28,11 @@ export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({
   let receiveAddress = null;
 
   if (inputAsset && isBitcoin(inputAsset.chain)) {
-    if (btcAddress) {
-      refundAddress = btcAddress;
-      receiveAddress = address;
-    } else {
-      receiveAddress = address;
-    }
+    refundAddress = btcAddress;
+    receiveAddress = address;
   } else if (outputAsset && isBitcoin(outputAsset.chain)) {
-    if (btcAddress) {
-      receiveAddress = btcAddress;
-      refundAddress = address;
-    } else {
-      refundAddress = address;
-    }
+    receiveAddress = btcAddress;
+    refundAddress = address;
   } else {
     refundAddress = address;
     receiveAddress = address;
@@ -84,8 +76,8 @@ export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({
               </Typography>
             </ScaleYIn>
           </div>
-          <AddressDetails address={receiveAddress!} />
-          <AddressDetails address={refundAddress!} isRefund />
+          {receiveAddress && <AddressDetails address={receiveAddress} />}
+          {refundAddress && <AddressDetails address={refundAddress} isRefund />}
         </div>
       </div>
     </>
