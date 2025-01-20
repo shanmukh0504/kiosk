@@ -97,4 +97,12 @@ export const GardenSupportedWallets: Record<
     isBitcoinSupported: true,
     isEVMSupported: false,
   },
+  "io.rabby": {
+    id: "io.rabby",
+    name: "Rabby Wallet",
+    logo: "https://garden-finance.imgix.net/wallets/rabby.svg",
+    installLink: "https://rabby.io/",
+    isBitcoinSupported: false,
+    isEVMSupported: true,
+  },
 };
