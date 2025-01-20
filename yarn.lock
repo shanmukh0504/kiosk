@@ -627,23 +627,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/core@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "@gardenfi/core@npm:2.0.3"
-  dependencies:
-    "@catalogfi/utils": "npm:^0.1.6"
-    "@catalogfi/wallets": "npm:^0.2.51"
-    "@gardenfi/orderbook": "npm:^2.0.0"
-    "@gardenfi/utils": "npm:^2.0.0"
-    bignumber.js: "npm:^9.1.2"
-    bitcoinjs-lib: "npm:^6.1.6"
-    tiny-secp256k1: "npm:^2.2.3"
-    varuint-bitcoin: "npm:^1.1.2"
-    viem: "npm:^2.21.15"
-  checksum: 10c0/64690f6f240e7845a9d0612bfd75e7deac68f8f91c7f9075ce458ab49b598b220ad7a8e9ea5072e15e1a5abc30e343730b25b2c9cf3e03b9207287b823591859
-  languageName: node
-  linkType: hard
-
 "@gardenfi/core@npm:^2.0.4":
   version: 2.0.4
   resolution: "@gardenfi/core@npm:2.0.4"
@@ -679,21 +662,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/orderbook@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@gardenfi/orderbook@npm:2.0.0"
-  dependencies:
-    "@catalogfi/utils": "npm:^0.1.6"
-    "@gardenfi/utils": "npm:^2.0.0"
-    bufferutil: "npm:^4.0.8"
-    siwe: "npm:^2.1.4"
-    utf-8-validate: "npm:^6.0.3"
-    viem: "npm:^2.21.15"
-    ws: "npm:^8.14.2"
-  checksum: 10c0/d1694f51470b893cd9e69f228843880061dac32fd20e6538f3ed53c1f29261e7b92e35484a2909d7ef934ea6ad0617858c55aecf123ebb5c083dd26dc587572e
-  languageName: node
-  linkType: hard
-
 "@gardenfi/orderbook@npm:^2.0.1":
   version: 2.0.1
   resolution: "@gardenfi/orderbook@npm:2.0.1"
@@ -709,7 +677,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/react-hooks@npm:^2.0.3":
+"@gardenfi/react-hooks@npm:^2.0.5":
   version: 2.0.5
   resolution: "@gardenfi/react-hooks@npm:2.0.5"
   dependencies:
@@ -5870,10 +5838,10 @@ __metadata:
   resolution: "garden-kiosk@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.13.0"
-    "@gardenfi/core": "npm:^2.0.3"
+    "@gardenfi/core": "npm:^2.0.4"
     "@gardenfi/garden-book": "npm:^0.1.63"
-    "@gardenfi/orderbook": "npm:^2.0.0"
-    "@gardenfi/react-hooks": "npm:^2.0.3"
+    "@gardenfi/orderbook": "npm:^2.0.1"
+    "@gardenfi/react-hooks": "npm:^2.0.5"
     "@gardenfi/utils": "npm:^2.0.0"
     "@gardenfi/wallet-connectors": "npm:^2.0.1"
     "@tanstack/react-query": "npm:^5.51.23"
