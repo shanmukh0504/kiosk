@@ -9,7 +9,7 @@ import { SwapFees } from "./SwapFees";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 
 export const CreateSwap = () => {
-  const { swapAssets } = swapStore();
+  const { swapAssets, isInsufficientLiquidity } = swapStore();
   const {
     outputAmount,
     inputAmount,
@@ -34,18 +34,22 @@ export const CreateSwap = () => {
       ? "Insufficient balance"
       : isSwapping
       ? "Signing..."
+      : isInsufficientLiquidity
+      ? "Insufficient Liquidity"
       : "Swap";
-  }, [isInsufficientBalance, isSwapping]);
+  }, [isInsufficientBalance, isSwapping, isInsufficientLiquidity]);
 
   const buttonVariant = useMemo(() => {
     return isInsufficientBalance
       ? "disabled"
       : isSwapping
       ? "ternary"
+      : isInsufficientLiquidity
+      ? "disabled"
       : validSwap
       ? "primary"
       : "disabled";
-  }, [isInsufficientBalance, isSwapping, validSwap]);
+  }, [isInsufficientBalance, isSwapping, validSwap, isInsufficientLiquidity]);
 
   const timeEstimate = useMemo(() => {
     if (!inputAsset || !outputAsset) return "";
@@ -94,7 +98,7 @@ export const CreateSwap = () => {
         <SwapFees tokenPrices={tokenPrices} />
         <Button
           className={`transition-colors duration-500 ${
-            isSwapping ? "cursor-not-allowed" : ""
+            buttonLabel !== "Swap" ? "pointer-events-none" : ""
           }`}
           variant={buttonVariant}
           size="lg"

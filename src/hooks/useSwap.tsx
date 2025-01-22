@@ -35,6 +35,7 @@ export const useSwap = () => {
     setAmount,
     setError,
     setIsFetchingQuote,
+    setIsInsufficientLiquidity,
     setTokenPrices,
     clearSwapState,
     setBtcAddress,
@@ -154,6 +155,14 @@ export const useSwap = () => {
             },
           });
           if (quote.error) {
+            if (quote.error.includes("insufficient liquidity")) {
+              setIsInsufficientLiquidity(true);
+              setAmount(isExactOut ? IOType.input : IOType.output, "0");
+              setIsFetchingQuote({ input: false, output: false });
+              setStrategy("");
+              setTokenPrices({ input: "0", output: "0" });
+              return;
+            }
             setAmount(isExactOut ? IOType.input : IOType.output, "0");
             setIsFetchingQuote({ input: false, output: false });
             setStrategy("");
@@ -195,7 +204,14 @@ export const useSwap = () => {
         },
         500
       ),
-    [getQuote, setAmount, setIsFetchingQuote, setStrategy, setTokenPrices]
+    [
+      getQuote,
+      setAmount,
+      setIsFetchingQuote,
+      setStrategy,
+      setTokenPrices,
+      setIsInsufficientLiquidity,
+    ]
   );
 
   const fetchQuote = useCallback(
@@ -358,11 +374,12 @@ export const useSwap = () => {
   }, [inputAsset, handleInputAmountChange, setError]);
 
   useEffect(() => {
+    setIsInsufficientLiquidity(false);
     if (inputAmount == "0" || outputAmount == "0") {
       setTokenPrices({ input: "0", output: "0" });
       return;
     }
-  }, [inputAmount, outputAmount, setTokenPrices]);
+  }, [inputAmount, outputAmount, setTokenPrices, setIsInsufficientLiquidity]);
 
   useEffect(() => {
     if (!inputAmount || !minAmount || !maxAmount) return;
