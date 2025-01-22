@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { swapStore } from "../store/swapStore";
 import { IOType, network } from "../constants/constants";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
@@ -44,6 +44,7 @@ export const useSwap = () => {
   const { address } = useEVMWallet();
   const { swapAndInitiate, getQuote } = useGarden();
   const { provider, account } = useBitcoinWallet();
+  const controller = useRef<AbortController | null>(null);
 
   const isInsufficientBalance = useMemo(
     () => new BigNumber(inputAmount).gt(inputTokenBalance),
@@ -131,21 +132,25 @@ export const useSwap = () => {
           toAsset: Asset,
           isExactOut: boolean
         ) => {
-          console.log("fetching debounced quote outside");
           if (!getQuote) return;
 
           if (isExactOut) setIsFetchingQuote({ input: true, output: false });
           else setIsFetchingQuote({ input: false, output: true });
 
+          if (controller.current) controller.current.abort();
+          controller.current = new AbortController();
+
           const amountInDecimals = new BigNumber(amount).multipliedBy(
             10 ** fromAsset.decimals
           );
-          console.log("fetching debounced quote");
           const quote = await getQuote({
             fromAsset,
             toAsset,
             amount: amountInDecimals.toNumber(),
             isExactOut,
+            request: {
+              signal: controller.current.signal,
+            },
           });
           if (quote.error) {
             setAmount(isExactOut ? IOType.input : IOType.output, "0");
@@ -199,7 +204,6 @@ export const useSwap = () => {
       toAsset: Asset,
       isExactOut: boolean
     ) => {
-      console.log("fetching quote");
       debouncedFetchQuote(amount, fromAsset, toAsset, isExactOut);
     },
     [debouncedFetchQuote]
@@ -216,15 +220,21 @@ export const useSwap = () => {
       if (minAmount && amountInNumber < minAmount) {
         setError(`Minimum amount is ${minAmount} ${inputAsset?.symbol}`);
         setAmount(IOType.output, "0");
-        // abort if any calls are already in progress
+        // cancel debounced fetch quote
         debouncedFetchQuote.cancel();
+        // abort if any calls are already in progress
+        if (controller.current) controller.current.abort();
+
         return;
       }
       if (maxAmount && amountInNumber > maxAmount) {
         setError(`Maximum amount is ${maxAmount} ${inputAsset?.symbol}`);
         setAmount(IOType.output, "0");
-        // abort if any calls are already in progress
+        // cancel debounced fetch quote
         debouncedFetchQuote.cancel();
+        // abort if any calls are already in progress
+        if (controller.current) controller.current.abort();
+
         return;
       }
       setError("");
