@@ -1,7 +1,9 @@
 import {
   ArrowLeftIcon,
+  Chip,
   CloseIcon,
   Modal,
+  RadioCheckedIcon,
   Typography,
 } from "@gardenfi/garden-book";
 import React, { useState, FC, useMemo } from "react";
@@ -9,26 +11,27 @@ import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { Connector } from "wagmi";
 import { BottomSheet } from "../../../common/BottomSheet";
 import { useViewport } from "../../../hooks/useViewport";
-import { WalletLogos } from "../../../constants/supportedEVMWallets";
+import { getAvailableWallets, Wallet } from "./getSupportedWallets";
 import {
   IInjectedBitcoinProvider,
   useBitcoinWallet,
 } from "@gardenfi/wallet-connectors";
 import { WalletRow } from "./WalletRow";
-import { btcToEVMid, evmToBTCid } from "./constants";
 import { MultiWalletConnection } from "./MultiWalletConnection";
 import { handleEVMConnect } from "./handleConnect";
 import { modalNames, modalStore } from "../../../store/modalStore";
 import { authStore } from "../../../store/authStore";
+import { ecosystems, evmToBTCid } from "./constants";
+import { AnimatePresence } from "framer-motion";
 
 type ConnectWalletProps = {
   open: boolean;
   onClose: () => void;
-  isBTCWallets: boolean;
+  showOnlyBTCWallets: boolean;
 };
 
 export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
-  isBTCWallets,
+  showOnlyBTCWallets,
   onClose,
 }) => {
   const [connectingWallet, setConnectingWallet] = useState<string | null>(null);
@@ -36,24 +39,27 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
     evm: Connector;
     btc: IInjectedBitcoinProvider;
   }>();
+  const [selectedEcosystem, setSelectedEcosystem] = useState<string | null>(
+    null
+  );
+
   const { connectors, connectAsync, connector, address } = useEVMWallet();
   const { availableWallets, connect, provider } = useBitcoinWallet();
-
   const { setOpenModal } = modalStore();
   const { setAuth } = authStore();
 
-  const evmWalletIds = useMemo(
-    () => connectors.map((wallet) => wallet.id),
-    [connectors]
-  );
+  const allAvailableWallets = useMemo(() => {
+    if (showOnlyBTCWallets) return getAvailableWallets(availableWallets);
 
-  const btcWallets = isBTCWallets
-    ? availableWallets
-    : Object.fromEntries(
-        Object.entries(availableWallets).filter(([name]) => {
-          return !evmWalletIds.includes(btcToEVMid[name]);
-        })
-      );
+    const allWallets = getAvailableWallets(availableWallets, connectors);
+
+    if (selectedEcosystem === "Bitcoin")
+      return allWallets.filter((wallet) => wallet.isBitcoin);
+    else if (selectedEcosystem === "EVM")
+      return allWallets.filter((wallet) => wallet.isEVM);
+
+    return allWallets;
+  }, [showOnlyBTCWallets, availableWallets, connectors, selectedEcosystem]);
 
   const handleClose = () => {
     if (address) onClose();
@@ -68,40 +74,45 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
     setMultiWalletConnector(undefined);
   };
 
-  const handleConnect = async (connector: Connector, id: string) => {
-    const btcId = evmToBTCid[id];
-    if (btcId && availableWallets[btcId]) {
+  const handleConnect = async (connector: Wallet) => {
+    if (!connector.isAvailable) {
+      window.open(connector.installLink, "_blank");
+      return;
+    }
+    if (connector.isBitcoin && connector.isEVM) {
+      if (!connector.wallet?.evmWallet || !connector.wallet?.btcWallet) return;
       setMultiWalletConnector({
-        evm: connector,
-        btc: availableWallets[btcId],
+        evm: connector.wallet.evmWallet,
+        btc: connector.wallet.btcWallet,
       });
       return;
     }
-
-    setConnectingWallet(id);
-    const res = await handleEVMConnect(connector, connectAsync);
-    if (res && !res.isWhitelisted) {
-      setOpenModal(modalNames.whiteList);
-      handleClose();
-    }
-    if (res?.auth) {
-      setAuth(res.auth);
-      handleClose();
-    }
-    setConnectingWallet(null);
-  };
-
-  const handleConnectBTCWallet = async (
-    wallet: IInjectedBitcoinProvider,
-    name: string
-  ) => {
-    setConnectingWallet(name);
-    const res = await connect(wallet);
-    if (res.error) {
-      console.log("error connecting wallet", res.error);
+    setConnectingWallet(connector.id);
+    if (connector.isBitcoin) {
+      if (!connector.wallet?.btcWallet) return;
+      const res = await connect(connector.wallet.btcWallet);
+      if (res.error) {
+        console.log("error connecting wallet", res.error);
+        setConnectingWallet(null);
+      }
+    } else if (connector.isEVM) {
+      if (!connector.wallet?.evmWallet) return;
+      const res = await handleEVMConnect(
+        connector.wallet.evmWallet,
+        connectAsync
+      );
+      if (res && !res.isWhitelisted) {
+        setOpenModal(modalNames.whiteList);
+        onClose();
+        handleClose();
+      }
+      if (res?.auth) {
+        setAuth(res.auth);
+        handleClose();
+      }
       setConnectingWallet(null);
     }
-    handleClose();
+    setConnectingWallet(null);
   };
 
   return (
@@ -120,6 +131,32 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
           <CloseIcon className="w-6 h-[14px] cursor-pointer" onClick={close} />
         </div>
       </div>
+
+      {!showOnlyBTCWallets && !multiWalletConnector && (
+        <div className="flex flex-wrap gap-3">
+          {Object.values(ecosystems).map((ecosystem, i) => (
+            <Chip
+              key={i}
+              className={`py-1 pl-3 pr-1 cursor-pointer transition-colors ease-cubic-in-out hover:bg-opacity-50`}
+              onClick={() => {
+                setSelectedEcosystem((prev) =>
+                  prev === ecosystem.name ? null : ecosystem.name
+                );
+              }}
+            >
+              <Typography size="h3" weight="medium">
+                {ecosystem.name}
+              </Typography>
+              <RadioCheckedIcon
+                className={`${
+                  selectedEcosystem === ecosystem.name ? "w-4 mr-1" : "w-0"
+                } transition-all fill-rose`}
+              />
+            </Chip>
+          ))}
+        </div>
+      )}
+
       {multiWalletConnector ? (
         <MultiWalletConnection
           connectors={multiWalletConnector}
@@ -127,52 +164,38 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
         />
       ) : (
         <div className="flex flex-col gap-1 bg-white/50 rounded-2xl p-4">
-          {!isBTCWallets &&
-            connectors.map((wallet, i) => (
-              <WalletRow
-                key={i}
-                name={wallet.name}
-                logo={WalletLogos[wallet.id] ?? wallet.icon}
-                onClick={async () => {
-                  if (!wallet) return;
-                  await handleConnect(wallet, wallet.id);
-                }}
-                isConnecting={connectingWallet === wallet.id}
-                isConnected={{
-                  bitcoin: !!(
-                    provider?.id && provider.id === evmToBTCid[wallet.id]
-                  ),
-                  evm: connector?.id === wallet.id,
-                }}
-              />
-            ))}
-          {Object.entries(availableWallets).length > 0 ? (
-            Object.entries(btcWallets).map(([name, wallet], i) => (
-              <WalletRow
-                key={i}
-                name={name}
-                logo={WalletLogos[name]}
-                onClick={async () => {
-                  handleConnectBTCWallet(wallet, name);
-                }}
-                isConnecting={connectingWallet === name}
-                isConnected={{
-                  bitcoin: provider?.id === wallet.id,
-                  evm: connector?.id === wallet.id,
-                }}
-              />
-            ))
-          ) : isBTCWallets ? (
-            <Typography size="h3">No bitcoin wallets found</Typography>
-          ) : (
-            <></>
-          )}
+          <AnimatePresence>
+            {allAvailableWallets.length > 0 ? (
+              allAvailableWallets.map((wallet) => (
+                <WalletRow
+                  key={wallet.id}
+                  name={wallet.name}
+                  logo={wallet.logo}
+                  onClick={async () => {
+                    await handleConnect(wallet);
+                  }}
+                  isConnecting={connectingWallet === wallet.id}
+                  isConnected={{
+                    bitcoin: !!(
+                      provider &&
+                      (provider.id === wallet.id ||
+                        provider.id === evmToBTCid[wallet.id])
+                    ),
+                    evm: !!(connector && connector.id === wallet.id),
+                  }}
+                  isAvailable={wallet.isAvailable}
+                />
+              ))
+            ) : (
+              <Typography size="h3">No wallets found</Typography>
+            )}
+          </AnimatePresence>
         </div>
       )}
 
       <div className="mb-2">
         <Typography size="h4" weight="medium">
-          By connecting a wallet, you agree to Garden’s{" "}
+          By connecting a wallet, you agree to Garden&apos;s{" "}
           <a
             href="https://garden.finance/terms.pdf"
             target="_blank"
@@ -200,7 +223,7 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
 export const ConnectWallet: FC<ConnectWalletProps> = ({
   open,
   onClose,
-  isBTCWallets,
+  showOnlyBTCWallets,
 }) => {
   const { isMobile } = useViewport();
 
@@ -211,7 +234,7 @@ export const ConnectWallet: FC<ConnectWalletProps> = ({
           <ConnectWalletComponent
             open={open}
             onClose={onClose}
-            isBTCWallets={isBTCWallets}
+            showOnlyBTCWallets={showOnlyBTCWallets}
           />
         </BottomSheet>
       ) : (
@@ -223,7 +246,7 @@ export const ConnectWallet: FC<ConnectWalletProps> = ({
             <ConnectWalletComponent
               open={open}
               onClose={onClose}
-              isBTCWallets={isBTCWallets}
+              showOnlyBTCWallets={showOnlyBTCWallets}
             />
           </Modal.Children>
         </Modal>

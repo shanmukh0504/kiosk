@@ -83,8 +83,11 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="bg-white py-1 px-3 rounded-full w-fit">
-        {connectors.btc.id}
+      <div className="flex items-center gap-2 bg-white py-1 px-3 rounded-full w-fit">
+        <img src={connectors.btc.icon} alt={"icon"} className="w-5 h-5" />
+        <Typography size="h3" weight="medium">
+          {connectors.btc.name}
+        </Typography>
       </div>
       <div className="flex flex-col gap-1 bg-white/50 rounded-2xl py-4">
         <Typography size="h5" weight="bold" className="px-4">

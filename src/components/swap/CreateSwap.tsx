@@ -2,15 +2,15 @@ import { Button, ExchangeIcon } from "@gardenfi/garden-book";
 import { SwapInput } from "./SwapInput";
 import { getTimeEstimates, IOType } from "../../constants/constants";
 import { SwapAddress } from "./SwapAddress";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { SwapCreateDetails } from "./SwapCreateDetails";
 import { swapStore } from "../../store/swapStore";
+import { Loader } from "../../common/Loader";
 
 export const CreateSwap = () => {
-  const [isAnimating, setIsAnimating] = useState(false);
-
+  const { isInsufficientLiquidity } = swapStore();
   const {
     outputAmount,
     inputAmount,
@@ -38,57 +38,46 @@ export const CreateSwap = () => {
       ? "Insufficient balance"
       : isSwapping
       ? "Signing..."
+      : isInsufficientLiquidity
+      ? "Insufficient Liquidity"
       : "Swap";
-  }, [isInsufficientBalance, isSwapping]);
+  }, [isInsufficientBalance, isSwapping, isInsufficientLiquidity]);
 
   const buttonVariant = useMemo(() => {
     return isInsufficientBalance
       ? "disabled"
       : isSwapping
       ? "ternary"
+      : isInsufficientLiquidity
+      ? "disabled"
       : validSwap
       ? "primary"
       : "disabled";
-  }, [isInsufficientBalance, isSwapping, validSwap]);
+  }, [isInsufficientBalance, isSwapping, validSwap, isInsufficientLiquidity]);
 
   const timeEstimate = useMemo(() => {
     if (!inputAsset || !outputAsset) return "";
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
 
+  const isAnimating = loading.output || loading.input;
   const isDisabled = useMemo(() => {
     return (
       isSwapping ||
       !validSwap ||
       isInsufficientBalance ||
-      isAnimating ||
       loading.output ||
-      loading.input
+      loading.input ||
+      isInsufficientLiquidity
     );
   }, [
     isSwapping,
     validSwap,
     isInsufficientBalance,
-    isAnimating,
     loading.output,
     loading.input,
+    isInsufficientLiquidity,
   ]);
-
-  useEffect(() => {
-    // if (loading.output || loading.input || isSwappingInProgress.current) {
-    if (loading.output || loading.input) {
-      setIsAnimating(true);
-      const interval = setInterval(() => {
-        setIsAnimating((prev) => !prev);
-      }, 1000);
-      return () => clearInterval(interval);
-    } else {
-      const timeout = setTimeout(() => {
-        setIsAnimating(false);
-      }, 1000);
-      return () => clearTimeout(timeout);
-    }
-  }, [loading.output, loading.input]);
 
   return (
     <div
@@ -151,7 +140,7 @@ export const CreateSwap = () => {
           <SwapCreateDetails tokenPrices={tokenPrices} />
         </div>
         <Button
-          className={`transition-colors relative duration-500 w-full z-20 overflow-hidden ${
+          className={`transition-colors relative duration-500 w-full z-20 flex justify-center items-center overflow-hidden ${
             isSwapping ? "cursor-not-allowed" : ""
           }`}
           variant={buttonVariant}
@@ -159,8 +148,13 @@ export const CreateSwap = () => {
           onClick={handleSwapClick}
           disabled={isDisabled}
         >
-          <div className={`w-full ${isAnimating ? "shine" : ""}`}>
-            {buttonLabel}
+          <span>{buttonLabel}</span>
+          <div
+            className={`overflow-hidden transition-all duration-500 ease-in-out ${
+              isAnimating ? "w-6 h-6 opacity-100" : "w-0 h-0 opacity-30"
+            }`}
+          >
+            <Loader width={24} height={24} />
           </div>
         </Button>
       </div>

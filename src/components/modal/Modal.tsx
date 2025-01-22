@@ -29,7 +29,7 @@ export const Modal = () => {
       <ConnectWallet
         open={isOpen}
         onClose={() => closeConnectWallet()}
-        isBTCWallets={isBTCwallets}
+        showOnlyBTCWallets={isBTCwallets}
       />
       <TransactionsComponent
         open={modalName.transactions}

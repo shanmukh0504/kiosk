@@ -84,7 +84,7 @@ export const Navbar = () => {
         <Button
           variant="primary"
           onClick={handleConnectClick}
-          className="ml-auto w-28"
+          className="ml-auto min-w-28"
           size="sm"
           breakpoints={{ md: "md" }}
           loading={isInitiatingSM}
