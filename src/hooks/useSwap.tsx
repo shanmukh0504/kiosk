@@ -140,8 +140,9 @@ export const useSwap = () => {
           if (controller.current) controller.current.abort();
           controller.current = new AbortController();
 
+          const decimals = isExactOut ? toAsset.decimals : fromAsset.decimals;
           const amountInDecimals = new BigNumber(amount).multipliedBy(
-            10 ** fromAsset.decimals
+            10 ** decimals
           );
           const quote = await getQuote({
             fromAsset,
