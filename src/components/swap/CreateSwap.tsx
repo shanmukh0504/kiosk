@@ -43,13 +43,12 @@ export const CreateSwap = () => {
       : "Swap";
   }, [isInsufficientBalance, isSwapping, isInsufficientLiquidity]);
 
+  const isAnimating = loading.output || loading.input;
   const buttonVariant = useMemo(() => {
-    return isInsufficientBalance
+    return isAnimating || isInsufficientLiquidity || isInsufficientBalance
       ? "disabled"
       : isSwapping
       ? "ternary"
-      : isInsufficientLiquidity
-      ? "disabled"
       : validSwap
       ? "primary"
       : "disabled";
@@ -60,24 +59,12 @@ export const CreateSwap = () => {
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
 
-  const isAnimating = loading.output || loading.input;
-  const isDisabled = useMemo(() => {
-    return (
-      isSwapping ||
-      !validSwap ||
-      isInsufficientBalance ||
-      loading.output ||
-      loading.input ||
-      isInsufficientLiquidity
-    );
-  }, [
-    isSwapping,
-    validSwap,
-    isInsufficientBalance,
-    loading.output,
-    loading.input,
-    isInsufficientLiquidity,
-  ]);
+  const isDisabled =
+    isSwapping ||
+    !validSwap ||
+    isInsufficientBalance ||
+    isAnimating ||
+    isInsufficientLiquidity;
 
   return (
     <div

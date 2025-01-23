@@ -142,8 +142,7 @@ export const useSwap = () => {
         ) => {
           if (!getQuote) return;
 
-          if (isExactOut)
-            setIsFetchingQuote({ input: isExactOut, output: !isExactOut });
+          setIsFetchingQuote({ input: isExactOut, output: !isExactOut });
 
           if (controller.current) controller.current.abort();
           controller.current = new AbortController();
