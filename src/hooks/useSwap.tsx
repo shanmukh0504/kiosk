@@ -170,26 +170,15 @@ export const useSwap = () => {
             if (quote.error.includes("output amount too high")) {
               setError(IOType.output, "Output amount too high");
               setAmount(IOType.input, "");
-              setIsFetchingQuote({ input: false, output: false });
-              setStrategy("");
-              setTokenPrices({ input: "0", output: "0" });
-              return;
             } else if (quote.error.includes("output amount too less")) {
               setError(IOType.output, "Output amount too less");
               setAmount(IOType.input, "");
-              setIsFetchingQuote({ input: false, output: false });
-              setStrategy("");
-              setTokenPrices({ input: "0", output: "0" });
-              return;
             } else if (quote.error.includes("insufficient liquidity")) {
               setIsInsufficientLiquidity(true);
               setAmount(IOType.input, "");
-              setIsFetchingQuote({ input: false, output: false });
-              setStrategy("");
-              setTokenPrices({ input: "0", output: "0" });
-              return;
+            } else {
+              setAmount(isExactOut ? IOType.input : IOType.output, "");
             }
-            setAmount(isExactOut ? IOType.input : IOType.output, "0");
             setIsFetchingQuote({ input: false, output: false });
             setStrategy("");
             setTokenPrices({ input: "0", output: "0" });
@@ -256,6 +245,10 @@ export const useSwap = () => {
 
   const handleInputAmountChange = useCallback(
     async (amount: string) => {
+      // cancel debounced fetch quote
+      debouncedFetchQuote.cancel();
+      // abort if any calls are already in progress
+      if (controller.current) controller.current.abort();
       setAmount(IOType.input, amount);
       const amountInNumber = Number(amount);
 
@@ -271,10 +264,6 @@ export const useSwap = () => {
           `Minimum amount is ${minAmount} ${inputAsset?.symbol}`
         );
         setAmount(IOType.output, "");
-        // cancel debounced fetch quote
-        debouncedFetchQuote.cancel();
-        // abort if any calls are already in progress
-        if (controller.current) controller.current.abort();
         return;
       }
 
@@ -284,10 +273,6 @@ export const useSwap = () => {
           `Maximum amount is ${maxAmount} ${inputAsset?.symbol}`
         );
         setAmount(IOType.output, "");
-        // cancel debounced fetch quote
-        debouncedFetchQuote.cancel();
-        // abort if any calls are already in progress
-        if (controller.current) controller.current.abort();
         return;
       }
 
@@ -314,16 +299,16 @@ export const useSwap = () => {
 
   const handleOutputAmountChange = useCallback(
     async (amount: string) => {
+      // cancel debounced fetch quote
+      debouncedFetchQuote.cancel();
+      // abort if any calls are already in progress
+      if (controller.current) controller.current.abort();
       setAmount(IOType.output, amount);
       const amountInNumber = Number(amount);
 
       if (!amountInNumber) {
         setError(IOType.output, "");
         setAmount(IOType.input, "");
-        // cancel debounced fetch quote
-        debouncedFetchQuote.cancel();
-        // abort if any calls are already in progress
-        if (controller.current) controller.current.abort();
         return;
       }
       if (!inputAsset || !outputAsset || !amountInNumber) return;
