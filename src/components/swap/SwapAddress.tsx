@@ -10,6 +10,7 @@ type SwapAddressProps = {
 
 export const SwapAddress: FC<SwapAddressProps> = ({ isValidAddress }) => {
   const inputRef = useRef<HTMLInputElement>(null);
+
   const tooltipId = useId();
   const { inputAsset, outputAsset, btcAddress, setBtcAddress } = swapStore();
 

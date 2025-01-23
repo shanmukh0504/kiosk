@@ -20,19 +20,10 @@ export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({
   const { address } = useEVMWallet();
   const { inputAsset, outputAsset } = useSwap();
 
-  let refundAddress = null;
-  let receiveAddress = null;
-
-  if (inputAsset && isBitcoin(inputAsset.chain)) {
-    refundAddress = btcAddress;
-    receiveAddress = address;
-  } else if (outputAsset && isBitcoin(outputAsset.chain)) {
-    receiveAddress = btcAddress;
-    refundAddress = address;
-  } else {
-    refundAddress = address;
-    receiveAddress = address;
-  }
+  const refundAddress =
+    inputAsset && isBitcoin(inputAsset.chain) ? btcAddress : address;
+  const receiveAddress =
+    outputAsset && isBitcoin(outputAsset.chain) ? btcAddress : address;
 
   const fees = useMemo(
     () => Number(tokenPrices.input) - Number(tokenPrices.output),

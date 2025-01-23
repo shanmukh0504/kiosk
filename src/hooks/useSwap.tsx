@@ -140,6 +140,7 @@ export const useSwap = () => {
           toAsset: Asset,
           isExactOut: boolean
         ) => {
+          console.log("fetching debounced quote outside");
           if (!getQuote) return;
 
           setIsFetchingQuote({ input: isExactOut, output: !isExactOut });
@@ -247,6 +248,7 @@ export const useSwap = () => {
       toAsset: Asset,
       isExactOut: boolean
     ) => {
+      console.log("fetching quote");
       debouncedFetchQuote(amount, fromAsset, toAsset, isExactOut);
     },
     [debouncedFetchQuote]
@@ -275,6 +277,7 @@ export const useSwap = () => {
         if (controller.current) controller.current.abort();
         return;
       }
+
       if (maxAmount && amountInNumber > maxAmount) {
         setError(
           IOType.input,
@@ -287,12 +290,14 @@ export const useSwap = () => {
         if (controller.current) controller.current.abort();
         return;
       }
+
       setError(IOType.input, "");
 
       if (!inputAsset || !outputAsset || !Number(amount)) return;
       const trimmedAmount = amount.includes(".")
         ? amount.replace(/^0+/, "0")
         : amount.replace(/^0+/, "");
+      setAmount(IOType.input, trimmedAmount);
       fetchQuote(trimmedAmount, inputAsset, outputAsset, false);
     },
     [
@@ -300,8 +305,8 @@ export const useSwap = () => {
       outputAsset,
       minAmount,
       maxAmount,
-      debouncedFetchQuote,
       fetchQuote,
+      debouncedFetchQuote,
       setAmount,
       setError,
     ]
@@ -327,6 +332,7 @@ export const useSwap = () => {
         ? amount.replace(/^0+/, "0")
         : amount.replace(/^0+/, "");
       setError(IOType.output, "");
+      setAmount(IOType.output, trimmedAmount);
 
       fetchQuote(trimmedAmount, inputAsset, outputAsset, true);
     },

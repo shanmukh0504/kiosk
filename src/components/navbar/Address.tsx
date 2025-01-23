@@ -13,7 +13,6 @@ export const Address = () => {
   const { pendingOrders } = useGarden();
   const { pendingOrders: pendingOrdersFromStore, setPendingOrders } =
     ordersStore();
-
   const handleAddressClick = () => setOpenModal(modalNames.transactions);
 
   useEffect(() => {

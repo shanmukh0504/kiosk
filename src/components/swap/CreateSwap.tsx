@@ -33,17 +33,23 @@ export const CreateSwap = () => {
   const { inputEditing, outputEditing } = swapStore();
   const { account: btcAddress } = useBitcoinWallet();
 
+  const isAnimating = loading.output || loading.input;
+  const isDisabled =
+    isSwapping ||
+    !validSwap ||
+    isInsufficientBalance ||
+    isAnimating ||
+    isInsufficientLiquidity;
   const buttonLabel = useMemo(() => {
-    return isInsufficientBalance
+    return isInsufficientLiquidity
+      ? "Insufficient Liquidity"
+      : isInsufficientBalance
       ? "Insufficient balance"
       : isSwapping
       ? "Signing..."
-      : isInsufficientLiquidity
-      ? "Insufficient Liquidity"
       : "Swap";
   }, [isInsufficientBalance, isSwapping, isInsufficientLiquidity]);
 
-  const isAnimating = loading.output || loading.input;
   const buttonVariant = useMemo(() => {
     return isAnimating || isInsufficientLiquidity || isInsufficientBalance
       ? "disabled"
@@ -58,13 +64,6 @@ export const CreateSwap = () => {
     if (!inputAsset || !outputAsset) return "";
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
-
-  const isDisabled =
-    isSwapping ||
-    !validSwap ||
-    isInsufficientBalance ||
-    isAnimating ||
-    isInsufficientLiquidity;
 
   return (
     <div
@@ -127,7 +126,7 @@ export const CreateSwap = () => {
           <SwapCreateDetails tokenPrices={tokenPrices} />
         </div>
         <Button
-          className={`transition-colors relative duration-500 w-full z-20 flex justify-center items-center overflow-hidden ${
+          className={`transition-colors duration-500 w-full z-20 flex justify-center items-center${
             isSwapping ? "cursor-not-allowed" : ""
           }`}
           variant={buttonVariant}
