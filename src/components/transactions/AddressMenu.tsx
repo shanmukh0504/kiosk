@@ -14,12 +14,14 @@ import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { connectWalletStore } from "../../store/connectWalletStore";
 import { swapStore } from "../../store/swapStore";
 import { balanceStore } from "../../store/balanceStore";
+import { ecosystems } from "../navbar/connectWallet/constants";
 
 type AddressProps = {
   address: string;
+  logo: string
 };
 
-const Address: FC<AddressProps> = ({ address }) => {
+const Address: FC<AddressProps> = ({ address, logo }) => {
   const [addressTooltipContent, setAddressTooltipContent] = useState("Copy");
   const addressTooltipId = useId();
 
@@ -34,11 +36,15 @@ const Address: FC<AddressProps> = ({ address }) => {
   };
 
   return (
-    <div className="bg-white/50 rounded-full px-3 py-1">
+    <div className="bg-white/50 flex rounded-full px-2 py-[2px] gap-2 ">
+      <img
+        src={logo}
+        className="w-5 h-5 my-1 "
+      />
       <Typography
         size="h3"
         weight="medium"
-        className="cursor-pointer"
+        className="cursor-pointer pt-[2px]"
         onClick={handleAddressClick}
         data-tooltip-id={addressTooltipId}
       >
@@ -88,13 +94,13 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   return (
     <>
       <div className="flex justify-between">
-        <div className="flex gap-3">
-          {address && <Address address={address} />}
-          {btcAddress && <Address address={btcAddress} />}
+        <div className="flex gap-3 flex-wrap">
+          {address && <Address address={address} logo={ecosystems.evm.icon} />}
+          {btcAddress && <Address address={btcAddress} logo={ecosystems.bitcoin.icon} />}
           {showConnectWallet && (
             <div
               data-tooltip-id={addTooltipId}
-              className="flex items-center bg-white/50 rounded-full p-1.5 cursor-pointer transition-colors hover:bg-white"
+              className="flex items-center bg-white/50 rounded-full p-1.5 h-8 cursor-pointer transition-colors hover:bg-white"
               onClick={handleBTCWalletClick}
             >
               <AddIcon className="w-5 h-3" />
@@ -116,7 +122,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
           </div> */}
           <div
             data-tooltip-id={logoutTooltipId}
-            className="flex items-center bg-white/50 rounded-full p-1.5 cursor-pointer transition-colors hover:bg-white"
+            className="flex items-center bg-white/50 rounded-full p-1.5 h-8 cursor-pointer transition-colors hover:bg-white"
             onClick={handleDisconnectClick}
           >
             <LogoutIcon
