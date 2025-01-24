@@ -1,10 +1,16 @@
 import { create } from "zustand";
-import { IOType, network } from "../constants/constants";
+import { IOType, network, QuoteError } from "../constants/constants";
 import { Asset, Chains } from "@gardenfi/orderbook";
 
 export type TokenPrices = {
   input: string;
   output: string;
+};
+
+export type SwapErrors = {
+  inputError?: string;
+  outputError?: string;
+  quoteError?: QuoteError;
 };
 
 export type FetchingQuote = {
@@ -22,7 +28,7 @@ type SwapState = {
   isInsufficientLiquidity: boolean;
   strategy: string;
   tokenPrices: TokenPrices;
-  error: string;
+  error: SwapErrors;
   isFetchingQuote: FetchingQuote;
   setTokenPrices: (tokenPrices: TokenPrices) => void;
   setIsSwapping: (isSwapping: boolean) => void;
@@ -32,7 +38,7 @@ type SwapState = {
   setAmount: (ioType: IOType, amount: string) => void;
   setBtcAddress: (btcAddress: string) => void;
   swapAssets: () => void;
-  setError: (error: string) => void;
+  setError: (error: SwapErrors) => void;
   setIsFetchingQuote: (isFetchingQuote: FetchingQuote) => void;
   clearSwapState: () => void;
   clear: () => void;
@@ -64,7 +70,12 @@ export const swapStore = create<SwapState>((set) => ({
     input: "0",
     output: "0",
   },
-  error: "",
+  error: {
+    inputError: "",
+    outputError: "",
+    quoteError: QuoteError.None
+  },
+  quoteError: QuoteError.None,
   isFetchingQuote: {
     input: false,
     output: false,
@@ -139,7 +150,11 @@ export const swapStore = create<SwapState>((set) => ({
         input: "0",
         output: "0",
       },
-      error: "",
+      error: {
+        inputError: "",
+        outputError: "",
+        quoteError: QuoteError.None
+      },
       isFetchingQuote: {
         input: false,
         output: false,
@@ -160,7 +175,11 @@ export const swapStore = create<SwapState>((set) => ({
         input: "0",
         output: "0",
       },
-      error: "",
+      error: {
+        inputError: "",
+        outputError: "",
+        quoteError: QuoteError.None
+      },
       isFetchingQuote: {
         input: false,
         output: false,

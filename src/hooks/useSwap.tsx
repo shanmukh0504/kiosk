@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { swapStore } from "../store/swapStore";
-import { IOType, network } from "../constants/constants";
+import { IOType, network, QuoteError } from "../constants/constants";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
@@ -74,7 +74,7 @@ export const useSwap = () => {
       strategy &&
       address &&
       isValidBitcoinAddress &&
-      !error &&
+      !error.inputError &&
       !isInsufficientBalance
     );
   }, [
@@ -156,12 +156,7 @@ export const useSwap = () => {
           });
           if (quote.error) {
             if (quote.error.includes("insufficient liquidity")) {
-              setIsInsufficientLiquidity(true);
-              setAmount(isExactOut ? IOType.input : IOType.output, "0");
-              setIsFetchingQuote({ input: false, output: false });
-              setStrategy("");
-              setTokenPrices({ input: "0", output: "0" });
-              return;
+              setError({ quoteError: QuoteError.InsufficientLiquidity });
             }
             setAmount(isExactOut ? IOType.input : IOType.output, "0");
             setIsFetchingQuote({ input: false, output: false });
@@ -229,13 +224,17 @@ export const useSwap = () => {
   const handleInputAmountChange = useCallback(
     async (amount: string) => {
       setAmount(IOType.input, amount);
+      setError({ quoteError: undefined });
       const amountInNumber = Number(amount);
       if (!amountInNumber) {
         setAmount(IOType.output, "0");
         return;
       }
       if (minAmount && amountInNumber < minAmount) {
-        setError(`Minimum amount is ${minAmount} ${inputAsset?.symbol}`);
+        setTokenPrices({ input: "0", output: "0" });
+        setError({
+          inputError: `Minimum amount is ${minAmount} ${inputAsset?.symbol}`,
+        });
         setAmount(IOType.output, "0");
         // cancel debounced fetch quote
         debouncedFetchQuote.cancel();
@@ -245,7 +244,9 @@ export const useSwap = () => {
         return;
       }
       if (maxAmount && amountInNumber > maxAmount) {
-        setError(`Maximum amount is ${maxAmount} ${inputAsset?.symbol}`);
+        setError({
+          inputError: `Maximum amount is ${maxAmount} ${inputAsset?.symbol}`,
+        });
         setAmount(IOType.output, "0");
         // cancel debounced fetch quote
         debouncedFetchQuote.cancel();
@@ -254,7 +255,7 @@ export const useSwap = () => {
 
         return;
       }
-      setError("");
+      setError({ inputError: "" });
 
       if (!inputAsset || !outputAsset || !Number(amount)) return;
       fetchQuote(amount, inputAsset, outputAsset, false);
@@ -273,6 +274,7 @@ export const useSwap = () => {
 
   const handleOutputAmountChange = async (amount: string) => {
     setAmount(IOType.output, amount);
+    setError({ quoteError: undefined });
     const amountInNumber = Number(amount);
     if (!amountInNumber) {
       setAmount(IOType.input, "0");
@@ -368,7 +370,7 @@ export const useSwap = () => {
 
   useEffect(() => {
     if (!inputAsset || !outputAsset) return;
-    setError("");
+    setError({ inputError: "" });
     handleInputAmountChange(inputAmount);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputAsset, handleInputAmountChange, setError]);
@@ -386,14 +388,18 @@ export const useSwap = () => {
     const amountInNumber = Number(inputAmount);
     if (!amountInNumber) return;
     if (amountInNumber < minAmount) {
-      setError(`Minimum amount is ${minAmount} ${inputAsset?.symbol}`);
+      setError({
+        inputError: `Minimum amount is ${minAmount} ${inputAsset?.symbol}`,
+      });
       return;
     }
     if (amountInNumber > maxAmount) {
-      setError(`Maximum amount is ${maxAmount} ${inputAsset?.symbol}`);
+      setError({
+        inputError: `Maximum amount is ${maxAmount} ${inputAsset?.symbol}`,
+      });
       return;
     }
-    setError("");
+    setError({ inputError: "" });
   }, [inputAmount, minAmount, maxAmount, inputAsset?.symbol, setError]);
 
   useEffect(() => {

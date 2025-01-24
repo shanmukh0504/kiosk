@@ -9,7 +9,7 @@ import { SwapFees } from "./SwapFees";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 
 export const CreateSwap = () => {
-  const { swapAssets, isInsufficientLiquidity } = swapStore();
+  const { swapAssets } = swapStore();
   const {
     outputAmount,
     inputAmount,
@@ -34,22 +34,20 @@ export const CreateSwap = () => {
       ? "Insufficient balance"
       : isSwapping
       ? "Signing..."
-      : isInsufficientLiquidity
+      : error.quoteError
       ? "Insufficient Liquidity"
       : "Swap";
-  }, [isInsufficientBalance, isSwapping, isInsufficientLiquidity]);
+  }, [isInsufficientBalance, isSwapping, error.quoteError]);
 
   const buttonVariant = useMemo(() => {
-    return isInsufficientBalance
+    return isInsufficientBalance || error.quoteError
       ? "disabled"
       : isSwapping
       ? "ternary"
-      : isInsufficientLiquidity
-      ? "disabled"
       : validSwap
       ? "primary"
       : "disabled";
-  }, [isInsufficientBalance, isSwapping, validSwap, isInsufficientLiquidity]);
+  }, [isInsufficientBalance, isSwapping, validSwap, error.quoteError]);
 
   const timeEstimate = useMemo(() => {
     if (!inputAsset || !outputAsset) return "";
@@ -73,7 +71,7 @@ export const CreateSwap = () => {
             onChange={handleInputAmountChange}
             loading={loading.input}
             price={tokenPrices.input}
-            error={error}
+            error={error.inputError}
             balance={inputTokenBalance}
           />
           <div
@@ -103,7 +101,12 @@ export const CreateSwap = () => {
           variant={buttonVariant}
           size="lg"
           onClick={handleSwapClick}
-          disabled={isSwapping || !validSwap || isInsufficientBalance}
+          disabled={
+            isSwapping ||
+            !validSwap ||
+            isInsufficientBalance ||
+            !!error.quoteError
+          }
         >
           {buttonLabel}
         </Button>
