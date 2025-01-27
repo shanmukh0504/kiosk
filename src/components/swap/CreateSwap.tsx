@@ -7,10 +7,9 @@ import { useSwap } from "../../hooks/useSwap";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { SwapCreateDetails } from "./SwapCreateDetails";
 import { swapStore } from "../../store/swapStore";
-import { Loader } from "../../common/Loader";
 
 export const CreateSwap = () => {
-  const { isInsufficientLiquidity } = swapStore();
+  const { error, swapAssets } = swapStore();
   const {
     outputAmount,
     inputAmount,
@@ -18,10 +17,7 @@ export const CreateSwap = () => {
     outputAsset,
     handleInputAmountChange,
     handleOutputAmountChange,
-    handleAssetSwap,
     loading,
-    inputError,
-    outputError,
     tokenPrices,
     validSwap,
     inputTokenBalance,
@@ -39,26 +35,26 @@ export const CreateSwap = () => {
     !validSwap ||
     isInsufficientBalance ||
     isAnimating ||
-    isInsufficientLiquidity;
+    !!error.quoteError;
   const buttonLabel = useMemo(() => {
-    return isInsufficientLiquidity
+    return error.quoteError
       ? "Insufficient Liquidity"
       : isInsufficientBalance
       ? "Insufficient balance"
       : isSwapping
       ? "Signing..."
       : "Swap";
-  }, [isInsufficientBalance, isSwapping, isInsufficientLiquidity]);
+  }, [isInsufficientBalance, isSwapping, error.quoteError]);
 
   const buttonVariant = useMemo(() => {
-    return isAnimating || isInsufficientLiquidity || isInsufficientBalance
+    return isAnimating || error.quoteError || isInsufficientBalance
       ? "disabled"
       : isSwapping
       ? "ternary"
       : validSwap
       ? "primary"
       : "disabled";
-  }, [isInsufficientBalance, isSwapping, validSwap, isInsufficientLiquidity]);
+  }, [isInsufficientBalance, isSwapping, validSwap, error, isAnimating]);
 
   const timeEstimate = useMemo(() => {
     if (!inputAsset || !outputAsset) return "";
@@ -82,14 +78,14 @@ export const CreateSwap = () => {
             onChange={handleInputAmountChange}
             loading={loading.input}
             price={tokenPrices.input}
-            error={inputError}
+            error={error.inputError}
             balance={inputTokenBalance}
           />
           <div
             className={`absolute bg-white border border-light-grey rounded-full
             -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 transition-transform hover:scale-[1.1]
             p-1.5 cursor-pointer`}
-            onClick={handleAssetSwap}
+            onClick={swapAssets}
           >
             <ExchangeIcon />
           </div>
@@ -99,7 +95,7 @@ export const CreateSwap = () => {
             asset={outputAsset}
             onChange={handleOutputAmountChange}
             loading={loading.output}
-            error={outputError}
+            error={error.outputError}
             price={tokenPrices.output}
             timeEstimate={timeEstimate}
           />
@@ -134,14 +130,7 @@ export const CreateSwap = () => {
           onClick={handleSwapClick}
           disabled={isDisabled}
         >
-          <span>{buttonLabel}</span>
-          <div
-            className={`overflow-hidden transition-all duration-500 ease-in-out ${
-              isAnimating ? "w-6 h-6 opacity-100" : "w-0 h-0 opacity-30"
-            }`}
-          >
-            <Loader width={24} height={24} />
-          </div>
+          {buttonLabel}
         </Button>
       </div>
     </div>

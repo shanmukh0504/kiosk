@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { cubicBezier, motion } from "framer-motion";
 import React from "react";
 
 interface ScaleYInProps {
@@ -12,30 +12,36 @@ interface ScaleYInProps {
  * @param children - component to animate
  * @default triggerAnimation - true
  */
-export const ScaleYIn = ({
-  children,
-  triggerAnimation = true,
-}: ScaleYInProps) => {
+export const ScaleYIn = ({ children, triggerAnimation }: ScaleYInProps) => {
   const animation = {
-    hidden: { scaleY: 1, transformOrigin: "bottom" },
-    animate: {
-      scaleY: [0, 1],
-      transformOrigin: "bottom",
-      transition: { duration: 0.15, ease: "easeInOut", once: true },
-    },
     exit: {
       scaleY: [1, 0],
-      transformOrigin: "bottom",
-      transition: { duration: 0.15, ease: "easeInOut", once: true },
+      opacity: [1, 0],
+      transition: {
+        duration: 0.2,
+        ease: cubicBezier(0.84, 0.0, 0.16, 1.0),
+        opacity: { duration: 0.2, ease: "easeInOut" },
+        once: true,
+      },
+    },
+    animate: {
+      scaleY: [0, 1],
+      opacity: [0, 1],
+      transition: {
+        duration: 0.5,
+        ease: cubicBezier(0.84, 0.0, 0.16, 1.0),
+        opacity: { duration: 0.5, ease: "easeInOut" },
+        once: true,
+      },
     },
   };
 
   return (
     <motion.div
-      initial="hidden"
-      animate={triggerAnimation ? "animate" : "hidden"}
+      animate={triggerAnimation ? "animate" : ""}
       exit={"exit"}
       variants={animation}
+      style={{ transformOrigin: "bottom" }}
     >
       {children}
     </motion.div>

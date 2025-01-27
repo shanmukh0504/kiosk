@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { swapStore } from "../store/swapStore";
-import { IOType, network } from "../constants/constants";
+import { IOType, network, QuoteError } from "../constants/constants";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
@@ -26,22 +26,17 @@ export const useSwap = () => {
     outputAsset,
     isSwapping,
     strategy,
+    error,
     btcAddress,
     tokenPrices,
     isFetchingQuote,
-    inputError,
-    outputError,
-    inputEditing,
-    outputEditing,
     setEditing,
     setStrategy,
     setIsSwapping,
     setAmount,
     setError,
-    setIsInsufficientLiquidity,
     setIsFetchingQuote,
     setTokenPrices,
-    swapAssetsAndAmounts,
     clearSwapState,
     setBtcAddress,
   } = swapStore();
@@ -79,8 +74,7 @@ export const useSwap = () => {
       strategy &&
       address &&
       isValidBitcoinAddress &&
-      !inputError &&
-      !outputError &&
+      !error.inputError &&
       !isInsufficientBalance
     );
   }, [
@@ -89,8 +83,7 @@ export const useSwap = () => {
     inputAmount,
     outputAsset,
     strategy,
-    inputError,
-    outputError,
+    error,
     address,
     isInsufficientBalance,
     isValidBitcoinAddress,
@@ -140,7 +133,6 @@ export const useSwap = () => {
           toAsset: Asset,
           isExactOut: boolean
         ) => {
-          console.log("fetching debounced quote outside");
           if (!getQuote) return;
 
           setIsFetchingQuote({ input: isExactOut, output: !isExactOut });
@@ -148,14 +140,10 @@ export const useSwap = () => {
           if (controller.current) controller.current.abort();
           controller.current = new AbortController();
 
-          const assetDecimals = isExactOut
-            ? toAsset.decimals
-            : fromAsset.decimals;
-
+          const decimals = isExactOut ? toAsset.decimals : fromAsset.decimals;
           const amountInDecimals = new BigNumber(amount).multipliedBy(
-            10 ** assetDecimals
+            10 ** decimals
           );
-
           const quote = await getQuote({
             fromAsset,
             toAsset,
@@ -167,14 +155,15 @@ export const useSwap = () => {
           });
 
           if (quote.error) {
+            if (quote.error.includes("AbortError")) return;
             if (quote.error.includes("output amount too high")) {
-              setError(IOType.output, "Output amount too high");
+              setError({ outputError: "Output amount too high" });
               setAmount(IOType.input, "");
             } else if (quote.error.includes("output amount too less")) {
-              setError(IOType.output, "Output amount too less");
+              setError({ outputError: "Output amount too less" });
               setAmount(IOType.input, "");
             } else if (quote.error.includes("insufficient liquidity")) {
-              setIsInsufficientLiquidity(true);
+              setError({ quoteError: QuoteError.InsufficientLiquidity });
               setAmount(IOType.input, "");
             } else {
               setAmount(isExactOut ? IOType.input : IOType.output, "");
@@ -226,7 +215,6 @@ export const useSwap = () => {
       setStrategy,
       setTokenPrices,
       setError,
-      setIsInsufficientLiquidity,
     ]
   );
 
@@ -237,7 +225,6 @@ export const useSwap = () => {
       toAsset: Asset,
       isExactOut: boolean
     ) => {
-      console.log("fetching quote");
       debouncedFetchQuote(amount, fromAsset, toAsset, isExactOut);
     },
     [debouncedFetchQuote]
@@ -245,38 +232,45 @@ export const useSwap = () => {
 
   const handleInputAmountChange = useCallback(
     async (amount: string) => {
-      // cancel debounced fetch quote
-      debouncedFetchQuote.cancel();
-      // abort if any calls are already in progress
-      if (controller.current) controller.current.abort();
       setAmount(IOType.input, amount);
       const amountInNumber = Number(amount);
 
       if (!amountInNumber) {
+        // cancel debounced fetch quote
+        debouncedFetchQuote.cancel();
+        // abort if any calls are already in progress
+        if (controller.current) controller.current.abort();
         setAmount(IOType.output, "");
-        setError(IOType.input, "");
+        setError({ inputError: "" });
         return;
       }
 
       if (minAmount && amountInNumber < minAmount) {
-        setError(
-          IOType.input,
-          `Minimum amount is ${minAmount} ${inputAsset?.symbol}`
-        );
-        setAmount(IOType.output, "");
+        setError({
+          inputError: `Minimum amount is ${minAmount} ${inputAsset?.symbol}`,
+        });
+        setAmount(IOType.output, "0");
+        // cancel debounced fetch quote
+        debouncedFetchQuote.cancel();
+        // abort if any calls are already in progress
+        if (controller.current) controller.current.abort();
+
         return;
       }
 
       if (maxAmount && amountInNumber > maxAmount) {
-        setError(
-          IOType.input,
-          `Maximum amount is ${maxAmount} ${inputAsset?.symbol}`
-        );
+        setError({
+          inputError: `Maximum amount is ${maxAmount} ${inputAsset?.symbol}`,
+        });
         setAmount(IOType.output, "");
+        // cancel debounced fetch quote
+        debouncedFetchQuote.cancel();
+        // abort if any calls are already in progress
+        if (controller.current) controller.current.abort();
         return;
       }
 
-      setError(IOType.input, "");
+      setError({ inputError: "" });
 
       if (!inputAsset || !outputAsset || !Number(amount)) return;
       const trimmedAmount = amount.includes(".")
@@ -299,24 +293,25 @@ export const useSwap = () => {
 
   const handleOutputAmountChange = useCallback(
     async (amount: string) => {
-      // cancel debounced fetch quote
-      debouncedFetchQuote.cancel();
-      // abort if any calls are already in progress
-      if (controller.current) controller.current.abort();
       setAmount(IOType.output, amount);
       const amountInNumber = Number(amount);
 
       if (!amountInNumber) {
-        setError(IOType.output, "");
+        // cancel debounced fetch quote
+        debouncedFetchQuote.cancel();
+        // abort if any calls are already in progress
+        if (controller.current) controller.current.abort();
         setAmount(IOType.input, "");
+        setError({ outputError: "" });
         return;
       }
+
       if (!inputAsset || !outputAsset || !amountInNumber) return;
 
       const trimmedAmount = amount.includes(".")
         ? amount.replace(/^0+/, "0")
         : amount.replace(/^0+/, "");
-      setError(IOType.output, "");
+      setError({ outputError: "" });
       setAmount(IOType.output, trimmedAmount);
 
       fetchQuote(trimmedAmount, inputAsset, outputAsset, true);
@@ -330,36 +325,6 @@ export const useSwap = () => {
       setError,
     ]
   );
-
-  const handleAssetSwap = useCallback(async () => {
-    if (!inputAsset || !outputAsset) {
-      return;
-    }
-
-    if (inputEditing || outputEditing) {
-      setEditing(IOType.input, !inputEditing);
-      setEditing(IOType.output, !outputEditing);
-    }
-
-    try {
-      await swapAssetsAndAmounts();
-    } catch (error) {
-      console.error("Error during asset swap:", error);
-    } finally {
-      setAmount(IOType.output, inputAmount);
-      fetchQuote(inputAmount, outputAsset, inputAsset, true);
-    }
-    return "Ok";
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    inputAsset,
-    outputAsset,
-    inputAmount,
-    outputAmount,
-    outputEditing,
-    inputEditing,
-    fetchQuote,
-  ]);
 
   const handleSwapClick = async () => {
     if (
@@ -446,27 +411,18 @@ export const useSwap = () => {
 
   useEffect(() => {
     if (!inputAsset || !outputAsset) return;
-    setError(IOType.output, "");
-    setError(IOType.input, "");
+    setError({ outputError: "", inputError: "" });
     handleInputAmountChange(inputAmount);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputAsset, handleInputAmountChange, setError]);
 
   useEffect(() => {
-    setIsInsufficientLiquidity(false);
     if (inputAmount == "0" || outputAmount == "0") {
       setTokenPrices({ input: "0", output: "0" });
-      setError(IOType.output, "");
-      setError(IOType.input, "");
+      setError({ outputError: "", inputError: "" });
       return;
     }
-  }, [
-    inputAmount,
-    outputAmount,
-    setTokenPrices,
-    setError,
-    setIsInsufficientLiquidity,
-  ]);
+  }, [inputAmount, outputAmount, setTokenPrices, setError]);
 
   useEffect(() => {
     if (!inputAmount || !minAmount || !maxAmount) return;
@@ -483,21 +439,18 @@ export const useSwap = () => {
       setEditing(IOType.output, false);
     }
 
-    setError(IOType.output, "");
-    setError(IOType.input, "");
+    setError({ outputError: "", inputError: "" });
 
     if (amountInNumber < minAmount) {
-      setError(
-        IOType.input,
-        `Minimum amount is ${minAmount} ${inputAsset?.symbol}`
-      );
+      setError({
+        inputError: `Minimum amount is ${minAmount} ${inputAsset?.symbol}`,
+      });
       return;
     }
     if (amountInNumber > maxAmount) {
-      setError(
-        IOType.input,
-        `Maximum amount is ${maxAmount} ${inputAsset?.symbol}`
-      );
+      setError({
+        inputError: `Maximum amount is ${maxAmount} ${inputAsset?.symbol}`,
+      });
       return;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -525,11 +478,8 @@ export const useSwap = () => {
     strategy,
     loading: isFetchingQuote,
     validSwap,
-    inputError,
-    outputError,
     isSwapping,
     isBitcoinSwap,
-    handleAssetSwap,
     handleInputAmountChange,
     handleOutputAmountChange,
     inputTokenBalance,

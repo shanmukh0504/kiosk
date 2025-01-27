@@ -27,10 +27,10 @@ export const WalletRow: FC<WalletRowProps> = ({
 }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, marginBottom: -64 }}
+      initial={{ opacity: 0, marginBottom: -68 }}
       animate={{ opacity: 1, marginBottom: 0 }}
-      exit={{ opacity: 0, marginBottom: -64 }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
+      exit={{ opacity: 0, marginBottom: -68 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
     >
       <div
         onClick={onClick}

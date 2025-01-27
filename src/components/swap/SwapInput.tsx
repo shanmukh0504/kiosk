@@ -5,7 +5,7 @@ import {
   Typography,
   WalletIcon,
 } from "@gardenfi/garden-book";
-import { FC, useMemo, useRef, ChangeEvent } from "react";
+import { FC, useMemo, useRef, ChangeEvent, useState, useEffect } from "react";
 import { IOType } from "../../constants/constants";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
@@ -29,7 +29,6 @@ export const SwapInput: FC<SwapInputProps> = ({
   amount,
   asset,
   onChange,
-  loading,
   price,
   error,
   balance,
@@ -38,11 +37,8 @@ export const SwapInput: FC<SwapInputProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const { setOpenAssetSelector, chains } = assetInfoStore();
   const { setOpenModal } = modalStore();
-  // const [triggerPriceAnimation, setTriggerPriceAnimation] = useState(false);
-  // const [triggerBalanceAnimation, setTriggerBalanceAnimation] = useState(false);
-  // const [triggerTimeEstimateAnimation, setTriggerTimeEstimateAnimation] = useState(false);
-  // const [triggerAmountAnimation, setTriggerAmountAnimation] = useState(false);
-  // const [isInFocus, setIsInFocus] = useState(false);
+  const [triggerAmountAnimation, setTriggerAmountAnimation] = useState(true);
+  const [isInFocus, setIsInFocus] = useState(false);
 
   const network = useMemo(() => {
     if (!chains || (asset && isBitcoin(asset.chain))) return;
@@ -52,12 +48,11 @@ export const SwapInput: FC<SwapInputProps> = ({
 
   const label = type === IOType.input ? "Send" : "Receive";
 
-  // useEffect(() => {
-  //   if (amount && amount !== '0.0') {
-  //     setTriggerAmountAnimation(false);
-  //     setTimeout(() => setTriggerAmountAnimation(true), 0);
-  //   }
-  // }, [amount]);
+  useEffect(() => {
+    setTriggerAmountAnimation(true);
+    const timer = setTimeout(() => setTriggerAmountAnimation(false), 500);
+    return () => clearTimeout(timer);
+  }, [amount]);
 
   // useEffect(() => {
   //   if (price) {
@@ -138,15 +133,9 @@ export const SwapInput: FC<SwapInputProps> = ({
               {label}
             </Typography>
             {Number(price) !== 0 && (
-              <ScaleYIn triggerAnimation={false}>
-                <Typography
-                  size="h5"
-                  weight="medium"
-                  className="text-mid-grey absolute "
-                >
-                  ${price}
-                </Typography>
-              </ScaleYIn>
+              <Typography size="h5" weight="medium" className="text-mid-grey">
+                ${price}
+              </Typography>
             )}
           </div>
           {type === IOType.input &&
@@ -155,17 +144,15 @@ export const SwapInput: FC<SwapInputProps> = ({
                 <div className="text-red-500">{error}</div>
               </Typography>
             ) : balance !== undefined ? (
-              <ScaleYIn triggerAnimation={false}>
-                <div
-                  className="flex items-center gap-1 cursor-pointer"
-                  onClick={handleBalanceClick}
-                >
-                  <WalletIcon className="h-2.5 w-2.5" />
-                  <Typography size="h5" weight="medium">
-                    {balance}
-                  </Typography>
-                </div>
-              </ScaleYIn>
+              <div
+                className="flex items-center gap-1 cursor-pointer"
+                onClick={handleBalanceClick}
+              >
+                <WalletIcon className="h-2.5 w-2.5" />
+                <Typography size="h5" weight="medium">
+                  {balance}
+                </Typography>
+              </div>
             ) : (
               <></>
             ))}
@@ -176,54 +163,46 @@ export const SwapInput: FC<SwapInputProps> = ({
               </Typography>
             ) : (
               timeEstimate && (
-                <ScaleYIn triggerAnimation={false}>
-                  <div className="flex gap-1 items-center">
-                    <TimerIcon className="h-4" />
-                    <Typography size="h5" weight="medium">
-                      {timeEstimate}
-                    </Typography>
-                  </div>
-                </ScaleYIn>
+                <div className="flex gap-1 items-center">
+                  <TimerIcon className="h-4" />
+                  <Typography size="h5" weight="medium">
+                    {timeEstimate}
+                  </Typography>
+                </div>
               )
             ))}
         </div>
         <div className="flex justify-between h-6">
-          {loading ? (
-            // The "loading..." Text feels like a glitch as it fetches fast
-            <div />
-          ) : (
-            <Typography
-              size={"h3"}
-              breakpoints={{
-                sm: "h2",
-              }}
-              weight="bold"
-            >
-              <div className="relative max-w-[150px] md:max-w-[200px]">
-                <ScaleYIn triggerAnimation={false}>
-                  <input
-                    ref={inputRef}
-                    className="w-full outline-none"
-                    type="text"
-                    value={amount}
-                    onChange={handleAmountChange}
-                    placeholder="0.0"
-                    // onFocus={() => setIsInFocus(true)}
-                    // onBlur={() => {
-                    //   setIsInFocus(false);
-                    //   setTriggerAmountAnimation(false);
-                    // }}
-                  />
-                </ScaleYIn>
-                {/* Placeholder as a separate element */}
-                {/* {(!amount) && (
-                  <span className="absolute left-0 top-1/2 transform -translate-y-1/2 text-mid-grey pointer-events-none">
-                    0.0
-                  </span>
-                )} */}
-              </div>
-            </Typography>
-          )}
+          <Typography
+            size={"h3"}
+            breakpoints={{
+              sm: "h2",
+            }}
+            weight="bold"
+          >
+            <div className="relative max-w-[150px] md:max-w-[200px]">
+              <ScaleYIn triggerAnimation={triggerAmountAnimation && !isInFocus}>
+                <input
+                  ref={inputRef}
+                  className="w-full outline-none"
+                  type="text"
+                  value={amount}
+                  onChange={handleAmountChange}
+                  onFocus={() => setIsInFocus(true)}
+                  onBlur={() => {
+                    setIsInFocus(false);
+                    setTriggerAmountAnimation(false);
+                  }}
+                />
+              </ScaleYIn>
+              {/* Placeholder as a separate element */}
+              {!amount && (
+                <span className="absolute left-0 top-1/2 transform -translate-y-1/2 text-mid-grey pointer-events-none">
+                  0.0
+                </span>
+              )}
+            </div>
+          </Typography>
           {asset ? (
             <TokenInfo
               symbol={asset.symbol}
