@@ -2,11 +2,11 @@ import { Button, ExchangeIcon } from "@gardenfi/garden-book";
 import { SwapInput } from "./SwapInput";
 import { getTimeEstimates, IOType } from "../../constants/constants";
 import { SwapAddress } from "./SwapAddress";
+import { swapStore } from "../../store/swapStore";
 import { useMemo } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { SwapCreateDetails } from "./SwapCreateDetails";
-import { swapStore } from "../../store/swapStore";
 
 export const CreateSwap = () => {
   const { error, swapAssets } = swapStore();
@@ -36,6 +36,7 @@ export const CreateSwap = () => {
     isInsufficientBalance ||
     isAnimating ||
     !!error.quoteError;
+
   const buttonLabel = useMemo(() => {
     return error.quoteError
       ? "Insufficient Liquidity"
@@ -122,7 +123,7 @@ export const CreateSwap = () => {
           <SwapCreateDetails tokenPrices={tokenPrices} />
         </div>
         <Button
-          className={`transition-colors duration-500 w-full z-20 flex justify-center items-center${
+          className={`transition-colors duration-500${
             isSwapping ? "cursor-not-allowed" : ""
           }`}
           variant={buttonVariant}

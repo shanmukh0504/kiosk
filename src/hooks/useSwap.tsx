@@ -153,7 +153,6 @@ export const useSwap = () => {
               signal: controller.current.signal,
             },
           });
-
           if (quote.error) {
             if (quote.error.includes("AbortError")) return;
             if (quote.error.includes("output amount too high")) {
@@ -234,17 +233,14 @@ export const useSwap = () => {
     async (amount: string) => {
       setAmount(IOType.input, amount);
       const amountInNumber = Number(amount);
-
       if (!amountInNumber) {
         // cancel debounced fetch quote
         debouncedFetchQuote.cancel();
         // abort if any calls are already in progress
         if (controller.current) controller.current.abort();
         setAmount(IOType.output, "");
-        setError({ inputError: "" });
         return;
       }
-
       if (minAmount && amountInNumber < minAmount) {
         setError({
           inputError: `Minimum amount is ${minAmount} ${inputAsset?.symbol}`,
@@ -257,7 +253,6 @@ export const useSwap = () => {
 
         return;
       }
-
       if (maxAmount && amountInNumber > maxAmount) {
         setError({
           inputError: `Maximum amount is ${maxAmount} ${inputAsset?.symbol}`,
@@ -267,9 +262,9 @@ export const useSwap = () => {
         debouncedFetchQuote.cancel();
         // abort if any calls are already in progress
         if (controller.current) controller.current.abort();
+
         return;
       }
-
       setError({ inputError: "" });
 
       if (!inputAsset || !outputAsset || !Number(amount)) return;
@@ -277,6 +272,7 @@ export const useSwap = () => {
         ? amount.replace(/^0+/, "0")
         : amount.replace(/^0+/, "");
       setAmount(IOType.input, trimmedAmount);
+
       fetchQuote(trimmedAmount, inputAsset, outputAsset, false);
     },
     [
@@ -291,40 +287,28 @@ export const useSwap = () => {
     ]
   );
 
-  const handleOutputAmountChange = useCallback(
-    async (amount: string) => {
-      setAmount(IOType.output, amount);
-      const amountInNumber = Number(amount);
+  const handleOutputAmountChange = async (amount: string) => {
+    setAmount(IOType.output, amount);
+    const amountInNumber = Number(amount);
+    if (!amountInNumber) {
+      // cancel debounced fetch quote
+      debouncedFetchQuote.cancel();
+      // abort if any calls are already in progress
+      if (controller.current) controller.current.abort();
+      setAmount(IOType.input, "");
+      return;
+    }
 
-      if (!amountInNumber) {
-        // cancel debounced fetch quote
-        debouncedFetchQuote.cancel();
-        // abort if any calls are already in progress
-        if (controller.current) controller.current.abort();
-        setAmount(IOType.input, "");
-        setError({ outputError: "" });
-        return;
-      }
+    if (!inputAsset || !outputAsset || !amountInNumber) return;
 
-      if (!inputAsset || !outputAsset || !amountInNumber) return;
+    const trimmedAmount = amount.includes(".")
+      ? amount.replace(/^0+/, "0")
+      : amount.replace(/^0+/, "");
+    setError({ outputError: "" });
+    setAmount(IOType.output, trimmedAmount);
 
-      const trimmedAmount = amount.includes(".")
-        ? amount.replace(/^0+/, "0")
-        : amount.replace(/^0+/, "");
-      setError({ outputError: "" });
-      setAmount(IOType.output, trimmedAmount);
-
-      fetchQuote(trimmedAmount, inputAsset, outputAsset, true);
-    },
-    [
-      inputAsset,
-      outputAsset,
-      debouncedFetchQuote,
-      fetchQuote,
-      setAmount,
-      setError,
-    ]
-  );
+    fetchQuote(trimmedAmount, inputAsset, outputAsset, true);
+  };
 
   const handleSwapClick = async () => {
     if (

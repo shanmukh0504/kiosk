@@ -50,30 +50,9 @@ export const SwapInput: FC<SwapInputProps> = ({
 
   useEffect(() => {
     setTriggerAmountAnimation(true);
-    const timer = setTimeout(() => setTriggerAmountAnimation(false), 500);
+    const timer = setTimeout(() => setTriggerAmountAnimation(false), 700);
     return () => clearTimeout(timer);
   }, [amount]);
-
-  // useEffect(() => {
-  //   if (price) {
-  //     setTriggerPriceAnimation(false);
-  //     setTimeout(() => setTriggerPriceAnimation(true), 0);
-  //   }
-  // }, [price]);
-
-  // useEffect(() => {
-  //   if (balance !== undefined) {
-  //     setTriggerBalanceAnimation(false);
-  //     setTimeout(() => setTriggerBalanceAnimation(true), 0);
-  //   }
-  // }, [balance]);
-
-  // useEffect(() => {
-  //   if (timeEstimate) {
-  //     setTriggerTimeEstimateAnimation(false);
-  //     setTimeout(() => setTriggerTimeEstimateAnimation(true), 0);
-  //   }
-  // }, [timeEstimate]);
 
   const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
@@ -133,8 +112,8 @@ export const SwapInput: FC<SwapInputProps> = ({
               {label}
             </Typography>
             {Number(price) !== 0 && (
-              <Typography size="h5" weight="medium" className="text-mid-grey">
-                ${price}
+              <Typography size="h5" weight="medium">
+                <span className="text-mid-grey">~${price}</span>
               </Typography>
             )}
           </div>
@@ -191,7 +170,6 @@ export const SwapInput: FC<SwapInputProps> = ({
                   onFocus={() => setIsInFocus(true)}
                   onBlur={() => {
                     setIsInFocus(false);
-                    setTriggerAmountAnimation(false);
                   }}
                 />
               </ScaleYIn>
