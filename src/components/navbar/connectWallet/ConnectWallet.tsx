@@ -23,7 +23,7 @@ import { MultiWalletConnection } from "./MultiWalletConnection";
 import { handleEVMConnect } from "./handleConnect";
 import { modalNames, modalStore } from "../../../store/modalStore";
 import { authStore } from "../../../store/authStore";
-import { ecosystems, evmToBTCid, maxVisibleWallets } from "./constants";
+import { ecosystems, evmToBTCid, MAX_VISIBLE_WALLETS } from "./constants";
 import { AnimatePresence } from "framer-motion";
 import { BREAKPOINTS } from "../../../constants/constants";
 
@@ -67,7 +67,7 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
 
   const visibleWallets = showAllWallets
     ? allAvailableWallets
-    : allAvailableWallets.slice(0, maxVisibleWallets);
+    : allAvailableWallets.slice(0, MAX_VISIBLE_WALLETS);
 
   const handleClose = () => {
     if (address) onClose();
@@ -196,7 +196,7 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
                   />
                 ))}
               </AnimatePresence>
-              {!showAllWallets && allAvailableWallets.length > maxVisibleWallets && (
+              {!showAllWallets && allAvailableWallets.length > MAX_VISIBLE_WALLETS && (
                 <div
                   onClick={() => setShowAllWallets(true)}
                   className={`flex justify-between items-center cursor-pointer px-4 ${BREAKPOINTS.sm ? "py-4" : "py-3"}`}
