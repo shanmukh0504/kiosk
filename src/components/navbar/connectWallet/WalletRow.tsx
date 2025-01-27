@@ -30,18 +30,20 @@ export const WalletRow: FC<WalletRowProps> = ({
       initial={{ opacity: 0, marginBottom: -68 }}
       animate={{ opacity: 1, marginBottom: 0 }}
       exit={{ opacity: 0, marginBottom: -68 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
+      transition={{
+        duration: 0.3,
+        ease: "easeOut",
+      }}
     >
       <div
         onClick={onClick}
-        className={`flex items-center h-full justify-between gap-4 p-4 rounded-xl ${
-          isAvailable
-            ? "hover:bg-off-white cursor-pointer"
-            : "opacity-50 pointer-events-none"
-        }`}
+        className={`flex items-center h-full justify-between gap-4 p-4 rounded-xl ${isAvailable
+          ? "hover:bg-off-white cursor-pointer"
+          : "opacity-50 pointer-events-none"
+          }`}
       >
         <div className="flex gap-4">
-          <img src={logo} alt={"icon"} className="w-8 h-8" />
+          <img src={logo} alt={"icon"} className="w-6 h-6" />
           <div className="flex justify-between items-center">
             <Typography size="h2" weight="medium">
               {name === "Injected"
@@ -50,7 +52,7 @@ export const WalletRow: FC<WalletRowProps> = ({
             </Typography>
           </div>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 ">
           {isConnecting && <Loader />}
           {Object.values(isConnected).some((value) => value) && (
             <div className="flex gap-2 bg-white p-1 rounded-full pl-3 pr-2 items-center w-fit">
@@ -64,7 +66,8 @@ export const WalletRow: FC<WalletRowProps> = ({
                       <img
                         key={ecosystem}
                         src={ecosystems[ecosystem as EcosystemKeys].icon ?? ""}
-                        className="w-4 h-4"
+                        height={24}
+                        width={24}
                       />
                     )
                 )}
