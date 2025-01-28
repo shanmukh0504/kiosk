@@ -80,7 +80,7 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
         <Typography size="h5" weight="bold">
           Stake Duration
         </Typography>
-        <div className="flex justify-between items-center gap-2">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
           <DurationMenu
             selectedDuration={selectedDuration}
             setSelectedDuration={setSelectedDuration}
