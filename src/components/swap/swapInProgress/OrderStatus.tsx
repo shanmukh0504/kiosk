@@ -8,12 +8,16 @@ import { OrderProgress } from "../../../hooks/useOrderStatus";
 
 type OrderStatusProps = {
   orderProgress: OrderProgress;
+  isRefunded: boolean;
 };
 
-export const OrderStatus: FC<OrderStatusProps> = ({ orderProgress }) => {
+export const OrderStatus: FC<OrderStatusProps> = ({ orderProgress, isRefunded }) => {
   const [dropdown, setDropdown] = useState(false);
 
-  const handleDropdown = () => setDropdown(!dropdown);
+  const handleDropdown = () => {
+    if (isRefunded) return;
+    setDropdown(!dropdown);
+  };
 
   const NoOfSteps = orderProgress ? Object.values(orderProgress).length : 0;
 
@@ -39,12 +43,12 @@ export const OrderStatus: FC<OrderStatusProps> = ({ orderProgress }) => {
           <Typography size="h5" weight="bold">
             Order status
           </Typography>
-          <div
+          {!isRefunded && <div
             className={`transform transition-transform duration-300 ${dropdown ? "rotate-180" : "rotate-0"
               }`}
           >
             <KeyboardDownIcon />
-          </div>
+          </div>}
         </div>
       </div>
       <div
@@ -100,17 +104,19 @@ export const OrderStatus: FC<OrderStatusProps> = ({ orderProgress }) => {
           }`}
         style={{
           transition: dropdown
-            ? "max-height 50ms ease-in-out, opacity 300ms ease-in-out" // Opening
-            : "max-height 300ms ease-in-out 200ms, opacity 300ms ease-in-out", // Closing
+            ? "max-height 50ms ease-in-out, opacity 300ms ease-in-out"
+            : "max-height 300ms ease-in-out 200ms, opacity 300ms ease-in-out",
         }}
       >
         <div className="flex mt-2 justify-between items-center">
           <Typography size="h3" weight="bold">
-            {currentStatus}
+            {isRefunded ? "Refunded" : currentStatus}
           </Typography>
-          <Typography size="h5" weight="bold" className="my-auto">
-            {completedSteps} of {NoOfSteps}
-          </Typography>
+          {!isRefunded && (
+            <Typography size="h5" weight="bold" className="my-auto">
+              {completedSteps} of {NoOfSteps}
+            </Typography>
+          )}
         </div>
       </div>
     </div>

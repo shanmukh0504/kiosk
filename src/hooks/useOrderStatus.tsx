@@ -40,14 +40,14 @@ export const useOrderStatus = () => {
       order.status === OrderStatus.InitiateDetected &&
       blockNumbers
       ? " (" +
-          Math.abs(
-            initBlockNumber
-              ? blockNumbers[order.source_swap.chain] - initBlockNumber
-              : 0
-          ) +
-          "/" +
-          order.source_swap.required_confirmations +
-          ")"
+      Math.abs(
+        initBlockNumber
+          ? blockNumbers[order.source_swap.chain] - initBlockNumber
+          : 0
+      ) +
+      "/" +
+      order.source_swap.required_confirmations +
+      ")"
       : "";
   }, [blockNumbers, order, initBlockNumber]);
 
@@ -221,5 +221,6 @@ export const useOrderStatus = () => {
 
   return {
     orderProgress,
+    isRefunded: order?.status === OrderStatus.RefundDetected || order?.status === OrderStatus.Refunded
   };
 };

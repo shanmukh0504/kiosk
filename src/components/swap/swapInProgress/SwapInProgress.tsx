@@ -16,7 +16,7 @@ import { ordersStore } from "../../../store/ordersStore";
 export const SwapInProgress = () => {
   const { setOrderInProgress, orderInProgress: order } = ordersStore();
   const { assets } = assetInfoStore();
-  const { orderProgress } = useOrderStatus();
+  const { orderProgress, isRefunded } = useOrderStatus();
 
   const { depositAddress, inputAsset, outputAsset } = useMemo(() => {
     return {
@@ -83,7 +83,7 @@ export const SwapInProgress = () => {
             <QRCode value={depositAddress} size={48} fgColor="#554B6A" />
           </div>
         )}
-      <OrderStatus orderProgress={orderProgress} />
+      <OrderStatus orderProgress={orderProgress} isRefunded={isRefunded} />
       <OrderDetails order={order} />
     </div>
   ) : (
