@@ -23,6 +23,7 @@ export const Stake: FC = () => {
     stakingStats,
     clearStakePosData,
     stakePosData,
+    fetchAndSetRewards,
   } = stakeStore();
   const { tokenBalance } = useBalances(asset);
 
@@ -63,6 +64,7 @@ export const Stake: FC = () => {
         isFetching = true;
         await fetchAndSetStakeApy(address);
         await fetchStakePosData(address);
+        await fetchAndSetRewards(address);
       } finally {
         isFetching = false;
       }
@@ -72,7 +74,13 @@ export const Stake: FC = () => {
     const intervalId = setInterval(fetchData, 10000);
 
     return () => clearInterval(intervalId);
-  }, [fetchAndSetStakeApy, address, fetchStakePosData, clearStakePosData]);
+  }, [
+    fetchAndSetStakeApy,
+    address,
+    fetchStakePosData,
+    clearStakePosData,
+    fetchAndSetRewards,
+  ]);
 
   return (
     <div className="flex flex-col gap-6 mt-10">

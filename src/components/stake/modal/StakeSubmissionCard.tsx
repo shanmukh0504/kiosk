@@ -1,5 +1,4 @@
 import { FC, useState } from "react";
-import DurationMenu from "../shared/DurationMenu";
 import {
   DURATION,
   DURATION_MAP,
@@ -7,7 +6,7 @@ import {
   STAKING_CHAIN,
   STAKING_CONFIG,
 } from "../constants";
-import { Button, Typography } from "@gardenfi/garden-book";
+import { Button } from "@gardenfi/garden-book";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { useReadContract, useSwitchChain, useWriteContract } from "wagmi";
 import { erc20Abi, Hex, maxUint256 } from "viem";
@@ -20,14 +19,12 @@ import { flowerABI } from "../abi/flower";
 
 type StakeSubmissionCardProps = {
   selectedDuration: DURATION;
-  setSelectedDuration: (duration: DURATION) => void;
   amount: number;
   onClose: () => void;
 };
 
 export const StakeSubmissionCard: FC<StakeSubmissionCardProps> = ({
   selectedDuration,
-  setSelectedDuration,
   amount,
   onClose,
 }) => {
@@ -137,24 +134,13 @@ export const StakeSubmissionCard: FC<StakeSubmissionCardProps> = ({
   };
 
   return (
-    <div className="p-4 flex flex-col gap-3 bg-white bg-opacity-25 rounded-2xl">
-      <Typography size="h5" weight="bold">
-        Stake Duration
-      </Typography>
-      <div className="flex justify-between items-center gap-2">
-        <DurationMenu
-          selectedDuration={selectedDuration}
-          setSelectedDuration={setSelectedDuration}
-        />
-        <Button
-          variant={loading ? "disabled" : "primary"}
-          size="lg"
-          onClick={handleStake}
-          loading={loading}
-        >
-          Stake
-        </Button>
-      </div>
-    </div>
+    <Button
+      variant={loading ? "disabled" : "primary"}
+      size="lg"
+      onClick={handleStake}
+      loading={loading}
+    >
+      Stake
+    </Button>
   );
 };

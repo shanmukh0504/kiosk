@@ -1,27 +1,22 @@
 import { Button, Typography } from "@gardenfi/garden-book";
-import { stakeStore, StakingReward } from "../../store/stakeStore";
+import { stakeStore } from "../../store/stakeStore";
 import { TEN_THOUSAND } from "../../constants/stake";
 import { distributerABI } from "./abi/distributerClaim";
 import { useReadContract, useSwitchChain, useWriteContract } from "wagmi";
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { Hex } from "viem";
 import { StakeStats } from "./shared/StakeStats";
-import axios from "axios";
-import { API } from "../../constants/api";
 import { formatAmount } from "../../utils/utils";
-import { STAKING_CHAIN } from "./constants";
-import { STAKING_CONFIG } from "./constants";
+import { REWARD_CHAIN, REWARD_CONFIG } from "./constants";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../../layout/wagmi/config";
 import { Toast } from "../toast/Toast";
 
 export const StakeOverview = () => {
-  const [isRewardLoading, setIsRewardLoading] = useState(false);
   const [isClaimLoading, setIsClaimLoading] = useState(false);
-  const [rewardResponse, setRewardResponse] = useState<StakingReward>();
 
-  const { totalStakedAmount, totalVotes } = stakeStore();
+  const { totalStakedAmount, totalVotes, stakeRewards } = stakeStore();
   const { writeContractAsync } = useWriteContract();
   const { address, chainId } = useEVMWallet();
   const { switchChainAsync } = useSwitchChain();
@@ -30,9 +25,9 @@ export const StakeOverview = () => {
     useReadContract({
       abi: distributerABI,
       functionName: "getClaimedAmount",
-      address: STAKING_CONFIG[STAKING_CHAIN].DISTRIBUTER_CONTRACT as Hex,
+      address: REWARD_CONFIG[REWARD_CHAIN].DISTRIBUTER_CONTRACT as Hex,
       args: [address as Hex],
-      chainId: STAKING_CHAIN,
+      chainId: REWARD_CHAIN,
       query: {
         enabled: !!address,
         refetchInterval: 15_000,
@@ -47,24 +42,25 @@ export const StakeOverview = () => {
       : totalStakedAmount.toString();
 
   const availableReward = useMemo(() => {
-    return rewardResponse
+    return stakeRewards
       ? formatAmount(
-          rewardResponse.cumulative_rewards_wbtc - Number(claimedAmount ?? 0),
+          stakeRewards.rewardResponse.cumulative_rewards_cbbtc -
+            Number(claimedAmount ?? 0),
           8,
           5
         )
       : 0;
-  }, [rewardResponse, claimedAmount]);
+  }, [stakeRewards, claimedAmount]);
 
   const handleRewardClick = async () => {
-    if (!chainId || !address || !rewardResponse) return;
-    const stakingConfig = STAKING_CONFIG[STAKING_CHAIN];
-    if (!stakingConfig) return;
+    if (!chainId || !address || !stakeRewards) return;
+    const rewardConfig = REWARD_CONFIG[REWARD_CHAIN];
+    if (!rewardConfig) return;
 
     try {
       setIsClaimLoading(true);
-      if (chainId !== STAKING_CHAIN) {
-        await switchChainAsync({ chainId: STAKING_CHAIN });
+      if (chainId !== REWARD_CHAIN) {
+        await switchChainAsync({ chainId: REWARD_CHAIN });
       }
 
       //small workaround to make sure the chain is switched other wise the claim is failing
@@ -73,14 +69,14 @@ export const StakeOverview = () => {
       const tx = await writeContractAsync({
         abi: distributerABI,
         functionName: "claim",
-        address: stakingConfig.DISTRIBUTER_CONTRACT as Hex,
+        address: rewardConfig.DISTRIBUTER_CONTRACT as Hex,
         args: [
           address as Hex,
-          BigInt(rewardResponse.cumulative_rewards_wbtc),
-          BigInt(rewardResponse.nonce),
-          ("0x" + rewardResponse.claim_signature) as Hex,
+          BigInt(stakeRewards.rewardResponse.cumulative_rewards_cbbtc),
+          BigInt(stakeRewards.rewardResponse.nonce),
+          ("0x" + stakeRewards.rewardResponse.latest_claim_signature) as Hex,
         ],
-        chainId: STAKING_CHAIN,
+        chainId: REWARD_CHAIN,
       });
       await waitForTransactionReceipt(config, {
         hash: tx,
@@ -94,52 +90,22 @@ export const StakeOverview = () => {
     }
   };
 
-  useEffect(() => {
-    if (!address) {
-      setRewardResponse(undefined);
-      return;
-    }
-
-    const fetchStakeReward = async () => {
-      try {
-        const resp = await axios.get<StakingReward>(API().reward(address));
-        if (resp.status === 200 && resp.data) {
-          setRewardResponse(resp.data);
-        }
-        return;
-      } catch (error) {
-        console.error("Error fetching rewards:", error);
-      }
-    };
-
-    setIsRewardLoading(true);
-    fetchStakeReward().finally(() => setIsRewardLoading(false));
-    const intervalId = setInterval(fetchStakeReward, 10000);
-    return () => clearInterval(intervalId);
-  }, [address]);
-
   return (
     <div className="w-[328px] sm:w-[424px] md:w-[740px] rounded-[15px] bg-opacity-50 gap-4 bg-white mx-auto p-6 flex flex-col">
       <Typography size="h5" weight="bold">
-        Staking Overview
+        Staking overview
       </Typography>
       <div className="flex flex-col md:flex-row gap-4 justify-between items-center ">
-        <div className="flex gap-10 justify-between w-full md:w-[328px]">
-          <StakeStats title={"Staked Seed"} value={formattedAmount} size="sm" />
+        <div className="flex gap-10 justify-between w-full md:w-[350px]">
+          <StakeStats title={"Staked SEED"} value={formattedAmount} size="sm" />
           <StakeStats
             title={"Votes"}
-            value={
-              isRewardLoading
-                ? "Loading..."
-                : totalVotes !== undefined
-                ? totalVotes
-                : 0
-            }
+            value={totalVotes !== undefined ? totalVotes : 0}
             size="sm"
           />
           <StakeStats
             title={"Staking rewards"}
-            value={isRewardLoading ? "Loading..." : `${availableReward} WBTC`}
+            value={`${availableReward} cbBTC`}
             size="sm"
             isPink
           />
@@ -155,7 +121,7 @@ export const StakeOverview = () => {
               : ""
           }`}
           onClick={handleRewardClick}
-          disabled={isClaimLoading || isRewardLoading || availableReward === 0}
+          disabled={isClaimLoading || availableReward === 0}
           loading={isClaimLoading}
         >
           {isClaimLoading ? "Claiming..." : "Claim"}

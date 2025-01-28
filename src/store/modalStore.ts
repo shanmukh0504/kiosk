@@ -16,8 +16,12 @@ export type ModalData = {
       isStake: boolean;
       amount: string;
     };
-    manage?: {
-      isManage: boolean;
+    extend?: {
+      isExtend: boolean;
+      stakingPosition: StakingPosition;
+    };
+    restake?: {
+      isRestake: boolean;
       stakingPosition: StakingPosition;
     };
   };

@@ -38,10 +38,20 @@ type StakeStoreState = {
   stakePosData: StakingPosition[] | null;
   stakeApys: Record<string, number>;
   stakingStats: StakingStats | null;
+  loading: {
+    stakeRewards: boolean;
+  };
+  stakeRewards: {
+    rewardResponse: Omit<StakingReward, "stakes">;
+    stakewiseRewards: {
+      [id: string]: number;
+    };
+  } | null;
   setInputAmount: (value: string) => void;
   fetchStakePosData: (address: string) => Promise<void>;
   fetchAndSetStakingStats: () => Promise<void>;
   fetchAndSetStakeApy: (address: string) => Promise<void>;
+  fetchAndSetRewards: (address: string) => Promise<void>;
   clearStakePosData: () => void;
 };
 
@@ -53,12 +63,16 @@ export enum StakePositionStatus {
 
 export type StakingReward = {
   address: string;
-  claim_signature: string;
-  cumulative_claims_wbtc: number;
+  latest_claim_signature: string;
+  cumulative_claims_cbbtc: number;
   cumulative_rewards_usd: string;
-  cumulative_rewards_wbtc: number;
+  cumulative_rewards_cbbtc: number;
   nonce: number;
-  votes: number;
+  active_votes: number;
+  stakes: {
+    id: string;
+    cumulative_reward_cbbtc: number;
+  }[];
 };
 
 export type StakingPosition = {
@@ -86,6 +100,10 @@ export const stakeStore = create<StakeStoreState>((set) => ({
   totalVotes: 0,
   stakingStats: null,
   stakeApys: {},
+  stakeRewards: null,
+  loading: {
+    stakeRewards: false,
+  },
   setInputAmount: (value: string) => set({ inputAmount: value }),
   fetchStakePosData: async (address: string) => {
     try {
@@ -174,6 +192,28 @@ export const stakeStore = create<StakeStoreState>((set) => ({
       set({ stakeApys: response.data.data.data.stakeApys });
     } catch (error) {
       console.error(error);
+    }
+  },
+  fetchAndSetRewards: async (address: string) => {
+    try {
+      set({ loading: { stakeRewards: true } });
+      const resp = await axios.get<StakingReward>(API().reward(address));
+      if (resp.status === 200 && resp.data) {
+        const stakeRewards: Record<string, number> = {};
+        resp.data.stakes.map((stake) => {
+          stakeRewards[stake.id] = stake.cumulative_reward_cbbtc;
+        });
+        set({
+          stakeRewards: {
+            rewardResponse: resp.data,
+            stakewiseRewards: stakeRewards,
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching rewards:", error);
+    } finally {
+      set({ loading: { stakeRewards: false } });
     }
   },
   clearStakePosData: () => set({ stakePosData: null }),

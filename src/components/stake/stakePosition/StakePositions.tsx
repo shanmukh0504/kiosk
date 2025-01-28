@@ -8,7 +8,7 @@ export const StakePositions = () => {
   return (
     <div className="flex flex-col w-[328px] sm:w-[424px] md:w-[740px] mb-8 rounded-2xl bg-opacity-50 bg-white mx-auto p-6">
       <Typography size="h5" weight="bold">
-        Staking Positions
+        Staking positions
       </Typography>
       <div>
         {stakePosData && stakePosData.length > 0 ? (
@@ -25,7 +25,7 @@ export const StakePositions = () => {
           )
         ) : (
           <Typography size="h5" weight="medium" className="mt-4 text-center">
-            No staking position found
+            No staking position found.
           </Typography>
         )}
       </div>

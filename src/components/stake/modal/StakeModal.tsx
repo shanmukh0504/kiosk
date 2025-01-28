@@ -5,9 +5,11 @@ import { viewPortStore } from "../../../store/viewPortStore";
 import { StakeStats } from "../shared/StakeStats";
 import { DURATION, DURATION_MAP, SEED_DECIMALS } from "../constants";
 import { StakeSubmissionCard } from "./StakeSubmissionCard";
-import { ExtendOrUnstake } from "./ExtendOrUnstake";
+import { ExtendStake } from "./ExtendStake";
 import { stakeStore } from "../../../store/stakeStore";
 import { formatAmount } from "../../../utils/utils";
+import DurationMenu from "../shared/DurationMenu";
+import { Restake } from "./Restake";
 
 type StakeModalProps = {
   onClose: () => void;
@@ -21,13 +23,19 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
   const { isMobile } = viewPortStore();
 
   const isStake = !!modalData?.manageStake?.stake?.isStake;
-  const isManage = !!modalData?.manageStake?.manage?.isManage;
+  const isExtend = !!modalData?.manageStake?.extend?.isExtend;
+  const isRestake = !!modalData?.manageStake?.restake?.isRestake;
 
   const amount = isStake
     ? Number(modalData.manageStake?.stake?.amount) || 0
-    : isManage
+    : isExtend
     ? formatAmount(
-        modalData.manageStake?.manage?.stakingPosition.amount || 0,
+        modalData.manageStake?.extend?.stakingPosition.amount || 0,
+        SEED_DECIMALS
+      )
+    : isRestake
+    ? formatAmount(
+        modalData.manageStake?.restake?.stakingPosition.amount || 0,
         SEED_DECIMALS
       )
     : 0;
@@ -67,22 +75,39 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
           size="md"
         />
       </div>
-      {isStake && (
-        <StakeSubmissionCard
-          selectedDuration={selectedDuration}
-          setSelectedDuration={setSelectedDuration}
-          amount={amount}
-          onClose={handleClose}
-        />
-      )}
-      {isManage && modalData.manageStake?.manage?.stakingPosition && (
-        <ExtendOrUnstake
-          selectedDuration={selectedDuration}
-          setSelectedDuration={setSelectedDuration}
-          stakePos={modalData.manageStake?.manage?.stakingPosition}
-          onClose={handleClose}
-        />
-      )}
+
+      <div className="p-4 flex flex-col gap-3 bg-white bg-opacity-25 rounded-2xl">
+        <Typography size="h5" weight="bold">
+          Stake Duration
+        </Typography>
+        <div className="flex justify-between items-center gap-2">
+          <DurationMenu
+            selectedDuration={selectedDuration}
+            setSelectedDuration={setSelectedDuration}
+          />
+          {isStake && (
+            <StakeSubmissionCard
+              selectedDuration={selectedDuration}
+              amount={amount}
+              onClose={handleClose}
+            />
+          )}
+          {isExtend && modalData.manageStake?.extend?.stakingPosition && (
+            <ExtendStake
+              selectedDuration={selectedDuration}
+              stakePos={modalData.manageStake?.extend?.stakingPosition}
+              onClose={handleClose}
+            />
+          )}
+          {isRestake && modalData.manageStake?.restake?.stakingPosition && (
+            <Restake
+              selectedDuration={selectedDuration}
+              stakePos={modalData.manageStake?.restake?.stakingPosition}
+              onClose={handleClose}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 };

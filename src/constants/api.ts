@@ -35,7 +35,7 @@ export const API = () => {
         REQUIRED_ENV_VARS.STAKING_URL + "/apy/" + address.toLowerCase(),
       stakingStats: REQUIRED_ENV_VARS.STAKING_URL + "/stakingStats",
     },
-    reward: (userId: string) => REQUIRED_ENV_VARS.REWARD + "/reward/" + userId,
+    reward: (userId: string) => REQUIRED_ENV_VARS.REWARD + "/rewards/" + userId,
     mempool: {
       testnet: "https://mempool.space/testnet4/api",
       mainnet: "https://mempool.space/api",
