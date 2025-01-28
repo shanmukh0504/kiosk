@@ -1,10 +1,10 @@
 import { Chain, isBitcoin } from "@gardenfi/orderbook";
-import { getTrimmedAddress } from "../utils/getTrimmedAddress";
+import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { FC, useMemo } from "react";
-import { assetInfoStore } from "../store/assetInfoStore";
+import { assetInfoStore } from "../../store/assetInfoStore";
 import { ArrowNorthEastIcon, EditIcon } from "@gardenfi/garden-book";
 import { Typography } from "@gardenfi/garden-book";
-import { useSwap } from "../hooks/useSwap";
+import { useSwap } from "../../hooks/useSwap";
 
 type AddressDetailsProps = {
   isRefund?: boolean;

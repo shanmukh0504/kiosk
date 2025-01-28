@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { IOType, network, QuoteError } from "../constants/constants";
+import { Errors, IOType, network, QuoteError } from "../constants/constants";
 import { Asset, Chains } from "@gardenfi/orderbook";
 
 export type TokenPrices = {
@@ -12,24 +12,16 @@ export type FetchingQuote = {
   output: boolean;
 };
 
-export type Test = 
+export type ErrorFormat = 
 | `Minimum amount is ${string} ${string}` 
 | `Maximum amount is ${string} ${string}` 
 | "Output amount too high" 
 | "Output amount too less"
 | "";
 
-export const Errors = {
-  minError: (amount: string, asset: string): Test => `Minimum amount is ${amount} ${asset}`,
-  maxError: (amount: string, asset: string): Test => `Maximum amount is ${amount} ${asset}`,
-  outHigh: "Output amount too high" as const,
-  outLow: "Output amount too less" as const,
-  none: "" as const,
-} as const;
-
 export type SwapErrors = {
-  inputError?: Test;
-  outputError?: Test;
+  inputError?: ErrorFormat;
+  outputError?: ErrorFormat;
   quoteError?: QuoteError;
 };
 

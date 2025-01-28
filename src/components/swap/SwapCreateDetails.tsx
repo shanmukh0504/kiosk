@@ -3,7 +3,7 @@ import { FC, useMemo } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { TokenPrices } from "../../store/swapStore";
 import { isBitcoin } from "@gardenfi/orderbook";
-import { AddressDetails } from "../../common/AddressDetails";
+import { AddressDetails } from "./AddressDetails";
 import { ScaleYIn } from "../../common/ScaleY";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
@@ -30,6 +30,12 @@ export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({
     [tokenPrices]
   );
 
+  const slippage =
+    inputAsset?.name.includes("Bitcoin") &&
+    outputAsset?.name.includes("Bitcoin")
+      ? "0%"
+      : "1%";
+
   return (
     <>
       <div
@@ -46,7 +52,7 @@ export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({
               Slippage
             </Typography>
             <Typography size="h4" weight="medium">
-              1%
+              {slippage}
             </Typography>
           </div>
           <div className="flex justify-between items-center py-0.5">
