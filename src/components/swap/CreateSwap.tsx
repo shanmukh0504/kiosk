@@ -9,7 +9,14 @@ import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { SwapCreateDetails } from "./SwapCreateDetails";
 
 export const CreateSwap = () => {
-  const { error, swapAssets, setAddressEditing } = swapStore();
+  const {
+    error,
+    swapAssets,
+    setAddressEditing,
+    inputAddressEditing,
+    outputAddressEditing,
+  } = swapStore();
+
   const {
     outputAmount,
     inputAmount,
@@ -26,7 +33,6 @@ export const CreateSwap = () => {
     isValidBitcoinAddress,
     handleSwapClick,
   } = useSwap();
-  const { inputAddressEditing, outputAddressEditing } = swapStore();
   const { account: btcAddress } = useBitcoinWallet();
 
   const isAnimating = loading.output || loading.input;

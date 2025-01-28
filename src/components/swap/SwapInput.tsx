@@ -48,12 +48,6 @@ export const SwapInput: FC<SwapInputProps> = ({
 
   const label = type === IOType.input ? "Send" : "Receive";
 
-  useEffect(() => {
-    setTriggerAmountAnimation(true);
-    const timer = setTimeout(() => setTriggerAmountAnimation(false), 700);
-    return () => clearTimeout(timer);
-  }, [amount]);
-
   const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
     const parts = input.split(".");
@@ -98,6 +92,12 @@ export const SwapInput: FC<SwapInputProps> = ({
     setOpenAssetSelector(type);
     setOpenModal(modalNames.assetList);
   };
+
+  useEffect(() => {
+    setTriggerAmountAnimation(true);
+    const timer = setTimeout(() => setTriggerAmountAnimation(false), 700);
+    return () => clearTimeout(timer);
+  }, [amount]);
 
   return (
     <>
@@ -173,7 +173,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                   }}
                 />
               </ScaleYIn>
-              {/* Placeholder as a separate element */}
+              {/* Placeholder as a separate element to avoid scaleY animation on load */}
               {!amount && (
                 <span className="absolute left-0 top-1/2 transform -translate-y-1/2 text-mid-grey pointer-events-none">
                   0.0

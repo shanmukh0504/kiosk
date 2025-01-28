@@ -29,14 +29,6 @@ export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({
     () => Number(tokenPrices.input) - Number(tokenPrices.output),
     [tokenPrices]
   );
-  // const [triggerFeesAnimation, setTriggerFeesAnimation] = useState(false);
-
-  // useEffect(() => {
-  //   if (fees) {
-  //     setTriggerFeesAnimation(false);
-  //     setTimeout(() => setTriggerFeesAnimation(true), 0);
-  //   }
-  // }, [fees]);
 
   return (
     <>

@@ -24,12 +24,9 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
 
   const show = isRefund ? !outputAddressEditing : !inputAddressEditing;
 
-  let chain: Chain | undefined;
-  if (isRefund) {
-    if (inputAsset) chain = inputAsset.chain;
-  } else {
-    if (outputAsset) chain = outputAsset.chain;
-  }
+  const chain = isRefund
+    ? inputAsset && inputAsset.chain
+    : outputAsset && outputAsset.chain;
 
   const redirect = useMemo(() => {
     return chains && chain ? chains[chain] : null;

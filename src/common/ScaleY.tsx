@@ -13,22 +13,22 @@ interface ScaleYInProps {
  * @default triggerAnimation - true
  */
 export const ScaleYIn = ({ children, triggerAnimation }: ScaleYInProps) => {
+  const animate = {
+    animation: {
+      scaleY: [0, 1],
+      opacity: [0, 1],
+      transition: {
+        duration: 0.5,
+        ease: cubicBezier(0.84, 0.0, 0.16, 1.0),
+        opacity: { duration: 0.5, ease: "easeInOut" },
+        once: true,
+      },
+    },
+  };
   return (
     <motion.div
-      animate={
-        triggerAnimation
-          ? {
-              scaleY: [0, 1],
-              opacity: [0, 1],
-              transition: {
-                duration: 0.5,
-                ease: cubicBezier(0.84, 0.0, 0.16, 1.0),
-                opacity: { duration: 0.5, ease: "easeInOut" },
-                once: true,
-              },
-            }
-          : {}
-      }
+      animate={triggerAnimation ? "animation" : ""}
+      variants={animate}
       style={{ transformOrigin: "bottom" }}
     >
       {children}
