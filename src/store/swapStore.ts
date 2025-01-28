@@ -134,7 +134,7 @@ export const swapStore = create<SwapState>((set) => ({
   setAddressEditing: (ioType, edit) => {
     set((state) => ({
       ...state,
-      [ioType === IOType.input ? "inputEditing" : "outputEditing"]: edit,
+      [ioType === IOType.input ? "inputAddressEditing" : "outputAddressEditing"]: edit,
     }));
   },
   setIsFetchingQuote: (isFetchingQuote) => {
