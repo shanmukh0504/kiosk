@@ -46,7 +46,7 @@ const DurationMenu: FC<DurationMenuProps> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute w-full flex sm:flex-col flex-col-reverse -translate-y-full sm:-translate-y-0 sm:-mt-[48px] bg-gray-200 shadow-2xl rounded-2xl z-10  overflow-hidden">
+        <div className="absolute w-full flex sm:flex-col flex-col-reverse -translate-y-full sm:-translate-y-0 sm:-mt-[48px] bg-white shadow-2xl rounded-2xl z-10  overflow-hidden">
           {Object.keys(DURATION_MAP).map((item) => {
             const multiplier = DURATION_MAP[item as DURATION].votes;
 
