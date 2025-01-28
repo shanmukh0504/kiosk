@@ -76,7 +76,7 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
         />
       </div>
 
-      <div className="p-4 flex flex-col gap-3 bg-white bg-opacity-25 rounded-2xl">
+      <div className="p-4 flex flex-col gap-3 bg-white bg-opacity-25 rounded-2xl mb-5 sm:mb-0">
         <Typography size="h5" weight="bold">
           Stake Duration
         </Typography>

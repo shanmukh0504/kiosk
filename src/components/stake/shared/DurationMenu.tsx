@@ -46,7 +46,7 @@ const DurationMenu: FC<DurationMenuProps> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute w-full mt-[-48px] bg-white shadow-2xl rounded-2xl z-10  overflow-hidden">
+        <div className="absolute w-full flex sm:flex-col flex-col-reverse -translate-y-full sm:-translate-y-0 sm:-mt-[48px] bg-gray-200 shadow-2xl rounded-2xl z-10  overflow-hidden">
           {Object.keys(DURATION_MAP).map((item) => {
             const multiplier = DURATION_MAP[item as DURATION].votes;
 
@@ -54,7 +54,7 @@ const DurationMenu: FC<DurationMenuProps> = ({
               <div
                 key={item}
                 onClick={() => handleSelectDuration(item as DURATION)}
-                className="px-3 py-2 text-2xl transition-colors cursor-pointer hover:bg-off-white"
+                className="px-3 py-[10px] text-2xl transition-colors cursor-pointer hover:bg-off-white"
               >
                 <div className="flex justify-between items-center">
                   <div className="flex gap-4 items-center">
@@ -62,7 +62,11 @@ const DurationMenu: FC<DurationMenuProps> = ({
                       {item === INFINITE ? <InfinityIcon /> : `${item} months`}
                     </Typography>
 
-                    <Typography size="h4" weight="medium" className="text-grey">
+                    <Typography
+                      size="h4"
+                      weight="medium"
+                      className="text-grey mt-1"
+                    >
                       {multiplier}x Multiplier
                     </Typography>
                   </div>
