@@ -79,7 +79,7 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
   const close = () => {
     onClose();
     setConnectingWallet(null);
-    setShowAllWallets(false)
+    setShowAllWallets(false);
     setMultiWalletConnector(undefined);
   };
 
@@ -157,8 +157,9 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
                 {ecosystem.name}
               </Typography>
               <RadioCheckedIcon
-                className={`${selectedEcosystem === ecosystem.name ? "w-4 mr-1" : "w-0"
-                  } transition-all fill-rose`}
+                className={`${
+                  selectedEcosystem === ecosystem.name ? "w-4 mr-1" : "w-0"
+                } transition-all fill-rose`}
               />
             </Chip>
           ))}
@@ -174,7 +175,7 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
         <div className="flex flex-col gap-1 bg-white/50 rounded-2xl  p-4 overflow-y-auto scrollbar-hide transition-all duration-300 ">
           {allAvailableWallets.length > 0 ? (
             <>
-              <AnimatePresence >
+              <AnimatePresence>
                 {visibleWallets.map((wallet) => (
                   <WalletRow
                     key={wallet.id}
@@ -196,25 +197,29 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
                   />
                 ))}
               </AnimatePresence>
-              {!showAllWallets && allAvailableWallets.length > MAX_VISIBLE_WALLETS && (
-                <div
-                  onClick={() => setShowAllWallets(true)}
-                  className={`flex justify-between items-center cursor-pointer px-4 ${BREAKPOINTS.sm ? "py-4" : "py-3"}`}
-                >
-                  <div className="flex gap-8 items-center">
-                    <WalletIcon className="fill-rose h-5 w-5 " />
-                    <Typography
-                      size="h3"
-                      breakpoints={{
-                        sm: "h2",
-                      }}
-                      weight="medium">
-                      All Wallets
-                    </Typography>
+              {!showAllWallets &&
+                allAvailableWallets.length > MAX_VISIBLE_WALLETS && (
+                  <div
+                    onClick={() => setShowAllWallets(true)}
+                    className={`flex justify-between items-center cursor-pointer px-4 ${
+                      BREAKPOINTS.sm ? "py-4" : "py-3"
+                    }`}
+                  >
+                    <div className="flex gap-4 items-center">
+                      <WalletIcon className="fill-rose h-5 w-5 " />
+                      <Typography
+                        size="h3"
+                        breakpoints={{
+                          sm: "h2",
+                        }}
+                        weight="medium"
+                      >
+                        All Wallets
+                      </Typography>
+                    </div>
+                    <KeyboardRightIcon className="" />
                   </div>
-                  <KeyboardRightIcon className="" />
-                </div>
-              )}
+                )}
             </>
           ) : (
             <Typography size="h3">No wallets found</Typography>
