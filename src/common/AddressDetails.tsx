@@ -4,8 +4,6 @@ import { FC, useMemo } from "react";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { ArrowNorthEastIcon, EditIcon } from "@gardenfi/garden-book";
 import { Typography } from "@gardenfi/garden-book";
-import { IOType } from "../constants/constants";
-import { swapStore } from "../store/swapStore";
 import { useSwap } from "../hooks/useSwap";
 
 type AddressDetailsProps = {
@@ -18,11 +16,8 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
   address,
 }) => {
   const { chains } = assetInfoStore();
-  const { setAddressEditing, inputAddressEditing, outputAddressEditing } =
-    swapStore();
-  const { inputAsset, outputAsset } = useSwap();
-
-  const show = isRefund ? !outputAddressEditing : !inputAddressEditing;
+  const { inputAsset, outputAsset, setIsEditBTCAddress, isEditBTCAddress } =
+    useSwap();
 
   const chain = isRefund
     ? inputAsset && inputAsset.chain
@@ -43,11 +38,12 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
     <>
       {address && (
         <div
-          className={`flex justify-between items-center py-0.5 duration-500 ease-in-out transition-all ${
-            show
-              ? "opacity-100 max-h-7 pointer-events-auto mb-0"
-              : "max-h-0 -mb-1 opacity-0 pointer-events-none"
-          }`}
+          className={`flex justify-between items-center py-0.5 duration-500 ease-in-out transition-all
+            ${
+              !isEditBTCAddress || (chain && !isBitcoin(chain))
+                ? "opacity-100 max-h-7 pointer-events-auto mb-0"
+                : "max-h-0 -mb-1 opacity-0 pointer-events-none"
+            }`}
         >
           <Typography size="h5" weight="medium">
             {isRefund ? "Refund" : "Receive"} address
@@ -56,19 +52,14 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
             <Typography size="h4" weight="medium">
               {getTrimmedAddress(address!)}
             </Typography>
-            {!inputAddressEditing && !outputAddressEditing && (
+            {!isEditBTCAddress && (
               <EditIcon
                 className={`p-0.5 cursor-pointer duration-500 ease-in-out transition-all ${
                   chain && isBitcoin(chain)
                     ? "max-w-4 max-h-4 opacity-100"
-                    : "max-w-0 max-h-0 w-0 -mr-3.5 opacity-0"
+                    : "max-w-0 max-h-0 -mr-3.5 opacity-0"
                 }`}
-                onClick={() =>
-                  setAddressEditing(
-                    isRefund ? IOType.output : IOType.input,
-                    true
-                  )
-                }
+                onClick={() => setIsEditBTCAddress(true)}
               />
             )}
             <ArrowNorthEastIcon
@@ -81,5 +72,3 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
     </>
   );
 };
-
-export default AddressDetails;

@@ -34,11 +34,13 @@ export const SwapInput: FC<SwapInputProps> = ({
   balance,
   timeEstimate,
 }) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const { setOpenAssetSelector, chains } = assetInfoStore();
-  const { setOpenModal } = modalStore();
   const [triggerAmountAnimation, setTriggerAmountAnimation] = useState(true);
   const [isInFocus, setIsInFocus] = useState(false);
+
+  const { setOpenAssetSelector, chains } = assetInfoStore();
+  const { setOpenModal } = modalStore();
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const network = useMemo(() => {
     if (!chains || (asset && isBitcoin(asset.chain))) return;
@@ -95,7 +97,7 @@ export const SwapInput: FC<SwapInputProps> = ({
 
   useEffect(() => {
     setTriggerAmountAnimation(true);
-    const timer = setTimeout(() => setTriggerAmountAnimation(false), 700);
+    const timer = setTimeout(() => setTriggerAmountAnimation(false), 500);
     return () => clearTimeout(timer);
   }, [amount]);
 

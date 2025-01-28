@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { swapStore } from "../store/swapStore";
+import { Errors, swapStore } from "../store/swapStore";
 import { IOType, network, QuoteError } from "../constants/constants";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
@@ -30,15 +30,17 @@ export const useSwap = () => {
     btcAddress,
     tokenPrices,
     isFetchingQuote,
-    setAddressEditing,
+    isEditBTCAddress,
     setStrategy,
     setIsSwapping,
     setAmount,
     setError,
+    swapAssets,
     setIsFetchingQuote,
     setTokenPrices,
     clearSwapState,
     setBtcAddress,
+    setIsEditBTCAddress,
   } = swapStore();
   const { strategies } = assetInfoStore();
   const { setOrderInProgress } = ordersStore();
@@ -156,10 +158,10 @@ export const useSwap = () => {
           if (quote.error) {
             if (quote.error.includes("AbortError")) return;
             if (quote.error.includes("output amount too high")) {
-              setError({ outputError: "Output amount too high" });
+              setError({ outputError: Errors.outHigh });
               setAmount(IOType.input, "");
             } else if (quote.error.includes("output amount too less")) {
-              setError({ outputError: "Output amount too less" });
+              setError({ outputError: Errors.outLow });
               setAmount(IOType.input, "");
             } else if (quote.error.includes("insufficient liquidity")) {
               setError({ quoteError: QuoteError.InsufficientLiquidity });
@@ -241,9 +243,9 @@ export const useSwap = () => {
         setAmount(IOType.output, "");
         return;
       }
-      if (minAmount && amountInNumber < minAmount) {
+      if (inputAsset && minAmount && amountInNumber < minAmount) {
         setError({
-          inputError: `Minimum amount is ${minAmount} ${inputAsset?.symbol}`,
+          inputError: Errors.minError(minAmount.toString(), inputAsset?.symbol),
         });
         setAmount(IOType.output, "0");
         // cancel debounced fetch quote
@@ -253,9 +255,9 @@ export const useSwap = () => {
 
         return;
       }
-      if (maxAmount && amountInNumber > maxAmount) {
+      if (inputAsset && maxAmount && amountInNumber > maxAmount) {
         setError({
-          inputError: `Maximum amount is ${maxAmount} ${inputAsset?.symbol}`,
+          inputError: Errors.maxError(maxAmount.toString(), inputAsset?.symbol),
         });
         setAmount(IOType.output, "");
         // cancel debounced fetch quote
@@ -265,15 +267,11 @@ export const useSwap = () => {
 
         return;
       }
-      setError({ inputError: "" });
+      setError({ inputError: Errors.none });
 
       if (!inputAsset || !outputAsset || !Number(amount)) return;
-      const trimmedAmount = amount.includes(".")
-        ? amount.replace(/^0+/, "0")
-        : amount.replace(/^0+/, "");
-      setAmount(IOType.input, trimmedAmount);
 
-      fetchQuote(trimmedAmount, inputAsset, outputAsset, false);
+      fetchQuote(amount, inputAsset, outputAsset, false);
     },
     [
       inputAsset,
@@ -298,16 +296,11 @@ export const useSwap = () => {
       setAmount(IOType.input, "");
       return;
     }
+    setError({ outputError: Errors.none });
 
     if (!inputAsset || !outputAsset || !amountInNumber) return;
 
-    const trimmedAmount = amount.includes(".")
-      ? amount.replace(/^0+/, "0")
-      : amount.replace(/^0+/, "");
-    setError({ outputError: "" });
-    setAmount(IOType.output, trimmedAmount);
-
-    fetchQuote(trimmedAmount, inputAsset, outputAsset, true);
+    fetchQuote(amount, inputAsset, outputAsset, true);
   };
 
   const handleSwapClick = async () => {
@@ -401,9 +394,18 @@ export const useSwap = () => {
   }, [inputAsset, handleInputAmountChange, setError]);
 
   useEffect(() => {
-    if (inputAmount == "0" || outputAmount == "0") {
+    if (
+      inputAmount == "0" ||
+      outputAmount == "0" ||
+      !inputAmount ||
+      !outputAmount
+    ) {
       setTokenPrices({ input: "0", output: "0" });
-      setError({ outputError: "", inputError: "" });
+      setError({
+        outputError: Errors.none,
+        inputError: Errors.none,
+        quoteError: QuoteError.None,
+      });
       return;
     }
   }, [inputAmount, outputAmount, setTokenPrices, setError]);
@@ -413,33 +415,23 @@ export const useSwap = () => {
     const amountInNumber = Number(inputAmount);
     if (!amountInNumber) return;
 
-    if (
-      inputAsset &&
-      outputAsset &&
-      !isBitcoin(inputAsset.chain) &&
-      !isBitcoin(outputAsset?.chain)
-    ) {
-      setAddressEditing(IOType.input, false);
-      setAddressEditing(IOType.output, false);
-    }
+    setError({ outputError: Errors.none, inputError: Errors.none });
 
-    setError({ outputError: "", inputError: "" });
-
-    if (amountInNumber < minAmount) {
+    if (amountInNumber < minAmount && inputAsset) {
       setError({
-        inputError: `Minimum amount is ${minAmount} ${inputAsset?.symbol}`,
+        inputError: Errors.minError(minAmount.toString(), inputAsset?.symbol),
       });
       return;
     }
-    if (amountInNumber > maxAmount) {
+    if (amountInNumber > maxAmount && inputAsset) {
       setError({
-        inputError: `Maximum amount is ${maxAmount} ${inputAsset?.symbol}`,
+        inputError: Errors.maxError(maxAmount.toString(), inputAsset?.symbol),
       });
       return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     inputAmount,
+    inputAsset,
     minAmount,
     maxAmount,
     inputAsset?.symbol,
@@ -460,6 +452,9 @@ export const useSwap = () => {
     outputAsset,
     tokenPrices,
     strategy,
+    error,
+    isEditBTCAddress,
+    swapAssets,
     loading: isFetchingQuote,
     validSwap,
     isSwapping,
@@ -468,6 +463,7 @@ export const useSwap = () => {
     handleOutputAmountChange,
     inputTokenBalance,
     isValidBitcoinAddress,
+    setIsEditBTCAddress,
     handleSwapClick,
     isInsufficientBalance,
   };

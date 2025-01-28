@@ -20,14 +20,18 @@ export const ScaleYIn = ({ children, triggerAnimation }: ScaleYInProps) => {
       transition: {
         duration: 0.5,
         ease: cubicBezier(0.84, 0.0, 0.16, 1.0),
-        opacity: { duration: 0.5, ease: "easeInOut" },
+        opacity: { duration: 0.2, ease: "easeInOut" },
         once: true,
       },
+    },
+    idle: {
+      scaleY: 1,
+      opacity: 1,
     },
   };
   return (
     <motion.div
-      animate={triggerAnimation ? "animation" : ""}
+      animate={triggerAnimation ? "animation" : "idle"}
       variants={animate}
       style={{ transformOrigin: "bottom" }}
     >

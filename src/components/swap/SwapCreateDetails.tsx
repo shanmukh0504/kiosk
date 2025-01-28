@@ -3,7 +3,7 @@ import { FC, useMemo } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { TokenPrices } from "../../store/swapStore";
 import { isBitcoin } from "@gardenfi/orderbook";
-import AddressDetails from "../../common/AddressDetails";
+import { AddressDetails } from "../../common/AddressDetails";
 import { ScaleYIn } from "../../common/ScaleY";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
