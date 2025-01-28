@@ -18,10 +18,11 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
   address,
 }) => {
   const { chains } = assetInfoStore();
-  const { setEditing, inputEditing, outputEditing } = swapStore();
+  const { setAddressEditing, inputAddressEditing, outputAddressEditing } =
+    swapStore();
   const { inputAsset, outputAsset } = useSwap();
 
-  const show = isRefund ? !outputEditing : !inputEditing;
+  const show = isRefund ? !outputAddressEditing : !inputAddressEditing;
 
   let chain: Chain | undefined;
   if (isRefund) {
@@ -58,11 +59,18 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
             <Typography size="h4" weight="medium">
               {getTrimmedAddress(address!)}
             </Typography>
-            {isBitcoin(chain!) && (
+            {!inputAddressEditing && !outputAddressEditing && (
               <EditIcon
-                className="w-4 h-4 p-[2px] cursor-pointer"
+                className={`p-0.5 cursor-pointer duration-500 ease-in-out transition-all ${
+                  chain && isBitcoin(chain)
+                    ? "max-w-4 max-h-4 opacity-100"
+                    : "max-w-0 max-h-0 w-0 -mr-3.5 opacity-0"
+                }`}
                 onClick={() =>
-                  setEditing(isRefund ? IOType.output : IOType.input, true)
+                  setAddressEditing(
+                    isRefund ? IOType.output : IOType.input,
+                    true
+                  )
                 }
               />
             )}

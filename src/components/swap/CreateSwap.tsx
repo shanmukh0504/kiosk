@@ -9,7 +9,7 @@ import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { SwapCreateDetails } from "./SwapCreateDetails";
 
 export const CreateSwap = () => {
-  const { error, swapAssets } = swapStore();
+  const { error, swapAssets, setAddressEditing } = swapStore();
   const {
     outputAmount,
     inputAmount,
@@ -26,7 +26,7 @@ export const CreateSwap = () => {
     isValidBitcoinAddress,
     handleSwapClick,
   } = useSwap();
-  const { inputEditing, outputEditing } = swapStore();
+  const { inputAddressEditing, outputAddressEditing } = swapStore();
   const { account: btcAddress } = useBitcoinWallet();
 
   const isAnimating = loading.output || loading.input;
@@ -62,6 +62,14 @@ export const CreateSwap = () => {
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
 
+  const handleAssetSwap = () => {
+    if (inputAddressEditing || outputAddressEditing) {
+      setAddressEditing(IOType.input, !inputAddressEditing);
+      setAddressEditing(IOType.output, !outputAddressEditing);
+    }
+    swapAssets();
+  };
+
   return (
     <div
       className={`before:content-[''] before:bg-black before:bg-opacity-0
@@ -86,7 +94,7 @@ export const CreateSwap = () => {
             className={`absolute bg-white border border-light-grey rounded-full
             -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 transition-transform hover:scale-[1.1]
             p-1.5 cursor-pointer`}
-            onClick={swapAssets}
+            onClick={handleAssetSwap}
           >
             <ExchangeIcon />
           </div>
@@ -113,7 +121,7 @@ export const CreateSwap = () => {
         >
           <div
             className={`transition-all opacity-0 duration-500 overflow-hidden ease-in-out ${
-              inputEditing || outputEditing || !btcAddress
+              inputAddressEditing || outputAddressEditing || !btcAddress
                 ? "max-h-[120px] opacity-100 pointer-events-auto"
                 : "max-h-0 opacity-0 pointer-events-none"
             }`}

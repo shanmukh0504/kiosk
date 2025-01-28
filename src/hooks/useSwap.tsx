@@ -30,7 +30,7 @@ export const useSwap = () => {
     btcAddress,
     tokenPrices,
     isFetchingQuote,
-    setEditing,
+    setAddressEditing,
     setStrategy,
     setIsSwapping,
     setAmount,
@@ -419,8 +419,8 @@ export const useSwap = () => {
       !isBitcoin(inputAsset.chain) &&
       !isBitcoin(outputAsset?.chain)
     ) {
-      setEditing(IOType.input, false);
-      setEditing(IOType.output, false);
+      setAddressEditing(IOType.input, false);
+      setAddressEditing(IOType.output, false);
     }
 
     setError({ outputError: "", inputError: "" });
