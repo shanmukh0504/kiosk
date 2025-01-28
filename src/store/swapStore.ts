@@ -29,8 +29,8 @@ type SwapState = {
   tokenPrices: TokenPrices;
   error: SwapErrors;
   isFetchingQuote: FetchingQuote;
-  inputEditing: boolean;
-  outputEditing: boolean;
+  inputAddressEditing: boolean;
+  outputAddressEditing: boolean;
   setTokenPrices: (tokenPrices: TokenPrices) => void;
   setIsSwapping: (isSwapping: boolean) => void;
   setStrategy: (strategy: string) => void;
@@ -40,7 +40,7 @@ type SwapState = {
   swapAssets: () => void;
   setError: (error: SwapErrors) => void;
   setIsFetchingQuote: (isFetchingQuote: FetchingQuote) => void;
-  setEditing: (ioType: IOType, editing: boolean) => void;
+  setAddressEditing: (ioType: IOType, editing: boolean) => void;
   clearSwapState: () => void;
   clear: () => void;
 };
@@ -60,8 +60,8 @@ export const swapStore = create<SwapState>((set) => ({
   inputAmount: "",
   outputAmount: "",
   btcAddress: "",
-  inputEditing: false,
-  outputEditing: false,
+  inputAddressEditing: false,
+  outputAddressEditing: false,
   swapInProgress: {
     isOpen: false,
     order: null,
@@ -131,7 +131,7 @@ export const swapStore = create<SwapState>((set) => ({
   setError: (error) => {
     set({ error });
   },
-  setEditing: (ioType, edit) => {
+  setAddressEditing: (ioType, edit) => {
     set((state) => ({
       ...state,
       [ioType === IOType.input ? "inputEditing" : "outputEditing"]: edit,
@@ -145,8 +145,8 @@ export const swapStore = create<SwapState>((set) => ({
       inputAmount: "",
       outputAmount: "",
       btcAddress: "",
-      inputEditing: false,
-      outputEditing: false,
+      inputAddressEditing: false,
+      outputAddressEditing: false,
       outputAsset: undefined,
       inputAsset: BTC,
       isSwapping: false,
@@ -171,8 +171,8 @@ export const swapStore = create<SwapState>((set) => ({
       inputAmount: "",
       outputAmount: "",
       btcAddress: "",
-      inputEditing: false,
-      outputEditing: false,
+      inputAddressEditing: false,
+      outputAddressEditing: false,
       outputAsset: undefined,
       inputAsset: BTC,
       isSwapping: false,
