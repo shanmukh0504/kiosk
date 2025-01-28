@@ -37,16 +37,21 @@ export const WalletRow: FC<WalletRowProps> = ({
     >
       <div
         onClick={onClick}
-        className={`flex items-center h-full justify-between gap-4 p-4 rounded-xl ${
-          isAvailable
+        className={`flex items-center h-full justify-between gap-4 p-4 rounded-xl ${isAvailable
             ? "hover:bg-off-white cursor-pointer"
             : "opacity-50 pointer-events-none"
-        }`}
+          }`}
       >
         <div className="flex gap-4 items-center">
           <img src={logo} alt={"icon"} className="w-6 h-6" />
           <div className="flex justify-between items-center">
-            <Typography size="h2" weight="medium">
+            <Typography
+              size="h3"
+              breakpoints={{
+                sm: "h2",
+              }}
+              weight="medium"
+            >
               {name === "Injected"
                 ? "Browser Wallet"
                 : name.charAt(0).toUpperCase() + name.slice(1)}
