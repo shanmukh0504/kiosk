@@ -163,7 +163,7 @@ export const useSwap = () => {
               setAmount(IOType.input, "");
             } else if (quote.error.includes("insufficient liquidity")) {
               setError({ quoteError: QuoteError.InsufficientLiquidity });
-              setAmount(IOType.input, "");
+              setAmount(isExactOut ? IOType.input : IOType.output, "");
             } else {
               setAmount(isExactOut ? IOType.input : IOType.output, "");
             }
