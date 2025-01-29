@@ -29,7 +29,7 @@ export const WalletRow: FC<WalletRowProps> = ({
     <motion.div
       initial={{ opacity: 0, marginBottom: -68 }}
       animate={{ opacity: 1, marginBottom: 0 }}
-      exit={{ opacity: 0, marginBottom: -68 }}
+      exit={{ opacity: 0, marginBottom: -65 }}
       transition={{
         duration: 0.3,
         ease: "easeOut",
@@ -38,8 +38,8 @@ export const WalletRow: FC<WalletRowProps> = ({
       <div
         onClick={onClick}
         className={`flex items-center h-full justify-between gap-4 p-4 rounded-xl ${isAvailable
-            ? "hover:bg-off-white cursor-pointer"
-            : "opacity-50 pointer-events-none"
+          ? "hover:bg-off-white cursor-pointer"
+          : "opacity-50 pointer-events-none"
           }`}
       >
         <div className="flex gap-4 items-center">
