@@ -10,6 +10,7 @@ import { StakeStats } from "./shared/StakeStats";
 import { StakeOverview } from "./StakeOverview";
 import { ToastContainer } from "../toast/Toast";
 import { StakePositions } from "./stakePosition/StakePositions";
+import { AnimatePresence } from "framer-motion";
 
 export const Stake: FC = () => {
   const { isConnected, address } = useEVMWallet();
@@ -83,7 +84,7 @@ export const Stake: FC = () => {
   ]);
 
   return (
-    <div className="flex flex-col gap-6 mt-10">
+    <div className="flex flex-col gap-6 mt-10 sm:mb-16 mb-8">
       <div className="flex flex-col gap-6 sm:max-w-[424px] max-w-[328px] mx-auto mt-10">
         <ToastContainer />
         <div className="flex flex-col p-4 gap-8 w-full rounded-2xl bg-opacity-50 bg-white">
@@ -133,10 +134,12 @@ export const Stake: FC = () => {
         </div>
       </div>
       {stakePosData && stakePosData.length > 0 && (
-        <>
-          <StakeOverview />
-          <StakePositions />
-        </>
+        <AnimatePresence>
+          <>
+            <StakeOverview />
+            <StakePositions />
+          </>
+        </AnimatePresence>
       )}
     </div>
   );
