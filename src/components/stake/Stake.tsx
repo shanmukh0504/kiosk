@@ -10,6 +10,7 @@ import { StakeStats } from "./shared/StakeStats";
 import { StakeOverview } from "./StakeOverview";
 import { ToastContainer } from "../toast/Toast";
 import { StakePositions } from "./stakePosition/StakePositions";
+import { Link } from "react-router-dom";
 
 export const Stake: FC = () => {
   const { isConnected, address } = useEVMWallet();
@@ -89,13 +90,21 @@ export const Stake: FC = () => {
         <div className="flex flex-col p-4 gap-8 w-full rounded-2xl bg-opacity-50 bg-white">
           <div className="flex flex-col gap-3 ">
             <Typography size="h5" weight="bold">
-              Stake
+              Stake to earn Bitcoin
             </Typography>
             <Typography size="h4" weight="medium">
-              Deposit SEED into Garden and unlock new opportunities like
-              discounted fees. Stake in multiples of{" "}
-              <span className="text-rose font-bold">2100 SEED</span> to
-              participate in revenue sharing.
+              <Link
+                to="https://docs.garden.finance/home/fundamentals/introduction/stakers"
+                className="text-rose font-bold"
+              >
+                Stake
+              </Link>{" "}
+              SEED to participate in the Garden protocol and earn Bitcoin
+              rewards every week. Stake in multiples of 2100 SEED and choose
+              longer periods for higher APY.
+            </Typography>
+            <Typography size="h4" weight="medium">
+              Plant your SEED, watch it grow!
             </Typography>
             <div className="flex gap-10 mt-1">
               <StakeStats
