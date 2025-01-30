@@ -6,7 +6,6 @@ import BigNumber from "bignumber.js";
 import { getAssetFromSwap } from "../../../utils/utils";
 import { assetInfoStore } from "../../../store/assetInfoStore";
 import { CopyToClipboard } from "../../../common/CopyToClipboard";
-import { useSwap } from "../../../hooks/useSwap";
 
 type OrderDetailsProps = {
   order: MatchedOrder;
@@ -16,23 +15,20 @@ type OrderDetailsRowProps = {
   title: string;
   value: string;
   copyString?: string;
-  isBtc?: boolean;
+  link?: string;
 };
 
 export const OrderDetailsRow: FC<OrderDetailsRowProps> = ({
   title,
   value,
   copyString,
-  isBtc,
+  link
 }) => {
-  const { chains } = assetInfoStore();
-  const { inputAsset, outputAsset } = useSwap();
   const handleClickAddress = () => {
-    const chain = inputAsset && isBitcoin(inputAsset.chain) ? inputAsset?.chain : outputAsset?.chain;
-    if (chain && chains) {
-      window.open(chains[chain]?.explorer + "address/" + value, "_blank");
-    }
+    if (link) 
+      window.open(link, "_blank")
   };
+
   return (
     <div className="flex justify-between">
       <Typography size="h4" weight="medium">
@@ -43,7 +39,7 @@ export const OrderDetailsRow: FC<OrderDetailsRowProps> = ({
           {getTrimmedAddress(value)}
         </Typography>
         {copyString && <CopyToClipboard text={copyString} />}
-        {isBtc && <ArrowNorthEastIcon className="w-[10px] h-[10px] cursor-pointer" onClick={handleClickAddress} />}
+        {link && <ArrowNorthEastIcon className="w-[10px] h-[10px] cursor-pointer" onClick={handleClickAddress} />}
       </div>
     </div>
   );
@@ -51,22 +47,24 @@ export const OrderDetailsRow: FC<OrderDetailsRowProps> = ({
 
 export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
   const [dropdown, setDropdown] = useState(false);
-  const { assets } = assetInfoStore();
-
+  const { assets, chains } = assetInfoStore();
+  
   const { inputAsset, outputAsset, btcAddress } = useMemo(() => {
     return {
       depositAddress:
-        order && isBitcoin(order?.source_swap.chain)
-          ? order.source_swap.swap_id
-          : "",
+      order && isBitcoin(order?.source_swap.chain)
+      ? order.source_swap.swap_id
+      : "",
       inputAsset: order && getAssetFromSwap(order.source_swap, assets),
       outputAsset: order && getAssetFromSwap(order.destination_swap, assets),
       btcAddress: order
-        ? order.create_order.additional_data.bitcoin_optional_recipient
-        : "",
+      ? order.create_order.additional_data.bitcoin_optional_recipient
+      : "",
     };
   }, [assets, order]);
 
+  const link = order && chains && chains[order.source_swap.chain]?.explorer + "address/" + btcAddress
+  
   const { inputAmountPrice, outputAmountPrice, amountToFill, filledAmount } =
     useMemo(() => {
       return {
@@ -106,9 +104,8 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
     0
   ).toFixed(3);
 
-  const handleDropdown = () => {
-    setDropdown(!dropdown);
-  };
+  const handleDropdown = () => 
+    setDropdown(!dropdown)
 
   return (
     <div className="flex flex-col justify-between bg-white/50 rounded-2xl p-4">
@@ -141,11 +138,11 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
             value={getTrimmedAddress(order.create_order.create_id)}
             copyString={order.create_order.create_id}
           />
-          {btcAddress && (
+          {inputAsset && btcAddress && link && (
             <OrderDetailsRow
-              title={inputAsset && isBitcoin(inputAsset?.chain) ? "Recovery address" : "Recieve address"}
+              title={isBitcoin(inputAsset.chain) ? "Recovery" : "Receive"+ " address"}
               value={btcAddress}
-              isBtc={true}
+              link={link}
             />
           )}
         </div>

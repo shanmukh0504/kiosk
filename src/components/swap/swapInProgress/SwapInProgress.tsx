@@ -43,8 +43,8 @@ export const SwapInProgress = () => {
   );
 
   const handleClickTransaction = () => {
-    const url = API().explorer(order?.create_order.create_id ?? "");
-    window.open(url);
+    if (!order) return;
+    window.open(API().explorer(order.create_order.create_id));
   };
 
   return order ? (
