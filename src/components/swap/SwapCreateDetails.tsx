@@ -31,8 +31,8 @@ export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({
   );
 
   const slippage =
-    inputAsset?.name.includes("Bitcoin") &&
-    outputAsset?.name.includes("Bitcoin")
+    inputAsset?.name.toLowerCase().includes("bitcoin") &&
+    outputAsset?.name.toLowerCase().includes("bitcoin")
       ? "0%"
       : "1%";
 

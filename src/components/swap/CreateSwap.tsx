@@ -36,20 +36,20 @@ export const CreateSwap = () => {
     return error.quoteError
       ? "Insufficient Liquidity"
       : isInsufficientBalance
-      ? "Insufficient balance"
-      : isSwapping
-      ? "Signing..."
-      : "Swap";
+        ? "Insufficient balance"
+        : isSwapping
+          ? "Signing..."
+          : "Swap";
   }, [isInsufficientBalance, isSwapping, error.quoteError]);
 
   const buttonVariant = useMemo(() => {
     return error.quoteError || isInsufficientBalance
       ? "disabled"
       : isSwapping
-      ? "ternary"
-      : validSwap
-      ? "primary"
-      : "disabled";
+        ? "ternary"
+        : validSwap
+          ? "primary"
+          : "disabled";
   }, [isInsufficientBalance, isSwapping, validSwap, error]);
 
   const timeEstimate = useMemo(() => {

@@ -139,8 +139,8 @@ export const SwapInput: FC<SwapInputProps> = ({
             ))}
           {type === IOType.output &&
             (error ? (
-              <Typography size="h5" weight="medium">
-                <div className="text-red-500">{error}</div>
+              <Typography size="h5" weight="medium" className="text-red-500">
+                {error}
               </Typography>
             ) : (
               timeEstimate && (
