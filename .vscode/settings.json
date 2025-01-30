@@ -19,5 +19,8 @@
   "prettier.bracketSameLine": false,
   "prettier.arrowParens": "always",
   "prettier.endOfLine": "lf",
-  "editor.formatOnSave": true // Automatically format on save
+  "editor.formatOnSave": true, // Automatically format on save
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }
