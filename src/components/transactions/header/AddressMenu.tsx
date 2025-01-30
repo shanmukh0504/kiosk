@@ -1,63 +1,19 @@
-import { FC, useMemo, useState } from "react";
+import { FC, useMemo } from "react";
 import {
   AddIcon,
-  // LanguageIcon,
-  // ReferralIcon,
   LogoutIcon,
-  Typography,
 } from "@gardenfi/garden-book";
 import { useId } from "react";
-import { Tooltip } from "../../common/Tooltip";
-import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
+import { Tooltip } from "../../../common/Tooltip";
+import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { connectWalletStore } from "../../store/connectWalletStore";
-import { swapStore } from "../../store/swapStore";
-import { balanceStore } from "../../store/balanceStore";
-import { ecosystems } from "../navbar/connectWallet/constants";
+import { connectWalletStore } from "../../../store/connectWalletStore";
+import { swapStore } from "../../../store/swapStore";
+import { balanceStore } from "../../../store/balanceStore";
+import { ecosystems } from "../../navbar/connectWallet/constants";
+import { Address } from "./Address";
 
-type AddressProps = {
-  address: string;
-  logo: string
-};
 
-const Address: FC<AddressProps> = ({ address, logo }) => {
-  const [addressTooltipContent, setAddressTooltipContent] = useState("Copy");
-  const addressTooltipId = useId();
-
-  const handleAddressClick = async () => {
-    if (address) {
-      await navigator.clipboard.writeText(address);
-      setAddressTooltipContent("Copied");
-    }
-    setTimeout(() => {
-      setAddressTooltipContent("Copy");
-    }, 2000);
-  };
-
-  return (
-    <div className="bg-white/50 flex rounded-full px-2 py-[2px] gap-2 ">
-      <img
-        src={logo}
-        className="w-5 h-5 my-1 "
-      />
-      <Typography
-        size="h3"
-        weight="medium"
-        className="cursor-pointer pt-[2px]"
-        onClick={handleAddressClick}
-        data-tooltip-id={addressTooltipId}
-      >
-        {getTrimmedAddress(address)}
-      </Typography>
-      <Tooltip
-        id={addressTooltipId}
-        place="top"
-        content={addressTooltipContent}
-      />
-    </div>
-  );
-};
 
 type AddressMenuProps = {
   onClose: () => void;

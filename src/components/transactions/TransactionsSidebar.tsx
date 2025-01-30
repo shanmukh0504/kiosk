@@ -1,7 +1,7 @@
 import { useEffect, useRef, FC, useCallback } from "react";
 import { Transactions } from "./Transactions";
 import { CloseIcon } from "@gardenfi/garden-book";
-import { AddressMenu } from "./AddressMenu";
+import { AddressMenu } from "./header/AddressMenu";
 
 type SidebarProps = {
   open: boolean;
