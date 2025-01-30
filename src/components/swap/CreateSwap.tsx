@@ -33,18 +33,18 @@ export const CreateSwap = () => {
     return isInsufficientBalance
       ? "Insufficient balance"
       : isSwapping
-      ? "Signing..."
-      : "Swap";
+        ? "Signing..."
+        : "Swap";
   }, [isInsufficientBalance, isSwapping]);
 
   const buttonVariant = useMemo(() => {
     return isInsufficientBalance
       ? "disabled"
       : isSwapping
-      ? "ternary"
-      : validSwap
-      ? "primary"
-      : "disabled";
+        ? "ternary"
+        : validSwap
+          ? "primary"
+          : "disabled";
   }, [isInsufficientBalance, isSwapping, validSwap]);
 
   const timeEstimate = useMemo(() => {
@@ -54,11 +54,7 @@ export const CreateSwap = () => {
 
   return (
     <div
-      className={`before:content-[''] before:bg-black before:bg-opacity-0
-          before:absolute before:top-0 before:left-0
-          before:h-full before:w-full
-          before:pointer-events-none before:transition-colors before:duration-700
-          `}
+      className={`before:pointer-events-none before:absolute before:left-0 before:top-0 before:h-full before:w-full before:bg-black before:bg-opacity-0 before:transition-colors before:duration-700 before:content-['']`}
     >
       <div className="flex flex-col gap-4 p-3">
         <div className="relative flex flex-col gap-4">
@@ -73,9 +69,7 @@ export const CreateSwap = () => {
             balance={inputTokenBalance}
           />
           <div
-            className="absolute bg-white border border-light-grey rounded-full
-            -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 transition-transform hover:scale-[1.1]
-            p-1.5 cursor-pointer"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full border border-light-grey bg-white p-1.5 transition-transform hover:scale-[1.1]"
             onClick={swapAssets}
           >
             <ExchangeIcon />

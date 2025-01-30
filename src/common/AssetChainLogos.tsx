@@ -12,19 +12,19 @@ export const AssetChainLogos: FC<AssetChainLogosProps> = ({
 }) => {
   return (
     <div
-      className={`relative flex items-center justify-between h-5 ${
+      className={`relative flex h-5 items-center justify-between ${
         chainLogo ? "w-[36px]" : "w-5"
       }`}
       {...rest}
     >
       <img
         src={tokenLogo}
-        className="absolute left-0 w-5 h-5 z-30 rounded-full"
+        className="absolute left-0 z-30 h-5 w-5 rounded-full"
       />
       {chainLogo ? (
         <img
           src={chainLogo}
-          className="absolute right-0 w-5 h-5 z-20 rounded-full"
+          className="absolute right-0 z-20 h-5 w-5 rounded-full"
         />
       ) : null}
     </div>

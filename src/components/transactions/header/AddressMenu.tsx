@@ -56,10 +56,10 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
           {showConnectWallet && (
             <div
               data-tooltip-id={addTooltipId}
-              className="flex items-center bg-white/50 rounded-full p-1.5 h-8 cursor-pointer transition-colors hover:bg-white"
+              className="flex cursor-pointer items-center rounded-full bg-white/50 p-1.5 transition-colors hover:bg-white"
               onClick={handleBTCWalletClick}
             >
-              <AddIcon className="w-5 h-3" />
+              <AddIcon className="h-3 w-5" />
             </div>
           )}
         </div>
@@ -78,13 +78,10 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
           </div> */}
           <div
             data-tooltip-id={logoutTooltipId}
-            className="flex items-center bg-white/50 rounded-full p-1.5 h-8 cursor-pointer transition-colors hover:bg-white"
+            className="flex cursor-pointer items-center rounded-full bg-white/50 p-1.5 h-8 transition-colors hover:bg-white"
             onClick={handleDisconnectClick}
           >
-            <LogoutIcon
-              className="w-5 h-4 cursor-pointer"
-
-            />
+            <LogoutIcon className="h-4 w-5 cursor-pointer" />
 
             <Tooltip id={addTooltipId} place="top" content="Wallet" />
             <Tooltip id={languageTooltipId} place="top" content="Language" />

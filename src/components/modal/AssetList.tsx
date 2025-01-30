@@ -22,7 +22,7 @@ export const AssetList: FC<AssetListProps> = ({ open, onClose }) => {
         <Modal open={open} onClose={onClose}>
           <Modal.Children
             opacityLevel={"medium"}
-            className="flex flex-col gap-6 rounded-2xl min-h-[452px] w-[480px] p-3"
+            className="flex min-h-[452px] w-[480px] flex-col gap-6 rounded-2xl p-3"
           >
             <AssetSelector onClose={onClose} />
           </Modal.Children>

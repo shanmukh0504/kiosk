@@ -3,14 +3,14 @@ import { FC } from "react";
 export const TransactionsSkeleton: FC = () => {
   const renderSkeletonRow = () => (
     <div className="flex flex-col gap-1 pb-4">
-      <div className="flex gap-4 justify-between">
-        <div className="bg-gray-200 rounded-md w-24 h-6 animate-pulse" />
-        <div className="bg-gray-200 rounded-full w-6 h-6 animate-pulse" />
-        <div className="bg-gray-200 rounded-md w-24 h-6 animate-pulse" />
+      <div className="flex justify-between gap-4">
+        <div className="h-6 w-24 animate-pulse rounded-md bg-gray-200" />
+        <div className="h-6 w-6 animate-pulse rounded-full bg-gray-200" />
+        <div className="h-6 w-24 animate-pulse rounded-md bg-gray-200" />
       </div>
       <div className="flex justify-between">
-        <div className="bg-gray-200 rounded-md w-28 h-4 animate-pulse" />
-        <div className="bg-gray-200 rounded-md w-20 h-4 animate-pulse" />
+        <div className="h-4 w-28 animate-pulse rounded-md bg-gray-200" />
+        <div className="h-4 w-20 animate-pulse rounded-md bg-gray-200" />
       </div>
     </div>
   );

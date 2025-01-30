@@ -9,6 +9,8 @@ export const btcToEVMid: Record<string, string> = {
   okx: "com.okex.wallet",
 } as const;
 
+export const MAX_VISIBLE_WALLETS = 3;
+
 export const ecosystems = {
   bitcoin: {
     name: "Bitcoin",
