@@ -57,14 +57,14 @@ export const Navbar = () => {
 
   return (
     <div
-      className={"flex items-center justify-between px-6 sm:px-10 py-6 gap-3"}
+      className={"flex items-center justify-between gap-3 px-6 py-6 sm:px-10"}
     >
       <div className="flex items-center gap-16">
         <GardenFullLogo
           onClick={handleHomeLogoClick}
-          className="cursor-pointer "
+          className="cursor-pointer"
         />
-        <div className="hidden sm:flex  sm:items-center gap-12">
+        <div className="hidden gap-12 sm:flex sm:items-center">
           {Object.values(INTERNAL_ROUTES).map((route) => {
             return (
               <a key={route.path} href={route.path}>

@@ -38,14 +38,14 @@ export const SwapInProgress = () => {
   );
 
   return order ? (
-    <div className="flex flex-col gap-3 p-3 animate-fade-out">
-      <div className="flex justify-between items-center p-1">
+    <div className="animate-fade-out flex flex-col gap-3 p-3">
+      <div className="flex items-center justify-between p-1">
         <Typography size="h4" weight="bold">
           Swap progress
         </Typography>
-        <CloseIcon className="w-3 h-3 m-1 cursor-pointer" onClick={goBack} />
+        <CloseIcon className="m-1 h-3 w-3 cursor-pointer" onClick={goBack} />
       </div>
-      <div className="flex flex-col gap-2 bg-white/50 rounded-2xl p-4">
+      <div className="flex flex-col gap-2 rounded-2xl bg-white/50 p-4">
         <Typography size="h5" weight="bold">
           Transaction
         </Typography>
@@ -68,12 +68,12 @@ export const SwapInProgress = () => {
         isBitcoin(inputAsset.chain) &&
         (order.status === OrderStatusEnum.Matched ||
           order.status === OrderStatusEnum.Created) && (
-          <div className="flex justify-between bg-white rounded-2xl p-4">
+          <div className="flex justify-between rounded-2xl bg-white p-4">
             <div className="flex flex-col gap-2">
               <Typography size="h5" weight="bold">
                 Deposit address
               </Typography>
-              <div className="flex gap-2 items-center">
+              <div className="flex items-center gap-2">
                 <Typography size="h3" weight="bold">
                   {getTrimmedAddress(depositAddress, 8, 6)}
                 </Typography>

@@ -37,14 +37,15 @@ export const WalletRow: FC<WalletRowProps> = ({
     >
       <div
         onClick={onClick}
-        className={`flex items-center h-full justify-between gap-4 p-4 rounded-xl ${isAvailable
-          ? "hover:bg-off-white cursor-pointer"
-          : "opacity-50 pointer-events-none"
-          }`}
+        className={`flex h-full items-center justify-between gap-4 rounded-xl p-4 ${
+          isAvailable
+            ? "cursor-pointer hover:bg-off-white"
+            : "pointer-events-none opacity-50"
+        }`}
       >
-        <div className="flex gap-4 items-center">
-          <img src={logo} alt={"icon"} className="w-6 h-6" />
-          <div className="flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          <img src={logo} alt={"icon"} className="h-6 w-6" />
+          <div className="flex items-center justify-between">
             <Typography
               size="h3"
               breakpoints={{
@@ -58,11 +59,11 @@ export const WalletRow: FC<WalletRowProps> = ({
             </Typography>
           </div>
         </div>
-        <div className="flex items-center gap-4 ">
+        <div className="flex items-center gap-4">
           {isConnecting && <Loader />}
           {Object.values(isConnected).some((value) => value) && (
-            <div className="flex gap-2 bg-white p-1 rounded-full pl-3 pr-2 items-center w-fit">
-              <Typography size="h4" className="flex gap-1 items-center">
+            <div className="flex w-fit items-center gap-2 rounded-full bg-white p-1 pl-3 pr-2">
+              <Typography size="h4" className="flex items-center gap-1">
                 Connected
               </Typography>
               <div className="flex gap-1">

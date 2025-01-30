@@ -21,10 +21,10 @@ export const FeaturedQuest: FC<FeaturedQuestProps> = ({
   logoLink,
 }) => {
   return (
-    <div className="flex flex-col md:flex-row md:items-stretch gap-6 bg-white/30 backdrop-blur-[20px] rounded-2xl p-6">
+    <div className="flex flex-col gap-6 rounded-2xl bg-white/30 p-6 backdrop-blur-[20px] md:flex-row md:items-stretch">
       <img
         src={image}
-        className="lg:basis-1/3 rounded-2xl md:object-cover md:w-[40%] lg:min-w-0"
+        className="rounded-2xl md:w-[40%] md:object-cover lg:min-w-0 lg:basis-1/3"
       />
       <Quest
         partner={partner}

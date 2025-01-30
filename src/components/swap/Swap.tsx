@@ -100,12 +100,10 @@ export const Swap = () => {
   }, [garden, assets, orderInProgress, updateOrder]);
 
   return (
-    <div
-      className="flex flex-col gap-4 w-full sm:max-w-[424px]
-    max-w-[328px] mx-auto mt-10"
-    >
+    <div className="mx-auto mt-10 flex w-full max-w-[328px] flex-col gap-4 sm:max-w-[424px]">
       <ToastContainer />
-      <div className={`bg-white/50 rounded-[20px] relative overflow-hidden`}>
+      <div></div>
+      <div className={`relative overflow-hidden rounded-[20px] bg-white/50`}>
         {orderInProgress ? <SwapInProgress /> : <CreateSwap />}
       </div>
     </div>

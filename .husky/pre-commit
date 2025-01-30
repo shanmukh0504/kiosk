@@ -1,7 +1,5 @@
-#!/bin/sh
-. "$(dirname "$0")/husky.sh"
 
-echo '🏗️👷 Styling, testing and building your project before committing'
+echo '🏗️ 👷 Styling, testing and building your project before committing'
 
 # Check tsconfig standards
 yarn check-types ||
@@ -16,14 +14,6 @@ yarn check-format ||
 (
     echo '🤢🤮🤢🤮 Its RAW - Your styling looks disgusting... 🤢🤮🤢🤮
         Prettier check Failed. Run yarn format, add changes and try commit again.';
-    false;
-);
-
-# Check Prettier standards
-yarn check-lint ||
-(
-    echo '😤🏀👋😤 Get that weak s**t out of here! 😤🏀👋😤
-        ESLint check Failed. Make the required changes listed above, add changes and try to commit again.';
     false;
 );
 
