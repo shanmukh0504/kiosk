@@ -59,13 +59,11 @@ export const SwapInProgress = () => {
         className="flex cursor-pointer flex-col gap-2 rounded-2xl bg-white/50 p-4 hover:bg-white"
         onClick={handleClickTransaction}
       >
-        <div className="flex items-center gap-2 ">
+        <div className="flex items-center gap-2">
           <Typography size="h5" weight="bold">
             Transaction
           </Typography>
-          <ArrowNorthEastIcon
-            className="h-[10px] w-[10px]"
-          />
+          <ArrowNorthEastIcon className="h-[10px] w-[10px]" />
         </div>
         {inputAsset && outputAsset && (
           <SwapInfo
