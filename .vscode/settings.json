@@ -13,10 +13,15 @@
   ],
   "prettier.semi": true,
   "prettier.singleQuote": false,
-  "prettier.trailingComma": "all",
+  "prettier.trailingComma": "es5",
   "prettier.tabWidth": 2,
   "prettier.bracketSpacing": true,
   "prettier.bracketSameLine": false,
   "prettier.arrowParens": "always",
-  "editor.formatOnSave": true // Automatically format on save
+  "editor.formatOnSave": true, // Automatically format on save
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always",
+    "source.fixAll.format": "always"
+  }
 }
