@@ -12,6 +12,7 @@ import { REWARD_CHAIN, REWARD_CONFIG } from "./constants";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../../layout/wagmi/config";
 import { Toast } from "../toast/Toast";
+import { motion } from "framer-motion";
 
 export const StakeOverview = () => {
   const [isClaimLoading, setIsClaimLoading] = useState(false);
@@ -90,42 +91,64 @@ export const StakeOverview = () => {
   };
 
   return (
-    <div className="w-[328px] sm:w-[424px] md:w-[740px] rounded-[15px] bg-opacity-50 gap-4 bg-white mx-auto p-6 flex flex-col">
-      <Typography size="h5" weight="bold">
-        Staking overview
-      </Typography>
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-center ">
-        <div className="flex gap-10 justify-between w-full md:w-[350px]">
-          <StakeStats title={"Staked SEED"} value={formattedAmount} size="sm" />
-          <StakeStats
-            title={"Votes"}
-            value={totalVotes !== undefined ? totalVotes : 0}
+    <motion.div
+      animate={{
+        scale: ["80%", "100%"],
+        margin: ["-10%", "0%"],
+        opacity: ["0%", "100%"],
+        transition: {
+          duration: 0.6,
+          ease: "easeInOut",
+          once: true,
+          opacity: {
+            duration: 0.3,
+            delay: 0.4,
+          },
+        },
+      }}
+      style={{ transformOrigin: "top" }}
+    >
+      <div className="w-[328px] sm:w-[424px] md:w-[740px] rounded-[15px] bg-opacity-50 gap-4 bg-white mx-auto p-6 flex flex-col">
+        <Typography size="h5" weight="bold">
+          Staking overview
+        </Typography>
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-center ">
+          <div className="flex gap-10 justify-between w-full md:w-[350px]">
+            <StakeStats
+              title={"Staked SEED"}
+              value={formattedAmount}
+              size="sm"
+            />
+            <StakeStats
+              title={"Votes"}
+              value={totalVotes !== undefined ? totalVotes : 0}
+              size="sm"
+            />
+            <StakeStats
+              title={"Staking rewards"}
+              value={`${availableReward} cbBTC`}
+              size="sm"
+              isPink
+            />
+          </div>
+          <Button
+            variant={
+              isClaimLoading || availableReward === 0 ? "disabled" : "primary"
+            }
             size="sm"
-          />
-          <StakeStats
-            title={"Staking rewards"}
-            value={`${availableReward} cbBTC`}
-            size="sm"
-            isPink
-          />
+            className={`w-full md:w-[120px] ${
+              isClaimLoading || availableReward === 0
+                ? "transition-colors duration-500 flex items-center justify-center self-center"
+                : ""
+            }`}
+            onClick={handleRewardClick}
+            disabled={isClaimLoading || availableReward === 0}
+            loading={isClaimLoading}
+          >
+            {isClaimLoading ? "Claiming..." : "Claim"}
+          </Button>
         </div>
-        <Button
-          variant={
-            isClaimLoading || availableReward === 0 ? "disabled" : "primary"
-          }
-          size="sm"
-          className={`w-full md:w-[120px] ${
-            isClaimLoading || availableReward === 0
-              ? "transition-colors duration-500 flex items-center justify-center self-center"
-              : ""
-          }`}
-          onClick={handleRewardClick}
-          disabled={isClaimLoading || availableReward === 0}
-          loading={isClaimLoading}
-        >
-          {isClaimLoading ? "Claiming..." : "Claim"}
-        </Button>
       </div>
-    </div>
+    </motion.div>
   );
 };

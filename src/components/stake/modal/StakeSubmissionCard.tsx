@@ -141,6 +141,7 @@ export const StakeSubmissionCard: FC<StakeSubmissionCardProps> = ({
       size="lg"
       onClick={handleStake}
       loading={loading}
+      className="w-full sm:w-fit"
     >
       Stake
     </Button>
