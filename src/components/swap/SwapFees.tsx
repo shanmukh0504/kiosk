@@ -28,10 +28,7 @@ export const SwapFees: FC<SwapFeesProps> = ({ tokenPrices }) => {
         hide={() => handleShowComparison(false)}
       /> */}
       <div
-        className="flex flex-col gap-3
-        bg-white/50 rounded-2xl
-        pt-4 pb-3 px-4
-        cursor-pointer transition-[background-color] hover:bg-white"
+        className="flex cursor-pointer flex-col gap-3 rounded-2xl bg-white/50 px-4 pb-3 pt-4 transition-[background-color] hover:bg-white"
         onClick={() => handleShowComparison(true)}
       >
         <Typography size="h5" weight="bold">

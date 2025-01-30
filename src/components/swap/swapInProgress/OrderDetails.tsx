@@ -99,10 +99,10 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
   };
 
   return (
-    <div className="flex flex-col justify-between bg-white/50 rounded-2xl p-4">
+    <div className="flex flex-col justify-between rounded-2xl bg-white/50 p-4">
       <div
         onClick={handleDropdown}
-        className="flex w-full justify-between items-center cursor-pointer"
+        className="flex w-full cursor-pointer items-center justify-between"
       >
         <Typography size="h5" weight="bold">
           Details
@@ -116,11 +116,11 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
         </div>
       </div>
       <div
-        className={`transition-all duration-300 overflow-hidden ${
+        className={`overflow-hidden transition-all duration-300 ${
           dropdown ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="flex flex-col gap-3 rounded-2xl mt-2">
+        <div className="mt-2 flex flex-col gap-3 rounded-2xl">
           <OrderDetailsRow title="Fee" value={`$${fees}`} />
           <OrderDetailsRow
             title="Amount"

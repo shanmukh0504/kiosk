@@ -18,7 +18,7 @@ export const Orb = () => {
       viewBox="0 0 2024 2024"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={`absolute z-0 top-[50%] left-[50%] transform translate-x-[-50%] translate-y-[-10%]`}
+      className={`absolute left-[50%] top-[50%] z-0 translate-x-[-50%] translate-y-[-10%] transform`}
     >
       <circle
         cx="1012"
