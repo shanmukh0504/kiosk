@@ -113,14 +113,14 @@ export const TransactionRow: FC<TransactionProps> = ({
 
   return (
     <div
-      className={`flex flex-col gap-1 p-4  ${isLast ? "rounded-b-2xl" : ""} ${
+      className={`flex flex-col gap-1 p-4 ${isLast ? "rounded-b-2xl" : ""} ${
         statusLabel !== StatusLabel.Expired
           ? "cursor-pointer hover:bg-white/50"
           : ""
       }`}
       onClick={handleTransactionClick}
     >
-      <div className={`flex flex-col gap-1 `}>
+      <div className={`flex flex-col gap-1`}>
         <SwapInfo
           sendAsset={sendAsset}
           receiveAsset={receiveAsset}

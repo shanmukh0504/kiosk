@@ -126,27 +126,27 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
 
   return (
     <>
-      <div className="flex justify-between items-center ">
+      <div className="flex items-center justify-between">
         <Typography size="h4" weight="bold">
           Connect a wallet
         </Typography>
         <div className="flex gap-4">
           {multiWalletConnector && (
             <ArrowLeftIcon
-              className="w-6 h-[14px] cursor-pointer"
+              className="h-[14px] w-6 cursor-pointer"
               onClick={handleClose}
             />
           )}
-          <CloseIcon className="w-6 h-[14px] cursor-pointer" onClick={close} />
+          <CloseIcon className="h-[14px] w-6 cursor-pointer" onClick={close} />
         </div>
       </div>
 
       {!showOnlyBTCWallets && !multiWalletConnector && (
-        <div className="flex flex-wrap gap-3 ">
+        <div className="flex flex-wrap gap-3">
           {Object.values(ecosystems).map((ecosystem, i) => (
             <Chip
               key={i}
-              className={`py-1 pl-3 pr-1 cursor-pointer transition-colors ease-cubic-in-out hover:bg-opacity-50`}
+              className={`cursor-pointer py-1 pl-3 pr-1 transition-colors ease-cubic-in-out hover:bg-opacity-50`}
               onClick={() => {
                 setSelectedEcosystem((prev) =>
                   prev === ecosystem.name ? null : ecosystem.name
@@ -157,8 +157,9 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
                 {ecosystem.name}
               </Typography>
               <RadioCheckedIcon
-                className={`${selectedEcosystem === ecosystem.name ? "w-4 mr-1" : "w-0"
-                  } transition-all fill-rose`}
+                className={`${
+                  selectedEcosystem === ecosystem.name ? "mr-1 w-4" : "w-0"
+                } fill-rose transition-all`}
               />
             </Chip>
           ))}
@@ -171,9 +172,7 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
           handleClose={handleClose}
         />
       ) : (
-        <div
-          className="flex flex-col gap-1 bg-white/50 rounded-2xl  p-4 overflow-y-auto scrollbar-hide transition-all duration-300 overscroll-contain"
-        >
+        <div className="scrollbar-hide flex flex-col gap-1 overflow-y-auto overscroll-contain rounded-2xl bg-white/50 p-4 transition-all duration-300">
           {allAvailableWallets.length > 0 ? (
             <>
               <AnimatePresence>
@@ -202,11 +201,12 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
                 allAvailableWallets.length > MAX_VISIBLE_WALLETS && (
                   <div
                     onClick={() => setShowAllWallets(true)}
-                    className={`flex justify-between items-center cursor-pointer px-4 ${BREAKPOINTS.sm ? "py-4" : "py-3"
-                      }`}
+                    className={`flex cursor-pointer items-center justify-between px-4 ${
+                      BREAKPOINTS.sm ? "py-4" : "py-3"
+                    }`}
                   >
-                    <div className="flex gap-4 items-center">
-                      <WalletIcon className="fill-rose h-5 w-5 " />
+                    <div className="flex items-center gap-4">
+                      <WalletIcon className="h-5 w-5 fill-rose" />
                       <Typography
                         size="h3"
                         breakpoints={{
@@ -275,7 +275,7 @@ export const ConnectWallet: FC<ConnectWalletProps> = ({
         <Modal open={open}>
           <Modal.Children
             opacityLevel={"medium"}
-            className="flex flex-col gap-6 backdrop-blur-[20px] rounded-2xl w-[600px] p-6 max-h-[692px]"
+            className="flex max-h-[692px] w-[600px] flex-col gap-6 rounded-2xl p-6 backdrop-blur-[20px]"
           >
             <ConnectWalletComponent
               open={open}
