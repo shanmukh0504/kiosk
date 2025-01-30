@@ -35,7 +35,7 @@ export const SwapFees: FC<SwapFeesProps> = ({ tokenPrices }) => {
           Details
         </Typography>
         <div>
-          <div className="flex justify-between gap-0">
+          <div className="flex items-center justify-between gap-0">
             <Typography size="h5" weight="medium">
               Fees
             </Typography>
@@ -45,7 +45,7 @@ export const SwapFees: FC<SwapFeesProps> = ({ tokenPrices }) => {
               </Typography>
             </div>
           </div>
-          <div className="flex justify-between">
+          <div className="flex items-center justify-between">
             <Typography size="h5" weight="medium">
               Saved
             </Typography>

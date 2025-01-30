@@ -1,4 +1,8 @@
-import { CloseIcon, Typography } from "@gardenfi/garden-book";
+import {
+  ArrowNorthEastIcon,
+  CloseIcon,
+  Typography,
+} from "@gardenfi/garden-book";
 import { useCallback, useMemo } from "react";
 import { SwapInfo } from "../../../common/SwapInfo";
 import { getTrimmedAddress } from "../../../utils/getTrimmedAddress";
@@ -12,6 +16,7 @@ import { CopyToClipboard } from "../../../common/CopyToClipboard";
 import { useOrderStatus } from "../../../hooks/useOrderStatus";
 import { OrderStatus as OrderStatusEnum } from "@gardenfi/core";
 import { ordersStore } from "../../../store/ordersStore";
+import { API } from "../../../constants/api";
 
 export const SwapInProgress = () => {
   const { setOrderInProgress, orderInProgress: order } = ordersStore();
@@ -37,6 +42,11 @@ export const SwapInProgress = () => {
     [setOrderInProgress]
   );
 
+  const handleClickTransaction = () => {
+    const url = API().explorer(order?.create_order.create_id ?? "");
+    window.open(url);
+  };
+
   return order ? (
     <div className="animate-fade-out flex flex-col gap-3 p-3">
       <div className="flex items-center justify-between p-1">
@@ -45,10 +55,18 @@ export const SwapInProgress = () => {
         </Typography>
         <CloseIcon className="m-1 h-3 w-3 cursor-pointer" onClick={goBack} />
       </div>
-      <div className="flex flex-col gap-2 rounded-2xl bg-white/50 p-4">
-        <Typography size="h5" weight="bold">
-          Transaction
-        </Typography>
+      <div
+        className="flex cursor-pointer flex-col gap-2 rounded-2xl bg-white/50 p-4 hover:bg-white"
+        onClick={handleClickTransaction}
+      >
+        <div className="flex items-center gap-2 ">
+          <Typography size="h5" weight="bold">
+            Transaction
+          </Typography>
+          <ArrowNorthEastIcon
+            className="h-[10px] w-[10px]"
+          />
+        </div>
         {inputAsset && outputAsset && (
           <SwapInfo
             sendAsset={inputAsset}
