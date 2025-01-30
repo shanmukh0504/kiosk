@@ -1,5 +1,6 @@
-
+echo ''
 echo '🏗️ 👷 Styling, testing and building your project before committing'
+echo ''
 
 # Check tsconfig standards
 yarn check-types ||
@@ -8,6 +9,11 @@ yarn check-types ||
         Are you seriously trying to write that? Make the changes required above.';
     false;
 );
+echo ''
+
+echo '🫡🌸🫡🌸 Applying Prettier to all files to standardize... 🫡🌸🫡🌸'
+yarn format
+echo ''
 
 # Check Prettier standards
 yarn check-format ||
@@ -16,8 +22,10 @@ yarn check-format ||
         Prettier check Failed. Run yarn format, add changes and try commit again.';
     false;
 );
+echo ''
 
 echo '🤔🤔🤔🤔... Alright... Code looks good to me... Trying to build now. 🤔🤔🤔🤔'
+echo ''
 
 # Check Prettier standards
 yarn build ||
@@ -26,6 +34,9 @@ yarn build ||
         Next build failed: View the error above to see why.';
     false;
 );
+echo ''
+echo ''
 
 # If it builds we can commit
 echo '✅✅✅✅ You win this time... Iam committing this now! ✅✅✅✅'
+echo ''
