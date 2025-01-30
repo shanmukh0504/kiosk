@@ -102,7 +102,6 @@ export const Swap = () => {
   return (
     <div className="mx-auto mt-10 flex w-full max-w-[328px] flex-col gap-4 sm:max-w-[424px]">
       <ToastContainer />
-      <div></div>
       <div className={`relative overflow-hidden rounded-[20px] bg-white/50`}>
         {orderInProgress ? <SwapInProgress /> : <CreateSwap />}
       </div>
