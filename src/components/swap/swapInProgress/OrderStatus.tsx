@@ -37,7 +37,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({ orderProgress, isRefunded })
     <div className="flex flex-col justify-between rounded-2xl bg-white p-4">
       <div
         onClick={handleDropdown}
-        className="flex flex-col gap-2 cursor-pointer"
+        className="flex flex-col gap-2 "
       >
         <div className="flex items-center justify-between">
           <Typography size="h5" weight="bold">
