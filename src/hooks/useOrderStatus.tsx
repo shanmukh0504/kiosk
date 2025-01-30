@@ -31,6 +31,8 @@ export const useOrderStatus = () => {
   const { fetchAndSetBlockNumbers, blockNumbers } = blockNumberStore();
   const { assets } = assetInfoStore();
   const { orderInProgress: order, setOrderInProgress } = ordersStore();
+  const orderId = order?.create_order.create_id;
+  const orderStatus = order?.status;
 
   const outputAsset = order && getAssetFromSwap(order.destination_swap, assets);
   const initBlockNumber = Number(order?.source_swap.initiate_block_number);
@@ -40,14 +42,14 @@ export const useOrderStatus = () => {
       order.status === OrderStatus.InitiateDetected &&
       blockNumbers
       ? " (" +
-          Math.abs(
-            initBlockNumber
-              ? blockNumbers[order.source_swap.chain] - initBlockNumber
-              : 0
-          ) +
-          "/" +
-          order.source_swap.required_confirmations +
-          ")"
+      Math.abs(
+        initBlockNumber
+          ? blockNumbers[order.source_swap.chain] - initBlockNumber
+          : 0
+      ) +
+      "/" +
+      order.source_swap.required_confirmations +
+      ")"
       : "";
   }, [blockNumbers, order, initBlockNumber]);
 
@@ -176,21 +178,19 @@ export const useOrderStatus = () => {
   }, [confirmationsString, outputAsset?.symbol, order?.status]);
 
   useEffect(() => {
-    if (!order || !orderBook) return;
+    if (!orderId || !orderBook) return;
     if (
       [
         OrderStatus.Redeemed,
         OrderStatus.CounterPartyRedeemDetected,
         OrderStatus.CounterPartyRedeemed,
         OrderStatus.Completed,
-      ].includes(order.status)
+      ].includes(orderStatus as OrderStatus)
     )
       return;
 
     const updateOrder = async () => {
-      if (!order) return;
-
-      const o = await orderBook.getOrder(order.create_order.create_id, true);
+      const o = await orderBook.getOrder(orderId, true);
       if (o.error) return;
 
       const blockNumbers = await fetchAndSetBlockNumbers();
@@ -217,7 +217,7 @@ export const useOrderStatus = () => {
 
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchAndSetBlockNumbers, orderBook, setOrderInProgress]);
+  }, [orderId, orderBook, fetchAndSetBlockNumbers, setOrderInProgress, orderStatus]);
 
   return {
     orderProgress,
