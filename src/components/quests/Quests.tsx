@@ -20,7 +20,7 @@ export const Quests = () => {
   }, [fetchQuestData]);
 
   return (
-    <div className="w-full max-w-[1600px] mx-auto mt-10 px-10">
+    <div className="mx-auto mt-10 w-full max-w-[1600px] px-10">
       <FeaturedQuest
         image="https://wbtc-garden.ghost.io/content/images/size/w1000/2024/08/season3_review-1.png" // TODO: This should not be hard coded
         partner={QuestsInfo[featuredIndex].name}
@@ -30,7 +30,7 @@ export const Quests = () => {
         link={QuestsInfo[featuredIndex].link}
         logoLink={QuestsInfo[featuredIndex].logoLink}
       />
-      <div className="grid gap-6 mt-10 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {QuestsInfo?.map((quest, i) => (
           <Quest
             key={i}

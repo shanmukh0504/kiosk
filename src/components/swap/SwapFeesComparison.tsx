@@ -16,20 +16,16 @@ export const SwapFeesComparison: FC<SwapFeesComparisonProps> = ({
 
   return (
     <div
-      className={`flex flex-col gap-3
-        bg-primary-lighter rounded-[20px]
-        absolute top-0 ${visible ? "left-0" : "left-full"} z-30
-        h-full w-full p-3
-        transition-left ease-in-out duration-700`}
+      className={`absolute top-0 flex flex-col gap-3 rounded-[20px] bg-primary-lighter ${visible ? "left-0" : "left-full"} transition-left z-30 h-full w-full p-3 duration-700 ease-in-out`}
     >
-      <div className="flex justify-between items-center p-1">
+      <div className="flex items-center justify-between p-1">
         <Typography size="h4" weight="bold">
           Cost & speed comparison
         </Typography>
         <ArrowLeftIcon className="cursor-pointer" onClick={() => hide()} />
       </div>
       {inputAsset && outputAsset && inputAmount && outputAmount && (
-        <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
+        <div className="flex flex-col gap-2 rounded-2xl bg-white p-4">
           <SwapInfo
             sendAsset={inputAsset}
             receiveAsset={outputAsset}
@@ -38,8 +34,8 @@ export const SwapFeesComparison: FC<SwapFeesComparisonProps> = ({
           />
         </div>
       )}
-      <div className="flex h-full gap-10 bg-white rounded-2xl p-4">
-        <div className="flex flex-col flex-grow gap-2">
+      <div className="flex h-full gap-10 rounded-2xl bg-white p-4">
+        <div className="flex flex-grow flex-col gap-2">
           <Typography className="p-1" size="h5" weight="bold">
             Routes
           </Typography>

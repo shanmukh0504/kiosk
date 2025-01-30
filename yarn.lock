@@ -627,9 +627,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/core@npm:^2.0.7":
-  version: 2.0.7
-  resolution: "@gardenfi/core@npm:2.0.7"
+"@gardenfi/core@npm:^2.0.8":
+  version: 2.0.8
+  resolution: "@gardenfi/core@npm:2.0.8"
   dependencies:
     "@catalogfi/wallets": "npm:^0.2.51"
     "@gardenfi/orderbook": "npm:^2.0.0"
@@ -639,7 +639,7 @@ __metadata:
     tiny-secp256k1: "npm:^2.2.3"
     varuint-bitcoin: "npm:^1.1.2"
     viem: "npm:^2.21.15"
-  checksum: 10c0/2dd0c2fecf1a06fe2b2740288fdf6bcfe4ca8ce80133ab9256460772921d1dc87767f3b2bc928f2709ede09293c80476504c108ab33a393e013ca72b239908b9
+  checksum: 10c0/3ebb787cc9609760f06a6a8574c12ee4c3f79dbd53bdba9e454c050e1b88292b8331042f031dcd189ca31e2e7c5c03169b02fb5552061d45a0b46afaaece3903
   languageName: node
   linkType: hard
 
@@ -676,17 +676,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/react-hooks@npm:^2.0.8":
-  version: 2.0.8
-  resolution: "@gardenfi/react-hooks@npm:2.0.8"
+"@gardenfi/react-hooks@npm:^2.0.11":
+  version: 2.0.11
+  resolution: "@gardenfi/react-hooks@npm:2.0.11"
   dependencies:
     "@catalogfi/wallets": "npm:^0.2.51"
-    "@gardenfi/core": "npm:^2.0.7"
+    "@gardenfi/core": "npm:^2.0.8"
     "@gardenfi/orderbook": "npm:^2.0.0"
     "@gardenfi/utils": "npm:^2.0.0"
     react: "npm:^18.3.1"
     viem: "npm:^2.21.15"
-  checksum: 10c0/f05292ba1835f190c84381243d6f20094883098e07bc975d718eb47ce9b4c381edfc7c263a916fb04eb021432673260b272d5401b08c5da7d272b4000f93fa0b
+  checksum: 10c0/6bf01c28cc2a95e986fcb4baf8db44794db8037f452e5493ada728e4c900b2fea20c9181e48ed9849142401ac2e8c2c0403d25513d0c28a8ba4c71f4363445ad
   languageName: node
   linkType: hard
 
@@ -5836,10 +5836,10 @@ __metadata:
   resolution: "garden-kiosk@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.13.0"
-    "@gardenfi/core": "npm:^2.0.7"
+    "@gardenfi/core": "npm:^2.0.8"
     "@gardenfi/garden-book": "npm:^0.1.63"
     "@gardenfi/orderbook": "npm:^2.0.1"
-    "@gardenfi/react-hooks": "npm:^2.0.8"
+    "@gardenfi/react-hooks": "npm:^2.0.11"
     "@gardenfi/utils": "npm:^2.0.0"
     "@gardenfi/wallet-connectors": "npm:^2.0.1"
     "@tanstack/react-query": "npm:^5.51.23"
@@ -5860,6 +5860,8 @@ __metadata:
     globals: "npm:^15.11.0"
     lodash.debounce: "npm:^4.0.8"
     postcss: "npm:^8.4.41"
+    prettier: "npm:3.4.2"
+    prettier-plugin-tailwindcss: "npm:^0.6.11"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     react-helmet-async: "npm:^2.0.5"
@@ -8393,6 +8395,73 @@ __metadata:
   version: 1.2.1
   resolution: "prelude-ls@npm:1.2.1"
   checksum: 10c0/b00d617431e7886c520a6f498a2e14c75ec58f6d93ba48c3b639cf241b54232d90daa05d83a9e9b9fef6baa63cb7e1e4602c2372fea5bc169668401eb127d0cd
+  languageName: node
+  linkType: hard
+
+"prettier-plugin-tailwindcss@npm:^0.6.11":
+  version: 0.6.11
+  resolution: "prettier-plugin-tailwindcss@npm:0.6.11"
+  peerDependencies:
+    "@ianvs/prettier-plugin-sort-imports": "*"
+    "@prettier/plugin-pug": "*"
+    "@shopify/prettier-plugin-liquid": "*"
+    "@trivago/prettier-plugin-sort-imports": "*"
+    "@zackad/prettier-plugin-twig": "*"
+    prettier: ^3.0
+    prettier-plugin-astro: "*"
+    prettier-plugin-css-order: "*"
+    prettier-plugin-import-sort: "*"
+    prettier-plugin-jsdoc: "*"
+    prettier-plugin-marko: "*"
+    prettier-plugin-multiline-arrays: "*"
+    prettier-plugin-organize-attributes: "*"
+    prettier-plugin-organize-imports: "*"
+    prettier-plugin-sort-imports: "*"
+    prettier-plugin-style-order: "*"
+    prettier-plugin-svelte: "*"
+  peerDependenciesMeta:
+    "@ianvs/prettier-plugin-sort-imports":
+      optional: true
+    "@prettier/plugin-pug":
+      optional: true
+    "@shopify/prettier-plugin-liquid":
+      optional: true
+    "@trivago/prettier-plugin-sort-imports":
+      optional: true
+    "@zackad/prettier-plugin-twig":
+      optional: true
+    prettier-plugin-astro:
+      optional: true
+    prettier-plugin-css-order:
+      optional: true
+    prettier-plugin-import-sort:
+      optional: true
+    prettier-plugin-jsdoc:
+      optional: true
+    prettier-plugin-marko:
+      optional: true
+    prettier-plugin-multiline-arrays:
+      optional: true
+    prettier-plugin-organize-attributes:
+      optional: true
+    prettier-plugin-organize-imports:
+      optional: true
+    prettier-plugin-sort-imports:
+      optional: true
+    prettier-plugin-style-order:
+      optional: true
+    prettier-plugin-svelte:
+      optional: true
+  checksum: 10c0/e5688a86f457b4eaa682d83a86702826d2d828db4cfc153b8b1f0b8409c94530a4bde8deb3e819497ba8e4bd0eda08ed55468a41a8138f82db43d633cf332121
+  languageName: node
+  linkType: hard
+
+"prettier@npm:3.4.2":
+  version: 3.4.2
+  resolution: "prettier@npm:3.4.2"
+  bin:
+    prettier: bin/prettier.cjs
+  checksum: 10c0/99e076a26ed0aba4ebc043880d0f08bbb8c59a4c6641cdee6cdadf2205bdd87aa1d7823f50c3aea41e015e99878d37c58d7b5f0e663bba0ef047f94e36b96446
   languageName: node
   linkType: hard
 
