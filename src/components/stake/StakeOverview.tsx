@@ -62,10 +62,9 @@ export const StakeOverview = () => {
       setIsClaimLoading(true);
       if (chainId !== REWARD_CHAIN) {
         await switchChainAsync({ chainId: REWARD_CHAIN });
+        //small workaround to make sure the chain is switched other wise the claim is failing
+        await new Promise((resolve) => setTimeout(resolve, 2000));
       }
-
-      //small workaround to make sure the chain is switched other wise the claim is failing
-      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       const tx = await writeContractAsync({
         abi: distributerABI,
@@ -83,7 +82,7 @@ export const StakeOverview = () => {
         hash: tx,
       });
       await refetchClaimedAmount();
-      Toast.success("Withdrawal successful");
+      Toast.success("Withdrawal completed successfully");
     } catch (error) {
       console.error("Error claiming rewards:", error);
     } finally {

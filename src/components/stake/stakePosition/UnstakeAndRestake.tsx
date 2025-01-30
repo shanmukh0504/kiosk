@@ -47,7 +47,7 @@ export const UnstakeAndRestake: FC<UnstakeAndRestakeProps> = ({ stakePos }) => {
       await waitForTransactionReceipt(config, {
         hash: tx,
       });
-      Toast.success("Unstake successful");
+      Toast.success("Unstaked successfully");
     } catch (error) {
       console.error("Error during unstake:", error);
     } finally {

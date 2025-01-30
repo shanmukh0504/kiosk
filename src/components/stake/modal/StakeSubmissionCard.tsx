@@ -124,7 +124,9 @@ export const StakeSubmissionCard: FC<StakeSubmissionCardProps> = ({
       });
       //✅ stake success
       console.log("Stake tx hash : ", hash);
-      Toast.success(`Staked ${amount} SEED for ${selectedDuration} months`);
+      Toast.success(
+        `Staked ${amount} SEED for ${selectedDuration} months successfully`
+      );
       onClose();
     } catch (e) {
       console.error("error :", e);
