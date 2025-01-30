@@ -42,14 +42,14 @@ export const useOrderStatus = () => {
       order.status === OrderStatus.InitiateDetected &&
       blockNumbers
       ? " (" +
-      Math.abs(
-        initBlockNumber
-          ? blockNumbers[order.source_swap.chain] - initBlockNumber
-          : 0
-      ) +
-      "/" +
-      order.source_swap.required_confirmations +
-      ")"
+          Math.abs(
+            initBlockNumber
+              ? blockNumbers[order.source_swap.chain] - initBlockNumber
+              : 0
+          ) +
+          "/" +
+          order.source_swap.required_confirmations +
+          ")"
       : "";
   }, [blockNumbers, order, initBlockNumber]);
 
@@ -180,12 +180,13 @@ export const useOrderStatus = () => {
   useEffect(() => {
     if (!orderId || !orderBook) return;
     if (
+      orderStatus &&
       [
         OrderStatus.Redeemed,
         OrderStatus.CounterPartyRedeemDetected,
         OrderStatus.CounterPartyRedeemed,
         OrderStatus.Completed,
-      ].includes(orderStatus as OrderStatus)
+      ].includes(orderStatus)
     )
       return;
 
@@ -217,7 +218,13 @@ export const useOrderStatus = () => {
 
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orderId, orderBook, fetchAndSetBlockNumbers, setOrderInProgress, orderStatus]);
+  }, [
+    orderId,
+    orderBook,
+    fetchAndSetBlockNumbers,
+    setOrderInProgress,
+    orderStatus,
+  ]);
 
   return {
     orderProgress,
