@@ -37,13 +37,13 @@ export const OrderStatus: FC<OrderStatusProps> = ({ orderProgress, isRefunded })
     <div className="flex flex-col justify-between rounded-2xl bg-white p-4">
       <div
         onClick={handleDropdown}
-        className="flex flex-col gap-2 "
+        className="flex flex-col gap-2 cursor-pointer"
       >
         <div className="flex items-center justify-between">
           <Typography size="h5" weight="bold">
             Order status
           </Typography>
-          <div
+          {!isRefunded && <div
             className={`transform transition-transform duration-300 ${dropdown ? "rotate-180" : "rotate-0"
               }`}
           >
