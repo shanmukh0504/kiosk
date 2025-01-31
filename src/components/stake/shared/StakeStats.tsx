@@ -17,20 +17,33 @@ export const StakeStats: FC<props> = ({
   className,
 }) => {
   const textColor = isPink ? "!text-rose" : "!text-dark-grey";
+  const titleSize = size === "xs" ? "h5" : size === "sm" ? "h5" : "h4";
+  const valueSize = "h4";
+  const valueBreakpoints =
+    size === "md"
+      ? ({ xs: "h2", sm: "h1" } as const)
+      : size === "sm"
+        ? ({ xs: "h3", sm: "h2" } as const)
+        : ({ xs: "h4", sm: "h3" } as const);
 
   return (
     <div
       className={`flex flex-col items-start justify-center gap-y-1 ${className}`}
     >
       <Typography
-        size={size === "xs" ? "h5" : size === "sm" ? "h5" : "h4"}
+        size={titleSize}
+        breakpoints={{
+          xs: "h5",
+          sm: titleSize,
+        }}
         weight={size === "xs" ? "medium" : "bold"}
         className={`${textColor} whitespace-nowrap`}
       >
         {title}
       </Typography>
       <Typography
-        size={size === "xs" ? "h3" : size === "sm" ? "h2" : "h1"}
+        size={valueSize}
+        breakpoints={valueBreakpoints}
         weight={size === "xs" ? "medium" : size === "sm" ? "medium" : "bold"}
         className={textColor}
       >
