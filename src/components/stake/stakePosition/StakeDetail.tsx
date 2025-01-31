@@ -78,10 +78,10 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
 
   return (
     <div
-      className="py-5 flex flex-col gap-5 cursor-pointer"
+      className="flex cursor-pointer flex-col gap-5 py-5"
       onClick={() => setShowDetails((p) => !p)}
     >
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div className="flex items-center">
           <Typography
             size={"h4"}
@@ -101,7 +101,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
               md: "h3",
             }}
             weight="medium"
-            className="flex items-center w-[120px]"
+            className="flex w-[120px] items-center"
           >
             {hasExpired ? (
               "Expired"
@@ -120,7 +120,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
           <Typography
             size="h4"
             weight="medium"
-            className="pl-10 hidden sm:block"
+            className="hidden pl-10 sm:block"
           >
             {stakePos.votes} {stakePos.votes === 1 ? "Vote" : "Votes"}
           </Typography>
@@ -132,15 +132,15 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
       <AnimatePresence>
         {showDetails && (
           <motion.div
-            className="flex flex-col md:flex-row gap-4 justify-between"
+            className="flex flex-col justify-between gap-4 md:flex-row"
             animate={{
               marginTop: ["-64px", "0px"],
               opacity: ["0%", "100%"],
               transition: {
-                duration: 0.3,
+                duration: 0.15,
                 ease: "easeInOut",
                 opacity: {
-                  delay: 0.15,
+                  delay: 0.1,
                   duration: 0.15,
                   ease: "easeInOut",
                 },
@@ -150,20 +150,20 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
               marginTop: ["0px", "-64px"],
               opacity: ["100%", "0%"],
               transition: {
-                duration: 0.3,
+                duration: 0.15,
                 ease: "easeInOut",
                 marginTop: {
-                  duration: 0.3,
+                  duration: 0.2,
                   ease: "easeInOut",
                 },
                 opacity: {
-                  duration: 0.15,
+                  duration: 0.1,
                 },
               },
             }}
           >
-            <div className="flex flex-col md:flex-row gap-4 sm:gap-10">
-              <div className=" flex gap-10">
+            <div className="flex flex-col gap-4 sm:gap-10 md:flex-row">
+              <div className="flex gap-10">
                 <StakeStats
                   title={"Rewards"}
                   value={`${stakeReward} WBTC`}
@@ -175,7 +175,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
                   size="xs"
                 />
               </div>
-              <div className=" flex gap-10">
+              <div className="flex gap-10">
                 <StakeStats
                   title={"EndDate"}
                   value={stakeEndDateString}
