@@ -60,31 +60,31 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
       return {
         inputAmountPrice: order
           ? new BigNumber(order.source_swap.amount)
-            .dividedBy(10 ** (inputAsset?.decimals ?? 0))
-            .multipliedBy(
-              order.create_order.additional_data.input_token_price
-            )
+              .dividedBy(10 ** (inputAsset?.decimals ?? 0))
+              .multipliedBy(
+                order.create_order.additional_data.input_token_price
+              )
           : new BigNumber(0),
         outputAmountPrice: order
           ? new BigNumber(order.destination_swap.amount)
-            .dividedBy(10 ** (outputAsset?.decimals ?? 0))
-            .multipliedBy(
-              order.create_order.additional_data.output_token_price
-            )
+              .dividedBy(10 ** (outputAsset?.decimals ?? 0))
+              .multipliedBy(
+                order.create_order.additional_data.output_token_price
+              )
           : new BigNumber(0),
         amountToFill: order
           ? Number(
-            new BigNumber(order.source_swap.amount)
-              .dividedBy(10 ** (inputAsset?.decimals ?? 0))
-              .toFixed(inputAsset?.decimals ?? 0)
-          )
+              new BigNumber(order.source_swap.amount)
+                .dividedBy(10 ** (inputAsset?.decimals ?? 0))
+                .toFixed(inputAsset?.decimals ?? 0)
+            )
           : 0,
         filledAmount: order
           ? Number(
-            new BigNumber(order.source_swap.filled_amount)
-              .dividedBy(10 ** (inputAsset?.decimals ?? 0))
-              .toFixed(inputAsset?.decimals ?? 0)
-          )
+              new BigNumber(order.source_swap.filled_amount)
+                .dividedBy(10 ** (inputAsset?.decimals ?? 0))
+                .toFixed(inputAsset?.decimals ?? 0)
+            )
           : 0,
       };
     }, [inputAsset, order, outputAsset]);
@@ -99,26 +99,28 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
   };
 
   return (
-    <div className="flex flex-col justify-between bg-white/50 rounded-2xl p-4">
+    <div className="flex flex-col justify-between rounded-2xl bg-white/50 p-4">
       <div
         onClick={handleDropdown}
-        className="flex w-full justify-between items-center cursor-pointer"
+        className="flex w-full cursor-pointer items-center justify-between"
       >
         <Typography size="h5" weight="bold">
           Details
         </Typography>
         <div
-          className={`transform transition-transform duration-300 ${dropdown ? "rotate-180" : "rotate-0"
-            }`}
+          className={`transform transition-transform duration-300 ${
+            dropdown ? "rotate-180" : "rotate-0"
+          }`}
         >
           <KeyboardDownIcon />
         </div>
       </div>
       <div
-        className={`transition-all duration-300 overflow-hidden ${dropdown ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
-          }`}
+        className={`overflow-hidden transition-all duration-300 ${
+          dropdown ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+        }`}
       >
-        <div className="flex flex-col gap-3 rounded-2xl mt-2">
+        <div className="mt-2 flex flex-col gap-3 rounded-2xl">
           <OrderDetailsRow title="Fee" value={`$${fees}`} />
           <OrderDetailsRow
             title="Amount"

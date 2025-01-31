@@ -103,7 +103,7 @@ export const SwapInput: FC<SwapInputProps> = ({
 
   return (
     <>
-      <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
+      <div className="flex flex-col gap-2 rounded-2xl bg-white p-4">
         <div className="flex justify-between">
           <div className="flex gap-3">
             <Typography
@@ -126,7 +126,7 @@ export const SwapInput: FC<SwapInputProps> = ({
               </Typography>
             ) : balance !== undefined ? (
               <div
-                className="flex items-center gap-1 cursor-pointer"
+                className="flex cursor-pointer items-center gap-1"
                 onClick={handleBalanceClick}
               >
                 <WalletIcon className="h-2.5 w-2.5" />
@@ -144,7 +144,7 @@ export const SwapInput: FC<SwapInputProps> = ({
               </Typography>
             ) : (
               timeEstimate && (
-                <div className="flex gap-1 items-center">
+                <div className="flex items-center gap-1">
                   <TimerIcon className="h-4" />
                   <Typography size="h5" weight="medium">
                     {timeEstimate}
@@ -153,7 +153,7 @@ export const SwapInput: FC<SwapInputProps> = ({
               )
             ))}
         </div>
-        <div className="flex justify-between h-6">
+        <div className="flex h-6 justify-between">
           <Typography
             size={"h3"}
             breakpoints={{
@@ -177,7 +177,7 @@ export const SwapInput: FC<SwapInputProps> = ({
               </ScaleYIn>
               {/* Placeholder as a separate element to avoid scaleY animation on load */}
               {!amount && (
-                <span className="absolute left-0 top-1/2 transform -translate-y-1/2 text-mid-grey pointer-events-none">
+                <span className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 transform text-mid-grey">
                   0.0
                 </span>
               )}
@@ -192,7 +192,7 @@ export const SwapInput: FC<SwapInputProps> = ({
             />
           ) : (
             <div
-              className="flex items-center gap-1 cursor-pointer"
+              className="flex cursor-pointer items-center gap-1"
               onClick={handleOpenAssetSelector}
             >
               <Typography

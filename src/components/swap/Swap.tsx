@@ -56,11 +56,13 @@ export const Swap = () => {
 
       const inputAmount = formatAmount(
         order.source_swap.amount,
-        inputAsset.decimals
+        inputAsset.decimals,
+        6
       );
       const outputAmount = formatAmount(
         order.destination_swap.amount,
-        outputAsset.decimals
+        outputAsset.decimals,
+        6
       );
       console.log("order success ✅", order.create_order.create_id);
 
@@ -98,12 +100,9 @@ export const Swap = () => {
   }, [garden, assets, orderInProgress, updateOrder]);
 
   return (
-    <div className="flex flex-col gap-4 w-full sm:max-w-[424px] max-w-[328px] -translate-y-[calc(56px+28px)] md:-translate-y-[calc(56px+34px)]">
+    <div className="flex w-full max-w-[328px] -translate-y-[calc(56px+28px)] flex-col gap-4 sm:max-w-[424px] md:-translate-y-[calc(56px+34px)]">
       <ToastContainer />
-      <div
-        className={`bg-white/50 rounded-[20px]
-          relative overflow-hidden`}
-      >
+      <div className={`relative overflow-hidden rounded-[20px] bg-white/50`}>
         {orderInProgress ? <SwapInProgress /> : <CreateSwap />}
       </div>
     </div>

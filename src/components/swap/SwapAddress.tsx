@@ -33,7 +33,7 @@ export const SwapAddress: FC<SwapAddressProps> = ({ isValidAddress }) => {
 
   return (
     (isRecoveryAddress || isReceiveAddress) && (
-      <div className="flex flex-col gap-2 bg-white rounded-2xl p-4 mb-4">
+      <div className="mb-4 flex flex-col gap-2 rounded-2xl bg-white p-4">
         <Typography
           data-tooltip-id={isRecoveryAddress ? tooltipId : ""}
           size="h5"

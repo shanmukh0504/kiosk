@@ -24,19 +24,19 @@ export const Address = () => {
   return (
     <Opacity
       level="medium"
-      className="flex items-center justify-center px-2 gap-2 ml-auto min-h-8 min-w-8 sm:py-3 sm:px-4 rounded-full cursor-pointer"
+      className="ml-auto flex min-h-8 min-w-8 cursor-pointer items-center justify-center gap-2 rounded-full px-2 sm:px-4 sm:py-3"
       onClick={handleAddressClick}
     >
       <Typography size="h3" weight="bold" className="hidden sm:block">
         {getTrimmedAddress(address ?? "")}
       </Typography>
 
-      <WalletIcon className="sm:hidden justify-center flex items-center " />
+      <WalletIcon className="flex items-center justify-center sm:hidden" />
 
       {pendingOrdersFromStore?.length ? (
         <div className="relative">
           <Loader />
-          <div className="absolute text-rose text-sm font-bold top-[8%] w-full items-center text-center">
+          <div className="absolute left-[32%] top-[12%] text-sm font-bold text-rose">
             {pendingOrdersFromStore.length}
           </div>
         </div>

@@ -58,9 +58,11 @@ export const CreateSwap = () => {
   }, [inputAsset, outputAsset]);
 
   return (
-    <div className="before:content-[''] before:bg-black before:bg-opacity-0 before:absolute before:top-0 before:left-0 before:h-full before:w-full before:pointer-events-none before:transition-colors before:duration-700">
-      <div className="flex flex-col p-3">
-        <div className="relative flex flex-col gap-4 mb-4">
+    <div
+      className={`before:pointer-events-none before:absolute before:left-0 before:top-0 before:h-full before:w-full before:bg-black before:bg-opacity-0 before:transition-colors before:duration-700 before:content-['']`}
+    >
+      <div className="flex flex-col gap-4 p-3">
+        <div className="relative flex flex-col gap-4">
           <SwapInput
             type={IOType.input}
             amount={inputAmount}
@@ -72,9 +74,7 @@ export const CreateSwap = () => {
             balance={inputTokenBalance}
           />
           <div
-            className="absolute bg-white border border-light-grey rounded-full
-            -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 transition-transform hover:scale-[1.1]
-            p-1.5 cursor-pointer"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full border border-light-grey bg-white p-1.5 transition-transform hover:scale-[1.1]"
             onClick={swapAssets}
           >
             <ExchangeIcon />
@@ -91,20 +91,20 @@ export const CreateSwap = () => {
           />
         </div>
         <div
-          className={`flex flex-col transition-all opacity-0 duration-700 ease-in-out ${
+          className={`flex flex-col opacity-0 transition-all duration-700 ease-in-out ${
             inputAsset &&
             outputAsset &&
             ((inputAmount && Number(inputAmount) !== 0) ||
               (outputAmount && Number(outputAmount) !== 0))
-              ? "max-h-[500px] opacity-100 pointer-events-auto"
-              : "max-h-0 opacity-0 pointer-events-none"
+              ? "pointer-events-auto max-h-[500px] opacity-100"
+              : "pointer-events-none max-h-0 opacity-0"
           }`}
         >
           <div
-            className={`transition-all opacity-0 duration-500 overflow-hidden ease-in-out ${
+            className={`overflow-hidden opacity-0 transition-all duration-500 ease-in-out ${
               isEditBTCAddress || !btcAddress
-                ? "max-h-[120px] opacity-100 pointer-events-auto"
-                : "max-h-0 opacity-0 pointer-events-none"
+                ? "pointer-events-auto max-h-[120px] opacity-100"
+                : "pointer-events-none max-h-0 opacity-0"
             }`}
           >
             <SwapAddress isValidAddress={isValidBitcoinAddress} />
