@@ -1,11 +1,12 @@
 import { create } from "zustand";
-import { Asset, Chains } from "@gardenfi/orderbook";
+import { Asset } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
-import { network } from "../constants/constants";
 import {
   ETH_BLOCKS_PER_DAY,
   SEED_DECIMALS,
+  STAKING_CHAIN,
+  STAKING_CONFIG,
 } from "../components/stake/constants";
 import { formatAmount } from "../utils/utils";
 import { CIRCULATING_SEED_SUPPLY } from "../constants/stake";
@@ -15,11 +16,9 @@ const SEED: Asset = {
   decimals: 18,
   symbol: "SEED",
   logo: "https://garden-finance.imgix.net/token-images/seed.svg",
-  tokenAddress:
-    network === "mainnet" ? "" : "0x5eedb3f5bbA7Da86b0bBa2c6450C52E27e105eeD",
-  atomicSwapAddress:
-    network === "mainnet" ? "" : "0xc09e6996459d2e9e2bb5f7727341486adee325bf",
-  chain: network === "mainnet" ? Chains.arbitrum : Chains.ethereum_sepolia,
+  tokenAddress: STAKING_CONFIG[STAKING_CHAIN].SEED_ADDRESS,
+  atomicSwapAddress: "",
+  chain: STAKING_CONFIG[STAKING_CHAIN].CHAIN,
 };
 
 type StakingStats = {

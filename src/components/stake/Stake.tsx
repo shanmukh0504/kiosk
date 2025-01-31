@@ -144,8 +144,10 @@ export const Stake: FC = () => {
       </div>
       {stakePosData && stakePosData.length > 0 && (
         <AnimatePresence>
-          <StakeOverview />
-          <StakePositions />
+          <>
+            <StakeOverview />
+            <StakePositions />
+          </>
         </AnimatePresence>
       )}
     </div>

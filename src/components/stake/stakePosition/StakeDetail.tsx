@@ -28,7 +28,9 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
   const { setOpenModal } = modalStore();
   const { stakeApys, stakeRewards } = stakeStore();
 
-  const isExtendable = stakePos.status === StakePositionStatus.staked;
+  const isPermaStake = stakePos.isPerma;
+  const isExtendable =
+    !isPermaStake && stakePos.status === StakePositionStatus.staked;
   const isExpired = stakePos.status === StakePositionStatus.expired;
 
   const stakeReward = formatAmount(
@@ -44,7 +46,6 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
       ? stakeAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       : stakeAmount.toString();
 
-  const isPermaStake = stakePos.isPerma;
   const daysPassedSinceStake = Math.floor(
     (new Date().getTime() - new Date(stakePos.stakedAt).getTime()) /
       (1000 * 3600 * 24)
@@ -166,7 +167,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
               <div className="flex gap-10">
                 <StakeStats
                   title={"Rewards"}
-                  value={`${stakeReward} WBTC`}
+                  value={`${stakeReward} cbBTC`}
                   size="xs"
                 />
                 <StakeStats

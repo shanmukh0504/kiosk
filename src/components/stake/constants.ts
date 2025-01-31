@@ -1,6 +1,7 @@
 import { maxInt256 } from "viem";
 import { network } from "../../constants/constants";
 import { Network } from "@gardenfi/utils";
+import { Chains } from "@gardenfi/orderbook";
 
 export const DURATION_MAP = {
   6: { votes: 1, lockDuration: 180 },
@@ -29,6 +30,7 @@ export const STAKING_CONFIG = {
     STAKING_CHAIN: 11155111,
     FLOWER_CONTRACT_ADDRESS: "0x4C8589A2A7F85a59B25D58Ff010CC2520118BB20",
     SEED_DECIMALS: 18,
+    CHAIN: Chains.ethereum_sepolia,
   },
   42161: {
     SEED_ADDRESS: "0x86f65121804D2Cdbef79F9f072D4e0c2eEbABC08",
@@ -37,6 +39,7 @@ export const STAKING_CONFIG = {
     STAKING_CHAIN: 42161,
     FLOWER_CONTRACT_ADDRESS: "0x1Ab59ae8BB54700B3C2C2cec4dB2dA26fE825a7D",
     SEED_DECIMALS: 18,
+    CHAIN: Chains.arbitrum_sepolia,
   },
 } as const;
 
