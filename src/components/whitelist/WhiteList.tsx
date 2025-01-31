@@ -47,7 +47,7 @@ export const Whitelist: FC<WhiteListProps> = ({ onClose }) => {
   }, [address, setOpenModal]);
 
   return (
-    <div className="flex flex-col gap-5 rounded-2xl p-1 mt-2">
+    <div className="mt-2 flex flex-col gap-5 rounded-2xl p-1">
       <img src={image} alt="whitelist" />
       <Typography size="h4">
         <b>Bloom {network}</b> is currently invite-only.
@@ -55,12 +55,12 @@ export const Whitelist: FC<WhiteListProps> = ({ onClose }) => {
         Secure your spot on the waitlist to be among the first
         <br /> to experience it and help shape the future of Garden!
       </Typography>
-      <div className="flex mt-2 gap-2 items-center">
+      <div className="mt-2 flex items-center gap-2">
         <Button className="w-11/12" size="lg" onClick={handleJoinWaitlist}>
           Join the waitlist
         </Button>
         <div
-          className="h-full bg-dark-grey p-4 rounded-2xl cursor-pointer"
+          className="h-full cursor-pointer rounded-2xl bg-dark-grey p-4"
           onClick={handleDisconnect}
         >
           <LogoutIcon className="w-5 cursor-pointer fill-white" />

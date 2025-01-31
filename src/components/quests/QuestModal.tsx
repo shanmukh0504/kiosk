@@ -28,11 +28,11 @@ export const QuestModal: React.FC<QuestModalProps> = ({
 
   return (
     <Modal open={open} onClose={onClose}>
-      <div className="flex flex-col gap-6 bg-white/50 backdrop-blur-[20px] rounded-2xl w-[600px] p-6">
-        <div className="flex justify-between items-center">
+      <div className="flex w-[600px] flex-col gap-6 rounded-2xl bg-white/50 p-6 backdrop-blur-[20px]">
+        <div className="flex items-center justify-between">
           <PartnerChip name={partner} logo={logo} />
           <CloseIcon
-            className="w-6 h-[14px] cursor-pointer"
+            className="h-[14px] w-6 cursor-pointer"
             onClick={onClose}
           />
         </div>
@@ -45,7 +45,7 @@ export const QuestModal: React.FC<QuestModalProps> = ({
           </Typography>
           <div className="flex justify-between">
             <div className="flex items-center gap-4">
-              <TrustWallet className="w-9 h-9" />
+              <TrustWallet className="h-9 w-9" />
               <div className="flex flex-col">
                 <Typography size="h4" weight="bold">
                   Follow @garden_finance

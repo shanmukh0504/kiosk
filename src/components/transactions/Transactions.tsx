@@ -69,16 +69,16 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
 
   return (
     <>
-      <div className="overflow-y-auto pb-6 flex flex-col gap-5 scrollbar-hide rounded-2xl">
-        <div className="flex flex-col bg-white/50 rounded-2xl">
+      <div className="scrollbar-hide flex flex-col gap-5 overflow-y-auto rounded-2xl pb-6">
+        <div className="flex flex-col rounded-2xl bg-white/50">
           <Typography size="h5" weight="bold" className="p-4">
             Transactions
           </Typography>
-          <div className="flex flex-col overflow-y-auto w-full">
+          <div className="flex w-full flex-col overflow-y-auto">
             {isLoadingOrders ? (
               <TransactionsSkeleton />
             ) : orders.length === 0 ? (
-              <Typography size="h5" className="text-center pb-2">
+              <Typography size="h5" className="pb-2 text-center">
                 No transactions found.
               </Typography>
             ) : (
@@ -90,7 +90,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
                     isLast={index === orders.length - 1}
                   />
                   {index !== orders.length - 1 ? (
-                    <div className="bg-white/50 w-full h-px"></div>
+                    <div className="h-px w-full bg-white/50"></div>
                   ) : null}
                 </div>
               ))
@@ -101,7 +101,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
           <Button
             onClick={handleLoadMore}
             variant={isLoadingMore ? "disabled" : "secondary"}
-            className="w-1/4 mx-auto min-h-10"
+            className="mx-auto min-h-10 w-1/4"
           >
             {isLoadingMore ? "Loading..." : "Load More"}
           </Button>

@@ -1,7 +1,7 @@
 import { useEffect, useRef, FC, useCallback } from "react";
 import { Transactions } from "./Transactions";
 import { CloseIcon } from "@gardenfi/garden-book";
-import { AddressMenu } from "./AddressMenu";
+import { AddressMenu } from "./header/AddressMenu";
 
 type SidebarProps = {
   open: boolean;
@@ -30,27 +30,21 @@ export const TransactionsSidebar: FC<SidebarProps> = ({ open, onClose }) => {
 
   return (
     <div
-      className={`bg-dark-grey
-        absolute top-0 left-0 z-50
-        h-full w-full
-        transition-colors ease-cubic-in-out duration-500
-        ${open ? "bg-opacity-40" : "bg-opacity-0 pointer-events-none"}`}
+      className={`absolute left-0 top-0 z-50 h-full w-full bg-dark-grey transition-colors duration-500 ease-cubic-in-out ${open ? "bg-opacity-40" : "pointer-events-none bg-opacity-0"}`}
     >
       <div
         ref={sliderRef}
-        className={`flex flex-col bg-white/50 backdrop-blur-[20px] fixed top-0
-          ${open ? "right-0" : "right-[-480px]"}
-          w-[480px] h-full transition-right ease-cubic-in-out duration-500`}
+        className={`fixed top-0 flex flex-col bg-white/50 backdrop-blur-[20px] ${open ? "right-0" : "right-[-480px]"} transition-right h-full w-[480px] duration-500 ease-cubic-in-out`}
       >
         <div className="flex justify-end p-6">
           <CloseIcon
-            className="w-6 h-[14px] cursor-pointer"
+            className="h-[14px] w-6 cursor-pointer"
             onClick={handleCloseIconClick}
           />
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex flex-col gap-5 px-6  overflow-y-auto max-h-[100vh]">
+        <div className="flex max-h-[100vh] flex-col gap-5 overflow-y-auto px-6">
           <AddressMenu onClose={onClose} />
           <Transactions isOpen={open} />
         </div>
