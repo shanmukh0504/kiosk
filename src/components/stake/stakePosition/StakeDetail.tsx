@@ -1,7 +1,6 @@
 import {
   Button,
   InfinityIcon,
-  KeyboardDownIcon,
   KeyboardUpIcon,
   Typography,
 } from "@gardenfi/garden-book";
@@ -17,6 +16,7 @@ import { getMultiplier } from "../../../utils/stakingUtils";
 import { modalNames, modalStore } from "../../../store/modalStore";
 import { StakeStats } from "../shared/StakeStats";
 import { UnstakeAndRestake } from "./UnstakeAndRestake";
+import { AnimatePresence, motion } from "framer-motion";
 
 type props = {
   stakePos: StakingPosition;
@@ -125,50 +125,80 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
             {stakePos.votes} {stakePos.votes === 1 ? "Vote" : "Votes"}
           </Typography>
         </div>
-        {showDetails ? (
-          <KeyboardUpIcon className="mr-2" />
-        ) : (
-          <KeyboardDownIcon className="mr-2" />
-        )}
+        <KeyboardUpIcon
+          className={`mr-2 transition-transform duration-300 ease-in-out ${showDetails ? "-rotate-180" : "rotate-0"}`}
+        />
       </div>
-      {showDetails && (
-        <div className="flex flex-col md:flex-row gap-4 justify-between ">
-          <div className="flex flex-col md:flex-row gap-4 sm:gap-10">
-            <div className=" flex gap-10">
-              <StakeStats
-                title={"Rewards"}
-                value={`${stakeReward} WBTC`}
-                size="xs"
-              />
-              <StakeStats
-                title={"Multiplier"}
-                value={`${multiplier}x`}
-                size="xs"
-              />
-            </div>
-            <div className=" flex gap-10">
-              <StakeStats
-                title={"EndDate"}
-                value={stakeEndDateString}
-                size="xs"
-              />
-              {stakeApy ? (
+      <AnimatePresence>
+        {showDetails && (
+          <motion.div
+            className="flex flex-col md:flex-row gap-4 justify-between"
+            animate={{
+              marginTop: ["-64px", "0px"],
+              opacity: ["0%", "100%"],
+              transition: {
+                duration: 0.3,
+                ease: "easeInOut",
+                opacity: {
+                  delay: 0.15,
+                  duration: 0.15,
+                  ease: "easeInOut",
+                },
+              },
+            }}
+            exit={{
+              marginTop: ["0px", "-64px"],
+              opacity: ["100%", "0%"],
+              transition: {
+                duration: 0.3,
+                ease: "easeInOut",
+                marginTop: {
+                  duration: 0.3,
+                  ease: "easeInOut",
+                },
+                opacity: {
+                  duration: 0.15,
+                },
+              },
+            }}
+          >
+            <div className="flex flex-col md:flex-row gap-4 sm:gap-10">
+              <div className=" flex gap-10">
                 <StakeStats
-                  title={"APY"}
-                  value={`${stakeApy || 0} %`}
+                  title={"Rewards"}
+                  value={`${stakeReward} WBTC`}
                   size="xs"
                 />
-              ) : null}
+                <StakeStats
+                  title={"Multiplier"}
+                  value={`${multiplier}x`}
+                  size="xs"
+                />
+              </div>
+              <div className=" flex gap-10">
+                <StakeStats
+                  title={"EndDate"}
+                  value={stakeEndDateString}
+                  size="xs"
+                />
+                {stakeApy ? (
+                  <StakeStats
+                    title={"APY"}
+                    value={`${stakeApy || 0} %`}
+                    size="xs"
+                  />
+                ) : null}
+              </div>
             </div>
-          </div>
-          {isExtendable && (
-            <Button variant="secondary" size="sm" onClick={handleExtend}>
-              Extend
-            </Button>
-          )}
-          {isExpired && <UnstakeAndRestake stakePos={stakePos} />}
-        </div>
-      )}
+            {isExtendable && (
+              <Button variant="secondary" size="sm" onClick={handleExtend}>
+                Extend
+              </Button>
+            )}
+            {isExpired && <UnstakeAndRestake stakePos={stakePos} />}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
