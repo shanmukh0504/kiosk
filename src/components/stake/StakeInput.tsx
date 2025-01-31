@@ -52,7 +52,7 @@ export const StakeInput = ({ balance }: { balance: number }) => {
   };
 
   return (
-    <div className="flex flex-col gap-3 p-4 bg-white rounded-xl">
+    <div className="flex flex-col gap-3 rounded-xl bg-white p-4">
       <div className="flex justify-between">
         <Typography size="h5" weight="bold">
           Stake SEED

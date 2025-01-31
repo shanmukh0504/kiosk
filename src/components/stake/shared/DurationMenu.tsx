@@ -29,9 +29,9 @@ const DurationMenu: FC<DurationMenuProps> = ({
     <div className="relative w-full">
       <button
         onClick={handleToggleDropdown}
-        className="flex justify-between items-center w-full px-3 py-[10px] text-2xl text-dark-grey rounded-2xl bg-white cursor-pointer outline-none"
+        className="flex w-full cursor-pointer items-center justify-between rounded-2xl bg-white px-3 py-[10px] text-2xl text-dark-grey outline-none"
       >
-        <div className="flex gap-4 items-center">
+        <div className="flex items-center gap-4">
           <Typography size="h2" weight="medium">
             {selectedDuration === INFINITE ? (
               <InfinityIcon />
@@ -44,7 +44,7 @@ const DurationMenu: FC<DurationMenuProps> = ({
           </Typography>
         </div>
         <KeyboardDownIcon
-          className={`mr-2 z-50 duration-200 ease-in-out transition-transform ${
+          className={`z-50 mr-2 transition-transform duration-200 ease-in-out ${
             isOpen ? "rotate-180" : ""
           }`}
         />
@@ -70,7 +70,7 @@ const DurationMenu: FC<DurationMenuProps> = ({
                   once: true,
                 },
               }}
-              className="absolute w-full flex sm:flex-col flex-col-reverse translate-y-[-100%] sm:-translate-y-0 sm:-mt-[48px] bg-white shadow-2xl rounded-2xl z-10 overflow-hidden"
+              className="absolute z-10 flex w-full translate-y-[-100%] flex-col-reverse overflow-hidden rounded-2xl bg-white shadow-2xl sm:-mt-[48px] sm:-translate-y-0 sm:flex-col"
             >
               {Object.keys(DURATION_MAP).map((item) => {
                 const multiplier = DURATION_MAP[item as DURATION].votes;
@@ -79,10 +79,10 @@ const DurationMenu: FC<DurationMenuProps> = ({
                   <div
                     key={item}
                     onClick={() => handleSelectDuration(item as DURATION)}
-                    className="px-3 py-[10px] text-2xl transition-colors cursor-pointer hover:bg-off-white origin-bottom"
+                    className="origin-bottom cursor-pointer px-3 py-[10px] text-2xl transition-colors hover:bg-off-white"
                   >
-                    <div className="flex justify-between items-center">
-                      <div className="flex gap-4 items-center">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
                         <Typography size="h2" weight="medium">
                           {item === INFINITE ? (
                             <InfinityIcon />

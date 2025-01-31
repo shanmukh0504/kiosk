@@ -65,7 +65,7 @@ export const UnstakeAndRestake: FC<UnstakeAndRestakeProps> = ({ stakePos }) => {
   };
 
   return (
-    <div className="flex gap-2 w-full sm:w-min">
+    <div className="flex w-full gap-2 sm:w-min">
       <Button
         variant={isUnstaking ? "disabled" : "secondary"}
         size="sm"

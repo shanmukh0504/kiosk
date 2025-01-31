@@ -29,16 +29,16 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
   const amount = isStake
     ? Number(modalData.manageStake?.stake?.amount) || 0
     : isExtend
-    ? formatAmount(
-        modalData.manageStake?.extend?.stakingPosition.amount || 0,
-        SEED_DECIMALS
-      )
-    : isRestake
-    ? formatAmount(
-        modalData.manageStake?.restake?.stakingPosition.amount || 0,
-        SEED_DECIMALS
-      )
-    : 0;
+      ? formatAmount(
+          modalData.manageStake?.extend?.stakingPosition.amount || 0,
+          SEED_DECIMALS
+        )
+      : isRestake
+        ? formatAmount(
+            modalData.manageStake?.restake?.stakingPosition.amount || 0,
+            SEED_DECIMALS
+          )
+        : 0;
 
   const handleClose = () => {
     setSelectedDuration(6);
@@ -47,7 +47,7 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="flex flex-col px-1 gap-4 rounded-[20px] top-60 left-auto z-40 transition-left ease-cubic-in-out duration-700">
+    <div className="transition-left left-auto top-60 z-40 flex flex-col gap-4 rounded-[20px] px-1 duration-700 ease-cubic-in-out">
       <div className="flex justify-between">
         <Typography size="h4" weight="bold">
           Stake SEED
@@ -61,7 +61,7 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
         You will receive a multiplier for your votes based on the duration of
         the stake.
       </Typography>
-      <div className="flex items-center align-middle gap-10">
+      <div className="flex items-center gap-10 align-middle">
         <StakeStats title={"SEED"} value={amount} size="md" />
         <StakeStats
           title={"Multiplier"}
@@ -76,11 +76,11 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
         />
       </div>
 
-      <div className="p-4 flex flex-col gap-3 bg-white bg-opacity-25 rounded-2xl mb-5 sm:mb-0">
+      <div className="mb-5 flex flex-col gap-3 rounded-2xl bg-white bg-opacity-25 p-4 sm:mb-0">
         <Typography size="h5" weight="bold">
           Stake Duration
         </Typography>
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
+        <div className="flex flex-col items-center justify-between gap-2 sm:flex-row">
           <DurationMenu
             selectedDuration={selectedDuration}
             setSelectedDuration={setSelectedDuration}

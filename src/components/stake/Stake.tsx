@@ -85,18 +85,18 @@ export const Stake: FC = () => {
   ]);
 
   return (
-    <div className="flex flex-col gap-6 mt-10 sm:mb-16 mb-8">
-      <div className="flex flex-col gap-6 sm:max-w-[424px] max-w-[328px] mx-auto mt-10">
+    <div className="mb-8 mt-10 flex flex-col gap-6 sm:mb-16">
+      <div className="mx-auto mt-10 flex max-w-[328px] flex-col gap-6 sm:max-w-[424px]">
         <ToastContainer />
-        <div className="flex flex-col p-4 gap-8 w-full rounded-2xl bg-opacity-50 bg-white">
-          <div className="flex flex-col gap-3 ">
+        <div className="flex w-full flex-col gap-8 rounded-2xl bg-white bg-opacity-50 p-4">
+          <div className="flex flex-col gap-3">
             <Typography size="h5" weight="bold">
               Stake to earn Bitcoin
             </Typography>
             <Typography size="h4" weight="medium">
               <Link
                 to="https://docs.garden.finance/home/fundamentals/introduction/stakers"
-                className="text-rose font-bold"
+                className="font-bold text-rose"
               >
                 Stake
               </Link>{" "}
@@ -107,7 +107,7 @@ export const Stake: FC = () => {
             <Typography size="h4" weight="medium">
               Plant your SEED, watch it grow!
             </Typography>
-            <div className="flex gap-10 mt-1">
+            <div className="mt-1 flex gap-10">
               <StakeStats
                 title={
                   <div className="flex items-center gap-1">
@@ -130,7 +130,7 @@ export const Stake: FC = () => {
               />
             </div>
           </div>
-          <div className="flex gap-3 flex-col">
+          <div className="flex flex-col gap-3">
             <StakeInput balance={tokenBalance} />
             <Button
               size="lg"
@@ -144,10 +144,8 @@ export const Stake: FC = () => {
       </div>
       {stakePosData && stakePosData.length > 0 && (
         <AnimatePresence>
-          <>
-            <StakeOverview />
-            <StakePositions />
-          </>
+          <StakeOverview />
+          <StakePositions />
         </AnimatePresence>
       )}
     </div>

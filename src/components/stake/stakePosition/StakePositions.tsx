@@ -24,7 +24,7 @@ export const StakePositions = () => {
       }}
       style={{ transformOrigin: "top" }}
     >
-      <div className="flex flex-col w-[328px] sm:w-[424px] md:w-[740px] mb-8 rounded-2xl bg-opacity-50 bg-white mx-auto p-6">
+      <div className="mx-auto mb-8 flex w-[328px] flex-col rounded-2xl bg-white bg-opacity-50 p-6 sm:w-[424px] md:w-[740px] lg:w-[1000px]">
         <Typography size="h5" weight="bold">
           Staking positions
         </Typography>
@@ -36,7 +36,7 @@ export const StakePositions = () => {
                   <div key={index}>
                     <StakeDetails key={index} stakePos={item} />
                     {index !== stakePosData.length - 1 && (
-                      <div className="bg-white/75 h-[1px] w-full" />
+                      <div className="h-[1px] w-full bg-white/75" />
                     )}
                   </div>
                 )

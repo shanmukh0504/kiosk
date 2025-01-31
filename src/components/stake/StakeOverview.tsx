@@ -39,8 +39,8 @@ export const StakeOverview = () => {
     totalStakedAmount === undefined
       ? "0"
       : totalStakedAmount >= TEN_THOUSAND
-      ? totalStakedAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-      : totalStakedAmount.toString();
+        ? totalStakedAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        : totalStakedAmount.toString();
 
   const availableReward = useMemo(() => {
     return stakeRewards
@@ -108,12 +108,12 @@ export const StakeOverview = () => {
       }}
       style={{ transformOrigin: "top" }}
     >
-      <div className="w-[328px] sm:w-[424px] md:w-[740px] rounded-[15px] bg-opacity-50 gap-4 bg-white mx-auto p-6 flex flex-col">
+      <div className="mx-auto flex w-[328px] flex-col gap-4 rounded-[15px] bg-white bg-opacity-50 p-6 sm:w-[424px] md:w-[740px] lg:w-[1000px]">
         <Typography size="h5" weight="bold">
           Staking overview
         </Typography>
-        <div className="flex flex-col md:flex-row gap-4 justify-between items-center ">
-          <div className="flex gap-10 justify-between w-full md:w-[350px]">
+        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+          <div className="flex w-full justify-between gap-10 md:w-[350px]">
             <StakeStats
               title={"Staked SEED"}
               value={formattedAmount}
@@ -138,7 +138,7 @@ export const StakeOverview = () => {
             size="sm"
             className={`w-full md:w-[120px] ${
               isClaimLoading || availableReward === 0
-                ? "transition-colors duration-500 flex items-center justify-center self-center"
+                ? "flex items-center justify-center self-center transition-colors duration-500"
                 : ""
             }`}
             onClick={handleRewardClick}
