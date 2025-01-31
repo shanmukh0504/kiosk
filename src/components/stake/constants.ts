@@ -39,7 +39,7 @@ export const STAKING_CONFIG = {
     STAKING_CHAIN: 42161,
     FLOWER_CONTRACT_ADDRESS: "0x1Ab59ae8BB54700B3C2C2cec4dB2dA26fE825a7D",
     SEED_DECIMALS: 18,
-    CHAIN: Chains.arbitrum_sepolia,
+    CHAIN: Chains.arbitrum,
   },
 } as const;
 
