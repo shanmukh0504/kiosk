@@ -18,7 +18,7 @@ export const useBalances = (asset: Asset | undefined) => {
   );
 
   useEffect(() => {
-    if (!asset) return;
+    if (!asset || !address) return;
 
     const fetchBalance = async () => {
       if (isBitcoin(asset.chain)) {
