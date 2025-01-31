@@ -1,6 +1,7 @@
 import { create } from "zustand";
-import { Errors, IOType, network, QuoteError } from "../constants/constants";
+import { IOType, network } from "../constants/constants";
 import { Asset, Chains } from "@gardenfi/orderbook";
+import { ErrorFormat, Errors } from "../constants/errors";
 
 export type TokenPrices = {
   input: string;
@@ -12,17 +13,10 @@ export type FetchingQuote = {
   output: boolean;
 };
 
-export type ErrorFormat = 
-| `Minimum amount is ${string} ${string}` 
-| `Maximum amount is ${string} ${string}` 
-| "Output amount too high" 
-| "Output amount too less"
-| "";
-
 export type SwapErrors = {
   inputError?: ErrorFormat;
   outputError?: ErrorFormat;
-  quoteError?: QuoteError;
+  swapError?: ErrorFormat;
 };
 
 type SwapState = {
@@ -66,8 +60,6 @@ export const swapStore = create<SwapState>((set) => ({
   inputAmount: "",
   outputAmount: "",
   btcAddress: "",
-  inputAddressEditing: false,
-  outputAddressEditing: false,
   swapInProgress: {
     isOpen: false,
     order: null,
@@ -81,7 +73,7 @@ export const swapStore = create<SwapState>((set) => ({
   error: {
     inputError: Errors.none,
     outputError: Errors.none,
-    quoteError: QuoteError.None
+    quoteError: Errors.none
   },
   isFetchingQuote: {
     input: false,
@@ -160,7 +152,7 @@ export const swapStore = create<SwapState>((set) => ({
       error: {
         inputError: Errors.none,
         outputError: Errors.none,
-        quoteError: QuoteError.None
+        swapError: Errors.none
       },
       isFetchingQuote: {
         input: false,
@@ -185,7 +177,7 @@ export const swapStore = create<SwapState>((set) => ({
       error: {
         inputError: Errors.none,
         outputError: Errors.none,
-        quoteError: QuoteError.None
+        swapError: Errors.none
       },
       isFetchingQuote: {
         input: false,

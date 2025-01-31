@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { swapStore } from "../store/swapStore";
-import { IOType, network, QuoteError, Errors } from "../constants/constants";
+import { IOType, network } from "../constants/constants";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
@@ -16,6 +16,7 @@ import { useBalances } from "./useBalances";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { ordersStore } from "../store/ordersStore";
 import { Environment } from "@gardenfi/utils";
+import { Errors } from "../constants/errors";
 
 export const useSwap = () => {
   const { inputTokenBalance } = useBalances();
@@ -77,7 +78,8 @@ export const useSwap = () => {
       address &&
       isValidBitcoinAddress &&
       !error.inputError &&
-      !isInsufficientBalance
+      !error.outputError &&
+      !error.swapError
     );
   }, [
     inputAsset,
@@ -87,9 +89,9 @@ export const useSwap = () => {
     strategy,
     error,
     address,
-    isInsufficientBalance,
     isValidBitcoinAddress,
   ]);
+
   const validSwap = useMemo(() => {
     return isBitcoinSwap ? !!(_validSwap && btcAddress) : _validSwap;
   }, [_validSwap, isBitcoinSwap, btcAddress]);
@@ -164,7 +166,7 @@ export const useSwap = () => {
               setError({ outputError: Errors.outLow });
               setAmount(IOType.input, "");
             } else if (quote.error.includes("insufficient liquidity")) {
-              setError({ quoteError: QuoteError.InsufficientLiquidity });
+              setError({ swapError: Errors.insufficientLiquidity });
               setAmount(isExactOut ? IOType.input : IOType.output, "");
             } else {
               setAmount(isExactOut ? IOType.input : IOType.output, "");
@@ -401,21 +403,43 @@ export const useSwap = () => {
       !outputAmount
     ) {
       setTokenPrices({ input: "0", output: "0" });
-      setError({
-        outputError: Errors.none,
-        inputError: Errors.none,
-        quoteError: QuoteError.None,
-      });
+      if (!isInsufficientBalance) {
+        setError({
+          outputError: Errors.none,
+          inputError: Errors.none,
+          swapError: Errors.none,
+        });
+      } else {
+        setError({
+          outputError: Errors.none,
+          inputError: Errors.none,
+          swapError: Errors.insufficientBalance,
+        });
+      }
       return;
     }
-  }, [inputAmount, outputAmount, setTokenPrices, setError]);
+  }, [
+    inputAmount,
+    outputAmount,
+    setTokenPrices,
+    setError,
+    isInsufficientBalance,
+  ]);
 
   useEffect(() => {
     if (!inputAmount || !minAmount || !maxAmount) return;
     const amountInNumber = Number(inputAmount);
     if (!amountInNumber) return;
 
-    setError({ outputError: Errors.none, inputError: Errors.none });
+    if (!isInsufficientBalance) {
+      setError({ outputError: Errors.none, inputError: Errors.none });
+    } else {
+      setError({
+        outputError: Errors.none,
+        inputError: Errors.none,
+        swapError: Errors.insufficientBalance,
+      });
+    }
 
     if (amountInNumber < minAmount && inputAsset) {
       setError({
@@ -437,6 +461,7 @@ export const useSwap = () => {
     inputAsset?.symbol,
     outputAsset?.symbol,
     setError,
+    isInsufficientBalance,
   ]);
 
   useEffect(() => {
@@ -460,7 +485,6 @@ export const useSwap = () => {
     isBitcoinSwap,
     inputTokenBalance,
     isValidBitcoinAddress,
-    isInsufficientBalance,
     swapAssets,
     handleInputAmountChange,
     handleOutputAmountChange,

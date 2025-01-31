@@ -1,6 +1,5 @@
 import { Asset, isBitcoin, isEVM } from "@gardenfi/orderbook";
 import { Environment, Network } from "@gardenfi/utils";
-import { ErrorFormat } from "../store/swapStore";
 
 export const INTERNAL_ROUTES = {
   swap: { name: "Swap", path: "/" },
@@ -16,21 +15,6 @@ export enum IOType {
   input = "input",
   output = "output",
 }
-
-export enum QuoteError {
-  InsufficientLiquidity = "Insufficient Liquidity",
-  None = "",
-}
-
-export const Errors = {
-  minError: (amount: string, asset: string): ErrorFormat =>
-    `Minimum amount is ${amount} ${asset}`,
-  maxError: (amount: string, asset: string): ErrorFormat =>
-    `Maximum amount is ${amount} ${asset}`,
-  outHigh: "Output amount too high" as const,
-  outLow: "Output amount too less" as const,
-  none: "" as const,
-} as const;
 
 export const LOCAL_STORAGE_KEYS = {
   notification: "notificationId",

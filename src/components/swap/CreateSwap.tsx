@@ -6,6 +6,7 @@ import { useMemo } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { SwapCreateDetails } from "./SwapCreateDetails";
+import { Errors } from "../../constants/errors";
 
 export const CreateSwap = () => {
   const {
@@ -20,7 +21,6 @@ export const CreateSwap = () => {
     tokenPrices,
     validSwap,
     inputTokenBalance,
-    isInsufficientBalance,
     isEditBTCAddress,
     isSwapping,
     isValidBitcoinAddress,
@@ -29,28 +29,27 @@ export const CreateSwap = () => {
   } = useSwap();
   const { account: btcAddress } = useBitcoinWallet();
 
-  const isDisabled =
-    isSwapping || !validSwap || isInsufficientBalance || !!error.quoteError;
+  const isDisabled = isSwapping || !validSwap || !!error.swapError;
 
   const buttonLabel = useMemo(() => {
-    return error.quoteError
+    return error.swapError === Errors.insufficientLiquidity
       ? "Insufficient Liquidity"
-      : isInsufficientBalance
+      : error.swapError === Errors.insufficientBalance
         ? "Insufficient balance"
         : isSwapping
           ? "Signing..."
           : "Swap";
-  }, [isInsufficientBalance, isSwapping, error.quoteError]);
+  }, [error.swapError, isSwapping]);
 
   const buttonVariant = useMemo(() => {
-    return error.quoteError || isInsufficientBalance
+    return error.swapError
       ? "disabled"
       : isSwapping
         ? "ternary"
         : validSwap
           ? "primary"
           : "disabled";
-  }, [isInsufficientBalance, isSwapping, validSwap, error]);
+  }, [isSwapping, validSwap, error.swapError]);
 
   const timeEstimate = useMemo(() => {
     if (!inputAsset || !outputAsset) return "";

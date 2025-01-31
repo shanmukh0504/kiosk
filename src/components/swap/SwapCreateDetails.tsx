@@ -38,16 +38,12 @@ export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({
 
   return (
     <>
-      <div
-        className="flex flex-col gap-3
-        bg-white/50 rounded-2xl
-        pt-4 pb-3 px-4 mb-4"
-      >
+      <div className="flex flex-col gap-3 rounded-2xl bg-white/50 px-4 pb-3 pt-4">
         <Typography size="h5" weight="bold">
           Details
         </Typography>
         <div>
-          <div className="flex justify-between items-center pb-0.5">
+          <div className="flex items-center justify-between pb-0.5">
             <Typography size="h5" weight="medium">
               Slippage
             </Typography>
@@ -55,7 +51,7 @@ export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({
               {slippage}
             </Typography>
           </div>
-          <div className="flex justify-between items-center py-0.5">
+          <div className="flex items-center justify-between py-0.5">
             <Typography size="h5" weight="medium">
               Fees
             </Typography>

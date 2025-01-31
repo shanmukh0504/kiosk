@@ -8,7 +8,7 @@ import { useSwap } from "../../hooks/useSwap";
 
 type AddressDetailsProps = {
   isRefund?: boolean;
-  address?: string;
+  address: string;
 };
 
 export const AddressDetails: FC<AddressDetailsProps> = ({
@@ -19,9 +19,11 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
   const { inputAsset, outputAsset, setIsEditBTCAddress, isEditBTCAddress } =
     useSwap();
 
-  const chain = isRefund
-    ? inputAsset && inputAsset.chain
-    : outputAsset && outputAsset.chain;
+  const chain = useMemo(() => {
+    return isRefund
+      ? inputAsset && inputAsset.chain
+      : outputAsset && outputAsset.chain;
+  }, [inputAsset, outputAsset, isRefund]);
 
   const redirect = useMemo(() => {
     return chains && chain ? chains[chain] : null;
@@ -38,32 +40,31 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
     <>
       {address && (
         <div
-          className={`flex justify-between items-center py-0.5 duration-500 ease-in-out transition-all
-            ${
-              !isEditBTCAddress || (chain && !isBitcoin(chain))
-                ? "opacity-100 max-h-7 pointer-events-auto mb-0"
-                : "max-h-0 -mb-1 opacity-0 pointer-events-none"
-            }`}
+          className={`flex items-center justify-between py-0.5 transition-all duration-500 ease-in-out ${
+            !isEditBTCAddress || (chain && !isBitcoin(chain))
+              ? "pointer-events-auto mb-0 max-h-7 opacity-100"
+              : "pointer-events-none -mb-1 max-h-0 opacity-0"
+          }`}
         >
           <Typography size="h5" weight="medium">
             {isRefund ? "Refund" : "Receive"} address
           </Typography>
-          <div className="flex gap-2.5 items-center">
+          <div className="flex items-center gap-2.5">
             <Typography size="h4" weight="medium">
               {getTrimmedAddress(address!)}
             </Typography>
             {!isEditBTCAddress && (
               <EditIcon
-                className={`p-0.5 cursor-pointer duration-500 ease-in-out transition-all ${
+                className={`cursor-pointer p-0.5 transition-all duration-500 ease-in-out ${
                   chain && isBitcoin(chain)
-                    ? "max-w-4 max-h-4 opacity-100"
-                    : "max-w-0 max-h-0 -mr-3.5 opacity-0"
+                    ? "max-h-4 max-w-4 opacity-100"
+                    : "-mr-3.5 max-h-0 max-w-0 opacity-0"
                 }`}
                 onClick={() => setIsEditBTCAddress(true)}
               />
             )}
             <ArrowNorthEastIcon
-              className="w-4 h-4 p-[3px] cursor-pointer"
+              className="h-4 w-4 cursor-pointer p-[3px]"
               onClick={() => handleAddressRedirect(address!, chain!)}
             />
           </div>
