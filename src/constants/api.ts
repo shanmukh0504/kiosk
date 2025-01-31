@@ -4,6 +4,7 @@ const REQUIRED_ENV_VARS = {
   ORDERBOOK_URL: import.meta.env.VITE_ORDERBOOK_URL,
   QUOTE_URL: import.meta.env.VITE_QUOTE_URL,
   WHITELIST: import.meta.env.VITE_WHITELIST_URL,
+  EXPLORER: import.meta.env.VITE_EXPLORER_URL,
 } as const;
 
 export const API = () => {
@@ -27,6 +28,8 @@ export const API = () => {
       testnet: "https://mempool.space/testnet4/api",
       mainnet: "https://mempool.space/api",
     },
+    explorer: (orderId: string) =>
+      REQUIRED_ENV_VARS.EXPLORER + `order/${orderId}`,
     whitelist: (address: string) =>
       REQUIRED_ENV_VARS.WHITELIST + `whitelist/${address}`,
   };

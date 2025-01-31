@@ -80,6 +80,9 @@ export default defineConfig({
       },
     },
   ],
+  preview: {
+    allowedHosts: true,
+  },
   define: {
     "process.env.BUILD_ID": JSON.stringify(buildId),
   },
