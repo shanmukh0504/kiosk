@@ -2,11 +2,9 @@ import {
   ArrowLeftIcon,
   Chip,
   CloseIcon,
-  KeyboardRightIcon,
   Modal,
   RadioCheckedIcon,
   Typography,
-  WalletIcon,
 } from "@gardenfi/garden-book";
 import React, { useState, FC, useMemo } from "react";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
@@ -23,9 +21,8 @@ import { MultiWalletConnection } from "./MultiWalletConnection";
 import { handleEVMConnect } from "./handleConnect";
 import { modalNames, modalStore } from "../../../store/modalStore";
 import { authStore } from "../../../store/authStore";
-import { ecosystems, evmToBTCid, MAX_VISIBLE_WALLETS } from "./constants";
+import { ecosystems, evmToBTCid } from "./constants";
 import { AnimatePresence } from "framer-motion";
-import { BREAKPOINTS } from "../../../constants/constants";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -45,7 +42,6 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
   const [selectedEcosystem, setSelectedEcosystem] = useState<string | null>(
     null
   );
-  const [showAllWallets, setShowAllWallets] = useState(false);
 
   const { connectors, connectAsync, connector, address } = useEVMWallet();
   const { availableWallets, connect, provider } = useBitcoinWallet();
@@ -65,10 +61,6 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
     return allWallets;
   }, [showOnlyBTCWallets, availableWallets, connectors, selectedEcosystem]);
 
-  const visibleWallets = showAllWallets
-    ? allAvailableWallets
-    : allAvailableWallets.slice(0, MAX_VISIBLE_WALLETS);
-
   const handleClose = () => {
     if (address) onClose();
 
@@ -79,7 +71,6 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
   const close = () => {
     onClose();
     setConnectingWallet(null);
-    setShowAllWallets(false);
     setMultiWalletConnector(undefined);
   };
 
@@ -174,53 +165,28 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
       ) : (
         <div className="scrollbar-hide flex flex-col gap-1 overflow-y-auto overscroll-contain rounded-2xl bg-white/50 p-4 transition-all duration-300">
           {allAvailableWallets.length > 0 ? (
-            <>
-              <AnimatePresence>
-                {visibleWallets.map((wallet) => (
-                  <WalletRow
-                    key={wallet.id}
-                    name={wallet.name}
-                    logo={wallet.logo}
-                    onClick={async () => {
-                      await handleConnect(wallet);
-                    }}
-                    isConnecting={connectingWallet === wallet.id}
-                    isConnected={{
-                      bitcoin: !!(
-                        provider &&
-                        (provider.id === wallet.id ||
-                          provider.id === evmToBTCid[wallet.id])
-                      ),
-                      evm: !!(connector && connector.id === wallet.id),
-                    }}
-                    isAvailable={wallet.isAvailable}
-                  />
-                ))}
-              </AnimatePresence>
-              {!showAllWallets &&
-                allAvailableWallets.length > MAX_VISIBLE_WALLETS && (
-                  <div
-                    onClick={() => setShowAllWallets(true)}
-                    className={`flex cursor-pointer items-center justify-between px-4 ${
-                      BREAKPOINTS.sm ? "py-4" : "py-3"
-                    }`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <WalletIcon className="h-5 w-5 fill-rose" />
-                      <Typography
-                        size="h3"
-                        breakpoints={{
-                          sm: "h2",
-                        }}
-                        weight="medium"
-                      >
-                        All Wallets
-                      </Typography>
-                    </div>
-                    <KeyboardRightIcon className="" />
-                  </div>
-                )}
-            </>
+            <AnimatePresence>
+              {allAvailableWallets.map((wallet) => (
+                <WalletRow
+                  key={wallet.id}
+                  name={wallet.name}
+                  logo={wallet.logo}
+                  onClick={async () => {
+                    await handleConnect(wallet);
+                  }}
+                  isConnecting={connectingWallet === wallet.id}
+                  isConnected={{
+                    bitcoin: !!(
+                      provider &&
+                      (provider.id === wallet.id ||
+                        provider.id === evmToBTCid[wallet.id])
+                    ),
+                    evm: !!(connector && connector.id === wallet.id),
+                  }}
+                  isAvailable={wallet.isAvailable}
+                />
+              ))}
+            </AnimatePresence>
           ) : (
             <Typography size="h3">No wallets found</Typography>
           )}
