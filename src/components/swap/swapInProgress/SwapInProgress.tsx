@@ -17,6 +17,7 @@ import { useOrderStatus } from "../../../hooks/useOrderStatus";
 import { OrderStatus as OrderStatusEnum } from "@gardenfi/core";
 import { ordersStore } from "../../../store/ordersStore";
 import { API } from "../../../constants/api";
+import { Url } from "@gardenfi/utils";
 
 export const SwapInProgress = () => {
   const { setOrderInProgress, orderInProgress: order } = ordersStore();
@@ -44,7 +45,7 @@ export const SwapInProgress = () => {
 
   const handleClickTransaction = () => {
     if (!order) return;
-    window.open(API().explorer(order.create_order.create_id));
+    window.open(new Url(API().explorer(order.create_order.create_id)));
   };
 
   return order ? (

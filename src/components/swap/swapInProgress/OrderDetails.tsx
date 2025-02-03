@@ -10,6 +10,7 @@ import BigNumber from "bignumber.js";
 import { getAssetFromSwap } from "../../../utils/utils";
 import { assetInfoStore } from "../../../store/assetInfoStore";
 import { CopyToClipboard } from "../../../common/CopyToClipboard";
+import { Url } from "@gardenfi/utils";
 
 type OrderDetailsProps = {
   order: MatchedOrder;
@@ -71,10 +72,15 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
     };
   }, [assets, order]);
 
-  const link =
+  const baseUrl =
     order &&
     chains &&
-    chains[order.source_swap.chain]?.explorer + "address/" + btcAddress;
+    chains[
+      isBitcoin(order.source_swap.chain)
+        ? order.source_swap.chain
+        : order.destination_swap.chain
+    ]?.explorer;
+  const link = baseUrl && new Url(`address/${btcAddress}`, baseUrl);
 
   const { inputAmountPrice, outputAmountPrice, amountToFill, filledAmount } =
     useMemo(() => {
@@ -158,7 +164,7 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
                   : "Receive" + " address"
               }
               value={btcAddress}
-              link={link}
+              link={link.toString()}
             />
           )}
         </div>
