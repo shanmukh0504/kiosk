@@ -157,11 +157,14 @@ export const stakeStore = create<StakeStoreState>((set) => ({
       const avgLockTime = Math.floor(
         Number(response.data.data.ast) / ETH_BLOCKS_PER_DAY
       );
+      const seedInDecimals = formatAmount(
+        response.data.data.totalStaked,
+        SEED_DECIMALS
+      );
       const seedLockedPercentage = Number(
-        Math.min(
-          Number(response.data.data.totalStaked) / CIRCULATING_SEED_SUPPLY,
-          100
-        ).toFixed(2)
+        Math.min((seedInDecimals / CIRCULATING_SEED_SUPPLY) * 100, 100).toFixed(
+          2
+        )
       ).toString();
 
       set({
