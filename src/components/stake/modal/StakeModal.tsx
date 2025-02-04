@@ -50,7 +50,7 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
     <div className="transition-left left-auto top-60 z-40 flex flex-col gap-4 rounded-[20px] px-1 duration-700 ease-cubic-in-out">
       <div className="flex justify-between">
         <Typography size="h4" weight="bold">
-          Stake SEED
+          Set duration
         </Typography>
         {!isMobile && (
           <CloseIcon className="cursor-pointer" onClick={handleClose} />
@@ -78,7 +78,7 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
 
       <div className="mb-5 flex flex-col gap-3 rounded-2xl bg-white bg-opacity-25 p-4 sm:mb-0">
         <Typography size="h5" weight="bold">
-          Stake Duration
+          Stake duration
         </Typography>
         <div className="flex flex-col items-center justify-between gap-2 sm:flex-row">
           <DurationMenu
