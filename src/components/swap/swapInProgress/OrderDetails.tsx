@@ -39,7 +39,7 @@ export const OrderDetailsRow: FC<OrderDetailsRowProps> = ({
       </Typography>
       <div className="flex items-center gap-2">
         <Typography size="h4" weight="medium">
-          {getTrimmedAddress(value)}
+          {link ? getTrimmedAddress(value) : value}
         </Typography>
         {copyString && <CopyToClipboard text={copyString} />}
         {link && (
@@ -110,10 +110,12 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
       };
     }, [inputAsset, order, outputAsset]);
 
+  console.log(amountToFill, filledAmount);
   const fees = BigNumber.maximum(
     inputAmountPrice.minus(outputAmountPrice),
     0
   ).toFixed(3);
+  console.log(fees);
 
   const handleDropdown = () => setDropdown(!dropdown);
 
