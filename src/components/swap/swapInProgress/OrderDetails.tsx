@@ -110,12 +110,10 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
       };
     }, [inputAsset, order, outputAsset]);
 
-  console.log(amountToFill, filledAmount);
   const fees = BigNumber.maximum(
     inputAmountPrice.minus(outputAmountPrice),
     0
   ).toFixed(3);
-  console.log(fees);
 
   const handleDropdown = () => setDropdown(!dropdown);
 
