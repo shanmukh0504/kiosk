@@ -33,7 +33,6 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const { setAsset, inputAsset, outputAsset } = swapStore();
 
   const orderedChains = useMemo(() => {
-    console.log("bye");
     const order = ["bitcoin", "ethereum", "base", "arbitrum"];
     return chains
       ? Object.values(chains).sort((a, b) => {
@@ -51,7 +50,6 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   }, [chains]);
 
   const sortedResults = useMemo(() => {
-    console.log("hey", orderedChains);
     if (results && orderedChains.length > 0) {
       return [...results].sort((a, b) => {
         const chainA = chains?.[a.chain];
