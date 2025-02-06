@@ -50,6 +50,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   }, [chains]);
 
   const sortedResults = useMemo(() => {
+    console.log("hey");
     if (results && orderedChains.length > 0) {
       return [...results].sort((a, b) => {
         const chainA = chains?.[a.chain];
@@ -68,7 +69,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     }
     return results;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [results]);
+  }, [results, orderedChains]);
 
   const comparisonToken = useMemo(
     () =>
