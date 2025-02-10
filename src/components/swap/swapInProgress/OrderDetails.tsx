@@ -74,7 +74,13 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
   const link =
     order &&
     chains &&
-    chains[order.source_swap.chain]?.explorer + "address/" + btcAddress;
+    chains[
+      isBitcoin(order.source_swap.chain)
+        ? order.source_swap.chain
+        : order.destination_swap.chain
+    ]?.explorer +
+      "address/" +
+      btcAddress;
 
   const { inputAmountPrice, outputAmountPrice, amountToFill, filledAmount } =
     useMemo(() => {
