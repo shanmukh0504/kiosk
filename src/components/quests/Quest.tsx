@@ -31,35 +31,33 @@ export const Quest: FC<QuestProps> = ({
 }) => {
   return (
     <div
-      className={`flex flex-col           
-            ${featured ? "lg:basis-2/3 lg:grow-0 lg:shrink-0" : ""}
-            bg-white/50 backdrop-blur-[20px] rounded-2xl p-6`}
+      className={`flex flex-col ${featured ? "lg:shrink-0 lg:grow-0 lg:basis-2/3" : ""} rounded-2xl bg-white/50 p-6 backdrop-blur-[20px]`}
     >
       <div className="flex justify-between">
         <Link to={logoLink} target="_blank">
           <PartnerChip name={partner} logo={logo} />
         </Link>
-        <div className="flex justify-center items-center w-6 h-6">
+        <div className="flex h-6 w-6 items-center justify-center">
           {showModal ? (
             <OpenInFullIcon
-              className="w-[18px] h-full cursor-pointer"
+              className="h-full w-[18px] cursor-pointer"
               onClick={() => showModal()}
             />
           ) : (
             link && (
               <Link to={link} target="_blank">
-                <ArrowNorthEastIcon className="w-[15px] h-full" />
+                <ArrowNorthEastIcon className="h-full w-[15px]" />
               </Link>
             )
           )}
         </div>
       </div>
-      <div className="grow mt-5">
+      <div className="mt-5 grow">
         <Typography size="h3" weight="medium">
           {description}
         </Typography>
       </div>
-      <div className="flex justify-end mt-8">
+      <div className="mt-8 flex justify-end">
         <Chip className="py-1 pl-3 pr-2">
           <Typography size="h3" weight="medium">
             {amount} SEED

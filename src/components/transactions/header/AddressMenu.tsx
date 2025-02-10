@@ -1,57 +1,19 @@
-import { FC, useMemo, useState } from "react";
+import { FC, useMemo } from "react";
 import {
   AddIcon,
-  // LanguageIcon,
-  // ReferralIcon,
   LogoutIcon,
-  Typography,
 } from "@gardenfi/garden-book";
 import { useId } from "react";
-import { Tooltip } from "../../common/Tooltip";
-import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
+import { Tooltip } from "../../../common/Tooltip";
+import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { connectWalletStore } from "../../store/connectWalletStore";
-import { swapStore } from "../../store/swapStore";
-import { balanceStore } from "../../store/balanceStore";
+import { connectWalletStore } from "../../../store/connectWalletStore";
+import { swapStore } from "../../../store/swapStore";
+import { balanceStore } from "../../../store/balanceStore";
+import { ecosystems } from "../../navbar/connectWallet/constants";
+import { Address } from "./Address";
 
-type AddressProps = {
-  address: string;
-};
 
-const Address: FC<AddressProps> = ({ address }) => {
-  const [addressTooltipContent, setAddressTooltipContent] = useState("Copy");
-  const addressTooltipId = useId();
-
-  const handleAddressClick = async () => {
-    if (address) {
-      await navigator.clipboard.writeText(address);
-      setAddressTooltipContent("Copied");
-    }
-    setTimeout(() => {
-      setAddressTooltipContent("Copy");
-    }, 2000);
-  };
-
-  return (
-    <div className="bg-white/50 rounded-full px-3 py-1">
-      <Typography
-        size="h3"
-        weight="medium"
-        className="cursor-pointer"
-        onClick={handleAddressClick}
-        data-tooltip-id={addressTooltipId}
-      >
-        {getTrimmedAddress(address)}
-      </Typography>
-      <Tooltip
-        id={addressTooltipId}
-        place="top"
-        content={addressTooltipContent}
-      />
-    </div>
-  );
-};
 
 type AddressMenuProps = {
   onClose: () => void;
@@ -88,16 +50,16 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   return (
     <>
       <div className="flex justify-between">
-        <div className="flex gap-3">
-          {address && <Address address={address} />}
-          {btcAddress && <Address address={btcAddress} />}
+        <div className="flex gap-3 flex-wrap">
+          {address && <Address address={address} logo={ecosystems.evm.icon} />}
+          {btcAddress && <Address address={btcAddress} logo={ecosystems.bitcoin.icon} />}
           {showConnectWallet && (
             <div
               data-tooltip-id={addTooltipId}
-              className="flex items-center bg-white/50 rounded-full p-1.5 cursor-pointer transition-colors hover:bg-white"
+              className="flex cursor-pointer items-center rounded-full bg-white/50 p-1.5 transition-colors hover:bg-white"
               onClick={handleBTCWalletClick}
             >
-              <AddIcon className="w-5 h-3" />
+              <AddIcon className="h-3 w-5" />
             </div>
           )}
         </div>
@@ -116,13 +78,10 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
           </div> */}
           <div
             data-tooltip-id={logoutTooltipId}
-            className="flex items-center bg-white/50 rounded-full p-1.5 cursor-pointer transition-colors hover:bg-white"
+            className="flex cursor-pointer items-center rounded-full bg-white/50 p-1.5 h-8 transition-colors hover:bg-white"
             onClick={handleDisconnectClick}
           >
-            <LogoutIcon
-              className="w-5 h-4 cursor-pointer"
-
-            />
+            <LogoutIcon className="h-4 w-5 cursor-pointer" />
 
             <Tooltip id={addTooltipId} place="top" content="Wallet" />
             <Tooltip id={languageTooltipId} place="top" content="Language" />

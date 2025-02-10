@@ -1,3 +1,6 @@
+import { Network } from "@gardenfi/utils";
+import { network } from "../../../constants/constants";
+
 export const evmToBTCid: Record<string, string> = {
   "com.okex.wallet": "okx",
 } as const;
@@ -5,6 +8,8 @@ export const evmToBTCid: Record<string, string> = {
 export const btcToEVMid: Record<string, string> = {
   okx: "com.okex.wallet",
 } as const;
+
+export const MAX_VISIBLE_WALLETS = 3;
 
 export const ecosystems = {
   bitcoin: {
@@ -18,3 +23,91 @@ export const ecosystems = {
 } as const;
 
 export type EcosystemKeys = keyof typeof ecosystems;
+
+type GardenSupportedWalletsType = {
+  id: string;
+  name: string;
+  logo: string;
+  installLink: string;
+  isBitcoinSupported: boolean;
+  isEVMSupported: boolean;
+};
+
+export const GardenSupportedWallets: Record<
+  string,
+  GardenSupportedWalletsType
+> = {
+  injected: {
+    id: "injected",
+    name: "Injected",
+    logo: "https://garden-finance.imgix.net/wallets/injected.svg",
+    installLink: "https://metamask.io/download/",
+    isBitcoinSupported: false,
+    isEVMSupported: true,
+  },
+  metaMaskSDK: {
+    id: "metaMaskSDK",
+    name: "Metamask",
+    logo: "https://garden-finance.imgix.net/wallets/metamask.svg",
+    installLink: "https://metamask.io/download/",
+    isBitcoinSupported: false,
+    isEVMSupported: true,
+  },
+  "com.brave.wallet": {
+    id: "com.brave.wallet",
+    name: "Brave Wallet",
+    logo: "https://garden-finance.imgix.net/wallets/brave.svg",
+    installLink: "https://brave.com/en-in/wallet/",
+    isBitcoinSupported: false,
+    isEVMSupported: true,
+  },
+  "app.phantom": {
+    id: "app.phantom",
+    name: "Phantom",
+    logo: "https://garden-finance.imgix.net/wallets/phantom.svg",
+    installLink:
+      "https://chromewebstore.google.com/detail/phantom/bfnaelmomeimhlpmgjnjophhpkkoljpa?hl=en",
+    isBitcoinSupported: false,
+    isEVMSupported: true,
+  },
+  "com.coinbase.wallet": {
+    id: "com.coinbase.wallet",
+    name: "Coinbase Wallet",
+    logo: "https://garden-finance.imgix.net/wallets/coinbase.svg",
+    installLink: "https://www.coinbase.com/wallet/downloads",
+    isBitcoinSupported: false,
+    isEVMSupported: true,
+  },
+  "com.okex.wallet": {
+    id: "com.okex.wallet",
+    name: "OKX Wallet",
+    logo: "https://garden-finance.imgix.net/wallets/okx.svg",
+    installLink: "https://www.okx.com/download",
+    isBitcoinSupported: network === Network.MAINNET ? true : false,
+    isEVMSupported: true,
+  },
+  "org.uniswap.app": {
+    id: "org.uniswap.app",
+    name: "Uniswap",
+    logo: "https://garden-finance.imgix.net/wallets/uniswap.svg",
+    installLink: "https://wallet.uniswap.org/",
+    isBitcoinSupported: false,
+    isEVMSupported: true,
+  },
+  unisat: {
+    id: "unisat",
+    name: "Unisat",
+    logo: "https://garden-finance.imgix.net/wallets/unisat.svg",
+    installLink: "https://unisat.io/",
+    isBitcoinSupported: true,
+    isEVMSupported: false,
+  },
+  "io.rabby": {
+    id: "io.rabby",
+    name: "Rabby Wallet",
+    logo: "https://garden-finance.imgix.net/wallets/rabby.svg",
+    installLink: "https://rabby.io/",
+    isBitcoinSupported: false,
+    isEVMSupported: true,
+  },
+};
