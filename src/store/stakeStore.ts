@@ -11,6 +11,8 @@ import {
 import { formatAmount } from "../utils/utils";
 import { CIRCULATING_SEED_SUPPLY } from "../constants/stake";
 
+const COINGECKO_API_KEY = import.meta.env.VITE_COINGECKO_API_KEY;
+
 const SEED: Asset = {
   name: "Seed",
   decimals: 18,
@@ -35,6 +37,7 @@ type StakeStoreState = {
   totalStakedAmount: number;
   totalVotes: number;
   stakePosData: StakingPosition[] | null;
+  seedPriceUSD: number;
   stakeApys: Record<string, number>;
   stakingStats: StakingStats | null;
   loading: {
@@ -43,14 +46,19 @@ type StakeStoreState = {
   stakeRewards: {
     rewardResponse: Omit<StakingReward, "stakes">;
     stakewiseRewards: {
-      [id: string]: number;
+      [id: string]: {
+        cumulative: number;
+        seed: number;
+      };
     };
   } | null;
+  totalSeedReward: number;
   setInputAmount: (value: string) => void;
   fetchStakePosData: (address: string) => Promise<void>;
   fetchAndSetStakingStats: () => Promise<void>;
   fetchAndSetStakeApy: (address: string) => Promise<void>;
   fetchAndSetRewards: (address: string) => Promise<void>;
+  fetchAndSetSeedPriceUSD: () => Promise<void>;
   clearStakePosData: () => void;
 };
 
@@ -72,6 +80,10 @@ export type StakingReward = {
     id: string;
     cumulative_reward_cbbtc: number;
   }[];
+};
+
+export type SeedRewardResponse = {
+  data: Record<string, string>;
 };
 
 export type StakingPosition = {
@@ -100,9 +112,11 @@ export const stakeStore = create<StakeStoreState>((set) => ({
   stakingStats: null,
   stakeApys: {},
   stakeRewards: null,
+  seedPriceUSD: 0,
   loading: {
     stakeRewards: false,
   },
+  totalSeedReward: 0,
   setInputAmount: (value: string) => set({ inputAmount: value }),
   fetchStakePosData: async (address: string) => {
     try {
@@ -199,23 +213,65 @@ export const stakeStore = create<StakeStoreState>((set) => ({
   fetchAndSetRewards: async (address: string) => {
     try {
       set({ loading: { stakeRewards: true } });
-      const resp = await axios.get<StakingReward>(API().reward(address));
+      const [resp, resp2] = await Promise.all([
+        axios.get<StakingReward>(API().reward(address)),
+        axios.get<SeedRewardResponse>(API().seedReward(address)),
+      ]);
+
+      const stakewiseRewards: Record<
+        string,
+        { cumulative: number; seed: number }
+      > = {};
+      let totalSeedReward = 0;
       if (resp.status === 200 && resp.data) {
-        const stakeRewards: Record<string, number> = {};
-        resp.data.stakes.map((stake) => {
-          stakeRewards[stake.id] = stake.cumulative_reward_cbbtc;
-        });
-        set({
-          stakeRewards: {
-            rewardResponse: resp.data,
-            stakewiseRewards: stakeRewards,
-          },
+        resp.data.stakes.forEach((stake) => {
+          stakewiseRewards[stake.id] = {
+            cumulative: stake.cumulative_reward_cbbtc,
+            seed: 0,
+          };
         });
       }
+
+      if (resp2.status === 200 && resp2.data) {
+        Object.entries(resp2.data.data).forEach(([stakeId, rewardValue]) => {
+          if (stakewiseRewards[stakeId]) {
+            stakewiseRewards[stakeId].seed = formatAmount(
+              Number(BigInt(rewardValue)),
+              SEED_DECIMALS,
+              5
+            );
+            totalSeedReward += stakewiseRewards[stakeId].seed;
+          }
+        });
+      }
+
+      set({
+        stakeRewards: {
+          rewardResponse: resp.data,
+          stakewiseRewards,
+        },
+        totalSeedReward: totalSeedReward,
+      });
     } catch (error) {
       console.error("Error fetching rewards:", error);
     } finally {
       set({ loading: { stakeRewards: false } });
+    }
+  },
+  fetchAndSetSeedPriceUSD: async () => {
+    try {
+      const resp = await axios.get<{ [key: string]: { usd: number } }>(
+        API().coingecko,
+        {
+          headers: {
+            "x-cg-api-key": COINGECKO_API_KEY,
+          },
+        }
+      );
+      console.log(resp.data["garden-2"].usd);
+      set({ seedPriceUSD: resp.data["garden-2"].usd });
+    } catch (error) {
+      console.log("Error fetching the Seed USD Price from Coingecko : ", error);
     }
   },
   clearStakePosData: () => set({ stakePosData: null }),

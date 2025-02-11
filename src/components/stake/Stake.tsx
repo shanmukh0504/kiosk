@@ -26,6 +26,7 @@ export const Stake: FC = () => {
     clearStakePosData,
     stakePosData,
     fetchAndSetRewards,
+    fetchAndSetSeedPriceUSD,
   } = stakeStore();
   const { tokenBalance } = useBalances(asset);
 
@@ -51,6 +52,10 @@ export const Stake: FC = () => {
   useEffect(() => {
     fetchAndSetStakingStats();
   }, [fetchAndSetStakingStats]);
+
+  useEffect(() => {
+    fetchAndSetSeedPriceUSD();
+  }, [fetchAndSetSeedPriceUSD]);
 
   useEffect(() => {
     if (!address) {
