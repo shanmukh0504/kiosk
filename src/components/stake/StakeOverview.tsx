@@ -12,15 +12,25 @@ import { REWARD_CHAIN, REWARD_CONFIG } from "./constants";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../../layout/wagmi/config";
 import { Toast } from "../toast/Toast";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { viewPortStore } from "../../store/viewPortStore";
+import { RewardsToolTip } from "./shared/RewardsToolTip";
 
 export const StakeOverview = () => {
   const [isClaimLoading, setIsClaimLoading] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
 
-  const { totalStakedAmount, totalVotes, stakeRewards } = stakeStore();
+  const {
+    totalStakedAmount,
+    totalVotes,
+    stakeRewards,
+    totalSeedReward,
+    seedPriceUSD,
+  } = stakeStore();
   const { writeContractAsync } = useWriteContract();
   const { address, chainId } = useEVMWallet();
   const { switchChainAsync } = useSwitchChain();
+  const { isTab } = viewPortStore();
   // get claimed amount
   const { data: claimedAmount, refetch: refetchClaimedAmount } =
     useReadContract({
@@ -41,6 +51,11 @@ export const StakeOverview = () => {
       : totalStakedAmount >= TEN_THOUSAND
         ? totalStakedAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
         : totalStakedAmount.toString();
+  const totalRewardsInUSD =
+    totalSeedReward * seedPriceUSD +
+    (stakeRewards?.rewardResponse?.cumulative_rewards_usd
+      ? parseFloat(stakeRewards.rewardResponse.cumulative_rewards_usd)
+      : 0);
 
   const availableReward = useMemo(() => {
     return stakeRewards
@@ -52,6 +67,10 @@ export const StakeOverview = () => {
         )
       : 0;
   }, [stakeRewards, claimedAmount]);
+
+  const cbBtcRewardCumulative = stakeRewards
+    ? formatAmount(stakeRewards.rewardResponse.cumulative_rewards_cbbtc, 8, 5)
+    : 0;
 
   const handleRewardClick = async () => {
     if (!chainId || !address || !stakeRewards) return;
@@ -108,12 +127,12 @@ export const StakeOverview = () => {
       }}
       style={{ transformOrigin: "top" }}
     >
-      <div className="mx-auto flex w-[328px] flex-col gap-4 rounded-[15px] bg-white bg-opacity-50 p-6 sm:w-[424px] md:w-[740px] lg:w-[1000px]">
+      <div className="mx-auto flex w-[328px] flex-col gap-4 rounded-[15px] bg-white p-6 sm:w-[424px] md:w-[740px] lg:w-[1000px]">
         <Typography size="h5" weight="bold">
           Staking overview
         </Typography>
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <div className="flex w-full justify-between gap-10 md:w-[350px]">
+          <div className="flex w-full justify-between gap-10 md:w-[500px]">
             <StakeStats
               title={"Staked SEED"}
               value={formattedAmount}
@@ -124,6 +143,38 @@ export const StakeOverview = () => {
               value={totalVotes !== undefined ? totalVotes : 0}
               size="sm"
             />
+            {isTab && (
+              <AnimatePresence>
+                <div
+                  className="relative cursor-pointer"
+                  onMouseEnter={() => setShowTooltip(true)}
+                  onMouseLeave={() => setShowTooltip(false)}
+                >
+                  <StakeStats
+                    title={"Total rewards"}
+                    value={`~$${totalRewardsInUSD.toFixed(2)}`}
+                    size="sm"
+                  />
+                  <AnimatePresence>
+                    {showTooltip && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2, ease: "easeInOut" }}
+                        className="absolute top-12 z-50 mx-auto flex w-max flex-col sm:absolute sm:left-[calc(100%+15px)] sm:top-[8.5px] sm:-translate-x-1/2 sm:flex-col-reverse"
+                      >
+                        <RewardsToolTip
+                          seed={totalSeedReward}
+                          cbBtc={cbBtcRewardCumulative}
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </AnimatePresence>
+            )}
+
             <StakeStats
               title={"Staking rewards"}
               value={`${availableReward} cbBTC`}

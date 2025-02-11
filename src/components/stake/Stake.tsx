@@ -26,6 +26,7 @@ export const Stake: FC = () => {
     clearStakePosData,
     stakePosData,
     fetchAndSetRewards,
+    fetchAndSetSeedPriceUSD,
   } = stakeStore();
   const { tokenBalance } = useBalances(asset);
 
@@ -53,6 +54,10 @@ export const Stake: FC = () => {
   }, [fetchAndSetStakingStats]);
 
   useEffect(() => {
+    fetchAndSetSeedPriceUSD();
+  }, [fetchAndSetSeedPriceUSD]);
+
+  useEffect(() => {
     if (!address) {
       clearStakePosData();
       return;
@@ -64,9 +69,9 @@ export const Stake: FC = () => {
 
       try {
         isFetching = true;
-        await fetchAndSetStakeApy(address);
-        await fetchStakePosData(address);
-        await fetchAndSetRewards(address);
+        await fetchAndSetStakeApy("0xeB7E1c4B16203187D2f46071203494662b4eE5C6");
+        await fetchStakePosData("0xeB7E1c4B16203187D2f46071203494662b4eE5C6");
+        await fetchAndSetRewards("0xeB7E1c4B16203187D2f46071203494662b4eE5C6");
       } finally {
         isFetching = false;
       }

@@ -1,9 +1,4 @@
-import {
-  Button,
-  InfinityIcon,
-  KeyboardUpIcon,
-  Typography,
-} from "@gardenfi/garden-book";
+import { Button, KeyboardUpIcon, Typography } from "@gardenfi/garden-book";
 import { FC, useState } from "react";
 import {
   StakePositionStatus,
@@ -17,6 +12,7 @@ import { modalNames, modalStore } from "../../../store/modalStore";
 import { StakeStats } from "../shared/StakeStats";
 import { UnstakeAndRestake } from "./UnstakeAndRestake";
 import { AnimatePresence, motion } from "framer-motion";
+import { RewardsToolTip } from "../shared/RewardsToolTip";
 
 type props = {
   stakePos: StakingPosition;
@@ -24,9 +20,10 @@ type props = {
 
 export const StakeDetails: FC<props> = ({ stakePos }) => {
   const [showDetails, setShowDetails] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const { setOpenModal } = modalStore();
-  const { stakeApys, stakeRewards } = stakeStore();
+  const { stakeApys, stakeRewards, seedPriceUSD } = stakeStore();
 
   const isPermaStake = stakePos.isPerma;
   const isExtendable =
@@ -34,10 +31,12 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
   const isExpired = stakePos.status === StakePositionStatus.expired;
 
   const stakeReward = formatAmount(
-    stakeRewards?.stakewiseRewards?.[stakePos.id] || 0,
+    stakeRewards?.stakewiseRewards?.[stakePos.id].cumulative || 0,
     8,
     5
   );
+  const seedReward =
+    stakeRewards && stakeRewards?.stakewiseRewards?.[stakePos.id].seed;
 
   const stakeApy = Number((stakeApys?.[stakePos.id] || 0).toFixed(2));
   const stakeAmount = formatAmount(stakePos.amount, SEED_DECIMALS, 0);
@@ -46,6 +45,17 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
       ? stakeAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       : stakeAmount.toString();
 
+  const cbBtcPriceUsd =
+    Number(stakeRewards?.rewardResponse?.cumulative_rewards_usd || 0) /
+    formatAmount(
+      Number(stakeRewards?.rewardResponse.cumulative_rewards_cbbtc),
+      8,
+      5
+    );
+
+  const totalrewardInUsd =
+    seedReward && seedReward * seedPriceUSD + stakeReward * cbBtcPriceUsd;
+
   const daysPassedSinceStake = Math.floor(
     (new Date().getTime() - new Date(stakePos.stakedAt).getTime()) /
       (1000 * 3600 * 24)
@@ -53,13 +63,14 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
   const expiryInDays = Math.floor(
     (stakePos.expiry - stakePos.lastStakedAtBlock) / ETH_BLOCKS_PER_DAY
   );
-
   const stakeEndDate = new Date();
   stakeEndDate.setDate(
     stakeEndDate.getDate() + (expiryInDays - daysPassedSinceStake)
   );
   const stakeEndDateString = isPermaStake ? (
-    <InfinityIcon />
+    <Typography size="h3" weight="medium" className="!text-2xl !leading-4">
+      ∞
+    </Typography>
   ) : (
     stakeEndDate.toISOString().split("T")[0].replaceAll("-", "/")
   );
@@ -83,7 +94,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
       onClick={() => setShowDetails((p) => !p)}
     >
       <div className="flex items-center justify-between">
-        <div className="flex items-center">
+        <div className="flex items-center gap-10">
           <Typography
             size={"h4"}
             breakpoints={{
@@ -91,7 +102,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
               md: "h3",
             }}
             weight="medium"
-            className="w-[120px]"
+            className="w-24 md:w-[120px]"
           >
             {formattedAmount} SEED
           </Typography>
@@ -109,7 +120,9 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
             ) : (
               <>
                 {isPermaStake ? (
-                  <InfinityIcon />
+                  <Typography size="h3" weight="medium">
+                    ∞
+                  </Typography>
                 ) : (
                   `${daysPassedSinceStake} / ${expiryInDays}`
                 )}
@@ -118,11 +131,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
             )}
           </Typography>
 
-          <Typography
-            size="h4"
-            weight="medium"
-            className="hidden pl-10 sm:block"
-          >
+          <Typography size="h4" weight="medium" className="hidden sm:block">
             {stakePos.votes} {stakePos.votes === 1 ? "Vote" : "Votes"}
           </Typography>
         </div>
@@ -166,21 +175,18 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
             <div className="flex flex-col gap-4 sm:gap-10 md:flex-row">
               <div className="flex gap-10">
                 <StakeStats
-                  title={"Rewards"}
-                  value={`${stakeReward} cbBTC`}
-                  size="xs"
-                />
-                <StakeStats
                   title={"Multiplier"}
                   value={`${multiplier}x`}
                   size="xs"
+                  className="w-[120px]"
                 />
               </div>
-              <div className="flex gap-10">
+              <div className="flex items-center gap-10">
                 <StakeStats
                   title={"EndDate"}
                   value={stakeEndDateString}
                   size="xs"
+                  className="w-[120px]"
                 />
                 {stakeApy ? (
                   <StakeStats
@@ -189,6 +195,31 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
                     size="xs"
                   />
                 ) : null}
+                <div
+                  className="relative"
+                  onMouseEnter={() => setShowTooltip(true)}
+                  onMouseLeave={() => setShowTooltip(false)}
+                >
+                  <StakeStats
+                    title={"Rewards"}
+                    value={`~$${totalrewardInUsd?.toFixed(4)}`}
+                    size="xs"
+                  />
+
+                  <AnimatePresence>
+                    {showTooltip && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2, ease: "easeInOut" }}
+                        className="absolute top-12 z-50 mx-auto flex w-max flex-col sm:absolute sm:left-[calc(100%+15px)] sm:top-[10px] sm:-translate-x-1/2 sm:flex-col-reverse"
+                      >
+                        <RewardsToolTip seed={seedReward} cbBtc={stakeReward} />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
             </div>
             {isExtendable && (
