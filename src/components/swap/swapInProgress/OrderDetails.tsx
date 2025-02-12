@@ -39,7 +39,7 @@ export const OrderDetailsRow: FC<OrderDetailsRowProps> = ({
       </Typography>
       <div className="flex items-center gap-2">
         <Typography size="h4" weight="medium">
-          {getTrimmedAddress(value)}
+          {link ? getTrimmedAddress(value) : value}
         </Typography>
         {copyString && <CopyToClipboard text={copyString} />}
         {link && (
@@ -74,7 +74,13 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
   const link =
     order &&
     chains &&
-    chains[order.source_swap.chain]?.explorer + "address/" + btcAddress;
+    chains[
+      isBitcoin(order.source_swap.chain)
+        ? order.source_swap.chain
+        : order.destination_swap.chain
+    ]?.explorer +
+      "address/" +
+      btcAddress;
 
   const { inputAmountPrice, outputAmountPrice, amountToFill, filledAmount } =
     useMemo(() => {
