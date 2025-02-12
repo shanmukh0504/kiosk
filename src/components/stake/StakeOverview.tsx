@@ -113,22 +113,22 @@ export const StakeOverview = () => {
           Staking overview
         </Typography>
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <div className="flex w-full flex-col gap-[20px] sm:w-[384px] sm:flex-row sm:gap-[32.67px] md:w-[600px] md:gap-8">
-            <div className="flex gap-10 sm:gap-[32.67px] md:gap-8">
+          <div className="flex w-full flex-col gap-[20px] sm:w-[384px] sm:flex-row md:w-[600px]">
+            <div className="flex gap-4 sm:gap-8 md:gap-5">
               <OverviewStats
                 title={"Staked SEED"}
                 value={formattedAmount}
                 size="sm"
-                className="w-[120px] sm:w-fit xl:w-[120px]"
+                className="w-[120px] sm:w-fit md:w-[120px]"
               />
               <OverviewStats
                 title={"Votes"}
                 value={totalVotes !== undefined ? totalVotes : 0}
                 size="sm"
-                className="w-[120px] sm:w-fit xl:w-[120px]"
+                className="w-[120px] sm:w-fit md:w-[80px] xl:w-[120px]"
               />
             </div>
-            <div className="flex gap-10 sm:gap-[32.67px] md:gap-8">
+            <div className="flex gap-4 sm:gap-8 md:gap-5">
               <AnimatePresence>
                 <OverviewStats
                   title={"Total rewards"}
@@ -150,7 +150,7 @@ export const StakeOverview = () => {
                       )}
                     />
                   }
-                  className="w-[120px] sm:w-fit xl:w-[120px]"
+                  className="w-[120px] cursor-pointer sm:w-fit md:w-[120px]"
                 />
               </AnimatePresence>
               <OverviewStats

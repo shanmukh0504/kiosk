@@ -33,7 +33,7 @@ export const OverviewStats: FC<props> = ({
 
   return (
     <div
-      className={`relative flex cursor-pointer flex-col items-start justify-center gap-y-1 ${className}`}
+      className={`relative flex flex-col items-start justify-center gap-y-1 ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
