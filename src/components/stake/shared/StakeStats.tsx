@@ -1,7 +1,5 @@
 import { Typography } from "@gardenfi/garden-book";
-import { AnimatePresence, motion } from "framer-motion";
-import { FC, ReactNode } from "react";
-import { RewardsToolTip } from "./RewardsToolTip";
+import { FC, ReactNode, useState } from "react";
 
 type props = {
   title: ReactNode;
@@ -9,9 +7,7 @@ type props = {
   size?: "xs" | "sm" | "md";
   isPink?: boolean;
   className?: string;
-  showTooltip?: boolean;
-  seedReward?: number;
-  stakeReward?: number;
+  toolTip?: ReactNode;
 };
 
 export const StakeStats: FC<props> = ({
@@ -19,11 +15,11 @@ export const StakeStats: FC<props> = ({
   value,
   size = "sm",
   isPink = false,
-  showTooltip = false,
-  seedReward,
-  stakeReward,
   className,
+  toolTip,
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   const textColor = isPink ? "!text-rose" : "!text-dark-grey";
   const titleSize = size === "xs" ? "h5" : size === "sm" ? "h5" : "h4";
   const valueSize = "h4";
@@ -37,6 +33,8 @@ export const StakeStats: FC<props> = ({
   return (
     <div
       className={`flex flex-col items-start justify-center gap-y-1 ${className}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <Typography
         size={titleSize}
@@ -57,22 +55,7 @@ export const StakeStats: FC<props> = ({
       >
         {value}
       </Typography>
-      <AnimatePresence>
-        {showTooltip && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
-            className="absolute top-12 z-50 mx-auto flex w-max flex-col sm:absolute sm:left-[calc(100%+15px)] sm:top-[8.5px] sm:-translate-x-1/2 sm:flex-col-reverse"
-          >
-            <RewardsToolTip
-              seed={seedReward ? seedReward : 0}
-              cbBtc={stakeReward ? stakeReward : 0}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isHovered && toolTip}
     </div>
   );
 };

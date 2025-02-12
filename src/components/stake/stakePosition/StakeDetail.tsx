@@ -17,6 +17,7 @@ import { modalNames, modalStore } from "../../../store/modalStore";
 import { StakeStats } from "../shared/StakeStats";
 import { UnstakeAndRestake } from "./UnstakeAndRestake";
 import { AnimatePresence, motion } from "framer-motion";
+import { TooltipWrapper } from "../shared/ToolTipWrapper";
 
 type props = {
   stakePos: StakingPosition;
@@ -24,7 +25,6 @@ type props = {
 
 export const StakeDetails: FC<props> = ({ stakePos }) => {
   const [showDetails, setShowDetails] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
 
   const { setOpenModal } = modalStore();
   const { stakeApys, stakeRewards } = stakeStore();
@@ -93,7 +93,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
       onClick={() => setShowDetails((p) => !p)}
     >
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-10">
+        <div className="flex items-center gap-5">
           <Typography
             size={"h4"}
             breakpoints={{
@@ -169,41 +169,42 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
               },
             }}
           >
-            <div className="flex flex-col gap-4 sm:gap-10 md:flex-row">
+            <div className="flex flex-col gap-4 sm:gap-5 md:flex-row">
               <div className="flex gap-10">
+                {stakeApy ? (
+                  <StakeStats
+                    title={"APY"}
+                    value={`${stakeApy || 0} %`}
+                    size="xs"
+                    className="w-[120px]"
+                  />
+                ) : null}
+              </div>
+              <div className="flex items-center gap-5">
                 <StakeStats
                   title={"Multiplier"}
                   value={`${multiplier}x`}
                   size="xs"
                   className="w-[120px]"
                 />
-              </div>
-              <div className="flex items-center gap-10">
                 <StakeStats
                   title={"EndDate"}
                   value={stakeEndDateString}
                   size="xs"
                   className="w-[120px]"
                 />
-                {stakeApy ? (
-                  <StakeStats
-                    title={"APY"}
-                    value={`${stakeApy || 0} %`}
-                    size="xs"
-                  />
-                ) : null}
-                <div
-                  className="relative"
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
-                >
+
+                <div className="relative">
                   <StakeStats
                     title={"Rewards"}
                     value={`~$${reward}`}
                     size="xs"
-                    showTooltip={isHovered}
-                    seedReward={seedReward}
-                    stakeReward={stakeReward}
+                    toolTip={
+                      <TooltipWrapper
+                        seedReward={seedReward}
+                        cbBtcReward={stakeReward}
+                      />
+                    }
                   />
                 </div>
               </div>

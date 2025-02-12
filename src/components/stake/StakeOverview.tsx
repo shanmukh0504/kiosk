@@ -14,10 +14,10 @@ import { config } from "../../layout/wagmi/config";
 import { Toast } from "../toast/Toast";
 import { AnimatePresence, motion } from "framer-motion";
 import { viewPortStore } from "../../store/viewPortStore";
+import { TooltipWrapper } from "./shared/ToolTipWrapper";
 
 export const StakeOverview = () => {
   const [isClaimLoading, setIsClaimLoading] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
 
   const { totalStakedAmount, totalVotes, stakeRewards } = stakeStore();
   const { writeContractAsync } = useWriteContract();
@@ -128,28 +128,28 @@ export const StakeOverview = () => {
             />
             {isTab && (
               <AnimatePresence>
-                <div
-                  className="relative cursor-pointer"
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
-                >
+                <div className="relative cursor-pointer">
                   <StakeStats
                     title={"Total rewards"}
                     value={`~$${stakeRewards?.accumulatedRewardUSD.toFixed(2) || 0}`}
                     size="sm"
-                    showTooltip={isHovered}
-                    seedReward={formatAmount(
-                      stakeRewards?.totalSeedReward ?? 0,
-                      SEED_DECIMALS,
-                      5
-                    )}
-                    stakeReward={formatAmount(
-                      Number(
-                        stakeRewards?.rewardResponse.cumulative_rewards_cbbtc
-                      ),
-                      8,
-                      5
-                    )}
+                    toolTip={
+                      <TooltipWrapper
+                        seedReward={formatAmount(
+                          stakeRewards?.totalSeedReward ?? 0,
+                          SEED_DECIMALS,
+                          5
+                        )}
+                        cbBtcReward={formatAmount(
+                          Number(
+                            stakeRewards?.rewardResponse
+                              .cumulative_rewards_cbbtc
+                          ),
+                          8,
+                          5
+                        )}
+                      />
+                    }
                   />
                 </div>
               </AnimatePresence>
@@ -157,7 +157,7 @@ export const StakeOverview = () => {
 
             <StakeStats
               title={"Staking rewards"}
-              value={`${availableReward.toFixed(3) || 0} cbBTC`}
+              value={`${availableReward.toFixed(5) || 0} cbBTC`}
               size="sm"
               isPink
             />
