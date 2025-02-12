@@ -195,7 +195,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
                     className="w-[120px]"
                   />
                   <StakeStats
-                    title={"EndDate"}
+                    title={"End date"}
                     value={stakeEndDateString}
                     size="xs"
                     className="w-[120px]"
