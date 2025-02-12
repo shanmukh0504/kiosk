@@ -43,13 +43,7 @@ type StakeStoreState = {
   stakeRewards: {
     rewardResponse: Omit<StakingReward, "stakes">;
     stakewiseRewards: {
-      [id: string]: {
-        accumulatedSeedRewards: string;
-        accumulatedSeedRewardsUSD: string;
-        accumulatedCBBTCRewards: string;
-        accumulatedCBBTCRewardsUSD: string;
-        accumulatedRewardsUSD: string;
-      };
+      [id: string]: AccumulatedReward;
     };
     totalcbBtcReward: number;
     totalSeedReward: number;
