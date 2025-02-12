@@ -167,12 +167,12 @@ export const StakeOverview = () => {
             }
             size="sm"
             className={`w-full md:w-[120px] ${
-              isClaimLoading || availableReward === 0
+              isClaimLoading || !availableReward
                 ? "flex items-center justify-center self-center transition-colors duration-500"
                 : ""
             }`}
             onClick={handleRewardClick}
-            disabled={isClaimLoading || availableReward === 0}
+            disabled={isClaimLoading || !availableReward}
             loading={isClaimLoading}
           >
             {isClaimLoading ? "Claiming..." : "Claim"}
