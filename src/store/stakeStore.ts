@@ -260,7 +260,7 @@ export const stakeStore = create<StakeStoreState>((set) => ({
         },
       });
     } catch (error) {
-      console.error("Error fetching rewards:", error);
+      console.error("Error fetching rewards :", error);
     } finally {
       set({ loading: { stakeRewards: false } });
     }
