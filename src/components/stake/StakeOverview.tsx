@@ -13,7 +13,8 @@ import { config } from "../../layout/wagmi/config";
 import { Toast } from "../toast/Toast";
 import { AnimatePresence, motion } from "framer-motion";
 import { TooltipWrapper } from "./shared/ToolTipWrapper";
-import { OverviewStats } from "./shared/Overviewstats";
+import { OverviewStats } from "./shared/OverviewStats";
+
 export const StakeOverview = () => {
   const [isClaimLoading, setIsClaimLoading] = useState(false);
 
