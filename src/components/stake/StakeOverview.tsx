@@ -128,30 +128,27 @@ export const StakeOverview = () => {
             />
             {isTab && (
               <AnimatePresence>
-                <div className="relative cursor-pointer">
-                  <StakeStats
-                    title={"Total rewards"}
-                    value={`~$${stakeRewards?.accumulatedRewardUSD.toFixed(2) || 0}`}
-                    size="sm"
-                    toolTip={
-                      <TooltipWrapper
-                        seedReward={formatAmount(
-                          stakeRewards?.totalSeedReward ?? 0,
-                          SEED_DECIMALS,
-                          5
-                        )}
-                        cbBtcReward={formatAmount(
-                          Number(
-                            stakeRewards?.rewardResponse
-                              .cumulative_rewards_cbbtc
-                          ),
-                          8,
-                          5
-                        )}
-                      />
-                    }
-                  />
-                </div>
+                <StakeStats
+                  title={"Total rewards"}
+                  value={`~$${stakeRewards?.accumulatedRewardUSD.toFixed(2) || 0}`}
+                  size="sm"
+                  toolTip={
+                    <TooltipWrapper
+                      seedReward={formatAmount(
+                        stakeRewards?.totalSeedReward ?? 0,
+                        SEED_DECIMALS,
+                        5
+                      )}
+                      cbBtcReward={formatAmount(
+                        Number(
+                          stakeRewards?.rewardResponse.cumulative_rewards_cbbtc
+                        ),
+                        8,
+                        5
+                      )}
+                    />
+                  }
+                />
               </AnimatePresence>
             )}
 
