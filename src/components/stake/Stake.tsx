@@ -1,5 +1,5 @@
 import { Button, InfoIcon, Typography } from "@gardenfi/garden-book";
-import { FC, useEffect, useMemo } from "react";
+import { FC, useEffect, useId, useMemo } from "react";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { stakeStore } from "../../store/stakeStore";
@@ -12,6 +12,7 @@ import { ToastContainer } from "../toast/Toast";
 import { StakePositions } from "./stakePosition/StakePositions";
 import { AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
+import { Tooltip } from "../../common/Tooltip";
 
 export const Stake: FC = () => {
   const { isConnected, address } = useEVMWallet();
@@ -28,6 +29,7 @@ export const Stake: FC = () => {
     fetchAndSetRewards,
   } = stakeStore();
   const { tokenBalance } = useBalances(asset);
+  const tooltipId = useId();
 
   const isStakeable = useMemo(
     () =>
@@ -89,7 +91,7 @@ export const Stake: FC = () => {
       <div className="mx-auto mt-10 flex max-w-[328px] flex-col gap-6 sm:max-w-[424px]">
         <ToastContainer />
         <div className="flex w-full flex-col gap-8 rounded-2xl bg-white bg-opacity-50 p-4">
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             <Typography size="h5" weight="bold">
               Stake to earn Bitcoin
             </Typography>
@@ -104,19 +106,24 @@ export const Stake: FC = () => {
               rewards every week. Stake in multiples of 2100 SEED and choose
               longer periods for higher APY.
             </Typography>
-            <Typography size="h4" weight="medium">
-              Plant your SEED, watch it grow!
-            </Typography>
             <div className="mt-1 flex gap-10">
               <StakeStats
                 title={
                   <div className="flex items-center gap-1">
                     APY
-                    <InfoIcon />
+                    <div data-tooltip-id={tooltipId} className="cursor-pointer">
+                      <InfoIcon />
+                    </div>
                   </div>
                 }
                 value={`${stakingStats?.apy || 0} %`}
                 size="sm"
+              />
+              <Tooltip
+                id={tooltipId}
+                place="top"
+                content="Estimated APY you can earn on each stake. APY value is updated after every epoch based on the amount of rewards and staked positions."
+                multiline={true}
               />
               <StakeStats
                 title={"SEED locked"}
