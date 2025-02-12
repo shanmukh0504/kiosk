@@ -119,12 +119,6 @@ export const Stake: FC = () => {
                 value={`${stakingStats?.apy || 0} %`}
                 size="sm"
               />
-              <Tooltip
-                id={tooltipId}
-                place="top"
-                content="Estimated APY you can earn on each stake. APY value is updated after every epoch based on the amount of rewards and staked positions."
-                multiline={true}
-              />
               <StakeStats
                 title={"SEED locked"}
                 value={`${stakingStats?.seedLockedPercentage || 0} %`}
@@ -137,15 +131,23 @@ export const Stake: FC = () => {
               />
             </div>
           </div>
-          <div className="flex flex-col gap-3">
-            <StakeInput balance={tokenBalance} />
-            <Button
-              size="lg"
-              variant={isStakeable ? "primary" : "disabled"}
-              onClick={handleStakeClick}
-            >
-              Stake
-            </Button>
+          <div>
+            <div className="flex flex-col gap-3">
+              <StakeInput balance={tokenBalance} />
+              <Button
+                size="lg"
+                variant={isStakeable ? "primary" : "disabled"}
+                onClick={handleStakeClick}
+              >
+                Stake
+              </Button>
+            </div>
+            <Tooltip
+              id={tooltipId}
+              place="top"
+              content="Estimated APY you can earn on each stake. APY value is updated after every epoch based on the amount of rewards and staked positions."
+              multiline={true}
+            />
           </div>
         </div>
       </div>
