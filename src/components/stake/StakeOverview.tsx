@@ -113,7 +113,7 @@ export const StakeOverview = () => {
           Staking overview
         </Typography>
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <div className="flex w-full flex-col gap-[20px] sm:w-[384px] sm:flex-row md:w-[600px]">
+          <div className="flex w-full flex-col gap-[32.67px] sm:w-[384px] sm:flex-row md:w-[600px] md:gap-[20px]">
             <div className="flex gap-4 sm:gap-8 md:gap-5">
               <OverviewStats
                 title={"Staked SEED"}
