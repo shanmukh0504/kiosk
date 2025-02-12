@@ -1,6 +1,6 @@
 import { Button, Typography } from "@gardenfi/garden-book";
 import { stakeStore } from "../../store/stakeStore";
-import { TEN_THOUSAND } from "../../constants/stake";
+import { SEED_DECIMALS, TEN_THOUSAND } from "../../constants/stake";
 import { distributerABI } from "./abi/distributerClaim";
 import { useReadContract, useSwitchChain, useWriteContract } from "wagmi";
 import { useState, useMemo } from "react";
@@ -20,13 +20,7 @@ export const StakeOverview = () => {
   const [isClaimLoading, setIsClaimLoading] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
 
-  const {
-    totalStakedAmount,
-    totalVotes,
-    stakeRewards,
-    totalSeedReward,
-    seedPriceUSD,
-  } = stakeStore();
+  const { totalStakedAmount, totalVotes, stakeRewards } = stakeStore();
   const { writeContractAsync } = useWriteContract();
   const { address, chainId } = useEVMWallet();
   const { switchChainAsync } = useSwitchChain();
@@ -51,26 +45,16 @@ export const StakeOverview = () => {
       : totalStakedAmount >= TEN_THOUSAND
         ? totalStakedAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
         : totalStakedAmount.toString();
-  const totalRewardsInUSD =
-    totalSeedReward * seedPriceUSD +
-    (stakeRewards?.rewardResponse?.cumulative_rewards_usd
-      ? parseFloat(stakeRewards.rewardResponse.cumulative_rewards_usd)
-      : 0);
 
   const availableReward = useMemo(() => {
     return stakeRewards
       ? formatAmount(
-          stakeRewards.rewardResponse.cumulative_rewards_cbbtc -
-            Number(claimedAmount ?? 0),
+          stakeRewards.totalcbBtcReward - Number(claimedAmount ?? 0),
           8,
           5
         )
       : 0;
   }, [stakeRewards, claimedAmount]);
-
-  const cbBtcRewardCumulative = stakeRewards
-    ? formatAmount(stakeRewards.rewardResponse.cumulative_rewards_cbbtc, 8, 5)
-    : 0;
 
   const handleRewardClick = async () => {
     if (!chainId || !address || !stakeRewards) return;
@@ -152,7 +136,7 @@ export const StakeOverview = () => {
                 >
                   <StakeStats
                     title={"Total rewards"}
-                    value={`~$${totalRewardsInUSD.toFixed(2)}`}
+                    value={`~$${stakeRewards?.accumulatedRewardUSD.toFixed(2) || 0}`}
                     size="sm"
                   />
                   <AnimatePresence>
@@ -165,8 +149,19 @@ export const StakeOverview = () => {
                         className="absolute top-12 z-50 mx-auto flex w-max flex-col sm:absolute sm:left-[calc(100%+15px)] sm:top-[8.5px] sm:-translate-x-1/2 sm:flex-col-reverse"
                       >
                         <RewardsToolTip
-                          seed={totalSeedReward}
-                          cbBtc={cbBtcRewardCumulative}
+                          seed={formatAmount(
+                            stakeRewards?.totalSeedReward ?? 0,
+                            SEED_DECIMALS,
+                            5
+                          )}
+                          cbBtc={formatAmount(
+                            Number(
+                              stakeRewards?.rewardResponse
+                                .cumulative_rewards_cbbtc
+                            ),
+                            8,
+                            5
+                          )}
                         />
                       </motion.div>
                     )}
@@ -177,7 +172,7 @@ export const StakeOverview = () => {
 
             <StakeStats
               title={"Staking rewards"}
-              value={`${availableReward} cbBTC`}
+              value={`${availableReward || 0} cbBTC`}
               size="sm"
               isPink
             />

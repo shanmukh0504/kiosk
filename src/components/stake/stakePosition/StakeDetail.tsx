@@ -1,4 +1,9 @@
-import { Button, KeyboardUpIcon, Typography } from "@gardenfi/garden-book";
+import {
+  Button,
+  InfinityIcon,
+  KeyboardUpIcon,
+  Typography,
+} from "@gardenfi/garden-book";
 import { FC, useState } from "react";
 import {
   StakePositionStatus,
@@ -23,7 +28,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   const { setOpenModal } = modalStore();
-  const { stakeApys, stakeRewards, seedPriceUSD } = stakeStore();
+  const { stakeApys, stakeRewards } = stakeStore();
 
   const isPermaStake = stakePos.isPerma;
   const isExtendable =
@@ -31,12 +36,10 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
   const isExpired = stakePos.status === StakePositionStatus.expired;
 
   const stakeReward = formatAmount(
-    stakeRewards?.stakewiseRewards?.[stakePos.id].cumulative || 0,
+    stakeRewards?.stakewiseRewards?.[stakePos.id].accumulatedCBBTCRewards || 0,
     8,
     5
   );
-  const seedReward =
-    stakeRewards && stakeRewards?.stakewiseRewards?.[stakePos.id].seed;
 
   const stakeApy = Number((stakeApys?.[stakePos.id] || 0).toFixed(2));
   const stakeAmount = formatAmount(stakePos.amount, SEED_DECIMALS, 0);
@@ -45,16 +48,12 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
       ? stakeAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       : stakeAmount.toString();
 
-  const cbBtcPriceUsd =
-    Number(stakeRewards?.rewardResponse?.cumulative_rewards_usd || 0) /
-    formatAmount(
-      Number(stakeRewards?.rewardResponse.cumulative_rewards_cbbtc),
-      8,
-      5
-    );
-
-  const totalrewardInUsd =
-    seedReward && seedReward * seedPriceUSD + stakeReward * cbBtcPriceUsd;
+  const seedReward = formatAmount(
+    stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedSeedRewards ??
+      "0",
+    SEED_DECIMALS,
+    5
+  );
 
   const daysPassedSinceStake = Math.floor(
     (new Date().getTime() - new Date(stakePos.stakedAt).getTime()) /
@@ -68,9 +67,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
     stakeEndDate.getDate() + (expiryInDays - daysPassedSinceStake)
   );
   const stakeEndDateString = isPermaStake ? (
-    <Typography size="h3" weight="medium" className="!text-2xl !leading-4">
-      ∞
-    </Typography>
+    <InfinityIcon />
   ) : (
     stakeEndDate.toISOString().split("T")[0].replaceAll("-", "/")
   );
@@ -78,6 +75,9 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
   const multiplier = getMultiplier(stakePos);
   const currentDate = new Date();
   const hasExpired = currentDate > stakeEndDate;
+  const reward = Number(
+    stakeRewards?.stakewiseRewards[stakePos.id].accumulatedRewardsUSD
+  ).toFixed(2);
 
   const handleExtend = () => {
     setOpenModal(modalNames.manageStake, {
@@ -120,9 +120,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
             ) : (
               <>
                 {isPermaStake ? (
-                  <Typography size="h3" weight="medium">
-                    ∞
-                  </Typography>
+                  <InfinityIcon className="h-4" />
                 ) : (
                   `${daysPassedSinceStake} / ${expiryInDays}`
                 )}
@@ -202,7 +200,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
                 >
                   <StakeStats
                     title={"Rewards"}
-                    value={`~$${totalrewardInUsd?.toFixed(4)}`}
+                    value={`~$${reward}`}
                     size="xs"
                   />
 
