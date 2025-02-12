@@ -83,18 +83,17 @@ export type StakingReward = {
   }[];
 };
 
-export type StakingAccumulatedReward = {
+export type AccumulatedReward = {
+  accumulatedSeedRewards: string;
+  accumulatedSeedRewardsUSD: string;
+  accumulatedCBBTCRewards: string;
+  accumulatedCBBTCRewardsUSD: string;
+  accumulatedRewardsUSD: string;
+};
+
+export type StakingAccumulatedRewards = {
   data: {
-    stakeRewards: Record<
-      string,
-      {
-        accumulatedSeedRewards: string;
-        accumulatedSeedRewardsUSD: string;
-        accumulatedCBBTCRewards: string;
-        accumulatedCBBTCRewardsUSD: string;
-        accumulatedRewardsUSD: string;
-      }
-    >;
+    stakeRewards: Record<string, AccumulatedReward>;
   };
 };
 
@@ -127,7 +126,6 @@ export const stakeStore = create<StakeStoreState>((set) => ({
   loading: {
     stakeRewards: false,
   },
-  totalSeedReward: 0,
   setInputAmount: (value: string) => set({ inputAmount: value }),
   fetchStakePosData: async (address: string) => {
     try {
@@ -227,28 +225,15 @@ export const stakeStore = create<StakeStoreState>((set) => ({
     try {
       set({ loading: { stakeRewards: true } });
       const resp = await axios.get<StakingReward>(API().reward(address));
-      const accResp = await axios.get<StakingAccumulatedReward>(
-        API().accumulatedReward(address)
+      const accResp = await axios.get<StakingAccumulatedRewards>(
+        API().stake.accumulatedReward(address)
       );
-      const stakewiseRewards: Record<
-        string,
-        {
-          accumulatedSeedRewards: string;
-          accumulatedSeedRewardsUSD: string;
-          accumulatedCBBTCRewards: string;
-          accumulatedCBBTCRewardsUSD: string;
-          accumulatedRewardsUSD: string;
-        }
-      > = {};
+      const stakewiseRewards: Record<string, AccumulatedReward> = {};
       if (accResp.status === 200 && accResp.data) {
         Object.entries(accResp.data.data.stakeRewards).forEach(
           ([address, reward]) => {
             stakewiseRewards[address] = {
-              accumulatedSeedRewards: reward.accumulatedSeedRewards,
-              accumulatedSeedRewardsUSD: reward.accumulatedSeedRewardsUSD,
-              accumulatedCBBTCRewards: reward.accumulatedCBBTCRewards,
-              accumulatedCBBTCRewardsUSD: reward.accumulatedCBBTCRewardsUSD,
-              accumulatedRewardsUSD: reward.accumulatedRewardsUSD,
+              ...reward,
             };
           }
         );

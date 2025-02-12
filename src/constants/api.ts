@@ -7,7 +7,6 @@ const REQUIRED_ENV_VARS = {
   WHITELIST: import.meta.env.VITE_WHITELIST_URL,
   REWARD: import.meta.env.VITE_REWARD_URL,
   EXPLORER: import.meta.env.VITE_EXPLORER_URL,
-  ACCUMULATED_REWARDS: import.meta.env.VITE_ACCUMULATED_REWARD_URL,
 } as const;
 
 export const API = () => {
@@ -36,10 +35,10 @@ export const API = () => {
       stakeApy: (address: string) =>
         REQUIRED_ENV_VARS.STAKING_URL + "/apy/" + address.toLowerCase(),
       stakingStats: REQUIRED_ENV_VARS.STAKING_URL + "/stakingStats",
+      accumulatedReward: (userId: string) =>
+        REQUIRED_ENV_VARS.STAKING_URL + "/rewards/" + userId,
     },
     reward: (userId: string) => REQUIRED_ENV_VARS.REWARD + "/rewards/" + userId,
-    accumulatedReward: (userId: string) =>
-      REQUIRED_ENV_VARS.ACCUMULATED_REWARDS + "/rewards/" + userId,
     mempool: {
       testnet: "https://mempool.space/testnet4/api",
       mainnet: "https://mempool.space/api",

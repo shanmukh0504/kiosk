@@ -58,7 +58,7 @@ export const REWARD_CONFIG = {
   },
 } as const;
 
-export const LOGO_CONFIGS = {
+export const REWARD_LOGO_CONFIG = {
   seed: {
     token_logo: "https://garden-finance.imgix.net/token-images/seed.svg",
     chain_logo: "https://garden-finance.imgix.net/chain_images/arbitrum.svg",

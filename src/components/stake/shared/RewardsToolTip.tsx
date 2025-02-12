@@ -1,6 +1,6 @@
 import { AssetChainLogos, Typography } from "@gardenfi/garden-book";
 import { motion } from "framer-motion";
-import { LOGO_CONFIGS } from "../constants";
+import { REWARD_LOGO_CONFIG } from "../constants";
 
 type TooltipProps = {
   seed: number | null;
@@ -27,8 +27,8 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
               {cbBtc} cbBTC
             </Typography>
             <AssetChainLogos
-              tokenLogo={LOGO_CONFIGS.cbBTC.token_logo}
-              chainLogo={LOGO_CONFIGS.cbBTC.chain_logo}
+              tokenLogo={REWARD_LOGO_CONFIG.cbBTC.token_logo}
+              chainLogo={REWARD_LOGO_CONFIG.cbBTC.chain_logo}
             />
           </div>
           <div className="flex gap-1">
@@ -36,8 +36,8 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
               {seed} SEED
             </Typography>
             <AssetChainLogos
-              tokenLogo={LOGO_CONFIGS.seed.token_logo}
-              chainLogo={LOGO_CONFIGS.seed.chain_logo}
+              tokenLogo={REWARD_LOGO_CONFIG.seed.token_logo}
+              chainLogo={REWARD_LOGO_CONFIG.seed.chain_logo}
             />
           </div>
         </div>

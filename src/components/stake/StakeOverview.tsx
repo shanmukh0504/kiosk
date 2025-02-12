@@ -14,11 +14,10 @@ import { config } from "../../layout/wagmi/config";
 import { Toast } from "../toast/Toast";
 import { AnimatePresence, motion } from "framer-motion";
 import { viewPortStore } from "../../store/viewPortStore";
-import { RewardsToolTip } from "./shared/RewardsToolTip";
 
 export const StakeOverview = () => {
   const [isClaimLoading, setIsClaimLoading] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const { totalStakedAmount, totalVotes, stakeRewards } = stakeStore();
   const { writeContractAsync } = useWriteContract();
@@ -131,48 +130,34 @@ export const StakeOverview = () => {
               <AnimatePresence>
                 <div
                   className="relative cursor-pointer"
-                  onMouseEnter={() => setShowTooltip(true)}
-                  onMouseLeave={() => setShowTooltip(false)}
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
                 >
                   <StakeStats
                     title={"Total rewards"}
                     value={`~$${stakeRewards?.accumulatedRewardUSD.toFixed(2) || 0}`}
                     size="sm"
-                  />
-                  <AnimatePresence>
-                    {showTooltip && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2, ease: "easeInOut" }}
-                        className="absolute top-12 z-50 mx-auto flex w-max flex-col sm:absolute sm:left-[calc(100%+15px)] sm:top-[8.5px] sm:-translate-x-1/2 sm:flex-col-reverse"
-                      >
-                        <RewardsToolTip
-                          seed={formatAmount(
-                            stakeRewards?.totalSeedReward ?? 0,
-                            SEED_DECIMALS,
-                            5
-                          )}
-                          cbBtc={formatAmount(
-                            Number(
-                              stakeRewards?.rewardResponse
-                                .cumulative_rewards_cbbtc
-                            ),
-                            8,
-                            5
-                          )}
-                        />
-                      </motion.div>
+                    showTooltip={isHovered}
+                    seedReward={formatAmount(
+                      stakeRewards?.totalSeedReward ?? 0,
+                      SEED_DECIMALS,
+                      5
                     )}
-                  </AnimatePresence>
+                    stakeReward={formatAmount(
+                      Number(
+                        stakeRewards?.rewardResponse.cumulative_rewards_cbbtc
+                      ),
+                      8,
+                      5
+                    )}
+                  />
                 </div>
               </AnimatePresence>
             )}
 
             <StakeStats
               title={"Staking rewards"}
-              value={`${availableReward || 0} cbBTC`}
+              value={`${availableReward.toFixed(3) || 0} cbBTC`}
               size="sm"
               isPink
             />

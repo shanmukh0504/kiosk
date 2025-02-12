@@ -17,7 +17,6 @@ import { modalNames, modalStore } from "../../../store/modalStore";
 import { StakeStats } from "../shared/StakeStats";
 import { UnstakeAndRestake } from "./UnstakeAndRestake";
 import { AnimatePresence, motion } from "framer-motion";
-import { RewardsToolTip } from "../shared/RewardsToolTip";
 
 type props = {
   stakePos: StakingPosition;
@@ -25,7 +24,7 @@ type props = {
 
 export const StakeDetails: FC<props> = ({ stakePos }) => {
   const [showDetails, setShowDetails] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const { setOpenModal } = modalStore();
   const { stakeApys, stakeRewards } = stakeStore();
@@ -195,28 +194,17 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
                 ) : null}
                 <div
                   className="relative"
-                  onMouseEnter={() => setShowTooltip(true)}
-                  onMouseLeave={() => setShowTooltip(false)}
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
                 >
                   <StakeStats
                     title={"Rewards"}
                     value={`~$${reward}`}
                     size="xs"
+                    showTooltip={isHovered}
+                    seedReward={seedReward}
+                    stakeReward={stakeReward}
                   />
-
-                  <AnimatePresence>
-                    {showTooltip && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2, ease: "easeInOut" }}
-                        className="absolute top-12 z-50 mx-auto flex w-max flex-col sm:absolute sm:left-[calc(100%+15px)] sm:top-[10px] sm:-translate-x-1/2 sm:flex-col-reverse"
-                      >
-                        <RewardsToolTip seed={seedReward} cbBtc={stakeReward} />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                 </div>
               </div>
             </div>
