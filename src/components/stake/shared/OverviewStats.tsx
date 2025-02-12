@@ -1,5 +1,6 @@
 import { Typography } from "@gardenfi/garden-book";
 import { FC, ReactNode, useState } from "react";
+import { viewPortStore } from "../../../store/viewPortStore";
 
 type props = {
   title: ReactNode;
@@ -10,7 +11,7 @@ type props = {
   toolTip?: ReactNode;
 };
 
-export const StakeStats: FC<props> = ({
+export const OverviewStats: FC<props> = ({
   title,
   value,
   size = "sm",
@@ -19,7 +20,7 @@ export const StakeStats: FC<props> = ({
   toolTip,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-
+  const { isTab } = viewPortStore();
   const textColor = isPink ? "!text-rose" : "!text-dark-grey";
   const titleSize = size === "xs" ? "h5" : size === "sm" ? "h5" : "h4";
   const valueSize = "h4";
@@ -27,7 +28,7 @@ export const StakeStats: FC<props> = ({
     size === "md"
       ? ({ xs: "h2", sm: "h1" } as const)
       : size === "sm"
-        ? ({ xs: "h3", sm: "h2" } as const)
+        ? ({ xs: "h3", sm: isTab ? "h2" : "h4" } as const)
         : ({ xs: "h4", sm: "h3" } as const);
 
   return (

@@ -37,6 +37,9 @@ export default {
       animation: {
         shine: `shine 1s ${cubicInOut}`,
       },
+      boxShadow: {
+        custom: "0px 0px 16px #554B6A14",
+      },
     },
   },
   plugins: [

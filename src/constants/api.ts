@@ -35,6 +35,8 @@ export const API = () => {
       stakeApy: (address: string) =>
         REQUIRED_ENV_VARS.STAKING_URL + "/apy/" + address.toLowerCase(),
       stakingStats: REQUIRED_ENV_VARS.STAKING_URL + "/stakingStats",
+      accumulatedReward: (userId: string) =>
+        REQUIRED_ENV_VARS.STAKING_URL + "/rewards/" + userId,
     },
     reward: (userId: string) => REQUIRED_ENV_VARS.REWARD + "/rewards/" + userId,
     mempool: {

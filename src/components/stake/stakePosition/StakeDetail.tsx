@@ -17,6 +17,7 @@ import { modalNames, modalStore } from "../../../store/modalStore";
 import { StakeStats } from "../shared/StakeStats";
 import { UnstakeAndRestake } from "./UnstakeAndRestake";
 import { AnimatePresence, motion } from "framer-motion";
+import { TooltipWrapper } from "../shared/ToolTipWrapper";
 
 type props = {
   stakePos: StakingPosition;
@@ -34,7 +35,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
   const isExpired = stakePos.status === StakePositionStatus.expired;
 
   const stakeReward = formatAmount(
-    stakeRewards?.stakewiseRewards?.[stakePos.id] || 0,
+    stakeRewards?.stakewiseRewards?.[stakePos.id].accumulatedCBBTCRewards || 0,
     8,
     5
   );
@@ -46,6 +47,13 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
       ? stakeAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       : stakeAmount.toString();
 
+  const seedReward = formatAmount(
+    stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedSeedRewards ??
+      "0",
+    SEED_DECIMALS,
+    5
+  );
+
   const daysPassedSinceStake = Math.floor(
     (new Date().getTime() - new Date(stakePos.stakedAt).getTime()) /
       (1000 * 3600 * 24)
@@ -53,7 +61,6 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
   const expiryInDays = Math.floor(
     (stakePos.expiry - stakePos.lastStakedAtBlock) / ETH_BLOCKS_PER_DAY
   );
-
   const stakeEndDate = new Date();
   stakeEndDate.setDate(
     stakeEndDate.getDate() + (expiryInDays - daysPassedSinceStake)
@@ -67,6 +74,9 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
   const multiplier = getMultiplier(stakePos);
   const currentDate = new Date();
   const hasExpired = currentDate > stakeEndDate;
+  const reward = Number(
+    stakeRewards?.stakewiseRewards[stakePos.id].accumulatedRewardsUSD
+  ).toFixed(2);
 
   const handleExtend = () => {
     setOpenModal(modalNames.manageStake, {
@@ -83,7 +93,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
       onClick={() => setShowDetails((p) => !p)}
     >
       <div className="flex items-center justify-between">
-        <div className="flex items-center">
+        <div className="flex items-center gap-5">
           <Typography
             size={"h4"}
             breakpoints={{
@@ -91,7 +101,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
               md: "h3",
             }}
             weight="medium"
-            className="w-[120px]"
+            className="w-24 md:w-[120px]"
           >
             {formattedAmount} SEED
           </Typography>
@@ -109,7 +119,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
             ) : (
               <>
                 {isPermaStake ? (
-                  <InfinityIcon />
+                  <InfinityIcon className="h-4" />
                 ) : (
                   `${daysPassedSinceStake} / ${expiryInDays}`
                 )}
@@ -118,11 +128,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
             )}
           </Typography>
 
-          <Typography
-            size="h4"
-            weight="medium"
-            className="hidden pl-10 sm:block"
-          >
+          <Typography size="h4" weight="medium" className="hidden sm:block">
             {stakePos.votes} {stakePos.votes === 1 ? "Vote" : "Votes"}
           </Typography>
         </div>
@@ -163,32 +169,52 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
               },
             }}
           >
-            <div className="flex flex-col gap-4 sm:gap-10 md:flex-row">
-              <div className="flex gap-10">
+            <div className="flex flex-col gap-4 sm:gap-5 md:flex-row">
+              <div className="flex gap-2 md:gap-10">
                 <StakeStats
-                  title={"Rewards"}
-                  value={`${stakeReward} cbBTC`}
+                  title={`${stakePos.votes === 1 ? "Vote" : "Votes"}`}
+                  value={stakePos.votes}
                   size="xs"
-                />
-                <StakeStats
-                  title={"Multiplier"}
-                  value={`${multiplier}x`}
-                  size="xs"
-                />
-              </div>
-              <div className="flex gap-10">
-                <StakeStats
-                  title={"EndDate"}
-                  value={stakeEndDateString}
-                  size="xs"
+                  className="block w-[120px] md:hidden"
                 />
                 {stakeApy ? (
                   <StakeStats
                     title={"APY"}
                     value={`${stakeApy || 0} %`}
                     size="xs"
+                    className="w-[120px]"
                   />
                 ) : null}
+              </div>
+              <div className="flex flex-col gap-4 md:flex-row md:gap-5">
+                <div className="flex items-center gap-2 md:gap-5">
+                  <StakeStats
+                    title={"Multiplier"}
+                    value={`${multiplier}x`}
+                    size="xs"
+                    className="w-[120px]"
+                  />
+                  <StakeStats
+                    title={"EndDate"}
+                    value={stakeEndDateString}
+                    size="xs"
+                    className="w-[120px]"
+                  />
+                </div>
+
+                <div className="relative">
+                  <StakeStats
+                    title={"Rewards"}
+                    value={`~$${reward}`}
+                    size="xs"
+                    toolTip={
+                      <TooltipWrapper
+                        seedReward={seedReward}
+                        cbBtcReward={stakeReward}
+                      />
+                    }
+                  />
+                </div>
               </div>
             </div>
             {isExtendable && (

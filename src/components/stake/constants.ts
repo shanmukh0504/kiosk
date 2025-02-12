@@ -57,3 +57,15 @@ export const REWARD_CONFIG = {
     REWARD_TOKEN_DECIMALS: 8,
   },
 } as const;
+
+export const REWARD_LOGO_CONFIG = {
+  seed: {
+    token_logo: "https://garden-finance.imgix.net/token-images/seed.svg",
+    chain_logo: "https://garden-finance.imgix.net/chain_images/arbitrum.svg",
+  },
+  cbBTC: {
+    token_logo:
+      "https://coin-images.coingecko.com/coins/images/51336/large/cbbtc.png?1730814747",
+    chain_logo: "https://garden-finance.imgix.net/chain_images/base.svg",
+  },
+};

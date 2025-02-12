@@ -43,8 +43,11 @@ type StakeStoreState = {
   stakeRewards: {
     rewardResponse: Omit<StakingReward, "stakes">;
     stakewiseRewards: {
-      [id: string]: number;
+      [id: string]: AccumulatedReward;
     };
+    totalcbBtcReward: number;
+    totalSeedReward: number;
+    accumulatedRewardUSD: number;
   } | null;
   setInputAmount: (value: string) => void;
   fetchStakePosData: (address: string) => Promise<void>;
@@ -72,6 +75,20 @@ export type StakingReward = {
     id: string;
     cumulative_reward_cbbtc: number;
   }[];
+};
+
+export type AccumulatedReward = {
+  accumulatedSeedRewards: string;
+  accumulatedSeedRewardsUSD: string;
+  accumulatedCBBTCRewards: string;
+  accumulatedCBBTCRewardsUSD: string;
+  accumulatedRewardsUSD: string;
+};
+
+export type StakingAccumulatedRewards = {
+  data: {
+    stakeRewards: Record<string, AccumulatedReward>;
+  };
 };
 
 export type StakingPosition = {
@@ -169,7 +186,9 @@ export const stakeStore = create<StakeStoreState>((set) => ({
 
       set({
         stakingStats: {
-          apy: Number(response.data.data.apy.toFixed(2)),
+          apy: response.data.data.apy
+            ? Number(response.data.data.apy.toFixed(2))
+            : 0,
           averageLockTime: avgLockTime.toString(),
           totalVotes: response.data.data.totalVotes,
           seedLockedPercentage: seedLockedPercentage,
@@ -200,20 +219,42 @@ export const stakeStore = create<StakeStoreState>((set) => ({
     try {
       set({ loading: { stakeRewards: true } });
       const resp = await axios.get<StakingReward>(API().reward(address));
-      if (resp.status === 200 && resp.data) {
-        const stakeRewards: Record<string, number> = {};
-        resp.data.stakes.map((stake) => {
-          stakeRewards[stake.id] = stake.cumulative_reward_cbbtc;
-        });
-        set({
-          stakeRewards: {
-            rewardResponse: resp.data,
-            stakewiseRewards: stakeRewards,
-          },
-        });
+      const accResp = await axios.get<StakingAccumulatedRewards>(
+        API().stake.accumulatedReward(address)
+      );
+      const stakewiseRewards: Record<string, AccumulatedReward> = {};
+      if (accResp.status === 200 && accResp.data) {
+        Object.entries(accResp.data.data.stakeRewards).forEach(
+          ([address, reward]) => {
+            stakewiseRewards[address] = {
+              ...reward,
+            };
+          }
+        );
       }
+
+      set({
+        stakeRewards: {
+          rewardResponse: resp.data,
+          stakewiseRewards,
+          totalcbBtcReward: Object.values(stakewiseRewards).reduce(
+            (total, reward) =>
+              total + parseFloat(reward.accumulatedCBBTCRewards),
+            0
+          ),
+          totalSeedReward: Object.values(stakewiseRewards).reduce(
+            (total, reward) =>
+              total + parseFloat(reward.accumulatedSeedRewards),
+            0
+          ),
+          accumulatedRewardUSD: Object.values(stakewiseRewards).reduce(
+            (total, reward) => total + parseFloat(reward.accumulatedRewardsUSD),
+            0
+          ),
+        },
+      });
     } catch (error) {
-      console.error("Error fetching rewards:", error);
+      console.error("Error fetching rewards :", error);
     } finally {
       set({ loading: { stakeRewards: false } });
     }
