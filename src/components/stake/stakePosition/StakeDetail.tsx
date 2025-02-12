@@ -170,7 +170,13 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
             }}
           >
             <div className="flex flex-col gap-4 sm:gap-5 md:flex-row">
-              <div className="flex gap-10">
+              <div className="flex gap-2 md:gap-10">
+                <StakeStats
+                  title={`${stakePos.votes === 1 ? "Vote" : "Votes"}`}
+                  value={stakePos.votes}
+                  size="xs"
+                  className="block w-[120px] md:hidden"
+                />
                 {stakeApy ? (
                   <StakeStats
                     title={"APY"}
@@ -180,19 +186,21 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
                   />
                 ) : null}
               </div>
-              <div className="flex items-center gap-5">
-                <StakeStats
-                  title={"Multiplier"}
-                  value={`${multiplier}x`}
-                  size="xs"
-                  className="w-[120px]"
-                />
-                <StakeStats
-                  title={"EndDate"}
-                  value={stakeEndDateString}
-                  size="xs"
-                  className="w-[120px]"
-                />
+              <div className="flex flex-col gap-4 md:flex-row md:gap-5">
+                <div className="flex items-center gap-2 md:gap-5">
+                  <StakeStats
+                    title={"Multiplier"}
+                    value={`${multiplier}x`}
+                    size="xs"
+                    className="w-[120px]"
+                  />
+                  <StakeStats
+                    title={"EndDate"}
+                    value={stakeEndDateString}
+                    size="xs"
+                    className="w-[120px]"
+                  />
+                </div>
 
                 <div className="relative">
                   <StakeStats

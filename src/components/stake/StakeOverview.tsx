@@ -6,16 +6,14 @@ import { useReadContract, useSwitchChain, useWriteContract } from "wagmi";
 import { useState, useMemo } from "react";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { Hex } from "viem";
-import { StakeStats } from "./shared/StakeStats";
 import { formatAmount } from "../../utils/utils";
 import { REWARD_CHAIN, REWARD_CONFIG } from "./constants";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../../layout/wagmi/config";
 import { Toast } from "../toast/Toast";
 import { AnimatePresence, motion } from "framer-motion";
-import { viewPortStore } from "../../store/viewPortStore";
 import { TooltipWrapper } from "./shared/ToolTipWrapper";
-
+import { OverviewStats } from "./shared/Overviewstats";
 export const StakeOverview = () => {
   const [isClaimLoading, setIsClaimLoading] = useState(false);
 
@@ -23,7 +21,6 @@ export const StakeOverview = () => {
   const { writeContractAsync } = useWriteContract();
   const { address, chainId } = useEVMWallet();
   const { switchChainAsync } = useSwitchChain();
-  const { isTab } = viewPortStore();
   // get claimed amount
   const { data: claimedAmount, refetch: refetchClaimedAmount } =
     useReadContract({
@@ -51,7 +48,7 @@ export const StakeOverview = () => {
           stakeRewards.totalcbBtcReward - Number(claimedAmount ?? 0),
           8,
           5
-        )
+        ).toFixed(5)
       : 0;
   }, [stakeRewards, claimedAmount]);
 
@@ -110,25 +107,29 @@ export const StakeOverview = () => {
       }}
       style={{ transformOrigin: "top" }}
     >
-      <div className="mx-auto flex w-[328px] flex-col gap-4 rounded-[15px] bg-white p-6 sm:w-[424px] md:w-[740px] lg:w-[1000px]">
+      <div className="mx-auto flex w-[328px] flex-col gap-[20px] rounded-[15px] bg-white p-6 sm:w-[424px] md:w-[740px] lg:w-[1000px]">
         <Typography size="h5" weight="bold">
           Staking overview
         </Typography>
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <div className="flex w-full justify-between gap-10 md:w-[500px]">
-            <StakeStats
-              title={"Staked SEED"}
-              value={formattedAmount}
-              size="sm"
-            />
-            <StakeStats
-              title={"Votes"}
-              value={totalVotes !== undefined ? totalVotes : 0}
-              size="sm"
-            />
-            {isTab && (
+          <div className="flex w-full flex-col gap-[20px] sm:w-[384px] sm:flex-row sm:gap-[32.67px] md:w-[600px] md:gap-8">
+            <div className="flex gap-10 sm:gap-[32.67px] md:gap-8">
+              <OverviewStats
+                title={"staked SEED"}
+                value={formattedAmount}
+                size="sm"
+                className="w-[120px] sm:w-fit xl:w-[120px]"
+              />
+              <OverviewStats
+                title={"Votes"}
+                value={totalVotes !== undefined ? totalVotes : 0}
+                size="sm"
+                className="w-[120px] sm:w-fit xl:w-[120px]"
+              />
+            </div>
+            <div className="flex gap-10 sm:gap-[32.67px] md:gap-8">
               <AnimatePresence>
-                <StakeStats
+                <OverviewStats
                   title={"Total rewards"}
                   value={`~$${stakeRewards?.accumulatedRewardUSD.toFixed(2) || 0}`}
                   size="sm"
@@ -148,16 +149,16 @@ export const StakeOverview = () => {
                       )}
                     />
                   }
+                  className="w-[120px] sm:w-fit xl:w-[120px]"
                 />
               </AnimatePresence>
-            )}
-
-            <StakeStats
-              title={"Staking rewards"}
-              value={`${availableReward.toFixed(5) || 0} cbBTC`}
-              size="sm"
-              isPink
-            />
+              <OverviewStats
+                title={"Staking rewards"}
+                value={`${availableReward || 0} cbBTC`}
+                size="sm"
+                isPink
+              />
+            </div>
           </div>
           <Button
             variant={
