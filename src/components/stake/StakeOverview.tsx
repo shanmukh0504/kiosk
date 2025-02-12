@@ -49,7 +49,7 @@ export const StakeOverview = () => {
           stakeRewards.totalcbBtcReward - Number(claimedAmount ?? 0),
           8,
           5
-        ).toFixed(5)
+        )
       : 0;
   }, [stakeRewards, claimedAmount]);
 
