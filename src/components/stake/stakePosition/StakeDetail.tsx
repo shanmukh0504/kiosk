@@ -177,14 +177,12 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
                   size="xs"
                   className="block w-[120px] md:hidden"
                 />
-                {stakeApy ? (
-                  <StakeStats
-                    title={"APY"}
-                    value={`${stakeApy || 0} %`}
-                    size="xs"
-                    className="w-[120px]"
-                  />
-                ) : null}
+                <StakeStats
+                  title={"APY"}
+                  value={`${stakeApy || 0} %`}
+                  size="xs"
+                  className="w-[120px]"
+                />
               </div>
               <div className="flex flex-col gap-4 md:flex-row md:gap-5">
                 <div className="flex items-center gap-2 md:gap-5">
