@@ -66,9 +66,9 @@ export const Stake: FC = () => {
 
       try {
         isFetching = true;
-        await fetchAndSetStakeApy("0xeB7E1c4B16203187D2f46071203494662b4eE5C6");
-        await fetchStakePosData("0xeB7E1c4B16203187D2f46071203494662b4eE5C6");
-        await fetchAndSetRewards("0xeB7E1c4B16203187D2f46071203494662b4eE5C6");
+        await fetchAndSetStakeApy(address);
+        await fetchStakePosData(address);
+        await fetchAndSetRewards(address);
       } finally {
         isFetching = false;
       }
