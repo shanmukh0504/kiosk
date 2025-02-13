@@ -225,5 +225,3 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     </div>
   );
 };
-
-export default AssetSelector;

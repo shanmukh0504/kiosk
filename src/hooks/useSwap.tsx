@@ -18,7 +18,6 @@ import { ordersStore } from "../store/ordersStore";
 import { Environment } from "@gardenfi/utils";
 
 export const useSwap = () => {
-  const { inputTokenBalance } = useBalances();
   const {
     inputAmount,
     outputAmount,
@@ -39,6 +38,7 @@ export const useSwap = () => {
     clearSwapState,
     setBtcAddress,
   } = swapStore();
+  const { tokenBalance: inputTokenBalance } = useBalances(inputAsset);
   const { strategies } = assetInfoStore();
   const { setOrderInProgress } = ordersStore();
   const { address } = useEVMWallet();

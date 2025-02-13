@@ -36,7 +36,7 @@ export const Address = () => {
       {pendingOrdersFromStore?.length ? (
         <div className="relative">
           <Loader />
-          <div className="absolute text-rose text-sm font-bold top-[10%] left-[34%]">
+          <div className="absolute left-[34%] top-[10%] text-sm font-bold text-rose">
             {pendingOrdersFromStore.length}
           </div>
         </div>

@@ -7,14 +7,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useGarden } from "@gardenfi/react-hooks";
 import { isCurrentRoute } from "../../utils/utils";
 import { MobileMenu } from "./MobileMenu";
-import { connectWalletStore } from "../../store/connectWalletStore";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { modalNames, modalStore } from "../../store/modalStore";
 
 export const Navbar = () => {
   const [isInitiatingSM, setIsInitiatingSM] = useState(false);
 
   const { isConnected, address } = useEVMWallet();
-  const { setIsOpen } = connectWalletStore();
+  const { setOpenModal } = modalStore();
   const { account } = useBitcoinWallet();
   const { garden, isExecuting, isExecutorRequired } = useGarden();
 
@@ -34,7 +34,7 @@ export const Navbar = () => {
   const handleConnectClick = () => {
     if (isFullyConnected) return;
     if (isConnected && shouldInitiateSM) handleInitializeSM();
-    else setIsOpen();
+    else setOpenModal(modalNames.connectWallet);
   };
 
   const handleInitializeSM = useCallback(async () => {
