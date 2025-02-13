@@ -90,8 +90,8 @@ export const Stake: FC = () => {
     <div className="mb-8 mt-10 flex flex-col gap-6 sm:mb-16">
       <div className="mx-auto mt-10 flex max-w-[328px] flex-col gap-6 sm:max-w-[424px]">
         <ToastContainer />
-        <div className="flex w-full flex-col gap-8 rounded-2xl bg-white bg-opacity-50 p-4">
-          <div className="flex flex-col gap-4">
+        <div className="flex w-full flex-col gap-8 rounded-2xl bg-white bg-opacity-50 p-3">
+          <div className="flex flex-col gap-2 p-1">
             <Typography size="h5" weight="bold">
               Stake to earn Bitcoin
             </Typography>
@@ -106,7 +106,7 @@ export const Stake: FC = () => {
               rewards every week. Stake in multiples of 2100 SEED and choose
               longer periods for higher APY.
             </Typography>
-            <div className="mt-1 flex gap-10">
+            <div className="mt-3 flex gap-10">
               <StakeStats
                 title={
                   <div className="flex items-center gap-1">
