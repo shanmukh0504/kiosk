@@ -35,7 +35,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
   const isExpired = stakePos.status === StakePositionStatus.expired;
 
   const stakeReward = formatAmount(
-    stakeRewards?.stakewiseRewards?.[stakePos.id].accumulatedCBBTCRewards || 0,
+    stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedCBBTCRewards || 0,
     8,
     5
   );
@@ -75,7 +75,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
   const currentDate = new Date();
   const hasExpired = currentDate > stakeEndDate;
   const reward = Number(
-    stakeRewards?.stakewiseRewards[stakePos.id].accumulatedRewardsUSD
+    stakeRewards?.stakewiseRewards[stakePos.id]?.accumulatedRewardsUSD
   ).toFixed(2);
 
   const handleExtend = () => {
