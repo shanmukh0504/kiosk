@@ -125,7 +125,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   };
 
   return (
-    <div className="transition-left left-auto top-60 z-40 flex flex-col gap-3 rounded-[20px] duration-700 ease-cubic-in-out">
+    <div className="transition-left left-auto top-60 z-40 flex flex-col gap-3 rounded-[20px] duration-700 ease-cubic-in-out sm:w-[480px]">
       <div className="flex items-center justify-between p-1">
         <Typography size="h4" weight="bold">
           Token select

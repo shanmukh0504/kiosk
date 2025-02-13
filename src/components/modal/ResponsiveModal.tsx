@@ -21,7 +21,7 @@ export const ResponsiveModal: FC<
         <Modal open={open} onClose={onClose}>
           <Modal.Children
             opacityLevel={"medium"}
-            className="flex max-w-[600px] flex-col gap-6 rounded-2xl p-6"
+            className="flex max-w-[600px] flex-col gap-6 rounded-2xl p-3"
           >
             {children}
           </Modal.Children>

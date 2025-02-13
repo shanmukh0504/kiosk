@@ -120,7 +120,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   };
 
   return (
-    <>
+    <div className="flex max-h-[600px] flex-col gap-[20px] p-3">
       <div className="flex items-center justify-between">
         <Typography size="h4" weight="bold">
           Connect a wallet
@@ -245,6 +245,6 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           .
         </Typography>
       </div>
-    </>
+    </div>
   );
 };
