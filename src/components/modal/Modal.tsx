@@ -1,14 +1,19 @@
 import { useEffect } from "react";
 import { modalNames, modalStore } from "../../store/modalStore";
-import { AssetList } from "./AssetList";
 import { ConnectWallet } from "../navbar/connectWallet/ConnectWallet";
 import { TransactionsComponent } from "../transactions/TransactionsComponent";
-import { WhiteList } from "../whitelist/WhiteList";
-import { connectWalletStore } from "../../store/connectWalletStore";
+import { ResponsiveModal } from "./ResponsiveModal";
+import { AssetSelector } from "../swap/AssetSelector";
+import { Whitelist } from "../whitelist/WhiteList";
+import { StakeModal } from "../stake/modal/StakeModal";
+
+export type ModalProps = {
+  open: boolean;
+  onClose?: () => void;
+};
 
 export const Modal = () => {
   const { modalName, setCloseModal } = modalStore();
-  const { isOpen, isBTCwallets, closeConnectWallet } = connectWalletStore();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -26,23 +31,37 @@ export const Modal = () => {
 
   return (
     <>
-      <ConnectWallet
-        open={isOpen}
-        onClose={() => closeConnectWallet()}
-        showOnlyBTCWallets={isBTCwallets}
-      />
+      <ResponsiveModal
+        open={modalName.connectWallet}
+        onClose={() => setCloseModal(modalNames.connectWallet)}
+      >
+        <ConnectWallet
+          open={modalName.connectWallet}
+          onClose={() => setCloseModal(modalNames.connectWallet)}
+        />
+      </ResponsiveModal>
+
       <TransactionsComponent
         open={modalName.transactions}
         onClose={() => setCloseModal(modalNames.transactions)}
       />
-      <WhiteList
-        open={modalName.whiteList}
-        onClose={() => setCloseModal(modalNames.whiteList)}
-      />
-      <AssetList
+      <ResponsiveModal open={modalName.whiteList}>
+        <Whitelist
+          open={modalName.whiteList}
+          onClose={() => setCloseModal(modalNames.whiteList)}
+        />
+      </ResponsiveModal>
+
+      <ResponsiveModal
         open={modalName.assetList}
         onClose={() => setCloseModal(modalNames.assetList)}
-      />
+      >
+        <AssetSelector onClose={() => setCloseModal(modalNames.assetList)} />
+      </ResponsiveModal>
+
+      <ResponsiveModal open={modalName.manageStake}>
+        <StakeModal onClose={() => setCloseModal(modalNames.manageStake)} />
+      </ResponsiveModal>
     </>
   );
 };

@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { swapStore } from "../store/swapStore";
-import { isBitcoin } from "@gardenfi/orderbook";
+import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { evmToViemChainMap } from "@gardenfi/core";
 import { useEVMWallet } from "./useEVMWallet";
 import { getTokenBalance } from "../utils/getTokenBalance";
@@ -8,42 +7,38 @@ import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import BigNumber from "bignumber.js";
 import { balanceStore } from "../store/balanceStore";
 
-export const useBalances = () => {
+export const useBalances = (asset: Asset | undefined) => {
   const { balances, setBalance, clearBalances } = balanceStore();
   const { address } = useEVMWallet();
   const { provider } = useBitcoinWallet();
-  const { inputAsset } = swapStore();
 
-  const inputTokenBalance = useMemo(
-    () =>
-      balances[
-        `${inputAsset?.chain}_${inputAsset?.tokenAddress.toLowerCase()}`
-      ],
-    [balances, inputAsset]
+  const tokenBalance = useMemo(
+    () => balances[`${asset?.chain}_${asset?.tokenAddress.toLowerCase()}`] || 0,
+    [balances, asset]
   );
 
   useEffect(() => {
-    if (!inputAsset) return;
+    if (!asset || !address) return;
 
     const fetchBalance = async () => {
-      if (isBitcoin(inputAsset.chain)) {
+      if (isBitcoin(asset.chain)) {
         if (!provider) return;
         const balance = await provider.getBalance();
         if (balance.error || !balance.val) return;
 
         const bal = new BigNumber(balance.val.total)
-          .dividedBy(10 ** inputAsset.decimals)
+          .dividedBy(10 ** asset.decimals)
           .toNumber();
-        setBalance(inputAsset, bal);
+        setBalance(asset, bal);
       } else {
         if (!address) {
           clearBalances();
           return;
         }
-        const chain = evmToViemChainMap[inputAsset.chain];
+        const chain = evmToViemChainMap[asset.chain];
         if (!chain) return;
-        const balance = await getTokenBalance(address, inputAsset);
-        setBalance(inputAsset, balance);
+        const balance = await getTokenBalance(address, asset);
+        setBalance(asset, balance);
       }
     };
 
@@ -51,7 +46,7 @@ export const useBalances = () => {
     const intervalId = setInterval(fetchBalance, 10000);
 
     return () => clearInterval(intervalId);
-  }, [address, clearBalances, inputAsset, provider, setBalance]);
+  }, [address, clearBalances, asset, provider, setBalance]);
 
-  return { balances, inputTokenBalance };
+  return { balances, tokenBalance };
 };

@@ -1,9 +1,11 @@
 const REQUIRED_ENV_VARS = {
+  STAKING_URL: import.meta.env.VITE_STAKING_URL,
   DATA_URL: import.meta.env.VITE_DATA_URL,
   QUESTS_URL: import.meta.env.VITE_QUESTS_URL,
   ORDERBOOK_URL: import.meta.env.VITE_ORDERBOOK_URL,
   QUOTE_URL: import.meta.env.VITE_QUOTE_URL,
   WHITELIST: import.meta.env.VITE_WHITELIST_URL,
+  REWARD: import.meta.env.VITE_REWARD_URL,
   EXPLORER: import.meta.env.VITE_EXPLORER_URL,
 } as const;
 
@@ -24,6 +26,19 @@ export const API = () => {
     buildId: "/build-id.json",
     orderbook: REQUIRED_ENV_VARS.ORDERBOOK_URL,
     quote: REQUIRED_ENV_VARS.QUOTE_URL,
+    stake: {
+      stakePosition: (userId: string) =>
+        REQUIRED_ENV_VARS.STAKING_URL +
+        "/stakes?userId=" +
+        userId.toLowerCase(),
+      globalApy: REQUIRED_ENV_VARS.STAKING_URL + "/apy",
+      stakeApy: (address: string) =>
+        REQUIRED_ENV_VARS.STAKING_URL + "/apy/" + address.toLowerCase(),
+      stakingStats: REQUIRED_ENV_VARS.STAKING_URL + "/stakingStats",
+      accumulatedReward: (userId: string) =>
+        REQUIRED_ENV_VARS.STAKING_URL + "/rewards/" + userId,
+    },
+    reward: (userId: string) => REQUIRED_ENV_VARS.REWARD + "/rewards/" + userId,
     mempool: {
       testnet: "https://mempool.space/testnet4/api",
       mainnet: "https://mempool.space/api",
