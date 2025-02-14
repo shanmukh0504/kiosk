@@ -150,7 +150,7 @@ export const StakeOverview = () => {
                       )}
                     />
                   }
-                  className="w-[120px] cursor-pointer sm:w-fit md:w-[120px]"
+                  className="w-[120px] cursor-pointer sm:w-fit md:mr-5 md:w-[100px]"
                 />
               </AnimatePresence>
               <OverviewStats

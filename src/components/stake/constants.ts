@@ -31,6 +31,9 @@ export const STAKING_CONFIG = {
     FLOWER_CONTRACT_ADDRESS: "0x4C8589A2A7F85a59B25D58Ff010CC2520118BB20",
     SEED_DECIMALS: 18,
     CHAIN: Chains.ethereum_sepolia,
+    EXPLORER: "https://sepolia.etherscan.io",
+    TOKEN_LOGO: "https://garden-finance.imgix.net/token-images/seed.svg",
+    CHAIN_LOGO: "https://garden-finance.imgix.net/chain_images/sepolia.svg",
   },
   42161: {
     SEED_ADDRESS: "0x86f65121804D2Cdbef79F9f072D4e0c2eEbABC08",
@@ -40,32 +43,31 @@ export const STAKING_CONFIG = {
     FLOWER_CONTRACT_ADDRESS: "0x1Ab59ae8BB54700B3C2C2cec4dB2dA26fE825a7D",
     SEED_DECIMALS: 18,
     CHAIN: Chains.arbitrum,
+    EXPLORER: "https://arbiscan.io",
+    TOKEN_LOGO: "https://garden-finance.imgix.net/token-images/seed.svg",
+    CHAIN_LOGO: "https://garden-finance.imgix.net/chain_images/arbitrum.svg",
   },
 } as const;
 
 export const REWARD_CONFIG = {
   //base_sepolia
   84532: {
+    EXPLORER: "https://sepolia.basescan.org",
     DISTRIBUTER_CONTRACT: "0xe30D56445C80fB42b35407fDE3cD1Bd960Ac9065",
     REWARD_TOKEN_ADDRESS: "0x868D08C137ff590BF70D368408B72f748eFbe483",
     REWARD_TOKEN_DECIMALS: 8,
+    TOKEN_LOGO:
+      "https://coin-images.coingecko.com/coins/images/51336/large/cbbtc.png?1730814747",
+    CHAIN_LOGO: "https://garden-finance.imgix.net/chain_images/base.svg",
   },
   //base
   8453: {
+    EXPLORER: "https://basescan.org",
     DISTRIBUTER_CONTRACT: "0xF568aa66C9eD68838CEBB93124EFdC4a4095dc66",
     REWARD_TOKEN_ADDRESS: "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
     REWARD_TOKEN_DECIMALS: 8,
+    TOKEN_LOGO:
+      "https://coin-images.coingecko.com/coins/images/51336/large/cbbtc.png?1730814747",
+    CHAIN_LOGO: "https://garden-finance.imgix.net/chain_images/base.svg",
   },
 } as const;
-
-export const REWARD_LOGO_CONFIG = {
-  seed: {
-    token_logo: "https://garden-finance.imgix.net/token-images/seed.svg",
-    chain_logo: "https://garden-finance.imgix.net/chain_images/arbitrum.svg",
-  },
-  cbBTC: {
-    token_logo:
-      "https://coin-images.coingecko.com/coins/images/51336/large/cbbtc.png?1730814747",
-    chain_logo: "https://garden-finance.imgix.net/chain_images/base.svg",
-  },
-};
