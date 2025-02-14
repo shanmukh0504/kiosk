@@ -47,7 +47,7 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="transition-left left-auto top-60 z-40 flex flex-col gap-4 rounded-[20px] px-1 duration-700 ease-cubic-in-out">
+    <div className="transition-left left-auto top-60 z-40 flex flex-col gap-4 rounded-[20px] p-3 duration-700 ease-cubic-in-out">
       <div className="flex justify-between">
         <Typography size="h4" weight="bold">
           Set duration
