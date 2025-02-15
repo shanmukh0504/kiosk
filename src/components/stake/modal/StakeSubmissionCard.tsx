@@ -30,7 +30,7 @@ export const StakeSubmissionCard: FC<StakeSubmissionCardProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
 
-  const shouldMintNFT = amount === 21000;
+  const shouldMintNFT = amount === 21000 && selectedDuration === "INFINITE";
 
   const { chainId, address } = useEVMWallet();
   const { switchChainAsync } = useSwitchChain();
