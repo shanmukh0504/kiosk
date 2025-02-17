@@ -17,8 +17,6 @@ export const useBalances = (asset: Asset | undefined) => {
     [balances, asset]
   );
 
-  console.log("tokenBalance", tokenBalance);
-
   useEffect(() => {
     if (!asset || !address) return;
 
