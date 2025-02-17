@@ -46,10 +46,10 @@ export const useSwap = () => {
   const { provider, account } = useBitcoinWallet();
   const controller = useRef<AbortController | null>(null);
 
-  const isInsufficientBalance = useMemo(
-    () => new BigNumber(inputAmount).gt(inputTokenBalance),
-    [inputAmount, inputTokenBalance]
-  );
+  const isInsufficientBalance = useMemo(() => {
+    if (inputTokenBalance === undefined) return false;
+    return new BigNumber(inputAmount).gt(inputTokenBalance);
+  }, [inputAmount, inputTokenBalance]);
 
   const isBitcoinSwap = useMemo(() => {
     return !!(

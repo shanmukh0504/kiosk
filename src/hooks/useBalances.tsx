@@ -12,10 +12,13 @@ export const useBalances = (asset: Asset | undefined) => {
   const { address } = useEVMWallet();
   const { provider } = useBitcoinWallet();
 
-  const tokenBalance = useMemo(
-    () => balances[`${asset?.chain}_${asset?.tokenAddress.toLowerCase()}`] || 0,
-    [balances, asset]
-  );
+  const tokenBalance = useMemo(() => {
+    if (asset && (isBitcoin(asset.chain) ? provider : address))
+      return (
+        balances[`${asset?.chain}_${asset?.tokenAddress.toLowerCase()}`] || 0
+      );
+    return;
+  }, [balances, asset, address, provider]);
 
   useEffect(() => {
     if (!asset || !address) return;
