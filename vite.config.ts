@@ -49,6 +49,7 @@ export default defineConfig({
         },
       ],
     }),
+
     {
       name: "generate-build-id",
       buildEnd() {
