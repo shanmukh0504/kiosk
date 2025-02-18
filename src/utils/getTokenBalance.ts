@@ -33,22 +33,27 @@ export const getTokenBalance = async (address: string, asset: Asset) => {
     transport: http(),
   });
 
-  const result = await publicClient.call({
-    to: with0x(asset.tokenAddress),
-    data,
-  });
-  if (!result.data) return 0;
+  try {
+    const result = await publicClient.call({
+      to: with0x(asset.tokenAddress),
+      data,
+    });
+    if (!result.data) return 0;
 
-  // Decode the result to get the balance
-  const balance = decodeFunctionResult({
-    abi: [balanceOfABI],
-    functionName: "balanceOf",
-    data: result.data,
-  });
+    // Decode the result to get the balance
+    const balance = decodeFunctionResult({
+      abi: [balanceOfABI],
+      functionName: "balanceOf",
+      data: result.data,
+    });
 
-  const balanceInDecimals = new BigNumber(balance as string)
-    .dividedBy(10 ** asset.decimals)
-    .toNumber();
+    const balanceInDecimals = new BigNumber(balance as string)
+      .dividedBy(10 ** asset.decimals)
+      .toNumber();
 
-  return balanceInDecimals;
+    return balanceInDecimals;
+  } catch (e) {
+    console.log(e);
+    return 0;
+  }
 };

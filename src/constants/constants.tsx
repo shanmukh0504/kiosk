@@ -3,12 +3,14 @@ import { Environment, Network } from "@gardenfi/utils";
 
 export const INTERNAL_ROUTES = {
   swap: { name: "Swap", path: "/" },
+  stake: { name: "Stake", path: "/stake" },
   // quests: { name: "Quests", path: "/quests" },
 } as const;
 
 export const THEMES = {
   swap: "swap",
   quests: "quests",
+  stake: "stake",
 } as const;
 
 export enum IOType {
