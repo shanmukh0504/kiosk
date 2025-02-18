@@ -1,4 +1,8 @@
-import { KeyboardDownIcon, Typography } from "@gardenfi/garden-book";
+import {
+  ArrowNorthEastIcon,
+  KeyboardDownIcon,
+  Typography,
+} from "@gardenfi/garden-book";
 import { useState, FC, useMemo } from "react";
 import { getTrimmedAddress } from "../../../utils/getTrimmedAddress";
 import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
@@ -15,13 +19,19 @@ type OrderDetailsRowProps = {
   title: string;
   value: string;
   copyString?: string;
+  link?: string;
 };
 
 export const OrderDetailsRow: FC<OrderDetailsRowProps> = ({
   title,
   value,
   copyString,
+  link,
 }) => {
+  const handleClickAddress = () => {
+    if (link) window.open(link, "_blank");
+  };
+
   return (
     <div className="flex justify-between">
       <Typography size="h4" weight="medium">
@@ -29,9 +39,15 @@ export const OrderDetailsRow: FC<OrderDetailsRowProps> = ({
       </Typography>
       <div className="flex items-center gap-2">
         <Typography size="h4" weight="medium">
-          {value}
+          {link ? getTrimmedAddress(value) : value}
         </Typography>
         {copyString && <CopyToClipboard text={copyString} />}
+        {link && (
+          <ArrowNorthEastIcon
+            className="h-[10px] w-[10px] cursor-pointer"
+            onClick={handleClickAddress}
+          />
+        )}
       </div>
     </div>
   );
@@ -39,7 +55,7 @@ export const OrderDetailsRow: FC<OrderDetailsRowProps> = ({
 
 export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
   const [dropdown, setDropdown] = useState(false);
-  const { assets } = assetInfoStore();
+  const { assets, chains } = assetInfoStore();
 
   const { inputAsset, outputAsset, btcAddress } = useMemo(() => {
     return {
@@ -54,6 +70,17 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
         : "",
     };
   }, [assets, order]);
+
+  const link =
+    order &&
+    chains &&
+    chains[
+      isBitcoin(order.source_swap.chain)
+        ? order.source_swap.chain
+        : order.destination_swap.chain
+    ]?.explorer +
+      "address/" +
+      btcAddress;
 
   const { inputAmountPrice, outputAmountPrice, amountToFill, filledAmount } =
     useMemo(() => {
@@ -94,9 +121,7 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
     0
   ).toFixed(3);
 
-  const handleDropdown = () => {
-    setDropdown(!dropdown);
-  };
+  const handleDropdown = () => setDropdown(!dropdown);
 
   return (
     <div className="flex flex-col justify-between rounded-2xl bg-white/50 p-4">
@@ -131,10 +156,15 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
             value={getTrimmedAddress(order.create_order.create_id)}
             copyString={order.create_order.create_id}
           />
-          {btcAddress && (
+          {inputAsset && btcAddress && link && (
             <OrderDetailsRow
-              title="Recovery address"
-              value={getTrimmedAddress(btcAddress)}
+              title={
+                isBitcoin(inputAsset.chain)
+                  ? "Recovery"
+                  : "Receive" + " address"
+              }
+              value={btcAddress}
+              link={link}
             />
           )}
         </div>

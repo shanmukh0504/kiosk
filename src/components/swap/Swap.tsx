@@ -13,14 +13,9 @@ import { ordersStore } from "../../store/ordersStore";
 
 export const Swap = () => {
   const { setAsset } = swapStore();
-  const { fetchAndSetAssetsAndChains, fetchAndSetStrategies, assets } =
-    assetInfoStore();
+  const { fetchAndSetStrategies, assets } = assetInfoStore();
   const { quote, garden } = useGarden();
   const { orderInProgress, updateOrder } = ordersStore();
-
-  useEffect(() => {
-    fetchAndSetAssetsAndChains();
-  }, [fetchAndSetAssetsAndChains]);
 
   useEffect(() => {
     if (!quote) return;
@@ -100,7 +95,7 @@ export const Swap = () => {
   }, [garden, assets, orderInProgress, updateOrder]);
 
   return (
-    <div className="mx-auto mt-10 flex w-full max-w-[328px] flex-col gap-4 sm:max-w-[424px]">
+    <div className="mx-auto mt-10 flex w-full max-w-[328px] flex-col gap-4 pb-60 sm:max-w-[424px]">
       <ToastContainer />
       <div className={`relative overflow-hidden rounded-[20px] bg-white/50`}>
         {orderInProgress ? <SwapInProgress /> : <CreateSwap />}

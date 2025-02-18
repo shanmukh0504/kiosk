@@ -1,57 +1,14 @@
-import { FC, useMemo, useState } from "react";
-import {
-  AddIcon,
-  // LanguageIcon,
-  // ReferralIcon,
-  LogoutIcon,
-  Typography,
-} from "@gardenfi/garden-book";
+import { FC, useMemo } from "react";
+import { AddIcon, LogoutIcon } from "@gardenfi/garden-book";
 import { useId } from "react";
-import { Tooltip } from "../../common/Tooltip";
-import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
+import { Tooltip } from "../../../common/Tooltip";
+import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { connectWalletStore } from "../../store/connectWalletStore";
-import { swapStore } from "../../store/swapStore";
-import { balanceStore } from "../../store/balanceStore";
-
-type AddressProps = {
-  address: string;
-};
-
-const Address: FC<AddressProps> = ({ address }) => {
-  const [addressTooltipContent, setAddressTooltipContent] = useState("Copy");
-  const addressTooltipId = useId();
-
-  const handleAddressClick = async () => {
-    if (address) {
-      await navigator.clipboard.writeText(address);
-      setAddressTooltipContent("Copied");
-    }
-    setTimeout(() => {
-      setAddressTooltipContent("Copy");
-    }, 2000);
-  };
-
-  return (
-    <div className="rounded-full bg-white/50 px-3 py-1">
-      <Typography
-        size="h3"
-        weight="medium"
-        className="cursor-pointer"
-        onClick={handleAddressClick}
-        data-tooltip-id={addressTooltipId}
-      >
-        {getTrimmedAddress(address)}
-      </Typography>
-      <Tooltip
-        id={addressTooltipId}
-        place="top"
-        content={addressTooltipContent}
-      />
-    </div>
-  );
-};
+import { modalNames, modalStore } from "../../../store/modalStore";
+import { ecosystems } from "../../navbar/connectWallet/constants";
+import { Address } from "./Address";
+import { balanceStore } from "../../../store/balanceStore";
+import { swapStore } from "../../../store/swapStore";
 
 type AddressMenuProps = {
   onClose: () => void;
@@ -60,7 +17,7 @@ type AddressMenuProps = {
 export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const { address, disconnect } = useEVMWallet();
   const { account: btcAddress, disconnect: btcDisconnect } = useBitcoinWallet();
-  const { setOpenBTCwallets } = connectWalletStore();
+  const { setOpenModal } = modalStore();
   const { clear } = swapStore();
   const { clearBalances } = balanceStore();
   const addTooltipId = useId();
@@ -82,15 +39,19 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
 
   const handleBTCWalletClick = () => {
     onClose();
-    setOpenBTCwallets();
+    setOpenModal(modalNames.connectWallet, {
+      isBTCWallets: true,
+    });
   };
 
   return (
     <>
       <div className="flex justify-between">
-        <div className="flex gap-3">
-          {address && <Address address={address} />}
-          {btcAddress && <Address address={btcAddress} />}
+        <div className="flex flex-wrap gap-3">
+          {address && <Address address={address} logo={ecosystems.evm.icon} />}
+          {btcAddress && (
+            <Address address={btcAddress} logo={ecosystems.bitcoin.icon} />
+          )}
           {showConnectWallet && (
             <div
               data-tooltip-id={addTooltipId}
@@ -116,7 +77,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
           </div> */}
           <div
             data-tooltip-id={logoutTooltipId}
-            className="flex cursor-pointer items-center rounded-full bg-white/50 p-1.5 transition-colors hover:bg-white"
+            className="flex h-8 cursor-pointer items-center rounded-full bg-white/50 p-1.5 transition-colors hover:bg-white"
             onClick={handleDisconnectClick}
           >
             <LogoutIcon className="h-4 w-5 cursor-pointer" />

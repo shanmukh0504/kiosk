@@ -1,13 +1,25 @@
 {
   "cSpell.words": [
+    "Apys",
     "bignumber",
     "citrea",
     "gardenfi",
     "Parens",
+    "Perma",
+    "Restake",
+    "Restakeable",
+    "Restaking",
     "Siwe",
+    "Solana",
+    "Stakeable",
+    "stakewise",
     "tailwindcss",
     "tanstack",
     "tseslint",
+    "Unstake",
+    "Unstakeable",
+    "unstaked",
+    "Unstaking",
     "viem",
     "Waitlist"
   ],
@@ -19,5 +31,8 @@
   "prettier.bracketSameLine": false,
   "prettier.arrowParens": "always",
   "prettier.endOfLine": "lf",
-  "editor.formatOnSave": true // Automatically format on save
+  "editor.formatOnSave": true, // Automatically format on save
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

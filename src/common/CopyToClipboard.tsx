@@ -19,6 +19,6 @@ export const CopyToClipboard: FC<CopyToClipboardProps> = ({ text }) => {
   return copied ? (
     <CheckIcon className="h-3 w-6" />
   ) : (
-    <CopyIcon className="h-5 w-6 cursor-pointer" onClick={copyToClipboard} />
+    <CopyIcon className="h-4 w-4 cursor-pointer" onClick={copyToClipboard} />
   );
 };

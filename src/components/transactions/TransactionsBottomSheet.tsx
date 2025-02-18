@@ -1,5 +1,5 @@
 import { BottomSheet } from "../../common/BottomSheet";
-import { AddressMenu } from "./AddressMenu";
+import { AddressMenu } from "./header/AddressMenu";
 import { FC } from "react";
 import { Transactions } from "./Transactions";
 
