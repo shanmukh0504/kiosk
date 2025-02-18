@@ -63,7 +63,7 @@ export const StakeInput = ({ balance }: { balance: number }) => {
           className="cursor-pointer"
           onClick={handleBalanceClick}
         >
-          {balance.toFixed(3)} available
+          {balance && balance.toFixed(3)} available
         </Typography>
       </div>
       <div className="flex justify-between">
