@@ -86,14 +86,6 @@ export const GardenSupportedWallets: Record<
     isBitcoinSupported: network === Network.MAINNET ? true : false,
     isEVMSupported: true,
   },
-  "org.uniswap.app": {
-    id: "org.uniswap.app",
-    name: "Uniswap",
-    logo: "https://garden-finance.imgix.net/wallets/uniswap.svg",
-    installLink: "https://wallet.uniswap.org/",
-    isBitcoinSupported: false,
-    isEVMSupported: true,
-  },
   unisat: {
     id: "unisat",
     name: "Unisat",

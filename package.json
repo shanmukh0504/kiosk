@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint '**/*.ts' '**/*.tsx'",
+    "lint": "eslint .",
+    "build": "tsc -b && vite build && yarn generate ",
+    "generate": "node prerender",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -23,7 +24,6 @@
     "lodash.debounce": "^4.0.8",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-helmet-async": "^2.0.5",
     "react-loading-skeleton": "^3.5.0",
     "react-lottie-player": "^2.1.0",
     "react-qr-code": "^2.0.15",
