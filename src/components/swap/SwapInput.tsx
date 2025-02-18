@@ -78,6 +78,13 @@ export const SwapInput: FC<SwapInputProps> = ({
     }
   };
 
+  const handleBalanceClick = () => {
+    if (type === IOType.input && balance) {
+      const balanceStr = balance.toString();
+      onChange(balanceStr);
+    }
+  };
+
   const handleOpenAssetSelector = () => {
     setOpenAssetSelector(type);
     setOpenModal(modalNames.assetList);
@@ -85,7 +92,7 @@ export const SwapInput: FC<SwapInputProps> = ({
 
   return (
     <>
-      <div className="flex flex-col gap-2 bg-white rounded-2xl p-4">
+      <div className="flex flex-col gap-2 rounded-2xl bg-white p-4">
         <div className="flex justify-between">
           <div className="flex gap-3">
             <Typography
@@ -105,7 +112,10 @@ export const SwapInput: FC<SwapInputProps> = ({
                 <div className="text-red-500">{error}</div>
               </Typography>
             ) : balance !== undefined ? (
-              <div className="flex items-center gap-1">
+              <div
+                className="flex cursor-pointer items-center gap-1"
+                onClick={handleBalanceClick}
+              >
                 <WalletIcon className="h-2.5 w-2.5" />
                 <Typography size="h5" weight="medium">
                   {balance}
@@ -115,7 +125,7 @@ export const SwapInput: FC<SwapInputProps> = ({
               <></>
             ))}
           {type === IOType.output && timeEstimate && (
-            <div className="flex gap-1 items-center">
+            <div className="flex items-center gap-1">
               <TimerIcon className="h-4" />
               <Typography size="h5" weight="medium">
                 {timeEstimate}
@@ -123,7 +133,7 @@ export const SwapInput: FC<SwapInputProps> = ({
             </div>
           )}
         </div>
-        <div className="flex justify-between h-6">
+        <div className="flex h-6 justify-between">
           {loading ? (
             <div className="text-mid-grey">loading...</div>
           ) : (
@@ -153,7 +163,7 @@ export const SwapInput: FC<SwapInputProps> = ({
             />
           ) : (
             <div
-              className="flex items-center gap-1 cursor-pointer"
+              className="flex cursor-pointer items-center gap-1"
               onClick={handleOpenAssetSelector}
             >
               <Typography

@@ -1,7 +1,7 @@
 import { useState, FC, useMemo } from "react";
 // import { SwapFeesComparison } from "./SwapFeesComparison";
 import { Typography } from "@gardenfi/garden-book";
-import { TokenPrices } from "../../hooks/useSwap";
+import { TokenPrices } from "../../store/swapStore";
 
 type SwapFeesProps = {
   tokenPrices: TokenPrices;
@@ -28,17 +28,14 @@ export const SwapFees: FC<SwapFeesProps> = ({ tokenPrices }) => {
         hide={() => handleShowComparison(false)}
       /> */}
       <div
-        className="flex flex-col gap-3
-        bg-white/50 rounded-2xl
-        pt-4 pb-3 px-4
-        cursor-pointer transition-[background-color] hover:bg-white"
+        className="flex cursor-pointer flex-col gap-3 rounded-2xl bg-white/50 px-4 pb-3 pt-4 transition-[background-color] hover:bg-white"
         onClick={() => handleShowComparison(true)}
       >
         <Typography size="h5" weight="bold">
           Details
         </Typography>
         <div>
-          <div className="flex justify-between gap-0">
+          <div className="flex items-center justify-between gap-0">
             <Typography size="h5" weight="medium">
               Fees
             </Typography>
@@ -48,7 +45,7 @@ export const SwapFees: FC<SwapFeesProps> = ({ tokenPrices }) => {
               </Typography>
             </div>
           </div>
-          <div className="flex justify-between">
+          <div className="flex items-center justify-between">
             <Typography size="h5" weight="medium">
               Saved
             </Typography>

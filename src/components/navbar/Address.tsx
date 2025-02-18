@@ -3,43 +3,41 @@ import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { useGarden } from "@gardenfi/react-hooks";
-import { OrderStatus } from "@gardenfi/core";
-import { useMemo } from "react";
+import { useEffect } from "react";
 import { Loader } from "../../common/Loader";
+import { ordersStore } from "../../store/ordersStore";
 
 export const Address = () => {
   const { address } = useEVMWallet();
   const { setOpenModal } = modalStore();
   const { pendingOrders } = useGarden();
+  const { pendingOrders: pendingOrdersFromStore, setPendingOrders } =
+    ordersStore();
   const handleAddressClick = () => setOpenModal(modalNames.transactions);
 
-  const actualPendingOrders = useMemo(
-    () =>
-      pendingOrders?.filter(
-        (order) =>
-          order.status !== OrderStatus.RedeemDetected &&
-          order.status !== OrderStatus.Matched
-      ),
-    [pendingOrders]
-  );
+  useEffect(() => {
+    if (pendingOrders) {
+      setPendingOrders(pendingOrders);
+    }
+  }, [pendingOrders, setPendingOrders]);
 
   return (
     <Opacity
       level="medium"
-      className="flex items-center justify-center px-2 gap-2 ml-auto min-h-8 min-w-8 sm:py-3 sm:px-4 rounded-full cursor-pointer"
+      className="ml-auto flex min-h-8 min-w-8 cursor-pointer items-center justify-center gap-2 rounded-full px-2 sm:px-4 sm:py-3"
       onClick={handleAddressClick}
     >
       <Typography size="h3" weight="bold" className="hidden sm:block">
         {getTrimmedAddress(address ?? "")}
       </Typography>
 
-      <WalletIcon className="sm:hidden justify-center flex items-center " />
+      <WalletIcon className="flex items-center justify-center sm:hidden" />
 
-      {actualPendingOrders?.length ? (
+      {pendingOrdersFromStore?.length ? (
         <div className="relative">
           <Loader />
-          <div className="absolute text-rose text-sm font-bold top-[12%] left-[33%]">
-            {actualPendingOrders.length}
+          <div className="absolute left-[34%] top-[10%] text-sm font-bold text-rose">
+            {pendingOrdersFromStore.length}
           </div>
         </div>
       ) : (

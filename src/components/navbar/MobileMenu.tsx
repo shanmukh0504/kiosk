@@ -18,18 +18,18 @@ export const MobileMenu = () => {
   return (
     <>
       <div
-        className="sm:hidden justify-center flex items-center min-h-8 min-w-8 rounded-full bg-white/50 cursor-pointer"
+        className="flex min-h-8 min-w-8 cursor-pointer items-center justify-center rounded-full bg-white/50 sm:hidden"
         onClick={handleSidebar}
       >
         <MenuIcon />
       </div>
 
-      <Sidebar open={isSidebarOpen} className="z-40 !px-0 py-6 " size={"small"}>
-        <div className=" flex flex-col items-end py-2 gap-8">
-          <div className="px-6 cursor-pointer">
+      <Sidebar open={isSidebarOpen} className="z-40 !px-0 py-6" size={"small"}>
+        <div className="flex flex-col items-end gap-8 py-2">
+          <div className="cursor-pointer px-6">
             <CloseIcon onClick={handleSidebar} />
           </div>
-          <div className={`flex flex-col text-right w-full`}>
+          <div className={`flex w-full flex-col text-right`}>
             {Object.values(INTERNAL_ROUTES).map((route) => {
               return (
                 <a

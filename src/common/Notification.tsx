@@ -1,8 +1,10 @@
 import { CloseIcon, Typography } from "@gardenfi/garden-book";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { LOCAL_STORAGE_KEYS } from "../constants/constants";
 
 type NotificationProps = {
+  id: string;
   title: string;
   description: string;
   image: string;
@@ -10,32 +12,45 @@ type NotificationProps = {
 };
 
 export const Notification: FC<NotificationProps> = ({
+  id,
   title,
   description,
   image,
   link,
 }) => {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const savedNotificationId = localStorage.getItem(
+      LOCAL_STORAGE_KEYS.notification
+    );
+
+    if (savedNotificationId !== id) setVisible(true);
+  }, [id]);
+
+  const handleClose = () => {
+    localStorage.setItem(LOCAL_STORAGE_KEYS.notification, id);
+    setVisible(false);
+  };
+
   return (
     <div
-      className={`bg-white/50 backdrop-blur-[20px]
-            fixed left-2 right-2 sm:left-10 bottom-10 p-4 z-50
-            transition-[border-radius,width,height,transform] ease-cubic-in-out duration-300
-            ${visible
-          ? "rounded-2xl max-w-[490px] w-fit h-24"
-          : "rounded-3xl w-12 h-12 cursor-pointer hover:scale-105"
-        }`}
+      className={`fixed bottom-10 left-2 right-2 z-40 bg-white/50 p-4 backdrop-blur-[20px] transition-[border-radius,width,height,transform] duration-300 ease-cubic-in-out sm:left-10 ${
+        visible
+          ? "h-24 w-[344px] rounded-2xl sm:w-[440px]"
+          : "h-12 w-12 cursor-pointer rounded-3xl hover:scale-105"
+      }`}
       onClick={() => !visible && setVisible(true)}
     >
       {/* TODO: Replace with bell icon once added to garden-book */}
       <div
-        className={`flex justify-center items-center transition-[opacity,height] ease-cubic-in-out
-                ${visible
+        className={`flex items-center justify-center transition-[opacity,height,width] ease-cubic-in-out ${
+          visible
             ? // On open, fade out the bell icon
-            "opacity-0 h-0"
+              "h-0 opacity-0"
             : // On close, fade in the bell icon once the notification has collapsed
-            "opacity-100 h-full delay-300"
-          }`}
+              "h-full opacity-100 delay-300"
+        }`}
       >
         <svg
           width="16"
@@ -51,40 +66,36 @@ export const Notification: FC<NotificationProps> = ({
         </svg>
       </div>
       <div
-        className={`flex justify-between gap-3
-                ${visible
+        className={`flex justify-between gap-3 ${
+          visible
             ? // On open, fade in the content once the notification has expanded
-            "opacity-100 w-full h-full transition-opacity duration-300 delay-300"
+              "h-full w-full opacity-100 transition-opacity delay-300 duration-300"
             : // On close, fade out the content, then the height and width
-            "opacity-0 w-0 h-0 pointer-events-none [transition:opacity_150ms,width_150ms_150ms,height_150ms_150ms]"
-          }`}
+              "pointer-events-none h-0 w-0 opacity-0 [transition:opacity_150ms,width_150ms_150ms,height_150ms_150ms]"
+        }`}
       >
         <Link to={link} target="_blank">
-          <img
-            src={image}
-            className="rounded-lg h-16 max-w-[113px] object-cover"
-          />
+          <img src={image} className="h-16 w-[113px] rounded-lg object-cover" />
         </Link>
-        <div className={`flex gap-1 `}>
-          <div className="flex flex-col gap-1 max-w-[306px] ">
-            <Link to={link} target="_blank" className="leading-4">
-              <Typography size="h4" weight="bold">
-                {title}
-              </Typography>
-            </Link>
+        <div className={`flex gap-1`}>
+          <Link
+            to={link}
+            target="_blank"
+            className="flex w-fit max-w-[306px] flex-col gap-1 leading-4"
+          >
+            <Typography size="h4" weight="bold">
+              {title}
+            </Typography>
             <Typography
-              className="text-mid-grey inline-block  mb-1 whitespace-wrap overflow-hidden text-ellipsis"
+              className="whitespace-wrap mb-1 inline-block overflow-hidden text-ellipsis text-mid-grey"
               size="h5"
               weight="medium"
             >
               {description}
             </Typography>
-          </div>
-          <div className="flex justify-center items-center w-[22px] h-5">
-            <CloseIcon
-              className="cursor-pointer "
-              onClick={() => setVisible(false)}
-            />
+          </Link>
+          <div className="flex h-5 w-[22px] items-center justify-center">
+            <CloseIcon className="cursor-pointer" onClick={handleClose} />
           </div>
         </div>
       </div>

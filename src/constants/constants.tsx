@@ -1,20 +1,26 @@
 import { Asset, isBitcoin, isEVM } from "@gardenfi/orderbook";
-import { environment } from "@gardenfi/react-hooks";
+import { Environment, Network } from "@gardenfi/utils";
 
 export const INTERNAL_ROUTES = {
   swap: { name: "Swap", path: "/" },
+  stake: { name: "Stake", path: "/stake" },
   // quests: { name: "Quests", path: "/quests" },
 } as const;
 
 export const THEMES = {
   swap: "swap",
   quests: "quests",
+  stake: "stake",
 } as const;
 
 export enum IOType {
   input = "input",
   output = "output",
 }
+
+export const LOCAL_STORAGE_KEYS = {
+  notification: "notificationId",
+};
 
 export const BREAKPOINTS = {
   xs: 360,
@@ -35,5 +41,4 @@ export const getTimeEstimates = (inputAsset: Asset) => {
   return "";
 };
 
-export const network: environment = import.meta.env.VITE_NETWORK;
-
+export const network: Environment | Network = import.meta.env.VITE_NETWORK;

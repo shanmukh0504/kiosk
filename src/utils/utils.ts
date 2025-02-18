@@ -10,8 +10,9 @@ export const isProduction = () => {
 export const getCurrentTheme = () => {
   const path = window.location.pathname;
   if (path === INTERNAL_ROUTES.swap.path) return THEMES.swap;
+  if (path === INTERNAL_ROUTES.stake.path) return THEMES.stake;
   // if (path === INTERNAL_ROUTES.quests.path) return THEMES.quests;
-  throw new Error("Invalid theme");
+  return THEMES.swap;
 };
 
 /**
@@ -37,7 +38,7 @@ export const getDayDifference = (date: string) => {
     return `${hourDifference} hour${hourDifference > 1 ? "s" : ""} ago`;
   if (minuteDifference > 0)
     return `${minuteDifference} minute${minuteDifference > 1 ? "s" : ""} ago`;
-  return "just now";
+  return "Just now";
 };
 
 export const formatAmount = (

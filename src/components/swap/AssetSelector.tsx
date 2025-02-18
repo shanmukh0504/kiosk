@@ -33,14 +33,42 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const { setAsset, inputAsset, outputAsset } = swapStore();
 
   const orderedChains = useMemo(() => {
+    const order = ["bitcoin", "ethereum", "base", "arbitrum"];
     return chains
       ? Object.values(chains).sort((a, b) => {
-        if (a.name.toLowerCase().includes("bitcoin")) return -1;
-        if (b.name.toLowerCase().includes("bitcoin")) return 1;
-        return 0;
-      })
+          const indexA = order.findIndex((name) =>
+            a.name.toLowerCase().includes(name)
+          );
+          const indexB = order.findIndex((name) =>
+            b.name.toLowerCase().includes(name)
+          );
+          if (indexA === -1) return 1;
+          if (indexB === -1) return -1;
+          return indexA - indexB;
+        })
       : [];
   }, [chains]);
+
+  const sortedResults = useMemo(() => {
+    if (results && orderedChains.length > 0) {
+      return [...results].sort((a, b) => {
+        const chainA = chains?.[a.chain];
+        const chainB = chains?.[b.chain];
+        if (chainA && chainB) {
+          const indexA = orderedChains.findIndex(
+            (c) => c.identifier === chainA.identifier
+          );
+          const indexB = orderedChains.findIndex(
+            (c) => c.identifier === chainB.identifier
+          );
+          return indexA - indexB;
+        }
+        return 0;
+      });
+    }
+    return results;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results, orderedChains]);
 
   const comparisonToken = useMemo(
     () =>
@@ -57,17 +85,17 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         const op =
           isAssetSelectorOpen.type === IOType.input
             ? constructOrderPair(
-              asset.chain,
-              asset.atomicSwapAddress,
-              comparisonToken.chain,
-              comparisonToken.atomicSwapAddress
-            )
+                asset.chain,
+                asset.atomicSwapAddress,
+                comparisonToken.chain,
+                comparisonToken.atomicSwapAddress
+              )
             : constructOrderPair(
-              comparisonToken.chain,
-              comparisonToken.atomicSwapAddress,
-              asset.chain,
-              asset.atomicSwapAddress
-            );
+                comparisonToken.chain,
+                comparisonToken.atomicSwapAddress,
+                asset.chain,
+                asset.atomicSwapAddress
+              );
         return strategies.val && strategies.val[op] !== undefined;
       });
       setResults(supportedTokens);
@@ -97,8 +125,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   };
 
   return (
-    <div className="flex flex-col gap-3 rounded-[20px] top-60 left-auto z-40 transition-left ease-cubic-in-out duration-700">
-      <div className="flex justify-between items-center p-1">
+    <div className="transition-left left-auto top-60 z-40 flex flex-col gap-3 rounded-[20px] duration-700 ease-cubic-in-out sm:w-[480px]">
+      <div className="flex items-center justify-between p-1">
         <Typography size="h4" weight="bold">
           Token select
         </Typography>
@@ -118,23 +146,25 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             // automatically adds the below styles
             <Chip
               key={i}
-              className={`${!chain || c.chainId !== chain.chainId
-                ? "bg-opacity-50 pr-1"
-                : "pr-2"
-                } pl-3 py-1 cursor-pointer transition-colors ease-cubic-in-out hover:bg-opacity-50`}
+              className={`${
+                !chain || c.chainId !== chain.chainId
+                  ? "bg-opacity-50 pr-1"
+                  : "pr-2"
+              } cursor-pointer py-1 pl-3 transition-colors ease-cubic-in-out hover:bg-opacity-50`}
               onClick={() => (c === chain ? setChain(undefined) : setChain(c))}
             >
               <Typography size="h3" weight="medium">
                 {c.name}
               </Typography>
               <RadioCheckedIcon
-                className={`${c === chain ? "w-4" : "w-0"
-                  } transition-all fill-rose`}
+                className={`${
+                  c === chain ? "w-4" : "w-0"
+                } fill-rose transition-all`}
               />
             </Chip>
           ))}
       </div>
-      <div className="flex justify-between items-center bg-white rounded-2xl w-full px-4 py-2">
+      <div className="flex w-full items-center justify-between rounded-2xl bg-white px-4 py-2">
         <div className="flex-grow">
           <Typography size="h4" weight="medium">
             <input
@@ -148,13 +178,13 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         </div>
         <SearchIcon />
       </div>
-      <div className="flex flex-col min-h-[288px] bg-white rounded-2xl h-full overflow-auto">
-        <div className="px-4 pt-4 pb-1.5">
+      <div className="flex h-full min-h-[288px] flex-col overflow-auto rounded-2xl bg-white">
+        <div className="px-4 pb-1.5 pt-4">
           <Typography size="h5" weight="bold">
             Assets
           </Typography>
         </div>
-        {results?.map((asset) => {
+        {sortedResults?.map((asset) => {
           const network = !isBitcoin(asset.chain)
             ? chains?.[asset.chain]
             : undefined;
@@ -162,10 +192,10 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             (!chain || asset.chain === chain.identifier) && (
               <div
                 key={`${asset.chain}-${asset.atomicSwapAddress}`}
-                className="flex justify-between items-center px-4 py-1.5 cursor-pointer hover:bg-off-white w-full"
+                className="flex w-full cursor-pointer items-center justify-between px-4 py-1.5 hover:bg-off-white"
                 onClick={() => handleClick(asset)}
               >
-                <div className="flex items-center gap-2 w-full">
+                <div className="flex w-full items-center gap-2">
                   <div className="w-10">
                     <AssetChainLogos
                       tokenLogo={asset.logo}
@@ -176,7 +206,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                     {asset.symbol}
                   </Typography>
                   <Typography
-                    className="!text-mid-grey w-2/3 "
+                    className="w-2/3 !text-mid-grey"
                     size={"h5"}
                     breakpoints={{
                       sm: "h4",
@@ -195,5 +225,3 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     </div>
   );
 };
-
-export default AssetSelector;

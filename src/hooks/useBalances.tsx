@@ -1,45 +1,52 @@
-import { useEffect, useMemo, useState } from "react";
-import { swapStore } from "../store/swapStore";
-import { isBitcoin } from "@gardenfi/orderbook";
+import { useEffect, useMemo } from "react";
+import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { evmToViemChainMap } from "@gardenfi/core";
 import { useEVMWallet } from "./useEVMWallet";
 import { getTokenBalance } from "../utils/getTokenBalance";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import BigNumber from "bignumber.js";
+import { balanceStore } from "../store/balanceStore";
 
-export const useBalances = () => {
-  const [balances, setBalances] = useState<Record<string, number>>({});
+export const useBalances = (asset: Asset | undefined) => {
+  const { balances, setBalance, clearBalances } = balanceStore();
   const { address } = useEVMWallet();
-  const { inputAsset } = swapStore();
-  const inputTokenBalance = useMemo(
-    () =>
-      balances[
-        `${inputAsset?.chain}_${inputAsset?.tokenAddress.toLowerCase()}`
-      ],
-    [balances, inputAsset]
+  const { provider } = useBitcoinWallet();
+
+  const tokenBalance = useMemo(
+    () => balances[`${asset?.chain}_${asset?.tokenAddress.toLowerCase()}`],
+    [balances, asset]
   );
 
   useEffect(() => {
-    if (!address) {
-      setBalances({});
-      return;
-    }
-    if (!inputAsset || isBitcoin(inputAsset.chain) || !address) return;
-    const chain = evmToViemChainMap[inputAsset.chain];
-    if (!chain) return;
+    if (!asset || !address) return;
 
     const fetchBalance = async () => {
-      const balance = await getTokenBalance(address, inputAsset);
-      setBalances((prev) => ({
-        ...prev,
-        [`${inputAsset.chain}_${inputAsset.tokenAddress.toLowerCase()}`]:
-          balance,
-      }));
+      if (isBitcoin(asset.chain)) {
+        if (!provider) return;
+        const balance = await provider.getBalance();
+        if (balance.error || !balance.val) return;
+
+        const bal = new BigNumber(balance.val.total)
+          .dividedBy(10 ** asset.decimals)
+          .toNumber();
+        setBalance(asset, bal);
+      } else {
+        if (!address) {
+          clearBalances();
+          return;
+        }
+        const chain = evmToViemChainMap[asset.chain];
+        if (!chain) return;
+        const balance = await getTokenBalance(address, asset);
+        setBalance(asset, balance);
+      }
     };
 
     fetchBalance();
     const intervalId = setInterval(fetchBalance, 10000);
 
     return () => clearInterval(intervalId);
-  }, [address, inputAsset]);
+  }, [address, clearBalances, asset, provider, setBalance]);
 
-  return { balances, inputTokenBalance };
+  return { balances, tokenBalance };
 };

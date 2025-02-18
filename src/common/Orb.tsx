@@ -1,13 +1,14 @@
-import { useViewport } from "../hooks/useViewport";
+import { viewPortStore } from "../store/viewPortStore";
 import { getCurrentTheme } from "../utils/utils";
 
 const ORB_COLORS = {
   swap: "#9BC8FF",
   quests: "#FFD89C",
+  stake: "#E36492",
 };
 
 export const Orb = () => {
-  const { width } = useViewport();
+  const { width } = viewPortStore();
   const dimension = width > 1600 ? "170%" : "2024";
   const orbColor = ORB_COLORS[getCurrentTheme()];
 
@@ -18,7 +19,7 @@ export const Orb = () => {
       viewBox="0 0 2024 2024"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={`absolute z-0 top-[50%] left-[50%] transform translate-x-[-50%] translate-y-[-10%]`}
+      className={`fixed left-[50%] top-[50%] z-0 translate-x-[-50%] translate-y-[-5%] scale-x-125 transform`}
     >
       <circle
         cx="1012"
@@ -36,7 +37,7 @@ export const Orb = () => {
           gradientTransform="translate(1012 1012) rotate(90) scale(1012)"
         >
           <stop offset="0.526115" stopColor={orbColor} />
-          <stop offset="1" stopColor={orbColor} stopOpacity="0.2" />
+          <stop offset="1" stopColor={orbColor} stopOpacity="0.04" />
         </radialGradient>
       </defs>
     </svg>

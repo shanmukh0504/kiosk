@@ -1,35 +1,67 @@
+import { useEffect } from "react";
 import { modalNames, modalStore } from "../../store/modalStore";
-import { AssetList } from "./AssetList";
-import { ConnectWallet } from "../navbar/ConnectWallet";
+import { ConnectWallet } from "../navbar/connectWallet/ConnectWallet";
 import { TransactionsComponent } from "../transactions/TransactionsComponent";
-import { WhiteList } from "../whitelist/WhiteList";
-import { InitializeSMModal } from "./InitializeSMModal";
+import { ResponsiveModal } from "./ResponsiveModal";
+import { AssetSelector } from "../swap/AssetSelector";
+import { Whitelist } from "../whitelist/WhiteList";
+import { StakeModal } from "../stake/modal/StakeModal";
+
+export type ModalProps = {
+  open: boolean;
+  onClose?: () => void;
+};
 
 export const Modal = () => {
   const { modalName, setCloseModal } = modalStore();
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        if (modalName.transactions) setCloseModal(modalNames.transactions);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [modalName.transactions, setCloseModal]);
+
   return (
     <>
-      <ConnectWallet
+      <ResponsiveModal
         open={modalName.connectWallet}
         onClose={() => setCloseModal(modalNames.connectWallet)}
-      />
+      >
+        <ConnectWallet
+          open={modalName.connectWallet}
+          onClose={() => setCloseModal(modalNames.connectWallet)}
+        />
+      </ResponsiveModal>
+
       <TransactionsComponent
         open={modalName.transactions}
         onClose={() => setCloseModal(modalNames.transactions)}
       />
-      <InitializeSMModal
-        open={modalName.initializeSM}
-        onClose={() => setCloseModal(modalNames.initializeSM)}
-      />
-      <WhiteList
-        open={modalName.whiteList}
-        onClose={() => setCloseModal(modalNames.whiteList)}
-      />
-      <AssetList
+      <ResponsiveModal open={modalName.whiteList}>
+        <Whitelist
+          open={modalName.whiteList}
+          onClose={() => setCloseModal(modalNames.whiteList)}
+        />
+      </ResponsiveModal>
+
+      <ResponsiveModal
         open={modalName.assetList}
         onClose={() => setCloseModal(modalNames.assetList)}
-      />
+      >
+        <AssetSelector onClose={() => setCloseModal(modalNames.assetList)} />
+      </ResponsiveModal>
+
+      <ResponsiveModal open={modalName.manageStake}>
+        <StakeModal onClose={() => setCloseModal(modalNames.manageStake)} />
+      </ResponsiveModal>
     </>
   );
 };

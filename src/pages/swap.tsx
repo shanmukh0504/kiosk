@@ -1,7 +1,7 @@
 import { Swap } from "../components/swap/Swap";
 export const SwapPage = () => {
   return (
-    <div className="w-full h-full">
+    <div className="h-full w-full">
       <Swap />
     </div>
   );
