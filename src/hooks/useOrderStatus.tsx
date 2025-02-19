@@ -15,7 +15,16 @@ export enum SimplifiedOrderStatus {
   redeeming = "Redeeming ",
   redeemed = "Redeemed ",
   swapCompleted = "Swap completed",
+  Refunded = "Refunded",
+  AwaitingRefund = "Awaiting refund",
 }
+
+export const STATUS_MAPPING: Record<string, SimplifiedOrderStatus> = {
+  RefundDetected: SimplifiedOrderStatus.AwaitingRefund,
+  CounterPartyRefundDetected: SimplifiedOrderStatus.AwaitingRefund,
+  CounterPartyRefunded: SimplifiedOrderStatus.AwaitingRefund,
+  Refunded: SimplifiedOrderStatus.Refunded,
+};
 
 type Status = {
   title: string;
@@ -42,18 +51,18 @@ export const useOrderStatus = () => {
       order.status === OrderStatus.InitiateDetected &&
       blockNumbers
       ? " (" +
-      Math.abs(
-        initBlockNumber
-          ? blockNumbers[order.source_swap.chain] - initBlockNumber
-          : 0
-      ) +
-      "/" +
-      order.source_swap.required_confirmations +
-      ")"
+          Math.abs(
+            initBlockNumber
+              ? blockNumbers[order.source_swap.chain] - initBlockNumber
+              : 0
+          ) +
+          "/" +
+          order.source_swap.required_confirmations +
+          ")"
       : "";
   }, [blockNumbers, order, initBlockNumber]);
 
-  const orderProgress: OrderProgress = useMemo(() => {
+  const orderProgress: OrderProgress | undefined = useMemo(() => {
     switch (order?.status) {
       case OrderStatus.Created:
         return {
@@ -168,12 +177,7 @@ export const useOrderStatus = () => {
           },
         };
       default:
-        return {
-          1: { title: "", status: "pending" },
-          2: { title: "", status: "pending" },
-          3: { title: "", status: "pending" },
-          4: { title: "", status: "pending" },
-        };
+        return undefined;
     }
   }, [confirmationsString, outputAsset?.symbol, order?.status]);
 
@@ -225,9 +229,10 @@ export const useOrderStatus = () => {
     setOrderInProgress,
     orderStatus,
   ]);
-
+  const viewableStatus =
+    (order?.status && STATUS_MAPPING[order?.status]) || null;
   return {
     orderProgress,
-    isRefunded: order?.status === OrderStatus.RefundDetected || order?.status === OrderStatus.Refunded
+    viewableStatus,
   };
 };
