@@ -1,6 +1,6 @@
 import { maxInt256 } from "viem";
 import { network } from "../../constants/constants";
-import { Network } from "@gardenfi/utils";
+import { Network, Url } from "@gardenfi/utils";
 import { Chains } from "@gardenfi/orderbook";
 
 export const DURATION_MAP = {
@@ -31,7 +31,7 @@ export const STAKING_CONFIG = {
     FLOWER_CONTRACT_ADDRESS: "0x4C8589A2A7F85a59B25D58Ff010CC2520118BB20",
     SEED_DECIMALS: 18,
     CHAIN: Chains.ethereum_sepolia,
-    EXPLORER: "https://sepolia.etherscan.io",
+    EXPLORER: new Url("address", "https://sepolia.etherscan.io"),
     TOKEN_LOGO: "https://garden-finance.imgix.net/token-images/seed.svg",
     CHAIN_LOGO: "https://garden-finance.imgix.net/chain_images/sepolia.svg",
   },
@@ -43,7 +43,7 @@ export const STAKING_CONFIG = {
     FLOWER_CONTRACT_ADDRESS: "0x1Ab59ae8BB54700B3C2C2cec4dB2dA26fE825a7D",
     SEED_DECIMALS: 18,
     CHAIN: Chains.arbitrum,
-    EXPLORER: "https://arbiscan.io",
+    EXPLORER: new Url("address", "https://arbiscan.io"),
     TOKEN_LOGO: "https://garden-finance.imgix.net/token-images/seed.svg",
     CHAIN_LOGO: "https://garden-finance.imgix.net/chain_images/arbitrum.svg",
   },
@@ -52,7 +52,7 @@ export const STAKING_CONFIG = {
 export const REWARD_CONFIG = {
   //base_sepolia
   84532: {
-    EXPLORER: "https://sepolia.basescan.org",
+    EXPLORER: new Url("address", "https://sepolia.basescan.org"),
     DISTRIBUTER_CONTRACT: "0xe30D56445C80fB42b35407fDE3cD1Bd960Ac9065",
     REWARD_TOKEN_ADDRESS: "0x868D08C137ff590BF70D368408B72f748eFbe483",
     REWARD_TOKEN_DECIMALS: 8,
@@ -62,7 +62,7 @@ export const REWARD_CONFIG = {
   },
   //base
   8453: {
-    EXPLORER: "https://basescan.org",
+    EXPLORER: new Url("address", "https://basescan.org"),
     DISTRIBUTER_CONTRACT: "0xF568aa66C9eD68838CEBB93124EFdC4a4095dc66",
     REWARD_TOKEN_ADDRESS: "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
     REWARD_TOKEN_DECIMALS: 8,
@@ -71,3 +71,8 @@ export const REWARD_CONFIG = {
     CHAIN_LOGO: "https://garden-finance.imgix.net/chain_images/base.svg",
   },
 } as const;
+
+export const ACTIVE_CHAIN_STAKE_CONFIG = {
+  STAKING: STAKING_CONFIG[STAKING_CHAIN],
+  REWARD: REWARD_CONFIG[REWARD_CHAIN],
+};
