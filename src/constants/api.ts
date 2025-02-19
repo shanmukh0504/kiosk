@@ -1,3 +1,5 @@
+import { Url } from "@gardenfi/utils";
+
 const REQUIRED_ENV_VARS = {
   DATA_URL: import.meta.env.VITE_DATA_URL,
   QUESTS_URL: import.meta.env.VITE_QUESTS_URL,
@@ -24,10 +26,13 @@ export const API = () => {
     buildId: "/build-id.json",
     orderbook: REQUIRED_ENV_VARS.ORDERBOOK_URL,
     quote: REQUIRED_ENV_VARS.QUOTE_URL,
-    mempool: {
-      testnet: "https://mempool.space/testnet4/api",
-      mainnet: "https://mempool.space/api",
-    },
+    addressExplorer: (network: "mainnet" | "testnet") =>
+      new Url(
+        "address",
+        network === "testnet"
+          ? "https://mempool.space/testnet4/api"
+          : "https://mempool.space/api"
+      ),
     explorer: (orderId: string) =>
       REQUIRED_ENV_VARS.EXPLORER + `order/${orderId}`,
     whitelist: (address: string) =>
