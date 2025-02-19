@@ -49,6 +49,7 @@ export default defineConfig({
         },
       ],
     }),
+
     {
       name: "generate-build-id",
       buildEnd() {
@@ -80,6 +81,9 @@ export default defineConfig({
       },
     },
   ],
+  preview: {
+    allowedHosts: true,
+  },
   define: {
     "process.env.BUILD_ID": JSON.stringify(buildId),
   },

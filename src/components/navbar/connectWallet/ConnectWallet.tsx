@@ -1,16 +1,13 @@
+import React, { useState, useMemo } from "react";
+import { useEVMWallet } from "../../../hooks/useEVMWallet";
+import { Connector } from "wagmi";
 import {
   ArrowLeftIcon,
   Chip,
   CloseIcon,
-  Modal,
   RadioCheckedIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import React, { useState, FC, useMemo } from "react";
-import { useEVMWallet } from "../../../hooks/useEVMWallet";
-import { Connector } from "wagmi";
-import { BottomSheet } from "../../../common/BottomSheet";
-import { useViewport } from "../../../hooks/useViewport";
 import { getAvailableWallets, Wallet } from "./getSupportedWallets";
 import {
   IInjectedBitcoinProvider,
@@ -27,13 +24,9 @@ import { AnimatePresence } from "framer-motion";
 type ConnectWalletProps = {
   open: boolean;
   onClose: () => void;
-  showOnlyBTCWallets: boolean;
 };
 
-export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
-  showOnlyBTCWallets,
-  onClose,
-}) => {
+export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   const [connectingWallet, setConnectingWallet] = useState<string | null>(null);
   const [multiWalletConnector, setMultiWalletConnector] = useState<{
     evm: Connector;
@@ -45,8 +38,10 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
 
   const { connectors, connectAsync, connector, address } = useEVMWallet();
   const { availableWallets, connect, provider } = useBitcoinWallet();
-  const { setOpenModal } = modalStore();
+  const { modalData, setOpenModal } = modalStore();
   const { setAuth } = authStore();
+
+  const showOnlyBTCWallets = !!modalData.connectWallet?.isBTCWallets;
 
   const allAvailableWallets = useMemo(() => {
     if (showOnlyBTCWallets) return getAvailableWallets(availableWallets);
@@ -62,14 +57,14 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
   }, [showOnlyBTCWallets, availableWallets, connectors, selectedEcosystem]);
 
   const handleClose = () => {
-    if (address) onClose();
+    if (address) onClose?.();
 
     setConnectingWallet(null);
     setMultiWalletConnector(undefined);
   };
 
   const close = () => {
-    onClose();
+    onClose?.();
     setConnectingWallet(null);
     setMultiWalletConnector(undefined);
   };
@@ -116,19 +111,19 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
   };
 
   return (
-    <>
-      <div className="flex justify-between items-center">
+    <div className="flex max-h-[600px] flex-col gap-[20px] p-3">
+      <div className="flex items-center justify-between">
         <Typography size="h4" weight="bold">
           Connect a wallet
         </Typography>
         <div className="flex gap-4">
           {multiWalletConnector && (
             <ArrowLeftIcon
-              className="w-6 h-[14px] cursor-pointer"
+              className="h-[14px] w-6 cursor-pointer"
               onClick={handleClose}
             />
           )}
-          <CloseIcon className="w-6 h-[14px] cursor-pointer" onClick={close} />
+          <CloseIcon className="h-[14px] w-6 cursor-pointer" onClick={close} />
         </div>
       </div>
 
@@ -137,7 +132,7 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
           {Object.values(ecosystems).map((ecosystem, i) => (
             <Chip
               key={i}
-              className={`py-1 pl-3 pr-1 cursor-pointer transition-colors ease-cubic-in-out hover:bg-opacity-50`}
+              className={`cursor-pointer py-1 pl-3 pr-1 transition-colors ease-cubic-in-out hover:bg-opacity-50`}
               onClick={() => {
                 setSelectedEcosystem((prev) =>
                   prev === ecosystem.name ? null : ecosystem.name
@@ -149,8 +144,8 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
               </Typography>
               <RadioCheckedIcon
                 className={`${
-                  selectedEcosystem === ecosystem.name ? "w-4 mr-1" : "w-0"
-                } transition-all fill-rose`}
+                  selectedEcosystem === ecosystem.name ? "mr-1 w-4" : "w-0"
+                } fill-rose transition-all`}
               />
             </Chip>
           ))}
@@ -163,10 +158,10 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
           handleClose={handleClose}
         />
       ) : (
-        <div className="flex flex-col gap-1 bg-white/50 rounded-2xl p-4">
-          <AnimatePresence>
-            {allAvailableWallets.length > 0 ? (
-              allAvailableWallets.map((wallet) => (
+        <div className="scrollbar-hide flex flex-col gap-1 overflow-y-auto overscroll-contain rounded-2xl bg-white/50 p-4 transition-all duration-300">
+          {allAvailableWallets.length > 0 ? (
+            <AnimatePresence>
+              {allAvailableWallets.map((wallet) => (
                 <WalletRow
                   key={wallet.id}
                   name={wallet.name}
@@ -185,11 +180,11 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
                   }}
                   isAvailable={wallet.isAvailable}
                 />
-              ))
-            ) : (
-              <Typography size="h3">No wallets found</Typography>
-            )}
-          </AnimatePresence>
+              ))}
+            </AnimatePresence>
+          ) : (
+            <Typography size="h3">No wallets found</Typography>
+          )}
         </div>
       )}
 
@@ -216,41 +211,6 @@ export const ConnectWalletComponent: React.FC<ConnectWalletProps> = ({
           .
         </Typography>
       </div>
-    </>
-  );
-};
-
-export const ConnectWallet: FC<ConnectWalletProps> = ({
-  open,
-  onClose,
-  showOnlyBTCWallets,
-}) => {
-  const { isMobile } = useViewport();
-
-  return (
-    <>
-      {isMobile ? (
-        <BottomSheet open={open} onOpenChange={onClose}>
-          <ConnectWalletComponent
-            open={open}
-            onClose={onClose}
-            showOnlyBTCWallets={showOnlyBTCWallets}
-          />
-        </BottomSheet>
-      ) : (
-        <Modal open={open}>
-          <Modal.Children
-            opacityLevel={"medium"}
-            className="flex flex-col gap-6 backdrop-blur-[20px] rounded-2xl w-[600px] p-6"
-          >
-            <ConnectWalletComponent
-              open={open}
-              onClose={onClose}
-              showOnlyBTCWallets={showOnlyBTCWallets}
-            />
-          </Modal.Children>
-        </Modal>
-      )}
-    </>
+    </div>
   );
 };

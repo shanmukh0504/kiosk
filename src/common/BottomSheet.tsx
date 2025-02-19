@@ -14,17 +14,13 @@ export const BottomSheet: FC<BottomSheetProps> = ({
 }) => {
   return (
     <div
-      className={`bg-dark-grey
-      absolute z-50
-      h-full w-full
-      transition-colors ease-cubic-in-out duration-500
-      ${open ? "bg-opacity-40" : "bg-opacity-0 pointer-events-none"}`}
+      className={`absolute z-50 h-full w-full bg-dark-grey transition-colors duration-500 ease-cubic-in-out ${open ? "bg-opacity-40" : "pointer-events-none bg-opacity-0"}`}
     >
       <Drawer.Root open={open} onOpenChange={onOpenChange}>
         <Drawer.Portal>
-          <Drawer.Content className="bg-white/50 backdrop-blur-[20px] rounded-t-xl w-full h-fit px-4 pt-4 fixed bottom-0 z-10 outline-none">
-            <div className="bg-white/30 rounded-full  w-[60px] h-1 mx-auto mb-5" />
-            <div className="flex flex-col gap-5  overflow-y-scroll max-h-[70vh] scrollbar-hide">
+          <Drawer.Content className="fixed bottom-0 z-10 h-fit w-full rounded-t-xl bg-white/50 px-4 pt-4 outline-none backdrop-blur-[20px]">
+            <div className="mx-auto mb-5 h-1 w-[60px] rounded-full bg-white/30" />
+            <div className="scrollbar-hide flex max-h-[70vh] flex-col gap-5 overflow-y-scroll">
               {children}
             </div>
           </Drawer.Content>

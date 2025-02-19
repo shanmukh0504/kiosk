@@ -7,14 +7,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useGarden } from "@gardenfi/react-hooks";
 import { isCurrentRoute } from "../../utils/utils";
 import { MobileMenu } from "./MobileMenu";
-import { connectWalletStore } from "../../store/connectWalletStore";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { modalNames, modalStore } from "../../store/modalStore";
 
 export const Navbar = () => {
   const [isInitiatingSM, setIsInitiatingSM] = useState(false);
 
   const { isConnected, address } = useEVMWallet();
-  const { setIsOpen } = connectWalletStore();
+  const { setOpenModal } = modalStore();
   const { account } = useBitcoinWallet();
   const { garden, isExecuting, isExecutorRequired } = useGarden();
 
@@ -34,7 +34,7 @@ export const Navbar = () => {
   const handleConnectClick = () => {
     if (isFullyConnected) return;
     if (isConnected && shouldInitiateSM) handleInitializeSM();
-    else setIsOpen();
+    else setOpenModal(modalNames.connectWallet);
   };
 
   const handleInitializeSM = useCallback(async () => {
@@ -57,14 +57,14 @@ export const Navbar = () => {
 
   return (
     <div
-      className={"flex items-center justify-between px-6 sm:px-10 py-6 gap-3"}
+      className={"flex items-center justify-between gap-3 px-6 py-6 sm:px-10"}
     >
       <div className="flex items-center gap-16">
         <GardenFullLogo
           onClick={handleHomeLogoClick}
-          className="cursor-pointer "
+          className="cursor-pointer"
         />
-        <div className="hidden sm:flex  sm:items-center gap-12">
+        <div className="hidden gap-12 sm:flex sm:items-center">
           {Object.values(INTERNAL_ROUTES).map((route) => {
             return (
               <a key={route.path} href={route.path}>

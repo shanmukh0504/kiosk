@@ -1,0 +1,93 @@
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+const generatePageMetadata = (path) => {
+  const baseMetadata = {
+    "/": {
+      title: "Garden Finance BTC Bridge: Swap Native Bitcoin",
+      description:
+        "Effortlessly bridge native Bitcoin to chains like Solana, Ethereum, Base, Arbitrum, Avalanche, and more.",
+      keywords: [
+        "Garden",
+        "Bitcoin exchange",
+        "Bitcoin bridge",
+        "fast BTC bridge",
+        "instant BTC bridge",
+        "decentralized BTC swap",
+        "atomic swap",
+        "cross-chain swap",
+      ],
+      ogImage: "/metadata.png",
+      canonical: "/",
+    },
+    "/stake": {
+      title: "Garden Finance: Stake SEED Token",
+      description:
+        "Stake SEED tokens to get revenue share and participate in governance while earning APY.",
+      keywords: [
+        "SEED token staking",
+        "earn APY on SEED tokens",
+        "Garden Finance governance",
+      ],
+      ogImage: "/stake.png",
+      canonical: "/stake",
+    },
+    "/quest": {
+      title: "Garden Finance Quests",
+      description:
+        "Get involved in the Garden ecosystem and earn SEED tokens by completing quests.",
+      keywords: [
+        "Earn SEED tokens",
+        "SEED token rewards",
+        "SEED token airdrop",
+      ],
+      ogImage: "/quest.png",
+      canonical: "/quest",
+    },
+  };
+
+  return (
+    baseMetadata[path] || {
+      title: "Garden Finance BTC Bridge: Swap Native Bitcoin",
+      description:
+        "Effortlessly bridge native Bitcoin to chains like Solana, Ethereum, Base, Arbitrum, Avalanche, and more.",
+      ogImage: "/metadata.png",
+      canonical: "/",
+    }
+  );
+};
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const toAbsolute = (p) => path.resolve(__dirname, p);
+
+// Read the HTML template to inject metadata
+const template = fs.readFileSync(toAbsolute("dist/index.html"), "utf-8");
+
+// Explicit list of routes to pre-render (including "/swap" and "/quest")
+const routesToPrerender = ["/", "/stake", "/quest"];
+
+// Function to pre-render the HTML for each route
+(async () => {
+  for (const url of routesToPrerender) {
+    // Generate metadata for the current route
+    const metadata = generatePageMetadata(url);
+
+    // Inject metadata into the template
+    const html = template
+      .replace("<!--meta-title-->", metadata.title)
+      .replace("<!--meta-og-title-->", metadata.title)
+      .replace("<!--meta-description-->", metadata.description)
+      .replace(
+        "<!--meta-og-description-->",
+        metadata.ogDescription || metadata.description
+      )
+      .replace("<!--meta-og-image-->", metadata.ogImage || "/metadata.png")
+      .replace("<!--meta-twt-image-->", metadata.ogImage || "/metadata.png");
+
+    const filePath = `dist${url === "/" ? "/index" : url}.html`;
+
+    // Write the generated HTML to a file
+    fs.writeFileSync(toAbsolute(filePath), html);
+    console.log(`Prerendered: ${filePath}`);
+  }
+})();

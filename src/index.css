@@ -36,7 +36,7 @@
   }
 
   .react-tooltip.tooltip {
-    @apply text-[100%] bg-dark-grey rounded-2xl px-4 py-2;
+    @apply rounded-2xl bg-dark-grey px-4 py-2 text-[100%];
   }
   .react-tooltip.tooltip.multiline {
     @apply w-60 p-3;
@@ -44,7 +44,7 @@
 
   /* TODO: Consider moving this animation to garden-book */
   .shine:before {
-    @apply content-[''] bg-gradient-to-r from-transparent via-white/50 via-50% to-transparent absolute top-0 left-0 w-[168px] h-full animate-shine opacity-0;
+    @apply absolute left-0 top-0 h-full w-[168px] animate-shine bg-gradient-to-r from-transparent via-white/50 via-50% to-transparent opacity-0 content-[''];
   }
 }
 

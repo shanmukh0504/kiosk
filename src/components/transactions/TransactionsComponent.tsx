@@ -1,18 +1,15 @@
 import { FC } from "react";
-import { useViewport } from "../../hooks/useViewport";
 import { TransactionsBottomSheet } from "./TransactionsBottomSheet";
 import { TransactionsSidebar } from "./TransactionsSidebar";
+import { ModalProps } from "../modal/Modal";
+import { viewPortStore } from "../../store/viewPortStore";
 
-type TransactionsViewProps = {
-  open: boolean;
-  onClose: () => void;
-};
-
-export const TransactionsComponent: FC<TransactionsViewProps> = ({
-  open,
-  onClose,
-}) => {
-  const { isMobile } = useViewport();
+export const TransactionsComponent: FC<
+  ModalProps & {
+    onClose: () => void;
+  }
+> = ({ open, onClose }) => {
+  const { isMobile } = viewPortStore();
 
   return (
     <div>

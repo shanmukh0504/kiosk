@@ -1,13 +1,10 @@
-import { FC, useEffect, useMemo } from "react";
-import { useViewport } from "../../hooks/useViewport";
-
+import { FC, useEffect } from "react";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { checkIfWhitelisted } from "../../utils/checkIfWhitelisted";
 import blossomTestnet from "/blossom-testnet.png";
 import blossomMainnet from "/blossom-mainnet.png";
-import { Button, LogoutIcon, Modal, Typography } from "@gardenfi/garden-book";
-import { BottomSheet } from "../../common/BottomSheet";
+import { Button, LogoutIcon, Typography } from "@gardenfi/garden-book";
 import { network } from "../../constants/constants";
 import { swapStore } from "../../store/swapStore";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
@@ -18,15 +15,15 @@ type WhiteListProps = {
   onClose: () => void;
 };
 
-const WhitelistComponent: FC<Omit<WhiteListProps, "open">> = ({ onClose }) => {
+export const Whitelist: FC<WhiteListProps> = ({ onClose }) => {
   const { disconnect } = useEVMWallet();
   const { clear } = swapStore();
   const { disconnect: btcDisconnect } = useBitcoinWallet();
   const { clearBalances } = balanceStore();
-  const image = useMemo(
-    () => (network === "mainnet" ? blossomMainnet : blossomTestnet),
-    []
-  );
+  const { address } = useEVMWallet();
+  const { setOpenModal } = modalStore();
+
+  const image = network === "mainnet" ? blossomMainnet : blossomTestnet;
 
   const handleJoinWaitlist = () =>
     window.open("https://waitlist.garden.finance", "_blank");
@@ -39,35 +36,6 @@ const WhitelistComponent: FC<Omit<WhiteListProps, "open">> = ({ onClose }) => {
     clearBalances();
   };
 
-  return (
-    <div className="flex flex-col gap-5 rounded-2xl p-1 mt-2">
-      <img src={image} alt="whitelist" />
-      <Typography size="h4">
-        <b>Bloom {network}</b> is currently invite-only.
-        <br />
-        Secure your spot on the waitlist to be among the first
-        <br /> to experience it and help shape the future of Garden!
-      </Typography>
-      <div className="flex mt-2 gap-2 items-center">
-        <Button className="w-11/12" size="lg" onClick={handleJoinWaitlist}>
-          Join the waitlist
-        </Button>
-        <div
-          className="h-full bg-dark-grey p-4 rounded-2xl cursor-pointer"
-          onClick={handleDisconnect}
-        >
-          <LogoutIcon className="w-5 cursor-pointer fill-white" />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export const WhiteList: FC<WhiteListProps> = ({ open, onClose }) => {
-  const { address } = useEVMWallet();
-  const { setOpenModal } = modalStore();
-  const { isMobile } = useViewport();
-
   useEffect(() => {
     if (!address) return;
 
@@ -79,18 +47,25 @@ export const WhiteList: FC<WhiteListProps> = ({ open, onClose }) => {
   }, [address, setOpenModal]);
 
   return (
-    <div>
-      {isMobile ? (
-        <BottomSheet open={open}>
-          <WhitelistComponent onClose={onClose} />
-        </BottomSheet>
-      ) : (
-        <Modal open={open}>
-          <Modal.Children opacityLevel={"medium"} className="rounded-2xl p-6">
-            <WhitelistComponent onClose={onClose} />
-          </Modal.Children>
-        </Modal>
-      )}
+    <div className="mt-2 flex flex-col gap-5 rounded-2xl p-1">
+      <img src={image} alt="whitelist" />
+      <Typography size="h4">
+        <b>Bloom {network}</b> is currently invite-only.
+        <br />
+        Secure your spot on the waitlist to be among the first
+        <br /> to experience it and help shape the future of Garden!
+      </Typography>
+      <div className="mt-2 flex items-center gap-2">
+        <Button className="w-11/12" size="lg" onClick={handleJoinWaitlist}>
+          Join the waitlist
+        </Button>
+        <div
+          className="h-full cursor-pointer rounded-2xl bg-dark-grey p-4"
+          onClick={handleDisconnect}
+        >
+          <LogoutIcon className="w-5 cursor-pointer fill-white" />
+        </div>
+      </div>
     </div>
   );
 };

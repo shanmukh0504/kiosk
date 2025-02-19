@@ -9,6 +9,8 @@ export const btcToEVMid: Record<string, string> = {
   okx: "com.okex.wallet",
 } as const;
 
+export const MAX_VISIBLE_WALLETS = 3;
+
 export const ecosystems = {
   bitcoin: {
     name: "Bitcoin",
@@ -82,14 +84,6 @@ export const GardenSupportedWallets: Record<
     logo: "https://garden-finance.imgix.net/wallets/okx.svg",
     installLink: "https://www.okx.com/download",
     isBitcoinSupported: network === Network.MAINNET ? true : false,
-    isEVMSupported: true,
-  },
-  "org.uniswap.app": {
-    id: "org.uniswap.app",
-    name: "Uniswap",
-    logo: "https://garden-finance.imgix.net/wallets/uniswap.svg",
-    installLink: "https://wallet.uniswap.org/",
-    isBitcoinSupported: false,
     isEVMSupported: true,
   },
   unisat: {
