@@ -30,14 +30,16 @@ export const OrderStatus: FC<OrderStatusProps> = ({
     ).length;
 
   const currentStatus =
-    Object.values(orderProgress || {}).find(
-      (_, index, array) =>
-        index === array.length - 1 || array[index + 1].status === "pending"
-    )?.title || "";
+    (orderProgress &&
+      Object.values(orderProgress).find(
+        (_, index, array) =>
+          index === array.length - 1 || array[index + 1].status === "pending"
+      )?.title) ||
+    "";
 
   return (
     <div className="flex flex-col justify-between rounded-2xl bg-white p-4">
-      {!viewableStatus ? (
+      {currentStatus ? (
         <>
           <div
             onClick={handleDropdown}
@@ -131,10 +133,12 @@ export const OrderStatus: FC<OrderStatusProps> = ({
             </div>
           </div>
         </>
-      ) : (
+      ) : viewableStatus ? (
         <Typography size="h3" weight="bold">
           {viewableStatus}
         </Typography>
+      ) : (
+        <></>
       )}
     </div>
   );
