@@ -1,6 +1,6 @@
 import { AssetChainLogos, Typography } from "@gardenfi/garden-book";
 import { motion } from "framer-motion";
-import { ACTIVE_CHAIN_STAKE_CONFIG } from "../constants";
+import { STAKE_REWARD } from "../constants";
 import { Url } from "@gardenfi/utils";
 
 type TooltipProps = {
@@ -37,16 +37,16 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
               className={`relative w-11 before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
               onClick={() =>
                 handleRedirect(
-                  ACTIVE_CHAIN_STAKE_CONFIG.REWARD.EXPLORER,
-                  ACTIVE_CHAIN_STAKE_CONFIG.REWARD.REWARD_TOKEN_ADDRESS
+                  STAKE_REWARD.CBBTC_REWARD.EXPLORER,
+                  STAKE_REWARD.CBBTC_REWARD.REWARD_TOKEN_ADDRESS
                 )
               }
             >
               cbBTC
             </Typography>
             <AssetChainLogos
-              tokenLogo={ACTIVE_CHAIN_STAKE_CONFIG.REWARD.TOKEN_LOGO}
-              chainLogo={ACTIVE_CHAIN_STAKE_CONFIG.REWARD.CHAIN_LOGO}
+              tokenLogo={STAKE_REWARD.CBBTC_REWARD.TOKEN_LOGO}
+              chainLogo={STAKE_REWARD.CBBTC_REWARD.CHAIN_LOGO}
               className="scale-[0.8054]"
             />
           </div>
@@ -60,16 +60,16 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
               className={`relative mr-2 w-9 before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
               onClick={() =>
                 handleRedirect(
-                  ACTIVE_CHAIN_STAKE_CONFIG.STAKING.EXPLORER,
-                  ACTIVE_CHAIN_STAKE_CONFIG.STAKING.SEED_ADDRESS
+                  STAKE_REWARD.SEED_REWARD.EXPLORER,
+                  STAKE_REWARD.SEED_REWARD.REWARD_TOKEN_ADDRESS
                 )
               }
             >
               SEED
             </Typography>
             <AssetChainLogos
-              tokenLogo={ACTIVE_CHAIN_STAKE_CONFIG.STAKING.TOKEN_LOGO}
-              chainLogo={ACTIVE_CHAIN_STAKE_CONFIG.STAKING.CHAIN_LOGO}
+              tokenLogo={STAKE_REWARD.SEED_REWARD.TOKEN_LOGO}
+              chainLogo={STAKE_REWARD.SEED_REWARD.CHAIN_LOGO}
               className="scale-[0.8054]"
             />
           </div>
