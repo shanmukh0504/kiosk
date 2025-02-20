@@ -10,9 +10,7 @@ import BigNumber from "bignumber.js";
 import { getAssetFromSwap } from "../../../utils/utils";
 import { assetInfoStore } from "../../../store/assetInfoStore";
 import { CopyToClipboard } from "../../../common/CopyToClipboard";
-import { Network } from "@gardenfi/utils";
-import { API } from "../../../constants/api";
-import { network } from "../../../constants/constants";
+import { Url } from "@gardenfi/utils";
 
 type OrderDetailsProps = {
   order: MatchedOrder;
@@ -58,7 +56,7 @@ export const OrderDetailsRow: FC<OrderDetailsRowProps> = ({
 
 export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
   const [dropdown, setDropdown] = useState(false);
-  const { assets } = assetInfoStore();
+  const { assets, chains } = assetInfoStore();
 
   const { inputAsset, outputAsset, btcAddress } = useMemo(() => {
     return {
@@ -74,8 +72,19 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
     };
   }, [assets, order]);
 
-  const url = API().addressExplorer(network as Network);
-  const link = btcAddress && url && url.endpoint(btcAddress);
+  const baseUrl =
+    order &&
+    chains &&
+    new Url(
+      "address",
+      chains[
+        isBitcoin(order.source_swap.chain)
+          ? order.source_swap.chain
+          : order.destination_swap.chain
+      ]?.explorer.toString()
+    );
+
+  const link = baseUrl && btcAddress && baseUrl.endpoint(btcAddress);
 
   const { inputAmountPrice, outputAmountPrice, amountToFill, filledAmount } =
     useMemo(() => {

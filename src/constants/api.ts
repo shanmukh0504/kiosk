@@ -15,27 +15,20 @@ export const API = () => {
   });
 
   return {
-    home: "https://garden.finance",
+    home: new Url("https://garden.finance"),
     data: {
-      data: REQUIRED_ENV_VARS.DATA_URL,
-      assets: REQUIRED_ENV_VARS.DATA_URL + "/assets",
+      data: new Url(REQUIRED_ENV_VARS.DATA_URL),
+      assets: new Url("assets", REQUIRED_ENV_VARS.DATA_URL),
       blockNumbers: (network: "mainnet" | "testnet") =>
-        REQUIRED_ENV_VARS.DATA_URL + "/blocknumber/" + network,
+        new Url("blocknumber", REQUIRED_ENV_VARS.DATA_URL).endpoint(network),
     },
-    leaderboard: { quests: REQUIRED_ENV_VARS.QUESTS_URL + "/quests" },
-    buildId: "/build-id.json",
-    orderbook: REQUIRED_ENV_VARS.ORDERBOOK_URL,
-    quote: REQUIRED_ENV_VARS.QUOTE_URL,
-    addressExplorer: (network: "mainnet" | "testnet") =>
-      new Url(
-        "address",
-        network === "testnet"
-          ? "https://mempool.space/testnet4/api"
-          : "https://mempool.space/api"
-      ),
+    leaderboard: { quests: new Url("quests", REQUIRED_ENV_VARS.QUESTS_URL) },
+    buildId: new Url("/build-id.json"),
+    orderbook: new Url(REQUIRED_ENV_VARS.ORDERBOOK_URL),
+    quote: new Url(REQUIRED_ENV_VARS.QUOTE_URL),
     explorer: (orderId: string) =>
-      REQUIRED_ENV_VARS.EXPLORER + `order/${orderId}`,
+      new Url("order", REQUIRED_ENV_VARS.EXPLORER).endpoint(orderId),
     whitelist: (address: string) =>
-      REQUIRED_ENV_VARS.WHITELIST + `whitelist/${address}`,
+      new Url("whitelist", REQUIRED_ENV_VARS.WHITELIST).endpoint(address),
   };
 };
