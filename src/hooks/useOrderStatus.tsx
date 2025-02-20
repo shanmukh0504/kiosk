@@ -20,7 +20,7 @@ export enum SimplifiedOrderStatus {
 }
 
 export const STATUS_MAPPING: Record<string, SimplifiedOrderStatus> = {
-  RefundDetected: SimplifiedOrderStatus.AwaitingRefund,
+  RefundDetected: SimplifiedOrderStatus.Refunded,
   CounterPartyRefundDetected: SimplifiedOrderStatus.AwaitingRefund,
   CounterPartyRefunded: SimplifiedOrderStatus.AwaitingRefund,
   Refunded: SimplifiedOrderStatus.Refunded,
