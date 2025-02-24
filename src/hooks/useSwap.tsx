@@ -150,9 +150,6 @@ export const useSwap = () => {
             toAsset,
             amount: amountInDecimals.toNumber(),
             isExactOut,
-            request: {
-              signal: controller.current.signal,
-            },
           });
           if (quote.error) {
             if (quote.error.includes("insufficient liquidity")) {
