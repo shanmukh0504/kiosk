@@ -709,9 +709,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/react-hooks@npm:^2.0.20":
-  version: 2.0.20
-  resolution: "@gardenfi/react-hooks@npm:2.0.20"
+"@gardenfi/react-hooks@npm:^2.0.21":
+  version: 2.0.21
+  resolution: "@gardenfi/react-hooks@npm:2.0.21"
   dependencies:
     "@catalogfi/wallets": "npm:^0.2.58"
     "@gardenfi/core": "npm:^2.0.17"
@@ -719,7 +719,7 @@ __metadata:
     "@gardenfi/utils": "npm:^2.0.1"
     react: "npm:^18.3.1"
     viem: "npm:^2.21.23"
-  checksum: 10c0/12dcab540dc83fae0bb9eb2eb2b5ee8d5b1ea62936d0e9012e820d83825420372bd49c0532b9c0065d3b8035631350bdc32b7d993d9a576ad8c49236821bfdde
+  checksum: 10c0/bcb8e996d7dc9f088ef7ec45fe14bf70f29fc3f6f4b905cc70a30ef3212114b265845ab9967c94e84d78274a24dc43b5ee92cc2a66da2b20c61e2facd7ed05ad
   languageName: node
   linkType: hard
 
@@ -5797,7 +5797,7 @@ __metadata:
     "@gardenfi/core": "npm:^2.0.17"
     "@gardenfi/garden-book": "npm:^0.1.66"
     "@gardenfi/orderbook": "npm:^2.0.4"
-    "@gardenfi/react-hooks": "npm:^2.0.20"
+    "@gardenfi/react-hooks": "npm:^2.0.21"
     "@gardenfi/utils": "npm:^2.0.1"
     "@gardenfi/wallet-connectors": "npm:^2.0.1"
     "@tanstack/react-query": "npm:^5.51.23"
