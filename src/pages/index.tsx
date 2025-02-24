@@ -20,9 +20,10 @@ function App() {
     >
       <Layout>
         <Routes>
-          <Route path={INTERNAL_ROUTES.swap.path} element={<SwapPage />} />
+          {INTERNAL_ROUTES.swap.path.map((path) => (
+            <Route key={path} path={path} element={<SwapPage />} />
+          ))}
           <Route path={INTERNAL_ROUTES.stake.path} element={<StakePage />} />
-          {/* <Route path={INTERNAL_ROUTES.quests.path} element={<QuestsPage />} /> */}
         </Routes>
       </Layout>
     </GardenProvider>

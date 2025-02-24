@@ -66,12 +66,12 @@ export const Navbar = () => {
         />
         <div className="hidden gap-12 sm:flex sm:items-center">
           {Object.values(INTERNAL_ROUTES).map((route) => {
+            const paths = Array.isArray(route.path) ? route.path : [route.path];
+            const isActive = paths.some(isCurrentRoute);
+            const primaryPath = paths[0];
             return (
-              <a key={route.path} href={route.path}>
-                <Typography
-                  size="h2"
-                  weight={isCurrentRoute(route.path) ? "bold" : "medium"}
-                >
+              <a key={primaryPath} href={primaryPath}>
+                <Typography size="h2" weight={isActive ? "bold" : "medium"}>
                   {route.name}
                 </Typography>
               </a>

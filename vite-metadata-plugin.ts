@@ -64,7 +64,7 @@ export function metadataPlugin(): Plugin {
           "utf-8"
         );
 
-        const routesToPrerender = ["/", "/stake", "/quest"];
+        const routesToPrerender = ["/", "/swap", "/stake", "/quest"];
 
         for (const route of routesToPrerender) {
           // Generate metadata for this route
@@ -138,6 +138,10 @@ function generatePageMetadata(path: string): Metadata {
       canonical: "/quest",
     },
   };
+
+  if (path === "/swap") {
+    return baseMetadata["/"];
+  }
 
   return baseMetadata[path] || baseMetadata["/"];
 }
