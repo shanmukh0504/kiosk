@@ -24,10 +24,30 @@ export const API = () => {
       blockNumbers: (network: "mainnet" | "testnet") =>
         new Url("blocknumber", REQUIRED_ENV_VARS.DATA_URL).endpoint(network),
     },
-    leaderboard: { quests: new Url("quests", REQUIRED_ENV_VARS.QUESTS_URL) },
+    leaderboard: { quests: REQUIRED_ENV_VARS.QUESTS_URL + "/quests" },
     buildId: new Url("/build-id.json"),
     orderbook: new Url(REQUIRED_ENV_VARS.ORDERBOOK_URL),
     quote: new Url(REQUIRED_ENV_VARS.QUOTE_URL),
+    stake: {
+      stakePosition: (userId: string) =>
+        new Url("stakes", REQUIRED_ENV_VARS.STAKING_URL).addSearchParams({
+          userId: userId.toLowerCase(),
+        }),
+      globalApy: new Url(REQUIRED_ENV_VARS.STAKING_URL).endpoint("apy"),
+      stakeApy: (address: string) =>
+        new Url(REQUIRED_ENV_VARS.STAKING_URL)
+          .endpoint("apy")
+          .endpoint(address.toLowerCase()),
+      stakingStats: new Url(REQUIRED_ENV_VARS.STAKING_URL).endpoint(
+        "stakingStats"
+      ),
+      accumulatedReward: (userId: string) =>
+        new Url(REQUIRED_ENV_VARS.STAKING_URL)
+          .endpoint("rewards")
+          .endpoint(userId),
+    },
+    reward: (userId: string) =>
+      new Url(REQUIRED_ENV_VARS.REWARD).endpoint("rewards").endpoint(userId),
     explorer: (orderId: string) =>
       new Url("order", REQUIRED_ENV_VARS.EXPLORER).endpoint(orderId),
     whitelist: (address: string) =>

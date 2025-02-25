@@ -32,7 +32,7 @@ export const questStore = create<QuestState>((set) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const response = await axios.get<QuestData>(API().leaderboard.quests);
+      const response = await axios.get<QuestData>(API().leaderboard.quests.toString());
 
       if (response.status === 200) {
         set({ questData: response.data });

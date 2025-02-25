@@ -124,8 +124,8 @@ export const stakeStore = create<StakeStoreState>((set) => ({
   fetchStakePosData: async (address: string) => {
     try {
       const response = await axios.get<StakingPositionApiResponse>(
-        API().stake.stakePosition(address.toLowerCase())
-      );
+        API().stake.stakePosition(address.toLowerCase()).toString()
+      );      
       if (response.status === 200 && response.data) {
         const stakes = response.data.data;
         const stats = stakes.reduce(
@@ -170,7 +170,7 @@ export const stakeStore = create<StakeStoreState>((set) => ({
           totalVotes: number;
           totalStaked: string;
         };
-      }>(API().stake.stakingStats);
+      }>(API().stake.stakingStats.toString());
       const avgLockTime = Math.floor(
         Number(response.data.data.ast) / ETH_BLOCKS_PER_DAY
       );
@@ -209,7 +209,7 @@ export const stakeStore = create<StakeStoreState>((set) => ({
             userApy: number;
           };
         };
-      }>(API().stake.stakeApy(address.toLowerCase()));
+      }>(API().stake.stakeApy(address.toLowerCase()).toString());
       set({ stakeApys: response.data.data.data.stakeApys });
     } catch (error) {
       console.error(error);
@@ -218,9 +218,9 @@ export const stakeStore = create<StakeStoreState>((set) => ({
   fetchAndSetRewards: async (address: string) => {
     try {
       set({ loading: { stakeRewards: true } });
-      const resp = await axios.get<StakingReward>(API().reward(address));
+      const resp = await axios.get<StakingReward>(API().reward(address).toString());
       const accResp = await axios.get<StakingAccumulatedRewards>(
-        API().stake.accumulatedReward(address)
+        API().stake.accumulatedReward(address).toString()
       );
       const stakewiseRewards: Record<string, AccumulatedReward> = {};
       if (accResp.status === 200 && accResp.data) {
