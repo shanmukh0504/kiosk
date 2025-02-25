@@ -11,9 +11,9 @@ type TooltipProps = {
 
 export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
   const formattedSeed = seed && formatAmount(seed, 5);
-  
-  const handleRedirect = (explorer: Url, address: string) => {
-    window.open(explorer.endpoint(address));
+
+  const handleRedirect = (addressExplorer: Url, address: string) => {
+    window.open(addressExplorer.endpoint(address));
   };
 
   return (
