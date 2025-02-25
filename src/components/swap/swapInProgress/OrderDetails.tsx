@@ -72,17 +72,16 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
     };
   }, [assets, order]);
 
+  const chain = isBitcoin(order.source_swap.chain)
+    ? order.source_swap.chain
+    : isBitcoin(order.destination_swap.chain)
+      ? order.destination_swap.chain
+      : "";
   const baseUrl =
     order &&
     chains &&
-    new Url(
-      "address",
-      chains[
-        isBitcoin(order.source_swap.chain)
-          ? order.source_swap.chain
-          : order.destination_swap.chain
-      ]?.explorer.toString()
-    );
+    chain &&
+    new Url("address", chains[chain]?.explorer.toString());
 
   const link = baseUrl && btcAddress && baseUrl.endpoint(btcAddress);
 
