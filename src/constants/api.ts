@@ -25,7 +25,7 @@ export const API = () => {
         new Url("blocknumber", REQUIRED_ENV_VARS.DATA_URL).endpoint(network),
     },
     leaderboard: { quests: REQUIRED_ENV_VARS.QUESTS_URL + "/quests" },
-    buildId: new Url("/build-id.json"),
+    buildId: "/build-id.json",
     orderbook: new Url(REQUIRED_ENV_VARS.ORDERBOOK_URL),
     quote: new Url(REQUIRED_ENV_VARS.QUOTE_URL),
     stake: {
