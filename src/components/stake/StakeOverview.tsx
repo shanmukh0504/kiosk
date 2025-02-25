@@ -27,7 +27,7 @@ export const StakeOverview = () => {
     useReadContract({
       abi: distributerABI,
       functionName: "getClaimedAmount",
-      address: STAKE_REWARD.CBBTC_REWARD.DISTRIBUTER_CONTRACT as Hex,
+      address: STAKE_REWARD.CBBTC.DISTRIBUTER_CONTRACT as Hex,
       args: [address as Hex],
       chainId: REWARD_CHAIN,
       query: {
@@ -55,7 +55,7 @@ export const StakeOverview = () => {
 
   const handleRewardClick = async () => {
     if (!chainId || !address || !stakeRewards) return;
-    const rewardConfig = STAKE_REWARD.CBBTC_REWARD;
+    const rewardConfig = STAKE_REWARD.CBBTC;
     if (!rewardConfig) return;
 
     try {
