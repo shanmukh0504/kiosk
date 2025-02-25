@@ -10,7 +10,7 @@ type TooltipProps = {
 
 export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
   const handleRedirect = (addressExplorer: Url, address: string) => {
-    window.open(addressExplorer.endpoint(address));
+    window.open(addressExplorer.endpoint("address").endpoint(address));
   };
 
   return (
@@ -28,7 +28,7 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
         </Typography>
         <div className="flex flex-col gap-3">
           <div className="flex gap-2">
-            <Typography size="h4" weight="medium" className="w-[70px]">
+            <Typography size="h4" weight="medium" className="w-[87px]">
               {cbBtc}
             </Typography>
             <Typography
@@ -51,7 +51,7 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
             />
           </div>
           <div className="flex gap-2">
-            <Typography size="h4" weight="medium" className="w-[70px]">
+            <Typography size="h4" weight="medium" className="w-[87px]">
               {seed}
             </Typography>
             <Typography
