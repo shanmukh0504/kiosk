@@ -139,14 +139,14 @@ export const StakeOverview = () => {
                       seedReward={formatAmount(
                         stakeRewards?.totalSeedReward ?? 0,
                         SEED_DECIMALS,
-                        5
+                        4
                       )}
                       cbBtcReward={formatAmount(
                         Number(
                           stakeRewards?.rewardResponse.cumulative_rewards_cbbtc
                         ),
                         8,
-                        5
+                        4
                       )}
                     />
                   }

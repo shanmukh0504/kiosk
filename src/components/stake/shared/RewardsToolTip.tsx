@@ -2,7 +2,6 @@ import { AssetChainLogos, Typography } from "@gardenfi/garden-book";
 import { motion } from "framer-motion";
 import { STAKE_REWARD } from "../constants";
 import { Url } from "@gardenfi/utils";
-import { formatAmount } from "../../../utils/utils";
 
 type TooltipProps = {
   seed: number | null;
@@ -10,8 +9,6 @@ type TooltipProps = {
 };
 
 export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
-  const formattedSeed = seed && formatAmount(seed, 5);
-
   const handleRedirect = (addressExplorer: Url, address: string) => {
     window.open(addressExplorer.endpoint(address));
   };
@@ -40,7 +37,7 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
               className={`relative w-11 before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
               onClick={() =>
                 handleRedirect(
-                  STAKE_REWARD.CBBTC.ADDRESS_EXPLORER,
+                  STAKE_REWARD.CBBTC.EXPLORER,
                   STAKE_REWARD.CBBTC.REWARD_TOKEN_ADDRESS
                 )
               }
@@ -55,7 +52,7 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
           </div>
           <div className="flex gap-2">
             <Typography size="h4" weight="medium" className="w-[70px]">
-              {formattedSeed}
+              {seed}
             </Typography>
             <Typography
               size="h4"
@@ -63,7 +60,7 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
               className={`relative mr-2 w-9 before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
               onClick={() =>
                 handleRedirect(
-                  STAKE_REWARD.SEED.ADDRESS_EXPLORER,
+                  STAKE_REWARD.SEED.EXPLORER,
                   STAKE_REWARD.SEED.REWARD_TOKEN_ADDRESS
                 )
               }
