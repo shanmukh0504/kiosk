@@ -4,7 +4,7 @@ import { checkIfWhitelisted } from "../../../utils/checkIfWhitelisted";
 import { WalletClient } from "viem";
 import { getWalletClient } from "wagmi/actions";
 import { config } from "../../../layout/wagmi/config";
-import { Siwe, Url } from "@gardenfi/utils";
+import { Siwe} from "@gardenfi/utils";
 import { API } from "../../../constants/api";
 
 export const handleEVMConnect = async (
@@ -31,7 +31,7 @@ export const handleEVMConnect = async (
     });
     if (!walletClient) return;
 
-    const auth = new Siwe(new Url(API().orderbook), walletClient, {
+    const auth = new Siwe(API().orderbook, walletClient, {
       store: localStorage,
       domain: window.location.hostname,
     });

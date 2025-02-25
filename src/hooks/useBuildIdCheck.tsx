@@ -12,7 +12,7 @@ export const useBuildIdCheck = () => {
       try {
         const response = await axios.get<{
           buildId: string;
-        }>(API().buildId);
+        }>(API().buildId.toString());
 
         if (!response.data.buildId || !currentBuildId) return;
 
