@@ -1,6 +1,7 @@
 import { AssetChainLogos, Typography } from "@gardenfi/garden-book";
 import { motion } from "framer-motion";
-import { REWARD_LOGO_CONFIG } from "../constants";
+import { STAKE_REWARD } from "../constants";
+import { Url } from "@gardenfi/utils";
 
 type TooltipProps = {
   seed: number | null;
@@ -8,6 +9,10 @@ type TooltipProps = {
 };
 
 export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
+  const handleRedirect = (addressExplorer: Url, address: string) => {
+    window.open(addressExplorer.endpoint("address").endpoint(address));
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8, y: -10 }}
@@ -26,24 +31,46 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
             <Typography size="h4" weight="medium" className="w-[87px]">
               {cbBtc}
             </Typography>
-            <Typography size="h4" weight="medium" className="w-11">
+            <Typography
+              size="h4"
+              weight="medium"
+              className={`relative w-11 before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
+              onClick={() =>
+                handleRedirect(
+                  STAKE_REWARD.CBBTC.EXPLORER,
+                  STAKE_REWARD.CBBTC.REWARD_TOKEN_ADDRESS
+                )
+              }
+            >
               cbBTC
             </Typography>
             <AssetChainLogos
-              tokenLogo={REWARD_LOGO_CONFIG.cbBTC.token_logo}
-              chainLogo={REWARD_LOGO_CONFIG.cbBTC.chain_logo}
+              tokenLogo={STAKE_REWARD.CBBTC.TOKEN_LOGO}
+              chainLogo={STAKE_REWARD.CBBTC.CHAIN_LOGO}
+              className="scale-[0.8054]"
             />
           </div>
           <div className="flex gap-2">
             <Typography size="h4" weight="medium" className="w-[87px]">
               {seed}
             </Typography>
-            <Typography size="h4" weight="medium" className="w-11">
+            <Typography
+              size="h4"
+              weight="medium"
+              className={`relative mr-2 w-9 before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
+              onClick={() =>
+                handleRedirect(
+                  STAKE_REWARD.SEED.EXPLORER,
+                  STAKE_REWARD.SEED.REWARD_TOKEN_ADDRESS
+                )
+              }
+            >
               SEED
             </Typography>
             <AssetChainLogos
-              tokenLogo={REWARD_LOGO_CONFIG.seed.token_logo}
-              chainLogo={REWARD_LOGO_CONFIG.seed.chain_logo}
+              tokenLogo={STAKE_REWARD.SEED.TOKEN_LOGO}
+              chainLogo={STAKE_REWARD.SEED.CHAIN_LOGO}
+              className="scale-[0.8054]"
             />
           </div>
         </div>
