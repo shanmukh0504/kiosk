@@ -103,7 +103,8 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
         }
       }
       set({ assets, chains });
-    } catch {
+    } catch (error) {
+      console.error("Failed to fetch assets data", error);
       set({ error: "Failed to fetch assets data" });
     } finally {
       set({ isLoading: false });

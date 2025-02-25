@@ -74,9 +74,11 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
   const multiplier = getMultiplier(stakePos);
   const currentDate = new Date();
   const hasExpired = currentDate > stakeEndDate;
-  const reward = Number(
-    stakeRewards?.stakewiseRewards[stakePos.id]?.accumulatedRewardsUSD
-  ).toFixed(2);
+  const reward = formatAmount(
+    stakeRewards?.stakewiseRewards[stakePos.id]?.accumulatedRewardsUSD || 0,
+    0,
+    2
+  );
 
   const handleExtend = () => {
     setOpenModal(modalNames.manageStake, {
@@ -88,11 +90,11 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
   };
 
   return (
-    <div
-      className="flex cursor-pointer flex-col gap-5 py-5"
-      onClick={() => setShowDetails((p) => !p)}
-    >
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-5 py-5">
+      <div
+        className="flex cursor-pointer items-center justify-between"
+        onClick={() => setShowDetails((p) => !p)}
+      >
         <div className="flex items-center gap-5">
           <Typography
             size={"h4"}
@@ -215,12 +217,15 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
                 </div>
               </div>
             </div>
-            {isExtendable && (
+            {isExtendable ? (
               <Button variant="secondary" size="sm" onClick={handleExtend}>
                 Extend
               </Button>
+            ) : isExpired ? (
+              <UnstakeAndRestake stakePos={stakePos} />
+            ) : (
+              <></>
             )}
-            {isExpired && <UnstakeAndRestake stakePos={stakePos} />}
           </motion.div>
         )}
       </AnimatePresence>
