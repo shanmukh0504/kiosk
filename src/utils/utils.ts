@@ -9,14 +9,13 @@ export const isProduction = () => {
 
 export const getCurrentTheme = () => {
   const path = window.location.pathname;
-  if (
-    Array.isArray(INTERNAL_ROUTES.swap.path) &&
-    INTERNAL_ROUTES.swap.path.includes(path)
-  )
-    return THEMES.swap;
-  if (path === INTERNAL_ROUTES.stake.path) return THEMES.stake;
+
+  if (INTERNAL_ROUTES.swap.path.includes(path)) return THEMES.swap;
+  if (INTERNAL_ROUTES.stake.path.includes(path)) return THEMES.stake;
+
   return THEMES.swap;
 };
+
 
 /**
  * Gets the {Asset} from assets in store using the swap object

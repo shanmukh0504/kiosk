@@ -66,7 +66,7 @@ export const Navbar = () => {
         />
         <div className="hidden gap-12 sm:flex sm:items-center">
           {Object.values(INTERNAL_ROUTES).map((route) => {
-            const paths = Array.isArray(route.path) ? route.path : [route.path];
+            const paths = route.path;
             const isActive = paths.some(isCurrentRoute);
             const primaryPath = paths[0];
             return (

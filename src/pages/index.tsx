@@ -23,7 +23,9 @@ function App() {
           {INTERNAL_ROUTES.swap.path.map((path) => (
             <Route key={path} path={path} element={<SwapPage />} />
           ))}
-          <Route path={INTERNAL_ROUTES.stake.path} element={<StakePage />} />
+          {INTERNAL_ROUTES.stake.path.map((path) => (
+            <Route key={path} path={path} element={<StakePage />} />
+          ))}
         </Routes>
       </Layout>
     </GardenProvider>

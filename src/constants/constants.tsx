@@ -1,11 +1,12 @@
 import { Asset, isBitcoin, isEVM } from "@gardenfi/orderbook";
 import { Environment, Network } from "@gardenfi/utils";
 
-export const INTERNAL_ROUTES = {
-  swap: { name: "Swap", path: ["/", "/swap"] },
-  stake: { name: "Stake", path: "/stake" },
-  // quests: { name: "Quests", path: "/quests" },
-} as const;
+export const INTERNAL_ROUTES: Record<string, { name: string; path: string[] }> =
+  {
+    swap: { name: "Swap", path: ["/", "/swap"] },
+    stake: { name: "Stake", path: ["/stake"] },
+    // quests: { name: "Quests", path: "/quests" },
+  } as const;
 
 export const THEMES = {
   swap: "swap",

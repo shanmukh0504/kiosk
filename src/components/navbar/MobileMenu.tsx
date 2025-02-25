@@ -31,9 +31,7 @@ export const MobileMenu = () => {
           </div>
           <div className={`flex w-full flex-col text-right`}>
             {Object.values(INTERNAL_ROUTES).map((route) => {
-              const paths = Array.isArray(route.path)
-                ? route.path
-                : [route.path];
+              const paths = route.path;
               const isActive = paths.some(isCurrentRoute);
               const primaryPath = paths[0];
               return (
