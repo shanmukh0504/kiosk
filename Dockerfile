@@ -1,32 +1,34 @@
-FROM node:20-alpine AS builder
+# Stage 1: Build the project using Node.js
+FROM node:22-alpine AS builder
 
 # Set working directory
 WORKDIR /app
 
-# First, copy only the files needed for installation
-COPY package.json yarn.lock .yarnrc.yml* ./
+# Install Corepack and set Yarn version
+RUN corepack enable && corepack prepare yarn@4.5.1 --activate
 
+# Copy package files first to leverage Docker cache
+COPY package.json yarn.lock ./
 
-# Enable Corepack and install correct Yarn version
-RUN corepack enable \
-    && corepack prepare yarn@4.5.1 --activate
+# Install dependencies using Yarn 4.5.1
+RUN yarn install --immutable
 
-# Install dependencies
-RUN yarn install --frozen-lockfile
-
-# Now copy the source code, excluding node_modules
+# Copy the rest of the application files
 COPY . .
 
 # Build the project
 RUN yarn build
 
-# Use Nginx for the final image
-FROM nginx:alpine
+# Stage 2: Serve the built files using Nginx
+FROM nginx:alpine AS server
 
-# Copy built files from builder
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Set working directory
+WORKDIR /usr/share/nginx/html
 
-# Copy Nginx configuration
+# Copy built files from builder stage
+COPY --from=builder /app/dist .
+
+# Copy the updated Nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Start Nginx
