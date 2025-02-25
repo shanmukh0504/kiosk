@@ -25,7 +25,7 @@ export const UnstakeAndRestake: FC<UnstakeAndRestakeProps> = ({ stakePos }) => {
   const { writeContractAsync } = useWriteContract();
   const { setOpenModal } = modalStore();
 
-  const isUnstakeable = stakePos.status === StakePositionStatus.staked;
+  const isUnstakeable = stakePos.status === StakePositionStatus.expired;
 
   const handleUnstake = async () => {
     if (!isUnstakeable || !chainId || !address) return;
