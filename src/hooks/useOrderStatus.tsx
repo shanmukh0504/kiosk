@@ -62,6 +62,9 @@ export const useOrderStatus = () => {
       : "";
   }, [blockNumbers, order, initBlockNumber]);
 
+  const viewableStatus =
+    (order?.status && STATUS_MAPPING[order?.status]) || null;
+
   const orderProgress: OrderProgress | undefined = useMemo(() => {
     switch (order?.status) {
       case OrderStatus.Created:
@@ -229,8 +232,7 @@ export const useOrderStatus = () => {
     setOrderInProgress,
     orderStatus,
   ]);
-  const viewableStatus =
-    (order?.status && STATUS_MAPPING[order?.status]) || null;
+
   return {
     orderProgress,
     viewableStatus,
