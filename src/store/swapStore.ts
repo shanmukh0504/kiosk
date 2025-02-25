@@ -1,10 +1,16 @@
 import { create } from "zustand";
-import { IOType, network } from "../constants/constants";
+import { IOType, network, QuoteError } from "../constants/constants";
 import { Asset, Chains } from "@gardenfi/orderbook";
 
 export type TokenPrices = {
   input: string;
   output: string;
+};
+
+export type SwapErrors = {
+  inputError?: string;
+  outputError?: string;
+  quoteError?: QuoteError;
 };
 
 export type FetchingQuote = {
@@ -19,18 +25,20 @@ type SwapState = {
   outputAmount: string;
   btcAddress: string;
   isSwapping: boolean;
+  isInsufficientLiquidity: boolean;
   strategy: string;
   tokenPrices: TokenPrices;
-  error: string;
+  error: SwapErrors;
   isFetchingQuote: FetchingQuote;
   setTokenPrices: (tokenPrices: TokenPrices) => void;
   setIsSwapping: (isSwapping: boolean) => void;
+  setIsInsufficientLiquidity: (isInsufficientLiquidity: boolean) => void;
   setStrategy: (strategy: string) => void;
   setAsset: (ioType: IOType, asset: Asset) => void;
   setAmount: (ioType: IOType, amount: string) => void;
   setBtcAddress: (btcAddress: string) => void;
   swapAssets: () => void;
-  setError: (error: string) => void;
+  setError: (error: SwapErrors) => void;
   setIsFetchingQuote: (isFetchingQuote: FetchingQuote) => void;
   clearSwapState: () => void;
   clear: () => void;
@@ -51,6 +59,7 @@ export const swapStore = create<SwapState>((set) => ({
   inputAmount: "",
   outputAmount: "",
   btcAddress: "",
+  isInsufficientLiquidity: false,
   swapInProgress: {
     isOpen: false,
     order: null,
@@ -61,7 +70,12 @@ export const swapStore = create<SwapState>((set) => ({
     input: "0",
     output: "0",
   },
-  error: "",
+  error: {
+    inputError: "",
+    outputError: "",
+    quoteError: QuoteError.None
+  },
+  quoteError: QuoteError.None,
   isFetchingQuote: {
     input: false,
     output: false,
@@ -119,6 +133,9 @@ export const swapStore = create<SwapState>((set) => ({
   setIsFetchingQuote: (isFetchingQuote) => {
     set({ isFetchingQuote });
   },
+  setIsInsufficientLiquidity: (isInsufficientLiquidity) => {
+    set({ isInsufficientLiquidity });
+  },
   clearSwapState: () => {
     set({
       inputAmount: "",
@@ -126,13 +143,18 @@ export const swapStore = create<SwapState>((set) => ({
       btcAddress: "",
       outputAsset: undefined,
       inputAsset: BTC,
+      isInsufficientLiquidity: false,
       isSwapping: false,
       strategy: "",
       tokenPrices: {
         input: "0",
         output: "0",
       },
-      error: "",
+      error: {
+        inputError: "",
+        outputError: "",
+        quoteError: QuoteError.None
+      },
       isFetchingQuote: {
         input: false,
         output: false,
@@ -147,12 +169,17 @@ export const swapStore = create<SwapState>((set) => ({
       outputAsset: undefined,
       inputAsset: BTC,
       isSwapping: false,
+      isInsufficientLiquidity: false,
       strategy: "",
       tokenPrices: {
         input: "0",
         output: "0",
       },
-      error: "",
+      error: {
+        inputError: "",
+        outputError: "",
+        quoteError: QuoteError.None
+      },
       isFetchingQuote: {
         input: false,
         output: false,

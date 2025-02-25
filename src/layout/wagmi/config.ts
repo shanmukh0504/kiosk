@@ -1,4 +1,3 @@
-import { citreaTestnet } from "@gardenfi/core";
 import { http, createConfig } from "wagmi";
 import {
   arbitrum,
@@ -13,6 +12,8 @@ import {
   base,
   berachainTestnetbArtio,
   berachain,
+  citreaTestnet,
+  monadTestnet,
 } from "wagmi/chains";
 import { injected, metaMask } from "wagmi/connectors";
 
@@ -30,6 +31,7 @@ export const SupportedChains = [
   berachainTestnetbArtio,
   berachain,
   citreaTestnet,
+  monadTestnet,
 ] as const;
 
 export const config = createConfig({
@@ -49,5 +51,6 @@ export const config = createConfig({
     [berachainTestnetbArtio.id]: http(),
     [berachain.id]: http(),
     [citreaTestnet.id]: http(),
+    [monadTestnet.id]: http(),
   },
 });
