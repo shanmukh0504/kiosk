@@ -31,16 +31,18 @@ export const MobileMenu = () => {
           </div>
           <div className={`flex w-full flex-col text-right`}>
             {Object.values(INTERNAL_ROUTES).map((route) => {
+              const paths = Array.isArray(route.path)
+                ? route.path
+                : [route.path];
+              const isActive = paths.some(isCurrentRoute);
+              const primaryPath = paths[0];
               return (
                 <a
-                  key={route.path}
-                  href={route.path}
-                  className={`px-6 py-[14px] hover:bg-white`}
+                  key={primaryPath}
+                  href={primaryPath}
+                  className="px-6 py-[14px] hover:bg-white"
                 >
-                  <Typography
-                    size="h2"
-                    weight={isCurrentRoute(route.path) ? "bold" : "medium"}
-                  >
+                  <Typography size="h2" weight={isActive ? "bold" : "medium"}>
                     {route.name}
                   </Typography>
                 </a>
