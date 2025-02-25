@@ -6,14 +6,15 @@
   "scripts": {
     "dev": "vite",
     "lint": "eslint .",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && yarn generate ",
+    "generate": "node prerender",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@gardenfi/core": "^2.0.18",
-    "@gardenfi/garden-book": "^0.1.66",
+    "@gardenfi/core": "^2.0.19",
+    "@gardenfi/garden-book": "^0.1.67",
     "@gardenfi/orderbook": "^2.0.4",
-    "@gardenfi/react-hooks": "^2.0.22",
+    "@gardenfi/react-hooks": "^2.0.23",
     "@gardenfi/utils": "^2.0.1",
     "@gardenfi/wallet-connectors": "^2.0.1",
     "@tanstack/react-query": "^5.51.23",
