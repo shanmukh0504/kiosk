@@ -33,19 +33,21 @@ export const CreateSwap = () => {
     return isInsufficientBalance
       ? "Insufficient balance"
       : isSwapping
-        ? "Signing..."
-        : "Swap";
-  }, [isInsufficientBalance, isSwapping]);
+      ? "Signing..."
+      : error.quoteError
+      ? "Insufficient Liquidity"
+      : "Swap";
+  }, [isInsufficientBalance, isSwapping, error.quoteError]);
 
   const buttonVariant = useMemo(() => {
-    return isInsufficientBalance
+    return isInsufficientBalance || error.quoteError
       ? "disabled"
       : isSwapping
-        ? "ternary"
-        : validSwap
-          ? "primary"
-          : "disabled";
-  }, [isInsufficientBalance, isSwapping, validSwap]);
+      ? "ternary"
+      : validSwap
+      ? "primary"
+      : "disabled";
+  }, [isInsufficientBalance, isSwapping, validSwap, error.quoteError]);
 
   const timeEstimate = useMemo(() => {
     if (!inputAsset || !outputAsset) return "";
@@ -65,7 +67,7 @@ export const CreateSwap = () => {
             onChange={handleInputAmountChange}
             loading={loading.input}
             price={tokenPrices.input}
-            error={error}
+            error={error.inputError}
             balance={inputTokenBalance}
           />
           <div
@@ -88,12 +90,17 @@ export const CreateSwap = () => {
         <SwapFees tokenPrices={tokenPrices} />
         <Button
           className={`transition-colors duration-500 ${
-            isSwapping ? "cursor-not-allowed" : ""
+            buttonLabel !== "Swap" ? "pointer-events-none" : ""
           }`}
           variant={buttonVariant}
           size="lg"
           onClick={handleSwapClick}
-          disabled={isSwapping || !validSwap || isInsufficientBalance}
+          disabled={
+            isSwapping ||
+            !validSwap ||
+            isInsufficientBalance ||
+            !!error.quoteError
+          }
         >
           {buttonLabel}
         </Button>

@@ -1,11 +1,13 @@
 import { Url } from "@gardenfi/utils";
 
 const REQUIRED_ENV_VARS = {
+  STAKING_URL: import.meta.env.VITE_STAKING_URL,
   DATA_URL: import.meta.env.VITE_DATA_URL,
   QUESTS_URL: import.meta.env.VITE_QUESTS_URL,
   ORDERBOOK_URL: import.meta.env.VITE_ORDERBOOK_URL,
   QUOTE_URL: import.meta.env.VITE_QUOTE_URL,
   WHITELIST: import.meta.env.VITE_WHITELIST_URL,
+  REWARD: import.meta.env.VITE_REWARD_URL,
   EXPLORER: import.meta.env.VITE_EXPLORER_URL,
 } as const;
 

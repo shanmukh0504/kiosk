@@ -27,7 +27,7 @@ export const WalletRow: FC<WalletRowProps> = ({
 }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, marginBottom: -68 }}
+      initial={{ opacity: 0, marginBottom: -65 }}
       animate={{ opacity: 1, marginBottom: 0 }}
       exit={{ opacity: 0, marginBottom: -65 }}
       transition={{

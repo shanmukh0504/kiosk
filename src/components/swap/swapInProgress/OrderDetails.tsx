@@ -40,7 +40,7 @@ export const OrderDetailsRow: FC<OrderDetailsRowProps> = ({
       </Typography>
       <div className="flex items-center gap-2">
         <Typography size="h4" weight="medium">
-          {getTrimmedAddress(value)}
+          {link ? getTrimmedAddress(value) : value}
         </Typography>
         {copyString && <CopyToClipboard text={copyString} />}
         {link && (
