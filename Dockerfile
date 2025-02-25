@@ -10,11 +10,14 @@ RUN corepack enable && corepack prepare yarn@4.5.1 --activate
 # Copy package files first to leverage Docker cache
 COPY package.json yarn.lock ./
 
-# Install dependencies using Yarn 4.5.1
+# Ensure Yarn 4 is correctly configured
+RUN yarn set version 4.5.1
+
+# Install dependencies (force `.yarn/cache` instead of `node_modules`)
+COPY . .
 RUN yarn install --immutable
 
-# Copy the rest of the application files
-COPY . .
+RUN yarn node -e "require('fs').symlinkSync('.yarn/unplugged', 'node_modules', 'dir')" || true
 
 # Build the project
 RUN yarn build
@@ -30,6 +33,7 @@ COPY --from=builder /app/dist .
 
 # Copy the updated Nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
