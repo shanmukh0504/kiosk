@@ -12,8 +12,7 @@ import { BTCWalletProvider } from "@gardenfi/wallet-connectors";
 import { Network } from "@gardenfi/utils";
 
 const queryClient = new QueryClient();
-ReactDOM.hydrateRoot(
-  document.getElementById("root") as HTMLElement,
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
     <BrowserRouter>
       <WagmiProvider config={config}>
