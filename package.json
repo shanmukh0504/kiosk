@@ -6,13 +6,12 @@
   "scripts": {
     "dev": "vite",
     "lint": "eslint .",
-    "build": "tsc -b && vite build && yarn generate ",
-    "generate": "node prerender",
+    "build": "tsc -b && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "@gardenfi/core": "^2.0.19",
-    "@gardenfi/garden-book": "^0.1.67",
+    "@gardenfi/garden-book": "^0.1.68",
     "@gardenfi/orderbook": "^2.0.4",
     "@gardenfi/react-hooks": "^2.0.23",
     "@gardenfi/utils": "^2.0.1",

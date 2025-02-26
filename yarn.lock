@@ -677,9 +677,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/garden-book@npm:^0.1.67":
-  version: 0.1.67
-  resolution: "@gardenfi/garden-book@npm:0.1.67"
+"@gardenfi/garden-book@npm:^0.1.68":
+  version: 0.1.68
+  resolution: "@gardenfi/garden-book@npm:0.1.68"
   dependencies:
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^2.1.1"
@@ -687,11 +687,12 @@ __metadata:
     lottie-react: "npm:^2.4.0"
     postcss-prefixwrap: "npm:^1.51.0"
     react-lazy-load-image-component: "npm:^1.6.2"
+    react-remove-scroll: "npm:^2.6.3"
     tailwind-merge: "npm:^2.4.0"
   peerDependencies:
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 10c0/ffb0ab20ec0968d576ca4154f9e6306a393117e0bcbe4e8b7f6f2637304ee2bb542a4466a88dcb7534baf14fdf6658029c38259e7eec45a6189447b481f83435
+  checksum: 10c0/fbb2d1aa1c38ad3df678b0fe78f7d9ecce140787c349e8daf64d4faedf933ce4ecbea5307c595838599b4d7a5fa39decfa190a1667326e734311f739837bbfe8
   languageName: node
   linkType: hard
 
@@ -5795,7 +5796,7 @@ __metadata:
   dependencies:
     "@eslint/js": "npm:^9.13.0"
     "@gardenfi/core": "npm:^2.0.19"
-    "@gardenfi/garden-book": "npm:^0.1.67"
+    "@gardenfi/garden-book": "npm:^0.1.68"
     "@gardenfi/orderbook": "npm:^2.0.4"
     "@gardenfi/react-hooks": "npm:^2.0.23"
     "@gardenfi/utils": "npm:^2.0.1"
