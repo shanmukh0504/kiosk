@@ -16,6 +16,8 @@ function App() {
         store: localStorage,
         environment: network as Environment,
         walletClient: walletClient,
+        quoteUrl: import.meta.env.VITE_QUOTE_URL,
+        orderBookUrl: import.meta.env.VITE_ORDERBOOK_URL,
       }}
     >
       <Layout>
