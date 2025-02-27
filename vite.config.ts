@@ -18,8 +18,15 @@ const getRecentGitCommitHash = () => {
 };
 
 const generateBuildIdFile = () => {
-  const __dirname = path.dirname(new URL(import.meta.url).pathname);
+  let __dirname = path.dirname(new URL(import.meta.url).pathname);
+  
+  // Fix Windows path issue
+  if (process.platform === "win32") {
+    __dirname = __dirname.replace(/^\/([A-Za-z]:\/)/, "$1"); // Remove extra slash
+  }
+
   const buildIdPath = path.resolve(__dirname, "public/build-id.json");
+
   fs.writeFileSync(buildIdPath, JSON.stringify({ buildId }, null, 2));
 };
 
@@ -49,7 +56,6 @@ export default defineConfig({
         },
       ],
     }),
-
     {
       name: "generate-build-id",
       buildEnd() {
@@ -81,8 +87,11 @@ export default defineConfig({
       },
     },
   ],
-  preview: {
-    allowedHosts: true,
+  server: {
+    hmr: true,
+    watch: {
+      usePolling: true,
+    },
   },
   define: {
     "process.env.BUILD_ID": JSON.stringify(buildId),
