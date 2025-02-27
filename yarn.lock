@@ -661,9 +661,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/core@npm:^2.0.18":
-  version: 2.0.18
-  resolution: "@gardenfi/core@npm:2.0.18"
+"@gardenfi/core@npm:^2.0.20":
+  version: 2.0.20
+  resolution: "@gardenfi/core@npm:2.0.20"
   dependencies:
     "@catalogfi/wallets": "npm:^0.2.59"
     "@gardenfi/orderbook": "npm:^2.0.4"
@@ -673,7 +673,7 @@ __metadata:
     tiny-secp256k1: "npm:^2.2.3"
     varuint-bitcoin: "npm:^1.1.2"
     viem: "npm:^2.21.23"
-  checksum: 10c0/db587ad11b8147a5940713fe63027d31e99b60907d6bd0833a2acee60a7a8afb7f55c3eae6215d4cbee851b483a60368d158912cc11e368a9d5f347fd3a8d193
+  checksum: 10c0/a29b03ecc25f4cde4fa4a4efe0a9dfccfd216abfee04350cfd3417b385501c55baf24189720c3765d4b6cd857e2087f2c6529273678b4e8b00f9af43e0f4d3cf
   languageName: node
   linkType: hard
 
@@ -709,17 +709,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/react-hooks@npm:^2.0.22":
-  version: 2.0.22
-  resolution: "@gardenfi/react-hooks@npm:2.0.22"
+"@gardenfi/react-hooks@npm:^2.0.24":
+  version: 2.0.24
+  resolution: "@gardenfi/react-hooks@npm:2.0.24"
   dependencies:
     "@catalogfi/wallets": "npm:^0.2.59"
-    "@gardenfi/core": "npm:^2.0.18"
+    "@gardenfi/core": "npm:^2.0.20"
     "@gardenfi/orderbook": "npm:^2.0.4"
     "@gardenfi/utils": "npm:^2.0.1"
     react: "npm:^18.3.1"
     viem: "npm:^2.21.23"
-  checksum: 10c0/38d9174ba8e7b99444d1eb2436e65010e6b2507cae4fe486223efb607914778f8b4d2041a7131f9d7bb626b5b53a6340f97ef6dc8a298b920ba65802af9a4f2b
+  checksum: 10c0/9a388f281d500cca58887338593d7edd280d9f5d1325128d86b5108ca3d26fca560e8e23c502ceac8a02751fb41e6805fdf4e88c6bec5f34d89d20a1d086029c
   languageName: node
   linkType: hard
 
@@ -5794,10 +5794,10 @@ __metadata:
   resolution: "garden-kiosk@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.13.0"
-    "@gardenfi/core": "npm:^2.0.18"
+    "@gardenfi/core": "npm:^2.0.20"
     "@gardenfi/garden-book": "npm:^0.1.66"
     "@gardenfi/orderbook": "npm:^2.0.4"
-    "@gardenfi/react-hooks": "npm:^2.0.22"
+    "@gardenfi/react-hooks": "npm:^2.0.24"
     "@gardenfi/utils": "npm:^2.0.1"
     "@gardenfi/wallet-connectors": "npm:^2.0.1"
     "@tanstack/react-query": "npm:^5.51.23"
@@ -10304,7 +10304,7 @@ __metadata:
 
 "typescript@patch:typescript@npm%3A^5.5.3#optional!builtin<compat/typescript>":
   version: 5.7.3
-  resolution: "typescript@patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=cef18b"
+  resolution: "typescript@patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=379a07"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
