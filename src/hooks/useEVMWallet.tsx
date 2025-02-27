@@ -12,7 +12,7 @@ export const useEVMWallet = () => {
   const disconnect = () => {
     disconnectWallet();
     localStorage.clear();
-    navigate("/");
+    navigate("/",{replace: true});
   };
 
   return {
