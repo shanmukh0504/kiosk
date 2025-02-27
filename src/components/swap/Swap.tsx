@@ -43,7 +43,7 @@ export const Swap = () => {
     if (!orderId) return;
 
     if (!address) {
-      navigate("/");
+      navigate("/", { replace: true });
       return;
     }
 
@@ -87,7 +87,6 @@ export const Swap = () => {
       navigate(INTERNAL_ROUTES.swap.path[2], { replace: true });
     }
   }, [orderInProgress, navigate]);
-
 
   const handleErrorLog = (order: MatchedOrder, error: string) =>
     console.error("garden error", order.create_order.create_id, error);
