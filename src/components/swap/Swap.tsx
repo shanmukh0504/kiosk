@@ -17,6 +17,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { blockNumberStore } from "../../store/blockNumberStore";
 import { SwapInProgressSkeleton } from "./swapInProgress/SwapInProgressSkeleton";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
+import { INTERNAL_ROUTES } from "../../constants/constants";
 
 export const Swap = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -83,6 +84,12 @@ export const Swap = () => {
       setSearchParams({ orderId: orderIdInProgress }, { replace: true });
     }
   }, [orderInProgress, setSearchParams, searchParams, orderId]);
+
+  useEffect(() => {
+    if (orderInProgress && !isCurrentRoute(INTERNAL_ROUTES.swap.path[2])) {
+      navigate(INTERNAL_ROUTES.swap.path[2], { replace: true });
+    }
+  }, [orderInProgress, navigate]);
 
 
   const handleErrorLog = (order: MatchedOrder, error: string) =>

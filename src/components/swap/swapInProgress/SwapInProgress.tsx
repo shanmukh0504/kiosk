@@ -3,13 +3,12 @@ import {
   CloseIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback,useMemo } from "react";
 import { SwapInfo } from "../../../common/SwapInfo";
 import { getTrimmedAddress } from "../../../utils/getTrimmedAddress";
 import {
   formatAmount,
   getAssetFromSwap,
-  isCurrentRoute,
 } from "../../../utils/utils";
 import { assetInfoStore } from "../../../store/assetInfoStore";
 import QRCode from "react-qr-code";
@@ -22,7 +21,6 @@ import { OrderStatus as OrderStatusEnum } from "@gardenfi/core";
 import { ordersStore } from "../../../store/ordersStore";
 import { API } from "../../../constants/api";
 import { useNavigate } from "react-router-dom";
-import { INTERNAL_ROUTES} from "../../../constants/constants";
 
 export const SwapInProgress = () => {
   const { setOrderInProgress, orderInProgress: order } = ordersStore();
@@ -53,12 +51,6 @@ export const SwapInProgress = () => {
     if (!order) return;
     window.open(API().explorer(order.create_order.create_id));
   };
-
-  useEffect(() => {
-    if (order && !isCurrentRoute(INTERNAL_ROUTES.swap.path[2])) {
-      navigate(INTERNAL_ROUTES.swap.path[2], { replace: true });
-    }
-  }, [order, navigate]);
   
 
   return order ? (
