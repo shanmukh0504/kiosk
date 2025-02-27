@@ -83,10 +83,10 @@ export const Swap = () => {
   }, [orderInProgress, setSearchParams, searchParams, orderId]);
 
   useEffect(() => {
-    if (orderInProgress && !isCurrentRoute(INTERNAL_ROUTES.swap.path[2])) {
+    if (orderInProgress && address && !isCurrentRoute(INTERNAL_ROUTES.swap.path[2])) {
       navigate(INTERNAL_ROUTES.swap.path[2], { replace: true });
     }
-  }, [orderInProgress, navigate]);
+  }, [orderInProgress, navigate, address]);
 
   const handleErrorLog = (order: MatchedOrder, error: string) =>
     console.error("garden error", order.create_order.create_id, error);
