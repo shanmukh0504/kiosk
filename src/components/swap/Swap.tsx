@@ -48,10 +48,7 @@ export const Swap = () => {
     }
 
     setIsLoading(true);
-    if (!orderBook) {
-      console.warn("OrderBook not initialized yet");
-      return;
-    }
+    if (!orderBook) return;
     const fetchOrderByOrderId = async () => {
       try {
         setIsLoading(true);

@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useAccount, useConnect, useDisconnect, useWalletClient } from "wagmi";
 import { useChainId } from "wagmi";
 export const useEVMWallet = () => {
@@ -6,10 +7,12 @@ export const useEVMWallet = () => {
   const { disconnect: disconnectWallet } = useDisconnect();
   const { status, connectors, isPending, connectAsync } = useConnect();
   const chainId = useChainId();
+  const navigate = useNavigate();
 
   const disconnect = () => {
     disconnectWallet();
     localStorage.clear();
+    navigate("/");
   };
 
   return {

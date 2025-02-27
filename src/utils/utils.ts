@@ -29,10 +29,10 @@ export const getAssetFromSwap = (swap: Swap, assets: Assets | null) => {
 export const getQueryParams = (urlParams: URLSearchParams) => {
   return {
     inputChain: urlParams.get("inputChain"),
-    inputAssetAddress: urlParams.get("inputAssetAddress"),
+    inputAsset: urlParams.get("inputAsset"),
     outputChain: urlParams.get("outputChain"),
-    outputAssetAddress: urlParams.get("outputAssetAddress"),
-    orderId: urlParams.get("orderId")
+    outputAsset: urlParams.get("outputAsset"),
+    orderId: urlParams.get("orderId"),
   };
 };
 

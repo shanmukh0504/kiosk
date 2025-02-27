@@ -2,19 +2,18 @@ import { Button, ExchangeIcon } from "@gardenfi/garden-book";
 import { SwapInput } from "./SwapInput";
 import { getTimeEstimates, IOType } from "../../constants/constants";
 import { SwapAddress } from "./SwapAddress";
-import { swapStore } from "../../store/swapStore";
+import { BTC, swapStore } from "../../store/swapStore";
 import { useEffect, useMemo } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { SwapFees } from "./SwapFees";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { isBitcoin } from "@gardenfi/orderbook";
 import { getQueryParams } from "../../utils/utils";
 import { useSearchParams } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
 
 export const CreateSwap = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
   const { swapAssets, setAsset } = swapStore();
   const { assets } = assetInfoStore();
 
@@ -41,20 +40,20 @@ export const CreateSwap = () => {
     return isInsufficientBalance
       ? "Insufficient balance"
       : isSwapping
-      ? "Signing..."
-      : error.quoteError
-      ? "Insufficient Liquidity"
-      : "Swap";
+        ? "Signing..."
+        : error.quoteError
+          ? "Insufficient Liquidity"
+          : "Swap";
   }, [isInsufficientBalance, isSwapping, error.quoteError]);
 
   const buttonVariant = useMemo(() => {
     return isInsufficientBalance || error.quoteError
       ? "disabled"
       : isSwapping
-      ? "ternary"
-      : validSwap
-      ? "primary"
-      : "disabled";
+        ? "ternary"
+        : validSwap
+          ? "primary"
+          : "disabled";
   }, [isInsufficientBalance, isSwapping, validSwap, error.quoteError]);
 
   const timeEstimate = useMemo(() => {
@@ -65,32 +64,23 @@ export const CreateSwap = () => {
   useEffect(() => {
     if (!assets) return;
 
-    const params = getQueryParams(searchParams);
     const {
       inputChain = "",
-      inputAssetAddress = "",
+      inputAsset = "",
       outputChain = "",
-      outputAssetAddress = "",
-    } = params;
+      outputAsset = "",
+    } = getQueryParams(searchParams);
 
-    const fromAsset =
-      assets[`${inputChain}_${inputAssetAddress?.toLowerCase()}`];
-    const toAsset =
-      assets[`${outputChain}_${outputAssetAddress?.toLowerCase()}`];
+    const fromAsset = assets[`${inputChain}_${inputAsset?.toLowerCase()}`];
+    const toAsset = assets[`${outputChain}_${outputAsset?.toLowerCase()}`];
 
     if (fromAsset) {
       setAsset(IOType.input, fromAsset);
     } else {
       if (!inputAsset) {
-        const bitcoinAsset = Object.values(assets).find((asset) =>
-          isBitcoin(asset.chain)
-        );
-        if (bitcoinAsset) {
-          setAsset(IOType.input, bitcoinAsset);
-        }
+          setAsset(IOType.input, BTC);
       }
     }
-
     if (toAsset) {
       setAsset(IOType.output, toAsset);
     }
@@ -98,12 +88,12 @@ export const CreateSwap = () => {
 
   useEffect(() => {
     if (!inputAsset || !outputAsset) return;
-    
+
     setSearchParams({
       inputChain: inputAsset.chain,
-      inputAssetAddress: inputAsset.atomicSwapAddress,
+      inputAsset: inputAsset.atomicSwapAddress,
       outputChain: outputAsset.chain,
-      outputAssetAddress: outputAsset.atomicSwapAddress,
+      outputAsset: outputAsset.atomicSwapAddress,
     });
   }, [inputAsset, outputAsset, setSearchParams]);
 

@@ -44,7 +44,7 @@ type SwapState = {
   clear: () => void;
 };
 
-const BTC = {
+export const BTC = {
   name: "Bitcoin",
   decimals: 8,
   symbol: "BTC",
