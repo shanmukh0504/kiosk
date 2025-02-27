@@ -125,7 +125,7 @@ export const stakeStore = create<StakeStoreState>((set) => ({
     try {
       const response = await axios.get<StakingPositionApiResponse>(
         API().stake.stakePosition(address.toLowerCase()).toString()
-      );      
+      );
       if (response.status === 200 && response.data) {
         const stakes = response.data.data;
         const stats = stakes.reduce(
@@ -218,7 +218,9 @@ export const stakeStore = create<StakeStoreState>((set) => ({
   fetchAndSetRewards: async (address: string) => {
     try {
       set({ loading: { stakeRewards: true } });
-      const resp = await axios.get<StakingReward>(API().reward(address).toString());
+      const resp = await axios.get<StakingReward>(
+        API().reward(address).toString()
+      );
       const accResp = await axios.get<StakingAccumulatedRewards>(
         API().stake.accumulatedReward(address).toString()
       );
@@ -237,11 +239,7 @@ export const stakeStore = create<StakeStoreState>((set) => ({
         stakeRewards: {
           rewardResponse: resp.data,
           stakewiseRewards,
-          totalcbBtcReward: Object.values(stakewiseRewards).reduce(
-            (total, reward) =>
-              total + parseFloat(reward.accumulatedCBBTCRewards),
-            0
-          ),
+          totalcbBtcReward: resp.data.cumulative_rewards_cbbtc,
           totalSeedReward: Object.values(stakewiseRewards).reduce(
             (total, reward) =>
               total + parseFloat(reward.accumulatedSeedRewards),
