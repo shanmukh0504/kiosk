@@ -77,13 +77,17 @@ export const Swap = () => {
     if (!orderInProgress) return;
 
     const orderIdInProgress = orderInProgress.create_order.create_id;
-    if (orderIdInProgress && orderIdInProgress !== orderId) {
+    if (orderIdInProgress && address && orderIdInProgress !== orderId) {
       setSearchParams({ orderId: orderIdInProgress }, { replace: true });
     }
-  }, [orderInProgress, setSearchParams, searchParams, orderId]);
+  }, [orderInProgress, setSearchParams, searchParams, orderId, address]);
 
   useEffect(() => {
-    if (orderInProgress && address && !isCurrentRoute(INTERNAL_ROUTES.swap.path[2])) {
+    if (
+      orderInProgress &&
+      address &&
+      !isCurrentRoute(INTERNAL_ROUTES.swap.path[2])
+    ) {
       navigate(INTERNAL_ROUTES.swap.path[2], { replace: true });
     }
   }, [orderInProgress, navigate, address]);
