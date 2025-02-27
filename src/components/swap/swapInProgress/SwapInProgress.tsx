@@ -3,10 +3,14 @@ import {
   CloseIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { SwapInfo } from "../../../common/SwapInfo";
 import { getTrimmedAddress } from "../../../utils/getTrimmedAddress";
-import { formatAmount, getAssetFromSwap } from "../../../utils/utils";
+import {
+  formatAmount,
+  getAssetFromSwap,
+  isCurrentRoute,
+} from "../../../utils/utils";
 import { assetInfoStore } from "../../../store/assetInfoStore";
 import QRCode from "react-qr-code";
 import { OrderStatus } from "./OrderStatus";
@@ -17,10 +21,13 @@ import { useOrderStatus } from "../../../hooks/useOrderStatus";
 import { OrderStatus as OrderStatusEnum } from "@gardenfi/core";
 import { ordersStore } from "../../../store/ordersStore";
 import { API } from "../../../constants/api";
+import { useNavigate } from "react-router-dom";
+import { INTERNAL_ROUTES} from "../../../constants/constants";
 
 export const SwapInProgress = () => {
   const { setOrderInProgress, orderInProgress: order } = ordersStore();
   const { assets } = assetInfoStore();
+  const navigate = useNavigate();
   const { orderProgress, viewableStatus } = useOrderStatus();
 
   const { depositAddress, inputAsset, outputAsset } = useMemo(() => {
@@ -37,15 +44,22 @@ export const SwapInProgress = () => {
     };
   }, [assets, order]);
 
-  const goBack = useCallback(
-    () => setOrderInProgress(null),
-    [setOrderInProgress]
-  );
+  const goBack = useCallback(() => {
+    setOrderInProgress(null);
+    navigate("/");
+  }, [setOrderInProgress, navigate]);
 
   const handleClickTransaction = () => {
     if (!order) return;
     window.open(API().explorer(order.create_order.create_id));
   };
+
+  useEffect(() => {
+    if (order && !isCurrentRoute(INTERNAL_ROUTES.swap.path[2])) {
+      navigate(INTERNAL_ROUTES.swap.path[2], { replace: true });
+    }
+  }, [order, navigate]);
+  
 
   return order ? (
     <div className="animate-fade-out flex flex-col gap-3 p-3">

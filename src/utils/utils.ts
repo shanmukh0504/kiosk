@@ -26,6 +26,16 @@ export const getAssetFromSwap = (swap: Swap, assets: Assets | null) => {
   return assets && assets[`${swap.chain}_${swap.asset.toLowerCase()}`];
 };
 
+export const getQueryParams = (urlParams: URLSearchParams) => {
+  return {
+    inputChain: urlParams.get("inputChain"),
+    inputAssetAddress: urlParams.get("inputAssetAddress"),
+    outputChain: urlParams.get("outputChain"),
+    outputAssetAddress: urlParams.get("outputAssetAddress"),
+    orderId: urlParams.get("orderId")
+  };
+};
+
 export const getDayDifference = (date: string) => {
   const now = new Date();
   const differenceInMs = now.getTime() - new Date(date).getTime();

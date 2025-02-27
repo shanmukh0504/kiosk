@@ -18,7 +18,10 @@ type OrdersStore = {
     fetchAndSetOrders: (orderBook: IOrderbook) => Promise<void>;
     loadMore: (orderBook: IOrderbook) => Promise<void>;
   };
-
+  fetchOrderById: (
+    orderId: string,
+    orderBook: IOrderbook
+  ) => Promise<OrderWithStatus | null>;
   setPendingOrders: (orders: OrderWithStatus[]) => void;
   setOrderInProgress: (order: OrderWithStatus | null) => void;
   updateOrder: (order: OrderWithStatus) => void;
@@ -123,6 +126,24 @@ export const ordersStore = create<OrdersStore>((set, get) => ({
     },
   },
 
+  fetchOrderById: async (orderId, orderBook) => {
+    const order = await orderBook.getOrder(orderId, true);
+    const blockNumbers = blockNumberStore.getState().blockNumbers;
+    const { source_swap, destination_swap } = order.val;
+    const sourceBlockNumber = blockNumbers && blockNumbers[source_swap.chain];
+    const destinationBlockNumber =
+      blockNumbers && blockNumbers[destination_swap.chain];
+    if (!sourceBlockNumber || !destinationBlockNumber) return null;
+    const orderWithStatus = {
+      ...order.val,
+      status: ParseOrderStatus(
+        order.val,
+        sourceBlockNumber,
+        destinationBlockNumber
+      ),
+    };
+    return orderWithStatus;
+  },
   // State updates for pendingOrders
   setPendingOrders: (orders) => {
     const state = get();

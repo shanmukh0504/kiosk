@@ -1,21 +1,37 @@
+import { useEffect, useState } from "react";
 import { SwapInProgress } from "./swapInProgress/SwapInProgress";
 import { CreateSwap } from "./CreateSwap";
-import { swapStore } from "../../store/swapStore";
 import { Toast, ToastContainer } from "../toast/Toast";
 import { assetInfoStore } from "../../store/assetInfoStore";
-import { useEffect } from "react";
 import { useGarden } from "@gardenfi/react-hooks";
-import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
-import { IOType } from "../../constants/constants";
-import { formatAmount, getAssetFromSwap } from "../../utils/utils";
+import { MatchedOrder } from "@gardenfi/orderbook";
+import {
+  formatAmount,
+  getAssetFromSwap,
+  getQueryParams,
+  isCurrentRoute,
+} from "../../utils/utils";
 import { OrderActions, OrderStatus } from "@gardenfi/core";
 import { ordersStore } from "../../store/ordersStore";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { blockNumberStore } from "../../store/blockNumberStore";
+import { SwapInProgressSkeleton } from "./swapInProgress/SwapInProgressSkeleton";
+import { useEVMWallet } from "../../hooks/useEVMWallet";
 
 export const Swap = () => {
-  const { setAsset } = swapStore();
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const navigate = useNavigate();
+  const { address } = useEVMWallet();
+
   const { fetchAndSetStrategies, assets } = assetInfoStore();
-  const { quote, garden } = useGarden();
-  const { orderInProgress, updateOrder } = ordersStore();
+  const { quote, garden, orderBook } = useGarden();
+  const { orderInProgress, updateOrder, setOrderInProgress, fetchOrderById } =
+    ordersStore();
+  const { fetchAndSetBlockNumbers } = blockNumberStore();
+
+  const orderId = getQueryParams(searchParams).orderId;
 
   useEffect(() => {
     if (!quote) return;
@@ -23,12 +39,51 @@ export const Swap = () => {
   }, [fetchAndSetStrategies, quote]);
 
   useEffect(() => {
-    if (!assets) return;
-    const bitcoinAsset = Object.values(assets).find((asset) =>
-      isBitcoin(asset.chain)
-    );
-    if (bitcoinAsset) setAsset(IOType.input, bitcoinAsset);
-  }, [assets, setAsset]);
+    if (!orderId) return;
+
+    if (!address) {
+      navigate("/");
+      return;
+    }
+
+    setIsLoading(true);
+    if (!orderBook) {
+      console.warn("OrderBook not initialized yet");
+      return;
+    }
+    const fetchOrderByOrderId = async () => {
+      try {
+        setIsLoading(true);
+        await fetchAndSetBlockNumbers();
+        const order = await fetchOrderById(orderId, orderBook);
+        setOrderInProgress(order);
+      } catch (error) {
+        console.error("Failed to fetch order:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchOrderByOrderId();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    address,
+    fetchAndSetBlockNumbers,
+    fetchOrderById,
+    orderBook,
+    searchParams,
+    setOrderInProgress,
+    orderId,
+  ]);
+
+  useEffect(() => {
+    if (!orderInProgress) return;
+
+    const orderIdInProgress = orderInProgress.create_order.create_id;
+    if (orderIdInProgress && orderIdInProgress !== orderId) {
+      setSearchParams({ orderId: orderIdInProgress }, { replace: true });
+    }
+  }, [orderInProgress, setSearchParams, searchParams, orderId]);
+
 
   const handleErrorLog = (order: MatchedOrder, error: string) =>
     console.error("garden error", order.create_order.create_id, error);
@@ -97,8 +152,14 @@ export const Swap = () => {
   return (
     <div className="mx-auto mt-10 flex w-full max-w-[328px] flex-col gap-4 pb-60 sm:max-w-[424px]">
       <ToastContainer />
-      <div className={`relative overflow-hidden rounded-[20px] bg-white/50`}>
-        {orderInProgress ? <SwapInProgress /> : <CreateSwap />}
+      <div className="relative overflow-hidden rounded-[20px] bg-white/50">
+        {isLoading ? (
+          <SwapInProgressSkeleton />
+        ) : orderInProgress ? (
+          <SwapInProgress />
+        ) : !isCurrentRoute("/swapInProgress") ? (
+          <CreateSwap />
+        ) : null}
       </div>
     </div>
   );
