@@ -25,6 +25,7 @@ export const WalletRow: FC<WalletRowProps> = ({
   isConnected,
   isAvailable,
 }) => {
+  console.log(isConnected)
   return (
     <motion.div
       initial={{ opacity: 0, marginBottom: -65 }}

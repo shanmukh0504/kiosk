@@ -65,17 +65,17 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
 
   const handleClose = () => {
     if (address) onClose?.();
-    
+
     setConnectingWallet(null);
     setMultiWalletConnector(undefined);
   };
-  
+
   const close = () => {
     onClose?.();
     setConnectingWallet(null);
     setMultiWalletConnector(undefined);
   };
-  
+
   const handleConnect = async (connector: Wallet) => {
     if (!connector.isAvailable) {
       window.open(connector.installLink, "_blank");
@@ -183,7 +183,15 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                       (provider.id === wallet.id ||
                         provider.id === evmToBTCid[wallet.id])
                     ),
-                    evm: !!(connector && (connector.id === wallet.id || (connector.id === "injected" && wallet.id === "com.coinbase.wallet"))),
+                    evm: !!(
+                      connector &&
+                      (connector.id === wallet.id ||
+                        (typeof window !== "undefined" &&
+                          window.ethereum &&
+                          window.ethereum.isCoinbaseWallet &&
+                          connector.id === "injected" &&
+                          wallet.id === "com.coinbase.wallet"))
+                    ),
                   }}
                   isAvailable={wallet.isAvailable}
                 />
