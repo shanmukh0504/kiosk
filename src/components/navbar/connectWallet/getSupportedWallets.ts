@@ -29,14 +29,22 @@ export const getAvailableWallets = (
   if (evmWallets) {
     Object.entries(GardenSupportedWallets).forEach(([key, value]) => {
       if (!value.isEVMSupported) return;
-      const wallet = evmWallets.find((w) => w.id === key);
-
+      let wallet = evmWallets.find((w) => w.id === key);
+      let isAvailable = !!wallet;
+      const isInjected =
+        typeof window !== "undefined" &&
+        !!window.ethereum &&
+        window.ethereum.isCoinbaseWallet;
+      if (key === "com.coinbase.wallet" && !isAvailable) {
+        isAvailable = isInjected;
+        wallet = evmWallets.find((w) => w.id === "injected");
+      }
       wallets.push({
         ...value,
         wallet: {
           evmWallet: wallet,
         },
-        isAvailable: !!wallet,
+        isAvailable,
         isBitcoin: false,
         isEVM: true,
       });
