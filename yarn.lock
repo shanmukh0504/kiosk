@@ -661,19 +661,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/core@npm:^2.0.19":
-  version: 2.0.19
-  resolution: "@gardenfi/core@npm:2.0.19"
+"@gardenfi/core@npm:^2.0.22":
+  version: 2.0.22
+  resolution: "@gardenfi/core@npm:2.0.22"
   dependencies:
     "@catalogfi/wallets": "npm:^0.2.59"
-    "@gardenfi/orderbook": "npm:^2.0.4"
-    "@gardenfi/utils": "npm:^2.0.1"
+    "@gardenfi/orderbook": "npm:^2.0.6"
+    "@gardenfi/utils": "npm:^2.0.3"
     bignumber.js: "npm:^9.1.2"
     bitcoinjs-lib: "npm:^6.1.6"
     tiny-secp256k1: "npm:^2.2.3"
     varuint-bitcoin: "npm:^1.1.2"
     viem: "npm:^2.21.23"
-  checksum: 10c0/288c466034d014ee1ba38639735e6af837ffe7f9449d173a7f864fa9671b34ab20798b9bf458751d6cc968618fc8efe5ef55796419e860dd36ea79a89f9084f6
+  checksum: 10c0/ab0904ce5782f55a8f2297522281e5af85279f1ad5c3a9bde1beba98510c8b79e9449f37950c5d20c6401b1eb92191892b7b5001ae983b6f647ab85614ce2973
   languageName: node
   linkType: hard
 
@@ -696,31 +696,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/orderbook@npm:^2.0.4":
-  version: 2.0.4
-  resolution: "@gardenfi/orderbook@npm:2.0.4"
+"@gardenfi/orderbook@npm:^2.0.6":
+  version: 2.0.6
+  resolution: "@gardenfi/orderbook@npm:2.0.6"
   dependencies:
-    "@gardenfi/utils": "npm:^2.0.1"
+    "@gardenfi/utils": "npm:^2.0.3"
     bufferutil: "npm:^4.0.8"
     siwe: "npm:^2.1.4"
     utf-8-validate: "npm:^6.0.3"
     viem: "npm:^2.21.23"
     ws: "npm:^8.14.2"
-  checksum: 10c0/8eecafa392594976ec0e10af03f4f170c1c2de345bbb2d800a97287599616cf43f5dd449221e2fee750d11c3e2c0260062a4706384755f12518ae64bd8425ef4
+  checksum: 10c0/53ee340bcc2b51f493c1cacf2897324e04bf3ed99f372d61c0099e58df4498d9d6bd391558c9a2b3b256b9cd446f45ba4598d64d689df2c12528d39888e2fd89
   languageName: node
   linkType: hard
 
-"@gardenfi/react-hooks@npm:^2.0.23":
-  version: 2.0.23
-  resolution: "@gardenfi/react-hooks@npm:2.0.23"
+"@gardenfi/react-hooks@npm:^2.0.26":
+  version: 2.0.26
+  resolution: "@gardenfi/react-hooks@npm:2.0.26"
   dependencies:
     "@catalogfi/wallets": "npm:^0.2.59"
-    "@gardenfi/core": "npm:^2.0.19"
-    "@gardenfi/orderbook": "npm:^2.0.4"
-    "@gardenfi/utils": "npm:^2.0.1"
+    "@gardenfi/core": "npm:^2.0.22"
+    "@gardenfi/orderbook": "npm:^2.0.6"
+    "@gardenfi/utils": "npm:^2.0.3"
     react: "npm:^18.3.1"
     viem: "npm:^2.21.23"
-  checksum: 10c0/bbb0dbddd548f2492b21691ee2e566bbe44b0b48986e54ad4d93f2068675d56056c6208a0a39c15b276f3d4df2a650190c5ae50061ffedea5701fac8eb3d1c38
+  checksum: 10c0/43949b207107646782ac1ac51568add5e543b9f4c983bfc3333108bd2b6ae23e75188b46a2c0943d06c37fdaaaa6daad9fcde76f365ab5a5c5e29d9b86b152c1
   languageName: node
   linkType: hard
 
@@ -734,7 +734,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/wallet-connectors@npm:^2.0.1":
+"@gardenfi/utils@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "@gardenfi/utils@npm:2.0.3"
+  dependencies:
+    jwt-decode: "npm:^4.0.0"
+    viem: "npm:^2.21.23"
+  checksum: 10c0/b8249bd639f7f778eb35cce3988b99ee0104ba581c5d6710a7513c32f15811a1c70f5de53cb2c8e90bff31032aee8b1026caeba925cf0c23a8d21409edb92ba0
+  languageName: node
+  linkType: hard
+
+"@gardenfi/wallet-connectors@npm:^2.0.2":
   version: 2.0.2
   resolution: "@gardenfi/wallet-connectors@npm:2.0.2"
   dependencies:
@@ -5795,12 +5805,12 @@ __metadata:
   resolution: "garden-kiosk@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.13.0"
-    "@gardenfi/core": "npm:^2.0.19"
+    "@gardenfi/core": "npm:^2.0.22"
     "@gardenfi/garden-book": "npm:^0.1.68"
-    "@gardenfi/orderbook": "npm:^2.0.4"
-    "@gardenfi/react-hooks": "npm:^2.0.23"
-    "@gardenfi/utils": "npm:^2.0.1"
-    "@gardenfi/wallet-connectors": "npm:^2.0.1"
+    "@gardenfi/orderbook": "npm:^2.0.6"
+    "@gardenfi/react-hooks": "npm:^2.0.26"
+    "@gardenfi/utils": "npm:^2.0.3"
+    "@gardenfi/wallet-connectors": "npm:^2.0.2"
     "@tanstack/react-query": "npm:^5.51.23"
     "@types/lodash.debounce": "npm:^4"
     "@types/node": "npm:^22.8.1"
@@ -10305,7 +10315,7 @@ __metadata:
 
 "typescript@patch:typescript@npm%3A^5.5.3#optional!builtin<compat/typescript>":
   version: 5.7.3
-  resolution: "typescript@patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=cef18b"
+  resolution: "typescript@patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=379a07"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
