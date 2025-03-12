@@ -1,7 +1,7 @@
 import { useState, FC, useMemo } from "react";
-// import { SwapFeesComparison } from "./SwapFeesComparison";
 import { Typography } from "@gardenfi/garden-book";
 import { TokenPrices } from "../../store/swapStore";
+import { SwapComparison } from "./SwapComparison";
 
 type SwapFeesProps = {
   tokenPrices: TokenPrices;
@@ -10,7 +10,8 @@ type SwapFeesProps = {
 export const SwapFees: FC<SwapFeesProps> = ({ tokenPrices }) => {
   const [showComparison, setIsShowComparison] = useState({
     isOpen: false,
-    price: 0,
+    isTime: false,
+    isFees: false,
   });
 
   const fees = useMemo(
@@ -18,43 +19,62 @@ export const SwapFees: FC<SwapFeesProps> = ({ tokenPrices }) => {
     [tokenPrices]
   );
 
-  const handleShowComparison = (isOpen: boolean) =>
-    setIsShowComparison({ ...showComparison, isOpen });
+  const handleShowComparison = (type: "time" | "fees") => {
+    setIsShowComparison({
+      isOpen: true,
+      isTime: type === "time",
+      isFees: type === "fees",
+    });
+  };
 
   return (
     <>
-      {/* <SwapFeesComparison
+      <SwapComparison
         visible={showComparison.isOpen}
-        hide={() => handleShowComparison(false)}
-      /> */}
-      <div
-        className="flex cursor-pointer flex-col gap-3 rounded-2xl bg-white/50 px-4 pb-3 pt-4 transition-[background-color] hover:bg-white"
-        onClick={() => handleShowComparison(true)}
-      >
-        <Typography size="h5" weight="bold">
+        hide={() =>
+          setIsShowComparison({ isOpen: false, isTime: false, isFees: false })
+        }
+        isTime={showComparison.isTime}
+        isFees={showComparison.isFees}
+      />
+      <div className="flex cursor-pointer flex-col gap-3 rounded-2xl bg-white/50 pb-3 pt-4 transition-[background-color]">
+        <Typography size="h5" weight="bold" className="px-4">
           Details
         </Typography>
         <div>
-          <div className="flex items-center justify-between gap-0">
+          <div
+            className="flex items-center justify-between gap-0 px-4 hover:bg-white"
+            onClick={() => handleShowComparison("time")}
+          >
+            <Typography size="h5" weight="medium">
+              Time saved
+            </Typography>
+            <div className="flex gap-5 py-1">
+              <Typography size="h4" weight="medium">
+                --
+              </Typography>
+            </div>
+          </div>
+          <div
+            className="flex items-center justify-between gap-0 px-4 hover:bg-white"
+            onClick={() => handleShowComparison("fees")}
+          >
+            <Typography size="h5" weight="medium">
+              Cost saved
+            </Typography>
+            <div className="flex gap-5 py-1">
+              <Typography size="h4" weight="medium">
+               --
+              </Typography>
+            </div>
+          </div>
+          <div className="flex items-center justify-between gap-0 px-4">
             <Typography size="h5" weight="medium">
               Fees
             </Typography>
             <div className="flex gap-5 py-1">
               <Typography size="h4" weight="medium">
                 {fees ? "$" + Number(fees.toFixed(4)) : "--"}
-              </Typography>
-            </div>
-          </div>
-          <div className="flex items-center justify-between">
-            <Typography size="h5" weight="medium">
-              Saved
-            </Typography>
-            <div className="flex gap-5 py-1">
-              <Typography size="h4" weight="medium">
-                {/* TODO: Show time saved */}
-              </Typography>
-              <Typography size="h4" weight="medium">
-                --
               </Typography>
             </div>
           </div>
