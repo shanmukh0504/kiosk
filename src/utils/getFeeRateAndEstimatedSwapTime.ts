@@ -1,4 +1,4 @@
-import { Asset } from "@gardenfi/orderbook";
+import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import {
   Chains,
   Assets,
@@ -90,7 +90,7 @@ const ASSET_MAPPINGS: AssetMappings = {
 };
 
 const formatTime = (seconds: number | string) => {
-  if (typeof seconds !== "number" || isNaN(seconds)) return "-"; 
+  if (typeof seconds !== "number" || isNaN(seconds)) return "-";
   const minutes = Math.floor(seconds / 60);
   const secs = seconds % 60;
   return `${minutes}m ${secs}s`;
@@ -107,9 +107,7 @@ export const getThorFee = async (
   const sellFormat = getFormattedAsset(srcAsset, "thor");
   const buyFormat = getFormattedAsset(destAsset, "thor");
   if (!sellFormat || !buyFormat) {
-    throw new Error(
-      `Unsupported asset pair: ${srcAsset.symbol} -> ${destAsset.symbol}`
-    );
+    return { fee: "-", time: "-" };
   }
 
   try {
@@ -121,19 +119,17 @@ export const getThorFee = async (
         sellAmount: amount,
       },
     });
-    console.log("thor : ",result);
 
     const route = result.data.routes[0];
     const inboundFee = route.fees?.THOR[0]?.totalFeeUSD ?? 0;
     const outboundFee = route.fees?.THOR[1]?.totalFeeUSD ?? 0;
-    const duration = route.meta?.thornodeMeta?.totalSwapSeconds;
+    const duration = route.estimatedTime;
 
     return {
       fee: (inboundFee + outboundFee).toFixed(2),
       time: formatTime(duration),
     };
-  } catch (error) {
-    console.error("Error fetching ThorSwap quote:", error);
+  } catch {
     return { fee: "-", time: "-" };
   }
 };
@@ -153,10 +149,7 @@ export const getRelayFee = async (
   };
 
   if (!srcFormat || !destFormat) {
-    console.log(
-      `Unsupported asset pair: ${srcAsset.symbol} -> ${destAsset.symbol}`
-    );
-    return {};
+    return { fee: "-", time: "-" };
   }
 
   const options = {
@@ -183,7 +176,8 @@ export const getRelayFee = async (
   try {
     const response = await fetch(API_URLS.relay, options);
     const data = await response.json();
-    console.log("relay : ",data);
+
+    if (!data.fees) return { fee: "-", time: "-" };
 
     const gasFee = Number(data.fees?.gas?.amountUsd) || 0;
     const relayerFee = Number(data.fees?.relayer?.amountUsd) || 0;
@@ -192,11 +186,12 @@ export const getRelayFee = async (
       Number(data.fees?.relayerServiceFee?.amountUsd) || 0;
 
     const totalFee = gasFee + relayerFee + relayerGasFee + relayerServiceFee;
-    const time = formatTime(data.details?.timeEstimate);
+    let time = formatTime(data.details?.timeEstimate);
+
+    if (isBitcoin(srcAsset.chain) || isBitcoin(destAsset.chain)) time = "~20m";
 
     return { fee: totalFee.toFixed(2), time };
-  } catch (error) {
-    console.error("Error fetching Relay quote:", error);
+  } catch {
     return { fee: "-", time: "-" };
   }
 };
@@ -207,9 +202,8 @@ const getAssetPriceInUSD = async (assetIds: string[]) => {
       params: { ids: assetIds.join(","), vs_currencies: "usd" },
     });
     return data;
-  } catch (error) {
-    console.error("Error fetching asset prices:", error);
-    return {};
+  } catch {
+    return { fee: "-", time: "-" };
   }
 };
 
@@ -219,7 +213,7 @@ export const getChainflipFee = async (
   amount: number
 ) => {
   if (!srcAsset || !destAsset) {
-    throw new Error("Invalid asset");
+    return {};
   }
 
   const srcFormat = getFormattedAsset(srcAsset, "chainflip") as {
@@ -232,10 +226,7 @@ export const getChainflipFee = async (
   };
 
   if (!srcFormat || !destFormat) {
-    console.log(
-      `Unsupported asset pair: ${srcAsset.symbol} -> ${destAsset.symbol}`
-    );
-    return {};
+    return { fee: "-", time: "-" };
   }
 
   const quoteRequest = {
@@ -249,9 +240,8 @@ export const getChainflipFee = async (
   try {
     const swapSDK = new SwapSDK({ network: network as ChainflipNetwork });
     const quoteData = await swapSDK.getQuoteV2(quoteRequest);
-    console.log("chainflip : ",quoteData)
-    const { includedFees, estimatedDurationSeconds } = quoteData.quotes[0];
-
+    const { includedFees, estimatedDurationSeconds, poolInfo } =
+      quoteData.quotes[0];
     const prices = await getAssetPriceInUSD([
       "bitcoin",
       "ethereum",
@@ -272,6 +262,13 @@ export const getChainflipFee = async (
       }
     });
 
+    if (poolInfo && poolInfo.length > 0) {
+      const poolFee = poolInfo[0].fee;
+      if (poolFee.asset === "BTC") {
+        totalBtcFee += parseFloat(poolFee.amount);
+      }
+    }
+
     totalEthFee /= 1e18;
     totalBtcFee /= 1e8;
     totalUsdcFee /= 1e6;
@@ -289,8 +286,7 @@ export const getChainflipFee = async (
       fee: totalFeeInUsd.toFixed(2),
       time: formatTime(estimatedDurationSeconds),
     };
-  } catch (error) {
-    console.error("Error fetching chainflip quote:", error);
+  } catch {
     return { fee: "-", time: "-" };
   }
 };

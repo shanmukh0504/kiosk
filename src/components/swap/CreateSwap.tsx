@@ -5,8 +5,8 @@ import { SwapAddress } from "./SwapAddress";
 import { swapStore } from "../../store/swapStore";
 import { useMemo } from "react";
 import { useSwap } from "../../hooks/useSwap";
-import { SwapFees } from "./SwapFees";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { SwapDetails} from "./SwapDetails";
 
 export const CreateSwap = () => {
   const { swapAssets } = swapStore();
@@ -33,20 +33,20 @@ export const CreateSwap = () => {
     return isInsufficientBalance
       ? "Insufficient balance"
       : isSwapping
-      ? "Signing..."
-      : error.quoteError
-      ? "Insufficient Liquidity"
-      : "Swap";
+        ? "Signing..."
+        : error.quoteError
+          ? "Insufficient Liquidity"
+          : "Swap";
   }, [isInsufficientBalance, isSwapping, error.quoteError]);
 
   const buttonVariant = useMemo(() => {
     return isInsufficientBalance || error.quoteError
       ? "disabled"
       : isSwapping
-      ? "ternary"
-      : validSwap
-      ? "primary"
-      : "disabled";
+        ? "ternary"
+        : validSwap
+          ? "primary"
+          : "disabled";
   }, [isInsufficientBalance, isSwapping, validSwap, error.quoteError]);
 
   const timeEstimate = useMemo(() => {
@@ -87,7 +87,7 @@ export const CreateSwap = () => {
           />
         </div>
         {!btcAddress && <SwapAddress isValidAddress={isValidBitcoinAddress} />}
-        <SwapFees tokenPrices={tokenPrices} />
+        <SwapDetails tokenPrices={tokenPrices} timeEstimate={timeEstimate} />
         <Button
           className={`transition-colors duration-500 ${
             buttonLabel !== "Swap" ? "pointer-events-none" : ""
