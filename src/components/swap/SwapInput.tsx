@@ -1,5 +1,6 @@
 import {
   KeyboardDownIcon,
+  ScaleY,
   TimerIcon,
   TokenInfo,
   Typography,
@@ -10,7 +11,6 @@ import { IOType } from "../../constants/constants";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { modalNames, modalStore } from "../../store/modalStore";
-import { ScaleYIn } from "../../common/ScaleY";
 
 type SwapInputProps = {
   type: IOType;
@@ -162,7 +162,7 @@ export const SwapInput: FC<SwapInputProps> = ({
             weight="bold"
           >
             <div className="relative max-w-[150px] md:max-w-[200px]">
-              <ScaleYIn triggerAnimation={triggerAmountAnimation && !isInFocus}>
+              <ScaleY triggerAnimation={triggerAmountAnimation && !isInFocus}>
                 <input
                   ref={inputRef}
                   className="w-full outline-none"
@@ -174,7 +174,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                     setIsInFocus(false);
                   }}
                 />
-              </ScaleYIn>
+              </ScaleY>
               {/* Placeholder as a separate element to avoid scaleY animation on load */}
               {!amount && (
                 <span className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 transform text-mid-grey">

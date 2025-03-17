@@ -93,8 +93,12 @@ export const CreateSwap = () => {
           className={`flex flex-col opacity-0 transition-all duration-700 ease-in-out ${
             inputAsset &&
             outputAsset &&
-            ((inputAmount && Number(inputAmount) !== 0) ||
-              (outputAmount && Number(outputAmount) !== 0))
+            ((inputAmount &&
+              Number(inputAmount) !== 0 &&
+              inputAmount !== ".") ||
+              (outputAmount &&
+                Number(outputAmount) !== 0 &&
+                outputAmount !== "."))
               ? "pointer-events-auto mt-0 max-h-[500px] opacity-100"
               : "pointer-events-none -mt-4 max-h-0 opacity-0"
           }`}

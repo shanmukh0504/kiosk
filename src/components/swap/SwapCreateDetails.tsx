@@ -1,10 +1,10 @@
 import { FC, useMemo } from "react";
 // import { SwapFeesComparison } from "./SwapFeesComparison";
-import { Typography } from "@gardenfi/garden-book";
+import { ScaleY, Typography } from "@gardenfi/garden-book";
 import { TokenPrices } from "../../store/swapStore";
 import { isBitcoin } from "@gardenfi/orderbook";
 import { AddressDetails } from "./AddressDetails";
-import { ScaleYIn } from "../../common/ScaleY";
+
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useSwap } from "../../hooks/useSwap";
@@ -55,11 +55,11 @@ export const SwapCreateDetails: FC<SwapCreateDetailsProps> = ({
             <Typography size="h5" weight="medium">
               Fees
             </Typography>
-            <ScaleYIn triggerAnimation={false}>
+            <ScaleY triggerAnimation={false}>
               <Typography size="h4" weight="medium">
                 {fees ? "$" + Number(fees.toFixed(4)) : "--"}
               </Typography>
-            </ScaleYIn>
+            </ScaleY>
           </div>
           {receiveAddress && <AddressDetails address={receiveAddress} />}
           {refundAddress && <AddressDetails address={refundAddress} isRefund />}
