@@ -1,13 +1,7 @@
 import { Swap } from "../components/swap/Swap";
-import { Meta } from "../layout/Meta";
-
 export const SwapPage = () => {
   return (
-    <div className="flex h-full min-h-[calc(100vh-80px)] w-full items-center justify-center md:min-h-[calc(100vh-96px)]">
-      <Meta
-        title="Garden Finance BTC Bridge: Swap Native Bitcoin"
-        description="Effortlessly bridge native Bitcoin to chains like Solana, Ethereum, Base, Arbitrum, Avalanche, and more."
-      />
+    <div className="h-full w-full">
       <Swap />
     </div>
   );

@@ -95,8 +95,8 @@ export const CreateSwap = () => {
             outputAsset &&
             ((inputAmount && Number(inputAmount) !== 0) ||
               (outputAmount && Number(outputAmount) !== 0))
-              ? "pointer-events-auto max-h-[500px] opacity-100"
-              : "pointer-events-none max-h-0 opacity-0"
+              ? "pointer-events-auto mt-0 max-h-[500px] opacity-100"
+              : "pointer-events-none -mt-4 max-h-0 opacity-0"
           }`}
         >
           <div

@@ -78,7 +78,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       set({ isLoading: true });
       const res = await axios.get<{
         data: { networks: Networks };
-      }>(API().data.assets);
+      }>(API().data.assets.toString());
       const assetsData = res.data.data.networks;
 
       const assets: Assets = {};
@@ -103,7 +103,8 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
         }
       }
       set({ assets, chains });
-    } catch {
+    } catch (error) {
+      console.error("Failed to fetch assets data", error);
       set({ error: "Failed to fetch assets data" });
     } finally {
       set({ isLoading: false });

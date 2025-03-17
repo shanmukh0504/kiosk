@@ -7,7 +7,7 @@ import { getTrimmedAddress } from "../../../utils/getTrimmedAddress";
 
 type AddressProps = {
   address: string;
-  logo: string
+  logo: string;
 };
 
 export const Address: FC<AddressProps> = ({ address, logo }) => {
@@ -25,11 +25,8 @@ export const Address: FC<AddressProps> = ({ address, logo }) => {
   };
 
   return (
-    <div className="bg-white/50 flex rounded-full px-2 py-[2px] gap-2 ">
-      <img
-        src={logo}
-        className="w-5 h-5 my-1 "
-      />
+    <div className="flex gap-2 rounded-full bg-white/50 px-2 py-[2px]">
+      <img src={logo} className="my-1 h-5 w-5" />
       <Typography
         size="h3"
         weight="medium"

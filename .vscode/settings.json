@@ -1,13 +1,25 @@
 {
   "cSpell.words": [
+    "Apys",
     "bignumber",
     "citrea",
     "gardenfi",
     "Parens",
+    "Perma",
+    "Restake",
+    "Restakeable",
+    "Restaking",
     "Siwe",
+    "Solana",
+    "Stakeable",
+    "stakewise",
     "tailwindcss",
     "tanstack",
     "tseslint",
+    "Unstake",
+    "Unstakeable",
+    "unstaked",
+    "Unstaking",
     "viem",
     "Waitlist"
   ],
@@ -22,5 +34,6 @@
   "editor.formatOnSave": true, // Automatically format on save
   "[typescriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "postman.settings.dotenv-detection-notification-visibility": false
 }

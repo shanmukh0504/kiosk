@@ -1,19 +1,27 @@
 import { Asset, isBitcoin, isEVM } from "@gardenfi/orderbook";
 import { Environment, Network } from "@gardenfi/utils";
 
-export const INTERNAL_ROUTES = {
-  swap: { name: "Swap", path: "/" },
-  // quests: { name: "Quests", path: "/quests" },
-} as const;
+export const INTERNAL_ROUTES: Record<string, { name: string; path: string[] }> =
+  {
+    swap: { name: "Swap", path: ["/", "/swap"] },
+    stake: { name: "Stake", path: ["/stake"] },
+    // quests: { name: "Quests", path: "/quests" },
+  } as const;
 
 export const THEMES = {
   swap: "swap",
   quests: "quests",
+  stake: "stake",
 } as const;
 
 export enum IOType {
   input = "input",
   output = "output",
+}
+
+export enum QuoteError {
+  InsufficientLiquidity = "Insufficient Liquidity",
+  None = "",
 }
 
 export const LOCAL_STORAGE_KEYS = {

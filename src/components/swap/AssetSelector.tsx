@@ -49,6 +49,27 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
       : [];
   }, [chains]);
 
+  const sortedResults = useMemo(() => {
+    if (results && orderedChains.length > 0) {
+      return [...results].sort((a, b) => {
+        const chainA = chains?.[a.chain];
+        const chainB = chains?.[b.chain];
+        if (chainA && chainB) {
+          const indexA = orderedChains.findIndex(
+            (c) => c.identifier === chainA.identifier
+          );
+          const indexB = orderedChains.findIndex(
+            (c) => c.identifier === chainB.identifier
+          );
+          return indexA - indexB;
+        }
+        return 0;
+      });
+    }
+    return results;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results, orderedChains]);
+
   const comparisonToken = useMemo(
     () =>
       isAssetSelectorOpen.type === IOType.input ? outputAsset : inputAsset,
@@ -104,7 +125,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   };
 
   return (
-    <div className="transition-left left-auto top-60 z-40 flex flex-col gap-3 rounded-[20px] duration-700 ease-cubic-in-out">
+    <div className="transition-left left-auto top-60 z-40 flex flex-col gap-3 rounded-[20px] duration-700 ease-cubic-in-out sm:w-[480px]">
       <div className="flex items-center justify-between p-1">
         <Typography size="h4" weight="bold">
           Token select
@@ -163,7 +184,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             Assets
           </Typography>
         </div>
-        {results?.map((asset) => {
+        {sortedResults?.map((asset) => {
           const network = !isBitcoin(asset.chain)
             ? chains?.[asset.chain]
             : undefined;

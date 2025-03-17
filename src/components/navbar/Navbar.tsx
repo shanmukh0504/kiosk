@@ -7,14 +7,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useGarden } from "@gardenfi/react-hooks";
 import { isCurrentRoute } from "../../utils/utils";
 import { MobileMenu } from "./MobileMenu";
-import { connectWalletStore } from "../../store/connectWalletStore";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { modalNames, modalStore } from "../../store/modalStore";
 
 export const Navbar = () => {
   const [isInitiatingSM, setIsInitiatingSM] = useState(false);
 
   const { isConnected, address } = useEVMWallet();
-  const { setIsOpen } = connectWalletStore();
+  const { setOpenModal } = modalStore();
   const { account } = useBitcoinWallet();
   const { garden, isExecuting, isExecutorRequired } = useGarden();
 
@@ -33,7 +33,7 @@ export const Navbar = () => {
   const handleConnectClick = () => {
     if (isFullyConnected) return;
     if (isConnected && shouldInitiateSM) handleInitializeSM();
-    else setIsOpen();
+    else setOpenModal(modalNames.connectWallet);
   };
 
   const handleInitializeSM = useCallback(async () => {
@@ -58,19 +58,19 @@ export const Navbar = () => {
     <div
       className={"flex items-center justify-between gap-3 px-6 py-6 sm:px-10"}
     >
-      <div className="flex items-center gap-16">
+      <div className="flex items-center gap-16 py-2">
         <GardenFullLogo
           onClick={handleHomeLogoClick}
           className="cursor-pointer"
         />
         <div className="hidden gap-12 sm:flex sm:items-center">
           {Object.values(INTERNAL_ROUTES).map((route) => {
+            const paths = route.path;
+            const isActive = paths.some(isCurrentRoute);
+            const primaryPath = paths[0];
             return (
-              <a key={route.path} href={route.path}>
-                <Typography
-                  size="h2"
-                  weight={isCurrentRoute(route.path) ? "bold" : "medium"}
-                >
+              <a key={primaryPath} href={primaryPath}>
+                <Typography size="h2" weight={isActive ? "bold" : "medium"}>
                   {route.name}
                 </Typography>
               </a>

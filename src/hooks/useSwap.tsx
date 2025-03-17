@@ -19,7 +19,6 @@ import { Environment } from "@gardenfi/utils";
 import { Errors } from "../constants/errors";
 
 export const useSwap = () => {
-  const { inputTokenBalance } = useBalances();
   const {
     inputAmount,
     outputAmount,
@@ -43,6 +42,7 @@ export const useSwap = () => {
     setBtcAddress,
     setIsEditBTCAddress,
   } = swapStore();
+  const { tokenBalance: inputTokenBalance } = useBalances(inputAsset);
   const { strategies } = assetInfoStore();
   const { setOrderInProgress } = ordersStore();
   const { address } = useEVMWallet();
@@ -236,6 +236,7 @@ export const useSwap = () => {
   const handleInputAmountChange = useCallback(
     async (amount: string) => {
       setAmount(IOType.input, amount);
+      setError({ swapError: undefined });
       const amountInNumber = Number(amount);
       if (!amountInNumber) {
         // cancel debounced fetch quote
@@ -289,6 +290,7 @@ export const useSwap = () => {
 
   const handleOutputAmountChange = async (amount: string) => {
     setAmount(IOType.output, amount);
+    setError({ swapError: undefined });
     const amountInNumber = Number(amount);
     if (!amountInNumber) {
       // cancel debounced fetch quote

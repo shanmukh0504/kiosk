@@ -61,14 +61,14 @@ export const GardenSupportedWallets: Record<
     isBitcoinSupported: false,
     isEVMSupported: true,
   },
-  "app.phantom": {
+   "app.phantom": {
     id: "app.phantom",
     name: "Phantom",
     logo: "https://garden-finance.imgix.net/wallets/phantom.svg",
     installLink:
       "https://chromewebstore.google.com/detail/phantom/bfnaelmomeimhlpmgjnjophhpkkoljpa?hl=en",
     isBitcoinSupported: false,
-    isEVMSupported: true,
+    isEVMSupported: network === Network.MAINNET,
   },
   "com.coinbase.wallet": {
     id: "com.coinbase.wallet",
@@ -84,14 +84,6 @@ export const GardenSupportedWallets: Record<
     logo: "https://garden-finance.imgix.net/wallets/okx.svg",
     installLink: "https://www.okx.com/download",
     isBitcoinSupported: network === Network.MAINNET ? true : false,
-    isEVMSupported: true,
-  },
-  "org.uniswap.app": {
-    id: "org.uniswap.app",
-    name: "Uniswap",
-    logo: "https://garden-finance.imgix.net/wallets/uniswap.svg",
-    installLink: "https://wallet.uniswap.org/",
-    isBitcoinSupported: false,
     isEVMSupported: true,
   },
   unisat: {

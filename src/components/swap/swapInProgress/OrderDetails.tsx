@@ -10,6 +10,7 @@ import BigNumber from "bignumber.js";
 import { getAssetFromSwap } from "../../../utils/utils";
 import { assetInfoStore } from "../../../store/assetInfoStore";
 import { CopyToClipboard } from "../../../common/CopyToClipboard";
+import { Url } from "@gardenfi/utils";
 
 type OrderDetailsProps = {
   order: MatchedOrder;
@@ -39,7 +40,7 @@ export const OrderDetailsRow: FC<OrderDetailsRowProps> = ({
       </Typography>
       <div className="flex items-center gap-2">
         <Typography size="h4" weight="medium">
-          {getTrimmedAddress(value)}
+          {link ? getTrimmedAddress(value) : value}
         </Typography>
         {copyString && <CopyToClipboard text={copyString} />}
         {link && (
@@ -71,10 +72,18 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
     };
   }, [assets, order]);
 
-  const link =
+  const chain = isBitcoin(order.source_swap.chain)
+    ? order.source_swap.chain
+    : isBitcoin(order.destination_swap.chain)
+      ? order.destination_swap.chain
+      : "";
+  const baseUrl =
     order &&
     chains &&
-    chains[order.source_swap.chain]?.explorer + "address/" + btcAddress;
+    chain && chains[chain] &&
+    new Url("address", chains[chain].explorer.toString());
+
+  const link = baseUrl && btcAddress && baseUrl.endpoint(btcAddress);
 
   const { inputAmountPrice, outputAmountPrice, amountToFill, filledAmount } =
     useMemo(() => {
@@ -158,7 +167,7 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
                   : "Receive" + " address"
               }
               value={btcAddress}
-              link={link}
+              link={link.toString()}
             />
           )}
         </div>
