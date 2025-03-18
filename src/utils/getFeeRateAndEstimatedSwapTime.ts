@@ -63,14 +63,6 @@ const ASSET_MAPPINGS: AssetMappings = {
       chainId: "8453",
       currency: "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
     },
-    "base_sepolia:USDC": {
-      chainId: "84532",
-      currency: "0x036cbd53842c5426634e7929541ec2318f3dcf7e",
-    },
-    "ethereum_sepolia:USDC": {
-      chainId: "11155111",
-      currency: "0x1c7d4b196cb0c7b01d743fbc6116a902379c7238",
-    },
     "arbitrum:WBTC": {
       chainId: "42161",
       currency: "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
@@ -166,18 +158,18 @@ export const getRelayFee = async (
       destinationChainId: destFormat.chainId,
       originCurrency: srcFormat.currency,
       recipient:
-      destFormat.chainId !== "8253038" && destFormat.chainId != "9092725"
-      ? "0x000000000000000000000000000000000000dead"
-      : destFormat.chainId === "9092725"
-        ? "tb1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqtlc5af"
-        : "bc1q4vxn43l44h30nkluqfxd9eckf45vr2awz38lwa",
+        destFormat.chainId !== "8253038" && destFormat.chainId != "9092725"
+          ? "0x000000000000000000000000000000000000dead"
+          : destFormat.chainId === "9092725"
+            ? "tb1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqtlc5af"
+            : "bc1q4vxn43l44h30nkluqfxd9eckf45vr2awz38lwa",
       destinationCurrency: destFormat.currency,
       amount: amount * 10 ** srcAsset.decimals,
       tradeType: "EXACT_INPUT",
     }),
   };
 
-  console.log(options , API_URLS.relay);
+  console.log(options, API_URLS.relay);
   try {
     const response = await fetch(API_URLS.relay, options);
     const data = await response.json();
