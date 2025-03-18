@@ -12,7 +12,7 @@
   "dependencies": {
     "@chainflip/sdk": "^1.7.0",
     "@gardenfi/core": "^2.0.22",
-    "@gardenfi/garden-book": "^0.1.68",
+    "@gardenfi/garden-book": "^0.1.74",
     "@gardenfi/orderbook": "^2.0.6",
     "@gardenfi/react-hooks": "^2.0.26",
     "@gardenfi/utils": "^2.0.3",

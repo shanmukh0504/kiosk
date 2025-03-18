@@ -1,4 +1,10 @@
-import { ArrowLeftIcon, Typography } from "@gardenfi/garden-book";
+import {
+  ArrowLeftIcon,
+  ChainflipIcon,
+  RelayLinkIcon,
+  ThorswapIcon,
+  Typography,
+} from "@gardenfi/garden-book";
 import { FC, useEffect, useMemo, useState } from "react";
 import { SwapInfo } from "../../common/SwapInfo";
 import { swapStore } from "../../store/swapStore";
@@ -31,13 +37,14 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
     string,
     { fee: string; time: string }
   > | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const { inputAsset, outputAsset, inputAmount, outputAmount } = swapStore();
 
   const swapSources = [
-    { name: "Relay", key: "Relay", icon: "/public/relay.svg" },
-    { name: "chainflip", key: "Chainflip", icon: "/public/chainflip.svg" },
-    { name: "thorswap", key: "Thorswap", icon: "/public/thorswap.svg" },
+    { name: "Relay", key: "Relay", icon: <RelayLinkIcon /> },
+    { name: "chainflip", key: "Chainflip", icon: <ChainflipIcon /> },
+    { name: "thorswap", key: "Thorswap", icon: <ThorswapIcon /> },
   ];
 
   const parseTime = (time: string | undefined) => {
@@ -68,6 +75,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
   useEffect(() => {
     const fetchAllData = async () => {
       if (inputAsset && outputAsset && inputAmount) {
+        setLoading(true);
         try {
           const sources = {
             Relay: getRelayFee,
@@ -106,7 +114,9 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
 
           setSwapData(newData);
         } catch {
-          // Do nothing, suppress all errors
+          //suppress error
+        } finally {
+          setLoading(false);
         }
       }
     };
@@ -115,7 +125,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
   }, [inputAsset, outputAsset, inputAmount]);
 
   useEffect(() => {
-    if (!swapData || swapEntries.length === 0) {
+    if (loading || !swapData || swapEntries.length === 0) {
       onComparisonUpdate(0, 0);
       return;
     }
@@ -130,7 +140,6 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
       const feeDiff = Number(fee) - gardenFee;
       maxCostSaved = Math.max(maxCostSaved, feeDiff);
     });
-
     onComparisonUpdate(maxTimeSaved, maxCostSaved);
   }, [
     swapData,
@@ -138,6 +147,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
     gardenFee,
     onComparisonUpdate,
     swapEntries.length,
+    loading,
   ]);
 
   return (
@@ -177,13 +187,9 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
                 <Typography size="h4" weight="medium" className="mr-2 w-[20px]">
                   #{index + 1}
                 </Typography>
-                {source && (
-                  <img
-                    src={source.icon}
-                    alt={source.name}
-                    className="h-4 w-4"
-                  />
-                )}
+                <div className="flex w-6 justify-center">
+                  {source && source.icon}
+                </div>
                 <Typography size="h4" weight="medium">
                   {source?.name || key}
                 </Typography>

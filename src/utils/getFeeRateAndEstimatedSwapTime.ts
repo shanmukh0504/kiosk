@@ -93,7 +93,7 @@ const formatTime = (seconds: number | string) => {
   if (typeof seconds !== "number" || isNaN(seconds)) return "-";
   const minutes = Math.floor(seconds / 60);
   const secs = seconds % 60;
-  return `${minutes}m ${secs}s`;
+  return `${minutes}m ${secs.toFixed(0)}s`;
 };
 
 const getFormattedAsset = (asset: Asset, type: AssetMappingType) =>
@@ -157,22 +157,27 @@ export const getRelayFee = async (
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       user:
-        srcFormat.chainId !== "8253038"
+        srcFormat.chainId !== "8253038" && srcFormat.chainId != "9092725"
           ? "0x000000000000000000000000000000000000dead"
-          : "bc1q4vxn43l44h30nkluqfxd9eckf45vr2awz38lwa",
+          : srcFormat.chainId === "9092725"
+            ? "tb1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqtlc5af"
+            : "bc1q4vxn43l44h30nkluqfxd9eckf45vr2awz38lwa",
       originChainId: srcFormat.chainId,
       destinationChainId: destFormat.chainId,
       originCurrency: srcFormat.currency,
       recipient:
-        destFormat.chainId === "8253038"
-          ? "bc1q4vxn43l44h30nkluqfxd9eckf45vr2awz38lwa"
-          : "0x000000000000000000000000000000000000dead",
+      destFormat.chainId !== "8253038" && destFormat.chainId != "9092725"
+      ? "0x000000000000000000000000000000000000dead"
+      : destFormat.chainId === "9092725"
+        ? "tb1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqtlc5af"
+        : "bc1q4vxn43l44h30nkluqfxd9eckf45vr2awz38lwa",
       destinationCurrency: destFormat.currency,
       amount: amount * 10 ** srcAsset.decimals,
       tradeType: "EXACT_INPUT",
     }),
   };
 
+  console.log(options , API_URLS.relay);
   try {
     const response = await fetch(API_URLS.relay, options);
     const data = await response.json();
