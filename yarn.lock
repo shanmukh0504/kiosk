@@ -677,9 +677,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/garden-book@npm:^0.1.68":
-  version: 0.1.68
-  resolution: "@gardenfi/garden-book@npm:0.1.68"
+"@gardenfi/garden-book@npm:^0.1.75":
+  version: 0.1.75
+  resolution: "@gardenfi/garden-book@npm:0.1.75"
   dependencies:
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^2.1.1"
@@ -692,7 +692,7 @@ __metadata:
   peerDependencies:
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 10c0/fbb2d1aa1c38ad3df678b0fe78f7d9ecce140787c349e8daf64d4faedf933ce4ecbea5307c595838599b4d7a5fa39decfa190a1667326e734311f739837bbfe8
+  checksum: 10c0/840e8d901a18981fb59455e384fb67065eb95b05c268778a3f0642b7fb1c851c828bc3a467fae0f9632fcda8cf94464f5976f4961c20c91b0e493379f949ae31
   languageName: node
   linkType: hard
 
@@ -5806,7 +5806,7 @@ __metadata:
   dependencies:
     "@eslint/js": "npm:^9.13.0"
     "@gardenfi/core": "npm:^2.0.22"
-    "@gardenfi/garden-book": "npm:^0.1.68"
+    "@gardenfi/garden-book": "npm:^0.1.75"
     "@gardenfi/orderbook": "npm:^2.0.6"
     "@gardenfi/react-hooks": "npm:^2.0.26"
     "@gardenfi/utils": "npm:^2.0.3"
