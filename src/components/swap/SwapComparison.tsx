@@ -12,7 +12,11 @@ import {
   getChainflipFee,
   getRelayFee,
   getThorFee,
-} from "../../utils/getFeeRateAndEstimatedSwapTime";
+} from "../../utils/timeAndFeeComparison/getFeeRateAndEstimatedSwapTime";
+import {
+  formatTimeDiff,
+  parseTime,
+} from "../../utils/timeAndFeeComparison/utils";
 
 type SwapComparisonProps = {
   visible: boolean;
@@ -46,26 +50,6 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
     { name: "chainflip", key: "Chainflip", icon: <ChainflipIcon /> },
     { name: "thorswap", key: "Thorswap", icon: <ThorswapIcon /> },
   ];
-
-  const parseTime = (time: string | undefined) => {
-    if (!time) return 0;
-
-    const cleanedTime = time.replace("~", "").trim();
-    const match = cleanedTime.match(/(?:(\d+)m)?\s*(?:(\d+)s)?/);
-
-    if (!match) return 0;
-
-    const minutes = match[1] ? parseInt(match[1]) : 0;
-    const seconds = match[2] ? parseInt(match[2]) : 0;
-
-    return minutes * 60 + seconds;
-  };
-
-  const formatTimeDiff = (time: string) => {
-    const diff = parseTime(time) - parseTime(gardenSwapTime);
-    const sign = diff >= 0 ? "+" : "-";
-    return `${sign}${Math.floor(Math.abs(diff) / 60)}m ${Math.abs(diff) % 60}s`;
-  };
 
   const swapEntries = useMemo(
     () => (swapData ? Object.entries(swapData) : []),
@@ -208,7 +192,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
                   size="h4"
                   weight="medium"
                 >
-                  {formatTimeDiff(time)}
+                  {formatTimeDiff(time, gardenSwapTime)}
                 </Typography>
               ))}
             </div>

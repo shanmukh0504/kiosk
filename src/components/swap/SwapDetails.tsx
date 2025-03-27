@@ -3,12 +3,15 @@ import { Typography } from "@gardenfi/garden-book";
 import { TokenPrices } from "../../store/swapStore";
 import { SwapComparison } from "./SwapComparison";
 
-type SwapFeesProps = {
+type SwapDetailsProps = {
   tokenPrices: TokenPrices;
   timeEstimate: string;
 };
 
-export const SwapDetails: FC<SwapFeesProps> = ({ tokenPrices, timeEstimate }) => {
+export const SwapDetails: FC<SwapDetailsProps> = ({
+  tokenPrices,
+  timeEstimate,
+}) => {
   const [showComparison, setIsShowComparison] = useState({
     isOpen: false,
     isTime: false,
@@ -46,7 +49,7 @@ export const SwapDetails: FC<SwapFeesProps> = ({ tokenPrices, timeEstimate }) =>
           setMaxCostSaved(cost);
         }}
       />
-      <div className="flex cursor-pointer flex-col gap-3 rounded-2xl bg-white/50 pb-3 pt-4 transition-[background-color]">
+      <div className="flex flex-col gap-3 rounded-2xl bg-white/50 pb-3 pt-4 transition-[background-color]">
         <Typography size="h5" weight="bold" className="px-4">
           Details
         </Typography>
