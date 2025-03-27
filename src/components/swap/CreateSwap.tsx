@@ -87,7 +87,7 @@ export const CreateSwap = () => {
           />
         </div>
         {!btcAddress && <SwapAddress isValidAddress={isValidBitcoinAddress} />}
-        <SwapDetails tokenPrices={tokenPrices} timeEstimate={timeEstimate} />
+        <SwapDetails tokenPrices={tokenPrices}/>
         <Button
           className={`transition-colors duration-500 ${
             buttonLabel !== "Swap" ? "pointer-events-none" : ""

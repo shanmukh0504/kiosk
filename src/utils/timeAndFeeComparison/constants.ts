@@ -33,7 +33,7 @@ export const API_URLS = {
   coingecko: "https://api.coingecko.com/api/v3/simple/price",
 };
 
-export const RELAY_BTC_SWAP_TIME = "20m";
+export const RELAY_BTC_SWAP_TIME = 1200; //in seconds
 
 export const ASSET_MAPPINGS: AssetMappings = {
   [SwapPlatform.THORSWAP]: {

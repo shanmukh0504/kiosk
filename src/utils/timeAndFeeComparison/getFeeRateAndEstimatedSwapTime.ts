@@ -1,8 +1,5 @@
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
-import {
-  SwapSDK,
-  ChainflipNetwork,
-} from "@chainflip/sdk/swap";
+import { SwapSDK, ChainflipNetwork } from "@chainflip/sdk/swap";
 import axios from "axios";
 import { network } from "../../constants/constants";
 import {
@@ -17,24 +14,25 @@ import {
 } from "./constants";
 import {
   getFormattedAsset,
-  formatTime,
   calculateThorFee,
   calculateRelayFee,
   calculateChainflipFee,
   ChainflipAssetAndChain,
 } from "./utils";
 
+export type comparisonMetric = { fee: number; time: number };
+
 //ThorSwap
 export const getThorFee = async (
   srcAsset: Asset,
   destAsset: Asset,
   amount: number
-) => {
+): Promise<comparisonMetric> => {
   const sellFormat = getFormattedAsset(srcAsset, SwapPlatform.THORSWAP);
   const buyFormat = getFormattedAsset(destAsset, SwapPlatform.THORSWAP);
 
   if (!sellFormat || !buyFormat) {
-    return { fee: "-", time: "-" };
+    return { fee: 0, time: 0 };
   }
 
   try {
@@ -49,14 +47,14 @@ export const getThorFee = async (
 
     const route = result.data.routes[0];
     const thorFee = calculateThorFee(route.fees);
-    const swapDuration = formatTime(route.estimatedTime);
+    const swapDuration = route.estimatedTime;
 
     return {
       fee: thorFee,
       time: swapDuration,
     };
   } catch {
-    return { fee: "-", time: "-" };
+    return { fee: 0, time: 0 };
   }
 };
 
@@ -65,7 +63,7 @@ export const getRelayFee = async (
   srcAsset: Asset,
   destAsset: Asset,
   amount: number
-) => {
+): Promise<comparisonMetric> => {
   const srcFormat = getFormattedAsset(srcAsset, SwapPlatform.RELAY) as {
     chainId: string;
     currency: string;
@@ -76,7 +74,7 @@ export const getRelayFee = async (
   };
 
   if (!srcFormat || !destFormat) {
-    return { fee: "-", time: "-" };
+    return { fee: 0, time: 0 };
   }
 
   const user =
@@ -111,17 +109,17 @@ export const getRelayFee = async (
       headers: { "Content-Type": "application/json" },
     });
 
-    if (!data.fees) return { fee: "-", time: "-" };
+    if (!data.fees) return { fee: 0, time: 0 };
 
     const totalFee = calculateRelayFee(data.fees);
-    let time = data.details && formatTime(data.details.timeEstimate);
+    let time = data.details.timeEstimate;
 
     if (isBitcoin(srcAsset.chain) || isBitcoin(destAsset.chain))
       time = RELAY_BTC_SWAP_TIME;
 
-    return { fee: totalFee.toFixed(2), time };
+    return { fee: totalFee, time };
   } catch {
-    return { fee: "-", time: "-" };
+    return { fee: 0, time: 0 };
   }
 };
 
@@ -130,9 +128,9 @@ export const getChainflipFee = async (
   srcAsset: Asset,
   destAsset: Asset,
   amount: number
-) => {
+): Promise<comparisonMetric> => {
   if (!srcAsset || !destAsset) {
-    return { fee: "-", time: "-" };
+    return { fee: 0, time: 0 };
   }
 
   const srcFormat = getFormattedAsset(
@@ -145,7 +143,7 @@ export const getChainflipFee = async (
   ) as ChainflipAssetAndChain;
 
   if (!srcFormat || !destFormat) {
-    return { fee: "-", time: "-" };
+    return { fee: 0, time: 0 };
   }
 
   const quoteRequest = {
@@ -164,9 +162,9 @@ export const getChainflipFee = async (
     const totalFeeInUsd = await calculateChainflipFee(includedFees, poolInfo);
     return {
       fee: totalFeeInUsd,
-      time: formatTime(estimatedDurationSeconds),
+      time: estimatedDurationSeconds,
     };
   } catch {
-    return { fee: "-", time: "-" };
+    return { fee: 0, time: 0 };
   }
 };

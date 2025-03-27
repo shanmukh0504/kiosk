@@ -75,8 +75,8 @@ export const parseTime = (time: string | undefined) => {
   return minutes * 60 + seconds;
 };
 
-export const formatTimeDiff = (time: string, gardenSwapTime: string) => {
-  const diff = parseTime(time) - parseTime(gardenSwapTime);
+export const formatTimeDiff = (time: number, gardenSwapTime: string) => {
+  const diff = time - parseTime(gardenSwapTime);
   const sign = diff >= 0 ? "+" : "-";
   return `${sign}${Math.floor(Math.abs(diff) / 60)}m ${Math.abs(diff) % 60}s`;
 };
@@ -98,13 +98,13 @@ export const getAssetPriceInUSD = async (assetIds: string[]) => {
 export const calculateThorFee = (fees: ThorFeeResponse) => {
   const inboundFee = fees.THOR[0].totalFeeUSD ?? 0;
   const outboundFee = fees.THOR[1].totalFeeUSD ?? 0;
-  return (inboundFee + outboundFee).toFixed(2);
+  return Number((inboundFee + outboundFee).toFixed(2));
 };
 
 export const calculateRelayFee = (fees: RelayFeeResponse) => {
   const gasFee = Number(fees.gas.amountUsd) || 0;
   const relayerFee = Number(fees.relayer.amountUsd) || 0;
-  return gasFee + relayerFee;
+  return Number((gasFee + relayerFee).toFixed(2));
 };
 
 export const calculateChainflipFee = async (
@@ -150,5 +150,5 @@ export const calculateChainflipFee = async (
     0
   );
 
-  return totalFeeInUsd.toFixed(2);
+  return Number(totalFeeInUsd.toFixed(2));
 };

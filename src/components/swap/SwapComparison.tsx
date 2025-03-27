@@ -9,33 +9,31 @@ import { FC, useEffect, useMemo, useState } from "react";
 import { SwapInfo } from "../../common/SwapInfo";
 import { swapStore } from "../../store/swapStore";
 import {
+  comparisonMetric,
   getChainflipFee,
   getRelayFee,
   getThorFee,
 } from "../../utils/timeAndFeeComparison/getFeeRateAndEstimatedSwapTime";
 import {
+  formatTime,
   formatTimeDiff,
   parseTime,
 } from "../../utils/timeAndFeeComparison/utils";
+import { getTimeEstimates } from "../../constants/constants";
 
 type SwapComparisonProps = {
   visible: boolean;
   hide: () => void;
   isTime?: boolean;
   isFees?: boolean;
-  gardenFee: number;
-  gardenSwapTime: string;
   onComparisonUpdate: (maxTimeSaved: number, maxCostSaved: number) => void;
 };
-type comparisonMetric = { fee: string; time: string };
 
 export const SwapComparison: FC<SwapComparisonProps> = ({
   visible,
   hide,
   isTime,
   isFees,
-  gardenFee,
-  gardenSwapTime,
   onComparisonUpdate,
 }) => {
   const [swapData, setSwapData] = useState<Record<
@@ -44,13 +42,24 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
   > | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const { inputAsset, outputAsset, inputAmount, outputAmount } = swapStore();
+  const { inputAsset, outputAsset, inputAmount, outputAmount, tokenPrices } =
+    swapStore();
 
   const swapSources = [
     { name: "Relay", key: "Relay", icon: <RelayLinkIcon /> },
     { name: "chainflip", key: "Chainflip", icon: <ChainflipIcon /> },
     { name: "thorswap", key: "Thorswap", icon: <ThorswapIcon /> },
   ];
+
+  const gardenFee = useMemo(
+    () => Number(tokenPrices.input) - Number(tokenPrices.output),
+    [tokenPrices]
+  );
+
+  const gardenSwapTime = useMemo(() => {
+    if (!inputAsset || !outputAsset) return "";
+    return getTimeEstimates(inputAsset);
+  }, [inputAsset, outputAsset]);
 
   const swapEntries = useMemo(
     () => (swapData ? Object.entries(swapData) : []),
@@ -76,7 +85,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
                   outputAsset,
                   Number(inputAmount)
                 );
-                return fee === "-" && time === "-" ? null : { key, fee, time };
+                return fee === 0 && time === 0 ? null : { key, fee, time };
               } catch {
                 // Suppress error
               }
@@ -85,8 +94,8 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
 
           const filteredResults = results.filter(Boolean) as {
             key: string;
-            fee: string;
-            time: string;
+            fee: number;
+            time: number;
           }[];
 
           const newData = filteredResults.reduce(
@@ -119,8 +128,8 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
     let maxCostSaved = 0;
 
     Object.values(swapData).forEach(({ fee, time }) => {
-      const timeDiff = parseTime(time) - parseTime(gardenSwapTime);
-      const feeDiff = Number(fee) - gardenFee;
+      const timeDiff = time - parseTime(gardenSwapTime);
+      const feeDiff = fee - gardenFee;
       maxTimeSaved = Math.max(maxTimeSaved, timeDiff);
       maxCostSaved = Math.max(maxCostSaved, feeDiff);
     });
@@ -200,7 +209,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
             <div className="flex flex-col gap-2">
               {swapEntries.map(([key, { time }]) => (
                 <Typography key={key} className="p-1" size="h4" weight="medium">
-                  {time}
+                  {formatTime(time)}
                 </Typography>
               ))}
             </div>

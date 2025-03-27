@@ -5,12 +5,10 @@ import { SwapComparison } from "./SwapComparison";
 
 type SwapDetailsProps = {
   tokenPrices: TokenPrices;
-  timeEstimate: string;
 };
 
 export const SwapDetails: FC<SwapDetailsProps> = ({
-  tokenPrices,
-  timeEstimate,
+  tokenPrices
 }) => {
   const [showComparison, setIsShowComparison] = useState({
     isOpen: false,
@@ -42,8 +40,6 @@ export const SwapDetails: FC<SwapDetailsProps> = ({
         }
         isTime={showComparison.isTime}
         isFees={showComparison.isFees}
-        gardenFee={fees}
-        gardenSwapTime={timeEstimate}
         onComparisonUpdate={(time, cost) => {
           setMaxTimeSaved(time);
           setMaxCostSaved(cost);
