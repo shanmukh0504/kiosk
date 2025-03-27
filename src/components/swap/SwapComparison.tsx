@@ -27,6 +27,7 @@ type SwapComparisonProps = {
   gardenSwapTime: string;
   onComparisonUpdate: (maxTimeSaved: number, maxCostSaved: number) => void;
 };
+type comparisonMetric = { fee: string; time: string };
 
 export const SwapComparison: FC<SwapComparisonProps> = ({
   visible,
@@ -39,7 +40,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
 }) => {
   const [swapData, setSwapData] = useState<Record<
     string,
-    { fee: string; time: string }
+    comparisonMetric
   > | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -93,7 +94,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
               acc[key] = { fee, time };
               return acc;
             },
-            {} as Record<string, { fee: string; time: string }>
+            {} as Record<string, comparisonMetric>
           );
 
           setSwapData(newData);
@@ -119,11 +120,11 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
 
     Object.values(swapData).forEach(({ fee, time }) => {
       const timeDiff = parseTime(time) - parseTime(gardenSwapTime);
-      maxTimeSaved = Math.max(maxTimeSaved, timeDiff);
-
       const feeDiff = Number(fee) - gardenFee;
+      maxTimeSaved = Math.max(maxTimeSaved, timeDiff);
       maxCostSaved = Math.max(maxCostSaved, feeDiff);
     });
+
     onComparisonUpdate(maxTimeSaved, maxCostSaved);
   }, [
     swapData,
