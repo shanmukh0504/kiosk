@@ -48,3 +48,18 @@ export const getTimeEstimates = (inputAsset: Asset) => {
 };
 
 export const network: Environment | Network = import.meta.env.VITE_NETWORK;
+
+export const SUPPORTED_CHAINS = [
+  "arbitrum",
+  "base",
+  "bera",
+  "bitcoin",
+  "ethereum",
+  "bitcoin_testnet",
+  "ethereum_sepolia",
+  "base_sepolia",
+  "arbitrum_sepolia",
+  "bera_testnet",
+  "citrea_testnet",
+  "monad_testnet",
+] as const;

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { IOType } from "../constants/constants";
+import { IOType, SUPPORTED_CHAINS } from "../constants/constants";
 import { Asset, Chain } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
@@ -85,6 +85,13 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       const chains: Chains = {};
 
       for (const chainInfo of Object.values(assetsData)) {
+        if (
+          !SUPPORTED_CHAINS.includes(
+            chainInfo.identifier as (typeof SUPPORTED_CHAINS)[number]
+          )
+        )
+          continue;
+
         chains[chainInfo.identifier] = {
           chainId: chainInfo.chainId,
           explorer: chainInfo.explorer,
@@ -93,6 +100,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           name: chainInfo.name,
           identifier: chainInfo.identifier,
         };
+
         for (const asset of chainInfo.assetConfig) {
           assets[
             generateTokenKey(chainInfo.identifier, asset.atomicSwapAddress)
