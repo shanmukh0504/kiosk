@@ -85,12 +85,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       const chains: Chains = {};
 
       for (const chainInfo of Object.values(assetsData)) {
-        if (
-          !SUPPORTED_CHAINS.includes(
-            chainInfo.identifier as (typeof SUPPORTED_CHAINS)[number]
-          )
-        )
-          continue;
+        if (!SUPPORTED_CHAINS.includes(chainInfo.identifier)) continue;
 
         chains[chainInfo.identifier] = {
           chainId: chainInfo.chainId,
