@@ -91,6 +91,18 @@ const formatTime = (seconds: number | string) => {
 const getFormattedAsset = (asset: Asset, type: AssetMappingType) =>
   ASSET_MAPPINGS[type]?.[`${asset.chain}:${asset.symbol}`];
 
+const getAssetPriceInUSD = async (assetIds: string[]) => {
+  try {
+    const { data } = await axios.get(API_URLS.coingecko, {
+      params: { ids: assetIds.join(","), vs_currencies: "usd" },
+    });
+    return data;
+  } catch {
+    return { fee: "-", time: "-" };
+  }
+};
+
+//ThorSwap
 export const getThorFee = async (
   srcAsset: Asset,
   destAsset: Asset,
@@ -126,11 +138,19 @@ export const getThorFee = async (
   }
 };
 
+//Relay
 export const getRelayFee = async (
   srcAsset: Asset,
   destAsset: Asset,
   amount: number
 ) => {
+  const EVM_DEAD_ADDRESS = "0x000000000000000000000000000000000000dead";
+  const BTC_TESTNET_RECIPIENT = "tb1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqtlc5af";
+  const BTC_MAINNET_RECIPIENT = "bc1q4vxn43l44h30nkluqfxd9eckf45vr2awz38lwa";
+
+  const BTC_MAINNET_CHAIN_ID = "8253038";
+  const BTC_TESTNET_CHAIN_ID = "9092725";
+
   const srcFormat = getFormattedAsset(srcAsset, "relay") as {
     chainId: string;
     currency: string;
@@ -144,32 +164,37 @@ export const getRelayFee = async (
     return { fee: "-", time: "-" };
   }
 
+  const user =
+    srcFormat.chainId !== BTC_MAINNET_CHAIN_ID &&
+    srcFormat.chainId != BTC_TESTNET_CHAIN_ID
+      ? EVM_DEAD_ADDRESS
+      : srcFormat.chainId === BTC_TESTNET_CHAIN_ID
+        ? BTC_TESTNET_RECIPIENT
+        : BTC_MAINNET_RECIPIENT;
+
+  const recipient =
+    destFormat.chainId !== BTC_MAINNET_CHAIN_ID &&
+    destFormat.chainId != BTC_TESTNET_CHAIN_ID
+      ? EVM_DEAD_ADDRESS
+      : destFormat.chainId === BTC_TESTNET_CHAIN_ID
+        ? BTC_TESTNET_RECIPIENT
+        : BTC_MAINNET_RECIPIENT;
+
   const options = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      user:
-        srcFormat.chainId !== "8253038" && srcFormat.chainId != "9092725"
-          ? "0x000000000000000000000000000000000000dead"
-          : srcFormat.chainId === "9092725"
-            ? "tb1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqtlc5af"
-            : "bc1q4vxn43l44h30nkluqfxd9eckf45vr2awz38lwa",
+      user,
       originChainId: srcFormat.chainId,
       destinationChainId: destFormat.chainId,
       originCurrency: srcFormat.currency,
-      recipient:
-        destFormat.chainId !== "8253038" && destFormat.chainId != "9092725"
-          ? "0x000000000000000000000000000000000000dead"
-          : destFormat.chainId === "9092725"
-            ? "tb1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqtlc5af"
-            : "bc1q4vxn43l44h30nkluqfxd9eckf45vr2awz38lwa",
+      recipient,
       destinationCurrency: destFormat.currency,
       amount: amount * 10 ** srcAsset.decimals,
       tradeType: "EXACT_INPUT",
     }),
   };
 
-  console.log(options, API_URLS.relay);
   try {
     const response = await fetch(API_URLS.relay, options);
     const data = await response.json();
@@ -193,17 +218,7 @@ export const getRelayFee = async (
   }
 };
 
-const getAssetPriceInUSD = async (assetIds: string[]) => {
-  try {
-    const { data } = await axios.get(API_URLS.coingecko, {
-      params: { ids: assetIds.join(","), vs_currencies: "usd" },
-    });
-    return data;
-  } catch {
-    return { fee: "-", time: "-" };
-  }
-};
-
+//Chainflip
 export const getChainflipFee = async (
   srcAsset: Asset,
   destAsset: Asset,
