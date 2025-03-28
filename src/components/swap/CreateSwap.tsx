@@ -3,7 +3,7 @@ import { SwapInput } from "./SwapInput";
 import { getTimeEstimates, IOType } from "../../constants/constants";
 import { SwapAddress } from "./SwapAddress";
 import { BTC, swapStore } from "../../store/swapStore";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { SwapFees } from "./SwapFees";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
@@ -16,6 +16,7 @@ import { assetInfoStore } from "../../store/assetInfoStore";
 
 export const CreateSwap = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [paramsApplied, setParamsApplied] = useState(false);
 
   const { swapAssets, setAsset } = swapStore();
   const { assets } = assetInfoStore();
@@ -65,7 +66,7 @@ export const CreateSwap = () => {
   }, [inputAsset, outputAsset]);
 
   useEffect(() => {
-    if (!assets) return;
+    if (!assets || paramsApplied) return;
 
     const {
       inputChain = "",
@@ -79,28 +80,33 @@ export const CreateSwap = () => {
     const toAsset =
       assets[getOrderPairFromChainAndAddress(outputChain, outputAsset)];
 
-    if (fromAsset) {
-      setAsset(IOType.input, fromAsset);
-    } else {
-      if (!inputAsset) {
-        setAsset(IOType.input, BTC);
-      }
-    }
-    if (toAsset) {
-      setAsset(IOType.output, toAsset);
-    }
-  }, [assets, searchParams, setAsset]);
+    if (inputAsset === null) setAsset(IOType.input, BTC);
+    else setAsset(IOType.input, fromAsset);
+    setAsset(IOType.output, toAsset);
+    setParamsApplied(true);
+  }, [assets, searchParams, setAsset, paramsApplied]);
 
   useEffect(() => {
-    if (!inputAsset || !outputAsset) return;
+    if (!paramsApplied || (!inputAsset && !outputAsset)) return;
+
+    const currentParams = Object.fromEntries(searchParams.entries());
+
+    if (
+      currentParams.inputChain === (inputAsset?.chain || "") &&
+      currentParams.inputAsset === (inputAsset?.atomicSwapAddress || "") &&
+      currentParams.outputChain === (outputAsset?.chain || "") &&
+      currentParams.outputAsset === (outputAsset?.atomicSwapAddress || "")
+    ) {
+      return;
+    }
 
     setSearchParams({
-      inputChain: inputAsset.chain,
-      inputAsset: inputAsset.atomicSwapAddress,
-      outputChain: outputAsset.chain,
-      outputAsset: outputAsset.atomicSwapAddress,
+      inputChain: inputAsset?.chain || "",
+      inputAsset: inputAsset?.atomicSwapAddress || "",
+      outputChain: outputAsset?.chain || "",
+      outputAsset: outputAsset?.atomicSwapAddress || "",
     });
-  }, [inputAsset, outputAsset, setSearchParams]);
+  }, [inputAsset, outputAsset, setSearchParams, searchParams, paramsApplied]);
 
   return (
     <div

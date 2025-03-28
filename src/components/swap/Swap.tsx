@@ -118,7 +118,6 @@ export const Swap = () => {
       garden.off("success", handleSuccess);
     };
   }, [garden, assets, orderInProgress, updateOrder]);
-  console.log(isLoading);
 
   return (
     <div className="mx-auto mt-10 flex w-full max-w-[328px] flex-col gap-4 pb-60 sm:max-w-[424px]">
