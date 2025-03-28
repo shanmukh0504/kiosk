@@ -126,11 +126,15 @@ export const Swap = () => {
       <div className="relative overflow-hidden rounded-[20px] bg-white/50">
         {isLoading ? (
           <SwapInProgressSkeleton />
-        ) : orderInProgress || orderId? (
-          <SwapInProgress orderId={orderId} setIsLoading={setIsLoading} />
-        ) : !isCurrentRoute("/order") ? (
+        ) : orderInProgress || orderId ? (
+          isCurrentRoute("/order") && !address ? (
+            <CreateSwap />
+          ) : (
+            <SwapInProgress orderId={orderId} setIsLoading={setIsLoading} />
+          )
+        ) : (
           <CreateSwap />
-        ) : null}
+        )}
       </div>
     </div>
   );
