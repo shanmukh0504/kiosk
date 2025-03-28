@@ -45,14 +45,21 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
 
   const allAvailableWallets = useMemo(() => {
     if (showOnlyBTCWallets) return getAvailableWallets(availableWallets);
-
-    const allWallets = getAvailableWallets(availableWallets, connectors);
+    let allWallets;
+    allWallets = getAvailableWallets(availableWallets, connectors);
 
     if (selectedEcosystem === "Bitcoin")
       return allWallets.filter((wallet) => wallet.isBitcoin);
     else if (selectedEcosystem === "EVM")
       return allWallets.filter((wallet) => wallet.isEVM);
 
+    if (
+      typeof window !== "undefined" &&
+      window.ethereum &&
+      window.ethereum.isCoinbaseWallet
+    ) {
+      allWallets = allWallets.filter((wallet) => wallet.id !== "injected");
+    }
     return allWallets;
   }, [showOnlyBTCWallets, availableWallets, connectors, selectedEcosystem]);
 
@@ -176,7 +183,15 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                       (provider.id === wallet.id ||
                         provider.id === evmToBTCid[wallet.id])
                     ),
-                    evm: !!(connector && connector.id === wallet.id),
+                    evm: !!(
+                      connector &&
+                      (connector.id === wallet.id ||
+                        (typeof window !== "undefined" &&
+                          window.ethereum &&
+                          window.ethereum.isCoinbaseWallet &&
+                          connector.id === "injected" &&
+                          wallet.id === "com.coinbase.wallet"))
+                    ),
                   }}
                   isAvailable={wallet.isAvailable}
                 />
