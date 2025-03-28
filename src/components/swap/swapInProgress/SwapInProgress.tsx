@@ -79,7 +79,6 @@ export const SwapInProgress = ({
         setIsLoading(true);
         await fetchAndSetBlockNumbers();
         const order = await fetchOrderById(orderId, orderBook);
-        console.log(order);
         setOrderInProgress(order);
       } catch (error) {
         console.error("Failed to fetch order:", error);
