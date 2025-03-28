@@ -128,6 +128,7 @@ export const ordersStore = create<OrdersStore>((set, get) => ({
 
   fetchOrderById: async (orderId, orderBook) => {
     const order = await orderBook.getOrder(orderId, true);
+    if (order.error || !order.val) return null;
     const blockNumbers = blockNumberStore.getState().blockNumbers;
     const { source_swap, destination_swap } = order.val;
     const sourceBlockNumber = blockNumbers && blockNumbers[source_swap.chain];

@@ -14,7 +14,6 @@ import {
 import { OrderActions, OrderStatus } from "@gardenfi/core";
 import { ordersStore } from "../../store/ordersStore";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { blockNumberStore } from "../../store/blockNumberStore";
 import { SwapInProgressSkeleton } from "./swapInProgress/SwapInProgressSkeleton";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { INTERNAL_ROUTES } from "../../constants/constants";
@@ -27,51 +26,15 @@ export const Swap = () => {
   const { address } = useEVMWallet();
 
   const { fetchAndSetStrategies, assets } = assetInfoStore();
-  const { quote, garden, orderBook } = useGarden();
-  const { orderInProgress, updateOrder, setOrderInProgress, fetchOrderById } =
-    ordersStore();
-  const { fetchAndSetBlockNumbers } = blockNumberStore();
+  const { quote, garden } = useGarden();
+  const { orderInProgress, updateOrder } = ordersStore();
 
-  const orderId = getQueryParams(searchParams).orderId;
+  const orderId = getQueryParams(searchParams).orderId ?? "";
 
   useEffect(() => {
     if (!quote) return;
     fetchAndSetStrategies(quote);
   }, [fetchAndSetStrategies, quote]);
-
-  useEffect(() => {
-    if (!orderId) return;
-
-    if (!address) {
-      navigate("/", { replace: true });
-      return;
-    }
-
-    setIsLoading(true);
-    if (!orderBook) return;
-    const fetchOrderByOrderId = async () => {
-      try {
-        setIsLoading(true);
-        await fetchAndSetBlockNumbers();
-        const order = await fetchOrderById(orderId, orderBook);
-        setOrderInProgress(order);
-      } catch (error) {
-        console.error("Failed to fetch order:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchOrderByOrderId();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    address,
-    fetchAndSetBlockNumbers,
-    fetchOrderById,
-    orderBook,
-    searchParams,
-    setOrderInProgress,
-    orderId,
-  ]);
 
   useEffect(() => {
     if (!orderInProgress) return;
@@ -155,6 +118,7 @@ export const Swap = () => {
       garden.off("success", handleSuccess);
     };
   }, [garden, assets, orderInProgress, updateOrder]);
+  console.log(isLoading);
 
   return (
     <div className="mx-auto mt-10 flex w-full max-w-[328px] flex-col gap-4 pb-60 sm:max-w-[424px]">
@@ -162,9 +126,9 @@ export const Swap = () => {
       <div className="relative overflow-hidden rounded-[20px] bg-white/50">
         {isLoading ? (
           <SwapInProgressSkeleton />
-        ) : orderInProgress ? (
-          <SwapInProgress />
-        ) : !isCurrentRoute("/swapInProgress") ? (
+        ) : orderInProgress || orderId? (
+          <SwapInProgress orderId={orderId} setIsLoading={setIsLoading} />
+        ) : !isCurrentRoute("/order") ? (
           <CreateSwap />
         ) : null}
       </div>

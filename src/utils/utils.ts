@@ -16,7 +16,6 @@ export const getCurrentTheme = () => {
   return THEMES.swap;
 };
 
-
 /**
  * Gets the {Asset} from assets in store using the swap object
  * @param {Swap} swap
@@ -67,3 +66,8 @@ export const formatAmount = (
 
 export const isCurrentRoute = (route: string) =>
   window.location.pathname === route;
+
+export const getOrderPairFromChainAndAddress = (
+  chain: string | null,
+  tokenAddress: string | null
+) => (chain && tokenAddress ? `${chain}_${tokenAddress.toLowerCase()}` : "");

@@ -7,7 +7,10 @@ import { useEffect, useMemo } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { SwapFees } from "./SwapFees";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { getQueryParams } from "../../utils/utils";
+import {
+  getOrderPairFromChainAndAddress,
+  getQueryParams,
+} from "../../utils/utils";
 import { useSearchParams } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
 
@@ -71,14 +74,16 @@ export const CreateSwap = () => {
       outputAsset = "",
     } = getQueryParams(searchParams);
 
-    const fromAsset = assets[`${inputChain}_${inputAsset?.toLowerCase()}`];
-    const toAsset = assets[`${outputChain}_${outputAsset?.toLowerCase()}`];
+    const fromAsset =
+      assets[getOrderPairFromChainAndAddress(inputChain, inputAsset)];
+    const toAsset =
+      assets[getOrderPairFromChainAndAddress(outputChain, outputAsset)];
 
     if (fromAsset) {
       setAsset(IOType.input, fromAsset);
     } else {
       if (!inputAsset) {
-          setAsset(IOType.input, BTC);
+        setAsset(IOType.input, BTC);
       }
     }
     if (toAsset) {
