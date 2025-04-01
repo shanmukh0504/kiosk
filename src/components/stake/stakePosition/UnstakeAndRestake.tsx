@@ -27,6 +27,10 @@ export const UnstakeAndRestake: FC<UnstakeAndRestakeProps> = ({ stakePos }) => {
 
   const isUnstakeable = stakePos.status === StakePositionStatus.expired;
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleUnstake = async () => {
     if (!isUnstakeable || !chainId || !address) return;
     try {
@@ -48,6 +52,7 @@ export const UnstakeAndRestake: FC<UnstakeAndRestakeProps> = ({ stakePos }) => {
         hash: tx,
       });
       Toast.success("Unstaked successfully");
+      scrollToTop();
     } catch (error) {
       console.error("Error during unstake:", error);
     } finally {
