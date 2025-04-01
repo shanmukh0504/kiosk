@@ -89,7 +89,7 @@ export const CreateSwap = () => {
     else setAsset(IOType.input, fromAsset);
     setAsset(IOType.output, toAsset);
     setParamsApplied(true);
-  }, [assets, searchParams, setAsset, paramsApplied, inputAsset, outputAsset]);
+  }, [assets, searchParams, setAsset, paramsApplied, outputAsset]);
 
   useEffect(() => {
     if (!paramsApplied || (!inputAsset && !outputAsset)) return;
