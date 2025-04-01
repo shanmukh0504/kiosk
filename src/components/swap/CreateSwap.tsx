@@ -70,26 +70,39 @@ export const CreateSwap = () => {
 
     const {
       inputChain = "",
-      inputAsset = "",
+      inputAsset: inputAssetParam = "",
       outputChain = "",
-      outputAsset = "",
+      outputAsset: outputAssetParam = "",
     } = getQueryParams(searchParams);
 
     const fromAsset =
-      assets[getOrderPairFromChainAndAddress(inputChain, inputAsset)];
+      assets[getOrderPairFromChainAndAddress(inputChain, inputAssetParam)];
     const toAsset =
-      assets[getOrderPairFromChainAndAddress(outputChain, outputAsset)];
+      assets[getOrderPairFromChainAndAddress(outputChain, outputAssetParam)];
 
-    if (inputAsset === null) setAsset(IOType.input, BTC);
+    if (
+      inputAssetParam === null &&
+      outputAssetParam === null &&
+      outputAsset === undefined
+    )
+      setAsset(IOType.input, BTC);
     else setAsset(IOType.input, fromAsset);
     setAsset(IOType.output, toAsset);
     setParamsApplied(true);
-  }, [assets, searchParams, setAsset, paramsApplied]);
+  }, [assets, searchParams, setAsset, paramsApplied, inputAsset, outputAsset]);
 
   useEffect(() => {
     if (!paramsApplied || (!inputAsset && !outputAsset)) return;
-
     const currentParams = Object.fromEntries(searchParams.entries());
+    console.log(currentParams, inputAsset, outputAsset);
+    if (
+      inputAsset?.chain === BTC.chain &&
+      outputAsset === undefined &&
+      searchParams.toString().length === 0
+    ) {
+      console.log("hey", !currentParams);
+      return;
+    }
 
     if (
       currentParams.inputChain === (inputAsset?.chain || "") &&
@@ -100,12 +113,24 @@ export const CreateSwap = () => {
       return;
     }
 
-    setSearchParams({
-      inputChain: inputAsset?.chain || "",
-      inputAsset: inputAsset?.atomicSwapAddress || "",
-      outputChain: outputAsset?.chain || "",
-      outputAsset: outputAsset?.atomicSwapAddress || "",
-    });
+    if (inputAsset && !outputAsset) {
+      setSearchParams({
+        inputChain: inputAsset?.chain || "",
+        inputAsset: inputAsset?.atomicSwapAddress || "",
+      });
+    } else if (!inputAsset && outputAsset) {
+      setSearchParams({
+        outputChain: outputAsset?.chain || "",
+        outputAsset: outputAsset?.atomicSwapAddress || "",
+      });
+    } else {
+      setSearchParams({
+        inputChain: inputAsset?.chain || "",
+        inputAsset: inputAsset?.atomicSwapAddress || "",
+        outputChain: outputAsset?.chain || "",
+        outputAsset: outputAsset?.atomicSwapAddress || "",
+      });
+    }
   }, [inputAsset, outputAsset, setSearchParams, searchParams, paramsApplied]);
 
   return (
