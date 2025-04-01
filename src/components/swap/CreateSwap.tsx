@@ -94,13 +94,11 @@ export const CreateSwap = () => {
   useEffect(() => {
     if (!paramsApplied || (!inputAsset && !outputAsset)) return;
     const currentParams = Object.fromEntries(searchParams.entries());
-    console.log(currentParams, inputAsset, outputAsset);
     if (
       inputAsset?.chain === BTC.chain &&
       outputAsset === undefined &&
       searchParams.toString().length === 0
     ) {
-      console.log("hey", !currentParams);
       return;
     }
 
