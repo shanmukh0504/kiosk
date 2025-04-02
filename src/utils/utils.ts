@@ -69,4 +69,7 @@ export const ClearLocalStorageExceptNotification = () => {
   if (notificationId) {
     localStorage.setItem(LOCAL_STORAGE_KEYS.notification, notificationId);
   }
+
+export const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
 };
