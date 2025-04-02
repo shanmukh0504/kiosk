@@ -1,5 +1,9 @@
 import BigNumber from "bignumber.js";
-import { INTERNAL_ROUTES, THEMES } from "../constants/constants";
+import {
+  INTERNAL_ROUTES,
+  LOCAL_STORAGE_KEYS,
+  THEMES,
+} from "../constants/constants";
 import { Assets } from "../store/assetInfoStore";
 import { Swap } from "@gardenfi/orderbook";
 
@@ -57,6 +61,15 @@ export const formatAmount = (
 export const isCurrentRoute = (route: string) =>
   window.location.pathname === route;
 
+export const ClearLocalStorageExceptNotification = () => {
+  const notificationId = localStorage.getItem(LOCAL_STORAGE_KEYS.notification);
+
+  localStorage.clear();
+
+  if (notificationId) {
+    localStorage.setItem(LOCAL_STORAGE_KEYS.notification, notificationId);
+  }
+}
 export const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 };
