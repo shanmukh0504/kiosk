@@ -37,7 +37,7 @@ export const getThorFee = async (
 
   try {
     const result = await axios.get(API_URLS.thorSwap, {
-      timeout: 5000,
+      timeout: 10000,
       params: {
         sellAsset: sellFormat,
         buyAsset: buyFormat,

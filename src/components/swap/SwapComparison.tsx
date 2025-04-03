@@ -1,6 +1,7 @@
 import {
   ArrowLeftIcon,
   ChainflipIcon,
+  GardenLogo,
   RelayLinkIcon,
   ThorswapIcon,
   Typography,
@@ -20,6 +21,7 @@ import {
   parseTime,
 } from "../../utils/timeAndFeeComparison/utils";
 import { getTimeEstimates } from "../../constants/constants";
+import { useSwap } from "../../hooks/useSwap";
 
 type SwapComparisonProps = {
   visible: boolean;
@@ -41,14 +43,16 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
     comparisonMetric
   > | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const { error } = useSwap();
 
   const { inputAsset, outputAsset, inputAmount, outputAmount, tokenPrices } =
     swapStore();
 
   const swapSources = [
+    { name: "garden", key: "garden", icon: <GardenLogo /> },
     { name: "Relay", key: "Relay", icon: <RelayLinkIcon /> },
-    { name: "chainflip", key: "Chainflip", icon: <ChainflipIcon /> },
-    { name: "thorswap", key: "Thorswap", icon: <ThorswapIcon /> },
+    { name: "Chainflip", key: "Chainflip", icon: <ChainflipIcon /> },
+    { name: "THORSwap", key: "Thorswap", icon: <ThorswapIcon /> },
   ];
 
   const gardenFee = useMemo(
@@ -65,6 +69,20 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
     () => (swapData ? Object.entries(swapData) : []),
     [swapData]
   );
+
+  const swapEntriesWithGarden = useMemo(() => {
+    const gardenEntry: [string, comparisonMetric] = [
+      "garden",
+      { fee: gardenFee, time: parseTime(gardenSwapTime) },
+    ];
+
+    return [
+      gardenEntry,
+      ...swapEntries.map(
+        ([key, data]) => [key, data] as [string, comparisonMetric]
+      ),
+    ];
+  }, [gardenFee, gardenSwapTime, swapEntries]);
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -119,7 +137,14 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
   }, [inputAsset, outputAsset, inputAmount]);
 
   useEffect(() => {
-    if (loading || !swapData || swapEntries.length === 0) {
+    if (
+      loading ||
+      !swapData ||
+      swapEntries.length === 0 ||
+      !inputAmount ||
+      error.inputError ||
+      error.quoteError
+    ) {
       onComparisonUpdate(0, 0);
       return;
     }
@@ -142,6 +167,9 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
     onComparisonUpdate,
     swapEntries.length,
     loading,
+    inputAmount,
+    error.inputError,
+    error.quoteError,
   ]);
 
   return (
@@ -152,11 +180,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
     >
       <div className="flex items-center justify-between p-1">
         <Typography size="h4" weight="bold">
-          {isTime
-            ? "Time Comparison"
-            : isFees
-              ? "Cost Comparison"
-              : "Comparison"}
+          {isTime ? "Time saved" : isFees ? "Cost saved" : "Saved"}
         </Typography>
         <ArrowLeftIcon className="cursor-pointer" onClick={hide} />
       </div>
@@ -172,76 +196,71 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
         </div>
       )}
 
-      <div className="flex h-full gap-10 rounded-2xl bg-white p-4">
-        <div className="flex flex-grow flex-col gap-2">
-          {swapEntries.map(([key], index) => {
-            const source = swapSources.find((s) => s.key === key);
-            return (
-              <div key={key} className="flex items-center gap-2 p-1">
-                <Typography size="h4" weight="medium" className="mr-2 w-[20px]">
+      <div className="flex h-full flex-col gap-3 rounded-2xl bg-white p-4">
+        {swapEntriesWithGarden.map(([key, { fee, time }], index) => {
+          const source = swapSources.find((s) => s.key === key);
+          const feeDiff = (Number(fee) - gardenFee).toFixed(2);
+
+          return (
+            <div key={key} className="flex items-center justify-between">
+              <div key={key} className="flex items-center gap-2">
+                <Typography size="h5" weight="medium" className="mr-2 w-[20px]">
                   #{index + 1}
                 </Typography>
-                <div className="flex w-6 justify-center">
+                <div className="flex h-4 w-4 items-center justify-center">
                   {source && source.icon}
                 </div>
-                <Typography size="h4" weight="medium">
+                <Typography size="h5" weight="medium">
                   {source?.name || key}
                 </Typography>
               </div>
-            );
-          })}
-        </div>
-
-        {isTime && swapEntries.length > 0 && (
-          <div className="flex flex-row gap-6">
-            <div className="flex flex-col gap-2">
-              {swapEntries.map(([key, { time }]) => (
-                <Typography
-                  key={key}
-                  className="p-1 !text-red-500"
-                  size="h4"
-                  weight="medium"
-                >
-                  {formatTimeDiff(time, gardenSwapTime)}
-                </Typography>
-              ))}
-            </div>
-            <div className="flex flex-col gap-2">
-              {swapEntries.map(([key, { time }]) => (
-                <Typography key={key} className="p-1" size="h4" weight="medium">
-                  {formatTime(time)}
-                </Typography>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {isFees && swapEntries.length > 0 && (
-          <div className="flex flex-row gap-6">
-            <div className="flex flex-col gap-2">
-              {swapEntries.map(([key, { fee }]) => {
-                const feeDiff = (Number(fee) - gardenFee).toFixed(2);
-                return (
+              {isTime && (
+                <div className="flex gap-6">
+                  {key !== "garden" && (
+                    <Typography
+                      key={key}
+                      className="!text-rose"
+                      size="h5"
+                      weight="medium"
+                    >
+                      {formatTimeDiff(time, gardenSwapTime)}
+                    </Typography>
+                  )}
                   <Typography
                     key={key}
-                    className="p-1 !text-red-500"
-                    size="h4"
+                    className="!flex !w-[52px] !justify-end"
+                    size="h5"
                     weight="medium"
                   >
-                    {`${Number(feeDiff) >= 0 ? "+" : "-"}$${Math.abs(Number(feeDiff))}`}
+                    ~{formatTime(time)}
                   </Typography>
-                );
-              })}
+                </div>
+              )}
+              {isFees && (
+                <div className="flex gap-6">
+                  {key !== "garden" && (
+                    <Typography
+                      key={key}
+                      className="!text-rose"
+                      size="h5"
+                      weight="medium"
+                    >
+                      {`${Number(feeDiff) >= 0 ? "+" : "-"}$${Math.abs(Number(feeDiff))}`}
+                    </Typography>
+                  )}
+                  <Typography
+                    key={key}
+                    className="!flex !w-12 !justify-end"
+                    size="h5"
+                    weight="medium"
+                  >
+                    {`$${fee}`}
+                  </Typography>
+                </div>
+              )}
             </div>
-            <div className="flex flex-col gap-2">
-              {swapEntries.map(([key, { fee }]) => (
-                <Typography key={key} className="p-1" size="h4" weight="medium">
-                  {`$${fee}`}
-                </Typography>
-              ))}
-            </div>
-          </div>
-        )}
+          );
+        })}
       </div>
     </div>
   );

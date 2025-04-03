@@ -6,7 +6,7 @@ import { swapStore } from "../../store/swapStore";
 import { useMemo } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { SwapDetails} from "./SwapDetails";
+import { SwapDetails } from "./SwapDetails";
 
 export const CreateSwap = () => {
   const { swapAssets } = swapStore();
@@ -30,12 +30,12 @@ export const CreateSwap = () => {
   const { account: btcAddress } = useBitcoinWallet();
 
   const buttonLabel = useMemo(() => {
-    return isInsufficientBalance
-      ? "Insufficient balance"
-      : isSwapping
-        ? "Signing..."
-        : error.quoteError
-          ? "Insufficient Liquidity"
+    return error.quoteError
+      ? "Insufficient Liquidity"
+      : isInsufficientBalance
+        ? "Insufficient Balance"
+        : isSwapping
+          ? "Signing..."
           : "Swap";
   }, [isInsufficientBalance, isSwapping, error.quoteError]);
 
@@ -87,7 +87,7 @@ export const CreateSwap = () => {
           />
         </div>
         {!btcAddress && <SwapAddress isValidAddress={isValidBitcoinAddress} />}
-        <SwapDetails tokenPrices={tokenPrices}/>
+        <SwapDetails tokenPrices={tokenPrices} />
         <Button
           className={`transition-colors duration-500 ${
             buttonLabel !== "Swap" ? "pointer-events-none" : ""

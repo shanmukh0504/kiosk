@@ -7,9 +7,7 @@ type SwapDetailsProps = {
   tokenPrices: TokenPrices;
 };
 
-export const SwapDetails: FC<SwapDetailsProps> = ({
-  tokenPrices
-}) => {
+export const SwapDetails: FC<SwapDetailsProps> = ({ tokenPrices }) => {
   const [showComparison, setIsShowComparison] = useState({
     isOpen: false,
     isTime: false,
