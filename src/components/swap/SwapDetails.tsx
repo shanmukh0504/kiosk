@@ -26,21 +26,22 @@ export const SwapDetails: FC<SwapDetailsProps> = ({
   const [maxTimeSaved, setMaxTimeSaved] = useState<number>(0);
   const [maxCostSaved, setMaxCostSaved] = useState<number>(0);
 
-  const { account: btcAddress } = useBitcoinWallet();
-  const { address } = useEVMWallet();
-  const { inputAsset, outputAsset } = useSwap();
-
-  const savedAnimation = {
-    initial: { opacity: 0, y: -10 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -10 },
+  const animationConfig = {
+    initial: { opacity: 0, height: 0 },
+    animate: { opacity: 1, height: "auto" },
+    exit: { opacity: 0, height: 0 },
     transition: {
       type: "spring",
       stiffness: 200,
       damping: 25,
       mass: 0.8,
+      duration: 0.3,
     },
   };
+
+  const { account: btcAddress } = useBitcoinWallet();
+  const { address } = useEVMWallet();
+  const { inputAsset, outputAsset } = useSwap();
 
   const fees = useMemo(
     () => Number(tokenPrices.input) - Number(tokenPrices.output),
@@ -84,9 +85,13 @@ export const SwapDetails: FC<SwapDetailsProps> = ({
           Details
         </Typography>
         <div>
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             {maxTimeSaved > 0 && isExpanded && (
-              <motion.div {...savedAnimation}>
+              <motion.div
+                key="time-saved"
+                {...animationConfig}
+                className="w-full"
+              >
                 <div
                   className="flex cursor-pointer items-center justify-between gap-0 px-4 hover:bg-white"
                   onClick={() => handleShowComparison("time")}
@@ -104,9 +109,13 @@ export const SwapDetails: FC<SwapDetailsProps> = ({
             )}
           </AnimatePresence>
 
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             {maxCostSaved > 0 && isExpanded && (
-              <motion.div {...savedAnimation}>
+              <motion.div
+                key="cost-saved"
+                {...animationConfig}
+                className="w-full"
+              >
                 <div
                   className="flex cursor-pointer items-center justify-between gap-0 px-4 hover:bg-white"
                   onClick={() => handleShowComparison("fees")}

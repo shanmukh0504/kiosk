@@ -7,27 +7,37 @@ import { useSwap } from "../../hooks/useSwap";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { Errors } from "../../constants/errors";
 import { SwapDetails } from "./SwapDetails";
-import { motion, Variants, Transition } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
 const detailsAnimation: Variants = {
-  initial: { opacity: 0, height: 0, marginTop: 0 },
-  animate: (shouldShowDetails: boolean) => ({
-    opacity: shouldShowDetails ? 1 : 0,
-    height: shouldShowDetails ? "auto" : 0,
-    marginTop: shouldShowDetails ? "12px" : 0,
-  }),
+  hidden: {
+    opacity: 0,
+    height: 0,
+    marginTop: 0,
+    transition: { duration: 0.3, ease: "easeOut" },
+  },
+  visible: {
+    opacity: 1,
+    height: "auto",
+    marginTop: "12px",
+    transition: { duration: 0.3, ease: "easeOut" },
+  },
 };
 
 const addressAnimation: Variants = {
-  initial: { opacity: 0, height: 0, marginBottom: 0 },
-  animate: (custom: [boolean, string | undefined]) => ({
-    opacity: custom[0] || !custom[1] ? 1 : 0,
-    height: custom[0] || !custom[1] ? "auto" : 0,
-    marginBottom: custom[0] || !custom[1] ? "12px" : 0,
-  }),
+  hidden: {
+    opacity: 0,
+    height: 0,
+    marginBottom: 0,
+    transition: { duration: 0.3, ease: "easeOut" },
+  },
+  visible: {
+    opacity: 1,
+    height: "auto",
+    marginBottom: "12px",
+    transition: { duration: 0.3, ease: "easeOut" },
+  },
 };
-
-const transition: Transition = { duration: 0.3, ease: "easeOut" };
 
 export const CreateSwap = () => {
   const {
@@ -83,7 +93,7 @@ export const CreateSwap = () => {
       outputAsset &&
       !error.inputError &&
       !error.outputError &&
-      !error.swapError &&
+      error.swapError !== Errors.insufficientLiquidity &&
       inputAmount &&
       outputAmount &&
       Number(inputAmount) !== 0 &&
@@ -133,21 +143,17 @@ export const CreateSwap = () => {
           />
         </div>
         <motion.div
-          custom={shouldShowDetails}
           variants={detailsAnimation}
-          initial="initial"
-          animate="animate"
-          transition={transition}
+          initial="hidden"
+          animate={shouldShowDetails ? "visible" : "hidden"}
           className={`flex flex-col overflow-hidden ${
             shouldShowDetails ? "pointer-events-auto" : "pointer-events-none"
           }`}
         >
           <motion.div
-            custom={[isEditBTCAddress, btcAddress]}
             variants={addressAnimation}
-            initial="initial"
-            animate="animate"
-            transition={transition}
+            initial="hidden"
+            animate={isEditBTCAddress || !btcAddress ? "visible" : "hidden"}
             className="overflow-hidden"
           >
             <SwapAddress isValidAddress={isValidBitcoinAddress} />
