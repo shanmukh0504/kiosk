@@ -158,7 +158,7 @@ export const CreateSwap = () => {
           />
         </motion.div>
         <Button
-          className={`mt-4 transition-colors duration-500${
+          className={`mt-3 transition-colors duration-500${
             isSwapping ? "cursor-not-allowed" : ""
           }`}
           variant={buttonVariant}

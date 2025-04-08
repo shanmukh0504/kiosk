@@ -95,10 +95,14 @@ export const Swap = () => {
   }, [garden, assets, orderInProgress, updateOrder]);
 
   return (
-    <div className="mx-auto flex min-h-[100vh] w-full max-w-[328px] flex-col justify-center gap-4 pb-60 sm:max-w-[424px]">
-      <ToastContainer />
-      <div className={`relative overflow-hidden rounded-[20px] bg-white/50`}>
-        {orderInProgress ? <SwapInProgress /> : <CreateSwap />}
+    <div className="mx-auto flex h-full min-h-[calc(100vh-96px)] w-full max-w-[328px] flex-col justify-center gap-4 sm:max-w-[424px]">
+      <div className="flex h-full -translate-y-7 flex-col justify-center gap-4">
+        <ToastContainer />
+        <div
+          className={`relative -translate-y-[calc(48px)] overflow-hidden rounded-[20px] bg-white/50`}
+        >
+          {orderInProgress ? <SwapInProgress /> : <CreateSwap />}
+        </div>
       </div>
     </div>
   );
