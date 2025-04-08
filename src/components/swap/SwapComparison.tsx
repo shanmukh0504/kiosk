@@ -6,7 +6,7 @@ import {
   ThorswapIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { SwapInfo } from "../../common/SwapInfo";
 import { swapStore } from "../../store/swapStore";
 import {
@@ -25,6 +25,7 @@ import { useSwap } from "../../hooks/useSwap";
 import { Errors } from "../../constants/errors";
 import { motion } from "framer-motion";
 import { formatAmount } from "../../utils/utils";
+import debounce from "lodash.debounce";
 
 type SwapComparisonProps = {
   visible: boolean;
@@ -57,6 +58,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
     comparisonMetric
   > | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const prevInputAmountRef = useRef<string | number>();
 
   const { error } = useSwap();
   const { inputAsset, outputAsset, inputAmount, outputAmount, tokenPrices } =
@@ -98,8 +100,8 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
     ];
   }, [gardenFee, gardenSwapTime, swapEntries]);
 
-  useEffect(() => {
-    const fetchAllData = async () => {
+  const debouncedFetchAllData = useMemo(() => {
+    return debounce(async (inputAsset, outputAsset, inputAmount) => {
       if (inputAsset && outputAsset && inputAmount) {
         setLoading(true);
         try {
@@ -140,15 +142,34 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
 
           setSwapData(newData);
         } catch {
-          //suppress error
+          // suppress error
         } finally {
           setLoading(false);
         }
       }
-    };
+    }, 500); // debounce delay
+  }, []);
 
-    fetchAllData();
-  }, [inputAsset, outputAsset, inputAmount]);
+  useEffect(() => {
+    const numericInputAmount = Number(inputAmount);
+    const prevNumericInputAmount = Number(prevInputAmountRef.current);
+
+    if (
+      inputAsset &&
+      outputAsset &&
+      numericInputAmount &&
+      prevNumericInputAmount !== numericInputAmount
+    ) {
+      prevInputAmountRef.current = numericInputAmount;
+      debouncedFetchAllData(inputAsset, outputAsset, numericInputAmount);
+    }
+  }, [inputAmount, inputAsset, outputAsset, debouncedFetchAllData]);
+
+  useEffect(() => {
+    return () => {
+      debouncedFetchAllData.cancel?.();
+    };
+  }, [debouncedFetchAllData]);
 
   useEffect(() => {
     if (
