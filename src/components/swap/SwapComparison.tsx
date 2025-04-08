@@ -24,6 +24,7 @@ import { getTimeEstimates } from "../../constants/constants";
 import { useSwap } from "../../hooks/useSwap";
 import { Errors } from "../../constants/errors";
 import { motion } from "framer-motion";
+import { formatAmount } from "../../utils/utils";
 
 type SwapComparisonProps = {
   visible: boolean;
@@ -242,7 +243,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
                   )}
                   <Typography
                     key={key}
-                    className="!flex !w-[52px] !justify-end"
+                    className="!flex !w-16 !justify-end"
                     size="h5"
                     weight="medium"
                   >
@@ -268,7 +269,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
                     size="h5"
                     weight="medium"
                   >
-                    {`$${fee}`}
+                    {`$${formatAmount(fee, 0, 2)}`}
                   </Typography>
                 </div>
               )}
