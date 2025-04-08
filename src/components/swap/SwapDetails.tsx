@@ -30,6 +30,18 @@ export const SwapDetails: FC<SwapDetailsProps> = ({
   const { address } = useEVMWallet();
   const { inputAsset, outputAsset } = useSwap();
 
+  const savedAnimation = {
+    initial: { opacity: 0, y: -10 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -10 },
+    transition: {
+      type: "spring",
+      stiffness: 200,
+      damping: 25,
+      mass: 0.8,
+    },
+  };
+
   const fees = useMemo(
     () => Number(tokenPrices.input) - Number(tokenPrices.output),
     [tokenPrices]
@@ -74,18 +86,7 @@ export const SwapDetails: FC<SwapDetailsProps> = ({
         <div>
           <AnimatePresence>
             {maxTimeSaved > 0 && isExpanded && (
-              <motion.div
-                initial={{ opacity: 0, height: 0, transformOrigin: "top" }}
-                animate={{ opacity: 1, height: "auto", transformOrigin: "top" }}
-                exit={{ opacity: 0, height: 0, transformOrigin: "top" }}
-                transition={{
-                  type: "spring",
-                  stiffness: 200,
-                  damping: 25,
-                  mass: 0.8,
-                }}
-                className="overflow-hidden"
-              >
+              <motion.div {...savedAnimation}>
                 <div
                   className="flex cursor-pointer items-center justify-between gap-0 px-4 hover:bg-white"
                   onClick={() => handleShowComparison("time")}
@@ -105,18 +106,7 @@ export const SwapDetails: FC<SwapDetailsProps> = ({
 
           <AnimatePresence>
             {maxCostSaved > 0 && isExpanded && (
-              <motion.div
-                initial={{ opacity: 0, height: 0, transformOrigin: "top" }}
-                animate={{ opacity: 1, height: "auto", transformOrigin: "top" }}
-                exit={{ opacity: 0, height: 0, transformOrigin: "top" }}
-                transition={{
-                  type: "spring",
-                  stiffness: 200,
-                  damping: 25,
-                  mass: 0.8,
-                }}
-                className="overflow-hidden"
-              >
+              <motion.div {...savedAnimation}>
                 <div
                   className="flex cursor-pointer items-center justify-between gap-0 px-4 hover:bg-white"
                   onClick={() => handleShowComparison("fees")}

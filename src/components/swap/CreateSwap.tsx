@@ -7,7 +7,27 @@ import { useSwap } from "../../hooks/useSwap";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { Errors } from "../../constants/errors";
 import { SwapDetails } from "./SwapDetails";
-import { motion } from "framer-motion";
+import { motion, Variants, Transition } from "framer-motion";
+
+const detailsAnimation: Variants = {
+  initial: { opacity: 0, height: 0, marginTop: 0 },
+  animate: (shouldShowDetails: boolean) => ({
+    opacity: shouldShowDetails ? 1 : 0,
+    height: shouldShowDetails ? "auto" : 0,
+    marginTop: shouldShowDetails ? "12px" : 0,
+  }),
+};
+
+const addressAnimation: Variants = {
+  initial: { opacity: 0, height: 0, marginBottom: 0 },
+  animate: (custom: [boolean, string | undefined]) => ({
+    opacity: custom[0] || !custom[1] ? 1 : 0,
+    height: custom[0] || !custom[1] ? "auto" : 0,
+    marginBottom: custom[0] || !custom[1] ? "12px" : 0,
+  }),
+};
+
+const transition: Transition = { duration: 0.3, ease: "easeOut" };
 
 export const CreateSwap = () => {
   const {
@@ -113,25 +133,21 @@ export const CreateSwap = () => {
           />
         </div>
         <motion.div
-          initial={{ opacity: 0, height: 0, marginTop: 0 }}
-          animate={{
-            opacity: shouldShowDetails ? 1 : 0,
-            height: shouldShowDetails ? "auto" : 0,
-            marginTop: shouldShowDetails ? "12px" : 0,
-          }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
+          custom={shouldShowDetails}
+          variants={detailsAnimation}
+          initial="initial"
+          animate="animate"
+          transition={transition}
           className={`flex flex-col overflow-hidden ${
             shouldShowDetails ? "pointer-events-auto" : "pointer-events-none"
           }`}
         >
           <motion.div
-            initial={{ opacity: 0, height: 0, marginBottom: 0 }}
-            animate={{
-              opacity: isEditBTCAddress || !btcAddress ? 1 : 0,
-              height: isEditBTCAddress || !btcAddress ? "auto" : 0,
-              marginBottom: isEditBTCAddress || !btcAddress ? "12px" : 0,
-            }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
+            custom={[isEditBTCAddress, btcAddress]}
+            variants={addressAnimation}
+            initial="initial"
+            animate="animate"
+            transition={transition}
             className="overflow-hidden"
           >
             <SwapAddress isValidAddress={isValidBitcoinAddress} />

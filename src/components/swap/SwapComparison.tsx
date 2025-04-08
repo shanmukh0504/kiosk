@@ -40,6 +40,17 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
   isFees,
   onComparisonUpdate,
 }) => {
+  const animationConfig = {
+    initial: { x: "100%" },
+    animate: { x: visible ? 0 : "100%" },
+    transition: {
+      type: "spring",
+      stiffness: 200,
+      damping: 25,
+      mass: 0.8,
+    },
+  };
+
   const [swapData, setSwapData] = useState<Record<
     string,
     comparisonMetric
@@ -178,14 +189,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
 
   return (
     <motion.div
-      initial={{ x: "100%" }}
-      animate={{ x: visible ? 0 : "100%" }}
-      transition={{
-        type: "spring",
-        stiffness: 200,
-        damping: 25,
-        mass: 0.8,
-      }}
+      {...animationConfig}
       className="absolute left-0 top-0 z-30 flex h-full w-full flex-col gap-3 rounded-[20px] bg-primary-lighter p-3"
     >
       <div className="flex items-center justify-between p-1">

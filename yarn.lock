@@ -843,7 +843,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/garden-book@npm:^0.1.76":
+"@gardenfi/garden-book@npm:^0.1.79":
   version: 0.1.81
   resolution: "@gardenfi/garden-book@npm:0.1.81"
   dependencies:
@@ -6361,7 +6361,7 @@ __metadata:
     "@chainflip/sdk": "npm:^1.7.0"
     "@eslint/js": "npm:^9.13.0"
     "@gardenfi/core": "npm:^2.0.25"
-    "@gardenfi/garden-book": "npm:^0.1.76"
+    "@gardenfi/garden-book": "npm:^0.1.79"
     "@gardenfi/orderbook": "npm:^2.0.9"
     "@gardenfi/react-hooks": "npm:2.0.28-beta.14"
     "@gardenfi/utils": "npm:^2.0.6"
@@ -11173,9 +11173,9 @@ __metadata:
   linkType: hard
 
 "ufo@npm:^1.5.4":
-  version: 1.6.0
-  resolution: "ufo@npm:1.6.0"
-  checksum: 10c0/55482bbe370a8dfcb87863b4a5afc89f8c94da3db7483dfb945ec32f4133590c60d4eef75e497d111c7d1d3795a5f85db7e1ab9821a8a00387687f7eb6177631
+  version: 1.6.1
+  resolution: "ufo@npm:1.6.1"
+  checksum: 10c0/5a9f041e5945fba7c189d5410508cbcbefef80b253ed29aa2e1f8a2b86f4bd51af44ee18d4485e6d3468c92be9bf4a42e3a2b72dcaf27ce39ce947ec994f1e6b
   languageName: node
   linkType: hard
 
