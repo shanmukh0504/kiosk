@@ -1,0 +1,154 @@
+import { Asset } from "@gardenfi/orderbook";
+import { API_URLS, ASSET_MAPPINGS, AssetMappingType } from "./constants";
+import { Chain, Asset as ChainflipAsset } from "@chainflip/sdk/swap";
+import axios from "axios";
+
+type ThorFeeType = {
+  type: "inbound" | "outbound";
+  asset: string;
+  networkFee: number;
+  networkFeeUSD: number;
+  affiliateFee: number;
+  affiliateFeeUSD: number;
+  totalFee: number;
+  totalFeeUSD: number;
+  isOutOfPocket: boolean;
+};
+
+type ThorFeeResponse = {
+  THOR: ThorFeeType[];
+};
+
+type FeeDetail = {
+  amount: string;
+  amountFormatted: string;
+  amountUsd: string;
+  minimumAmount: string;
+};
+
+type RelayFeeResponse = {
+  gas: FeeDetail;
+  relayer: FeeDetail;
+  relayerGas: FeeDetail;
+  relayerService: FeeDetail;
+  app: FeeDetail;
+};
+
+export type ChainflipAssetAndChain = {
+  chain: Chain;
+  asset: ChainflipAsset;
+};
+
+type ChainflipFeeDetail = {
+  amount: string;
+} & ChainflipAssetAndChain;
+
+type ChainflipPoolInfo = {
+  baseAsset: ChainflipAssetAndChain;
+  quoteAsset: ChainflipAssetAndChain;
+  fee: ChainflipFeeDetail;
+};
+
+type ChainflipIncludedFee = {
+  type: "INGRESS" | "NETWORK" | "EGRESS" | "BROKER" | "BOOST";
+} & ChainflipFeeDetail;
+
+type ChainflipIncludedFeeResponse = ChainflipIncludedFee[];
+type ChainflipPoolInfoResponse = ChainflipPoolInfo[];
+
+export const formatTime = (seconds: number | string) => {
+  if (typeof seconds !== "number" || isNaN(seconds)) return "-";
+  const minutes = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${minutes}m ${secs.toFixed(0)}s`;
+};
+
+export const parseTime = (time: string | undefined) => {
+  if (!time) return 0;
+  const cleanedTime = time.replace("~", "").trim();
+  const match = cleanedTime.match(/(?:(\d+)m)?\s*(?:(\d+)s)?/);
+
+  if (!match) return 0;
+  const minutes = match[1] ? parseInt(match[1]) : 0;
+  const seconds = match[2] ? parseInt(match[2]) : 0;
+
+  return minutes * 60 + seconds;
+};
+
+export const formatTimeDiff = (time: number, gardenSwapTime: string) => {
+  const diff = time - parseTime(gardenSwapTime);
+  const sign = diff >= 0 ? "+" : "-";
+  return `${sign}${Math.floor(Math.abs(diff) / 60)}m ${Math.abs(diff) % 60}s`;
+};
+
+export const getFormattedAsset = (asset: Asset, type: AssetMappingType) =>
+  ASSET_MAPPINGS[type]?.[`${asset.chain}:${asset.symbol}`];
+
+export const getAssetPriceInUSD = async (assetIds: string[]) => {
+  try {
+    const { data } = await axios.get(API_URLS.coingecko, {
+      params: { ids: assetIds.join(","), vs_currencies: "usd" },
+    });
+    return data;
+  } catch {
+    return { fee: "-", time: "-" };
+  }
+};
+
+export const calculateThorFee = (fees: ThorFeeResponse) => {
+  const inboundFee = fees.THOR[0].totalFeeUSD ?? 0;
+  const outboundFee = fees.THOR[1].totalFeeUSD ?? 0;
+  return Number((inboundFee + outboundFee).toFixed(2));
+};
+
+export const calculateRelayFee = (fees: RelayFeeResponse) => {
+  const gasFee = Number(fees.gas.amountUsd) || 0;
+  const relayerFee = Number(fees.relayer.amountUsd) || 0;
+  return Number((gasFee + relayerFee).toFixed(2));
+};
+
+export const calculateChainflipFee = async (
+  includedFee: ChainflipIncludedFeeResponse,
+  poolInfo: ChainflipPoolInfoResponse
+) => {
+  const prices = await getAssetPriceInUSD(["bitcoin", "ethereum", "usd-coin"]);
+  const feeMap: Record<string, number> = {
+    ETH: 0,
+    BTC: 0,
+    USDC: 0,
+  };
+
+  includedFee.forEach((fee) => {
+    if (fee.asset in feeMap) {
+      feeMap[fee.asset] += parseFloat(fee.amount);
+    }
+  });
+
+  const poolFee = poolInfo[0].fee;
+  if (poolFee && poolFee.asset in feeMap) {
+    feeMap[poolFee.asset] += parseFloat(poolFee.amount);
+  }
+
+  const normalizationFactors: Record<string, number> = {
+    ETH: 1e18,
+    BTC: 1e8,
+    USDC: 1e6,
+  };
+
+  Object.keys(feeMap).forEach((key) => {
+    feeMap[key] /= normalizationFactors[key];
+  });
+
+  const assetPrices: Record<string, number> = {
+    ETH: prices.ethereum.usd ?? 0,
+    BTC: prices.bitcoin.usd ?? 0,
+    USDC: prices["usd-coin"].usd ?? 1,
+  };
+
+  const totalFeeInUsd = Object.keys(feeMap).reduce(
+    (sum, key) => sum + feeMap[key] * assetPrices[key],
+    0
+  );
+
+  return Number(totalFeeInUsd.toFixed(2));
+};

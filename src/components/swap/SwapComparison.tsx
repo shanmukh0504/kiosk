@@ -1,0 +1,277 @@
+import {
+  ArrowLeftIcon,
+  ChainflipIcon,
+  GardenLogo,
+  RelayLinkIcon,
+  ThorswapIcon,
+  Typography,
+} from "@gardenfi/garden-book";
+import { FC, useEffect, useMemo, useState } from "react";
+import { SwapInfo } from "../../common/SwapInfo";
+import { swapStore } from "../../store/swapStore";
+import {
+  comparisonMetric,
+  getChainflipFee,
+  getRelayFee,
+  getThorFee,
+} from "../../utils/timeAndFeeComparison/getFeeRateAndEstimatedSwapTime";
+import {
+  formatTime,
+  formatTimeDiff,
+  parseTime,
+} from "../../utils/timeAndFeeComparison/utils";
+import { getTimeEstimates } from "../../constants/constants";
+import { useSwap } from "../../hooks/useSwap";
+import { Errors } from "../../constants/errors";
+import { motion } from "framer-motion";
+
+type SwapComparisonProps = {
+  visible: boolean;
+  hide: () => void;
+  isTime?: boolean;
+  isFees?: boolean;
+  onComparisonUpdate: (maxTimeSaved: number, maxCostSaved: number) => void;
+};
+
+export const SwapComparison: FC<SwapComparisonProps> = ({
+  visible,
+  hide,
+  isTime,
+  isFees,
+  onComparisonUpdate,
+}) => {
+  const [swapData, setSwapData] = useState<Record<
+    string,
+    comparisonMetric
+  > | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const { error } = useSwap();
+  const { inputAsset, outputAsset, inputAmount, outputAmount, tokenPrices } =
+    swapStore();
+
+  const swapSources = [
+    { name: "garden", key: "garden", icon: <GardenLogo /> },
+    { name: "Relay", key: "Relay", icon: <RelayLinkIcon /> },
+    { name: "Chainflip", key: "Chainflip", icon: <ChainflipIcon /> },
+    { name: "THORSwap", key: "Thorswap", icon: <ThorswapIcon /> },
+  ];
+
+  const gardenFee = useMemo(
+    () => Number(tokenPrices.input) - Number(tokenPrices.output),
+    [tokenPrices]
+  );
+
+  const gardenSwapTime = useMemo(() => {
+    if (!inputAsset || !outputAsset) return "";
+    return getTimeEstimates(inputAsset);
+  }, [inputAsset, outputAsset]);
+
+  const swapEntries = useMemo(
+    () => (swapData ? Object.entries(swapData) : []),
+    [swapData]
+  );
+
+  const swapEntriesWithGarden = useMemo(() => {
+    const gardenEntry: [string, comparisonMetric] = [
+      "garden",
+      { fee: gardenFee, time: parseTime(gardenSwapTime) },
+    ];
+
+    return [
+      gardenEntry,
+      ...swapEntries.map(
+        ([key, data]) => [key, data] as [string, comparisonMetric]
+      ),
+    ];
+  }, [gardenFee, gardenSwapTime, swapEntries]);
+
+  useEffect(() => {
+    const fetchAllData = async () => {
+      if (inputAsset && outputAsset && inputAmount) {
+        setLoading(true);
+        try {
+          const sources = {
+            Relay: getRelayFee,
+            Thorswap: getThorFee,
+            Chainflip: getChainflipFee,
+          };
+
+          const results = await Promise.all(
+            Object.entries(sources).map(async ([key, fetchFn]) => {
+              try {
+                const { fee, time } = await fetchFn(
+                  inputAsset,
+                  outputAsset,
+                  Number(inputAmount)
+                );
+                return fee === 0 && time === 0 ? null : { key, fee, time };
+              } catch {
+                // Suppress error
+              }
+            })
+          );
+
+          const filteredResults = results.filter(Boolean) as {
+            key: string;
+            fee: number;
+            time: number;
+          }[];
+
+          const newData = filteredResults.reduce(
+            (acc, { key, fee, time }) => {
+              acc[key] = { fee, time };
+              return acc;
+            },
+            {} as Record<string, comparisonMetric>
+          );
+
+          setSwapData(newData);
+        } catch {
+          //suppress error
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchAllData();
+  }, [inputAsset, outputAsset, inputAmount]);
+
+  useEffect(() => {
+    if (
+      loading ||
+      !swapData ||
+      swapEntries.length === 0 ||
+      !inputAmount ||
+      error.inputError ||
+      error.outputError ||
+      error.swapError === Errors.insufficientLiquidity
+    ) {
+      onComparisonUpdate(0, 0);
+      return;
+    }
+
+    let maxTimeSaved = 0;
+    let maxCostSaved = 0;
+
+    Object.values(swapData).forEach(({ fee, time }) => {
+      const timeDiff = time - parseTime(gardenSwapTime);
+      const feeDiff = fee - gardenFee;
+      maxTimeSaved = Math.max(maxTimeSaved, timeDiff);
+      maxCostSaved = Math.max(maxCostSaved, feeDiff);
+    });
+
+    onComparisonUpdate(maxTimeSaved, maxCostSaved);
+  }, [
+    swapData,
+    gardenSwapTime,
+    gardenFee,
+    onComparisonUpdate,
+    swapEntries.length,
+    loading,
+    inputAmount,
+    error.inputError,
+    error.outputError,
+    error.swapError,
+  ]);
+
+  return (
+    <motion.div
+      initial={{ x: "100%" }}
+      animate={{ x: visible ? 0 : "100%" }}
+      transition={{
+        type: "spring",
+        stiffness: 200,
+        damping: 25,
+        mass: 0.8,
+      }}
+      className="absolute left-0 top-0 z-30 flex h-full w-full flex-col gap-3 rounded-[20px] bg-primary-lighter p-3"
+    >
+      <div className="flex items-center justify-between p-1">
+        <Typography size="h4" weight="bold">
+          {isTime ? "Time saved" : isFees ? "Cost saved" : "Saved"}
+        </Typography>
+        <ArrowLeftIcon className="cursor-pointer" onClick={hide} />
+      </div>
+
+      {inputAsset && outputAsset && inputAmount && outputAmount && (
+        <div className="flex flex-col gap-2 rounded-2xl bg-white p-4">
+          <SwapInfo
+            sendAsset={inputAsset}
+            receiveAsset={outputAsset}
+            sendAmount={inputAmount}
+            receiveAmount={outputAmount}
+          />
+        </div>
+      )}
+
+      <div className="flex h-full flex-col gap-3 rounded-2xl bg-white p-4">
+        {swapEntriesWithGarden.map(([key, { fee, time }], index) => {
+          const source = swapSources.find((s) => s.key === key);
+          const feeDiff = (Number(fee) - gardenFee).toFixed(2);
+
+          return (
+            <div key={key} className="flex items-center justify-between">
+              <div key={key} className="flex items-center gap-2">
+                <Typography size="h5" weight="medium" className="mr-2 w-[20px]">
+                  #{index + 1}
+                </Typography>
+                <div className="flex h-4 w-4 items-center justify-center">
+                  {source && source.icon}
+                </div>
+                <Typography size="h5" weight="medium">
+                  {source?.name || key}
+                </Typography>
+              </div>
+              {isTime && (
+                <div className="flex gap-6">
+                  {key !== "garden" && (
+                    <Typography
+                      key={key}
+                      className="!text-rose"
+                      size="h5"
+                      weight="medium"
+                    >
+                      {formatTimeDiff(time, gardenSwapTime)}
+                    </Typography>
+                  )}
+                  <Typography
+                    key={key}
+                    className="!flex !w-[52px] !justify-end"
+                    size="h5"
+                    weight="medium"
+                  >
+                    ~{formatTime(time)}
+                  </Typography>
+                </div>
+              )}
+              {isFees && (
+                <div className="flex gap-6">
+                  {key !== "garden" && (
+                    <Typography
+                      key={key}
+                      className="!text-rose"
+                      size="h5"
+                      weight="medium"
+                    >
+                      {`${Number(feeDiff) >= 0 ? "+" : "-"}$${Math.abs(Number(feeDiff))}`}
+                    </Typography>
+                  )}
+                  <Typography
+                    key={key}
+                    className="!flex !w-12 !justify-end"
+                    size="h5"
+                    weight="medium"
+                  >
+                    {`$${fee}`}
+                  </Typography>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+};

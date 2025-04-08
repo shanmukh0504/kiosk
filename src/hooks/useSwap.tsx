@@ -157,17 +157,18 @@ export const useSwap = () => {
               signal: controller.current.signal,
             },
           });
+
           if (quote.error) {
             if (quote.error.includes("AbortError")) return;
-            if (quote.error.includes("output amount too high")) {
-              setError({ outputError: Errors.outHigh });
-              setAmount(IOType.input, "");
+            if (quote.error.includes("insufficient liquidity")) {
+              setError({ swapError: Errors.insufficientLiquidity });
+              setAmount(isExactOut ? IOType.input : IOType.output, "");
             } else if (quote.error.includes("output amount too less")) {
               setError({ outputError: Errors.outLow });
               setAmount(IOType.input, "");
-            } else if (quote.error.includes("insufficient liquidity")) {
-              setError({ swapError: Errors.insufficientLiquidity });
-              setAmount(isExactOut ? IOType.input : IOType.output, "");
+            } else if (quote.error.includes("output amount too high")) {
+              setError({ outputError: Errors.outHigh });
+              setAmount(IOType.input, "");
             } else {
               setAmount(isExactOut ? IOType.input : IOType.output, "");
             }
@@ -176,12 +177,11 @@ export const useSwap = () => {
             setTokenPrices({ input: "0", output: "0" });
             return;
           }
-
           const [_strategy, quoteAmount] = Object.entries(quote.val.quotes)[0];
           setStrategy(_strategy);
           setIsFetchingQuote({ input: false, output: false });
           const assetToChange = isExactOut ? fromAsset : toAsset;
-          const quoteAmountInDecimals = new BigNumber(quoteAmount).div(
+          const quoteAmountInDecimals = new BigNumber(Number(quoteAmount)).div(
             Math.pow(10, assetToChange.decimals)
           );
           setAmount(

@@ -5,8 +5,9 @@ import { SwapAddress } from "./SwapAddress";
 import { useMemo } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { SwapCreateDetails } from "./SwapCreateDetails";
 import { Errors } from "../../constants/errors";
+import { SwapDetails } from "./SwapDetails";
+import { motion } from "framer-motion";
 
 export const CreateSwap = () => {
   const {
@@ -32,10 +33,10 @@ export const CreateSwap = () => {
   const isDisabled = isSwapping || !validSwap || !!error.swapError;
 
   const buttonLabel = useMemo(() => {
-    return error.swapError === Errors.insufficientLiquidity
-      ? "Insufficient Liquidity"
-      : error.swapError === Errors.insufficientBalance
-        ? "Insufficient balance"
+    return error.swapError === Errors.insufficientBalance
+      ? "Insufficient balance"
+      : error.swapError === Errors.insufficientLiquidity
+        ? "Insufficient Liquidity"
         : isSwapping
           ? "Signing..."
           : "Swap";
@@ -56,12 +57,34 @@ export const CreateSwap = () => {
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
 
+  const shouldShowDetails = useMemo(() => {
+    return !!(
+      inputAsset &&
+      outputAsset &&
+      !error.inputError &&
+      !error.outputError &&
+      !error.swapError &&
+      inputAmount &&
+      outputAmount &&
+      Number(inputAmount) !== 0 &&
+      Number(outputAmount) !== 0
+    );
+  }, [
+    inputAsset,
+    outputAsset,
+    error.inputError,
+    error.outputError,
+    error.swapError,
+    inputAmount,
+    outputAmount,
+  ]);
+
   return (
     <div
       className={`before:pointer-events-none before:absolute before:left-0 before:top-0 before:h-full before:w-full before:bg-black before:bg-opacity-0 before:transition-colors before:duration-700 before:content-['']`}
     >
-      <div className="flex flex-col gap-4 p-3">
-        <div className="relative flex flex-col gap-4">
+      <div className="flex flex-col p-3">
+        <div className="relative flex flex-col gap-3">
           <SwapInput
             type={IOType.input}
             amount={inputAmount}
@@ -89,33 +112,37 @@ export const CreateSwap = () => {
             timeEstimate={timeEstimate}
           />
         </div>
-        <div
-          className={`flex flex-col opacity-0 transition-all duration-700 ease-in-out ${
-            inputAsset &&
-            outputAsset &&
-            ((inputAmount &&
-              Number(inputAmount) !== 0 &&
-              inputAmount !== ".") ||
-              (outputAmount &&
-                Number(outputAmount) !== 0 &&
-                outputAmount !== "."))
-              ? "pointer-events-auto mt-0 max-h-[500px] opacity-100"
-              : "pointer-events-none -mt-4 max-h-0 opacity-0"
+        <motion.div
+          initial={{ opacity: 0, height: 0, marginTop: 0 }}
+          animate={{
+            opacity: shouldShowDetails ? 1 : 0,
+            height: shouldShowDetails ? "auto" : 0,
+            marginTop: shouldShowDetails ? "12px" : 0,
+          }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className={`flex flex-col overflow-hidden ${
+            shouldShowDetails ? "pointer-events-auto" : "pointer-events-none"
           }`}
         >
-          <div
-            className={`overflow-hidden opacity-0 transition-all duration-500 ease-in-out ${
-              isEditBTCAddress || !btcAddress
-                ? "pointer-events-auto max-h-[120px] opacity-100"
-                : "pointer-events-none max-h-0 opacity-0"
-            }`}
+          <motion.div
+            initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+            animate={{
+              opacity: isEditBTCAddress || !btcAddress ? 1 : 0,
+              height: isEditBTCAddress || !btcAddress ? "auto" : 0,
+              marginBottom: isEditBTCAddress || !btcAddress ? "12px" : 0,
+            }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="overflow-hidden"
           >
             <SwapAddress isValidAddress={isValidBitcoinAddress} />
-          </div>
-          <SwapCreateDetails tokenPrices={tokenPrices} />
-        </div>
+          </motion.div>
+          <SwapDetails
+            tokenPrices={tokenPrices}
+            isExpanded={shouldShowDetails}
+          />
+        </motion.div>
         <Button
-          className={`transition-colors duration-500${
+          className={`mt-4 transition-colors duration-500${
             isSwapping ? "cursor-not-allowed" : ""
           }`}
           variant={buttonVariant}

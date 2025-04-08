@@ -37,7 +37,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
   const stakeReward = formatAmount(
     stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedCBBTCRewards || 0,
     8,
-    5
+    8
   );
 
   const stakeApy = Number((stakeApys?.[stakePos.id] || 0).toFixed(2));
