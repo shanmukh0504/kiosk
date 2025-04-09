@@ -33,8 +33,8 @@ export const VersionUpdateModal: React.FC<VersionUpdateModalProps> = ({
           />
         </div>
         <Typography size="h4" className="w-[90%]">
-          Your MetaMask wallet version (12.5.1) is outdated and may not function
-          properly. Please update to the latest version to continue.
+          Your MetaMask wallet version (12.15.1) is outdated and may not
+          function properly. Please update to the latest version to continue.
         </Typography>
       </div>
       <div className="flex w-full gap-2">
