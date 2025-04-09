@@ -135,35 +135,26 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
       </div>
 
       <div className="flex flex-wrap gap-3">
-        {orderedChains
-          .filter((c) => {
-            const assetsForChain = results?.filter(
-              (asset) => asset.chain === c.identifier
-            );
-            return assetsForChain && assetsForChain.length > 0;
-          })
-          .map((c, i) => (
-            // TODO: Chip component should ideally have a `checked` prop that
-            // automatically adds the below styles
-            <Chip
-              key={i}
+        {orderedChains.map((c, i) => (
+          <Chip
+            key={i}
+            className={`${
+              !chain || c.chainId !== chain.chainId
+                ? "bg-opacity-50 pr-1"
+                : "pr-2"
+            } cursor-pointer py-1 pl-3 transition-colors ease-cubic-in-out hover:bg-opacity-50`}
+            onClick={() => (c === chain ? setChain(undefined) : setChain(c))}
+          >
+            <Typography size="h3" weight="medium">
+              {c.name}
+            </Typography>
+            <RadioCheckedIcon
               className={`${
-                !chain || c.chainId !== chain.chainId
-                  ? "bg-opacity-50 pr-1"
-                  : "pr-2"
-              } cursor-pointer py-1 pl-3 transition-colors ease-cubic-in-out hover:bg-opacity-50`}
-              onClick={() => (c === chain ? setChain(undefined) : setChain(c))}
-            >
-              <Typography size="h3" weight="medium">
-                {c.name}
-              </Typography>
-              <RadioCheckedIcon
-                className={`${
-                  c === chain ? "w-4" : "w-0"
-                } fill-rose transition-all`}
-              />
-            </Chip>
-          ))}
+                c === chain ? "w-4" : "w-0"
+              } fill-rose transition-all`}
+            />
+          </Chip>
+        ))}
       </div>
       <div className="flex w-full items-center justify-between rounded-2xl bg-white px-4 py-2">
         <div className="flex-grow">
