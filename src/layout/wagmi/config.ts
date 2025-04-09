@@ -14,8 +14,31 @@ import {
   berachain,
   citreaTestnet,
   monadTestnet,
+  Chain,
 } from "wagmi/chains";
+
 import { injected, metaMask } from "wagmi/connectors";
+
+export const hyperliquidTestnet: Chain = {
+  id: 998,
+  name: "Hyperliquid EVM Testnet",
+  nativeCurrency: {
+    name: "Hyperliquid",
+    symbol: "HYPE",
+    decimals: 18,
+  },
+  blockExplorers: {
+    default: {
+      name: "Hyperliquid Explorer",
+      url: "https://testnet.purrsec.com/",
+    },
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.hyperliquid-testnet.xyz/evm"],
+    },
+  },
+};
 
 export const SupportedChains = [
   mainnet,
@@ -32,6 +55,7 @@ export const SupportedChains = [
   berachain,
   citreaTestnet,
   monadTestnet,
+  hyperliquidTestnet,
 ] as const;
 
 export const config = createConfig({
@@ -52,5 +76,6 @@ export const config = createConfig({
     [berachain.id]: http(),
     [citreaTestnet.id]: http(),
     [monadTestnet.id]: http(),
+    [hyperliquidTestnet.id]: http(),
   },
 });
