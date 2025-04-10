@@ -100,9 +100,15 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     } else if (connector.isEVM) {
       if (!connector.wallet?.evmWallet) return;
 
-      if (connector.id === "metaMaskSDK" || connector.id === "io.metamask") {
+      console.log("connector", connector);
+
+      if (
+        connector.id === "metaMaskSDK" ||
+        connector.id === "io.metamask" ||
+        (connector.id === "injected" && window.ethereum?.isMetaMask)
+      ) {
         const provider = window.ethereum;
-        if (provider && provider.isMetaMask) {
+        if (provider && (provider.isMetaMask || provider._metamask)) {
           try {
             const version = await provider.request({
               method: "web3_clientVersion",
