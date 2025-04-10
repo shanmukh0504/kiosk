@@ -4,21 +4,22 @@ import { FC, ReactNode } from "react";
 import { ModalProps } from "./Modal";
 import { viewPortStore } from "../../store/viewPortStore";
 
-export type OpacityLevel =
-  | "light"
-  | "medium"
-  | "semi-dark"
-  | "extra-light"
-  | "full"
-  | null
-  | undefined;
+export const Opacity = {
+  light: "light",
+  medium: "medium",
+  semiDark: "semi-dark",
+  extraLight: "extra-light",
+  full: "full",
+} as const;
+
+export type OpacityLevel = (typeof Opacity)[keyof typeof Opacity];
 
 export const ResponsiveModal: FC<
   ModalProps & {
     children: ReactNode;
     opacityLevel?: OpacityLevel;
   }
-> = ({ open, onClose, children, opacityLevel = "medium" }) => {
+> = ({ open, onClose, children, opacityLevel = Opacity.medium }) => {
   const { isMobile } = viewPortStore();
 
   return (
