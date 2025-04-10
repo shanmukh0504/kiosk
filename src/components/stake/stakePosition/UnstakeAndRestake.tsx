@@ -12,6 +12,7 @@ import { config } from "../../../layout/wagmi/config";
 import { StakingPosition } from "../../../store/stakeStore";
 import { Toast } from "../../toast/Toast";
 import { modalNames, modalStore } from "../../../store/modalStore";
+import { scrollToTop } from "../../../utils/utils";
 
 type UnstakeAndRestakeProps = {
   stakePos: StakingPosition;
@@ -48,6 +49,7 @@ export const UnstakeAndRestake: FC<UnstakeAndRestakeProps> = ({ stakePos }) => {
         hash: tx,
       });
       Toast.success("Unstaked successfully");
+      scrollToTop();
     } catch (error) {
       console.error("Error during unstake:", error);
     } finally {

@@ -102,7 +102,7 @@ export const SwapInput: FC<SwapInputProps> = ({
             >
               {label}
             </Typography>
-            <Typography size="h5" weight="medium" className="text-mid-grey">
+            <Typography size="h5" weight="medium" className="!text-mid-grey">
               {Number(price) ? `$${price}` : ""}
             </Typography>
           </div>
@@ -133,7 +133,7 @@ export const SwapInput: FC<SwapInputProps> = ({
             </div>
           )}
         </div>
-        <div className="flex h-6 justify-between">
+        <div className="flex h-6 items-center justify-between">
           {loading ? (
             <div className="text-mid-grey">loading...</div>
           ) : (
@@ -146,10 +146,10 @@ export const SwapInput: FC<SwapInputProps> = ({
             >
               <input
                 ref={inputRef}
-                className="max-w-[150px] outline-none placeholder:text-mid-grey"
+                className="max-w-[150px] outline-none placeholder:text-dark-grey"
                 type="text"
                 value={type == IOType.output && amount == "0" ? "" : amount}
-                placeholder="0.0"
+                placeholder="0"
                 onChange={handleAmountChange}
               />
             </Typography>
