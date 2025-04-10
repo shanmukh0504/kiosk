@@ -246,7 +246,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           </a>
           and{" "}
           <a
-            href="https://garden.finance/privacy.pdf"
+            href="https://garden.finance/GardenFinancePrivacyPolicy.pdf"
             target="_blank"
             rel="noreferrer"
             className="font-bold"
