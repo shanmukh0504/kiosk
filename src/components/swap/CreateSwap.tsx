@@ -8,6 +8,7 @@ import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { Errors } from "../../constants/errors";
 import { SwapDetails } from "./SwapDetails";
 import { motion, Variants } from "framer-motion";
+import { isBitcoin } from "@gardenfi/orderbook";
 
 const detailsAnimation: Variants = {
   hidden: {
@@ -24,11 +25,11 @@ const detailsAnimation: Variants = {
   },
 };
 
-const addressAnimation: Variants = {
+const addressAnimation = {
   hidden: {
     opacity: 0,
     height: 0,
-    marginBottom: 0,
+    marginBottom: "0",
     transition: { duration: 0.3, ease: "easeOut" },
   },
   visible: {
@@ -109,6 +110,14 @@ export const CreateSwap = () => {
     outputAmount,
   ]);
 
+  const shouldShowAddress = useMemo(() => {
+    return (
+      (isEditBTCAddress || !btcAddress) &&
+      ((inputAsset?.chain && isBitcoin(inputAsset.chain)) ||
+        (outputAsset?.chain && isBitcoin(outputAsset.chain)))
+    );
+  }, [isEditBTCAddress, btcAddress, inputAsset, outputAsset]);
+
   return (
     <div
       className={`before:pointer-events-none before:absolute before:left-0 before:top-0 before:h-full before:w-full before:bg-black before:bg-opacity-0 before:transition-colors before:duration-700 before:content-['']`}
@@ -153,8 +162,7 @@ export const CreateSwap = () => {
           <motion.div
             variants={addressAnimation}
             initial="hidden"
-            animate={isEditBTCAddress || !btcAddress ? "visible" : "hidden"}
-            className="overflow-hidden"
+            animate={shouldShowAddress ? "visible" : "hidden"}
           >
             <SwapAddress isValidAddress={isValidBitcoinAddress} />
           </motion.div>

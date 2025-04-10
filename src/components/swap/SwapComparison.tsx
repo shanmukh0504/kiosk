@@ -26,6 +26,7 @@ import { Errors } from "../../constants/errors";
 import { motion } from "framer-motion";
 import { formatAmount } from "../../utils/utils";
 import debounce from "lodash.debounce";
+import { Asset } from "@gardenfi/orderbook";
 
 type SwapComparisonProps = {
   visible: boolean;
@@ -59,6 +60,8 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
   > | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const prevInputAmountRef = useRef<string | number>();
+  const prevOutputAssetRef = useRef<Asset | undefined>(undefined);
+  const prevInputAssetRef = useRef<Asset | undefined>(undefined);
 
   const { error } = useSwap();
   const { inputAsset, outputAsset, inputAmount, outputAmount, tokenPrices } =
@@ -157,13 +160,21 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
     if (
       inputAsset &&
       outputAsset &&
-      numericInputAmount &&
-      prevNumericInputAmount !== numericInputAmount
+      ((numericInputAmount && prevNumericInputAmount !== numericInputAmount) ||
+        outputAsset !== prevOutputAssetRef.current ||
+        inputAsset !== prevInputAssetRef.current)
     ) {
       prevInputAmountRef.current = numericInputAmount;
+      prevOutputAssetRef.current = outputAsset;
       debouncedFetchAllData(inputAsset, outputAsset, numericInputAmount);
     }
-  }, [inputAmount, inputAsset, outputAsset, debouncedFetchAllData]);
+  }, [
+    inputAmount,
+    inputAsset,
+    outputAsset,
+    outputAmount,
+    debouncedFetchAllData,
+  ]);
 
   useEffect(() => {
     return () => {
@@ -208,7 +219,6 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
     error.outputError,
     error.swapError,
   ]);
-console.log(swapEntriesWithGarden)
   return (
     <motion.div
       {...animationConfig}
