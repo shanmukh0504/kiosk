@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { Asset, isBitcoin } from "@gardenfi/orderbook";
+import { Asset, isBitcoin, isEVM } from "@gardenfi/orderbook";
 import { evmToViemChainMap } from "@gardenfi/core";
 import { useEVMWallet } from "./useEVMWallet";
 import { getTokenBalance } from "../utils/getTokenBalance";
@@ -30,7 +30,7 @@ export const useBalances = (asset: Asset | undefined) => {
           .dividedBy(10 ** asset.decimals)
           .toNumber();
         setBalance(asset, bal);
-      } else {
+      } else if (isEVM(asset.chain)) {
         if (!address) {
           clearBalances();
           return;

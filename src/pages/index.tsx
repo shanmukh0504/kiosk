@@ -10,12 +10,14 @@ import { Environment } from "@gardenfi/utils";
 
 function App() {
   const { data: walletClient } = useWalletClient();
+
   return (
     <GardenProvider
       config={{
-        store: localStorage,
         environment: network as Environment,
-        walletClient: walletClient,
+        wallets: {
+          evm: walletClient,
+        },
       }}
     >
       <Layout>

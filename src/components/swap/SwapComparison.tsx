@@ -68,7 +68,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
     { name: "garden", key: "garden", icon: <GardenLogo /> },
     { name: "Relay", key: "Relay", icon: <RelayLinkIcon /> },
     { name: "Chainflip", key: "Chainflip", icon: <ChainflipIcon /> },
-    { name: "THORSwap", key: "Thorswap", icon: <ThorswapIcon /> },
+    { name: "THORSwap", key: "THORSwap", icon: <ThorswapIcon /> },
   ];
 
   const gardenFee = useMemo(
@@ -208,7 +208,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
     error.outputError,
     error.swapError,
   ]);
-
+console.log(swapEntriesWithGarden)
   return (
     <motion.div
       {...animationConfig}
@@ -239,7 +239,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
 
           return (
             <div key={key} className="flex items-center justify-between">
-              <div key={key} className="flex items-center gap-2">
+              <div className="flex items-center gap-2">
                 <Typography size="h5" weight="medium" className="mr-2 w-[20px]">
                   #{index + 1}
                 </Typography>
@@ -254,7 +254,6 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
                 <div className="flex gap-6">
                   {key !== "garden" && (
                     <Typography
-                      key={key}
                       className="!text-rose"
                       size="h5"
                       weight="medium"
@@ -263,7 +262,6 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
                     </Typography>
                   )}
                   <Typography
-                    key={key}
                     className="!flex !w-16 !justify-end"
                     size="h5"
                     weight="medium"
@@ -276,7 +274,6 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
                 <div className="flex gap-6">
                   {key !== "garden" && (
                     <Typography
-                      key={key}
                       className="!text-rose"
                       size="h5"
                       weight="medium"
@@ -285,7 +282,6 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
                     </Typography>
                   )}
                   <Typography
-                    key={key}
                     className="!flex !w-12 !justify-end"
                     size="h5"
                     weight="medium"
