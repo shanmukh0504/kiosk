@@ -100,8 +100,6 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     } else if (connector.isEVM) {
       if (!connector.wallet?.evmWallet) return;
 
-      console.log("connector", connector);
-
       if (
         connector.id === "metaMaskSDK" ||
         connector.id === "io.metamask" ||
