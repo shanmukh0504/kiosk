@@ -8,6 +8,7 @@ import { blockNumberStore } from "../../store/blockNumberStore";
 import { TransactionRow } from "./TransactionRow";
 import { TransactionsSkeleton } from "./TransactionsSkeleton";
 import { ordersStore } from "../../store/ordersStore";
+import { useEVMWallet } from "../../hooks/useEVMWallet";
 
 type TransactionsProps = {
   isOpen: boolean;
@@ -17,6 +18,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const { orderBook } = useGarden();
+  const { address } = useEVMWallet();
   const { orders, fetchAndSetOrders, totalItems, loadMore } =
     ordersStore().ordersHistory;
   const { fetchAndSetBlockNumbers, blockNumbers } = blockNumberStore();
@@ -27,9 +29,9 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   );
 
   const handleLoadMore = async () => {
-    if (!orderBook) return;
+    if (!orderBook || !address) return;
     setIsLoadingMore(true);
-    await loadMore(orderBook);
+    await loadMore(orderBook, address);
     setIsLoadingMore(false);
   };
 
@@ -44,7 +46,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   };
 
   useEffect(() => {
-    if (!orderBook || !isOpen) return;
+    if (!orderBook || !address || !isOpen) return;
 
     let isFetching = false;
 
@@ -54,7 +56,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
       try {
         isFetching = true;
         await fetchAndSetBlockNumbers();
-        await fetchAndSetOrders(orderBook);
+        await fetchAndSetOrders(orderBook, address);
       } finally {
         isFetching = false;
       }
@@ -65,7 +67,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
     const intervalId = setInterval(fetchOrdersAndBlockNumbers, 10000);
 
     return () => clearInterval(intervalId);
-  }, [orderBook, isOpen, fetchAndSetOrders, fetchAndSetBlockNumbers]);
+  }, [orderBook, isOpen, fetchAndSetOrders, fetchAndSetBlockNumbers, address]);
 
   return (
     <>
