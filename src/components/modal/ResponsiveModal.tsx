@@ -1,25 +1,15 @@
-import { Modal } from "@gardenfi/garden-book";
+import { Modal, OpacityVariants } from "@gardenfi/garden-book";
 import { BottomSheet } from "../../common/BottomSheet";
 import { FC, ReactNode } from "react";
 import { ModalProps } from "./Modal";
 import { viewPortStore } from "../../store/viewPortStore";
 
-export const Opacity = {
-  light: "light",
-  medium: "medium",
-  semiDark: "semi-dark",
-  extraLight: "extra-light",
-  full: "full",
-} as const;
-
-export type OpacityLevel = (typeof Opacity)[keyof typeof Opacity];
-
 export const ResponsiveModal: FC<
   ModalProps & {
     children: ReactNode;
-    opacityLevel?: OpacityLevel;
+    opacityLevel?: OpacityVariants;
   }
-> = ({ open, onClose, children, opacityLevel = Opacity.medium }) => {
+> = ({ open, onClose, children, opacityLevel = "medium" }) => {
   const { isMobile } = viewPortStore();
 
   return (

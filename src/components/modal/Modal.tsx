@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { ConnectWallet } from "../navbar/connectWallet/ConnectWallet";
 import { TransactionsComponent } from "../transactions/TransactionsComponent";
-import { ResponsiveModal, Opacity } from "./ResponsiveModal";
+import { ResponsiveModal } from "./ResponsiveModal";
 import { AssetSelector } from "../swap/AssetSelector";
 import { Whitelist } from "../whitelist/WhiteList";
 import { StakeModal } from "../stake/modal/StakeModal";
@@ -66,7 +66,7 @@ export const Modal = () => {
 
       <ResponsiveModal
         open={modalName.versionUpdate}
-        opacityLevel={Opacity.semiDark}
+        opacityLevel={"semi-dark"}
         onClose={() => setCloseModal(modalNames.versionUpdate)}
       >
         <VersionUpdateModal
