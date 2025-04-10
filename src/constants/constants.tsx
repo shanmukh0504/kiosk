@@ -1,4 +1,4 @@
-import { Asset, isBitcoin, isEVM } from "@gardenfi/orderbook";
+import { Asset, Chain, isBitcoin, isEVM } from "@gardenfi/orderbook";
 import { Environment, Network } from "@gardenfi/utils";
 
 export const INTERNAL_ROUTES: Record<string, { name: string; path: string[] }> =
@@ -48,3 +48,18 @@ export const getTimeEstimates = (inputAsset: Asset) => {
 };
 
 export const network: Environment | Network = import.meta.env.VITE_NETWORK;
+
+export const SUPPORTED_CHAINS: Chain[] = [
+  "arbitrum",
+  "base",
+  "bera",
+  "bitcoin",
+  "ethereum",
+  "bitcoin_testnet",
+  "ethereum_sepolia",
+  "base_sepolia",
+  "arbitrum_sepolia",
+  "bera_testnet",
+  "citrea_testnet",
+  "monad_testnet",
+] as const;
