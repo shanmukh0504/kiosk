@@ -20,6 +20,10 @@ export const ecosystems = {
     name: "EVM",
     icon: "https://garden-finance.imgix.net/token-images/ethereum.svg",
   },
+  starknet: {
+    name: "Starknet",
+    icon: "https://garden-finance.imgix.net/starknet-logo.svg",
+  },
 } as const;
 
 export type EcosystemKeys = keyof typeof ecosystems;
@@ -31,6 +35,7 @@ type GardenSupportedWalletsType = {
   installLink: string;
   isBitcoinSupported: boolean;
   isEVMSupported: boolean;
+  isStarknetSupported: boolean;
 };
 
 export const GardenSupportedWallets: Record<
@@ -44,6 +49,7 @@ export const GardenSupportedWallets: Record<
     installLink: "https://metamask.io/download/",
     isBitcoinSupported: false,
     isEVMSupported: true,
+    isStarknetSupported: false,
   },
   metaMaskSDK: {
     id: "metaMaskSDK",
@@ -52,6 +58,7 @@ export const GardenSupportedWallets: Record<
     installLink: "https://metamask.io/download/",
     isBitcoinSupported: false,
     isEVMSupported: true,
+    isStarknetSupported: false,
   },
   "com.brave.wallet": {
     id: "com.brave.wallet",
@@ -60,8 +67,9 @@ export const GardenSupportedWallets: Record<
     installLink: "https://brave.com/en-in/wallet/",
     isBitcoinSupported: false,
     isEVMSupported: true,
+    isStarknetSupported: false,
   },
-   "app.phantom": {
+  "app.phantom": {
     id: "app.phantom",
     name: "Phantom",
     logo: "https://garden-finance.imgix.net/wallets/phantom.svg",
@@ -69,6 +77,7 @@ export const GardenSupportedWallets: Record<
       "https://chromewebstore.google.com/detail/phantom/bfnaelmomeimhlpmgjnjophhpkkoljpa?hl=en",
     isBitcoinSupported: false,
     isEVMSupported: network === Network.MAINNET,
+    isStarknetSupported: false,
   },
   "com.coinbase.wallet": {
     id: "com.coinbase.wallet",
@@ -77,6 +86,7 @@ export const GardenSupportedWallets: Record<
     installLink: "https://www.coinbase.com/wallet/downloads",
     isBitcoinSupported: false,
     isEVMSupported: true,
+    isStarknetSupported: false,
   },
   "com.okex.wallet": {
     id: "com.okex.wallet",
@@ -85,6 +95,7 @@ export const GardenSupportedWallets: Record<
     installLink: "https://www.okx.com/download",
     isBitcoinSupported: network === Network.MAINNET ? true : false,
     isEVMSupported: true,
+    isStarknetSupported: false,
   },
   unisat: {
     id: "unisat",
@@ -93,6 +104,7 @@ export const GardenSupportedWallets: Record<
     installLink: "https://unisat.io/",
     isBitcoinSupported: true,
     isEVMSupported: false,
+    isStarknetSupported: false,
   },
   "io.rabby": {
     id: "io.rabby",
@@ -101,5 +113,24 @@ export const GardenSupportedWallets: Record<
     installLink: "https://rabby.io/",
     isBitcoinSupported: false,
     isEVMSupported: true,
+    isStarknetSupported: false,
+  },
+  braavos: {
+    id: "braavos",
+    name: "Braavos",
+    logo: "https://garden-finance.imgix.net/wallet/braavos.svg",
+    installLink: "tallLink:",
+    isStarknetSupported: true,
+    isBitcoinSupported: false,
+    isEVMSupported: false,
+  },
+  argentX: {
+    id: "argentX",
+    name: "Argent X",
+    logo: "https://garden-finance.imgix.net/wallet/argent.svg",
+    installLink: "tallLink:",
+    isStarknetSupported: true,
+    isBitcoinSupported: false,
+    isEVMSupported: false,
   },
 };

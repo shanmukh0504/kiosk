@@ -20,6 +20,7 @@ import { modalNames, modalStore } from "../../../store/modalStore";
 import { authStore } from "../../../store/authStore";
 import { ecosystems, evmToBTCid } from "./constants";
 import { AnimatePresence } from "framer-motion";
+import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -37,21 +38,28 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   );
 
   const { connectors, connectAsync, connector, address } = useEVMWallet();
+  const { starknetConnect, starknetConnectors, starknetConnector } =
+    useStarknetWallet();
   const { availableWallets, connect, provider } = useBitcoinWallet();
   const { modalData, setOpenModal } = modalStore();
   const { setAuth } = authStore();
-
   const showOnlyBTCWallets = !!modalData.connectWallet?.isBTCWallets;
 
   const allAvailableWallets = useMemo(() => {
     if (showOnlyBTCWallets) return getAvailableWallets(availableWallets);
     let allWallets;
-    allWallets = getAvailableWallets(availableWallets, connectors);
+    allWallets = getAvailableWallets(
+      availableWallets,
+      connectors,
+      starknetConnectors
+    );
 
     if (selectedEcosystem === "Bitcoin")
       return allWallets.filter((wallet) => wallet.isBitcoin);
     else if (selectedEcosystem === "EVM")
       return allWallets.filter((wallet) => wallet.isEVM);
+    else if (selectedEcosystem === "Starknet")
+      return allWallets.filter((wallet) => wallet.isStarknet);
 
     if (
       typeof window !== "undefined" &&
@@ -113,6 +121,10 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         handleClose();
       }
       setConnectingWallet(null);
+    } else if (connector.isStarknet) {
+      if (!connector.wallet?.starknetWallet) return;
+      await starknetConnect({ connector: connector.wallet.starknetWallet });
+      handleClose();
     }
     setConnectingWallet(null);
   };
@@ -191,6 +203,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                           window.ethereum.isCoinbaseWallet &&
                           connector.id === "injected" &&
                           wallet.id === "com.coinbase.wallet"))
+                    ),
+                    starknet: !!(
+                      starknetConnector && starknetConnector.id === wallet.id
                     ),
                   }}
                   isAvailable={wallet.isAvailable}

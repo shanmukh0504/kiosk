@@ -9,6 +9,7 @@ import { ecosystems } from "../../navbar/connectWallet/constants";
 import { Address } from "./Address";
 import { balanceStore } from "../../../store/balanceStore";
 import { swapStore } from "../../../store/swapStore";
+import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 
 type AddressMenuProps = {
   onClose: () => void;
@@ -16,6 +17,7 @@ type AddressMenuProps = {
 
 export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const { address, disconnect } = useEVMWallet();
+  const { starknetAddress, starknetDisconnect } = useStarknetWallet();
   const { account: btcAddress, disconnect: btcDisconnect } = useBitcoinWallet();
   const { setOpenModal } = modalStore();
   const { clear } = swapStore();
@@ -26,14 +28,15 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const logoutTooltipId = useId();
 
   const showConnectWallet = useMemo(() => {
-    return !(address && btcAddress);
-  }, [address, btcAddress]);
+    return !(address && btcAddress && starknetAddress);
+  }, [address, btcAddress, starknetAddress]);
 
   const handleDisconnectClick = () => {
     clear();
     disconnect();
     onClose();
     btcDisconnect();
+    starknetDisconnect();
     clearBalances();
   };
 
@@ -51,6 +54,12 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
           {address && <Address address={address} logo={ecosystems.evm.icon} />}
           {btcAddress && (
             <Address address={btcAddress} logo={ecosystems.bitcoin.icon} />
+          )}
+          {starknetAddress && (
+            <Address
+              address={starknetAddress}
+              logo={ecosystems.starknet.icon}
+            />
           )}
           {showConnectWallet && (
             <div
