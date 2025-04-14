@@ -71,7 +71,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
     { name: "garden", key: "garden", icon: <GardenLogo /> },
     { name: "Relay", key: "Relay", icon: <RelayLinkIcon /> },
     { name: "Chainflip", key: "Chainflip", icon: <ChainflipIcon /> },
-    { name: "THORSwap", key: "THORSwap", icon: <ThorswapIcon /> },
+    { name: "THORSwap", key: "Thorswap", icon: <ThorswapIcon /> },
   ];
 
   const gardenFee = useMemo(
