@@ -16,6 +16,8 @@ import { useBalances } from "./useBalances";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { ordersStore } from "../store/ordersStore";
 import { Environment } from "@gardenfi/utils";
+import { modalNames, modalStore } from "../store/modalStore";
+import { ConnectingWalletStore } from "../store/connectWalletStore";
 
 export const useSwap = () => {
   const {
@@ -39,14 +41,15 @@ export const useSwap = () => {
     clearSwapState,
     setBtcAddress,
   } = swapStore();
+  const { setOpenModal } = modalStore();
   const { tokenBalance: inputTokenBalance } = useBalances(inputAsset);
   const { strategies } = assetInfoStore();
   const { setOrderInProgress } = ordersStore();
-  const { address } = useEVMWallet();
+  const { address, disconnect } = useEVMWallet();
   const { swapAndInitiate, getQuote } = useGarden();
   const { provider, account } = useBitcoinWallet();
   const controller = useRef<AbortController | null>(null);
-
+  const { setConnectingWallet } = ConnectingWalletStore();
   const isInsufficientBalance = useMemo(
     () => new BigNumber(inputAmount).gt(inputTokenBalance),
     [inputAmount, inputTokenBalance]
@@ -322,6 +325,15 @@ export const useSwap = () => {
       });
 
       if (res.error) {
+        if (
+          res.error.includes(
+            "Cannot read properties of undefined (reading 'toLowerCase')"
+          )
+        ) {
+          disconnect();
+          setConnectingWallet(null);
+          setOpenModal(modalNames.versionUpdate);
+        }
         console.error("failed to create order ❌", res.error);
         setIsSwapping(false);
         return;
