@@ -1,4 +1,4 @@
-import { Modal } from "@gardenfi/garden-book";
+import { Modal, OpacityVariants } from "@gardenfi/garden-book";
 import { BottomSheet } from "../../common/BottomSheet";
 import { FC, ReactNode } from "react";
 import { ModalProps } from "./Modal";
@@ -7,8 +7,9 @@ import { viewPortStore } from "../../store/viewPortStore";
 export const ResponsiveModal: FC<
   ModalProps & {
     children: ReactNode;
+    opacityLevel?: OpacityVariants;
   }
-> = ({ open, onClose, children }) => {
+> = ({ open, onClose, children, opacityLevel = "medium" }) => {
   const { isMobile } = viewPortStore();
 
   return (
@@ -20,7 +21,7 @@ export const ResponsiveModal: FC<
       ) : (
         <Modal open={open} onClose={onClose}>
           <Modal.Children
-            opacityLevel={"medium"}
+            opacityLevel={opacityLevel}
             className="flex max-w-[600px] flex-col gap-6 rounded-2xl p-3"
           >
             {children}
