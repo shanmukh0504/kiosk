@@ -12,20 +12,35 @@ const ConnectedWallets = () => {
   const { starknetAddress } = useStarknetWallet();
   const { account: btcAddress } = useBitcoinWallet();
   const handleAddressClick = () => setOpenModal(modalNames.transactions);
+
   return (
     <>
       <Opacity
         level="medium"
-        className="ml-auto flex min-h-8 min-w-8 cursor-pointer items-center justify-center gap-2 rounded-[24px] p-3 sm:px-4 sm:py-2"
+        className="ml-auto flex min-h-[32px] min-w-[32px] cursor-pointer items-center justify-center gap-1.5 rounded-[24px] p-2 transition-all duration-300 hover:bg-opacity-80 sm:min-h-[40px] sm:min-w-[40px] sm:gap-2 sm:p-3"
         onClick={handleAddressClick}
       >
-        <WalletIcon className="h-6 w-6" />
-        {address && <img src={ecosystems.evm.icon} className="my-1 h-6 w-6" />}
+        <WalletIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+        {address && (
+          <img
+            src={ecosystems.evm.icon}
+            className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            alt="EVM wallet"
+          />
+        )}
         {btcAddress && (
-          <img src={ecosystems.bitcoin.icon} className="my-1 h-6 w-6" />
+          <img
+            src={ecosystems.bitcoin.icon}
+            className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            alt="Bitcoin wallet"
+          />
         )}
         {starknetAddress && (
-          <img src={ecosystems.starknet.icon} className="my-1 h-6 w-6" />
+          <img
+            src={ecosystems.starknet.icon}
+            className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            alt="Starknet wallet"
+          />
         )}
       </Opacity>
     </>

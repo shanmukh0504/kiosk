@@ -28,16 +28,16 @@ function App() {
             starknetWallet!
           ),
           evm: new EvmRelay(
-            "https://orderbook-stage.hashira.io",
+            "https://evm-relay-stage.hashira.io",
             walletClient!,
             Siwe.fromDigestKey(
-              new Url("https://orderbook-stage.hashira.io"),
+              new Url("https://evm-relay-stage.hashira.io"),
               DigestKey.generateRandom().val
             )
           ),
         },
         quote: new Quote("https://quote-staging.hashira.io/"),
-        api: "https://orderbook-stage.hashira.io",
+        api: "https://evm-relay-stage.hashira.io",
       }}
     >
       <Layout>
