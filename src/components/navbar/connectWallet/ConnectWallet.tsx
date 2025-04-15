@@ -20,6 +20,7 @@ import { modalNames, modalStore } from "../../../store/modalStore";
 import { authStore } from "../../../store/authStore";
 import { ecosystems, evmToBTCid } from "./constants";
 import { AnimatePresence } from "framer-motion";
+import { ConnectingWalletStore } from "../../../store/connectWalletStore";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -27,7 +28,6 @@ type ConnectWalletProps = {
 };
 
 export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
-  const [connectingWallet, setConnectingWallet] = useState<string | null>(null);
   const [multiWalletConnector, setMultiWalletConnector] = useState<{
     evm: Connector;
     btc: IInjectedBitcoinProvider;
@@ -38,6 +38,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
 
   const { connectors, connectAsync, connector, address } = useEVMWallet();
   const { availableWallets, connect, provider } = useBitcoinWallet();
+  const { connectingWallet, setConnectingWallet } = ConnectingWalletStore();
   const { modalData, setOpenModal } = modalStore();
   const { setAuth } = authStore();
 

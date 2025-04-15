@@ -9,11 +9,14 @@ import { isCurrentRoute } from "../../utils/utils";
 import { MobileMenu } from "./MobileMenu";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { modalNames, modalStore } from "../../store/modalStore";
+import { ConnectingWalletStore } from "../../store/connectWalletStore";
 
 export const Navbar = () => {
   const [isInitiatingSM, setIsInitiatingSM] = useState(false);
+  const [initializationError, setInitializationError] = useState(false);
 
-  const { isConnected, address } = useEVMWallet();
+  const { setConnectingWallet } = ConnectingWalletStore();
+  const { isConnected, address, disconnect } = useEVMWallet();
   const { setOpenModal } = modalStore();
   const { account } = useBitcoinWallet();
   const { garden, isExecuting, isExecutorRequired } = useGarden();
@@ -38,22 +41,43 @@ export const Navbar = () => {
   };
 
   const handleInitializeSM = useCallback(async () => {
-    if (!garden) return;
+    if (!garden || initializationError) return;
     setIsInitiatingSM(true);
     const res = await garden.secretManager.initialize();
     if (res.error) {
-      // if (res.error.includes("User rejected the request"))
-      //   setShouldInitiateSM(true);
-      setIsInitiatingSM(false);
-      return;
+      if (
+        res.error.includes(
+          "Cannot read properties of undefined (reading 'toLowerCase')"
+        )
+      ) {
+        setIsInitiatingSM(false);
+        setInitializationError(true);
+        disconnect();
+        setConnectingWallet(null);
+        setOpenModal(modalNames.versionUpdate);
+        return;
+      }
     }
     setIsInitiatingSM(false);
-  }, [garden]);
+    return;
+  }, [
+    garden,
+    disconnect,
+    setOpenModal,
+    initializationError,
+    setConnectingWallet,
+  ]);
 
   useEffect(() => {
-    if (isInitiatingSM || !garden) return;
+    if (isInitiatingSM || !garden || initializationError) return;
     if (shouldInitiateSM) handleInitializeSM();
-  }, [isInitiatingSM, garden, shouldInitiateSM, handleInitializeSM]);
+  }, [
+    isInitiatingSM,
+    garden,
+    shouldInitiateSM,
+    handleInitializeSM,
+    initializationError,
+  ]);
 
   return (
     <div
@@ -79,7 +103,7 @@ export const Navbar = () => {
           })}
         </div>
       </div>
-      {isFullyConnected ? (
+      {isFullyConnected || address ? (
         <Address />
       ) : (
         <Button
