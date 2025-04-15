@@ -149,6 +149,6 @@ export const calculateChainflipFee = async (
     (sum, key) => sum + feeMap[key] * assetPrices[key],
     0
   );
-
+  
   return Number(totalFeeInUsd.toFixed(2));
 };

@@ -84,24 +84,39 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
 
-  const swapEntries = useMemo(
-    () => (swapData ? Object.entries(swapData) : []),
-    [swapData]
-  );
-
   const swapEntriesWithGarden = useMemo(() => {
+    if (!swapData) return [];
+
+    const gardenTimeParsed = parseTime(gardenSwapTime);
     const gardenEntry: [string, comparisonMetric] = [
       "garden",
-      { fee: gardenFee, time: parseTime(gardenSwapTime) },
+      { fee: gardenFee, time: gardenTimeParsed },
     ];
+
+    let entries = Object.entries(swapData);
+
+    if (isFees) {
+      entries = entries.sort((a, b) => a[1].fee - b[1].fee);
+    } else if (isTime) {
+      entries = entries.sort((a, b) => a[1].time - b[1].time);
+    }
+
+    const filteredEntries = entries.filter(([, data]) => {
+      if (isTime) {
+        return data.time >= gardenTimeParsed;
+      } else if (isFees) {
+        return data.fee >= gardenFee;
+      }
+      return true;
+    });
 
     return [
       gardenEntry,
-      ...swapEntries.map(
+      ...filteredEntries.map(
         ([key, data]) => [key, data] as [string, comparisonMetric]
       ),
     ];
-  }, [gardenFee, gardenSwapTime, swapEntries]);
+  }, [swapData, gardenFee, gardenSwapTime, isTime, isFees]);
 
   const debouncedFetchAllData = useMemo(() => {
     return debounce(async (inputAsset, outputAsset, inputAmount) => {
@@ -186,7 +201,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
     if (
       loading ||
       !swapData ||
-      swapEntries.length === 0 ||
+      swapEntriesWithGarden.length === 1 ||
       !inputAmount ||
       error.inputError ||
       error.outputError ||
@@ -205,6 +220,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
       maxTimeSaved = Math.max(maxTimeSaved, timeDiff);
       maxCostSaved = Math.max(maxCostSaved, feeDiff);
     });
+    console.log(maxCostSaved , maxTimeSaved)
 
     onComparisonUpdate(maxTimeSaved, maxCostSaved);
   }, [
@@ -212,12 +228,12 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
     gardenSwapTime,
     gardenFee,
     onComparisonUpdate,
-    swapEntries.length,
     loading,
     inputAmount,
     error.inputError,
     error.outputError,
     error.swapError,
+    swapEntriesWithGarden.length,
   ]);
   return (
     <motion.div
@@ -276,7 +292,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
                     size="h5"
                     weight="medium"
                   >
-                    ~{formatTime(time)}
+                    {formatTime(time)}
                   </Typography>
                 </div>
               )}

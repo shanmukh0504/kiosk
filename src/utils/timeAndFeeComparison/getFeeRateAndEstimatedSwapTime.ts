@@ -1,7 +1,5 @@
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
-import { SwapSDK, ChainflipNetwork } from "@chainflip/sdk/swap";
 import axios from "axios";
-import { network } from "../../constants/constants";
 import {
   API_URLS,
   BTC_MAINNET_CHAIN_ID,
@@ -146,19 +144,26 @@ export const getChainflipFee = async (
     return { fee: 0, time: 0 };
   }
 
+  const sendAmount = (
+    amount * (srcFormat.asset === "BTC" ? 1e8 : 1e6)
+  ).toString();
+
   const quoteRequest = {
+    amount: sendAmount,
     srcChain: srcFormat.chain,
-    destChain: destFormat.chain,
     srcAsset: srcFormat.asset,
+    destChain: destFormat.chain,
     destAsset: destFormat.asset,
-    amount: (amount * 1e8).toString(),
+    isVaultSwap: false,
+    dcaEnabled: true,
   };
 
   try {
-    const swapSDK = new SwapSDK({ network: network as ChainflipNetwork });
-    const quoteData = await swapSDK.getQuoteV2(quoteRequest);
+    const quoteData = await axios.get(API_URLS.chainflip, {
+      params: quoteRequest,
+    });
     const { includedFees, estimatedDurationSeconds, poolInfo } =
-      quoteData.quotes[0];
+      quoteData.data[0];
     const totalFeeInUsd = await calculateChainflipFee(includedFees, poolInfo);
     return {
       fee: totalFeeInUsd,

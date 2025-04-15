@@ -31,6 +31,7 @@ export const API_URLS = {
       ? "https://api.relay.link/quote"
       : "https://api.testnets.relay.link/quote",
   coingecko: "https://api.coingecko.com/api/v3/simple/price",
+  chainflip: "https://chainflip-swap.chainflip.io/v2/quote"
 };
 
 export const RELAY_BTC_SWAP_TIME = 1200; //in seconds

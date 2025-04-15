@@ -8,6 +8,7 @@ import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useSwap } from "../../hooks/useSwap";
 import { isBitcoin } from "@gardenfi/orderbook";
 import { motion, AnimatePresence } from "framer-motion";
+import { formatAmount } from "../../utils/utils";
 
 type SwapDetailsProps = {
   tokenPrices: TokenPrices;
@@ -125,7 +126,7 @@ export const SwapDetails: FC<SwapDetailsProps> = ({
                   </Typography>
                   <div className="flex gap-5 py-1">
                     <Typography size="h4" weight="medium">
-                      {`$${maxCostSaved.toFixed(2)}`}
+                      {`$${formatAmount(maxCostSaved, 0, 2)}`}
                     </Typography>
                   </div>
                 </div>
@@ -139,7 +140,7 @@ export const SwapDetails: FC<SwapDetailsProps> = ({
             </Typography>
             <div className="flex gap-5 py-1">
               <Typography size="h4" weight="medium">
-                {fees ? "$" + Number(fees.toFixed(4)) : ""}
+                {fees ? "$" + formatAmount(fees, 0, 2) : ""}
               </Typography>
             </div>
           </div>
