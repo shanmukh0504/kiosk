@@ -20,6 +20,7 @@ import { modalNames, modalStore } from "../../../store/modalStore";
 import { authStore } from "../../../store/authStore";
 import { ecosystems, evmToBTCid } from "./constants";
 import { AnimatePresence } from "framer-motion";
+import { ConnectingWalletStore } from "../../../store/connectWalletStore";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -27,7 +28,6 @@ type ConnectWalletProps = {
 };
 
 export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
-  const [connectingWallet, setConnectingWallet] = useState<string | null>(null);
   const [multiWalletConnector, setMultiWalletConnector] = useState<{
     evm: Connector;
     btc: IInjectedBitcoinProvider;
@@ -38,6 +38,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
 
   const { connectors, connectAsync, connector, address } = useEVMWallet();
   const { availableWallets, connect, provider } = useBitcoinWallet();
+  const { connectingWallet, setConnectingWallet } = ConnectingWalletStore();
   const { modalData, setOpenModal } = modalStore();
   const { setAuth } = authStore();
 
@@ -99,6 +100,40 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       }
     } else if (connector.isEVM) {
       if (!connector.wallet?.evmWallet) return;
+
+      if (
+        connector.id === "metaMaskSDK" ||
+        connector.id === "io.metamask" ||
+        (connector.id === "injected" && window.ethereum?.isMetaMask)
+      ) {
+        const provider = window.ethereum;
+        if (provider && (provider.isMetaMask || provider._metamask)) {
+          try {
+            const version = await provider.request({
+              method: "web3_clientVersion",
+              params: [],
+            });
+
+            const versionMatch = version.match(/v(\d+\.\d+\.\d+)/);
+            const versionNumber = versionMatch ? versionMatch[1] : null;
+
+            if (versionNumber) {
+              const [major, minor, patch] = versionNumber
+                .split(".")
+                .map(Number);
+              if (major === 12 && minor === 15 && patch === 1) {
+                onClose();
+                setOpenModal(modalNames.versionUpdate);
+                setConnectingWallet(null);
+                return;
+              }
+            }
+          } catch (error) {
+            console.error("Error getting MetaMask version:", error);
+          }
+        }
+      }
+
       const res = await handleEVMConnect(
         connector.wallet.evmWallet,
         connectAsync
