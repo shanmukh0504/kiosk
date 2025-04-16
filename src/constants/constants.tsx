@@ -62,4 +62,5 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "bera_testnet",
   "citrea_testnet",
   "monad_testnet",
+  "hyperliquid_testnet",
 ] as const;

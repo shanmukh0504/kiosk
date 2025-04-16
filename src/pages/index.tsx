@@ -6,16 +6,17 @@ import { StakePage } from "./stake";
 import { GardenProvider } from "@gardenfi/react-hooks";
 import { useWalletClient } from "wagmi";
 import { Environment } from "@gardenfi/utils";
-// import { QuestsPage } from "./quests";
 
 function App() {
   const { data: walletClient } = useWalletClient();
+
   return (
     <GardenProvider
       config={{
-        store: localStorage,
         environment: network as Environment,
-        walletClient: walletClient,
+        wallets: {
+          evm: walletClient,
+        },
       }}
     >
       <Layout>
