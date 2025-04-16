@@ -661,7 +661,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/garden-book@npm:^0.1.79":
+"@gardenfi/garden-book@npm:^0.1.85":
   version: 0.1.85
   resolution: "@gardenfi/garden-book@npm:0.1.85"
   dependencies:
@@ -5909,7 +5909,7 @@ __metadata:
   dependencies:
     "@eslint/js": "npm:^9.13.0"
     "@gardenfi/core": "npm:2.0.25-beta.25"
-    "@gardenfi/garden-book": "npm:^0.1.79"
+    "@gardenfi/garden-book": "npm:^0.1.85"
     "@gardenfi/orderbook": "npm:2.0.9-beta.19"
     "@gardenfi/react-hooks": "npm:2.0.28-beta.27"
     "@gardenfi/utils": "npm:2.0.6-beta.18"
