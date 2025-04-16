@@ -220,7 +220,6 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
       maxTimeSaved = Math.max(maxTimeSaved, timeDiff);
       maxCostSaved = Math.max(maxCostSaved, feeDiff);
     });
-    console.log(maxCostSaved , maxTimeSaved)
 
     onComparisonUpdate(maxTimeSaved, maxCostSaved);
   }, [

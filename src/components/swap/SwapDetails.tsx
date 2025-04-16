@@ -9,6 +9,7 @@ import { useSwap } from "../../hooks/useSwap";
 import { isBitcoin } from "@gardenfi/orderbook";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatAmount } from "../../utils/utils";
+import { formatTime } from "../../utils/timeAndFeeComparison/utils";
 
 type SwapDetailsProps = {
   tokenPrices: TokenPrices;
@@ -94,7 +95,7 @@ export const SwapDetails: FC<SwapDetailsProps> = ({
                 className="w-full"
               >
                 <div
-                  className="flex cursor-pointer items-center justify-between gap-0 px-4 hover:bg-white"
+                  className="relative z-10 flex cursor-pointer items-center justify-between gap-0 px-4 hover:bg-white"
                   onClick={() => handleShowComparison("time")}
                 >
                   <Typography size="h5" weight="medium">
@@ -102,7 +103,7 @@ export const SwapDetails: FC<SwapDetailsProps> = ({
                   </Typography>
                   <div className="flex gap-5 py-1">
                     <Typography size="h4" weight="medium">
-                      {`${Math.floor(maxTimeSaved / 60)}m ${maxTimeSaved % 60}s`}
+                      {formatTime(maxTimeSaved)}
                     </Typography>
                   </div>
                 </div>

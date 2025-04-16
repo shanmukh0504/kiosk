@@ -56,11 +56,15 @@ type ChainflipIncludedFee = {
 type ChainflipIncludedFeeResponse = ChainflipIncludedFee[];
 type ChainflipPoolInfoResponse = ChainflipPoolInfo[];
 
-export const formatTime = (seconds: number | string) => {
-  if (typeof seconds !== "number" || isNaN(seconds)) return "-";
-  const minutes = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${minutes}m ${secs.toFixed(0)}s`;
+export const formatTime = (totalSeconds: number | string): string => {
+  const sec = Number(totalSeconds);
+  if (isNaN(sec)) return "-";
+
+  const hours = Math.floor(sec / 3600);
+  const minutes = Math.floor((sec % 3600) / 60);
+  const seconds = sec % 60;
+
+  return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m ${seconds}s`;
 };
 
 export const parseTime = (time: string | undefined) => {
@@ -78,7 +82,7 @@ export const parseTime = (time: string | undefined) => {
 export const formatTimeDiff = (time: number, gardenSwapTime: string) => {
   const diff = time - parseTime(gardenSwapTime);
   const sign = diff >= 0 ? "+" : "-";
-  return `${sign}${Math.floor(Math.abs(diff) / 60)}m ${Math.abs(diff) % 60}s`;
+  return `${sign}${formatTime(Math.abs(diff))}`;
 };
 
 export const getFormattedAsset = (asset: Asset, type: AssetMappingType) =>
@@ -149,6 +153,6 @@ export const calculateChainflipFee = async (
     (sum, key) => sum + feeMap[key] * assetPrices[key],
     0
   );
-  
+
   return Number(totalFeeInUsd.toFixed(2));
 };
