@@ -60,7 +60,7 @@ export const ordersStore = create<OrdersStore>((set, get) => ({
       const blockNumbers = blockNumberStore.getState().blockNumbers;
       if (!blockNumbers) return;
 
-      const res = await orderBook.getMatchedOrders(address, false, {
+      const res = await orderBook.getMatchedOrders(address, "fulfilled", {
         per_page: state.ordersHistory.perPage,
       });
       if (!res.ok) {

@@ -51,6 +51,7 @@ const getOrderStatusLabel = (status: OrderStatus) => {
     case OrderStatus.RefundDetected:
     case OrderStatus.CounterPartyRedeemed:
     case OrderStatus.CounterPartyRedeemDetected:
+    case OrderStatus.Completed:
       return StatusLabel.Completed;
     default:
       return StatusLabel.Pending;

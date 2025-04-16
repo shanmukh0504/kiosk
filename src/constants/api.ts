@@ -1,4 +1,4 @@
-import { Url } from "@gardenfi/utils";
+import { Network, Url } from "@gardenfi/utils";
 
 const REQUIRED_ENV_VARS = {
   STAKING_URL: import.meta.env.VITE_STAKING_URL,
@@ -20,9 +20,14 @@ export const API = () => {
     home: new Url("https://garden.finance"),
     data: {
       data: new Url(REQUIRED_ENV_VARS.DATA_URL),
-      assets: new Url("assets", REQUIRED_ENV_VARS.DATA_URL),
+      assets: (network: Network) =>
+        new Url(REQUIRED_ENV_VARS.DATA_URL)
+          .endpoint("assets")
+          .endpoint(network),
       blockNumbers: (network: "mainnet" | "testnet") =>
-        new Url("blocknumber", REQUIRED_ENV_VARS.DATA_URL).endpoint(network),
+        new Url(REQUIRED_ENV_VARS.DATA_URL)
+          .endpoint("blocknumbers")
+          .endpoint(network),
     },
     leaderboard: { quests: REQUIRED_ENV_VARS.QUESTS_URL + "/quests" },
     buildId: "/build-id.json",

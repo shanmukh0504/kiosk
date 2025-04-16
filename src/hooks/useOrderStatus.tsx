@@ -161,6 +161,7 @@ export const useOrderStatus = () => {
       case OrderStatus.Redeemed:
       case OrderStatus.CounterPartyRedeemDetected:
       case OrderStatus.CounterPartyRedeemed:
+      case OrderStatus.Completed:
         return {
           1: {
             title: SimplifiedOrderStatus.orderCreated,

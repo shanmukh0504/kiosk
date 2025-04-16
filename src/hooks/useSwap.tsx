@@ -154,8 +154,8 @@ export const useSwap = () => {
               signal: controller.current.signal,
             },
           });
-          if (quote.error) {
-            if (quote.error.includes("insufficient liquidity")) {
+          if (!quote || quote.error) {
+            if (quote?.error?.includes("insufficient liquidity")) {
               setError({ quoteError: QuoteError.InsufficientLiquidity });
             }
             setAmount(isExactOut ? IOType.input : IOType.output, "0");
