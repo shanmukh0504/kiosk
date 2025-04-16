@@ -30,14 +30,25 @@ export const SwapDetails: FC<SwapDetailsProps> = ({
 
   const animationConfig = {
     initial: { opacity: 0, height: 0 },
-    animate: { opacity: 1, height: "auto" },
-    exit: { opacity: 0, height: 0 },
-    transition: {
-      type: "spring",
-      stiffness: 200,
-      damping: 25,
-      mass: 0.8,
-      duration: 0.3,
+    animate: {
+      opacity: 1,
+      height: "auto",
+      transition: {
+        type: "spring",
+        stiffness: 160,
+        damping: 25,
+        mass: 0.8,
+      },
+    },
+    exit: {
+      opacity: 0,
+      height: 0,
+      transition: {
+        type: "spring",
+        stiffness: 900,
+        damping: 50,
+        mass: 0.2,
+      },
     },
   };
 

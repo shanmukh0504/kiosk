@@ -62,7 +62,7 @@ export const formatTime = (totalSeconds: number | string): string => {
 
   const hours = Math.floor(sec / 3600);
   const minutes = Math.floor((sec % 3600) / 60);
-  const seconds = sec % 60;
+  const seconds = (sec % 60).toFixed(0);
 
   return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m ${seconds}s`;
 };
