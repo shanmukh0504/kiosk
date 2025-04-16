@@ -1,10 +1,11 @@
 import { Chain, isBitcoin } from "@gardenfi/orderbook";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
-import { FC, useMemo } from "react";
+import { FC, useId, useMemo } from "react";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { ArrowNorthEastIcon, EditIcon } from "@gardenfi/garden-book";
 import { Typography } from "@gardenfi/garden-book";
 import { useSwap } from "../../hooks/useSwap";
+import { Tooltip } from "../../common/Tooltip";
 
 type AddressDetailsProps = {
   isRefund?: boolean;
@@ -16,6 +17,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
   address,
 }) => {
   const { chains } = assetInfoStore();
+  const tooltipId = useId();
   const { inputAsset, outputAsset, setIsEditBTCAddress, isEditBTCAddress } =
     useSwap();
 
@@ -46,7 +48,11 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
               : "pointer-events-none -mb-1 max-h-0 opacity-0"
           }`}
         >
-          <Typography size="h5" weight="medium">
+          <Typography
+            data-tooltip-id={isRefund ? tooltipId : ""}
+            size="h5"
+            weight="medium"
+          >
             {isRefund ? "Refund" : "Receive"} address
           </Typography>
           <div className="flex items-center gap-2.5">
@@ -70,6 +76,16 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
           </div>
         </div>
       )}
+      <Typography size="h5" weight="medium">
+        {isRefund && (
+          <Tooltip
+            id={tooltipId}
+            place="right"
+            content="If the swap expires, your Bitcoin will be refunded to this address."
+            multiline={true}
+          />
+        )}
+      </Typography>
     </>
   );
 };

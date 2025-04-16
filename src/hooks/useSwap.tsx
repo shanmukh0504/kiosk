@@ -236,41 +236,45 @@ export const useSwap = () => {
   const handleInputAmountChange = useCallback(
     async (amount: string) => {
       setAmount(IOType.input, amount);
-      setError({ swapError: undefined });
       const amountInNumber = Number(amount);
+
       if (!amountInNumber) {
         // cancel debounced fetch quote
         debouncedFetchQuote.cancel();
         // abort if any calls are already in progress
         if (controller.current) controller.current.abort();
         setAmount(IOType.output, "");
+        setError({ inputError: Errors.none, swapError: undefined });
         return;
       }
+
       if (inputAsset && minAmount && amountInNumber < minAmount) {
         setError({
           inputError: Errors.minError(minAmount.toString(), inputAsset?.symbol),
+          swapError: undefined,
         });
         setAmount(IOType.output, "0");
         // cancel debounced fetch quote
         debouncedFetchQuote.cancel();
         // abort if any calls are already in progress
         if (controller.current) controller.current.abort();
-
         return;
       }
+
       if (inputAsset && maxAmount && amountInNumber > maxAmount) {
         setError({
           inputError: Errors.maxError(maxAmount.toString(), inputAsset?.symbol),
+          swapError: undefined,
         });
         setAmount(IOType.output, "");
         // cancel debounced fetch quote
         debouncedFetchQuote.cancel();
         // abort if any calls are already in progress
         if (controller.current) controller.current.abort();
-
         return;
       }
-      setError({ inputError: Errors.none });
+
+      setError({ inputError: Errors.none, swapError: undefined });
 
       if (!inputAsset || !outputAsset || !Number(amount)) return;
 
@@ -290,17 +294,19 @@ export const useSwap = () => {
 
   const handleOutputAmountChange = async (amount: string) => {
     setAmount(IOType.output, amount);
-    setError({ swapError: undefined });
     const amountInNumber = Number(amount);
+
     if (!amountInNumber) {
       // cancel debounced fetch quote
       debouncedFetchQuote.cancel();
       // abort if any calls are already in progress
       if (controller.current) controller.current.abort();
       setAmount(IOType.input, "");
+      setError({ outputError: Errors.none, swapError: undefined });
       return;
     }
-    setError({ outputError: Errors.none });
+
+    setError({ outputError: Errors.none, swapError: undefined });
 
     if (!inputAsset || !outputAsset || !amountInNumber) return;
 
