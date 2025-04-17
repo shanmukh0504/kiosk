@@ -61,14 +61,14 @@ export const GardenSupportedWallets: Record<
     isBitcoinSupported: false,
     isEVMSupported: true,
   },
-  "app.phantom": {
+   "app.phantom": {
     id: "app.phantom",
     name: "Phantom",
     logo: "https://garden-finance.imgix.net/wallets/phantom.svg",
     installLink:
       "https://chromewebstore.google.com/detail/phantom/bfnaelmomeimhlpmgjnjophhpkkoljpa?hl=en",
     isBitcoinSupported: false,
-    isEVMSupported: true,
+    isEVMSupported: network === Network.MAINNET,
   },
   "com.coinbase.wallet": {
     id: "com.coinbase.wallet",

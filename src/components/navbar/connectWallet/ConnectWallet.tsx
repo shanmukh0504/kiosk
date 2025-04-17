@@ -20,6 +20,7 @@ import { modalNames, modalStore } from "../../../store/modalStore";
 import { authStore } from "../../../store/authStore";
 import { ecosystems, evmToBTCid } from "./constants";
 import { AnimatePresence } from "framer-motion";
+import { ConnectingWalletStore } from "../../../store/connectWalletStore";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -27,7 +28,6 @@ type ConnectWalletProps = {
 };
 
 export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
-  const [connectingWallet, setConnectingWallet] = useState<string | null>(null);
   const [multiWalletConnector, setMultiWalletConnector] = useState<{
     evm: Connector;
     btc: IInjectedBitcoinProvider;
@@ -38,6 +38,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
 
   const { connectors, connectAsync, connector, address } = useEVMWallet();
   const { availableWallets, connect, provider } = useBitcoinWallet();
+  const { connectingWallet, setConnectingWallet } = ConnectingWalletStore();
   const { modalData, setOpenModal } = modalStore();
   const { setAuth } = authStore();
 
@@ -45,14 +46,21 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
 
   const allAvailableWallets = useMemo(() => {
     if (showOnlyBTCWallets) return getAvailableWallets(availableWallets);
-
-    const allWallets = getAvailableWallets(availableWallets, connectors);
+    let allWallets;
+    allWallets = getAvailableWallets(availableWallets, connectors);
 
     if (selectedEcosystem === "Bitcoin")
       return allWallets.filter((wallet) => wallet.isBitcoin);
     else if (selectedEcosystem === "EVM")
       return allWallets.filter((wallet) => wallet.isEVM);
 
+    if (
+      typeof window !== "undefined" &&
+      window.ethereum &&
+      window.ethereum.isCoinbaseWallet
+    ) {
+      allWallets = allWallets.filter((wallet) => wallet.id !== "injected");
+    }
     return allWallets;
   }, [showOnlyBTCWallets, availableWallets, connectors, selectedEcosystem]);
 
@@ -92,6 +100,40 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       }
     } else if (connector.isEVM) {
       if (!connector.wallet?.evmWallet) return;
+
+      if (
+        connector.id === "metaMaskSDK" ||
+        connector.id === "io.metamask" ||
+        (connector.id === "injected" && window.ethereum?.isMetaMask)
+      ) {
+        const provider = window.ethereum;
+        if (provider && (provider.isMetaMask || provider._metamask)) {
+          try {
+            const version = await provider.request({
+              method: "web3_clientVersion",
+              params: [],
+            });
+
+            const versionMatch = version.match(/v(\d+\.\d+\.\d+)/);
+            const versionNumber = versionMatch ? versionMatch[1] : null;
+
+            if (versionNumber) {
+              const [major, minor, patch] = versionNumber
+                .split(".")
+                .map(Number);
+              if (major === 12 && minor === 15 && patch === 1) {
+                onClose();
+                setOpenModal(modalNames.versionUpdate);
+                setConnectingWallet(null);
+                return;
+              }
+            }
+          } catch (error) {
+            console.error("Error getting MetaMask version:", error);
+          }
+        }
+      }
+
       const res = await handleEVMConnect(
         connector.wallet.evmWallet,
         connectAsync
@@ -176,7 +218,15 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                       (provider.id === wallet.id ||
                         provider.id === evmToBTCid[wallet.id])
                     ),
-                    evm: !!(connector && connector.id === wallet.id),
+                    evm: !!(
+                      connector &&
+                      (connector.id === wallet.id ||
+                        (typeof window !== "undefined" &&
+                          window.ethereum &&
+                          window.ethereum.isCoinbaseWallet &&
+                          connector.id === "injected" &&
+                          wallet.id === "com.coinbase.wallet"))
+                    ),
                   }}
                   isAvailable={wallet.isAvailable}
                 />
@@ -201,7 +251,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           </a>
           and{" "}
           <a
-            href="https://garden.finance/privacy.pdf"
+            href="https://garden.finance/GardenFinancePrivacyPolicy.pdf"
             target="_blank"
             rel="noreferrer"
             className="font-bold"

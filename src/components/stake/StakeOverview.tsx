@@ -7,7 +7,7 @@ import { useState, useMemo } from "react";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { Hex } from "viem";
 import { formatAmount } from "../../utils/utils";
-import { REWARD_CHAIN, REWARD_CONFIG } from "./constants";
+import { REWARD_CHAIN, STAKE_REWARD } from "./constants";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../../layout/wagmi/config";
 import { Toast } from "../toast/Toast";
@@ -27,7 +27,7 @@ export const StakeOverview = () => {
     useReadContract({
       abi: distributerABI,
       functionName: "getClaimedAmount",
-      address: REWARD_CONFIG[REWARD_CHAIN].DISTRIBUTER_CONTRACT as Hex,
+      address: STAKE_REWARD.CBBTC.DISTRIBUTER_CONTRACT as Hex,
       args: [address as Hex],
       chainId: REWARD_CHAIN,
       query: {
@@ -48,14 +48,14 @@ export const StakeOverview = () => {
       ? formatAmount(
           stakeRewards.totalcbBtcReward - Number(claimedAmount ?? 0),
           8,
-          5
+          8
         )
       : 0;
   }, [stakeRewards, claimedAmount]);
 
   const handleRewardClick = async () => {
     if (!chainId || !address || !stakeRewards) return;
-    const rewardConfig = REWARD_CONFIG[REWARD_CHAIN];
+    const rewardConfig = STAKE_REWARD.CBBTC;
     if (!rewardConfig) return;
 
     try {
@@ -139,18 +139,16 @@ export const StakeOverview = () => {
                       seedReward={formatAmount(
                         stakeRewards?.totalSeedReward ?? 0,
                         SEED_DECIMALS,
-                        5
+                        4
                       )}
                       cbBtcReward={formatAmount(
                         Number(
                           stakeRewards?.rewardResponse.cumulative_rewards_cbbtc
-                        ),
-                        8,
-                        5
+                        ),8
                       )}
                     />
                   }
-                  className="w-[120px] cursor-pointer sm:w-fit md:w-[120px]"
+                  className="w-[120px] cursor-pointer sm:w-fit md:mr-5 md:w-[100px]"
                 />
               </AnimatePresence>
               <OverviewStats

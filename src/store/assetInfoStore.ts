@@ -1,10 +1,11 @@
 import { create } from "zustand";
-import { IOType } from "../constants/constants";
+import { IOType, network, SUPPORTED_CHAINS } from "../constants/constants";
 import { Asset, Chain } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
 import { IQuote, Strategies } from "@gardenfi/core";
 import { generateTokenKey } from "../utils/generateTokenKey";
+import { Network } from "@gardenfi/utils";
 
 export type Networks = {
   [chain in Chain]: ChainData & { assetConfig: Omit<Asset, "chain">[] };
@@ -76,15 +77,19 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   fetchAndSetAssetsAndChains: async () => {
     try {
       set({ isLoading: true });
-      const res = await axios.get<{
-        data: { networks: Networks };
-      }>(API().data.assets);
-      const assetsData = res.data.data.networks;
+      const res = await axios.get<Networks>(
+        API()
+          .data.assets(network as Network)
+          .toString()
+      );
+      const assetsData = res.data;
 
       const assets: Assets = {};
       const chains: Chains = {};
 
       for (const chainInfo of Object.values(assetsData)) {
+        if (!SUPPORTED_CHAINS.includes(chainInfo.identifier)) continue;
+
         chains[chainInfo.identifier] = {
           chainId: chainInfo.chainId,
           explorer: chainInfo.explorer,
@@ -93,6 +98,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           name: chainInfo.name,
           identifier: chainInfo.identifier,
         };
+
         for (const asset of chainInfo.assetConfig) {
           assets[
             generateTokenKey(chainInfo.identifier, asset.atomicSwapAddress)

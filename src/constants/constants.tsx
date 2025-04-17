@@ -1,11 +1,12 @@
-import { Asset, isBitcoin, isEVM } from "@gardenfi/orderbook";
+import { Asset, Chain, isBitcoin, isEVM } from "@gardenfi/orderbook";
 import { Environment, Network } from "@gardenfi/utils";
 
-export const INTERNAL_ROUTES = {
-  swap: { name: "Swap", path: "/" },
-  stake: { name: "Stake", path: "/stake" },
-  // quests: { name: "Quests", path: "/quests" },
-} as const;
+export const INTERNAL_ROUTES: Record<string, { name: string; path: string[] }> =
+  {
+    swap: { name: "Swap", path: ["/", "/swap"] },
+    stake: { name: "Stake", path: ["/stake"] },
+    // quests: { name: "Quests", path: "/quests" },
+  } as const;
 
 export const THEMES = {
   swap: "swap",
@@ -47,3 +48,19 @@ export const getTimeEstimates = (inputAsset: Asset) => {
 };
 
 export const network: Environment | Network = import.meta.env.VITE_NETWORK;
+
+export const SUPPORTED_CHAINS: Chain[] = [
+  "arbitrum",
+  "base",
+  "bera",
+  "bitcoin",
+  "ethereum",
+  "bitcoin_testnet",
+  "ethereum_sepolia",
+  "base_sepolia",
+  "arbitrum_sepolia",
+  "bera_testnet",
+  "citrea_testnet",
+  "monad_testnet",
+  "hyperliquid_testnet",
+] as const;

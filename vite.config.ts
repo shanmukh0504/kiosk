@@ -7,6 +7,7 @@ import fs from "fs";
 import wasm from "vite-plugin-wasm";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import topLevelAwait from "vite-plugin-top-level-await";
+import { metadataPlugin } from "./vite-metadata-plugin";
 
 const getRecentGitCommitHash = () => {
   try {
@@ -30,6 +31,7 @@ export default defineConfig({
   plugins: [
     react(),
     wasm(),
+    metadataPlugin(),
     nodePolyfills({
       globals: {
         process: true,
@@ -86,5 +88,6 @@ export default defineConfig({
   },
   define: {
     "process.env.BUILD_ID": JSON.stringify(buildId),
+    "process.version": JSON.stringify("v18.16.1"),
   },
 });

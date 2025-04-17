@@ -1,6 +1,7 @@
 import {
   Chip,
   CloseIcon,
+  GradientScroll,
   RadioCheckedIcon,
   SearchIcon,
   StarIcon,
@@ -134,35 +135,26 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
       </div>
 
       <div className="flex flex-wrap gap-3">
-        {orderedChains
-          .filter((c) => {
-            const assetsForChain = results?.filter(
-              (asset) => asset.chain === c.identifier
-            );
-            return assetsForChain && assetsForChain.length > 0;
-          })
-          .map((c, i) => (
-            // TODO: Chip component should ideally have a `checked` prop that
-            // automatically adds the below styles
-            <Chip
-              key={i}
+        {orderedChains.map((c, i) => (
+          <Chip
+            key={i}
+            className={`${
+              !chain || c.chainId !== chain.chainId
+                ? "bg-opacity-50 pr-1"
+                : "pr-2"
+            } cursor-pointer py-1 pl-3 transition-colors ease-cubic-in-out hover:bg-opacity-50`}
+            onClick={() => (c === chain ? setChain(undefined) : setChain(c))}
+          >
+            <Typography size="h3" weight="medium">
+              {c.name}
+            </Typography>
+            <RadioCheckedIcon
               className={`${
-                !chain || c.chainId !== chain.chainId
-                  ? "bg-opacity-50 pr-1"
-                  : "pr-2"
-              } cursor-pointer py-1 pl-3 transition-colors ease-cubic-in-out hover:bg-opacity-50`}
-              onClick={() => (c === chain ? setChain(undefined) : setChain(c))}
-            >
-              <Typography size="h3" weight="medium">
-                {c.name}
-              </Typography>
-              <RadioCheckedIcon
-                className={`${
-                  c === chain ? "w-4" : "w-0"
-                } fill-rose transition-all`}
-              />
-            </Chip>
-          ))}
+                c === chain ? "w-4" : "w-0"
+              } fill-rose transition-all`}
+            />
+          </Chip>
+        ))}
       </div>
       <div className="flex w-full items-center justify-between rounded-2xl bg-white px-4 py-2">
         <div className="flex-grow">
@@ -184,43 +176,45 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             Assets
           </Typography>
         </div>
-        {sortedResults?.map((asset) => {
-          const network = !isBitcoin(asset.chain)
-            ? chains?.[asset.chain]
-            : undefined;
-          return (
-            (!chain || asset.chain === chain.identifier) && (
-              <div
-                key={`${asset.chain}-${asset.atomicSwapAddress}`}
-                className="flex w-full cursor-pointer items-center justify-between px-4 py-1.5 hover:bg-off-white"
-                onClick={() => handleClick(asset)}
-              >
-                <div className="flex w-full items-center gap-2">
-                  <div className="w-10">
-                    <AssetChainLogos
-                      tokenLogo={asset.logo}
-                      chainLogo={network?.networkLogo}
-                    />
+        <GradientScroll height={288}>
+          {sortedResults?.map((asset) => {
+            const network = !isBitcoin(asset.chain)
+              ? chains?.[asset.chain]
+              : undefined;
+            return (
+              (!chain || asset.chain === chain.identifier) && (
+                <div
+                  key={`${asset.chain}-${asset.atomicSwapAddress}`}
+                  className="flex w-full cursor-pointer items-center justify-between px-4 py-1.5 hover:bg-off-white"
+                  onClick={() => handleClick(asset)}
+                >
+                  <div className="flex w-full items-center gap-2">
+                    <div className="w-10">
+                      <AssetChainLogos
+                        tokenLogo={asset.logo}
+                        chainLogo={network?.networkLogo}
+                      />
+                    </div>
+                    <Typography size="h4" weight="medium" className="w-1/6">
+                      {asset.symbol}
+                    </Typography>
+                    <Typography
+                      className="w-2/3 !text-mid-grey"
+                      size={"h5"}
+                      breakpoints={{
+                        sm: "h4",
+                      }}
+                      weight="medium"
+                    >
+                      {asset.name}
+                    </Typography>
                   </div>
-                  <Typography size="h4" weight="medium" className="w-1/6">
-                    {asset.symbol}
-                  </Typography>
-                  <Typography
-                    className="w-2/3 !text-mid-grey"
-                    size={"h5"}
-                    breakpoints={{
-                      sm: "h4",
-                    }}
-                    weight="medium"
-                  >
-                    {asset.name}
-                  </Typography>
+                  <StarIcon className={`fill-light-grey`} />
                 </div>
-                <StarIcon className={`fill-light-grey`} />
-              </div>
-            )
-          );
-        })}
+              )
+            );
+          })}
+        </GradientScroll>
       </div>
     </div>
   );
