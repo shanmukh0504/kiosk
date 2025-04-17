@@ -16,6 +16,15 @@ export const Address = () => {
     pendingOrdersStore();
   const handleAddressClick = () => setOpenModal(modalNames.transactions);
 
+  const pendingOrdersCount = pendingOrdersFromStore.filter(
+    (order) =>
+      order.status !== OrderStatus.RedeemDetected &&
+      order.status !== OrderStatus.Redeemed &&
+      order.status !== OrderStatus.CounterPartyRedeemDetected &&
+      order.status !== OrderStatus.CounterPartyRedeemed &&
+      order.status !== OrderStatus.Completed
+  ).length;
+
   useEffect(() => {
     if (pendingOrders) {
       setPendingOrders(pendingOrders);
@@ -36,20 +45,11 @@ export const Address = () => {
 
       <WalletIcon className="flex items-center justify-center sm:hidden" />
 
-      {pendingOrdersFromStore?.length ? (
+      {pendingOrdersCount ? (
         <div className="relative">
           <Loader />
           <div className="absolute left-[34%] top-[10%] text-sm font-bold text-rose">
-            {
-              pendingOrdersFromStore.filter(
-                (order) =>
-                  order.status !== OrderStatus.RedeemDetected &&
-                  order.status !== OrderStatus.Redeemed &&
-                  order.status !== OrderStatus.CounterPartyRedeemDetected &&
-                  order.status !== OrderStatus.CounterPartyRedeemed &&
-                  order.status !== OrderStatus.Completed
-              ).length
-            }
+            {pendingOrdersCount}
           </div>
         </div>
       ) : (
