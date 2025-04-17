@@ -1,11 +1,16 @@
 import { Route, Routes } from "react-router-dom";
 import { Layout } from "../layout/Layout";
-import { INTERNAL_ROUTES, network } from "../constants/constants";
+import {
+  Environment,
+  INTERNAL_ROUTES,
+  environment,
+  network,
+} from "../constants/constants";
 import { SwapPage } from "./swap";
 import { StakePage } from "./stake";
 import { GardenProvider } from "@gardenfi/react-hooks";
 import { useWalletClient } from "wagmi";
-import { Environment } from "@gardenfi/utils";
+import { Environment as GardenEnvironment } from "@gardenfi/utils";
 
 function App() {
   const { data: walletClient } = useWalletClient();
@@ -13,7 +18,17 @@ function App() {
   return (
     <GardenProvider
       config={{
-        environment: network as Environment,
+        environment:
+          environment === Environment.Staging
+            ? {
+                orderbook: import.meta.env.VITE_ORDERBOOK_URL,
+                auth: import.meta.env.VITE_AUTH_URL,
+                quote: import.meta.env.VITE_QUOTE_URL,
+                info: import.meta.env.VITE_INFO_URL,
+                evmRelay: import.meta.env.VITE_RELAYER_URL,
+                starknetRelay: "",
+              }
+            : (network as unknown as GardenEnvironment),
         wallets: {
           evm: walletClient,
         },

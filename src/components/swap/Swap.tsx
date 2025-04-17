@@ -15,7 +15,7 @@ export const Swap = () => {
   const { setAsset } = swapStore();
   const { fetchAndSetStrategies, assets } = assetInfoStore();
   const { garden } = useGarden();
-  const { orderInProgress, updateOrder } = ordersStore();
+  const { orderInProgress, updateOrder, open } = ordersStore();
 
   useEffect(() => {
     if (!garden) return;
@@ -98,7 +98,7 @@ export const Swap = () => {
     <div className="mx-auto mt-10 flex w-full max-w-[328px] flex-col gap-4 pb-60 sm:max-w-[424px]">
       <ToastContainer />
       <div className={`relative overflow-hidden rounded-[20px] bg-white/50`}>
-        {orderInProgress ? <SwapInProgress /> : <CreateSwap />}
+        {orderInProgress && open ? <SwapInProgress /> : <CreateSwap />}
       </div>
     </div>
   );

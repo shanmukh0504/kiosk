@@ -18,6 +18,8 @@ export const Address = () => {
   useEffect(() => {
     if (pendingOrders) {
       setPendingOrders(pendingOrders);
+    } else {
+      setPendingOrders([]);
     }
   }, [pendingOrders, setPendingOrders]);
 

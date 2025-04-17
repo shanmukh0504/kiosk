@@ -44,7 +44,7 @@ export const useSwap = () => {
   const { setOpenModal } = modalStore();
   const { tokenBalance: inputTokenBalance } = useBalances(inputAsset);
   const { strategies } = assetInfoStore();
-  const { setOrderInProgress } = ordersStore();
+  const { setOrderInProgress, activateOrderInProgress } = ordersStore();
   const { address, disconnect } = useEVMWallet();
   const { swapAndInitiate, getQuote } = useGarden();
   const { provider, account } = useBitcoinWallet();
@@ -65,7 +65,7 @@ export const useSwap = () => {
   const isValidBitcoinAddress = useMemo(() => {
     if (!isBitcoinSwap) return true;
     return btcAddress
-      ? validateBTCAddress(btcAddress, network as Environment)
+      ? validateBTCAddress(btcAddress, network as unknown as Environment)
       : false;
   }, [btcAddress, isBitcoinSwap]);
   const _validSwap = useMemo(() => {
@@ -363,16 +363,19 @@ export const useSwap = () => {
               : OrderStatus.Matched,
           };
           setOrderInProgress(updateOrder);
+          activateOrderInProgress(true);
           clearSwapState();
           return;
         }
         setIsSwapping(false);
         setOrderInProgress({ ...res.val, status: OrderStatus.Matched });
+        activateOrderInProgress(true);
         clearSwapState();
         return;
       }
       setIsSwapping(false);
       setOrderInProgress({ ...res.val, status: OrderStatus.InitiateDetected });
+      activateOrderInProgress(true);
       clearSwapState();
     } catch (error) {
       console.log("failed to create order ❌", error);
