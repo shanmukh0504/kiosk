@@ -16,6 +16,8 @@ import { useBalances } from "./useBalances";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { ordersStore } from "../store/ordersStore";
 import { Environment } from "@gardenfi/utils";
+import { modalNames, modalStore } from "../store/modalStore";
+import { ConnectingWalletStore } from "../store/connectWalletStore";
 
 export const useSwap = () => {
   const {
@@ -39,14 +41,15 @@ export const useSwap = () => {
     clearSwapState,
     setBtcAddress,
   } = swapStore();
+  const { setOpenModal } = modalStore();
   const { tokenBalance: inputTokenBalance } = useBalances(inputAsset);
   const { strategies } = assetInfoStore();
-  const { setOrderInProgress } = ordersStore();
-  const { address } = useEVMWallet();
+  const { setOrderInProgress, activateOrderInProgress } = ordersStore();
+  const { address, disconnect } = useEVMWallet();
   const { swapAndInitiate, getQuote } = useGarden();
   const { provider, account } = useBitcoinWallet();
   const controller = useRef<AbortController | null>(null);
-
+  const { setConnectingWallet } = ConnectingWalletStore();
   const isInsufficientBalance = useMemo(
     () => new BigNumber(inputAmount).gt(inputTokenBalance),
     [inputAmount, inputTokenBalance]
@@ -62,7 +65,7 @@ export const useSwap = () => {
   const isValidBitcoinAddress = useMemo(() => {
     if (!isBitcoinSwap) return true;
     return btcAddress
-      ? validateBTCAddress(btcAddress, network as Environment)
+      ? validateBTCAddress(btcAddress, network as unknown as Environment)
       : false;
   }, [btcAddress, isBitcoinSwap]);
   const _validSwap = useMemo(() => {
@@ -154,8 +157,8 @@ export const useSwap = () => {
               signal: controller.current.signal,
             },
           });
-          if (quote.error) {
-            if (quote.error.includes("insufficient liquidity")) {
+          if (!quote || quote.error) {
+            if (quote?.error?.includes("insufficient liquidity")) {
               setError({ quoteError: QuoteError.InsufficientLiquidity });
             }
             setAmount(isExactOut ? IOType.input : IOType.output, "0");
@@ -322,6 +325,15 @@ export const useSwap = () => {
       });
 
       if (res.error) {
+        if (
+          res.error.includes(
+            "Cannot read properties of undefined (reading 'toLowerCase')"
+          )
+        ) {
+          disconnect();
+          setConnectingWallet(null);
+          setOpenModal(modalNames.versionUpdate);
+        }
         console.error("failed to create order ❌", res.error);
         setIsSwapping(false);
         return;
@@ -351,16 +363,19 @@ export const useSwap = () => {
               : OrderStatus.Matched,
           };
           setOrderInProgress(updateOrder);
+          activateOrderInProgress(true);
           clearSwapState();
           return;
         }
         setIsSwapping(false);
         setOrderInProgress({ ...res.val, status: OrderStatus.Matched });
+        activateOrderInProgress(true);
         clearSwapState();
         return;
       }
       setIsSwapping(false);
       setOrderInProgress({ ...res.val, status: OrderStatus.InitiateDetected });
+      activateOrderInProgress(true);
       clearSwapState();
     } catch (error) {
       console.log("failed to create order ❌", error);

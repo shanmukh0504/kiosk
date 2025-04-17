@@ -1,7 +1,10 @@
 import { FC, useMemo } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { SwapInfo } from "../../common/SwapInfo";
-import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
+import {
+  //  isBitcoin,
+  MatchedOrder,
+} from "@gardenfi/orderbook";
 import {
   formatAmount,
   getAssetFromSwap,
@@ -10,7 +13,7 @@ import {
 import { OrderStatus } from "@gardenfi/core";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
-import { useGarden } from "@gardenfi/react-hooks";
+// import { useGarden } from "@gardenfi/react-hooks";
 import { ordersStore } from "../../store/ordersStore";
 
 type TransactionProps = {
@@ -48,6 +51,7 @@ const getOrderStatusLabel = (status: OrderStatus) => {
     case OrderStatus.RefundDetected:
     case OrderStatus.CounterPartyRedeemed:
     case OrderStatus.CounterPartyRedeemDetected:
+    case OrderStatus.Completed:
       return StatusLabel.Completed;
     default:
       return StatusLabel.Pending;
@@ -61,9 +65,9 @@ export const TransactionRow: FC<TransactionProps> = ({
 }) => {
   const { create_order, source_swap, destination_swap } = order;
   const { assets } = assetInfoStore();
-  const { setOrderInProgress } = ordersStore();
+  const { setOrderInProgress, activateOrderInProgress } = ordersStore();
   const { setCloseModal } = modalStore();
-  const { evmInitiate } = useGarden();
+  // const { evmInitiate } = useGarden();
 
   const sendAsset = useMemo(
     () => getAssetFromSwap(source_swap, assets),
@@ -97,16 +101,17 @@ export const TransactionRow: FC<TransactionProps> = ({
   const handleTransactionClick = async () => {
     if (statusLabel !== StatusLabel.Expired && status) {
       setOrderInProgress({ ...order, status: status });
+      activateOrderInProgress(true);
       setCloseModal(modalNames.transactions);
     }
 
-    if (!isBitcoin(order.source_swap.chain) && status === OrderStatus.Matched) {
-      if (!evmInitiate) return;
-      const res = await evmInitiate(order);
-      if (res.error) {
-        console.error("failed to initiate swap ❌", res.error);
-      }
-    }
+    // if (!isBitcoin(order.source_swap.chain) && status === OrderStatus.Matched) {
+    //   if (!evmInitiate) return;
+    //   const res = await evmInitiate(order);
+    //   if (res.error) {
+    //     console.error("failed to initiate swap ❌", res.error);
+    //   }
+    // }
   };
 
   if (!sendAsset || !receiveAsset) return null;

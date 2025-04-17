@@ -19,7 +19,11 @@ import { ordersStore } from "../../../store/ordersStore";
 import { API } from "../../../constants/api";
 
 export const SwapInProgress = () => {
-  const { setOrderInProgress, orderInProgress: order } = ordersStore();
+  const {
+    setOrderInProgress,
+    orderInProgress: order,
+    activateOrderInProgress,
+  } = ordersStore();
   const { assets } = assetInfoStore();
   const { orderProgress, viewableStatus } = useOrderStatus();
 
@@ -37,10 +41,10 @@ export const SwapInProgress = () => {
     };
   }, [assets, order]);
 
-  const goBack = useCallback(
-    () => setOrderInProgress(null),
-    [setOrderInProgress]
-  );
+  const goBack = useCallback(() => {
+    setOrderInProgress(null);
+    activateOrderInProgress(false);
+  }, [setOrderInProgress, activateOrderInProgress]);
 
   const handleClickTransaction = () => {
     if (!order) return;
