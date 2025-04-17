@@ -1,9 +1,9 @@
 import { Typography } from "@gardenfi/garden-book";
-import { useGarden } from "@gardenfi/react-hooks";
+import pendingOrdersStore from "../../store/pendingOrdersStore";
 import { TransactionRow } from "./TransactionRow";
 
 export const PendingTransactions = () => {
-  const { pendingOrders } = useGarden();
+  const { pendingOrders } = pendingOrdersStore();
 
   return (
     <div className="flex w-full flex-col overflow-y-auto">

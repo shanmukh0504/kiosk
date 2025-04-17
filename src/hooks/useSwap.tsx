@@ -14,10 +14,11 @@ import { useGarden } from "@gardenfi/react-hooks";
 import { useEVMWallet } from "./useEVMWallet";
 import { useBalances } from "./useBalances";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { ordersStore } from "../store/ordersStore";
 import { Environment } from "@gardenfi/utils";
 import { modalNames, modalStore } from "../store/modalStore";
 import { ConnectingWalletStore } from "../store/connectWalletStore";
+import orderInProgressStore from "../store/orderInProgressStore";
+import pendingOrdersStore from "../store/pendingOrdersStore";
 
 export const useSwap = () => {
   const {
@@ -44,7 +45,8 @@ export const useSwap = () => {
   const { setOpenModal } = modalStore();
   const { tokenBalance: inputTokenBalance } = useBalances(inputAsset);
   const { strategies } = assetInfoStore();
-  const { setOrderInProgress, activateOrderInProgress } = ordersStore();
+  const { setOrder, setIsOpen } = orderInProgressStore();
+  const { updateOrder } = pendingOrdersStore();
   const { address, disconnect } = useEVMWallet();
   const { swapAndInitiate, getQuote } = useGarden();
   const { provider, account } = useBitcoinWallet();
@@ -352,7 +354,7 @@ export const useSwap = () => {
             console.error("failed to send bitcoin ❌", bitcoinRes.error);
             setIsSwapping(false);
           }
-          const updateOrder = {
+          const updatedOrder = {
             ...order,
             source_swap: {
               ...order.source_swap,
@@ -362,20 +364,23 @@ export const useSwap = () => {
               ? OrderStatus.InitiateDetected
               : OrderStatus.Matched,
           };
-          setOrderInProgress(updateOrder);
-          activateOrderInProgress(true);
+          setOrder(updatedOrder);
+          setIsOpen(true);
+          updateOrder(updatedOrder);
           clearSwapState();
           return;
         }
         setIsSwapping(false);
-        setOrderInProgress({ ...res.val, status: OrderStatus.Matched });
-        activateOrderInProgress(true);
+        setOrder({ ...res.val, status: OrderStatus.Matched });
+        setIsOpen(true);
+        updateOrder({ ...res.val, status: OrderStatus.Matched });
         clearSwapState();
         return;
       }
       setIsSwapping(false);
-      setOrderInProgress({ ...res.val, status: OrderStatus.InitiateDetected });
-      activateOrderInProgress(true);
+      setOrder({ ...res.val, status: OrderStatus.InitiateDetected });
+      updateOrder({ ...res.val, status: OrderStatus.InitiateDetected });
+      setIsOpen(true);
       clearSwapState();
     } catch (error) {
       console.log("failed to create order ❌", error);
