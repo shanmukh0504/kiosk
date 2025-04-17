@@ -644,20 +644,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/core@npm:2.0.25-beta.25":
-  version: 2.0.25-beta.25
-  resolution: "@gardenfi/core@npm:2.0.25-beta.25"
+"@gardenfi/core@npm:2.1.1":
+  version: 2.1.1
+  resolution: "@gardenfi/core@npm:2.1.1"
   dependencies:
     "@catalogfi/wallets": "npm:^0.2.59"
-    "@gardenfi/orderbook": "npm:2.0.9-beta.19"
-    "@gardenfi/utils": "npm:2.0.6-beta.18"
+    "@gardenfi/orderbook": "npm:2.1.1"
+    "@gardenfi/utils": "npm:2.1.1"
     bignumber.js: "npm:^9.1.2"
     bitcoinjs-lib: "npm:^6.1.6"
     starknet: "npm:6.23.1"
     tiny-secp256k1: "npm:^2.2.3"
     varuint-bitcoin: "npm:^1.1.2"
     viem: "npm:^2.21.23"
-  checksum: 10c0/8645f52d1c26d804558d3bfcbc1a655dd44dcf852f2ea5da324e63d77342c0e25a9e6b140b595b5734a29733bee8c53a247643cc865d30a88f5dd7acfd48d565
+  checksum: 10c0/3409a056959960106e0f26bc610770e110dab0b2f26dcae3462805b041b3eb4c10f7a2f7fa7a8d57d607836cab2754b78bfbf29f90ba825e7ae03df837f52c1e
   languageName: node
   linkType: hard
 
@@ -680,46 +680,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/orderbook@npm:2.0.9-beta.19":
-  version: 2.0.9-beta.19
-  resolution: "@gardenfi/orderbook@npm:2.0.9-beta.19"
+"@gardenfi/orderbook@npm:2.1.1":
+  version: 2.1.1
+  resolution: "@gardenfi/orderbook@npm:2.1.1"
   dependencies:
-    "@gardenfi/utils": "npm:2.0.6-beta.18"
+    "@gardenfi/utils": "npm:2.1.1"
     bufferutil: "npm:^4.0.8"
     siwe: "npm:^2.1.4"
     utf-8-validate: "npm:^6.0.3"
     viem: "npm:^2.21.23"
     ws: "npm:^8.14.2"
-  checksum: 10c0/7a2008f21f1640e4d2339d6925c34dfd503a55ac3dcbc7e9caad211c74a3475e8823e4a6a620076a66c642b83e3cafe91e97084c53177359b5fe5bb649773029
+  checksum: 10c0/89a1a94898628c768e35c7ee8437965e70a16e4add111d0b04e93d676dab0e4c5b878b2381b4b7fc43bda874b394480ccc966a6ba1548de3c02cc890c8e54970
   languageName: node
   linkType: hard
 
-"@gardenfi/react-hooks@npm:2.0.28-beta.27":
-  version: 2.0.28-beta.27
-  resolution: "@gardenfi/react-hooks@npm:2.0.28-beta.27"
+"@gardenfi/react-hooks@npm:2.1.1":
+  version: 2.1.1
+  resolution: "@gardenfi/react-hooks@npm:2.1.1"
   dependencies:
     "@catalogfi/wallets": "npm:^0.2.59"
-    "@gardenfi/core": "npm:2.0.25-beta.25"
-    "@gardenfi/orderbook": "npm:2.0.9-beta.19"
-    "@gardenfi/utils": "npm:2.0.6-beta.18"
+    "@gardenfi/core": "npm:2.1.1"
+    "@gardenfi/orderbook": "npm:2.1.1"
+    "@gardenfi/utils": "npm:2.1.1"
     react: "npm:^18.3.1"
     starknet: "npm:6.23.1"
     viem: "npm:^2.21.23"
-  checksum: 10c0/68dacca9615e006c015052207617d5a2e4a388b0f5ffb85c2ac42e0c1e218acbbcb48399880b7551fd474a140a41aec6ef473ba69adbd0680c3266764e1c9f2b
-  languageName: node
-  linkType: hard
-
-"@gardenfi/utils@npm:2.0.6-beta.18":
-  version: 2.0.6-beta.18
-  resolution: "@gardenfi/utils@npm:2.0.6-beta.18"
-  dependencies:
-    "@peculiar/webcrypto": "npm:^1.5.0"
-    "@simplewebauthn/browser": "npm:^13.1.0"
-    fetch-cookie: "npm:^3.1.0"
-    jwt-decode: "npm:^4.0.0"
-    tough-cookie: "npm:^5.1.2"
-    viem: "npm:^2.21.23"
-  checksum: 10c0/2072cad591cb369e26f9f5b9878bcde563858945f272f708a6a09e915f62ead2f008b60f19123abf95c5cb179b86dfa4bb74448bc53147a126bfe24e07bc5755
+  checksum: 10c0/48feba671500ed490bfa3fcc1f54a92ef3bd5fc197ee3117c6da08b9fd07e742b142e94c55d5ebdebca1484669154ff26721f9b43be9bd3a74cef7fc529cb9ac
   languageName: node
   linkType: hard
 
@@ -732,6 +718,20 @@ __metadata:
     jwt-decode: "npm:^4.0.0"
     viem: "npm:^2.21.23"
   checksum: 10c0/897f339073f0a757a32ef0aed9369c1fe1ee120fa66c068130b197c8cd5316dbf4e248dba76486fad164b2eed268d9d320d0397a3dc5a8158ad80ea91a0f33e1
+  languageName: node
+  linkType: hard
+
+"@gardenfi/utils@npm:2.1.1":
+  version: 2.1.1
+  resolution: "@gardenfi/utils@npm:2.1.1"
+  dependencies:
+    "@peculiar/webcrypto": "npm:^1.5.0"
+    "@simplewebauthn/browser": "npm:^13.1.0"
+    fetch-cookie: "npm:^3.1.0"
+    jwt-decode: "npm:^4.0.0"
+    tough-cookie: "npm:^5.1.2"
+    viem: "npm:^2.21.23"
+  checksum: 10c0/a80eb75da0c9f6172e70c77a35d1d336d6affb1c8beeb2ec9ca0a29805254099799b9bfd6392724333b53707e7a5b2e53d6208cf9070383a5f069c7e4d13bfad
   languageName: node
   linkType: hard
 
@@ -5908,11 +5908,11 @@ __metadata:
   resolution: "garden-kiosk@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.13.0"
-    "@gardenfi/core": "npm:2.0.25-beta.25"
+    "@gardenfi/core": "npm:2.1.1"
     "@gardenfi/garden-book": "npm:^0.1.85"
-    "@gardenfi/orderbook": "npm:2.0.9-beta.19"
-    "@gardenfi/react-hooks": "npm:2.0.28-beta.27"
-    "@gardenfi/utils": "npm:2.0.6-beta.18"
+    "@gardenfi/orderbook": "npm:2.1.1"
+    "@gardenfi/react-hooks": "npm:2.1.1"
+    "@gardenfi/utils": "npm:2.1.1"
     "@gardenfi/wallet-connectors": "npm:2.0.3-beta.3"
     "@tanstack/react-query": "npm:^5.51.23"
     "@types/lodash.debounce": "npm:^4"

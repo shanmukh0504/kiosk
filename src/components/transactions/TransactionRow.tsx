@@ -65,7 +65,7 @@ export const TransactionRow: FC<TransactionProps> = ({
 }) => {
   const { create_order, source_swap, destination_swap } = order;
   const { assets } = assetInfoStore();
-  const { setOrderInProgress } = ordersStore();
+  const { setOrderInProgress, activateOrderInProgress } = ordersStore();
   const { setCloseModal } = modalStore();
   // const { evmInitiate } = useGarden();
 
@@ -101,6 +101,7 @@ export const TransactionRow: FC<TransactionProps> = ({
   const handleTransactionClick = async () => {
     if (statusLabel !== StatusLabel.Expired && status) {
       setOrderInProgress({ ...order, status: status });
+      activateOrderInProgress(true);
       setCloseModal(modalNames.transactions);
     }
 

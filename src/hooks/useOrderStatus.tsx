@@ -39,7 +39,7 @@ export const useOrderStatus = () => {
   const { orderBook } = useGarden();
   const { fetchAndSetBlockNumbers, blockNumbers } = blockNumberStore();
   const { assets } = assetInfoStore();
-  const { orderInProgress: order, setOrderInProgress } = ordersStore();
+  const { orderInProgress: order, setOrderInProgress, open } = ordersStore();
   const orderId = order?.create_order.create_id;
   const orderStatus = order?.status;
 
@@ -186,7 +186,7 @@ export const useOrderStatus = () => {
   }, [confirmationsString, outputAsset?.symbol, order?.status]);
 
   useEffect(() => {
-    if (!orderId || !orderBook) return;
+    if (!orderBook || !order || !orderId || !open) return;
     if (
       orderStatus &&
       [
@@ -198,7 +198,12 @@ export const useOrderStatus = () => {
     )
       return;
 
+    let isFetching = false;
+
     const updateOrder = async () => {
+      if (isFetching) return;
+      isFetching = true;
+
       const o = await orderBook.getOrder(orderId, true);
       if (o.error) return;
 
@@ -219,6 +224,7 @@ export const useOrderStatus = () => {
         ...mergeOrders(order, o.val),
         status: _status,
       });
+      isFetching = false;
     };
 
     updateOrder();
@@ -232,6 +238,7 @@ export const useOrderStatus = () => {
     fetchAndSetBlockNumbers,
     setOrderInProgress,
     orderStatus,
+    // order,
   ]);
 
   return {
