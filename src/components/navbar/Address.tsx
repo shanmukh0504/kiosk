@@ -5,15 +5,25 @@ import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useEffect } from "react";
 import { Loader } from "../../common/Loader";
-import { ordersStore } from "../../store/ordersStore";
+import pendingOrdersStore from "../../store/pendingOrdersStore";
+import { OrderStatus } from "@gardenfi/core";
 
 export const Address = () => {
   const { address } = useEVMWallet();
   const { setOpenModal } = modalStore();
   const { pendingOrders } = useGarden();
   const { pendingOrders: pendingOrdersFromStore, setPendingOrders } =
-    ordersStore();
+    pendingOrdersStore();
   const handleAddressClick = () => setOpenModal(modalNames.transactions);
+
+  const pendingOrdersCount = pendingOrdersFromStore.filter(
+    (order) =>
+      order.status !== OrderStatus.RedeemDetected &&
+      order.status !== OrderStatus.Redeemed &&
+      order.status !== OrderStatus.CounterPartyRedeemDetected &&
+      order.status !== OrderStatus.CounterPartyRedeemed &&
+      order.status !== OrderStatus.Completed
+  ).length;
 
   useEffect(() => {
     if (pendingOrders) {
@@ -35,11 +45,11 @@ export const Address = () => {
 
       <WalletIcon className="flex items-center justify-center sm:hidden" />
 
-      {pendingOrdersFromStore?.length ? (
+      {pendingOrdersCount ? (
         <div className="relative">
           <Loader />
           <div className="absolute left-[34%] top-[10%] text-sm font-bold text-rose">
-            {pendingOrdersFromStore.length}
+            {pendingOrdersCount}
           </div>
         </div>
       ) : (

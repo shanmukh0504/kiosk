@@ -13,8 +13,7 @@ import {
 import { OrderStatus } from "@gardenfi/core";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
-// import { useGarden } from "@gardenfi/react-hooks";
-import { ordersStore } from "../../store/ordersStore";
+import orderInProgressStore from "../../store/orderInProgressStore";
 
 type TransactionProps = {
   order: MatchedOrder;
@@ -41,7 +40,6 @@ const getOrderStatusLabel = (status: OrderStatus) => {
     case OrderStatus.InitiateDetected:
       return StatusLabel.InitiateDetected;
     case OrderStatus.Initiated:
-      return StatusLabel.Initiated;
     case OrderStatus.CounterPartyInitiateDetected:
     case OrderStatus.CounterPartyInitiated:
       return StatusLabel.Redeeming;
@@ -65,7 +63,7 @@ export const TransactionRow: FC<TransactionProps> = ({
 }) => {
   const { create_order, source_swap, destination_swap } = order;
   const { assets } = assetInfoStore();
-  const { setOrderInProgress, activateOrderInProgress } = ordersStore();
+  const { setOrder, setIsOpen } = orderInProgressStore();
   const { setCloseModal } = modalStore();
   // const { evmInitiate } = useGarden();
 
@@ -100,8 +98,8 @@ export const TransactionRow: FC<TransactionProps> = ({
 
   const handleTransactionClick = async () => {
     if (statusLabel !== StatusLabel.Expired && status) {
-      setOrderInProgress({ ...order, status: status });
-      activateOrderInProgress(true);
+      setOrder({ ...order, status: status });
+      setIsOpen(true);
       setCloseModal(modalNames.transactions);
     }
 
