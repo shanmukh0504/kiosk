@@ -53,13 +53,11 @@ export const Swap = () => {
 
       const inputAmount = formatAmount(
         order.source_swap.amount,
-        inputAsset.decimals,
-        6
+        inputAsset.decimals
       );
       const outputAmount = formatAmount(
         order.destination_swap.amount,
-        outputAsset.decimals,
-        6
+        outputAsset.decimals
       );
       console.log("order success ✅", order.create_order.create_id);
 
