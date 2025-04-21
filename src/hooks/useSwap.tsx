@@ -53,6 +53,9 @@ export const useSwap = () => {
   const { provider, account } = useBitcoinWallet();
   const controller = useRef<AbortController | null>(null);
   const { setConnectingWallet } = ConnectingWalletStore();
+  const { address: evmAddress } = useEVMWallet();
+  const { starknetAddress } = useStarknetWallet();
+  const { setOpenModal } = modalStore();
   const isInsufficientBalance = useMemo(
     () => new BigNumber(inputAmount).gt(inputTokenBalance),
     [inputAmount, inputTokenBalance]
@@ -207,11 +210,11 @@ export const useSwap = () => {
       ),
     [
       getQuote,
-      setAmount,
       setIsFetchingQuote,
       setStrategy,
+      setAmount,
       setTokenPrices,
-      setIsInsufficientLiquidity,
+      setError,
     ]
   );
 
@@ -290,10 +293,6 @@ export const useSwap = () => {
     if (!inputAsset || !outputAsset || !Number(amount)) return;
     fetchQuote(amount, inputAsset, outputAsset, true);
   };
-
-  const { address: evmAddress } = useEVMWallet();
-  const { starknetAddress } = useStarknetWallet();
-  const { setOpenModal } = modalStore();
 
   const needsWalletConnection = useMemo(() => {
     if (!evmAddress && !starknetAddress && !account) return false;

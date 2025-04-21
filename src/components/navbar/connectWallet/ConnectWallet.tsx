@@ -84,12 +84,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       allWallets = allWallets.filter((wallet) => wallet.id !== "injected");
     }
     return allWallets;
-  }, [
-    availableWallets,
-    connectors,
-    starknetConnectors,
-    selectedEcosystem,
-  ]);
+  }, [availableWallets, connectors, starknetConnectors, selectedEcosystem]);
 
   const handleClose = () => {
     if (address) onClose?.();
@@ -183,7 +178,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       setConnectingWallet(null);
       handleClose();
     }
-  }, [starknetStatus]);
+  }, [handleClose, setConnectingWallet, starknetStatus]);
 
   return (
     <div className="flex max-h-[600px] flex-col gap-[20px] p-3">
@@ -210,9 +205,12 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
               className={`cursor-pointer py-1 pl-3 pr-1 transition-colors ease-cubic-in-out hover:bg-opacity-50`}
               onClick={() => {
                 setSelectedEcosystem((prev) =>
-                  prev === BlockchainType[ecosystem.name as keyof typeof BlockchainType]
+                  prev ===
+                  BlockchainType[ecosystem.name as keyof typeof BlockchainType]
                     ? null
-                    : BlockchainType[ecosystem.name as keyof typeof BlockchainType]
+                    : BlockchainType[
+                        ecosystem.name as keyof typeof BlockchainType
+                      ]
                 );
               }}
             >
