@@ -23,6 +23,7 @@ export const CreateSwap = () => {
     validSwap,
     inputTokenBalance,
     isInsufficientBalance,
+    isApproving,
     isSwapping,
     isValidBitcoinAddress,
     handleSwapClick,
@@ -32,12 +33,14 @@ export const CreateSwap = () => {
   const buttonLabel = useMemo(() => {
     return isInsufficientBalance
       ? "Insufficient balance"
+      : isApproving
+      ? "Approving..."
       : isSwapping
       ? "Signing..."
       : error.quoteError
       ? "Insufficient Liquidity"
       : "Swap";
-  }, [isInsufficientBalance, isSwapping, error.quoteError]);
+  }, [isInsufficientBalance, isApproving, isSwapping, error.quoteError]);
 
   const buttonVariant = useMemo(() => {
     return isInsufficientBalance || error.quoteError

@@ -26,6 +26,7 @@ type SwapState = {
   btcAddress: string;
   isSwapping: boolean;
   isInsufficientLiquidity: boolean;
+  isApproving: boolean;
   strategy: string;
   tokenPrices: TokenPrices;
   error: SwapErrors;
@@ -33,6 +34,7 @@ type SwapState = {
   setTokenPrices: (tokenPrices: TokenPrices) => void;
   setIsSwapping: (isSwapping: boolean) => void;
   setIsInsufficientLiquidity: (isInsufficientLiquidity: boolean) => void;
+  setIsApproving: (isApproving: boolean) => void;
   setStrategy: (strategy: string) => void;
   setAsset: (ioType: IOType, asset: Asset) => void;
   setAmount: (ioType: IOType, amount: string) => void;
@@ -60,6 +62,7 @@ export const swapStore = create<SwapState>((set) => ({
   outputAmount: "",
   btcAddress: "",
   isInsufficientLiquidity: false,
+  isApproving: false,
   swapInProgress: {
     isOpen: false,
     order: null,
@@ -136,6 +139,9 @@ export const swapStore = create<SwapState>((set) => ({
   setIsInsufficientLiquidity: (isInsufficientLiquidity) => {
     set({ isInsufficientLiquidity });
   },
+  setIsApproving: (isApproving) => {
+    set({ isApproving });
+  },
   clearSwapState: () => {
     set({
       inputAmount: "",
@@ -144,6 +150,7 @@ export const swapStore = create<SwapState>((set) => ({
       outputAsset: undefined,
       inputAsset: BTC,
       isInsufficientLiquidity: false,
+      isApproving: false,
       isSwapping: false,
       strategy: "",
       tokenPrices: {
@@ -170,6 +177,7 @@ export const swapStore = create<SwapState>((set) => ({
       inputAsset: BTC,
       isSwapping: false,
       isInsufficientLiquidity: false,
+      isApproving: false,
       strategy: "",
       tokenPrices: {
         input: "0",

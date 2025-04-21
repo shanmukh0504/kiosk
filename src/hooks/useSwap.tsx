@@ -14,11 +14,12 @@ import { useGarden } from "@gardenfi/react-hooks";
 import { useEVMWallet } from "./useEVMWallet";
 import { useBalances } from "./useBalances";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { Environment } from "@gardenfi/utils";
+import { checkAllowanceAndApprove, Environment } from "@gardenfi/utils";
 import { modalNames, modalStore } from "../store/modalStore";
 import { ConnectingWalletStore } from "../store/connectWalletStore";
 import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
+import { useWalletClient } from "wagmi";
 
 export const useSwap = () => {
   const {
@@ -27,6 +28,7 @@ export const useSwap = () => {
     inputAsset,
     outputAsset,
     isSwapping,
+    isApproving,
     strategy,
     btcAddress,
     tokenPrices,
@@ -38,6 +40,7 @@ export const useSwap = () => {
     setError,
     setIsFetchingQuote,
     setIsInsufficientLiquidity,
+    setIsApproving,
     setTokenPrices,
     clearSwapState,
     setBtcAddress,
@@ -52,6 +55,7 @@ export const useSwap = () => {
   const { provider, account } = useBitcoinWallet();
   const controller = useRef<AbortController | null>(null);
   const { setConnectingWallet } = ConnectingWalletStore();
+  const { data: walletClient } = useWalletClient();
   const isInsufficientBalance = useMemo(
     () => new BigNumber(inputAmount).gt(inputTokenBalance),
     [inputAmount, inputTokenBalance]
@@ -318,6 +322,15 @@ export const useSwap = () => {
         };
 
     try {
+      setIsApproving(true);
+      await checkAllowanceAndApprove(
+        Number(inputAmountInDecimals),
+        inputAsset.tokenAddress,
+        inputAsset.atomicSwapAddress,
+        walletClient,
+      );
+      setIsApproving(false);
+      
       const res = await swapAndInitiate({
         fromAsset: inputAsset,
         toAsset: outputAsset,
@@ -439,6 +452,7 @@ export const useSwap = () => {
     validSwap,
     error,
     isSwapping,
+    isApproving,
     isBitcoinSwap,
     handleInputAmountChange,
     handleOutputAmountChange,
