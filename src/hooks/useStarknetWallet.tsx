@@ -1,19 +1,20 @@
 import { useAccount, useConnect, useDisconnect } from "@starknet-react/core";
 
 export const useStarknetWallet = () => {
-  const { address: starknetAddress, account: starknetAccount } = useAccount();
   const {
-    connectors: starknetConnectors,
-    connector: starknetConnector,
-    connectAsync: starknetConnect,
+    connect: starknetConnect,
+    connectors,
+    connector: activeConnector,
   } = useConnect();
-  const { disconnect: starknetDisconnect } = useDisconnect();
+  const { disconnect } = useDisconnect();
+  const { address, status } = useAccount();
+
   return {
     starknetConnect,
-    starknetConnectors,
-    starknetConnector,
-    starknetDisconnect,
-    starknetAddress,
-    starknetAccount,
+    starknetConnectors: connectors,
+    starknetConnector: activeConnector,
+    starknetDisconnect: disconnect,
+    starknetAddress: address,
+    starknetStatus: status,
   };
 };
