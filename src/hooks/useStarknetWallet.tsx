@@ -7,7 +7,7 @@ export const useStarknetWallet = () => {
     connector: activeConnector,
   } = useConnect();
   const { disconnect } = useDisconnect();
-  const { address, status } = useAccount();
+  const { address, status, account } = useAccount();
 
   return {
     starknetConnect,
@@ -16,5 +16,6 @@ export const useStarknetWallet = () => {
     starknetDisconnect: disconnect,
     starknetAddress: address,
     starknetStatus: status,
+    starknetAccount: account,
   };
 };

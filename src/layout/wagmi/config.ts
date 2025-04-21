@@ -1,4 +1,4 @@
-import { hyperliquid } from "@gardenfi/core";
+// import { hyperliquid } from "@gardenfi/core";
 import { http, createConfig } from "wagmi";
 import {
   arbitrum,
@@ -57,7 +57,7 @@ export const SupportedChains = [
   citreaTestnet,
   monadTestnet,
   hyperliquidTestnet,
-  hyperliquid,
+  // hyperliquid,
 ] as const;
 
 export const config = createConfig({
@@ -79,6 +79,6 @@ export const config = createConfig({
     [citreaTestnet.id]: http(),
     [monadTestnet.id]: http(),
     [hyperliquidTestnet.id]: http(),
-    [hyperliquid.id]: http(),
+    // [hyperliquid.id]: http(),
   },
 });

@@ -46,7 +46,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   const { availableWallets, connect, provider } = useBitcoinWallet();
   const { connectingWallet, setConnectingWallet } = ConnectingWalletStore();
   const { modalData, setOpenModal } = modalStore();
-  const showOnlyBTCWallets = !!modalData.connectWallet?.isBTCWallets;
+  const showOnlyBTCWallets = !!modalData.connectWallet?.Bitcoin;
+  const showOnlyStarknetWallets = !!modalData.connectWallet?.Starknet;
+  const showOnlyEVMWallets = !!modalData.connectWallet?.EVM;
 
   const allAvailableWallets = useMemo(() => {
     if (showOnlyBTCWallets) return getAvailableWallets(availableWallets);
@@ -56,6 +58,15 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       connectors,
       starknetConnectors
     );
+
+    if (showOnlyStarknetWallets) {
+      setSelectedEcosystem("starknet");
+      return allWallets.filter((wallet) => wallet.isStarknet);
+    }
+    if (showOnlyEVMWallets) {
+      setSelectedEcosystem("evm");
+      return allWallets.filter((wallet) => wallet.isEVM);
+    }
 
     if (selectedEcosystem === "Bitcoin")
       return allWallets.filter((wallet) => wallet.isBitcoin);
@@ -75,6 +86,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   }, [
     showOnlyBTCWallets,
     availableWallets,
+    showOnlyStarknetWallets,
+    showOnlyEVMWallets,
     connectors,
     starknetConnectors,
     selectedEcosystem,
@@ -178,7 +191,13 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     <div className="flex max-h-[600px] flex-col gap-[20px] p-3">
       <div className="flex items-center justify-between">
         <Typography size="h4" weight="bold">
-          Connect a wallet
+          {showOnlyStarknetWallets
+            ? "Connect Starknet Wallet"
+            : showOnlyEVMWallets
+              ? "Connect EVM Wallet"
+              : showOnlyBTCWallets
+                ? "Connect Bitcoin Wallet"
+                : "Connect a wallet"}
         </Typography>
         <div className="flex gap-4">
           {multiWalletConnector && (
@@ -191,30 +210,33 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         </div>
       </div>
 
-      {!showOnlyBTCWallets && !multiWalletConnector && (
-        <div className="flex flex-wrap gap-3">
-          {Object.values(ecosystems).map((ecosystem, i) => (
-            <Chip
-              key={i}
-              className={`cursor-pointer py-1 pl-3 pr-1 transition-colors ease-cubic-in-out hover:bg-opacity-50`}
-              onClick={() => {
-                setSelectedEcosystem((prev) =>
-                  prev === ecosystem.name ? null : ecosystem.name
-                );
-              }}
-            >
-              <Typography size="h3" weight="medium">
-                {ecosystem.name}
-              </Typography>
-              <RadioCheckedIcon
-                className={`${
-                  selectedEcosystem === ecosystem.name ? "mr-1 w-4" : "w-0"
-                } fill-rose transition-all`}
-              />
-            </Chip>
-          ))}
-        </div>
-      )}
+      {!showOnlyBTCWallets &&
+        !showOnlyStarknetWallets &&
+        !showOnlyEVMWallets &&
+        !multiWalletConnector && (
+          <div className="flex flex-wrap gap-3">
+            {Object.values(ecosystems).map((ecosystem, i) => (
+              <Chip
+                key={i}
+                className={`cursor-pointer py-1 pl-3 pr-1 transition-colors ease-cubic-in-out hover:bg-opacity-50`}
+                onClick={() => {
+                  setSelectedEcosystem((prev) =>
+                    prev === ecosystem.name ? null : ecosystem.name
+                  );
+                }}
+              >
+                <Typography size="h3" weight="medium">
+                  {ecosystem.name}
+                </Typography>
+                <RadioCheckedIcon
+                  className={`${
+                    selectedEcosystem === ecosystem.name ? "mr-1 w-4" : "w-0"
+                  } fill-rose transition-all`}
+                />
+              </Chip>
+            ))}
+          </div>
+        )}
 
       {multiWalletConnector ? (
         <MultiWalletConnection

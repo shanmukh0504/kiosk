@@ -42,9 +42,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
 
   const handleBTCWalletClick = () => {
     onClose();
-    setOpenModal(modalNames.connectWallet, {
-      Bitcoin: true,
-    });
+    setOpenModal(modalNames.connectWallet);
   };
 
   return (

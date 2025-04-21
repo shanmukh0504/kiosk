@@ -24,7 +24,7 @@ export type Wallet = {
 };
 
 export const getAvailableWallets = (
-  btcWallets: AvailableWallets,
+  btcWallets?: AvailableWallets,
   evmWallets?: GetConnectorsReturnType,
   starknetWallets?: StarknetConnector[]
 ): Wallet[] => {
@@ -60,7 +60,7 @@ export const getAvailableWallets = (
     if (evmWallets && evmToBTCid[key]) {
       const walletIndex = wallets.findIndex((w) => w.id === key);
       if (walletIndex !== -1) {
-        wallets[walletIndex].wallet.btcWallet = btcWallets[evmToBTCid[key]];
+        wallets[walletIndex].wallet.btcWallet = btcWallets?.[evmToBTCid[key]];
         wallets[walletIndex].isBitcoin = true;
       } else {
         wallets[walletIndex].isBitcoin = false;
@@ -69,7 +69,7 @@ export const getAvailableWallets = (
       return;
     }
 
-    const wallet = btcWallets[key] ?? btcWallets[evmToBTCid[key]];
+    const wallet = btcWallets?.[key] ?? btcWallets?.[evmToBTCid[key]];
     wallets.push({
       ...value,
       wallet: {
