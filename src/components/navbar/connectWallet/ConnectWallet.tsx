@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { Connector } from "wagmi";
 import {
@@ -19,7 +19,9 @@ import { handleEVMConnect } from "./handleConnect";
 import { modalNames, modalStore } from "../../../store/modalStore";
 import { ecosystems, evmToBTCid } from "./constants";
 import { AnimatePresence } from "framer-motion";
+import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { ConnectingWalletStore } from "../../../store/connectWalletStore";
+import { BlockchainType } from "@gardenfi/orderbook";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -31,26 +33,48 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     evm: Connector;
     btc: IInjectedBitcoinProvider;
   }>();
-  const [selectedEcosystem, setSelectedEcosystem] = useState<string | null>(
-    null
-  );
+  const [selectedEcosystem, setSelectedEcosystem] =
+    useState<BlockchainType | null>(null);
 
   const { connectors, connectAsync, connector, address } = useEVMWallet();
+  const {
+    starknetConnect,
+    starknetConnectors,
+    starknetConnector,
+    starknetStatus,
+  } = useStarknetWallet();
   const { availableWallets, connect, provider } = useBitcoinWallet();
   const { connectingWallet, setConnectingWallet } = ConnectingWalletStore();
   const { modalData, setOpenModal } = modalStore();
+  const showOnlyBTCWallets = !!modalData.connectWallet?.Bitcoin;
+  const showOnlyStarknetWallets = !!modalData.connectWallet?.Starknet;
+  const showOnlyEVMWallets = !!modalData.connectWallet?.EVM;
 
-  const showOnlyBTCWallets = !!modalData.connectWallet?.isBTCWallets;
+  // Add useEffect to handle initial ecosystem selection
+  useEffect(() => {
+    if (showOnlyStarknetWallets) {
+      setSelectedEcosystem(BlockchainType.Starknet);
+    } else if (showOnlyEVMWallets) {
+      setSelectedEcosystem(BlockchainType.EVM);
+    } else if (showOnlyBTCWallets) {
+      setSelectedEcosystem(BlockchainType.Bitcoin);
+    }
+  }, [showOnlyStarknetWallets, showOnlyEVMWallets, showOnlyBTCWallets]);
 
   const allAvailableWallets = useMemo(() => {
-    if (showOnlyBTCWallets) return getAvailableWallets(availableWallets);
     let allWallets;
-    allWallets = getAvailableWallets(availableWallets, connectors);
+    allWallets = getAvailableWallets(
+      availableWallets,
+      connectors,
+      starknetConnectors
+    );
 
-    if (selectedEcosystem === "Bitcoin")
+    if (selectedEcosystem === BlockchainType.Bitcoin)
       return allWallets.filter((wallet) => wallet.isBitcoin);
-    else if (selectedEcosystem === "EVM")
+    else if (selectedEcosystem === BlockchainType.EVM)
       return allWallets.filter((wallet) => wallet.isEVM);
+    else if (selectedEcosystem === BlockchainType.Starknet)
+      return allWallets.filter((wallet) => wallet.isStarknet);
 
     if (
       typeof window !== "undefined" &&
@@ -60,14 +84,13 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       allWallets = allWallets.filter((wallet) => wallet.id !== "injected");
     }
     return allWallets;
-  }, [showOnlyBTCWallets, availableWallets, connectors, selectedEcosystem]);
+  }, [availableWallets, connectors, starknetConnectors, selectedEcosystem]);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     if (address) onClose?.();
-
     setConnectingWallet(null);
     setMultiWalletConnector(undefined);
-  };
+  }, [address, onClose, setConnectingWallet]);
 
   const close = () => {
     onClose?.();
@@ -80,69 +103,88 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       window.open(connector.installLink, "_blank");
       return;
     }
-    if (connector.isBitcoin && connector.isEVM) {
-      if (!connector.wallet?.evmWallet || !connector.wallet?.btcWallet) return;
-      setMultiWalletConnector({
-        evm: connector.wallet.evmWallet,
-        btc: connector.wallet.btcWallet,
-      });
-      return;
-    }
     setConnectingWallet(connector.id);
-    if (connector.isBitcoin) {
-      if (!connector.wallet?.btcWallet) return;
-      const res = await connect(connector.wallet.btcWallet);
-      if (res.error) {
-        console.log("error connecting wallet", res.error);
-        setConnectingWallet(null);
+
+    try {
+      if (connector.isBitcoin && connector.isEVM) {
+        if (!connector.wallet?.evmWallet || !connector.wallet?.btcWallet)
+          return;
+        setMultiWalletConnector({
+          evm: connector.wallet.evmWallet,
+          btc: connector.wallet.btcWallet,
+        });
+        return;
       }
-    } else if (connector.isEVM) {
-      if (!connector.wallet?.evmWallet) return;
 
-      if (
-        connector.id === "metaMaskSDK" ||
-        connector.id === "io.metamask" ||
-        (connector.id === "injected" && window.ethereum?.isMetaMask)
-      ) {
-        const provider = window.ethereum;
-        if (provider && (provider.isMetaMask || provider._metamask)) {
-          try {
-            const version = await provider.request({
-              method: "web3_clientVersion",
-              params: [],
-            });
+      if (connector.isBitcoin) {
+        if (!connector.wallet?.btcWallet) return;
+        const res = await connect(connector.wallet.btcWallet);
+        if (res.error) {
+          console.log("error connecting wallet", res.error);
+        }
+      } else if (connector.isEVM) {
+        if (!connector.wallet?.evmWallet) return;
 
-            const versionMatch = version.match(/v(\d+\.\d+\.\d+)/);
-            const versionNumber = versionMatch ? versionMatch[1] : null;
+        if (
+          connector.id === "metaMaskSDK" ||
+          connector.id === "io.metamask" ||
+          (connector.id === "injected" && window.ethereum?.isMetaMask)
+        ) {
+          const provider = window.ethereum;
+          if (provider && (provider.isMetaMask || provider._metamask)) {
+            try {
+              const version = await provider.request({
+                method: "web3_clientVersion",
+                params: [],
+              });
 
-            if (versionNumber) {
-              const [major, minor, patch] = versionNumber
-                .split(".")
-                .map(Number);
-              if (major === 12 && minor === 15 && patch === 1) {
-                onClose();
-                setOpenModal(modalNames.versionUpdate);
-                setConnectingWallet(null);
-                return;
+              const versionMatch = version.match(/v(\d+\.\d+\.\d+)/);
+              const versionNumber = versionMatch ? versionMatch[1] : null;
+
+              if (versionNumber) {
+                const [major, minor, patch] = versionNumber
+                  .split(".")
+                  .map(Number);
+                if (major === 12 && minor === 15 && patch === 1) {
+                  onClose();
+                  setOpenModal(modalNames.versionUpdate);
+                  setConnectingWallet(null);
+                  return;
+                }
               }
+            } catch (error) {
+              console.error("Error getting MetaMask version:", error);
             }
-          } catch (error) {
-            console.error("Error getting MetaMask version:", error);
           }
         }
-      }
 
-      await handleEVMConnect(connector.wallet.evmWallet, connectAsync);
-      setConnectingWallet(null);
+        await handleEVMConnect(connector.wallet.evmWallet, connectAsync);
+        setConnectingWallet(null);
+      } else if (connector.isStarknet) {
+        if (!connector.wallet?.starknetWallet) return;
+        starknetConnect({ connector: connector.wallet.starknetWallet });
+      }
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+    } finally {
+      if (!connector.isStarknet || !starknetStatus) {
+        setConnectingWallet(null);
+      }
     }
-    setConnectingWallet(null);
   };
+
+  useEffect(() => {
+    if (starknetStatus === "connected") {
+      setConnectingWallet(null);
+      handleClose();
+    }
+  }, [handleClose, setConnectingWallet, starknetStatus]);
 
   return (
     <div className="flex max-h-[600px] flex-col gap-[20px] p-3">
       <div className="flex items-center justify-between">
         <Typography size="h4" weight="bold">
-          Connect a wallet
+          Connect a Wallet
         </Typography>
         <div className="flex gap-4">
           {multiWalletConnector && (
@@ -155,7 +197,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         </div>
       </div>
 
-      {!showOnlyBTCWallets && !multiWalletConnector && (
+      {!multiWalletConnector && (
         <div className="flex flex-wrap gap-3">
           {Object.values(ecosystems).map((ecosystem, i) => (
             <Chip
@@ -163,7 +205,12 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
               className={`cursor-pointer py-1 pl-3 pr-1 transition-colors ease-cubic-in-out hover:bg-opacity-50`}
               onClick={() => {
                 setSelectedEcosystem((prev) =>
-                  prev === ecosystem.name ? null : ecosystem.name
+                  prev ===
+                  BlockchainType[ecosystem.name as keyof typeof BlockchainType]
+                    ? null
+                    : BlockchainType[
+                        ecosystem.name as keyof typeof BlockchainType
+                      ]
                 );
               }}
             >
@@ -172,7 +219,10 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
               </Typography>
               <RadioCheckedIcon
                 className={`${
-                  selectedEcosystem === ecosystem.name ? "mr-1 w-4" : "w-0"
+                  selectedEcosystem ===
+                  BlockchainType[ecosystem.name as keyof typeof BlockchainType]
+                    ? "mr-1 w-4"
+                    : "w-0"
                 } fill-rose transition-all`}
               />
             </Chip>
@@ -212,6 +262,12 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                           window.ethereum.isCoinbaseWallet &&
                           connector.id === "injected" &&
                           wallet.id === "com.coinbase.wallet"))
+                    ),
+                    starknet: !!(
+                      starknetConnector &&
+                      wallet.isStarknet &&
+                      starknetConnector.id === wallet.id &&
+                      starknetStatus === "connected"
                     ),
                   }}
                   isAvailable={wallet.isAvailable}
