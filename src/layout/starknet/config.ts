@@ -11,10 +11,12 @@ import {
 import { InjectedConnector } from "starknetkit/injected";
 import { WebWalletConnector } from "starknetkit/webwallet";
 import { constants } from "starknet";
+import { network } from "../../constants/constants";
+import { Network } from "@gardenfi/utils";
 
 export const ARGENT_WEBWALLET_URL = "https://sepolia-web.argent.xyz";
 export const CHAIN_ID =
-  process.env.VITE_CHAIN_ID === constants.NetworkName.SN_MAIN
+  network === Network.MAINNET
     ? constants.NetworkName.SN_MAIN
     : constants.NetworkName.SN_SEPOLIA;
 
@@ -38,7 +40,6 @@ export const availableConnectors = () => {
   return [
     new InjectedConnector({ options: { id: "argentX" } }),
     new InjectedConnector({ options: { id: "braavos" } }),
-    new InjectedConnector({ options: { id: "metamask" } }),
     ArgentMobileConnector.init({
       options: {
         url: typeof window !== "undefined" ? window.location.href : "",
