@@ -15,11 +15,11 @@ import { isBitcoin } from "@gardenfi/orderbook";
 import { CopyToClipboard } from "../../../common/CopyToClipboard";
 import { useOrderStatus } from "../../../hooks/useOrderStatus";
 import { OrderStatus as OrderStatusEnum } from "@gardenfi/core";
-import { ordersStore } from "../../../store/ordersStore";
 import { API } from "../../../constants/api";
+import orderInProgressStore from "../../../store/orderInProgressStore";
 
 export const SwapInProgress = () => {
-  const { setOrderInProgress, orderInProgress: order } = ordersStore();
+  const { order, setIsOpen } = orderInProgressStore();
   const { assets } = assetInfoStore();
   const { orderProgress, viewableStatus } = useOrderStatus();
 
@@ -37,10 +37,9 @@ export const SwapInProgress = () => {
     };
   }, [assets, order]);
 
-  const goBack = useCallback(
-    () => setOrderInProgress(null),
-    [setOrderInProgress]
-  );
+  const goBack = useCallback(() => {
+    setIsOpen(false);
+  }, [setIsOpen]);
 
   const handleClickTransaction = () => {
     if (!order) return;

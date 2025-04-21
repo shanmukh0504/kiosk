@@ -7,6 +7,7 @@ export const modalNames = {
   whiteList: "whiteList",
   assetList: "assetList",
   manageStake: "manageStake",
+  versionUpdate: "versionUpdate",
 } as const;
 
 export type ModalData = {
@@ -29,6 +30,7 @@ export type ModalData = {
   initializeSM: undefined;
   whiteList: undefined;
   assetList: undefined;
+  versionUpdate: undefined;
 };
 
 export type ModalName = keyof typeof modalNames;
@@ -52,6 +54,7 @@ export const modalStore = create<ModalState>((set) => ({
     whiteList: false,
     assetList: false,
     manageStake: false,
+    versionUpdate: false,
   },
   modalData: {
     manageStake: {},

@@ -1,4 +1,4 @@
-import { useState, FC, useMemo } from "react";
+import { useState, FC, useMemo, useEffect } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { TokenPrices } from "../../store/swapStore";
 import { SwapComparison } from "./SwapComparison";
@@ -10,6 +10,7 @@ import { isBitcoin } from "@gardenfi/orderbook";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatAmount } from "../../utils/utils";
 import { formatTime } from "../../utils/timeAndFeeComparison/utils";
+import debounce from "lodash.debounce";
 
 type SwapDetailsProps = {
   tokenPrices: TokenPrices;
@@ -18,8 +19,9 @@ type SwapDetailsProps = {
 
 export const SwapDetails: FC<SwapDetailsProps> = ({
   tokenPrices,
-  isExpanded,
+  isExpanded: isExpandedProp,
 }) => {
+  const [isExpanded, setIsExpanded] = useState(isExpandedProp);
   const [showComparison, setIsShowComparison] = useState({
     isOpen: false,
     isTime: false,
@@ -27,6 +29,22 @@ export const SwapDetails: FC<SwapDetailsProps> = ({
   });
   const [maxTimeSaved, setMaxTimeSaved] = useState<number>(0);
   const [maxCostSaved, setMaxCostSaved] = useState<number>(0);
+
+  useEffect(() => {
+    if (isExpandedProp) {
+      const debouncedSetExpanded = debounce(() => {
+        setIsExpanded(true);
+      }, 500);
+
+      debouncedSetExpanded();
+
+      return () => {
+        debouncedSetExpanded.cancel();
+      };
+    } else {
+      setIsExpanded(false);
+    }
+  }, [isExpandedProp]);
 
   const animationConfig = {
     initial: { opacity: 0, height: 0 },

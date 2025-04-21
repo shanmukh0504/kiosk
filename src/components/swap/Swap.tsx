@@ -9,18 +9,20 @@ import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
 import { IOType } from "../../constants/constants";
 import { formatAmount, getAssetFromSwap } from "../../utils/utils";
 import { OrderActions, OrderStatus } from "@gardenfi/core";
-import { ordersStore } from "../../store/ordersStore";
+import orderInProgressStore from "../../store/orderInProgressStore";
+import pendingOrdersStore from "../../store/pendingOrdersStore";
 
 export const Swap = () => {
   const { setAsset } = swapStore();
   const { fetchAndSetStrategies, assets } = assetInfoStore();
-  const { quote, garden } = useGarden();
-  const { orderInProgress, updateOrder } = ordersStore();
+  const { garden } = useGarden();
+  const { order, isOpen } = orderInProgressStore();
+  const { updateOrder } = pendingOrdersStore();
 
   useEffect(() => {
-    if (!quote) return;
-    fetchAndSetStrategies(quote);
-  }, [fetchAndSetStrategies, quote]);
+    if (!garden) return;
+    fetchAndSetStrategies(garden.quote);
+  }, [fetchAndSetStrategies, garden]);
 
   useEffect(() => {
     if (!assets) return;
@@ -41,7 +43,7 @@ export const Swap = () => {
 
     const handleSuccess = (
       order: MatchedOrder,
-      action: OrderActions,
+      _: OrderActions,
       result: string
     ) => {
       const { source_swap, destination_swap } = order;
@@ -51,33 +53,24 @@ export const Swap = () => {
 
       const inputAmount = formatAmount(
         order.source_swap.amount,
-        inputAsset.decimals,
-        6
+        inputAsset.decimals
       );
       const outputAmount = formatAmount(
         order.destination_swap.amount,
-        outputAsset.decimals,
-        6
+        outputAsset.decimals
       );
       console.log("order success ✅", order.create_order.create_id);
 
-      if (
-        orderInProgress &&
-        orderInProgress.create_order.create_id ===
-          order.create_order.create_id &&
-        action === OrderActions.Redeem &&
-        result
-      ) {
-        const updatedOrder = {
-          ...order,
-          destination_swap: {
-            ...order.destination_swap,
-            redeem_tx_hash: result,
-          },
-          status: OrderStatus.RedeemDetected,
-        };
-        updateOrder(updatedOrder);
-      }
+      const updatedOrder = {
+        ...order,
+        destination_swap: {
+          ...order.destination_swap,
+          redeem_tx_hash: result,
+        },
+        status: OrderStatus.RedeemDetected,
+      };
+      updateOrder(updatedOrder);
+
       Toast.success(
         `Swap success ${inputAmount} ${inputAsset.symbol} to ${outputAmount} ${outputAsset.symbol}`
       );
@@ -92,7 +85,7 @@ export const Swap = () => {
       garden.off("log", handleLog);
       garden.off("success", handleSuccess);
     };
-  }, [garden, assets, orderInProgress, updateOrder]);
+  }, [garden, assets, order, updateOrder]);
 
   return (
     <div className="mx-auto flex h-full min-h-[calc(100vh-96px)] w-full max-w-[328px] flex-col justify-center gap-4 sm:max-w-[424px]">
@@ -101,7 +94,7 @@ export const Swap = () => {
         <div
           className={`relative -translate-y-[calc(48px)] overflow-hidden rounded-[20px] bg-white/50`}
         >
-          {orderInProgress ? <SwapInProgress /> : <CreateSwap />}
+          {isOpen ? <SwapInProgress /> : <CreateSwap />}
         </div>
       </div>
     </div>

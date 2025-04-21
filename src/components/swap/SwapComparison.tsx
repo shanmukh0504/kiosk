@@ -165,7 +165,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
           setLoading(false);
         }
       }
-    }, 500); // debounce delay
+    }, 300); // debounce delay
   }, []);
 
   useEffect(() => {
@@ -234,6 +234,18 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
     error.swapError,
     swapEntriesWithGarden.length,
   ]);
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        hide();
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [hide]);
+
   return (
     <motion.div
       {...animationConfig}

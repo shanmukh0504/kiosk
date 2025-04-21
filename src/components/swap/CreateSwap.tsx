@@ -64,24 +64,24 @@ export const CreateSwap = () => {
   const isDisabled = isSwapping || !validSwap || !!error.swapError;
 
   const buttonLabel = useMemo(() => {
-    return error.swapError === Errors.insufficientBalance
-      ? "Insufficient balance"
-      : error.swapError === Errors.insufficientLiquidity
-        ? "Insufficient Liquidity"
+    return error.swapError === Errors.insufficientLiquidity
+      ? "Insufficient liquidity"
+      : error.swapError === Errors.insufficientBalance
+        ? "Insufficient balance"
         : isSwapping
           ? "Signing..."
           : "Swap";
   }, [error.swapError, isSwapping]);
 
   const buttonVariant = useMemo(() => {
-    return error.swapError
+    return error.swapError || loading.output || loading.input
       ? "disabled"
       : isSwapping
         ? "ternary"
         : validSwap
           ? "primary"
           : "disabled";
-  }, [isSwapping, validSwap, error.swapError]);
+  }, [isSwapping, validSwap, error.swapError, loading]);
 
   const timeEstimate = useMemo(() => {
     if (!inputAsset || !outputAsset) return "";
@@ -168,7 +168,7 @@ export const CreateSwap = () => {
           </motion.div>
           <SwapDetails
             tokenPrices={tokenPrices}
-            isExpanded={shouldShowDetails}
+            isExpanded={shouldShowDetails && !loading.output && !loading.input}
           />
         </motion.div>
         <Button

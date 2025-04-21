@@ -1,0 +1,30 @@
+import { Typography } from "@gardenfi/garden-book";
+import pendingOrdersStore from "../../store/pendingOrdersStore";
+import { TransactionRow } from "./TransactionRow";
+
+export const PendingTransactions = () => {
+  const { pendingOrders } = pendingOrdersStore();
+
+  return (
+    <div className="flex w-full flex-col overflow-y-auto">
+      {pendingOrders && pendingOrders.length === 0 ? (
+        <Typography size="h5" className="pb-4 text-center">
+          No transactions found.
+        </Typography>
+      ) : (
+        pendingOrders.map((order, index) => (
+          <div key={index} className="w-full">
+            <TransactionRow
+              order={order}
+              status={order.status}
+              isLast={index === pendingOrders.length - 1}
+            />
+            {index !== pendingOrders.length - 1 ? (
+              <div className="h-px w-full bg-white/50"></div>
+            ) : null}
+          </div>
+        ))
+      )}
+    </div>
+  );
+};

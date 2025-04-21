@@ -1,5 +1,5 @@
 import { Asset, Chain, isBitcoin, isEVM } from "@gardenfi/orderbook";
-import { Environment, Network } from "@gardenfi/utils";
+import { Network } from "@gardenfi/utils";
 
 export const INTERNAL_ROUTES: Record<string, { name: string; path: string[] }> =
   {
@@ -47,7 +47,14 @@ export const getTimeEstimates = (inputAsset: Asset) => {
   return "";
 };
 
-export const network: Environment | Network = import.meta.env.VITE_NETWORK;
+export enum Environment {
+  Staging = "staging",
+  Development = "development",
+  Production = "production",
+}
+
+export const network: Network = import.meta.env.VITE_NETWORK;
+export const environment: Environment = import.meta.env.VITE_ENVIRONMENT;
 
 export const SUPPORTED_CHAINS: Chain[] = [
   "arbitrum",
@@ -63,4 +70,5 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "citrea_testnet",
   "monad_testnet",
   "hyperliquid_testnet",
+  "hyperliquid",
 ] as const;
