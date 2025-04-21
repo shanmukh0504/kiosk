@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { Connector } from "wagmi";
 import {
@@ -37,8 +37,12 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   );
 
   const { connectors, connectAsync, connector, address } = useEVMWallet();
-  const { starknetConnect, starknetConnectors, starknetConnector } =
-    useStarknetWallet();
+  const {
+    starknetConnect,
+    starknetConnectors,
+    starknetConnector,
+    starknetStatus,
+  } = useStarknetWallet();
   const { availableWallets, connect, provider } = useBitcoinWallet();
   const { connectingWallet, setConnectingWallet } = ConnectingWalletStore();
   const { modalData, setOpenModal } = modalStore();
@@ -78,7 +82,6 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
 
   const handleClose = () => {
     if (address) onClose?.();
-
     setConnectingWallet(null);
     setMultiWalletConnector(undefined);
   };
@@ -94,67 +97,82 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       window.open(connector.installLink, "_blank");
       return;
     }
-    if (connector.isBitcoin && connector.isEVM) {
-      if (!connector.wallet?.evmWallet || !connector.wallet?.btcWallet) return;
-      setMultiWalletConnector({
-        evm: connector.wallet.evmWallet,
-        btc: connector.wallet.btcWallet,
-      });
-      return;
-    }
     setConnectingWallet(connector.id);
-    if (connector.isBitcoin) {
-      if (!connector.wallet?.btcWallet) return;
-      const res = await connect(connector.wallet.btcWallet);
-      if (res.error) {
-        console.log("error connecting wallet", res.error);
-        setConnectingWallet(null);
+
+    try {
+      if (connector.isBitcoin && connector.isEVM) {
+        if (!connector.wallet?.evmWallet || !connector.wallet?.btcWallet)
+          return;
+        setMultiWalletConnector({
+          evm: connector.wallet.evmWallet,
+          btc: connector.wallet.btcWallet,
+        });
+        return;
       }
-    } else if (connector.isEVM) {
-      if (!connector.wallet?.evmWallet) return;
 
-      if (
-        connector.id === "metaMaskSDK" ||
-        connector.id === "io.metamask" ||
-        (connector.id === "injected" && window.ethereum?.isMetaMask)
-      ) {
-        const provider = window.ethereum;
-        if (provider && (provider.isMetaMask || provider._metamask)) {
-          try {
-            const version = await provider.request({
-              method: "web3_clientVersion",
-              params: [],
-            });
+      if (connector.isBitcoin) {
+        if (!connector.wallet?.btcWallet) return;
+        const res = await connect(connector.wallet.btcWallet);
+        if (res.error) {
+          console.log("error connecting wallet", res.error);
+        }
+      } else if (connector.isEVM) {
+        if (!connector.wallet?.evmWallet) return;
 
-            const versionMatch = version.match(/v(\d+\.\d+\.\d+)/);
-            const versionNumber = versionMatch ? versionMatch[1] : null;
+        if (
+          connector.id === "metaMaskSDK" ||
+          connector.id === "io.metamask" ||
+          (connector.id === "injected" && window.ethereum?.isMetaMask)
+        ) {
+          const provider = window.ethereum;
+          if (provider && (provider.isMetaMask || provider._metamask)) {
+            try {
+              const version = await provider.request({
+                method: "web3_clientVersion",
+                params: [],
+              });
 
-            if (versionNumber) {
-              const [major, minor, patch] = versionNumber
-                .split(".")
-                .map(Number);
-              if (major === 12 && minor === 15 && patch === 1) {
-                onClose();
-                setOpenModal(modalNames.versionUpdate);
-                setConnectingWallet(null);
-                return;
+              const versionMatch = version.match(/v(\d+\.\d+\.\d+)/);
+              const versionNumber = versionMatch ? versionMatch[1] : null;
+
+              if (versionNumber) {
+                const [major, minor, patch] = versionNumber
+                  .split(".")
+                  .map(Number);
+                if (major === 12 && minor === 15 && patch === 1) {
+                  onClose();
+                  setOpenModal(modalNames.versionUpdate);
+                  setConnectingWallet(null);
+                  return;
+                }
               }
+            } catch (error) {
+              console.error("Error getting MetaMask version:", error);
             }
-          } catch (error) {
-            console.error("Error getting MetaMask version:", error);
           }
         }
-      }
 
-      await handleEVMConnect(connector.wallet.evmWallet, connectAsync);
+        await handleEVMConnect(connector.wallet.evmWallet, connectAsync);
+        setConnectingWallet(null);
+      } else if (connector.isStarknet) {
+        if (!connector.wallet?.starknetWallet) return;
+        starknetConnect({ connector: connector.wallet.starknetWallet });
+      }
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+    } finally {
+      if (!connector.isStarknet || !starknetStatus) {
+        setConnectingWallet(null);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (starknetStatus === "connected") {
       setConnectingWallet(null);
-    } else if (connector.isStarknet) {
-      if (!connector.wallet?.starknetWallet) return;
-      await starknetConnect({ connector: connector.wallet.starknetWallet });
       handleClose();
     }
-    setConnectingWallet(null);
-  };
+  }, [starknetStatus]);
 
   return (
     <div className="flex max-h-[600px] flex-col gap-[20px] p-3">
@@ -232,7 +250,10 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                           wallet.id === "com.coinbase.wallet"))
                     ),
                     starknet: !!(
-                      starknetConnector && starknetConnector.id === wallet.id
+                      starknetConnector &&
+                      wallet.isStarknet &&
+                      starknetConnector.id === wallet.id &&
+                      starknetStatus === "connected"
                     ),
                   }}
                   isAvailable={wallet.isAvailable}
