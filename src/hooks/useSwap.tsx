@@ -296,6 +296,7 @@ export const useSwap = () => {
   const { setOpenModal } = modalStore();
 
   const needsWalletConnection = useMemo(() => {
+    if (!evmAddress && !starknetAddress && !account) return false;
     if (!inputAsset || !outputAsset) return false;
     if (isEVM(inputAsset.chain) && !evmAddress) return "evm";
     if (isStarknet(inputAsset.chain) && !starknetAddress) return "starknet";

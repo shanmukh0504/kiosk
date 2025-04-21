@@ -73,7 +73,6 @@ export const CreateSwap = () => {
   }, [inputAsset, outputAsset]);
 
   const handleConnectWallet = () => {
-    console.log("needsWalletConnection", needsWalletConnection);
     if (needsWalletConnection === "starknet") {
       setOpenModal(modalNames.connectWallet, {
         Starknet: true,

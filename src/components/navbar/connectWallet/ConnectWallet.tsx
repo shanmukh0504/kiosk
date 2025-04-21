@@ -21,6 +21,7 @@ import { ecosystems, evmToBTCid } from "./constants";
 import { AnimatePresence } from "framer-motion";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { ConnectingWalletStore } from "../../../store/connectWalletStore";
+import { BlockchainType } from "@gardenfi/orderbook";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -32,9 +33,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     evm: Connector;
     btc: IInjectedBitcoinProvider;
   }>();
-  const [selectedEcosystem, setSelectedEcosystem] = useState<string | null>(
-    null
-  );
+  const [selectedEcosystem, setSelectedEcosystem] =
+    useState<BlockchainType | null>(null);
 
   const { connectors, connectAsync, connector, address } = useEVMWallet();
   const {
@@ -50,8 +50,18 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   const showOnlyStarknetWallets = !!modalData.connectWallet?.Starknet;
   const showOnlyEVMWallets = !!modalData.connectWallet?.EVM;
 
+  // Add useEffect to handle initial ecosystem selection
+  useEffect(() => {
+    if (showOnlyStarknetWallets) {
+      setSelectedEcosystem(BlockchainType.Starknet);
+    } else if (showOnlyEVMWallets) {
+      setSelectedEcosystem(BlockchainType.EVM);
+    } else if (showOnlyBTCWallets) {
+      setSelectedEcosystem(BlockchainType.Bitcoin);
+    }
+  }, [showOnlyStarknetWallets, showOnlyEVMWallets, showOnlyBTCWallets]);
+
   const allAvailableWallets = useMemo(() => {
-    if (showOnlyBTCWallets) return getAvailableWallets(availableWallets);
     let allWallets;
     allWallets = getAvailableWallets(
       availableWallets,
@@ -59,20 +69,11 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       starknetConnectors
     );
 
-    if (showOnlyStarknetWallets) {
-      setSelectedEcosystem("starknet");
-      return allWallets.filter((wallet) => wallet.isStarknet);
-    }
-    if (showOnlyEVMWallets) {
-      setSelectedEcosystem("evm");
-      return allWallets.filter((wallet) => wallet.isEVM);
-    }
-
-    if (selectedEcosystem === "Bitcoin")
+    if (selectedEcosystem === BlockchainType.Bitcoin)
       return allWallets.filter((wallet) => wallet.isBitcoin);
-    else if (selectedEcosystem === "EVM")
+    else if (selectedEcosystem === BlockchainType.EVM)
       return allWallets.filter((wallet) => wallet.isEVM);
-    else if (selectedEcosystem === "Starknet")
+    else if (selectedEcosystem === BlockchainType.Starknet)
       return allWallets.filter((wallet) => wallet.isStarknet);
 
     if (
@@ -84,10 +85,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     }
     return allWallets;
   }, [
-    showOnlyBTCWallets,
     availableWallets,
-    showOnlyStarknetWallets,
-    showOnlyEVMWallets,
     connectors,
     starknetConnectors,
     selectedEcosystem,
@@ -191,13 +189,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     <div className="flex max-h-[600px] flex-col gap-[20px] p-3">
       <div className="flex items-center justify-between">
         <Typography size="h4" weight="bold">
-          {showOnlyStarknetWallets
-            ? "Connect Starknet Wallet"
-            : showOnlyEVMWallets
-              ? "Connect EVM Wallet"
-              : showOnlyBTCWallets
-                ? "Connect Bitcoin Wallet"
-                : "Connect a wallet"}
+          Connect a Wallet
         </Typography>
         <div className="flex gap-4">
           {multiWalletConnector && (
@@ -210,33 +202,35 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         </div>
       </div>
 
-      {!showOnlyBTCWallets &&
-        !showOnlyStarknetWallets &&
-        !showOnlyEVMWallets &&
-        !multiWalletConnector && (
-          <div className="flex flex-wrap gap-3">
-            {Object.values(ecosystems).map((ecosystem, i) => (
-              <Chip
-                key={i}
-                className={`cursor-pointer py-1 pl-3 pr-1 transition-colors ease-cubic-in-out hover:bg-opacity-50`}
-                onClick={() => {
-                  setSelectedEcosystem((prev) =>
-                    prev === ecosystem.name ? null : ecosystem.name
-                  );
-                }}
-              >
-                <Typography size="h3" weight="medium">
-                  {ecosystem.name}
-                </Typography>
-                <RadioCheckedIcon
-                  className={`${
-                    selectedEcosystem === ecosystem.name ? "mr-1 w-4" : "w-0"
-                  } fill-rose transition-all`}
-                />
-              </Chip>
-            ))}
-          </div>
-        )}
+      {!multiWalletConnector && (
+        <div className="flex flex-wrap gap-3">
+          {Object.values(ecosystems).map((ecosystem, i) => (
+            <Chip
+              key={i}
+              className={`cursor-pointer py-1 pl-3 pr-1 transition-colors ease-cubic-in-out hover:bg-opacity-50`}
+              onClick={() => {
+                setSelectedEcosystem((prev) =>
+                  prev === BlockchainType[ecosystem.name as keyof typeof BlockchainType]
+                    ? null
+                    : BlockchainType[ecosystem.name as keyof typeof BlockchainType]
+                );
+              }}
+            >
+              <Typography size="h3" weight="medium">
+                {ecosystem.name}
+              </Typography>
+              <RadioCheckedIcon
+                className={`${
+                  selectedEcosystem ===
+                  BlockchainType[ecosystem.name as keyof typeof BlockchainType]
+                    ? "mr-1 w-4"
+                    : "w-0"
+                } fill-rose transition-all`}
+              />
+            </Chip>
+          ))}
+        </div>
+      )}
 
       {multiWalletConnector ? (
         <MultiWalletConnection
