@@ -5,12 +5,14 @@ export const useStarknetWallet = () => {
     connect: starknetConnect,
     connectors,
     connector: activeConnector,
+    connectAsync: starknetConnectAsync,
   } = useConnect();
   const { disconnect } = useDisconnect();
   const { address, status, account } = useAccount();
 
   return {
     starknetConnect,
+    starknetConnectAsync,
     starknetConnectors: connectors,
     starknetConnector: activeConnector,
     starknetDisconnect: disconnect,

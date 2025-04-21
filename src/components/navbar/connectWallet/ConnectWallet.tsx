@@ -38,10 +38,10 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
 
   const { connectors, connectAsync, connector, address } = useEVMWallet();
   const {
-    starknetConnect,
     starknetConnectors,
     starknetConnector,
     starknetStatus,
+    starknetConnectAsync,
   } = useStarknetWallet();
   const { availableWallets, connect, provider } = useBitcoinWallet();
   const { connectingWallet, setConnectingWallet } = ConnectingWalletStore();
@@ -162,23 +162,16 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         setConnectingWallet(null);
       } else if (connector.isStarknet) {
         if (!connector.wallet?.starknetWallet) return;
-        starknetConnect({ connector: connector.wallet.starknetWallet });
+        await starknetConnectAsync({
+          connector: connector.wallet.starknetWallet,
+        });
       }
     } catch (error) {
       console.error("Error connecting wallet:", error);
     } finally {
-      if (!connector.isStarknet || !starknetStatus) {
-        setConnectingWallet(null);
-      }
+      setConnectingWallet(null);
     }
   };
-
-  useEffect(() => {
-    if (starknetStatus === "connected") {
-      setConnectingWallet(null);
-      handleClose();
-    }
-  }, [handleClose, setConnectingWallet, starknetStatus]);
 
   return (
     <div className="flex max-h-[600px] flex-col gap-[20px] p-3">
