@@ -5,13 +5,38 @@ import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { ecosystems } from "./connectWallet/constants";
 import { Opacity, WalletIcon } from "@gardenfi/garden-book";
 import { modalNames, modalStore } from "../../store/modalStore";
+import pendingOrdersStore from "../../store/pendingOrdersStore";
+import { OrderStatus } from "@gardenfi/core";
+import { useEffect } from "react";
+import { useGarden } from "@gardenfi/react-hooks";
+import { Loader } from "../../common/Loader";
 
 const ConnectedWallets = () => {
   const { address } = useEVMWallet();
   const { setOpenModal } = modalStore();
   const { starknetAddress } = useStarknetWallet();
   const { account: btcAddress } = useBitcoinWallet();
+  const { pendingOrders } = useGarden();
+  const { pendingOrders: pendingOrdersFromStore, setPendingOrders } =
+    pendingOrdersStore();
   const handleAddressClick = () => setOpenModal(modalNames.transactions);
+
+  const pendingOrdersCount = pendingOrdersFromStore.filter(
+    (order) =>
+      order.status !== OrderStatus.RedeemDetected &&
+      order.status !== OrderStatus.Redeemed &&
+      order.status !== OrderStatus.CounterPartyRedeemDetected &&
+      order.status !== OrderStatus.CounterPartyRedeemed &&
+      order.status !== OrderStatus.Completed
+  ).length;
+
+  useEffect(() => {
+    if (pendingOrders) {
+      setPendingOrders(pendingOrders);
+    } else {
+      setPendingOrders([]);
+    }
+  }, [pendingOrders, setPendingOrders]);
 
   return (
     <>
@@ -41,6 +66,16 @@ const ConnectedWallets = () => {
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="Starknet wallet"
           />
+        )}
+        {pendingOrdersCount ? (
+          <div className="relative">
+            <Loader />
+            <div className="absolute left-[34%] top-[10%] text-sm font-bold text-rose">
+              {pendingOrdersCount}
+            </div>
+          </div>
+        ) : (
+          <></>
         )}
       </Opacity>
     </>
