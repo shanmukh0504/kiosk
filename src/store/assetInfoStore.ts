@@ -1,10 +1,11 @@
 import { create } from "zustand";
-import { IOType, SUPPORTED_CHAINS } from "../constants/constants";
+import { IOType, network, SUPPORTED_CHAINS } from "../constants/constants";
 import { Asset, Chain } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
 import { IQuote, Strategies } from "@gardenfi/core";
 import { generateTokenKey } from "../utils/generateTokenKey";
+import { Network } from "@gardenfi/utils";
 
 export type Networks = {
   [chain in Chain]: ChainData & { assetConfig: Omit<Asset, "chain">[] };
@@ -76,10 +77,12 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   fetchAndSetAssetsAndChains: async () => {
     try {
       set({ isLoading: true });
-      const res = await axios.get<{
-        data: { networks: Networks };
-      }>(API().data.assets.toString());
-      const assetsData = res.data.data.networks;
+      const res = await axios.get<Networks>(
+        API()
+          .data.assets(network as Network)
+          .toString()
+      );
+      const assetsData = res.data;
 
       const assets: Assets = {};
       const chains: Chains = {};

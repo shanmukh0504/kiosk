@@ -32,11 +32,11 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
           {children}
         </div>
         <Notification
-          id="introducing-act-2"
+          id="act-2:bloom"
           title="introducing act 2: bloom"
-          description="Join the early access cohort to get in on the action!"
-          image="https://wbtc-garden.ghost.io/content/images/size/w1000/2024/10/act2_bloom.png"
-          link="https://garden.finance/blog/act-2-bloom"
+          description="Explore faster swaps, new assets and chains, and all that's new around here!"
+          image="https://wbtc-garden.ghost.io/content/images/size/w1000/2025/04/act2-1.png"
+          link="https://garden.finance/blog/leveling-up-garden"
         />
         <Footer className={"mt-auto"} />
       </div>

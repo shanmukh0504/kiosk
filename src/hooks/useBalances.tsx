@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { Asset, isBitcoin, isStarknet } from "@gardenfi/orderbook";
+import { Asset, isBitcoin, isStarknet, isEVM } from "@gardenfi/orderbook";
 import { evmToViemChainMap } from "@gardenfi/core";
 import { useEVMWallet } from "./useEVMWallet";
 import { getTokenBalance } from "../utils/getTokenBalance";
@@ -49,7 +49,7 @@ export const useBalances = (asset: Asset | undefined) => {
           console.error("Error processing Starknet balance:", error);
           return;
         }
-      } else {
+      } else if (isEVM(asset.chain)) {
         if (!address) {
           clearBalances();
           return;

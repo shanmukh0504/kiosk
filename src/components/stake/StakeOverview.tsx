@@ -48,7 +48,7 @@ export const StakeOverview = () => {
       ? formatAmount(
           stakeRewards.totalcbBtcReward - Number(claimedAmount ?? 0),
           8,
-          5
+          8
         )
       : 0;
   }, [stakeRewards, claimedAmount]);
@@ -144,9 +144,7 @@ export const StakeOverview = () => {
                       cbBtcReward={formatAmount(
                         Number(
                           stakeRewards?.rewardResponse.cumulative_rewards_cbbtc
-                        ),
-                        8,
-                        4
+                        ),8
                       )}
                     />
                   }

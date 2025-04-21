@@ -8,8 +8,6 @@ import {
 } from "@gardenfi/wallet-connectors";
 import { handleEVMConnect } from "./handleConnect";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
-import { authStore } from "../../../store/authStore";
-import { modalNames, modalStore } from "../../../store/modalStore";
 
 type Checked = Record<EcosystemKeys, boolean>;
 type MultiWalletConnectionProps = {
@@ -35,8 +33,6 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
 
   const { connect } = useBitcoinWallet();
   const { connectAsync } = useEVMWallet();
-  const { setOpenModal } = modalStore();
-  const { setAuth } = authStore();
 
   const handleCheck = (ecosystem: string) => {
     if (ecosystem === "evm") {
@@ -53,18 +49,11 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
 
     const res = await handleEVMConnect(connectors.evm, connectAsync);
 
-    if (!res) {
+    if (res.error) {
       setLoading(false);
       handleClose();
       return;
     }
-
-    if (res && !res.isWhitelisted) {
-      setOpenModal(modalNames.whiteList);
-      handleClose();
-      return;
-    }
-    if (res && res.auth) setAuth(res.auth);
 
     if (!checked.bitcoin) {
       setLoading(false);

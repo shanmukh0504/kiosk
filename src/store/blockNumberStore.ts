@@ -21,7 +21,11 @@ export const blockNumberStore = create<BlockNumberStore>()((set, get) => ({
       set({ isLoading: true });
       const res = await axios.get<{
         [key in Chain]: number;
-      }>(API().data.blockNumbers(network as Network).toString());
+      }>(
+        API()
+          .data.blockNumbers(network as Network)
+          .toString()
+      );
       set({ blockNumbers: res.data, error: "" });
     } catch (error) {
       set({ error: (error as Error).message });
