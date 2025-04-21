@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { Connector } from "wagmi";
 import {
@@ -86,11 +86,11 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     return allWallets;
   }, [availableWallets, connectors, starknetConnectors, selectedEcosystem]);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     if (address) onClose?.();
     setConnectingWallet(null);
     setMultiWalletConnector(undefined);
-  };
+  }, [address, onClose, setConnectingWallet]);
 
   const close = () => {
     onClose?.();
