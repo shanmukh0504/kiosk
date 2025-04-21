@@ -83,6 +83,20 @@ export default defineConfig({
       },
     },
   ],
+  build: {
+    target: "esnext",
+    minify: "terser",
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "react-vendor": ["react", "react-dom"],
+          "ui-vendor": ["@gardenfi/garden-book", "framer-motion"],
+          "wallet-vendor": ["@gardenfi/wallet-connectors", "wagmi", "viem"],
+        },
+      },
+    },
+  },
   preview: {
     allowedHosts: true,
   },
