@@ -39,6 +39,7 @@ const addressAnimation = {
     transition: { duration: 0.3, ease: "easeOut" },
   },
 };
+import { modalNames, modalStore } from "../../store/modalStore";
 
 export const CreateSwap = () => {
   const {
@@ -58,12 +59,15 @@ export const CreateSwap = () => {
     isValidBitcoinAddress,
     handleSwapClick,
     swapAssets,
+    needsWalletConnection,
   } = useSwap();
   const { account: btcAddress } = useBitcoinWallet();
-
-  const isDisabled = isSwapping || !validSwap || !!error.swapError;
+  const { setOpenModal } = modalStore();
 
   const buttonLabel = useMemo(() => {
+    if (needsWalletConnection) {
+      return `Connect ${needsWalletConnection === "starknet" ? "Starknet" : "EVM"} Wallet`;
+    }
     return error.swapError === Errors.insufficientLiquidity
       ? "Insufficient liquidity"
       : error.swapError === Errors.insufficientBalance
@@ -71,17 +75,32 @@ export const CreateSwap = () => {
         : isSwapping
           ? "Signing..."
           : "Swap";
-  }, [error.swapError, isSwapping]);
+  }, [error.swapError, isSwapping, needsWalletConnection]);
+
+  // const buttonVariant = useMemo(() => {
+  //   if (needsWalletConnection) {
+  //     return `Connect ${needsWalletConnection === "starknet" ? "Starknet" : "EVM"} Wallet`;
+  //   }
+  //   return error.swapError === Errors.insufficientLiquidity
+  //     ? "Insufficient Liquidity"
+  //     : error.swapError === Errors.insufficientBalance
+  //       ? "Insufficient balance"
+  //       : isSwapping
+  //         ? "Signing..."
+  //         : "Swap";
+  // }, [error.swapError, isSwapping, needsWalletConnection]);
 
   const buttonVariant = useMemo(() => {
-    return error.swapError || loading.output || loading.input
+    if (needsWalletConnection) return "primary";
+    return error.swapError === Errors.insufficientLiquidity ||
+      error.swapError === Errors.insufficientBalance
       ? "disabled"
       : isSwapping
         ? "ternary"
         : validSwap
           ? "primary"
           : "disabled";
-  }, [isSwapping, validSwap, error.swapError, loading]);
+  }, [isSwapping, validSwap, error.swapError, needsWalletConnection]);
 
   const timeEstimate = useMemo(() => {
     if (!inputAsset || !outputAsset) return "";
@@ -117,6 +136,22 @@ export const CreateSwap = () => {
         (outputAsset?.chain && isBitcoin(outputAsset.chain)))
     );
   }, [isEditBTCAddress, btcAddress, inputAsset, outputAsset]);
+  const handleConnectWallet = () => {
+    if (needsWalletConnection === "starknet") {
+      setOpenModal(modalNames.connectWallet, {
+        Starknet: true,
+        Bitcoin: false,
+        EVM: false,
+      });
+    }
+    if (needsWalletConnection === "evm") {
+      setOpenModal(modalNames.connectWallet, {
+        EVM: true,
+        Starknet: false,
+        Bitcoin: false,
+      });
+    }
+  };
 
   return (
     <div
@@ -172,13 +207,20 @@ export const CreateSwap = () => {
           />
         </motion.div>
         <Button
-          className={`mt-3 transition-colors duration-500${
-            isSwapping ? "cursor-not-allowed" : ""
+          className={`mt-3 transition-colors duration-500 ${
+            !needsWalletConnection && buttonLabel !== "Swap"
+              ? "pointer-events-none"
+              : ""
           }`}
           variant={buttonVariant}
           size="lg"
-          onClick={handleSwapClick}
-          disabled={isDisabled}
+          onClick={
+            needsWalletConnection ? handleConnectWallet : handleSwapClick
+          }
+          disabled={
+            isSwapping ||
+            (!needsWalletConnection && (!validSwap || !!error.swapError))
+          }
         >
           {buttonLabel}
         </Button>

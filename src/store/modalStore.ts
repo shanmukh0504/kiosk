@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { StakingPosition } from "./stakeStore";
+import { BlockchainType } from "@gardenfi/orderbook";
 
 export const modalNames = {
   connectWallet: "connectWallet",
@@ -11,7 +12,9 @@ export const modalNames = {
 } as const;
 
 export type ModalData = {
-  connectWallet: { isBTCWallets: boolean };
+  connectWallet: {
+    [key in BlockchainType]?: boolean;
+  };
   manageStake: {
     stake?: {
       isStake: boolean;

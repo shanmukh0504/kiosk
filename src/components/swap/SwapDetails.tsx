@@ -174,7 +174,7 @@ export const SwapDetails: FC<SwapDetailsProps> = ({
               </Typography>
             </div>
           </div>
-          <div className="flex flex-col items-stretch justify-center gap-1 px-4">
+          <div className="flex flex-col items-stretch justify-center px-4">
             {receiveAddress && <AddressDetails address={receiveAddress} />}
             {refundAddress && (
               <AddressDetails address={refundAddress} isRefund />

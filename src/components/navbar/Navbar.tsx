@@ -2,13 +2,18 @@ import { Button, GardenFullLogo, Typography } from "@gardenfi/garden-book";
 import { INTERNAL_ROUTES } from "../../constants/constants";
 import { API } from "../../constants/api";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { Address } from "./Address";
+// import { Address } from "./Address";
 import { isCurrentRoute } from "../../utils/utils";
 import { MobileMenu } from "./MobileMenu";
 import { modalNames, modalStore } from "../../store/modalStore";
+import ConnectedWallets from "./ConnectedWallets";
+import { useStarknetWallet } from "../../hooks/useStarknetWallet";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 
 export const Navbar = () => {
   const { isConnected, address } = useEVMWallet();
+  const { starknetAddress } = useStarknetWallet();
+  const { account: btcAddress } = useBitcoinWallet();
   const { setOpenModal } = modalStore();
 
   const handleHomeLogoClick = () => window.open(API().home, "_blank");
@@ -41,8 +46,8 @@ export const Navbar = () => {
           })}
         </div>
       </div>
-      {address ? (
-        <Address />
+      {address || starknetAddress || btcAddress ? (
+        <ConnectedWallets />
       ) : (
         <Button
           variant="primary"

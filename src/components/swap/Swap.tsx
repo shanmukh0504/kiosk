@@ -92,7 +92,7 @@ export const Swap = () => {
       <div className="flex h-full -translate-y-7 flex-col justify-center gap-4">
         <ToastContainer />
         <div
-          className={`relative -translate-y-[calc(48px)] overflow-hidden rounded-[20px] bg-white/50`}
+          className={`relative -translate-y-[48px] overflow-hidden rounded-[20px] bg-white/50`}
         >
           {isOpen ? <SwapInProgress /> : <CreateSwap />}
         </div>
