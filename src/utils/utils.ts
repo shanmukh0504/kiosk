@@ -69,7 +69,16 @@ export const ClearLocalStorageExceptNotification = () => {
   if (notificationId) {
     localStorage.setItem(LOCAL_STORAGE_KEYS.notification, notificationId);
   }
-}
+};
 export const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+export const toXOnly = (pubKey: string) =>
+  pubKey.length === 64 ? pubKey : pubKey.slice(2);
+
+export const starknetAddressToXOnly = (address: string) => {
+  const xOnly = address.slice(2);
+  const trimmed = xOnly.replace(/^0+/, "");
+  return `0x${trimmed}`;
 };
