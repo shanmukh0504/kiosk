@@ -14,6 +14,7 @@ import { swapStore } from "../../store/swapStore";
 import { IOType } from "../../constants/constants";
 import { constructOrderPair } from "@gardenfi/core";
 import { AssetChainLogos } from "../../common/AssetChainLogos";
+import { modalStore } from "../../store/modalStore";
 
 type props = {
   onClose: () => void;
@@ -31,6 +32,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     chains,
     strategies,
   } = assetInfoStore();
+  const { modalName } = modalStore();
   const { setAsset, inputAsset, outputAsset } = swapStore();
 
   const orderedChains = useMemo(() => {
@@ -175,7 +177,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             Assets
           </Typography>
         </div>
-        <GradientScroll height={288}>
+        <GradientScroll height={288} onClose={!modalName.assetList}>
           {sortedResults?.map((asset) => {
             const network = !isBitcoin(asset.chain)
               ? chains?.[asset.chain]
