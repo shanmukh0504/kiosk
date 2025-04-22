@@ -7,6 +7,7 @@ import { assetInfoStore } from "../store/assetInfoStore";
 import {
   constructOrderPair,
   OrderStatus,
+  switchOrAddNetwork,
   validateBTCAddress,
 } from "@gardenfi/core";
 import BigNumber from "bignumber.js";
@@ -20,6 +21,7 @@ import { ConnectingWalletStore } from "../store/connectWalletStore";
 import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import { useWalletClient } from "wagmi";
+import { Account } from "viem";
 
 export const useSwap = () => {
   const {
@@ -55,7 +57,7 @@ export const useSwap = () => {
   const { provider, account } = useBitcoinWallet();
   const controller = useRef<AbortController | null>(null);
   const { setConnectingWallet } = ConnectingWalletStore();
-  const { data: walletClient } = useWalletClient();
+  let { data: wallet } = useWalletClient();
   const isInsufficientBalance = useMemo(
     () => new BigNumber(inputAmount).gt(inputTokenBalance),
     [inputAmount, inputTokenBalance]
@@ -321,13 +323,24 @@ export const useSwap = () => {
           strategyId: strategy,
         };
 
-    try {
+    try {      
+      if(!wallet) return;
+      
       setIsApproving(true);
+      const _walletClient = await switchOrAddNetwork(
+        inputAsset.chain,
+        wallet,
+      );
+
+      if (_walletClient.error) return Error(_walletClient.error);
+      wallet = _walletClient.val.walletClient  as typeof wallet & { account: Account };
+      if (!wallet.account) return Error('No account found');
+
       await checkAllowanceAndApprove(
         Number(inputAmountInDecimals),
         inputAsset.tokenAddress,
         inputAsset.atomicSwapAddress,
-        walletClient,
+        wallet,
       );
       setIsApproving(false);
       
