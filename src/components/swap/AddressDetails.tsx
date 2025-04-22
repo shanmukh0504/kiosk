@@ -42,9 +42,9 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
     <>
       {address && (
         <div
-          className={`flex items-center justify-between py-1 transition-all duration-500 ease-in-out ${
+          className={`flex items-center justify-between transition-all duration-500 ease-in-out ${
             !isEditBTCAddress || (chain && !isBitcoin(chain))
-              ? "pointer-events-auto max-h-7 opacity-100"
+              ? "pointer-events-auto max-h-7 py-1 opacity-100"
               : "pointer-events-none max-h-0 py-0 opacity-0"
           }`}
         >

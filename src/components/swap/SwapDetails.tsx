@@ -111,7 +111,7 @@ export const SwapDetails: FC<SwapDetailsProps> = ({
           setMaxCostSaved(cost);
         }}
       />
-      <div className="flex flex-col gap-2 rounded-2xl bg-white/50 pb-3 pt-4">
+      <div className="flex flex-col gap-2 rounded-2xl bg-white/50 pb-2.5 pt-4">
         <Typography size="h5" weight="bold" className="px-4">
           Details
         </Typography>

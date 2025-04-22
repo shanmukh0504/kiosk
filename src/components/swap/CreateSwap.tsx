@@ -77,19 +77,6 @@ export const CreateSwap = () => {
           : "Swap";
   }, [error.swapError, isSwapping, needsWalletConnection]);
 
-  // const buttonVariant = useMemo(() => {
-  //   if (needsWalletConnection) {
-  //     return `Connect ${needsWalletConnection === "starknet" ? "Starknet" : "EVM"} Wallet`;
-  //   }
-  //   return error.swapError === Errors.insufficientLiquidity
-  //     ? "Insufficient Liquidity"
-  //     : error.swapError === Errors.insufficientBalance
-  //       ? "Insufficient balance"
-  //       : isSwapping
-  //         ? "Signing..."
-  //         : "Swap";
-  // }, [error.swapError, isSwapping, needsWalletConnection]);
-
   const buttonVariant = useMemo(() => {
     if (needsWalletConnection) return "primary";
     return error.swapError === Errors.insufficientLiquidity ||
