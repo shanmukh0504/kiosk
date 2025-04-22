@@ -163,7 +163,12 @@ export const useSwap = () => {
             },
           });
           if (!quote || quote.error) {
-            if (quote?.error?.includes("insufficient liquidity")) {
+            if (quote?.error?.includes("AbortError")) {
+              setError({ swapError: Errors.none });
+              setIsFetchingQuote({ input: false, output: false });
+              setStrategy("");
+              return;
+            } else if (quote?.error?.includes("insufficient liquidity")) {
               setError({ swapError: Errors.insufficientLiquidity });
               setAmount(isExactOut ? IOType.input : IOType.output, "");
             } else if (quote?.error?.includes("output amount too less")) {
