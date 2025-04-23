@@ -635,9 +635,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/core@npm:2.1.3-beta.3":
-  version: 2.1.3-beta.3
-  resolution: "@gardenfi/core@npm:2.1.3-beta.3"
+"@gardenfi/core@npm:2.1.3-beta.4":
+  version: 2.1.3-beta.4
+  resolution: "@gardenfi/core@npm:2.1.3-beta.4"
   dependencies:
     "@catalogfi/wallets": "npm:^0.2.59"
     "@gardenfi/orderbook": "npm:2.1.2"
@@ -648,7 +648,7 @@ __metadata:
     tiny-secp256k1: "npm:^2.2.3"
     varuint-bitcoin: "npm:^1.1.2"
     viem: "npm:^2.21.23"
-  checksum: 10c0/768dd0459ed68f27f306f4c0c3ddaf06e309ba91fa03777a61b3c529a20eba93a924ae819473efa06ed6840f8016faad9b4cd947983d4d79c98a84b10b3d8f7d
+  checksum: 10c0/d425e2149701e478546716361af4d9e6d503a9cfe7d7c36b2919cc37742adfa0bea71bbe8fe7d94a363a59abec5ba498cecd51e511396ecaf6c7eaeaee999e6d
   languageName: node
   linkType: hard
 
@@ -685,18 +685,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/react-hooks@npm:2.1.3-beta.3":
-  version: 2.1.3-beta.3
-  resolution: "@gardenfi/react-hooks@npm:2.1.3-beta.3"
+"@gardenfi/react-hooks@npm:2.1.3-beta.4":
+  version: 2.1.3-beta.4
+  resolution: "@gardenfi/react-hooks@npm:2.1.3-beta.4"
   dependencies:
     "@catalogfi/wallets": "npm:^0.2.59"
-    "@gardenfi/core": "npm:2.1.3-beta.3"
+    "@gardenfi/core": "npm:2.1.3-beta.4"
     "@gardenfi/orderbook": "npm:2.1.2"
     "@gardenfi/utils": "npm:2.1.2"
     react: "npm:^18.3.1"
     starknet: "npm:6.23.1"
     viem: "npm:^2.21.23"
-  checksum: 10c0/db7764f26edef2a60a1835416c269893f4370fe6f9622874af4a729ccf8ba53c63e56bc5745e56b285d28183f14fc92a7f3ffeff8e898f8b974648ec9e5eb6af
+  checksum: 10c0/a31059daed318054d75c0898d661237a51002b8aaebc4185a16d76d590a4d7cae91012ffbc842841132a7fa35a3f2d5d7748e25eab08288d92174ba13c0cd0be
   languageName: node
   linkType: hard
 
@@ -6091,10 +6091,10 @@ __metadata:
   resolution: "garden-kiosk@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.13.0"
-    "@gardenfi/core": "npm:2.1.3-beta.3"
+    "@gardenfi/core": "npm:2.1.3-beta.4"
     "@gardenfi/garden-book": "npm:^0.1.85"
     "@gardenfi/orderbook": "npm:^2.1.2"
-    "@gardenfi/react-hooks": "npm:2.1.3-beta.3"
+    "@gardenfi/react-hooks": "npm:2.1.3-beta.4"
     "@gardenfi/utils": "npm:^2.1.2"
     "@gardenfi/wallet-connectors": "npm:2.0.3-beta.3"
     "@starknet-react/core": "npm:^3.7.2"
