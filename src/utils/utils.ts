@@ -49,12 +49,24 @@ export const getDayDifference = (date: string) => {
 export const formatAmount = (
   amount: string | number,
   decimals: number,
-  toFixed = 8
+  toFixed = 4
 ) => {
   const bigAmount = new BigNumber(amount);
-  const temp = bigAmount
-    .dividedBy(10 ** decimals)
-    .toFixed(toFixed, BigNumber.ROUND_DOWN);
+  if (bigAmount.isZero()) return 0;
+
+  const value = bigAmount.dividedBy(10 ** decimals);
+  let temp = value.toFixed(toFixed, BigNumber.ROUND_DOWN);
+
+  while (
+    temp
+      .split(".")[1]
+      ?.split("")
+      .every((d) => d === "0") &&
+    temp.split(".")[1].length < 8
+  ) {
+    temp = value.toFixed(temp.split(".")[1].length + 1, BigNumber.ROUND_DOWN);
+  }
+
   return Number(temp);
 };
 

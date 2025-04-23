@@ -8,7 +8,7 @@ export const PendingTransactions = () => {
   return (
     <div className="flex w-full flex-col overflow-y-auto">
       {pendingOrders && pendingOrders.length === 0 ? (
-        <Typography size="h5" className="pb-2 text-center">
+        <Typography size="h5" className="pb-4 text-center">
           No transactions found.
         </Typography>
       ) : (
