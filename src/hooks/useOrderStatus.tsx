@@ -178,7 +178,7 @@ export const useOrderStatus = () => {
     if (pendingOrders.length) {
       //check in pending orders and update status
       const orderFromPending = pendingOrders.find(
-        (order) => order.create_order.create_id === order.create_order.create_id
+        (o) => order.create_order.create_id === o.create_order.create_id
       );
       if (orderFromPending) setOrder(orderFromPending);
     } else {

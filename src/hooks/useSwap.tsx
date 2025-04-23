@@ -12,11 +12,13 @@ import {
 } from "@gardenfi/core";
 import BigNumber from "bignumber.js";
 import { useGarden } from "@gardenfi/react-hooks";
+import { useStarknetWallet } from "./useStarknetWallet";
 import { useEVMWallet } from "./useEVMWallet";
+import { modalNames, modalStore } from "../store/modalStore";
+import { isStarknet, isEVM } from "@gardenfi/orderbook";
 import { useBalances } from "./useBalances";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { Environment, with0x } from "@gardenfi/utils";
-import { modalNames, modalStore } from "../store/modalStore";
 import { ConnectingWalletStore } from "../store/connectWalletStore";
 import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
@@ -48,7 +50,6 @@ export const useSwap = () => {
     clearSwapState,
     setBtcAddress,
   } = swapStore();
-  const { setOpenModal } = modalStore();
   const { tokenBalance: inputTokenBalance } = useBalances(inputAsset);
   const { strategies } = assetInfoStore();
   const { setOrder, setIsOpen } = orderInProgressStore();
@@ -59,6 +60,9 @@ export const useSwap = () => {
   const controller = useRef<AbortController | null>(null);
   const { setConnectingWallet } = ConnectingWalletStore();
   let { data: wallet } = useWalletClient();
+  const { address: evmAddress } = useEVMWallet();
+  const { starknetAddress } = useStarknetWallet();
+  const { setOpenModal } = modalStore();
   const isInsufficientBalance = useMemo(
     () => new BigNumber(inputAmount).gt(inputTokenBalance),
     [inputAmount, inputTokenBalance]
@@ -213,11 +217,11 @@ export const useSwap = () => {
       ),
     [
       getQuote,
-      setAmount,
       setIsFetchingQuote,
       setStrategy,
+      setAmount,
       setTokenPrices,
-      setIsInsufficientLiquidity,
+      setError,
     ]
   );
 
@@ -340,7 +344,25 @@ export const useSwap = () => {
     }
   };
 
+  const needsWalletConnection = useMemo(() => {
+    if (!evmAddress && !starknetAddress && !account) return false;
+    if (!inputAsset || !outputAsset) return false;
+    if (isEVM(inputAsset.chain) && !evmAddress) return "evm";
+    if (isStarknet(inputAsset.chain) && !starknetAddress) return "starknet";
+
+    if (isEVM(outputAsset.chain) && !evmAddress) return "evm";
+    if (isStarknet(outputAsset.chain) && !starknetAddress) return "starknet";
+
+    return null;
+  }, [inputAsset, outputAsset, evmAddress, starknetAddress, account]);
+
   const handleSwapClick = async () => {
+    if (needsWalletConnection) {
+      setOpenModal(modalNames.connectWallet, {
+        [needsWalletConnection]: true,
+      });
+      return;
+    }
     if (
       !validSwap ||
       !swapAndInitiate ||
@@ -383,7 +405,7 @@ export const useSwap = () => {
         Number(inputAmountInDecimals),
         inputAsset.tokenAddress,
         inputAsset.atomicSwapAddress,
-        wallet,
+        wallet
       );
 
       const res = await swapAndInitiate({
@@ -513,6 +535,7 @@ export const useSwap = () => {
     handleOutputAmountChange,
     inputTokenBalance,
     isValidBitcoinAddress,
+    needsWalletConnection,
     handleSwapClick,
     isInsufficientBalance,
   };

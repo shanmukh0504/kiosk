@@ -49,6 +49,7 @@ const transactionHistoryStore = create<TransactionHistoryStoreState>(
         totalItems += txns.val.total_items;
         transactions.push(...txns.val.data);
       }
+
       //sort by time, newest first
       transactions.sort(
         (a, b) =>
