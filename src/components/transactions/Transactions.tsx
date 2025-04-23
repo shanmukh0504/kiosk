@@ -8,6 +8,7 @@ import { PendingTransactions } from "./PendingTransactions";
 import { CompletedTransactions } from "./CompletedTransactions";
 import { BlockchainType } from "@gardenfi/orderbook";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
+import { starknetAddressToXOnly, toXOnly } from "../../utils/utils";
 
 type TransactionsProps = {
   isOpen: boolean;
@@ -50,14 +51,14 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
     if (garden) {
       garden.btcWallet?.getPublicKey().then((publicKey) => {
         setConnectedWallets({
-          Bitcoin: publicKey,
+          Bitcoin: toXOnly(publicKey),
           EVM: address ?? "",
-          Starknet: starknetAddress ?? "",
+          Starknet: starknetAddressToXOnly(starknetAddress ?? ""),
         });
         fetchTransactions(garden.orderbook, {
-          Bitcoin: publicKey,
+          Bitcoin: toXOnly(publicKey),
           EVM: address ?? "",
-          Starknet: starknetAddress ?? "",
+          Starknet: starknetAddressToXOnly(starknetAddress ?? ""),
         });
       });
     }
