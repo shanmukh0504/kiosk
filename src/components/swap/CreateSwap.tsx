@@ -14,6 +14,7 @@ import {
   getOrderPairFromChainAndAddress,
   getQueryParams,
 } from "../../utils/utils";
+import orderInProgressStore from "../../store/orderInProgressStore";
 
 export const CreateSwap = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -42,6 +43,7 @@ export const CreateSwap = () => {
   } = useSwap();
   const { account: btcAddress } = useBitcoinWallet();
   const { setOpenModal } = modalStore();
+  const { isOpen } = orderInProgressStore();
 
   const buttonLabel = useMemo(() => {
     if (needsWalletConnection) {
@@ -128,6 +130,7 @@ export const CreateSwap = () => {
 
   useEffect(() => {
     if (!paramsApplied || (!inputAsset && !outputAsset)) return;
+
     const currentParams = Object.fromEntries(searchParams.entries());
     if (
       inputAsset?.chain === BTC.chain &&
@@ -148,23 +151,30 @@ export const CreateSwap = () => {
 
     if (inputAsset && !outputAsset) {
       setSearchParams({
-        inputChain: inputAsset?.chain || "",
-        inputAsset: inputAsset?.atomicSwapAddress || "",
+        "input-chain": inputAsset?.chain || "",
+        "input-asset": inputAsset?.atomicSwapAddress || "",
       });
     } else if (!inputAsset && outputAsset) {
       setSearchParams({
-        outputChain: outputAsset?.chain || "",
-        outputAsset: outputAsset?.atomicSwapAddress || "",
+        "output-chain": outputAsset?.chain || "",
+        "output-asset": outputAsset?.atomicSwapAddress || "",
       });
     } else {
       setSearchParams({
-        inputChain: inputAsset?.chain || "",
-        inputAsset: inputAsset?.atomicSwapAddress || "",
-        outputChain: outputAsset?.chain || "",
-        outputAsset: outputAsset?.atomicSwapAddress || "",
+        "input-chain": inputAsset?.chain || "",
+        "input-asset": inputAsset?.atomicSwapAddress || "",
+        "output-chain": outputAsset?.chain || "",
+        "output-asset": outputAsset?.atomicSwapAddress || "",
       });
     }
-  }, [inputAsset, outputAsset, setSearchParams, searchParams, paramsApplied]);
+  }, [
+    inputAsset,
+    outputAsset,
+    setSearchParams,
+    searchParams,
+    paramsApplied,
+    isOpen,
+  ]);
 
   return (
     <div

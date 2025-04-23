@@ -1,73 +1,39 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { SwapInProgress } from "./swapInProgress/SwapInProgress";
 import { CreateSwap } from "./CreateSwap";
 import { Toast, ToastContainer } from "../toast/Toast";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { useGarden } from "@gardenfi/react-hooks";
 import { MatchedOrder } from "@gardenfi/orderbook";
-import {
-  formatAmount,
-  getAssetFromSwap,
-  getQueryParams,
-  isCurrentRoute,
-} from "../../utils/utils";
+import { formatAmount, getAssetFromSwap } from "../../utils/utils";
 import { OrderActions, OrderStatus } from "@gardenfi/core";
 import orderInProgressStore from "../../store/orderInProgressStore";
 import pendingOrdersStore from "../../store/pendingOrdersStore";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { SwapInProgressSkeleton } from "./swapInProgress/SwapInProgressSkeleton";
-import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { INTERNAL_ROUTES } from "../../constants/constants";
-
+import { useSearchParams } from "react-router-dom";
 export const Swap = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const navigate = useNavigate();
-  const { address } = useEVMWallet();
+  const [, setSearchParams] = useSearchParams();
 
   const { fetchAndSetStrategies, assets } = assetInfoStore();
   const { garden } = useGarden();
   const { order, isOpen } = orderInProgressStore();
   const { updateOrder } = pendingOrdersStore();
 
-  const orderId = getQueryParams(searchParams).orderId ?? "";
-
   useEffect(() => {
     if (!garden) return;
     fetchAndSetStrategies(garden.quote);
   }, [fetchAndSetStrategies, garden]);
-
-  useEffect(() => {
-    if (!order) return;
-
-    const orderIdInProgress = order.create_order.create_id;
-    if (orderIdInProgress && address && orderIdInProgress !== orderId) {
-      setSearchParams({ orderId: orderIdInProgress }, { replace: true });
-    }
-  }, [order, setSearchParams, searchParams, orderId, address]);
-
-  useEffect(() => {
-    if (order && address) {
-      if (!isCurrentRoute(INTERNAL_ROUTES.swap.path[2])) {
-        navigate(INTERNAL_ROUTES.swap.path[2], { replace: true });
-      }
-    }
-    if (!address) {
-      const hasAssetParams =
-        searchParams.has("inputAsset") || searchParams.has("outputAsset");
-
-      if (!hasAssetParams) {
-        navigate("/", { replace: true });
-      }
-    }
-  }, [order, navigate, address, orderId, searchParams]);
 
   const handleErrorLog = (order: MatchedOrder, error: string) =>
     console.error("garden error", order.create_order.create_id, error);
 
   const handleLog = (orderId: string, log: string) =>
     console.log("garden log", orderId, log);
+
+  useEffect(() => {
+    if (isOpen) {
+      setSearchParams({});
+    }
+  }, [isOpen, setSearchParams]);
 
   useEffect(() => {
     if (!garden) return;
@@ -124,17 +90,7 @@ export const Swap = () => {
     <div className="mx-auto mt-10 flex w-full max-w-[328px] flex-col gap-4 pb-60 sm:max-w-[424px]">
       <ToastContainer />
       <div className="relative overflow-hidden rounded-[20px] bg-white/50">
-        {isLoading ? (
-          <SwapInProgressSkeleton />
-        ) : (order && isOpen) || orderId ? (
-          !address ? (
-            <CreateSwap />
-          ) : (
-            <SwapInProgress orderId={orderId} setIsLoading={setIsLoading} />
-          )
-        ) : (
-          <CreateSwap />
-        )}
+        {isOpen ? <SwapInProgress /> : <CreateSwap />}
       </div>
     </div>
   );

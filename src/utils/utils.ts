@@ -31,10 +31,10 @@ export const getAssetFromSwap = (swap: Swap, assets: Assets | null) => {
 
 export const getQueryParams = (urlParams: URLSearchParams) => {
   return {
-    inputChain: urlParams.get("inputChain"),
-    inputAsset: urlParams.get("inputAsset"),
-    outputChain: urlParams.get("outputChain"),
-    outputAsset: urlParams.get("outputAsset"),
+    inputChain: urlParams.get("input-chain"),
+    inputAsset: urlParams.get("input-asset"),
+    outputChain: urlParams.get("output-chain"),
+    outputAsset: urlParams.get("output-asset"),
     orderId: urlParams.get("orderId"),
   };
 };

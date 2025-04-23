@@ -3,7 +3,7 @@ import {
   CloseIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { SwapInfo } from "../../../common/SwapInfo";
 import { getTrimmedAddress } from "../../../utils/getTrimmedAddress";
 import { formatAmount, getAssetFromSwap } from "../../../utils/utils";
@@ -17,27 +17,11 @@ import { useOrderStatus } from "../../../hooks/useOrderStatus";
 import { OrderStatus as OrderStatusEnum } from "@gardenfi/core";
 import { API } from "../../../constants/api";
 import orderInProgressStore from "../../../store/orderInProgressStore";
-import { useNavigate } from "react-router-dom";
-import { blockNumberStore } from "../../../store/blockNumberStore";
-import { useGarden } from "@gardenfi/react-hooks";
-import { useEVMWallet } from "../../../hooks/useEVMWallet";
-import { ordersStore } from "../../../store/ordersStore";
 
-export const SwapInProgress = ({
-  orderId,
-  setIsLoading,
-}: {
-  orderId: string;
-  setIsLoading: (loading: boolean) => void;
-}) => {
-  const { setOrderInProgress, fetchOrderById } = ordersStore();
-  const { order, setIsOpen, setOrder } = orderInProgressStore();
+export const SwapInProgress = () => {
+  const { order, setIsOpen } = orderInProgressStore();
   const { assets } = assetInfoStore();
-  const navigate = useNavigate();
   const { orderProgress, viewableStatus } = useOrderStatus();
-  const { orderBook } = useGarden();
-  const { fetchAndSetBlockNumbers } = blockNumberStore();
-  const { address } = useEVMWallet();
 
   const { depositAddress, inputAsset, outputAsset } = useMemo(() => {
     return {
@@ -55,45 +39,12 @@ export const SwapInProgress = ({
 
   const goBack = useCallback(() => {
     setIsOpen(false);
-    setOrderInProgress(null);
-    setOrder(null);
-    navigate("/");
-  }, [setIsOpen, setOrderInProgress, setOrder, navigate]);
+  }, [setIsOpen]);
 
   const handleClickTransaction = () => {
     if (!order) return;
     window.open(API().explorer(order.create_order.create_id));
   };
-
-  useEffect(() => {
-    if (!orderBook) return;
-
-    if (!orderId) return;
-    if (order && order.create_order.create_id === orderId) return;
-
-    const fetchOrderByOrderId = async () => {
-      try {
-        setIsLoading(true);
-        await fetchAndSetBlockNumbers();
-        const order = await fetchOrderById(orderId, orderBook);
-        // setOrderInProgress(order);
-        setOrder(order);
-      } catch (error) {
-        console.error("Failed to fetch order:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchOrderByOrderId();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    address,
-    fetchAndSetBlockNumbers,
-    fetchOrderById,
-    orderBook,
-    setOrderInProgress,
-    orderId,
-  ]);
 
   return order ? (
     <div className="animate-fade-out flex flex-col gap-3 p-3">
