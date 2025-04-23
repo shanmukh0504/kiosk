@@ -91,6 +91,8 @@ export const getAvailableWallets = (
           isAvailable = true;
         } else if (key === "braavos" && window.starknet_braavos) {
           isAvailable = true;
+        } else if (key === "keplr" && window.starknet_keplr) {
+          isAvailable = true;
         }
       }
 
