@@ -7,6 +7,8 @@ import transactionHistoryStore from "../../store/transactionHistoryStore";
 import { PendingTransactions } from "./PendingTransactions";
 import { CompletedTransactions } from "./CompletedTransactions";
 import { BlockchainType } from "@gardenfi/orderbook";
+import { useStarknetWallet } from "../../hooks/useStarknetWallet";
+import { starknetAddressToXOnly, toXOnly } from "../../utils/utils";
 
 type TransactionsProps = {
   isOpen: boolean;
@@ -27,6 +29,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
 
   const { garden } = useGarden();
   const { address } = useEVMWallet();
+  const { starknetAddress } = useStarknetWallet();
   const { fetchTransactions, totalItems, transactions, loadMore } =
     transactionHistoryStore();
 
@@ -48,18 +51,18 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
     if (garden) {
       garden.btcWallet?.getPublicKey().then((publicKey) => {
         setConnectedWallets({
-          Bitcoin: publicKey,
+          Bitcoin: toXOnly(publicKey),
           EVM: address ?? "",
-          Starknet: "",
+          Starknet: starknetAddressToXOnly(starknetAddress ?? ""),
         });
         fetchTransactions(garden.orderbook, {
-          Bitcoin: publicKey,
+          Bitcoin: toXOnly(publicKey),
           EVM: address ?? "",
-          Starknet: "",
+          Starknet: starknetAddressToXOnly(starknetAddress ?? ""),
         });
       });
     }
-  }, [garden, address, fetchTransactions, isOpen]);
+  }, [garden, address, starknetAddress, fetchTransactions, isOpen]);
 
   return (
     <div className="flex flex-col gap-3">

@@ -10,10 +10,12 @@ import { SwapPage } from "./swap";
 import { StakePage } from "./stake";
 import { GardenProvider } from "@gardenfi/react-hooks";
 import { useWalletClient } from "wagmi";
+import { useAccount } from "@starknet-react/core";
 import { Environment as GardenEnvironment } from "@gardenfi/utils";
 
 function App() {
   const { data: walletClient } = useWalletClient();
+  const { account: starknetWallet } = useAccount();
 
   return (
     <GardenProvider
@@ -26,11 +28,12 @@ function App() {
                 quote: import.meta.env.VITE_QUOTE_URL,
                 info: import.meta.env.VITE_INFO_URL,
                 evmRelay: import.meta.env.VITE_RELAYER_URL,
-                starknetRelay: "",
+                starknetRelay: import.meta.env.VITE_STARKNET_URL,
               }
             : (network as unknown as GardenEnvironment),
         wallets: {
           evm: walletClient,
+          starknet: starknetWallet,
         },
       }}
     >
