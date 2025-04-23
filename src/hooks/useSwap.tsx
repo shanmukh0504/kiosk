@@ -15,13 +15,14 @@ import { useGarden } from "@gardenfi/react-hooks";
 import { useEVMWallet } from "./useEVMWallet";
 import { useBalances } from "./useBalances";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { checkAllowanceAndApprove, Environment } from "@gardenfi/utils";
+import { Environment, with0x } from "@gardenfi/utils";
 import { modalNames, modalStore } from "../store/modalStore";
 import { ConnectingWalletStore } from "../store/connectWalletStore";
 import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import { useWalletClient } from "wagmi";
-import { Account } from "viem";
+import { Account, erc20Abi, getContract, maxUint256, WalletClient } from "viem";
+import { waitForTransactionReceipt } from "viem/actions";
 
 export const useSwap = () => {
   const {
@@ -109,12 +110,12 @@ export const useSwap = () => {
       outputAsset &&
       strategies.val &&
       strategies.val[
-        constructOrderPair(
-          inputAsset.chain,
-          inputAsset.atomicSwapAddress,
-          outputAsset.chain,
-          outputAsset.atomicSwapAddress
-        )
+      constructOrderPair(
+        inputAsset.chain,
+        inputAsset.atomicSwapAddress,
+        outputAsset.chain,
+        outputAsset.atomicSwapAddress
+      )
       ]
     );
   }, [inputAsset, outputAsset, strategies.val]);
@@ -122,16 +123,16 @@ export const useSwap = () => {
   const minAmount = useMemo(() => {
     return swapLimits && inputAsset
       ? new BigNumber(swapLimits.minAmount)
-          .dividedBy(10 ** inputAsset.decimals)
-          .toNumber()
+        .dividedBy(10 ** inputAsset.decimals)
+        .toNumber()
       : undefined;
   }, [swapLimits, inputAsset]);
 
   const maxAmount = useMemo(() => {
     return swapLimits && inputAsset
       ? new BigNumber(swapLimits.maxAmount)
-          .dividedBy(10 ** inputAsset.decimals)
-          .toNumber()
+        .dividedBy(10 ** inputAsset.decimals)
+        .toNumber()
       : undefined;
   }, [swapLimits, inputAsset]);
 
@@ -296,6 +297,49 @@ export const useSwap = () => {
     fetchQuote(amount, inputAsset, outputAsset, true);
   };
 
+  const checkAllowanceAndApprove = async (
+    amount: number,
+    tokenAddress: string,
+    contractAddress: string,
+    walletClient: WalletClient,
+  ) => {
+    if (!walletClient.account) return Error('No account found');
+
+    const erc20Contract = getContract({
+      address: with0x(tokenAddress),
+      abi: erc20Abi,
+      client: walletClient,
+    });
+
+    try {
+      const allowance = await erc20Contract.read.allowance([
+        with0x(walletClient.account.address),
+        with0x(contractAddress),
+      ]);
+
+      if (BigInt(allowance) < BigInt(amount)) {
+        setIsApproving(true);
+        const res = await erc20Contract.write.approve(
+          [with0x(contractAddress), maxUint256],
+          {
+            account: walletClient.account,
+            chain: walletClient.chain,
+          },
+        );
+        const receipt = await waitForTransactionReceipt(walletClient, {
+          hash: res,
+        });
+        setIsApproving(false);
+
+        if (receipt.status !== 'success') return Error('Failed to approve');
+        return res;
+      }
+      return 'Already approved';
+    } catch (error) {
+      return Error('Failed to approve: ' + error);
+    }
+  };
+
   const handleSwapClick = async () => {
     if (
       !validSwap ||
@@ -316,24 +360,23 @@ export const useSwap = () => {
 
     const additionalData = isBitcoinSwap
       ? {
-          strategyId: strategy,
-          btcAddress,
-        }
+        strategyId: strategy,
+        btcAddress,
+      }
       : {
-          strategyId: strategy,
-        };
+        strategyId: strategy,
+      };
 
-    try {      
-      if(!wallet) return;
-      
-      setIsApproving(true);
+    try {
+      if (!wallet) return;
+
       const _walletClient = await switchOrAddNetwork(
         inputAsset.chain,
         wallet,
       );
 
       if (_walletClient.error) return Error(_walletClient.error);
-      wallet = _walletClient.val.walletClient  as typeof wallet & { account: Account };
+      wallet = _walletClient.val.walletClient as typeof wallet & { account: Account };
       if (!wallet.account) return Error('No account found');
 
       await checkAllowanceAndApprove(
@@ -342,8 +385,7 @@ export const useSwap = () => {
         inputAsset.atomicSwapAddress,
         wallet,
       );
-      setIsApproving(false);
-      
+
       const res = await swapAndInitiate({
         fromAsset: inputAsset,
         toAsset: outputAsset,
