@@ -133,4 +133,13 @@ export const GardenSupportedWallets: Record<
     isBitcoinSupported: false,
     isEVMSupported: false,
   },
+  keplr: {
+    id: "keplr",
+    name: "Keplr",
+    logo: "https://garden-finance.imgix.net/wallets/keplr.svg",
+    installLink: "tallLink:",
+    isStarknetSupported: true,
+    isBitcoinSupported: false,
+    isEVMSupported: false,
+  },
 };

@@ -48,7 +48,7 @@ export const useSwap = () => {
   const { strategies } = assetInfoStore();
   const { setOrder, setIsOpen } = orderInProgressStore();
   const { updateOrder } = pendingOrdersStore();
-  const { address, disconnect } = useEVMWallet();
+  const { disconnect } = useEVMWallet();
   const { swapAndInitiate, getQuote } = useGarden();
   const { provider, account } = useBitcoinWallet();
   const controller = useRef<AbortController | null>(null);
@@ -81,7 +81,6 @@ export const useSwap = () => {
       inputAmount &&
       outputAsset &&
       strategy &&
-      address &&
       isValidBitcoinAddress &&
       !error.inputError &&
       !isInsufficientBalance
@@ -93,7 +92,6 @@ export const useSwap = () => {
     outputAsset,
     strategy,
     error,
-    address,
     isInsufficientBalance,
     isValidBitcoinAddress,
   ]);
