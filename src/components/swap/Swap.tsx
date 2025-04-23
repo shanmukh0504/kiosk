@@ -12,7 +12,8 @@ import {
   isCurrentRoute,
 } from "../../utils/utils";
 import { OrderActions, OrderStatus } from "@gardenfi/core";
-import { ordersStore } from "../../store/ordersStore";
+import orderInProgressStore from "../../store/orderInProgressStore";
+import pendingOrdersStore from "../../store/pendingOrdersStore";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { SwapInProgressSkeleton } from "./swapInProgress/SwapInProgressSkeleton";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
@@ -26,34 +27,41 @@ export const Swap = () => {
   const { address } = useEVMWallet();
 
   const { fetchAndSetStrategies, assets } = assetInfoStore();
-  const { quote, garden } = useGarden();
-  const { orderInProgress, updateOrder } = ordersStore();
+  const { garden } = useGarden();
+  const { order, isOpen } = orderInProgressStore();
+  const { updateOrder } = pendingOrdersStore();
 
   const orderId = getQueryParams(searchParams).orderId ?? "";
 
   useEffect(() => {
-    if (!quote) return;
-    fetchAndSetStrategies(quote);
-  }, [fetchAndSetStrategies, quote]);
+    if (!garden) return;
+    fetchAndSetStrategies(garden.quote);
+  }, [fetchAndSetStrategies, garden]);
 
   useEffect(() => {
-    if (!orderInProgress) return;
+    if (!order) return;
 
-    const orderIdInProgress = orderInProgress.create_order.create_id;
+    const orderIdInProgress = order.create_order.create_id;
     if (orderIdInProgress && address && orderIdInProgress !== orderId) {
       setSearchParams({ orderId: orderIdInProgress }, { replace: true });
     }
-  }, [orderInProgress, setSearchParams, searchParams, orderId, address]);
+  }, [order, setSearchParams, searchParams, orderId, address]);
 
   useEffect(() => {
-    if (
-      orderInProgress &&
-      address &&
-      !isCurrentRoute(INTERNAL_ROUTES.swap.path[2])
-    ) {
-      navigate(INTERNAL_ROUTES.swap.path[2], { replace: true });
+    if (order && address) {
+      if (!isCurrentRoute(INTERNAL_ROUTES.swap.path[2])) {
+        navigate(INTERNAL_ROUTES.swap.path[2], { replace: true });
+      }
     }
-  }, [orderInProgress, navigate, address]);
+    if (!address) {
+      const hasAssetParams =
+        searchParams.has("inputAsset") || searchParams.has("outputAsset");
+
+      if (!hasAssetParams) {
+        navigate("/", { replace: true });
+      }
+    }
+  }, [order, navigate, address, orderId, searchParams]);
 
   const handleErrorLog = (order: MatchedOrder, error: string) =>
     console.error("garden error", order.create_order.create_id, error);
@@ -66,7 +74,7 @@ export const Swap = () => {
 
     const handleSuccess = (
       order: MatchedOrder,
-      action: OrderActions,
+      _: OrderActions,
       result: string
     ) => {
       const { source_swap, destination_swap } = order;
@@ -86,23 +94,16 @@ export const Swap = () => {
       );
       console.log("order success ✅", order.create_order.create_id);
 
-      if (
-        orderInProgress &&
-        orderInProgress.create_order.create_id ===
-          order.create_order.create_id &&
-        action === OrderActions.Redeem &&
-        result
-      ) {
-        const updatedOrder = {
-          ...order,
-          destination_swap: {
-            ...order.destination_swap,
-            redeem_tx_hash: result,
-          },
-          status: OrderStatus.RedeemDetected,
-        };
-        updateOrder(updatedOrder);
-      }
+      const updatedOrder = {
+        ...order,
+        destination_swap: {
+          ...order.destination_swap,
+          redeem_tx_hash: result,
+        },
+        status: OrderStatus.RedeemDetected,
+      };
+      updateOrder(updatedOrder);
+
       Toast.success(
         `Swap success ${inputAmount} ${inputAsset.symbol} to ${outputAmount} ${outputAsset.symbol}`
       );
@@ -117,7 +118,7 @@ export const Swap = () => {
       garden.off("log", handleLog);
       garden.off("success", handleSuccess);
     };
-  }, [garden, assets, orderInProgress, updateOrder]);
+  }, [garden, assets, order, updateOrder]);
 
   return (
     <div className="mx-auto mt-10 flex w-full max-w-[328px] flex-col gap-4 pb-60 sm:max-w-[424px]">
@@ -125,8 +126,8 @@ export const Swap = () => {
       <div className="relative overflow-hidden rounded-[20px] bg-white/50">
         {isLoading ? (
           <SwapInProgressSkeleton />
-        ) : orderInProgress || orderId ? (
-          isCurrentRoute("/order") && !address ? (
+        ) : (order && isOpen) || orderId ? (
+          !address ? (
             <CreateSwap />
           ) : (
             <SwapInProgress orderId={orderId} setIsLoading={setIsLoading} />

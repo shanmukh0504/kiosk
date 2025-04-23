@@ -88,5 +88,6 @@ export default defineConfig({
   },
   define: {
     "process.env.BUILD_ID": JSON.stringify(buildId),
+    "process.version": JSON.stringify("v18.16.1"),
   },
 });

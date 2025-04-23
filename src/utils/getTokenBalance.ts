@@ -1,5 +1,5 @@
 import { evmToViemChainMap } from "@gardenfi/core";
-import { Asset, isBitcoin } from "@gardenfi/orderbook";
+import { Asset, isBitcoin, isEVM } from "@gardenfi/orderbook";
 import { with0x } from "@gardenfi/utils";
 import BigNumber from "bignumber.js";
 import {
@@ -18,7 +18,7 @@ export const getTokenBalance = async (address: string, asset: Asset) => {
     type: "function",
   };
 
-  if (isBitcoin(asset.chain)) return 0;
+  if (isBitcoin(asset.chain) || !isEVM(asset.chain)) return 0;
   const _chain = evmToViemChainMap[asset.chain];
   if (!_chain) return 0;
 

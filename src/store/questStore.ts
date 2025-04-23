@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { API } from "../constants/api";
+// import { API } from "../constants/api";
 import axios from "axios";
 import { Partner } from "../constants/quests";
 
@@ -32,7 +32,7 @@ export const questStore = create<QuestState>((set) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const response = await axios.get<QuestData>(API().leaderboard.quests.toString());
+      const response = await axios.get<QuestData>("");
 
       if (response.status === 200) {
         set({ questData: response.data });

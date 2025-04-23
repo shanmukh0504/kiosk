@@ -10,13 +10,17 @@ import { blockNumberStore } from "./blockNumberStore";
 type OrdersStore = {
   pendingOrders: OrderWithStatus[];
   orderInProgress: OrderWithStatus | null;
+  open: boolean;
   ordersHistory: {
     orders: OrderWithStatus[];
     totalItems: number;
     error: string;
     perPage: number;
-    fetchAndSetOrders: (orderBook: IOrderbook) => Promise<void>;
-    loadMore: (orderBook: IOrderbook) => Promise<void>;
+    fetchAndSetOrders: (
+      orderBook: IOrderbook,
+      address: `0x${string}`
+    ) => Promise<void>;
+    loadMore: (orderBook: IOrderbook, address: `0x${string}`) => Promise<void>;
   };
   fetchOrderById: (
     orderId: string,
@@ -24,6 +28,7 @@ type OrdersStore = {
   ) => Promise<OrderWithStatus | null>;
   setPendingOrders: (orders: OrderWithStatus[]) => void;
   setOrderInProgress: (order: OrderWithStatus | null) => void;
+  activateOrderInProgress: (set: boolean) => void;
   updateOrder: (order: OrderWithStatus) => void;
 };
 
@@ -50,17 +55,18 @@ export const ordersStore = create<OrdersStore>((set, get) => ({
   // Store state initialization
   pendingOrders: [],
   orderInProgress: null,
+  open: false,
   ordersHistory: {
     orders: [],
     totalItems: 0,
     error: "",
     perPage: 4,
-    fetchAndSetOrders: async (orderBook) => {
+    fetchAndSetOrders: async (orderBook, address) => {
       const state = get();
       const blockNumbers = blockNumberStore.getState().blockNumbers;
       if (!blockNumbers) return;
 
-      const res = await orderBook.fetchOrders(true, false, {
+      const res = await orderBook.getMatchedOrders(address, "fulfilled", {
         per_page: state.ordersHistory.perPage,
       });
       if (!res.ok) {
@@ -94,18 +100,6 @@ export const ordersStore = create<OrdersStore>((set, get) => ({
       // Merge into respective states
       set({
         pendingOrders: mergeOrders(state.pendingOrders, ordersWithStatus),
-        orderInProgress: state.orderInProgress
-          ? (() => {
-              const foundOrder = ordersWithStatus.find(
-                (o) =>
-                  o.create_order.create_id ===
-                  state.orderInProgress?.create_order.create_id
-              );
-              return foundOrder
-                ? getLatestUpdatedOrder(foundOrder, state.orderInProgress)
-                : state.orderInProgress;
-            })()
-          : state.orderInProgress,
         ordersHistory: {
           ...state.ordersHistory,
           orders: mergeOrders(ordersWithStatus, state.ordersHistory.orders),
@@ -115,14 +109,14 @@ export const ordersStore = create<OrdersStore>((set, get) => ({
         },
       });
     },
-    loadMore: async (orderBook) => {
+    loadMore: async (orderBook, address) => {
       set((prev) => ({
         ordersHistory: {
           ...prev.ordersHistory,
           perPage: prev.ordersHistory.perPage + 4,
         },
       }));
-      await get().ordersHistory.fetchAndSetOrders(orderBook);
+      await get().ordersHistory.fetchAndSetOrders(orderBook, address);
     },
   },
 
@@ -152,18 +146,6 @@ export const ordersStore = create<OrdersStore>((set, get) => ({
       pendingOrders: filterPendingOrders(
         mergeOrders(orders, state.pendingOrders)
       ),
-      orderInProgress: state.orderInProgress
-        ? (() => {
-            const foundOrder = orders.find(
-              (o) =>
-                o.create_order.create_id ===
-                state.orderInProgress?.create_order.create_id
-            );
-            return foundOrder
-              ? getLatestUpdatedOrder(foundOrder, state.orderInProgress)
-              : state.orderInProgress;
-          })()
-        : state.orderInProgress,
       ordersHistory: {
         ...state.ordersHistory,
         orders: mergeOrders(state.ordersHistory.orders, orders),
@@ -181,19 +163,18 @@ export const ordersStore = create<OrdersStore>((set, get) => ({
     }
     const state = get();
     set({
-      pendingOrders: filterPendingOrders(
-        updateSingleOrder(order, state.pendingOrders)
-      ),
       orderInProgress:
         state.orderInProgress &&
         order.create_order.create_id ===
           state.orderInProgress.create_order.create_id
           ? getLatestUpdatedOrder(order, state.orderInProgress)
           : order,
-      ordersHistory: {
-        ...state.ordersHistory,
-        orders: updateSingleOrder(order, state.ordersHistory.orders),
-      },
+    });
+  },
+
+  activateOrderInProgress: (setting: boolean) => {
+    set({
+      open: setting,
     });
   },
 
@@ -204,12 +185,6 @@ export const ordersStore = create<OrdersStore>((set, get) => ({
       pendingOrders: filterPendingOrders(
         updateSingleOrder(order, state.pendingOrders)
       ),
-      orderInProgress:
-        state.orderInProgress &&
-        order.create_order.create_id ===
-          state.orderInProgress.create_order.create_id
-          ? getLatestUpdatedOrder(order, state.orderInProgress)
-          : state.orderInProgress,
       ordersHistory: {
         ...state.ordersHistory,
         orders: updateSingleOrder(order, state.ordersHistory.orders),

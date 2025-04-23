@@ -52,7 +52,7 @@ export const OverviewStats: FC<props> = ({
         size={valueSize}
         breakpoints={valueBreakpoints}
         weight={size === "xs" ? "medium" : size === "sm" ? "medium" : "bold"}
-        className={textColor}
+        className={`${textColor} lg:whitespace-nowrap`}
       >
         {value}
       </Typography>

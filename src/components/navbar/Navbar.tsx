@@ -2,58 +2,25 @@ import { Button, GardenFullLogo, Typography } from "@gardenfi/garden-book";
 import { INTERNAL_ROUTES } from "../../constants/constants";
 import { API } from "../../constants/api";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { Address } from "./Address";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useGarden } from "@gardenfi/react-hooks";
+// import { Address } from "./Address";
 import { isCurrentRoute } from "../../utils/utils";
 import { MobileMenu } from "./MobileMenu";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { modalNames, modalStore } from "../../store/modalStore";
+import ConnectedWallets from "./ConnectedWallets";
+import { useStarknetWallet } from "../../hooks/useStarknetWallet";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 
 export const Navbar = () => {
-  const [isInitiatingSM, setIsInitiatingSM] = useState(false);
-
   const { isConnected, address } = useEVMWallet();
+  const { starknetAddress } = useStarknetWallet();
+  const { account: btcAddress } = useBitcoinWallet();
   const { setOpenModal } = modalStore();
-  const { account } = useBitcoinWallet();
-  const { garden, isExecuting, isExecutorRequired } = useGarden();
-
-  const shouldInitiateSM = useMemo(
-    () => isExecutorRequired && !isExecuting,
-    [isExecuting, isExecutorRequired]
-  );
-
-  const isEVMConnect = !address && !!account;
-
-  const isFullyConnected = useMemo(
-    () => isConnected && !shouldInitiateSM,
-    [isConnected, shouldInitiateSM]
-  );
 
   const handleHomeLogoClick = () => window.open(API().home, "_blank");
   const handleConnectClick = () => {
-    if (isFullyConnected) return;
-    if (isConnected && shouldInitiateSM) handleInitializeSM();
-    else setOpenModal(modalNames.connectWallet);
+    if (isConnected) return;
+    setOpenModal(modalNames.connectWallet);
   };
-
-  const handleInitializeSM = useCallback(async () => {
-    if (!garden) return;
-    setIsInitiatingSM(true);
-    const res = await garden.secretManager.initialize();
-    if (res.error) {
-      // if (res.error.includes("User rejected the request"))
-      //   setShouldInitiateSM(true);
-      setIsInitiatingSM(false);
-      return;
-    }
-    setIsInitiatingSM(false);
-  }, [garden]);
-
-  useEffect(() => {
-    if (isInitiatingSM || !garden) return;
-    if (shouldInitiateSM) handleInitializeSM();
-  }, [isInitiatingSM, garden, shouldInitiateSM, handleInitializeSM]);
 
   return (
     <div
@@ -79,8 +46,8 @@ export const Navbar = () => {
           })}
         </div>
       </div>
-      {isFullyConnected ? (
-        <Address />
+      {address || starknetAddress || btcAddress ? (
+        <ConnectedWallets />
       ) : (
         <Button
           variant="primary"
@@ -88,9 +55,8 @@ export const Navbar = () => {
           className="ml-auto min-w-28"
           size="sm"
           breakpoints={{ md: "md" }}
-          loading={isInitiatingSM}
         >
-          {isEVMConnect ? "Connect EVM" : "Connect"}
+          Connect
         </Button>
       )}
       <MobileMenu />

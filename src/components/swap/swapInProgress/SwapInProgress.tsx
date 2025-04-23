@@ -15,12 +15,13 @@ import { isBitcoin } from "@gardenfi/orderbook";
 import { CopyToClipboard } from "../../../common/CopyToClipboard";
 import { useOrderStatus } from "../../../hooks/useOrderStatus";
 import { OrderStatus as OrderStatusEnum } from "@gardenfi/core";
-import { ordersStore } from "../../../store/ordersStore";
 import { API } from "../../../constants/api";
+import orderInProgressStore from "../../../store/orderInProgressStore";
 import { useNavigate } from "react-router-dom";
 import { blockNumberStore } from "../../../store/blockNumberStore";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
+import { ordersStore } from "../../../store/ordersStore";
 
 export const SwapInProgress = ({
   orderId,
@@ -29,11 +30,8 @@ export const SwapInProgress = ({
   orderId: string;
   setIsLoading: (loading: boolean) => void;
 }) => {
-  const {
-    setOrderInProgress,
-    orderInProgress: order,
-    fetchOrderById,
-  } = ordersStore();
+  const { setOrderInProgress, fetchOrderById } = ordersStore();
+  const { order, setIsOpen, setOrder } = orderInProgressStore();
   const { assets } = assetInfoStore();
   const navigate = useNavigate();
   const { orderProgress, viewableStatus } = useOrderStatus();
@@ -56,9 +54,11 @@ export const SwapInProgress = ({
   }, [assets, order]);
 
   const goBack = useCallback(() => {
+    setIsOpen(false);
     setOrderInProgress(null);
+    setOrder(null);
     navigate("/");
-  }, [setOrderInProgress, navigate]);
+  }, [setIsOpen, setOrderInProgress, setOrder, navigate]);
 
   const handleClickTransaction = () => {
     if (!order) return;
@@ -66,12 +66,9 @@ export const SwapInProgress = ({
   };
 
   useEffect(() => {
-    if (!orderId || !orderBook) return;
+    if (!orderBook) return;
 
-    if (!address) {
-      navigate("/", { replace: true });
-      return;
-    }
+    if (!orderId) return;
     if (order && order.create_order.create_id === orderId) return;
 
     const fetchOrderByOrderId = async () => {
@@ -79,7 +76,8 @@ export const SwapInProgress = ({
         setIsLoading(true);
         await fetchAndSetBlockNumbers();
         const order = await fetchOrderById(orderId, orderBook);
-        setOrderInProgress(order);
+        // setOrderInProgress(order);
+        setOrder(order);
       } catch (error) {
         console.error("Failed to fetch order:", error);
       } finally {

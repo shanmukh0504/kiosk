@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { StakingPosition } from "./stakeStore";
+import { BlockchainType } from "@gardenfi/orderbook";
 
 export const modalNames = {
   connectWallet: "connectWallet",
@@ -7,10 +8,13 @@ export const modalNames = {
   whiteList: "whiteList",
   assetList: "assetList",
   manageStake: "manageStake",
+  versionUpdate: "versionUpdate",
 } as const;
 
 export type ModalData = {
-  connectWallet: { isBTCWallets: boolean };
+  connectWallet: {
+    [key in BlockchainType]?: boolean;
+  };
   manageStake: {
     stake?: {
       isStake: boolean;
@@ -29,6 +33,7 @@ export type ModalData = {
   initializeSM: undefined;
   whiteList: undefined;
   assetList: undefined;
+  versionUpdate: undefined;
 };
 
 export type ModalName = keyof typeof modalNames;
@@ -52,6 +57,7 @@ export const modalStore = create<ModalState>((set) => ({
     whiteList: false,
     assetList: false,
     manageStake: false,
+    versionUpdate: false,
   },
   modalData: {
     manageStake: {},

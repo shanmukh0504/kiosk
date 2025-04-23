@@ -4,8 +4,8 @@ import { useEffect, useMemo } from "react";
 import { blockNumberStore } from "../store/blockNumberStore";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { getAssetFromSwap } from "../utils/utils";
-import { mergeOrders } from "../utils/mergeOrder";
-import { ordersStore } from "../store/ordersStore";
+import orderInProgressStore from "../store/orderInProgressStore";
+import pendingOrdersStore from "../store/pendingOrdersStore";
 
 export enum SimplifiedOrderStatus {
   orderCreated = "Order created",
@@ -37,30 +37,18 @@ export type OrderProgress = {
 
 export const useOrderStatus = () => {
   const { orderBook } = useGarden();
-  const { fetchAndSetBlockNumbers, blockNumbers } = blockNumberStore();
+  const { blockNumbers } = blockNumberStore();
   const { assets } = assetInfoStore();
-  const { orderInProgress: order, setOrderInProgress } = ordersStore();
-  const orderId = order?.create_order.create_id;
-  const orderStatus = order?.status;
+  const { order, setOrder } = orderInProgressStore();
+  const { pendingOrders } = pendingOrdersStore();
 
   const outputAsset = order && getAssetFromSwap(order.destination_swap, assets);
-  const initBlockNumber = Number(order?.source_swap.initiate_block_number);
 
   const confirmationsString = useMemo(() => {
-    return order &&
-      order.status === OrderStatus.InitiateDetected &&
-      blockNumbers
-      ? " (" +
-          Math.abs(
-            initBlockNumber
-              ? blockNumbers[order.source_swap.chain] - initBlockNumber
-              : 0
-          ) +
-          "/" +
-          order.source_swap.required_confirmations +
-          ")"
+    return order && order.status === OrderStatus.InitiateDetected
+      ? " (" + "0" + "/" + "1" + ")"
       : "";
-  }, [blockNumbers, order, initBlockNumber]);
+  }, [order]);
 
   const viewableStatus =
     (order?.status && STATUS_MAPPING[order?.status]) || null;
@@ -161,6 +149,7 @@ export const useOrderStatus = () => {
       case OrderStatus.Redeemed:
       case OrderStatus.CounterPartyRedeemDetected:
       case OrderStatus.CounterPartyRedeemed:
+      case OrderStatus.Completed:
         return {
           1: {
             title: SimplifiedOrderStatus.orderCreated,
@@ -185,53 +174,44 @@ export const useOrderStatus = () => {
   }, [confirmationsString, outputAsset?.symbol, order?.status]);
 
   useEffect(() => {
-    if (!orderId || !orderBook) return;
-    if (
-      orderStatus &&
-      [
-        OrderStatus.Redeemed,
-        OrderStatus.CounterPartyRedeemDetected,
-        OrderStatus.CounterPartyRedeemed,
-        OrderStatus.Completed,
-      ].includes(orderStatus)
-    )
-      return;
-
-    const updateOrder = async () => {
-      const o = await orderBook.getOrder(orderId, true);
-      if (o.error) return;
-
-      const blockNumbers = await fetchAndSetBlockNumbers();
-      if (!blockNumbers) return;
-
-      const { source_swap, destination_swap } = o.val;
-      const sourceBlockNumber = blockNumbers[source_swap.chain];
-      const destinationBlockNumber = blockNumbers[destination_swap.chain];
-
-      const _status = ParseOrderStatus(
-        o.val,
-        sourceBlockNumber,
-        destinationBlockNumber
+    if (!order) return;
+    if (pendingOrders.length) {
+      //check in pending orders and update status
+      const orderFromPending = pendingOrders.find(
+        (o) => order.create_order.create_id === o.create_order.create_id
       );
+      if (orderFromPending) setOrder(orderFromPending);
+    } else {
+      //fetch from orderbook and set status
+      if (
+        [
+          OrderStatus.RedeemDetected,
+          OrderStatus.Redeemed,
+          OrderStatus.CounterPartyRedeemDetected,
+          OrderStatus.CounterPartyRedeemed,
+          OrderStatus.Completed,
+        ].includes(order.status)
+      )
+        return;
 
-      setOrderInProgress({
-        ...mergeOrders(order, o.val),
-        status: _status,
-      });
-    };
-
-    updateOrder();
-    const interval = setInterval(updateOrder, 10000);
-
-    return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    orderId,
-    orderBook,
-    fetchAndSetBlockNumbers,
-    setOrderInProgress,
-    orderStatus,
-  ]);
+      const fetchOrder = async () => {
+        if (!orderBook || !blockNumbers) return;
+        const orderFromOrderbook = await orderBook.getOrder(
+          order.create_order.create_id,
+          true
+        );
+        if (orderFromOrderbook.error) return;
+        const o = orderFromOrderbook.val;
+        const status = ParseOrderStatus(
+          o,
+          blockNumbers[o.source_swap.chain],
+          blockNumbers[o.destination_swap.chain]
+        );
+        setOrder({ ...o, status });
+      };
+      fetchOrder();
+    }
+  }, [pendingOrders, order, setOrder, orderBook, blockNumbers]);
 
   return {
     orderProgress,
