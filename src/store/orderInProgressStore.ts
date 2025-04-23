@@ -4,7 +4,7 @@ import { create } from "zustand";
 type OrderInProgressStoreState = {
   order: OrderWithStatus | null;
   isOpen: boolean;
-  setOrder: (order: OrderWithStatus | null) => void;
+  setOrder: (order: OrderWithStatus) => void;
   setIsOpen: (isOpen: boolean) => void;
 };
 
