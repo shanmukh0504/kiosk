@@ -24,6 +24,7 @@ export const CreateSwap = () => {
     validSwap,
     inputTokenBalance,
     isInsufficientBalance,
+    isApproving,
     isSwapping,
     isValidBitcoinAddress,
     handleSwapClick,
@@ -38,13 +39,16 @@ export const CreateSwap = () => {
     }
     return isInsufficientBalance
       ? "Insufficient balance"
-      : isSwapping
-        ? "Signing..."
-        : error.quoteError
-          ? "Insufficient Liquidity"
-          : "Swap";
+      : isApproving
+        ? "Approving..."
+        : isSwapping
+          ? "Signing..."
+          : error.quoteError
+            ? "Insufficient Liquidity"
+            : "Swap";
   }, [
     isInsufficientBalance,
+    isApproving,
     isSwapping,
     error.quoteError,
     needsWalletConnection,
