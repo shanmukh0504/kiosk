@@ -7,7 +7,7 @@ import { assetInfoStore } from "../store/assetInfoStore";
 import {
   constructOrderPair,
   OrderStatus,
-  switchOrAddNetwork,
+  // switchOrAddNetwork,
   validateBTCAddress,
 } from "@gardenfi/core";
 import BigNumber from "bignumber.js";
@@ -22,9 +22,9 @@ import { Environment } from "@gardenfi/utils";
 import { ConnectingWalletStore } from "../store/connectWalletStore";
 import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
-import { useWalletClient } from "wagmi";
-import { Account } from "viem";
-import { approve, checkAllowance } from "../utils/approve";
+// import { useWalletClient } from "wagmi";
+// import { Account } from "viem";
+// import { approve, checkAllowance } from "../utils/approve";
 
 export const useSwap = () => {
   const {
@@ -45,7 +45,7 @@ export const useSwap = () => {
     setError,
     setIsFetchingQuote,
     setIsInsufficientLiquidity,
-    setIsApproving,
+    // setIsApproving,
     setTokenPrices,
     clearSwapState,
     setBtcAddress,
@@ -59,7 +59,7 @@ export const useSwap = () => {
   const { provider, account } = useBitcoinWallet();
   const controller = useRef<AbortController | null>(null);
   const { setConnectingWallet } = ConnectingWalletStore();
-  let { data: wallet } = useWalletClient();
+  // let { data: wallet } = useWalletClient();
   const { address: evmAddress } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { setOpenModal } = modalStore();
@@ -112,12 +112,12 @@ export const useSwap = () => {
       outputAsset &&
       strategies.val &&
       strategies.val[
-      constructOrderPair(
-        inputAsset.chain,
-        inputAsset.atomicSwapAddress,
-        outputAsset.chain,
-        outputAsset.atomicSwapAddress
-      )
+        constructOrderPair(
+          inputAsset.chain,
+          inputAsset.atomicSwapAddress,
+          outputAsset.chain,
+          outputAsset.atomicSwapAddress
+        )
       ]
     );
   }, [inputAsset, outputAsset, strategies.val]);
@@ -125,16 +125,16 @@ export const useSwap = () => {
   const minAmount = useMemo(() => {
     return swapLimits && inputAsset
       ? new BigNumber(swapLimits.minAmount)
-        .dividedBy(10 ** inputAsset.decimals)
-        .toNumber()
+          .dividedBy(10 ** inputAsset.decimals)
+          .toNumber()
       : undefined;
   }, [swapLimits, inputAsset]);
 
   const maxAmount = useMemo(() => {
     return swapLimits && inputAsset
       ? new BigNumber(swapLimits.maxAmount)
-        .dividedBy(10 ** inputAsset.decimals)
-        .toNumber()
+          .dividedBy(10 ** inputAsset.decimals)
+          .toNumber()
       : undefined;
   }, [swapLimits, inputAsset]);
 
@@ -337,46 +337,45 @@ export const useSwap = () => {
 
     const additionalData = isBitcoinSwap
       ? {
-        strategyId: strategy,
-        btcAddress,
-      }
+          strategyId: strategy,
+          btcAddress,
+        }
       : {
-        strategyId: strategy,
-      };
+          strategyId: strategy,
+        };
 
     try {
-      if (!wallet) return;
+      // if (!wallet) return;
 
-      const _walletClient = await switchOrAddNetwork(
-        inputAsset.chain,
-        wallet,
-      );
+      // const _walletClient = await switchOrAddNetwork(inputAsset.chain, wallet);
 
-      if (_walletClient.error) return Error(_walletClient.error);
-      wallet = _walletClient.val.walletClient as typeof wallet & { account: Account };
-      if (!wallet.account) return Error('No account found');
+      // if (_walletClient.error) return Error(_walletClient.error);
+      // wallet = _walletClient.val.walletClient as typeof wallet & {
+      //   account: Account;
+      // };
+      // if (!wallet.account) return Error("No account found");
 
-      const allowance = await checkAllowance(
-        Number(inputAmountInDecimals),
-        inputAsset.tokenAddress,
-        inputAsset.atomicSwapAddress,
-        wallet
-      );
+      // const allowance = await checkAllowance(
+      //   Number(inputAmountInDecimals),
+      //   inputAsset.tokenAddress,
+      //   inputAsset.atomicSwapAddress,
+      //   wallet
+      // );
 
-      if (!allowance) {
-        setIsApproving(true);
-        const res = await approve(
-          inputAsset.tokenAddress,
-          inputAsset.atomicSwapAddress,
-          wallet
-        );
-        if (res instanceof Error) {
-          console.error("failed to approve ❌", res.message);
-          setIsApproving(false);
-          return;
-        }
-        setIsApproving(false);
-      }
+      // if (!allowance) {
+      //   setIsApproving(true);
+      //   const res = await approve(
+      //     inputAsset.tokenAddress,
+      //     inputAsset.atomicSwapAddress,
+      //     wallet
+      //   );
+      //   if (res instanceof Error) {
+      //     console.error("failed to approve ❌", res.message);
+      //     setIsApproving(false);
+      //     return;
+      //   }
+      //   setIsApproving(false);
+      // }
 
       const res = await swapAndInitiate({
         fromAsset: inputAsset,
