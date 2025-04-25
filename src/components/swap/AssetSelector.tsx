@@ -50,9 +50,23 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
       : [];
   }, [chains]);
 
+  const comparisonToken = useMemo(
+    () =>
+      isAssetSelectorOpen.type === IOType.input ? outputAsset : inputAsset,
+    [isAssetSelectorOpen.type, inputAsset, outputAsset]
+  );
+
   const sortedResults = useMemo(() => {
     if (results && orderedChains.length > 0) {
-      return [...results].sort((a, b) => {
+      const filteredAssets = comparisonToken
+        ? [
+            ...results.filter(
+              (r) => r.atomicSwapAddress !== comparisonToken.atomicSwapAddress
+            ),
+            comparisonToken,
+          ]
+        : results;
+      return filteredAssets.sort((a, b) => {
         const chainA = chains?.[a.chain];
         const chainB = chains?.[b.chain];
         if (chainA && chainB) {
@@ -68,13 +82,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
       });
     }
     return results;
-  }, [results, orderedChains, chains]);
-
-  const comparisonToken = useMemo(
-    () =>
-      isAssetSelectorOpen.type === IOType.input ? outputAsset : inputAsset,
-    [isAssetSelectorOpen.type, inputAsset, outputAsset]
-  );
+  }, [results, orderedChains, comparisonToken, chains]);
 
   useEffect(() => {
     if (!assets || !strategies.val) return;
@@ -115,7 +123,20 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   };
 
   const handleClick = (asset?: Asset) => {
-    if (asset) setAsset(isAssetSelectorOpen.type, asset);
+    if (asset) {
+      const isMatchingToken =
+        asset.chain === comparisonToken?.chain &&
+        asset.atomicSwapAddress === comparisonToken?.atomicSwapAddress;
+      setAsset(isAssetSelectorOpen.type, asset);
+      if (isMatchingToken) {
+        setAsset(
+          isAssetSelectorOpen.type === IOType.input
+            ? IOType.output
+            : IOType.input,
+          undefined
+        );
+      }
+    }
     CloseAssetSelector();
     setTimeout(() => {
       setChain(undefined);

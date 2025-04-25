@@ -36,7 +36,7 @@ type SwapState = {
   setIsInsufficientLiquidity: (isInsufficientLiquidity: boolean) => void;
   setIsApproving: (isApproving: boolean) => void;
   setStrategy: (strategy: string) => void;
-  setAsset: (ioType: IOType, asset: Asset) => void;
+  setAsset: (ioType: IOType, asset: Asset | undefined) => void;
   setAmount: (ioType: IOType, amount: string) => void;
   setBtcAddress: (btcAddress: string) => void;
   swapAssets: () => void;
@@ -76,7 +76,7 @@ export const swapStore = create<SwapState>((set) => ({
   error: {
     inputError: "",
     outputError: "",
-    quoteError: QuoteError.None
+    quoteError: QuoteError.None,
   },
   quoteError: QuoteError.None,
   isFetchingQuote: {
