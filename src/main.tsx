@@ -10,6 +10,12 @@ import { network } from "./constants/constants.tsx";
 import ReactDOM from "react-dom/client";
 import { BTCWalletProvider } from "@gardenfi/wallet-connectors";
 import { Network } from "@gardenfi/utils";
+import { StarknetConfig } from "@starknet-react/core";
+import {
+  starknetChains,
+  connectors as starknetConnectors,
+  starknetProviders,
+} from "./layout/starknet/config.ts";
 
 const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
@@ -18,7 +24,14 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
           <BTCWalletProvider network={network as Network} store={localStorage}>
-            <App />
+            <StarknetConfig
+              chains={starknetChains}
+              provider={starknetProviders}
+              connectors={starknetConnectors}
+              autoConnect
+            >
+              <App />
+            </StarknetConfig>
           </BTCWalletProvider>
         </QueryClientProvider>
       </WagmiProvider>

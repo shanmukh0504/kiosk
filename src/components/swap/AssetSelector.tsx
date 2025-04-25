@@ -68,8 +68,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
       });
     }
     return results;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [results, orderedChains]);
+  }, [results, orderedChains, chains]);
 
   const comparisonToken = useMemo(
     () =>

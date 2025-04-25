@@ -7,6 +7,7 @@ import { useMemo } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { SwapFees } from "./SwapFees";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { modalNames, modalStore } from "../../store/modalStore";
 
 export const CreateSwap = () => {
   const { swapAssets } = swapStore();
@@ -23,36 +24,74 @@ export const CreateSwap = () => {
     validSwap,
     inputTokenBalance,
     isInsufficientBalance,
+    isApproving,
     isSwapping,
     isValidBitcoinAddress,
     handleSwapClick,
+    needsWalletConnection,
   } = useSwap();
   const { account: btcAddress } = useBitcoinWallet();
+  const { setOpenModal } = modalStore();
 
   const buttonLabel = useMemo(() => {
+    if (needsWalletConnection) {
+      return `Connect ${needsWalletConnection === "starknet" ? "Starknet" : "EVM"} Wallet`;
+    }
     return isInsufficientBalance
       ? "Insufficient balance"
-      : isSwapping
-      ? "Signing..."
-      : error.quoteError
-      ? "Insufficient Liquidity"
-      : "Swap";
-  }, [isInsufficientBalance, isSwapping, error.quoteError]);
+      : isApproving
+        ? "Approving..."
+        : isSwapping
+          ? "Signing..."
+          : error.quoteError
+            ? "Insufficient Liquidity"
+            : "Swap";
+  }, [
+    isInsufficientBalance,
+    isApproving,
+    isSwapping,
+    error.quoteError,
+    needsWalletConnection,
+  ]);
 
   const buttonVariant = useMemo(() => {
+    if (needsWalletConnection) return "primary";
     return isInsufficientBalance || error.quoteError
       ? "disabled"
       : isSwapping
-      ? "ternary"
-      : validSwap
-      ? "primary"
-      : "disabled";
-  }, [isInsufficientBalance, isSwapping, validSwap, error.quoteError]);
+        ? "ternary"
+        : validSwap
+          ? "primary"
+          : "disabled";
+  }, [
+    isInsufficientBalance,
+    isSwapping,
+    validSwap,
+    error.quoteError,
+    needsWalletConnection,
+  ]);
 
   const timeEstimate = useMemo(() => {
     if (!inputAsset || !outputAsset) return "";
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
+
+  const handleConnectWallet = () => {
+    if (needsWalletConnection === "starknet") {
+      setOpenModal(modalNames.connectWallet, {
+        Starknet: true,
+        Bitcoin: false,
+        EVM: false,
+      });
+    }
+    if (needsWalletConnection === "evm") {
+      setOpenModal(modalNames.connectWallet, {
+        EVM: true,
+        Starknet: false,
+        Bitcoin: false,
+      });
+    }
+  };
 
   return (
     <div
@@ -90,16 +129,19 @@ export const CreateSwap = () => {
         <SwapFees tokenPrices={tokenPrices} />
         <Button
           className={`transition-colors duration-500 ${
-            buttonLabel !== "Swap" ? "pointer-events-none" : ""
+            !needsWalletConnection && buttonLabel !== "Swap"
+              ? "pointer-events-none"
+              : ""
           }`}
           variant={buttonVariant}
           size="lg"
-          onClick={handleSwapClick}
+          onClick={
+            needsWalletConnection ? handleConnectWallet : handleSwapClick
+          }
           disabled={
             isSwapping ||
-            !validSwap ||
-            isInsufficientBalance ||
-            !!error.quoteError
+            (!needsWalletConnection &&
+              (!validSwap || isInsufficientBalance || !!error.quoteError))
           }
         >
           {buttonLabel}

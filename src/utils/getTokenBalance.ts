@@ -1,5 +1,5 @@
 import { evmToViemChainMap } from "@gardenfi/core";
-import { Asset, isBitcoin, isEVM } from "@gardenfi/orderbook";
+import { Asset, isBitcoin, isEVM, isEvmNativeToken } from "@gardenfi/orderbook";
 import { with0x } from "@gardenfi/utils";
 import BigNumber from "bignumber.js";
 import {
@@ -8,8 +8,12 @@ import {
   encodeFunctionData,
   http,
 } from "viem";
+import { formatAmount } from "./utils";
 
 export const getTokenBalance = async (address: string, asset: Asset) => {
+  if (isEvmNativeToken(asset.chain, asset.tokenAddress))
+    return getNativeBalance(address, asset);
+
   const balanceOfABI = {
     inputs: [{ name: "_owner", type: "address" }],
     name: "balanceOf",
@@ -54,6 +58,34 @@ export const getTokenBalance = async (address: string, asset: Asset) => {
     return balanceInDecimals;
   } catch (e) {
     console.log(e);
+    return 0;
+  }
+};
+
+export const getNativeBalance = async (address: string, asset: Asset) => {
+  try {
+    if (
+      isBitcoin(asset.chain) ||
+      !isEVM(asset.chain) ||
+      !isEvmNativeToken(asset.chain, asset.tokenAddress)
+    )
+      return 0;
+    const _chain = evmToViemChainMap[asset.chain];
+    if (!_chain) return 0;
+
+    const publicClient = createPublicClient({
+      chain: _chain,
+      transport: http(),
+    });
+
+    const balance = await publicClient.getBalance({
+      address: address as `0x${string}`,
+    });
+
+    const balanceInDecimals = formatAmount(balance, asset.decimals, 8);
+
+    return balanceInDecimals;
+  } catch {
     return 0;
   }
 };
