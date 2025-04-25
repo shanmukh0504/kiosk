@@ -53,12 +53,12 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
           {btcAddress && (
             <Address address={btcAddress} logo={ecosystems.bitcoin.icon} />
           )}
-          {/* {starknetAddress && (
+          {starknetAddress && (
             <Address
               address={starknetAddress}
               logo={ecosystems.starknet.icon}
             />
-          )} */}
+          )}
           {showConnectWallet && (
             <div
               data-tooltip-id={addTooltipId}
