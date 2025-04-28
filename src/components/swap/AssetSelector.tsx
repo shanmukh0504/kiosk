@@ -57,15 +57,14 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   );
 
   const sortedResults = useMemo(() => {
-    if (results && orderedChains.length > 0) {
-      const filteredAssets = comparisonToken
-        ? [
-            ...results.filter(
-              (r) => r.atomicSwapAddress !== comparisonToken.atomicSwapAddress
-            ),
-            comparisonToken,
-          ]
-        : results;
+    if (results && comparisonToken && orderedChains.length > 0) {
+      const filteredAssets = [
+        ...results.filter(
+          (r) => r.atomicSwapAddress !== comparisonToken.atomicSwapAddress
+        ),
+        comparisonToken,
+      ];
+
       return filteredAssets.sort((a, b) => {
         const chainA = chains?.[a.chain];
         const chainB = chains?.[b.chain];
