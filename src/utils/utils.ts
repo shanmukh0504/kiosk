@@ -32,10 +32,9 @@ export const getAssetFromSwap = (swap: Swap, assets: Assets | null) => {
 export const getQueryParams = (urlParams: URLSearchParams) => {
   return {
     inputChain: urlParams.get("input-chain"),
-    inputAsset: urlParams.get("input-asset"),
+    inputAssetSymbol: urlParams.get("input-asset"),
     outputChain: urlParams.get("output-chain"),
-    outputAsset: urlParams.get("output-asset"),
-    orderId: urlParams.get("orderId"),
+    outputAssetSymbol: urlParams.get("output-asset"),
   };
 };
 
@@ -93,7 +92,14 @@ export const starknetAddressToXOnly = (address: string) => {
   return `0x${trimmed}`;
 };
 
-export const getOrderPairFromChainAndAddress = (
+export const getAssetFromChainAndSymbol = (
+  assets: Assets,
   chain: string | null,
-  assetAddress: string | null
-) => (chain && assetAddress ? `${chain}_${assetAddress.toLowerCase()}` : "");
+  assetSymbol: string | null
+) => {
+  const assetKey = Object.keys(assets).find((key) => {
+    const asset = assets[key];
+    return asset.chain === chain && asset.symbol === assetSymbol;
+  });
+  return assetKey ? assets[assetKey] : undefined;
+};

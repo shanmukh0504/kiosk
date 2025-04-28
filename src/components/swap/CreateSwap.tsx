@@ -3,20 +3,19 @@ import { SwapInput } from "./SwapInput";
 import { getTimeEstimates, IOType } from "../../constants/constants";
 import { SwapAddress } from "./SwapAddress";
 import { BTC, swapStore } from "../../store/swapStore";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { SwapFees } from "./SwapFees";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useSearchParams } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
-import {
-  getOrderPairFromChainAndAddress,
-  getQueryParams,
-} from "../../utils/utils";
+import { getAssetFromChainAndSymbol, getQueryParams } from "../../utils/utils";
+import { QUERY_PARAMS } from "../../constants/constants";
 
 export const CreateSwap = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [addParams, setAddParams] = useState(false);
 
   const { swapAssets, setAsset } = swapStore();
   const { assets } = assetInfoStore();
@@ -100,46 +99,52 @@ export const CreateSwap = () => {
   };
 
   useEffect(() => {
-    if (!assets) return;
-
+    if (!assets || addParams) return;
     const {
       inputChain = "",
-      inputAsset: inputAssetParam = "",
+      inputAssetSymbol = "",
       outputChain = "",
-      outputAsset: outputAssetParam = "",
+      outputAssetSymbol = "",
     } = getQueryParams(searchParams);
 
-    const fromAsset =
-      assets[getOrderPairFromChainAndAddress(inputChain, inputAssetParam)];
-    const toAsset =
-      assets[getOrderPairFromChainAndAddress(outputChain, outputAssetParam)];
+    const fromAsset = getAssetFromChainAndSymbol(
+      assets,
+      inputChain,
+      inputAssetSymbol
+    );
+    const toAsset = getAssetFromChainAndSymbol(
+      assets,
+      outputChain,
+      outputAssetSymbol
+    );
 
-    if (fromAsset) setAsset(IOType.input, fromAsset);
-    else if (toAsset) setAsset(IOType.output, toAsset);
-    else setAsset(IOType.input, BTC);
-  }, [assets, searchParams, setAsset]);
+    setAsset(IOType.input, fromAsset);
+    setAsset(IOType.output, toAsset);
+    if (!fromAsset && !toAsset) setAsset(IOType.input, BTC);
+    setAddParams(true);
+  }, [addParams, assets, inputAsset, outputAsset, searchParams, setAsset]);
 
   useEffect(() => {
-    if (!inputAsset && !outputAsset) return;
+    if (!addParams || (!inputAsset && !outputAsset)) return;
 
     setSearchParams((prev) => {
-      prev.delete("input-chain");
-      prev.delete("input-asset");
-      prev.delete("output-chain");
-      prev.delete("output-asset");
+      prev.delete(QUERY_PARAMS.inputChain);
+      prev.delete(QUERY_PARAMS.inputAsset);
+      prev.delete(QUERY_PARAMS.outputChain);
+      prev.delete(QUERY_PARAMS.outputAsset);
 
       if (inputAsset) {
-        prev.set("input-chain", inputAsset.chain);
-        prev.set("input-asset", inputAsset.atomicSwapAddress);
+        prev.set(QUERY_PARAMS.inputChain, inputAsset.chain);
+        prev.set(QUERY_PARAMS.inputAsset, inputAsset.symbol);
       }
       if (outputAsset) {
-        prev.set("output-chain", outputAsset.chain);
-        prev.set("output-asset", outputAsset.atomicSwapAddress);
+        prev.set(QUERY_PARAMS.outputChain, outputAsset.chain);
+        prev.set(QUERY_PARAMS.outputAsset, outputAsset.symbol);
       }
 
       return prev;
     });
-  }, [inputAsset, outputAsset, setSearchParams]);
+  }, [addParams, inputAsset, outputAsset, setSearchParams]);
 
   return (
     <div

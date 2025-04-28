@@ -34,7 +34,7 @@ type SwapState = {
   setIsSwapping: (isSwapping: boolean) => void;
   setIsInsufficientLiquidity: (isInsufficientLiquidity: boolean) => void;
   setStrategy: (strategy: string) => void;
-  setAsset: (ioType: IOType, asset: Asset) => void;
+  setAsset: (ioType: IOType, asset: Asset | undefined) => void;
   setAmount: (ioType: IOType, amount: string) => void;
   setBtcAddress: (btcAddress: string) => void;
   swapAssets: () => void;
@@ -55,6 +55,7 @@ export const BTC = {
 };
 
 export const swapStore = create<SwapState>((set) => ({
+  inputAsset: BTC,
   inputAmount: "",
   outputAmount: "",
   btcAddress: "",
