@@ -2,6 +2,7 @@ import BigNumber from "bignumber.js";
 import {
   INTERNAL_ROUTES,
   LOCAL_STORAGE_KEYS,
+  QUERY_PARAMS,
   THEMES,
 } from "../constants/constants";
 import { Assets } from "../store/assetInfoStore";
@@ -31,10 +32,10 @@ export const getAssetFromSwap = (swap: Swap, assets: Assets | null) => {
 
 export const getQueryParams = (urlParams: URLSearchParams) => {
   return {
-    inputChain: urlParams.get("input-chain"),
-    inputAssetSymbol: urlParams.get("input-asset"),
-    outputChain: urlParams.get("output-chain"),
-    outputAssetSymbol: urlParams.get("output-asset"),
+    inputChain: urlParams.get(QUERY_PARAMS.inputChain),
+    inputAssetSymbol: urlParams.get(QUERY_PARAMS.inputAsset),
+    outputChain: urlParams.get(QUERY_PARAMS.outputChain),
+    outputAssetSymbol: urlParams.get(QUERY_PARAMS.outputAsset),
   };
 };
 
