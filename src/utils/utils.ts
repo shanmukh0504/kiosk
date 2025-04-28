@@ -12,7 +12,7 @@ export const isProduction = () => {
 };
 
 export const getCurrentTheme = () => {
-  const path = window.location.pathname;
+  const path = window.location.pathname.replace(/\/+$/, "");
 
   if (INTERNAL_ROUTES.swap.path.includes(path)) return THEMES.swap;
   if (INTERNAL_ROUTES.stake.path.includes(path)) return THEMES.stake;
