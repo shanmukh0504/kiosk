@@ -1,5 +1,11 @@
 import { evmToViemChainMap } from "@gardenfi/core";
-import { Asset, isBitcoin, isEVM } from "@gardenfi/orderbook";
+import {
+  Asset,
+  isBitcoin,
+  isEVM,
+  isEvmNativeToken,
+  isStarknet,
+} from "@gardenfi/orderbook";
 import { with0x } from "@gardenfi/utils";
 import BigNumber from "bignumber.js";
 import {
@@ -8,8 +14,88 @@ import {
   encodeFunctionData,
   http,
 } from "viem";
+import { formatAmount } from "./utils";
+import { RpcProvider, Contract } from "starknet";
+
+const erc20ABI = [
+  {
+    members: [
+      {
+        name: "low",
+        offset: 0,
+        type: "felt",
+      },
+      {
+        name: "high",
+        offset: 1,
+        type: "felt",
+      },
+    ],
+    name: "Uint256",
+    size: 2,
+    type: "struct",
+  },
+  {
+    inputs: [
+      {
+        name: "account",
+        type: "felt",
+      },
+    ],
+    name: "balanceOf",
+    outputs: [
+      {
+        name: "balance",
+        type: "Uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+];
+
+export const getStarknetTokenBalance = async (
+  address: string,
+  asset: Asset
+) => {
+  if (!isStarknet(asset.chain)) return 0;
+
+  try {
+    const provider = new RpcProvider({
+      nodeUrl: "https://starknet-sepolia.public.blastapi.io/rpc/v0_8",
+    });
+
+    const erc20Contract = new Contract(erc20ABI, asset.tokenAddress, provider);
+
+    const balance = await erc20Contract.balanceOf(address);
+    if (!balance) return 0;
+    const lowValue = balance.balance.low.toString();
+    const highValue = balance.balance.high.toString();
+
+    // Convert hex strings to BigNumber
+    const low = new BigNumber(lowValue);
+    const high = new BigNumber(highValue);
+
+    // Calculate total value: low + (high << 128)
+    const shift128 = new BigNumber(2).pow(128);
+    const totalBalance = low.plus(high.multipliedBy(shift128));
+
+    const balanceInDecimals = formatAmount(
+      Number(totalBalance),
+      asset.decimals,
+      8
+    );
+    return balanceInDecimals;
+  } catch (error) {
+    console.error("Error fetching Starknet balance:", error);
+    return 0;
+  }
+};
 
 export const getTokenBalance = async (address: string, asset: Asset) => {
+  if (isEvmNativeToken(asset.chain, asset.tokenAddress))
+    return getNativeBalance(address, asset);
+
   const balanceOfABI = {
     inputs: [{ name: "_owner", type: "address" }],
     name: "balanceOf",
@@ -54,6 +140,34 @@ export const getTokenBalance = async (address: string, asset: Asset) => {
     return balanceInDecimals;
   } catch (e) {
     console.log(e);
+    return 0;
+  }
+};
+
+export const getNativeBalance = async (address: string, asset: Asset) => {
+  try {
+    if (
+      isBitcoin(asset.chain) ||
+      !isEVM(asset.chain) ||
+      !isEvmNativeToken(asset.chain, asset.tokenAddress)
+    )
+      return 0;
+    const _chain = evmToViemChainMap[asset.chain];
+    if (!_chain) return 0;
+
+    const publicClient = createPublicClient({
+      chain: _chain,
+      transport: http(),
+    });
+
+    const balance = await publicClient.getBalance({
+      address: address as `0x${string}`,
+    });
+
+    const balanceInDecimals = formatAmount(balance, asset.decimals, 8);
+
+    return balanceInDecimals;
+  } catch {
     return 0;
   }
 };

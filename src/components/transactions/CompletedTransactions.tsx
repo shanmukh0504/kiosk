@@ -12,7 +12,7 @@ export const CompletedTransactions = () => {
       {isLoading ? (
         <TransactionsSkeleton />
       ) : transactions.length === 0 ? (
-        <Typography size="h5" className="pb-2 text-center">
+        <Typography size="h5" className="pb-4 text-center">
           No transactions found.
         </Typography>
       ) : (

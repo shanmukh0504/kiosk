@@ -2,14 +2,24 @@ import { Button, ExchangeIcon } from "@gardenfi/garden-book";
 import { SwapInput } from "./SwapInput";
 import { getTimeEstimates, IOType } from "../../constants/constants";
 import { SwapAddress } from "./SwapAddress";
-import { swapStore } from "../../store/swapStore";
-import { useMemo } from "react";
+import { BTC, swapStore } from "../../store/swapStore";
+import { useEffect, useMemo, useState } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { SwapFees } from "./SwapFees";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { useSearchParams } from "react-router-dom";
+import { assetInfoStore } from "../../store/assetInfoStore";
+import { modalNames, modalStore } from "../../store/modalStore";
+import { getAssetFromChainAndSymbol, getQueryParams } from "../../utils/utils";
+import { QUERY_PARAMS } from "../../constants/constants";
 
 export const CreateSwap = () => {
-  const { swapAssets } = swapStore();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [addParams, setAddParams] = useState(false);
+
+  const { swapAssets, setAsset } = swapStore();
+  const { assets } = assetInfoStore();
+
   const {
     outputAmount,
     inputAmount,
@@ -23,36 +33,122 @@ export const CreateSwap = () => {
     validSwap,
     inputTokenBalance,
     isInsufficientBalance,
+    isApproving,
     isSwapping,
     isValidBitcoinAddress,
     handleSwapClick,
+    needsWalletConnection,
   } = useSwap();
   const { account: btcAddress } = useBitcoinWallet();
+  const { setOpenModal } = modalStore();
 
   const buttonLabel = useMemo(() => {
+    if (needsWalletConnection) {
+      return `Connect ${needsWalletConnection === "starknet" ? "Starknet" : "EVM"} Wallet`;
+    }
     return isInsufficientBalance
       ? "Insufficient balance"
-      : isSwapping
-      ? "Signing..."
-      : error.quoteError
-      ? "Insufficient Liquidity"
-      : "Swap";
-  }, [isInsufficientBalance, isSwapping, error.quoteError]);
+      : isApproving
+        ? "Approving..."
+        : isSwapping
+          ? "Signing..."
+          : error.quoteError
+            ? "Insufficient Liquidity"
+            : "Swap";
+  }, [
+    isInsufficientBalance,
+    isApproving,
+    isSwapping,
+    error.quoteError,
+    needsWalletConnection,
+  ]);
 
   const buttonVariant = useMemo(() => {
+    if (needsWalletConnection) return "primary";
     return isInsufficientBalance || error.quoteError
       ? "disabled"
       : isSwapping
-      ? "ternary"
-      : validSwap
-      ? "primary"
-      : "disabled";
-  }, [isInsufficientBalance, isSwapping, validSwap, error.quoteError]);
+        ? "ternary"
+        : validSwap
+          ? "primary"
+          : "disabled";
+  }, [
+    isInsufficientBalance,
+    isSwapping,
+    validSwap,
+    error.quoteError,
+    needsWalletConnection,
+  ]);
 
   const timeEstimate = useMemo(() => {
     if (!inputAsset || !outputAsset) return "";
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
+
+  const handleConnectWallet = () => {
+    if (needsWalletConnection === "starknet") {
+      setOpenModal(modalNames.connectWallet, {
+        Starknet: true,
+        Bitcoin: false,
+        EVM: false,
+      });
+    }
+    if (needsWalletConnection === "evm") {
+      setOpenModal(modalNames.connectWallet, {
+        EVM: true,
+        Starknet: false,
+        Bitcoin: false,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!assets || addParams) return;
+    const {
+      inputChain = "",
+      inputAssetSymbol = "",
+      outputChain = "",
+      outputAssetSymbol = "",
+    } = getQueryParams(searchParams);
+
+    const fromAsset = getAssetFromChainAndSymbol(
+      assets,
+      inputChain,
+      inputAssetSymbol
+    );
+    const toAsset = getAssetFromChainAndSymbol(
+      assets,
+      outputChain,
+      outputAssetSymbol
+    );
+
+    setAsset(IOType.input, fromAsset);
+    setAsset(IOType.output, toAsset);
+    if (!fromAsset && !toAsset) setAsset(IOType.input, BTC);
+    setAddParams(true);
+  }, [addParams, assets, inputAsset, outputAsset, searchParams, setAsset]);
+
+  useEffect(() => {
+    if (!addParams || (!inputAsset && !outputAsset)) return;
+
+    setSearchParams((prev) => {
+      prev.delete(QUERY_PARAMS.inputChain);
+      prev.delete(QUERY_PARAMS.inputAsset);
+      prev.delete(QUERY_PARAMS.outputChain);
+      prev.delete(QUERY_PARAMS.outputAsset);
+
+      if (inputAsset) {
+        prev.set(QUERY_PARAMS.inputChain, inputAsset.chain);
+        prev.set(QUERY_PARAMS.inputAsset, inputAsset.symbol);
+      }
+      if (outputAsset) {
+        prev.set(QUERY_PARAMS.outputChain, outputAsset.chain);
+        prev.set(QUERY_PARAMS.outputAsset, outputAsset.symbol);
+      }
+
+      return prev;
+    });
+  }, [addParams, inputAsset, outputAsset, setSearchParams]);
 
   return (
     <div
@@ -90,16 +186,19 @@ export const CreateSwap = () => {
         <SwapFees tokenPrices={tokenPrices} />
         <Button
           className={`transition-colors duration-500 ${
-            buttonLabel !== "Swap" ? "pointer-events-none" : ""
+            !needsWalletConnection && buttonLabel !== "Swap"
+              ? "pointer-events-none"
+              : ""
           }`}
           variant={buttonVariant}
           size="lg"
-          onClick={handleSwapClick}
+          onClick={
+            needsWalletConnection ? handleConnectWallet : handleSwapClick
+          }
           disabled={
             isSwapping ||
-            !validSwap ||
-            isInsufficientBalance ||
-            !!error.quoteError
+            (!needsWalletConnection &&
+              (!validSwap || isInsufficientBalance || !!error.quoteError))
           }
         >
           {buttonLabel}
