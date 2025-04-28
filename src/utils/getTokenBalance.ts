@@ -1,5 +1,11 @@
 import { evmToViemChainMap } from "@gardenfi/core";
-import { Asset, isBitcoin, isEVM, isEvmNativeToken } from "@gardenfi/orderbook";
+import {
+  Asset,
+  isBitcoin,
+  isEVM,
+  isEvmNativeToken,
+  isStarknet,
+} from "@gardenfi/orderbook";
 import { with0x } from "@gardenfi/utils";
 import BigNumber from "bignumber.js";
 import {
@@ -9,6 +15,71 @@ import {
   http,
 } from "viem";
 import { formatAmount } from "./utils";
+import { RpcProvider, Contract } from "starknet";
+
+const erc20ABI = [
+  {
+    members: [
+      {
+        name: "low",
+        offset: 0,
+        type: "felt",
+      },
+      {
+        name: "high",
+        offset: 1,
+        type: "felt",
+      },
+    ],
+    name: "Uint256",
+    size: 2,
+    type: "struct",
+  },
+  {
+    inputs: [
+      {
+        name: "account",
+        type: "felt",
+      },
+    ],
+    name: "balanceOf",
+    outputs: [
+      {
+        name: "balance",
+        type: "Uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+];
+
+export const getStarknetTokenBalance = async (
+  address: string,
+  asset: Asset
+) => {
+  if (!isStarknet(asset.chain)) return 0;
+
+  try {
+    const provider = new RpcProvider({
+      nodeUrl: import.meta.env.VITE_STARKNET_NODE_URL,
+    });
+
+    const erc20Contract = new Contract(erc20ABI, asset.tokenAddress, provider);
+
+    const balance = await erc20Contract.balanceOf(address);
+    if (!balance) return 0;
+
+    const balanceValue = balance?.balance?.low.toString();
+    if (!balanceValue) return 0;
+    const parsedBalance = new BigNumber(balanceValue);
+    if (parsedBalance.isNaN()) return 0;
+    return Number(parsedBalance.dividedBy(10 ** asset.decimals).toFixed(8));
+  } catch (error) {
+    console.error("Error fetching Starknet balance:", error);
+    return 0;
+  }
+};
 
 export const getTokenBalance = async (address: string, asset: Asset) => {
   if (isEvmNativeToken(asset.chain, asset.tokenAddress))
