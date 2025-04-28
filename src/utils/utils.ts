@@ -2,6 +2,7 @@ import BigNumber from "bignumber.js";
 import {
   INTERNAL_ROUTES,
   LOCAL_STORAGE_KEYS,
+  QUERY_PARAMS,
   THEMES,
 } from "../constants/constants";
 import { Assets } from "../store/assetInfoStore";
@@ -12,7 +13,7 @@ export const isProduction = () => {
 };
 
 export const getCurrentTheme = () => {
-  const path = window.location.pathname;
+  const path = window.location.pathname.replace(/\/+$/, "");
 
   if (INTERNAL_ROUTES.swap.path.includes(path)) return THEMES.swap;
   if (INTERNAL_ROUTES.stake.path.includes(path)) return THEMES.stake;
@@ -27,6 +28,15 @@ export const getCurrentTheme = () => {
  */
 export const getAssetFromSwap = (swap: Swap, assets: Assets | null) => {
   return assets && assets[`${swap.chain}_${swap.asset.toLowerCase()}`];
+};
+
+export const getQueryParams = (urlParams: URLSearchParams) => {
+  return {
+    inputChain: urlParams.get(QUERY_PARAMS.inputChain),
+    inputAssetSymbol: urlParams.get(QUERY_PARAMS.inputAsset),
+    outputChain: urlParams.get(QUERY_PARAMS.outputChain),
+    outputAssetSymbol: urlParams.get(QUERY_PARAMS.outputAsset),
+  };
 };
 
 export const getDayDifference = (date: string) => {
@@ -93,4 +103,16 @@ export const starknetAddressToXOnly = (address: string) => {
   const xOnly = address.slice(2);
   const trimmed = xOnly.replace(/^0+/, "");
   return `0x${trimmed}`;
+};
+
+export const getAssetFromChainAndSymbol = (
+  assets: Assets,
+  chain: string | null,
+  assetSymbol: string | null
+) => {
+  const assetKey = Object.keys(assets).find((key) => {
+    const asset = assets[key];
+    return asset.chain === chain && asset.symbol === assetSymbol;
+  });
+  return assetKey ? assets[assetKey] : undefined;
 };

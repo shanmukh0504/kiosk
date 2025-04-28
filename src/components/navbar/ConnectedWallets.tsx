@@ -1,7 +1,6 @@
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
-// import { useStarknetWallet } from "../../hooks/useStarknetWallet";
-
+import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { ecosystems } from "./connectWallet/constants";
 import { Opacity, WalletIcon } from "@gardenfi/garden-book";
 import { modalNames, modalStore } from "../../store/modalStore";
@@ -14,7 +13,7 @@ import { Loader } from "../../common/Loader";
 const ConnectedWallets = () => {
   const { address } = useEVMWallet();
   const { setOpenModal } = modalStore();
-  // const { starknetAddress } = useStarknetWallet();
+  const { starknetAddress } = useStarknetWallet();
   const { account: btcAddress } = useBitcoinWallet();
   const { pendingOrders } = useGarden();
   const { pendingOrders: pendingOrdersFromStore, setPendingOrders } =
@@ -60,13 +59,13 @@ const ConnectedWallets = () => {
             alt="Bitcoin wallet"
           />
         )}
-        {/* {starknetAddress && (
+        {starknetAddress && (
           <img
             src={ecosystems.starknet.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="Starknet wallet"
           />
-        )} */}
+        )}
         {pendingOrdersCount ? (
           <div className="relative">
             <Loader />

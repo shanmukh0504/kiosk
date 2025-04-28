@@ -39,8 +39,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   const { connectors, connectAsync, connector, address } = useEVMWallet();
   const {
     starknetConnectors,
-    // starknetConnector,
-    // starknetStatus,
+    starknetConnector,
+    starknetStatus,
     starknetConnectAsync,
   } = useStarknetWallet();
   const { availableWallets, connect, provider } = useBitcoinWallet();
@@ -256,12 +256,12 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                           connector.id === "injected" &&
                           wallet.id === "com.coinbase.wallet"))
                     ),
-                    // starknet: !!(
-                    //   starknetConnector &&
-                    //   wallet.isStarknet &&
-                    //   starknetConnector.id === wallet.id &&
-                    //   starknetStatus === "connected"
-                    // ),
+                    starknet: !!(
+                      starknetConnector &&
+                      wallet.isStarknet &&
+                      starknetConnector.id === wallet.id &&
+                      starknetStatus === "connected"
+                    ),
                   }}
                   isAvailable={wallet.isAvailable}
                 />

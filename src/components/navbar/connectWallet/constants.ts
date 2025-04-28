@@ -20,10 +20,10 @@ export const ecosystems = {
     name: "EVM",
     icon: "https://garden-finance.imgix.net/token-images/ethereum.svg",
   },
-  // starknet: {
-  //   name: "Starknet",
-  //   icon: "https://garden-finance.imgix.net/starknet-logo.svg",
-  // },
+  starknet: {
+    name: "Starknet",
+    icon: "https://garden-finance.imgix.net/starknet-logo.svg",
+  },
 } as const;
 
 export type EcosystemKeys = keyof typeof ecosystems;
@@ -115,31 +115,31 @@ export const GardenSupportedWallets: Record<
     isEVMSupported: true,
     isStarknetSupported: false,
   },
-  // braavos: {
-  //   id: "braavos",
-  //   name: "Braavos",
-  //   logo: "https://garden-finance.imgix.net/wallet/braavos.svg",
-  //   installLink: "tallLink:",
-  //   isStarknetSupported: true,
-  //   isBitcoinSupported: false,
-  //   isEVMSupported: false,
-  // },
-  // argentX: {
-  //   id: "argentX",
-  //   name: "Argent X",
-  //   logo: "https://garden-finance.imgix.net/wallet/argent.svg",
-  //   installLink: "tallLink:",
-  //   isStarknetSupported: true,
-  //   isBitcoinSupported: false,
-  //   isEVMSupported: false,
-  // },
-  // keplr: {
-  //   id: "keplr",
-  //   name: "Keplr",
-  //   logo: "https://garden-finance.imgix.net/wallets/keplr.svg",
-  //   installLink: "tallLink:",
-  //   isStarknetSupported: true,
-  //   isBitcoinSupported: false,
-  //   isEVMSupported: false,
-  // },
+  braavos: {
+    id: "braavos",
+    name: "Braavos",
+    logo: "https://garden-finance.imgix.net/wallet/braavos.svg",
+    installLink: "tallLink:",
+    isStarknetSupported: true,
+    isBitcoinSupported: false,
+    isEVMSupported: false,
+  },
+  argentX: {
+    id: "argentX",
+    name: "Argent X",
+    logo: "https://garden-finance.imgix.net/wallet/argent.svg",
+    installLink: "tallLink:",
+    isStarknetSupported: true,
+    isBitcoinSupported: false,
+    isEVMSupported: false,
+  },
+  keplr: {
+    id: "keplr",
+    name: "Keplr",
+    logo: "https://garden-finance.imgix.net/wallets/keplr.svg",
+    installLink: "tallLink:",
+    isStarknetSupported: true,
+    isBitcoinSupported: false,
+    isEVMSupported: false,
+  },
 };
