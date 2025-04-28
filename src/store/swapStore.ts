@@ -55,7 +55,6 @@ export const BTC = {
 };
 
 export const swapStore = create<SwapState>((set) => ({
-  inputAsset: BTC,
   inputAmount: "",
   outputAmount: "",
   btcAddress: "",
@@ -73,7 +72,7 @@ export const swapStore = create<SwapState>((set) => ({
   error: {
     inputError: "",
     outputError: "",
-    quoteError: QuoteError.None
+    quoteError: QuoteError.None,
   },
   quoteError: QuoteError.None,
   isFetchingQuote: {
@@ -153,7 +152,7 @@ export const swapStore = create<SwapState>((set) => ({
       error: {
         inputError: "",
         outputError: "",
-        quoteError: QuoteError.None
+        quoteError: QuoteError.None,
       },
       isFetchingQuote: {
         input: false,
@@ -178,7 +177,7 @@ export const swapStore = create<SwapState>((set) => ({
       error: {
         inputError: "",
         outputError: "",
-        quoteError: QuoteError.None
+        quoteError: QuoteError.None,
       },
       isFetchingQuote: {
         input: false,

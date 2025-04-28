@@ -3,7 +3,7 @@ import { SwapInput } from "./SwapInput";
 import { getTimeEstimates, IOType } from "../../constants/constants";
 import { SwapAddress } from "./SwapAddress";
 import { BTC, swapStore } from "../../store/swapStore";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { SwapFees } from "./SwapFees";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
@@ -17,7 +17,6 @@ import {
 
 export const CreateSwap = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [paramsApplied, setParamsApplied] = useState(false);
 
   const { swapAssets, setAsset } = swapStore();
   const { assets } = assetInfoStore();
@@ -101,7 +100,7 @@ export const CreateSwap = () => {
   };
 
   useEffect(() => {
-    if (!assets || paramsApplied) return;
+    if (!assets) return;
 
     const {
       inputChain = "",
@@ -115,57 +114,32 @@ export const CreateSwap = () => {
     const toAsset =
       assets[getOrderPairFromChainAndAddress(outputChain, outputAssetParam)];
 
-    if (
-      inputAssetParam === null &&
-      outputAssetParam === null &&
-      outputAsset === undefined
-    )
-      setAsset(IOType.input, BTC);
-    else setAsset(IOType.input, fromAsset);
-    setAsset(IOType.output, toAsset);
-    setParamsApplied(true);
-  }, [assets, searchParams, setAsset, paramsApplied, outputAsset]);
+    if (fromAsset) setAsset(IOType.input, fromAsset);
+    else if (toAsset) setAsset(IOType.output, toAsset);
+    else setAsset(IOType.input, BTC);
+  }, [assets, searchParams, setAsset]);
 
   useEffect(() => {
-    if (!paramsApplied || (!inputAsset && !outputAsset)) return;
+    if (!inputAsset && !outputAsset) return;
 
-    const currentParams = Object.fromEntries(searchParams.entries());
-    if (
-      inputAsset?.chain === BTC.chain &&
-      outputAsset === undefined &&
-      searchParams.toString().length === 0
-    ) {
-      return;
-    }
+    setSearchParams((prev) => {
+      prev.delete("input-chain");
+      prev.delete("input-asset");
+      prev.delete("output-chain");
+      prev.delete("output-asset");
 
-    if (
-      currentParams.inputChain === (inputAsset?.chain || "") &&
-      currentParams.inputAsset === (inputAsset?.atomicSwapAddress || "") &&
-      currentParams.outputChain === (outputAsset?.chain || "") &&
-      currentParams.outputAsset === (outputAsset?.atomicSwapAddress || "")
-    ) {
-      return;
-    }
+      if (inputAsset) {
+        prev.set("input-chain", inputAsset.chain);
+        prev.set("input-asset", inputAsset.atomicSwapAddress);
+      }
+      if (outputAsset) {
+        prev.set("output-chain", outputAsset.chain);
+        prev.set("output-asset", outputAsset.atomicSwapAddress);
+      }
 
-    if (inputAsset && !outputAsset) {
-      setSearchParams({
-        "input-chain": inputAsset?.chain || "",
-        "input-asset": inputAsset?.atomicSwapAddress || "",
-      });
-    } else if (!inputAsset && outputAsset) {
-      setSearchParams({
-        "output-chain": outputAsset?.chain || "",
-        "output-asset": outputAsset?.atomicSwapAddress || "",
-      });
-    } else {
-      setSearchParams({
-        "input-chain": inputAsset?.chain || "",
-        "input-asset": inputAsset?.atomicSwapAddress || "",
-        "output-chain": outputAsset?.chain || "",
-        "output-asset": outputAsset?.atomicSwapAddress || "",
-      });
-    }
-  }, [inputAsset, outputAsset, setSearchParams, searchParams, paramsApplied]);
+      return prev;
+    });
+  }, [inputAsset, outputAsset, setSearchParams]);
 
   return (
     <div
