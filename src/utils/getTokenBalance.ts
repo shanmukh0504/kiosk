@@ -62,19 +62,30 @@ export const getStarknetTokenBalance = async (
 
   try {
     const provider = new RpcProvider({
-      nodeUrl: import.meta.env.VITE_STARKNET_NODE_URL,
+      nodeUrl: "https://starknet-sepolia.public.blastapi.io/rpc/v0_8",
     });
 
     const erc20Contract = new Contract(erc20ABI, asset.tokenAddress, provider);
 
     const balance = await erc20Contract.balanceOf(address);
     if (!balance) return 0;
+    const lowValue = balance.balance.low.toString();
+    const highValue = balance.balance.high.toString();
 
-    const balanceValue = balance?.balance?.low.toString();
-    if (!balanceValue) return 0;
-    const parsedBalance = new BigNumber(balanceValue);
-    if (parsedBalance.isNaN()) return 0;
-    return Number(parsedBalance.dividedBy(10 ** asset.decimals).toFixed(8));
+    // Convert hex strings to BigNumber
+    const low = new BigNumber(lowValue);
+    const high = new BigNumber(highValue);
+
+    // Calculate total value: low + (high << 128)
+    const shift128 = new BigNumber(2).pow(128);
+    const totalBalance = low.plus(high.multipliedBy(shift128));
+
+    const balanceInDecimals = formatAmount(
+      Number(totalBalance),
+      asset.decimals,
+      8
+    );
+    return balanceInDecimals;
   } catch (error) {
     console.error("Error fetching Starknet balance:", error);
     return 0;
