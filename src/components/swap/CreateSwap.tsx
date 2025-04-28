@@ -14,7 +14,6 @@ import {
   getOrderPairFromChainAndAddress,
   getQueryParams,
 } from "../../utils/utils";
-import orderInProgressStore from "../../store/orderInProgressStore";
 
 export const CreateSwap = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -43,7 +42,6 @@ export const CreateSwap = () => {
   } = useSwap();
   const { account: btcAddress } = useBitcoinWallet();
   const { setOpenModal } = modalStore();
-  const { isOpen } = orderInProgressStore();
 
   const buttonLabel = useMemo(() => {
     if (needsWalletConnection) {
@@ -167,14 +165,7 @@ export const CreateSwap = () => {
         "output-asset": outputAsset?.atomicSwapAddress || "",
       });
     }
-  }, [
-    inputAsset,
-    outputAsset,
-    setSearchParams,
-    searchParams,
-    paramsApplied,
-    isOpen,
-  ]);
+  }, [inputAsset, outputAsset, setSearchParams, searchParams, paramsApplied]);
 
   return (
     <div

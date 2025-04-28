@@ -95,5 +95,5 @@ export const starknetAddressToXOnly = (address: string) => {
 
 export const getOrderPairFromChainAndAddress = (
   chain: string | null,
-  tokenAddress: string | null
-) => (chain && tokenAddress ? `${chain}_${tokenAddress.toLowerCase()}` : "");
+  assetAddress: string | null
+) => (chain && assetAddress ? `${chain}_${assetAddress.toLowerCase()}` : "");
