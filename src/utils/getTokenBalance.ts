@@ -16,6 +16,8 @@ import {
 } from "viem";
 import { formatAmount } from "./utils";
 import { RpcProvider, Contract } from "starknet";
+import { STARKNET_CONFIG } from "@gardenfi/core";
+import { network } from "../constants/constants";
 
 const erc20ABI = [
   {
@@ -62,7 +64,7 @@ export const getStarknetTokenBalance = async (
 
   try {
     const provider = new RpcProvider({
-      nodeUrl: "https://starknet-sepolia.public.blastapi.io/rpc/v0_8",
+      nodeUrl: STARKNET_CONFIG[network].nodeUrl,
     });
 
     const erc20Contract = new Contract(erc20ABI, asset.tokenAddress, provider);
