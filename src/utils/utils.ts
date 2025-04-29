@@ -6,7 +6,7 @@ import {
   THEMES,
 } from "../constants/constants";
 import { Assets } from "../store/assetInfoStore";
-import { Asset, isBitcoin, Swap } from "@gardenfi/orderbook";
+import { Swap } from "@gardenfi/orderbook";
 
 export const isProduction = () => {
   return import.meta.env.VITE_ENVIRONMENT === "production";
@@ -117,31 +117,37 @@ export const getAssetFromChainAndSymbol = (
   return assetKey ? assets[assetKey] : undefined;
 };
 
-export const getFormattedAmountValue = (asset: Asset, amount: string | number): string => {
-  const numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+// export const getFormattedAmountValue = (asset: Asset, amount: string | number): string => {
+//   const numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
 
-  if (isBitcoin(asset.chain)) {
-    const formattedWithSeven = numericAmount.toFixed(7);
-    const [integerPart, decimalPart] = formattedWithSeven.split('.');
-    const match = decimalPart.match(/0{4,}/);
+//   if (isBitcoin(asset.chain)) {
+//     // Format with 7 decimal places as base representation
+//     const formattedWithSeven = numericAmount.toFixed(7);
 
-    if (match) {
-      const zeroPosition = match.index;
-      if (zeroPosition === 0) {
-        return integerPart;
-      } else {
-        return `${integerPart}.${decimalPart.substring(0, zeroPosition)}`;
-      }
-    }
+//     // Split into integer and decimal parts
+//     const [integerPart, decimalPart] = formattedWithSeven.split('.');
 
-    return Number(formattedWithSeven).toString(); 
-  } else {
-    const hasDecimal = !Number.isInteger(numericAmount);
-    if (hasDecimal) {
-      const decimalPlaces = numericAmount >= 10000 ? 2 : 4;
-      return numericAmount.toFixed(decimalPlaces);
-    } else {
-      return numericAmount.toString();
-    }
-  }
-};
+//     // Check for 4+ consecutive zeros in the decimal part
+//     const match = decimalPart.match(/0{4,}/);
+
+//     if (match) {
+//       // Get the position where consecutive zeros start
+//       const zeroPosition = match.index;
+
+//       // Return only the digits before the consecutive zeros
+//       if (zeroPosition === 0) {
+//         // If zeros start immediately after decimal point, return just integer part
+//         return integerPart;
+//       } else {
+//         // Otherwise truncate at the position where zeros start
+//         return `${integerPart}.${decimalPart.substring(0, zeroPosition)}`;
+//       }
+//     }
+
+//     // No 4+ consecutive zeros found, return full 7 decimal format
+//     return formattedWithSeven;
+//   } else {
+//     const decimalPlaces = numericAmount >= 10000 ? 2 : 4;
+//     return numericAmount.toFixed(decimalPlaces);
+//   }
+// };

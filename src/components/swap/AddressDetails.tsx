@@ -37,7 +37,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
       window.open(redirect.explorer + "address/" + address, "_blank");
     else window.open(redirect.explorer + "/address/" + address, "_blank");
   };
-
+  
   return (
     <>
       {address && (
@@ -52,27 +52,30 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
             data-tooltip-id={isRefund ? tooltipId : ""}
             size="h5"
             weight="medium"
+            className="!text-mid-grey"
           >
             {isRefund ? "Refund" : "Receive"} address
           </Typography>
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
             <Typography size="h4" weight="medium">
               {getTrimmedAddress(address!)}
             </Typography>
-            {!isEditBTCAddress && (
-              <EditIcon
-                className={`cursor-pointer p-0.5 transition-all duration-500 ease-in-out ${
-                  chain && isBitcoin(chain)
-                    ? "max-h-4 max-w-4 opacity-100"
-                    : "-mr-3.5 max-h-0 max-w-0 opacity-0"
-                }`}
-                onClick={() => setIsEditBTCAddress(true)}
+            <div className="flex gap-1">
+              {!isEditBTCAddress && (
+                <EditIcon
+                  className={`cursor-pointer p-0.5 transition-all duration-500 ease-in-out ${
+                    chain && isBitcoin(chain)
+                      ? "max-h-4 max-w-4 opacity-100"
+                      : "-mr-3.5 max-h-0 max-w-0 opacity-0"
+                  }`}
+                  onClick={() => setIsEditBTCAddress(true)}
+                />
+              )}
+              <ArrowNorthEastIcon
+                className="h-4 w-4 cursor-pointer p-[3px]"
+                onClick={() => handleAddressRedirect(address!, chain!)}
               />
-            )}
-            <ArrowNorthEastIcon
-              className="h-4 w-4 cursor-pointer p-[3px]"
-              onClick={() => handleAddressRedirect(address!, chain!)}
-            />
+            </div>
           </div>
         </div>
       )}
