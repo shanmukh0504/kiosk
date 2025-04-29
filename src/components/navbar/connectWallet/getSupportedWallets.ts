@@ -116,5 +116,11 @@ export const getAvailableWallets = (
     });
   }
 
-  return wallets.sort((a, b) => Number(b.isAvailable) - Number(a.isAvailable));
+  return wallets.sort((a, b) => {
+    if (a.id === "injected") return 1;
+    if (b.id === "injected") return -1;
+    if (a.isAvailable && !b.isAvailable) return -1;
+    if (!a.isAvailable && b.isAvailable) return 1;
+    return 0;
+  });
 };
