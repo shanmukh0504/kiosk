@@ -22,6 +22,8 @@ import { AnimatePresence } from "framer-motion";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { ConnectingWalletStore } from "../../../store/connectWalletStore";
 import { BlockchainType } from "@gardenfi/orderbook";
+import { STARKNET_CONFIG } from "@gardenfi/core";
+import { network } from "../../../constants/constants";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -42,6 +44,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     starknetConnector,
     starknetStatus,
     starknetConnectAsync,
+    starknetDisconnect,
+    starknetSwitchChain,
   } = useStarknetWallet();
   const { availableWallets, connect, provider } = useBitcoinWallet();
   const { connectingWallet, setConnectingWallet } = ConnectingWalletStore();
@@ -165,6 +169,21 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         await starknetConnectAsync({
           connector: connector.wallet.starknetWallet,
         });
+        const chainId = await connector.wallet.starknetWallet.chainId();
+        // console.log("Current Chain ID:", chainId);
+
+        const targetChainId = STARKNET_CONFIG[network].chainId;
+        const currentChainIdHex = "0x" + chainId.toString(16);
+        if (currentChainIdHex.toLowerCase() !== targetChainId.toLowerCase()) {
+          try {
+            await starknetSwitchChain({ chainId: targetChainId });
+            // console.log("Network switched successfully!");
+          } catch (switchError: any) {
+            console.log(switchError);
+            await starknetDisconnect();
+            onClose();
+          }
+        }
       }
     } catch (error) {
       console.error("Error connecting wallet:", error);
