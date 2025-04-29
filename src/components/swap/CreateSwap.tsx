@@ -2,9 +2,12 @@ import { Button, ExchangeIcon } from "@gardenfi/garden-book";
 import { SwapInput } from "./SwapInput";
 import { getTimeEstimates, IOType } from "../../constants/constants";
 import { SwapAddress } from "./SwapAddress";
-import { useMemo } from "react";
+import { BTC, swapStore } from "../../store/swapStore";
+import { useEffect, useMemo, useState } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { useSearchParams } from "react-router-dom";
+import { assetInfoStore } from "../../store/assetInfoStore";
 import { Errors } from "../../constants/errors";
 import { SwapDetails } from "./SwapDetails";
 import { motion, Variants } from "framer-motion";
@@ -40,8 +43,16 @@ const addressAnimation = {
   },
 };
 import { modalNames, modalStore } from "../../store/modalStore";
+import { getAssetFromChainAndSymbol, getQueryParams } from "../../utils/utils";
+import { QUERY_PARAMS } from "../../constants/constants";
 
 export const CreateSwap = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [addParams, setAddParams] = useState(false);
+
+  const { swapAssets, setAsset } = swapStore();
+  const { assets } = assetInfoStore();
+
   const {
     outputAmount,
     inputAmount,
@@ -55,15 +66,15 @@ export const CreateSwap = () => {
     validSwap,
     inputTokenBalance,
     isEditBTCAddress,
+    isApproving,
     isSwapping,
     isValidBitcoinAddress,
     handleSwapClick,
-    swapAssets,
     needsWalletConnection,
   } = useSwap();
   const { account: btcAddress } = useBitcoinWallet();
   const { setOpenModal } = modalStore();
-
+  
   const buttonLabel = useMemo(() => {
     if (needsWalletConnection) {
       return `Connect ${needsWalletConnection === "starknet" ? "Starknet" : "EVM"} Wallet`;
@@ -72,10 +83,12 @@ export const CreateSwap = () => {
       ? "Insufficient liquidity"
       : error.swapError === Errors.insufficientBalance
         ? "Insufficient balance"
-        : isSwapping
-          ? "Signing..."
-          : "Swap";
-  }, [error.swapError, isSwapping, needsWalletConnection]);
+        : isApproving
+          ? "Approving..."
+          : isSwapping
+            ? "Signing..."
+            : "Swap";
+  }, [error.swapError, isApproving, isSwapping, needsWalletConnection]);
 
   const buttonVariant = useMemo(() => {
     if (needsWalletConnection) return "primary";
@@ -139,6 +152,54 @@ export const CreateSwap = () => {
       });
     }
   };
+
+  useEffect(() => {
+    if (!assets || addParams) return;
+    const {
+      inputChain = "",
+      inputAssetSymbol = "",
+      outputChain = "",
+      outputAssetSymbol = "",
+    } = getQueryParams(searchParams);
+
+    const fromAsset = getAssetFromChainAndSymbol(
+      assets,
+      inputChain,
+      inputAssetSymbol
+    );
+    const toAsset = getAssetFromChainAndSymbol(
+      assets,
+      outputChain,
+      outputAssetSymbol
+    );
+
+    setAsset(IOType.input, fromAsset);
+    setAsset(IOType.output, toAsset);
+    if (!fromAsset && !toAsset) setAsset(IOType.input, BTC);
+    setAddParams(true);
+  }, [addParams, assets, inputAsset, outputAsset, searchParams, setAsset]);
+
+  useEffect(() => {
+    if (!addParams || (!inputAsset && !outputAsset)) return;
+
+    setSearchParams((prev) => {
+      prev.delete(QUERY_PARAMS.inputChain);
+      prev.delete(QUERY_PARAMS.inputAsset);
+      prev.delete(QUERY_PARAMS.outputChain);
+      prev.delete(QUERY_PARAMS.outputAsset);
+
+      if (inputAsset) {
+        prev.set(QUERY_PARAMS.inputChain, inputAsset.chain);
+        prev.set(QUERY_PARAMS.inputAsset, inputAsset.symbol);
+      }
+      if (outputAsset) {
+        prev.set(QUERY_PARAMS.outputChain, outputAsset.chain);
+        prev.set(QUERY_PARAMS.outputAsset, outputAsset.symbol);
+      }
+
+      return prev;
+    });
+  }, [addParams, inputAsset, outputAsset, setSearchParams]);
 
   return (
     <div

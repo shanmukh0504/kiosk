@@ -2,17 +2,18 @@ import BigNumber from "bignumber.js";
 import {
   INTERNAL_ROUTES,
   LOCAL_STORAGE_KEYS,
+  QUERY_PARAMS,
   THEMES,
 } from "../constants/constants";
 import { Assets } from "../store/assetInfoStore";
-import { Swap } from "@gardenfi/orderbook";
+import { Asset, isBitcoin, Swap } from "@gardenfi/orderbook";
 
 export const isProduction = () => {
   return import.meta.env.VITE_ENVIRONMENT === "production";
 };
 
 export const getCurrentTheme = () => {
-  const path = window.location.pathname;
+  const path = window.location.pathname.replace(/\/+$/, "");
 
   if (INTERNAL_ROUTES.swap.path.includes(path)) return THEMES.swap;
   if (INTERNAL_ROUTES.stake.path.includes(path)) return THEMES.stake;
@@ -27,6 +28,15 @@ export const getCurrentTheme = () => {
  */
 export const getAssetFromSwap = (swap: Swap, assets: Assets | null) => {
   return assets && assets[`${swap.chain}_${swap.asset.toLowerCase()}`];
+};
+
+export const getQueryParams = (urlParams: URLSearchParams) => {
+  return {
+    inputChain: urlParams.get(QUERY_PARAMS.inputChain),
+    inputAssetSymbol: urlParams.get(QUERY_PARAMS.inputAsset),
+    outputChain: urlParams.get(QUERY_PARAMS.outputChain),
+    outputAssetSymbol: urlParams.get(QUERY_PARAMS.outputAsset),
+  };
 };
 
 export const getDayDifference = (date: string) => {
@@ -47,7 +57,7 @@ export const getDayDifference = (date: string) => {
 };
 
 export const formatAmount = (
-  amount: string | number,
+  amount: string | number | bigint,
   decimals: number,
   toFixed = 4
 ) => {
@@ -93,4 +103,45 @@ export const starknetAddressToXOnly = (address: string) => {
   const xOnly = address.slice(2);
   const trimmed = xOnly.replace(/^0+/, "");
   return `0x${trimmed}`;
+};
+
+export const getAssetFromChainAndSymbol = (
+  assets: Assets,
+  chain: string | null,
+  assetSymbol: string | null
+) => {
+  const assetKey = Object.keys(assets).find((key) => {
+    const asset = assets[key];
+    return asset.chain === chain && asset.symbol === assetSymbol;
+  });
+  return assetKey ? assets[assetKey] : undefined;
+};
+
+export const getFormattedAmountValue = (asset: Asset, amount: string | number): string => {
+  const numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+
+  if (isBitcoin(asset.chain)) {
+    const formattedWithSeven = numericAmount.toFixed(7);
+    const [integerPart, decimalPart] = formattedWithSeven.split('.');
+    const match = decimalPart.match(/0{4,}/);
+
+    if (match) {
+      const zeroPosition = match.index;
+      if (zeroPosition === 0) {
+        return integerPart;
+      } else {
+        return `${integerPart}.${decimalPart.substring(0, zeroPosition)}`;
+      }
+    }
+
+    return Number(formattedWithSeven).toString(); 
+  } else {
+    const hasDecimal = !Number.isInteger(numericAmount);
+    if (hasDecimal) {
+      const decimalPlaces = numericAmount >= 10000 ? 2 : 4;
+      return numericAmount.toFixed(decimalPlaces);
+    } else {
+      return numericAmount.toString();
+    }
+  }
 };

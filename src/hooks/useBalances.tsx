@@ -2,12 +2,14 @@ import { useEffect, useMemo } from "react";
 import { Asset, isBitcoin, isStarknet, isEVM } from "@gardenfi/orderbook";
 import { evmToViemChainMap } from "@gardenfi/core";
 import { useEVMWallet } from "./useEVMWallet";
-import { getTokenBalance } from "../utils/getTokenBalance";
+import {
+  getTokenBalance,
+  getStarknetTokenBalance,
+} from "../utils/getTokenBalance";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import BigNumber from "bignumber.js";
 import { balanceStore } from "../store/balanceStore";
 import { useStarknetWallet } from "./useStarknetWallet";
-import { useBalance } from "@starknet-react/core";
 
 export const useBalances = (asset: Asset | undefined) => {
   const { balances, setBalance, clearBalances } = balanceStore();
@@ -15,18 +17,13 @@ export const useBalances = (asset: Asset | undefined) => {
   const { provider } = useBitcoinWallet();
   const { starknetAccount } = useStarknetWallet();
 
-  const { data: starknetBalance } = useBalance({
-    address: starknetAccount?.address as `0x${string}`,
-    watch: true,
-  });
-
   const tokenBalance = useMemo(
     () => balances[`${asset?.chain}_${asset?.tokenAddress.toLowerCase()}`],
     [balances, asset]
   );
 
   useEffect(() => {
-    if (!asset || !address) return;
+    if (!asset) return;
 
     const fetchBalance = async () => {
       if (isBitcoin(asset.chain)) {
@@ -39,16 +36,15 @@ export const useBalances = (asset: Asset | undefined) => {
           .toNumber();
         setBalance(asset, bal);
       } else if (isStarknet(asset.chain)) {
-        if (!starknetAccount || !starknetBalance) return;
-        try {
-          const bal = new BigNumber(
-            starknetBalance.formatted.slice(0, 12)
-          ).toNumber();
-          setBalance(asset, bal);
-        } catch (error) {
-          console.error("Error processing Starknet balance:", error);
+        if (!starknetAccount) {
+          clearBalances();
           return;
         }
+        const balance = await getStarknetTokenBalance(
+          starknetAccount.address,
+          asset
+        );
+        setBalance(asset, balance);
       } else if (isEVM(asset.chain)) {
         if (!address) {
           clearBalances();
@@ -65,15 +61,7 @@ export const useBalances = (asset: Asset | undefined) => {
     const intervalId = setInterval(fetchBalance, 10000);
 
     return () => clearInterval(intervalId);
-  }, [
-    address,
-    clearBalances,
-    asset,
-    provider,
-    setBalance,
-    starknetAccount,
-    starknetBalance,
-  ]);
+  }, [address, clearBalances, asset, provider, setBalance, starknetAccount]);
 
   return { balances, tokenBalance };
 };

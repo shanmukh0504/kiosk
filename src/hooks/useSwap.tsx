@@ -7,6 +7,7 @@ import { assetInfoStore } from "../store/assetInfoStore";
 import {
   constructOrderPair,
   OrderStatus,
+  // switchOrAddNetwork,
   validateBTCAddress,
 } from "@gardenfi/core";
 import { useGarden } from "@gardenfi/react-hooks";
@@ -22,6 +23,9 @@ import { ConnectingWalletStore } from "../store/connectWalletStore";
 import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import BigNumber from "bignumber.js";
+// import { useWalletClient } from "wagmi";
+// import { Account } from "viem";
+// import { approve, checkAllowance } from "../utils/approve";
 
 export const useSwap = () => {
   const {
@@ -30,6 +34,7 @@ export const useSwap = () => {
     inputAsset,
     outputAsset,
     isSwapping,
+    isApproving,
     strategy,
     error,
     btcAddress,
@@ -42,6 +47,8 @@ export const useSwap = () => {
     setError,
     swapAssets,
     setIsFetchingQuote,
+    setIsInsufficientLiquidity,
+    // setIsApproving,
     setTokenPrices,
     clearSwapState,
     setBtcAddress,
@@ -51,11 +58,12 @@ export const useSwap = () => {
   const { strategies } = assetInfoStore();
   const { setOrder, setIsOpen } = orderInProgressStore();
   const { updateOrder } = pendingOrdersStore();
-  const { address, disconnect } = useEVMWallet();
+  const { disconnect } = useEVMWallet();
   const { swapAndInitiate, getQuote } = useGarden();
   const { provider, account } = useBitcoinWallet();
   const controller = useRef<AbortController | null>(null);
   const { setConnectingWallet } = ConnectingWalletStore();
+  // let { data: wallet } = useWalletClient();
   const { address: evmAddress } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { setOpenModal } = modalStore();
@@ -84,7 +92,6 @@ export const useSwap = () => {
       inputAmount &&
       outputAsset &&
       strategy &&
-      address &&
       isValidBitcoinAddress &&
       !error.inputError &&
       !error.outputError &&
@@ -97,7 +104,6 @@ export const useSwap = () => {
     outputAsset,
     strategy,
     error,
-    address,
     isValidBitcoinAddress,
   ]);
 
@@ -372,6 +378,38 @@ export const useSwap = () => {
         };
 
     try {
+      // if (!wallet) return;
+
+      // const _walletClient = await switchOrAddNetwork(inputAsset.chain, wallet);
+
+      // if (_walletClient.error) return Error(_walletClient.error);
+      // wallet = _walletClient.val.walletClient as typeof wallet & {
+      //   account: Account;
+      // };
+      // if (!wallet.account) return Error("No account found");
+
+      // const allowance = await checkAllowance(
+      //   Number(inputAmountInDecimals),
+      //   inputAsset.tokenAddress,
+      //   inputAsset.atomicSwapAddress,
+      //   wallet
+      // );
+
+      // if (!allowance) {
+      //   setIsApproving(true);
+      //   const res = await approve(
+      //     inputAsset.tokenAddress,
+      //     inputAsset.atomicSwapAddress,
+      //     wallet
+      //   );
+      //   if (res instanceof Error) {
+      //     console.error("failed to approve ❌", res.message);
+      //     setIsApproving(false);
+      //     return;
+      //   }
+      //   setIsApproving(false);
+      // }
+
       const res = await swapAndInitiate({
         fromAsset: inputAsset,
         toAsset: outputAsset,
@@ -536,6 +574,7 @@ export const useSwap = () => {
     loading: isFetchingQuote,
     validSwap,
     isSwapping,
+    isApproving,
     isBitcoinSwap,
     inputTokenBalance,
     isValidBitcoinAddress,

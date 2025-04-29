@@ -3,6 +3,7 @@ import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { FC } from "react";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { AssetChainLogos } from "./AssetChainLogos";
+import { getFormattedAmountValue } from "../utils/utils";
 
 type SwapInfoProps = {
   sendAsset: Asset;
@@ -29,7 +30,7 @@ export const SwapInfo: FC<SwapInfoProps> = ({
     <div className="flex items-center justify-between">
       <div className="flex w-fit items-center gap-2">
         <Typography size="h3" weight="medium">
-          {sendAmount}
+          {getFormattedAmountValue(sendAsset, sendAmount)}
         </Typography>
         <AssetChainLogos
           tokenLogo={sendAsset.logo}
@@ -39,7 +40,7 @@ export const SwapInfo: FC<SwapInfoProps> = ({
       <ArrowRightIcon className="w-fit" />
       <div className="flex w-fit items-center justify-end gap-2">
         <Typography size="h3" weight="medium">
-          {receiveAmount}
+          {getFormattedAmountValue(receiveAsset, receiveAmount)}
         </Typography>
         <AssetChainLogos
           tokenLogo={receiveAsset.logo}

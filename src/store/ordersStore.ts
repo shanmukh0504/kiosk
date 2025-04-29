@@ -22,7 +22,10 @@ type OrdersStore = {
     ) => Promise<void>;
     loadMore: (orderBook: IOrderbook, address: `0x${string}`) => Promise<void>;
   };
-
+  fetchOrderById: (
+    orderId: string,
+    orderBook: IOrderbook
+  ) => Promise<OrderWithStatus | null>;
   setPendingOrders: (orders: OrderWithStatus[]) => void;
   setOrderInProgress: (order: OrderWithStatus | null) => void;
   activateOrderInProgress: (set: boolean) => void;
@@ -117,6 +120,25 @@ export const ordersStore = create<OrdersStore>((set, get) => ({
     },
   },
 
+  fetchOrderById: async (orderId, orderBook) => {
+    const order = await orderBook.getOrder(orderId, true);
+    if (order.error || !order.val) return null;
+    const blockNumbers = blockNumberStore.getState().blockNumbers;
+    const { source_swap, destination_swap } = order.val;
+    const sourceBlockNumber = blockNumbers && blockNumbers[source_swap.chain];
+    const destinationBlockNumber =
+      blockNumbers && blockNumbers[destination_swap.chain];
+    if (!sourceBlockNumber || !destinationBlockNumber) return null;
+    const orderWithStatus = {
+      ...order.val,
+      status: ParseOrderStatus(
+        order.val,
+        sourceBlockNumber,
+        destinationBlockNumber
+      ),
+    };
+    return orderWithStatus;
+  },
   // State updates for pendingOrders
   setPendingOrders: (orders) => {
     const state = get();
@@ -137,7 +159,6 @@ export const ordersStore = create<OrdersStore>((set, get) => ({
       set({
         orderInProgress: null,
       });
-
       return;
     }
     const state = get();

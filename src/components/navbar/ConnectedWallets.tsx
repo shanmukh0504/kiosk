@@ -1,7 +1,6 @@
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
-
 import { ecosystems } from "./connectWallet/constants";
 import { Opacity, WalletIcon } from "@gardenfi/garden-book";
 import { modalNames, modalStore } from "../../store/modalStore";
