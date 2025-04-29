@@ -181,7 +181,6 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           } catch (switchError: any) {
             console.log(switchError);
             await starknetDisconnect();
-            onClose();
           }
         }
       }
