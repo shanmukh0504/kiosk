@@ -921,7 +921,6 @@ __metadata:
   checksum: 10c0/c85a56bdf46a4ce3752a8c0234ed0cdd37a11070f05fc55498cd97d4a7f3d6eabd512adb5d7668645b9462a1b4c2e2d119adc378cccaf166b6be15e8a5d960d6
   languageName: node
   linkType: hard
-
 "@gardenfi/wallet-connectors@npm:2.0.3-beta.21":
   version: 2.0.3-beta.21
   resolution: "@gardenfi/wallet-connectors@npm:2.0.3-beta.21"
@@ -1435,7 +1434,6 @@ __metadata:
   checksum: 10c0/84902c7af93338373a95d833f77981113e81c48d4bec78f22f63f1f7fdd893bc1d3d7a3ee78f01b9a8ad3dec812a1232866bf2ccbeb2b1560492e5e7d690ab1f
   languageName: node
   linkType: hard
-
 "@noble/curves@npm:1.8.2, @noble/curves@npm:~1.8.1":
   version: 1.8.2
   resolution: "@noble/curves@npm:1.8.2"
@@ -6650,7 +6648,7 @@ __metadata:
     typescript: "npm:^5.5.3"
     typescript-eslint: "npm:^8.12.1"
     vaul: "npm:^1.1.0"
-    viem: "npm:^2.21.23"
+    viem: "npm:^2.28.0"
     vite: "npm:^5.4.0"
     vite-plugin-node-polyfills: "npm:^0.22.0"
     vite-plugin-static-copy: "npm:^1.0.6"
@@ -12039,8 +12037,28 @@ __metadata:
   checksum: 10c0/39332d008d2ab0700aa57f541bb199350daecdfb722ae1b262404b02944e11205368fcc696cc0ab8327b9f90bf7172014687ae3e5d9091978e9d174885ccff2d
   languageName: node
   linkType: hard
-
 "viem@npm:^2.1.1, viem@npm:^2.20.1, viem@npm:^2.21.1, viem@npm:^2.21.23":
+  version: 2.28.0
+  resolution: "viem@npm:2.28.0"
+  dependencies:
+    "@noble/curves": "npm:1.8.2"
+    "@noble/hashes": "npm:1.7.2"
+    "@scure/bip32": "npm:1.6.2"
+    "@scure/bip39": "npm:1.5.4"
+    abitype: "npm:1.0.8"
+    isows: "npm:1.0.6"
+    ox: "npm:0.6.9"
+    ws: "npm:8.18.1"
+  peerDependencies:
+    typescript: ">=5.0.4"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10c0/fb67861c74e0fac54278627dbf15ffdcec41e9ddee3196cca20c137bad2ac0de531037c744095a95498c061b84d76bdf2e069fab0bfb3a76acb23265cba6a97d
+  languageName: node
+  linkType: hard
+
+"viem@npm:^2.28.0":
   version: 2.28.0
   resolution: "viem@npm:2.28.0"
   dependencies:
