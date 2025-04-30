@@ -3,7 +3,7 @@ import {
   Asset,
   isBitcoin,
   isEVM,
-  // isEvmNativeToken,
+  isEvmNativeToken,
   isStarknet,
 } from "@gardenfi/orderbook";
 import { with0x } from "@gardenfi/utils";
@@ -93,8 +93,8 @@ export const getStarknetTokenBalance = async (
 };
 
 export const getTokenBalance = async (address: string, asset: Asset) => {
-  // if (isEvmNativeToken(asset.chain, asset.tokenAddress))
-  //   return getNativeBalance(address, asset);
+  if (isEvmNativeToken(asset.chain, asset.tokenAddress))
+    return getNativeBalance(address, asset);
 
   const balanceOfABI = {
     inputs: [{ name: "_owner", type: "address" }],
@@ -148,8 +148,8 @@ export const getNativeBalance = async (address: string, asset: Asset) => {
   try {
     if (
       isBitcoin(asset.chain) ||
-      !isEVM(asset.chain)
-      // !isEvmNativeToken(asset.chain, asset.tokenAddress)
+      !isEVM(asset.chain) ||
+      !isEvmNativeToken(asset.chain, asset.tokenAddress)
     )
       return 0;
     const _chain = evmToViemChainMap[asset.chain];
