@@ -74,7 +74,7 @@ export const CreateSwap = () => {
   } = useSwap();
   const { account: btcAddress } = useBitcoinWallet();
   const { setOpenModal } = modalStore();
-  
+
   const buttonLabel = useMemo(() => {
     if (needsWalletConnection) {
       return `Connect ${needsWalletConnection === "starknet" ? "Starknet" : "EVM"} Wallet`;
@@ -205,7 +205,7 @@ export const CreateSwap = () => {
     <div
       className={`before:pointer-events-none before:absolute before:left-0 before:top-0 before:h-full before:w-full before:bg-black before:bg-opacity-0 before:transition-colors before:duration-700 before:content-['']`}
     >
-      <div className="flex flex-col p-3">
+      <div className="flex flex-col px-3 pb-4 pt-3">
         <div className="relative flex flex-col gap-3">
           <SwapInput
             type={IOType.input}

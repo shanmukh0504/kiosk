@@ -80,6 +80,32 @@ export const formatAmount = (
   return Number(temp);
 };
 
+export const formatAmountByAsset = (
+  amount: string | number | bigint,
+  decimals: number,
+  symbol?: string
+) => {
+  const bigAmount = new BigNumber(amount);
+  if (bigAmount.isZero()) return 0;
+  const value = bigAmount.dividedBy(10 ** decimals);
+  const valStr = value.toFixed(7, BigNumber.ROUND_DOWN);
+
+  if (symbol?.includes("BTC")) {
+    const match = valStr.match(/\.(\d*?)(0{4,})/);
+    let formatted = match
+      ? valStr.slice(0, match.index! + match[1].length + 1)
+      : valStr;
+    formatted = formatted.replace(/\.?0+$/, "");
+    return formatted;
+  }
+
+  if (symbol?.includes("USD") || symbol?.includes("SEED")) {
+    const decimalsToUse = value.lt(10000) ? 4 : 2;
+    return Number(value.toFixed(decimalsToUse, BigNumber.ROUND_DOWN));
+  }
+  return Number(value.toFixed(4, BigNumber.ROUND_DOWN));
+};
+
 export const isCurrentRoute = (route: string) =>
   window.location.pathname === route;
 
@@ -116,38 +142,3 @@ export const getAssetFromChainAndSymbol = (
   });
   return assetKey ? assets[assetKey] : undefined;
 };
-
-// export const getFormattedAmountValue = (asset: Asset, amount: string | number): string => {
-//   const numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-
-//   if (isBitcoin(asset.chain)) {
-//     // Format with 7 decimal places as base representation
-//     const formattedWithSeven = numericAmount.toFixed(7);
-
-//     // Split into integer and decimal parts
-//     const [integerPart, decimalPart] = formattedWithSeven.split('.');
-
-//     // Check for 4+ consecutive zeros in the decimal part
-//     const match = decimalPart.match(/0{4,}/);
-
-//     if (match) {
-//       // Get the position where consecutive zeros start
-//       const zeroPosition = match.index;
-
-//       // Return only the digits before the consecutive zeros
-//       if (zeroPosition === 0) {
-//         // If zeros start immediately after decimal point, return just integer part
-//         return integerPart;
-//       } else {
-//         // Otherwise truncate at the position where zeros start
-//         return `${integerPart}.${decimalPart.substring(0, zeroPosition)}`;
-//       }
-//     }
-
-//     // No 4+ consecutive zeros found, return full 7 decimal format
-//     return formattedWithSeven;
-//   } else {
-//     const decimalPlaces = numericAmount >= 10000 ? 2 : 4;
-//     return numericAmount.toFixed(decimalPlaces);
-//   }
-// };

@@ -1,5 +1,6 @@
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import axios from "axios";
+import BigNumber from "bignumber.js";
 import {
   API_URLS,
   BTC_MAINNET_CHAIN_ID,
@@ -91,6 +92,10 @@ export const getRelayFee = async (
         ? BTC_TESTNET_RECIPIENT
         : BTC_MAINNET_RECIPIENT;
 
+  const sendAmount = new BigNumber(amount)
+    .multipliedBy(10 ** srcAsset.decimals)
+    .toFixed();
+
   const requestBody = {
     user,
     originChainId: srcFormat.chainId,
@@ -98,7 +103,7 @@ export const getRelayFee = async (
     originCurrency: srcFormat.currency,
     recipient,
     destinationCurrency: destFormat.currency,
-    amount: amount * 10 ** srcAsset.decimals,
+    amount: sendAmount,
     tradeType: "EXACT_INPUT",
   };
 

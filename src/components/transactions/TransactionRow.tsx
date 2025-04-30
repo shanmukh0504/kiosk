@@ -6,7 +6,7 @@ import {
   MatchedOrder,
 } from "@gardenfi/orderbook";
 import {
-  formatAmount,
+  formatAmountByAsset,
   getAssetFromSwap,
   getDayDifference,
 } from "../../utils/utils";
@@ -80,16 +80,22 @@ export const TransactionRow: FC<TransactionProps> = ({
     [status]
   );
   const sendAmount = useMemo(
-    () => formatAmount(create_order.source_amount, sendAsset?.decimals ?? 0),
-    [create_order.source_amount, sendAsset?.decimals]
+    () =>
+      formatAmountByAsset(
+        create_order.source_amount,
+        sendAsset?.decimals ?? 0,
+        sendAsset?.symbol
+      ),
+    [create_order.source_amount, sendAsset]
   );
   const receiveAmount = useMemo(
     () =>
-      formatAmount(
+      formatAmountByAsset(
         create_order.destination_amount,
-        receiveAsset?.decimals ?? 0
+        receiveAsset?.decimals ?? 0,
+        receiveAsset?.symbol
       ),
-    [create_order.destination_amount, receiveAsset?.decimals]
+    [create_order.destination_amount, receiveAsset]
   );
   const dayDifference = useMemo(
     () => getDayDifference(create_order.updated_at),

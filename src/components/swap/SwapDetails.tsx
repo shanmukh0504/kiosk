@@ -147,7 +147,7 @@ export const SwapDetails: FC<SwapDetailsProps> = ({
           <div
             className={`${isExpanded && (maxTimeSaved > 0 || maxCostSaved > 0) ? "block" : "hidden"}`}
           >
-            <div className="mx-4 my-1 bg-white py-[0.5px]"></div>
+            <div className="z-10 mx-4 my-1 h-px bg-white"></div>
             <AnimatePresence mode="wait">
               {maxTimeSaved > 0 && isExpanded && (
                 <motion.div
@@ -214,7 +214,7 @@ export const SwapDetails: FC<SwapDetailsProps> = ({
           </div>
           {(receiveAddress || refundAddress) && (
             <>
-              <div className="my-1 h-px bg-white mx-4"></div>
+              <div className="mx-4 my-1 h-px bg-white"></div>
               <div className="flex flex-col items-stretch justify-center px-4">
                 {receiveAddress && <AddressDetails address={receiveAddress} />}
                 {refundAddress && (
