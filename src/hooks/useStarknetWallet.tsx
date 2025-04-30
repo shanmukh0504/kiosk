@@ -1,4 +1,5 @@
 import { useAccount, useConnect, useDisconnect } from "@starknet-react/core";
+import { useEffect } from "react";
 import { useSwitchChain } from "@starknet-react/core";
 import { constants } from "starknet";
 import { network } from "../constants/constants";
@@ -13,6 +14,18 @@ export const useStarknetWallet = () => {
   } = useConnect();
   const { disconnectAsync } = useDisconnect();
   const { address, status, account, chainId } = useAccount();
+
+  useEffect(() => {
+    if (status === "connected" && address && activeConnector) {
+      localStorage.setItem(
+        "starknetWalletStore",
+        JSON.stringify({
+          address: address,
+          connector: activeConnector.name,
+        })
+      );
+    }
+  }, [status, address, activeConnector]);
 
   const { switchChainAsync, error } = useSwitchChain({
     params: {
