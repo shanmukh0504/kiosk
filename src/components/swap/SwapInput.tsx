@@ -153,7 +153,7 @@ export const SwapInput: FC<SwapInputProps> = ({
               )
             ))}
         </div>
-        <div className="flex justify-between">
+        <div className="flex h-6 justify-between sm:h-7">
           <Typography
             size={"h3"}
             breakpoints={{
