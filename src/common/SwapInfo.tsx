@@ -24,7 +24,7 @@ export const SwapInfo: FC<SwapInfoProps> = ({
     chains && !isBitcoin(receiveAsset.chain)
       ? chains[receiveAsset.chain]
       : undefined;
-console.log("sendAsset", sendAsset , sendAmount);
+
   return (
     <div className="flex items-center justify-between">
       <div className="flex w-fit items-center gap-2">
