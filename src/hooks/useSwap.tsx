@@ -488,6 +488,7 @@ export const useSwap = () => {
   }, [inputAsset, handleInputAmountChange, setError]);
 
   useEffect(() => {
+    setIsInsufficientLiquidity(false);
     if (
       inputAmount == "0" ||
       outputAmount == "0" ||

@@ -29,7 +29,6 @@ export const SwapInfo: FC<SwapInfoProps> = ({
     <div className="flex items-center justify-between">
       <div className="flex w-fit items-center gap-2">
         <Typography size="h3" weight="medium">
-          {/* {getFormattedAmountValue(sendAsset, sendAmount)} */}
           {sendAmount}
         </Typography>
         <AssetChainLogos
@@ -40,7 +39,6 @@ export const SwapInfo: FC<SwapInfoProps> = ({
       <ArrowRightIcon className="w-fit" />
       <div className="flex w-fit items-center justify-end gap-2">
         <Typography size="h3" weight="medium">
-          {/* {getFormattedAmountValue(receiveAsset, receiveAmount)} */}
           {receiveAmount}
         </Typography>
         <AssetChainLogos

@@ -96,6 +96,9 @@ export const formatAmountByAsset = (
       ? valStr.slice(0, match.index! + match[1].length + 1)
       : valStr;
     formatted = formatted.replace(/\.?0+$/, "");
+    if (formatted.endsWith(".")) {
+      formatted = formatted.slice(0, -1);
+    }
     return formatted;
   }
 

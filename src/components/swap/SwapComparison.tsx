@@ -24,9 +24,10 @@ import { getTimeEstimates } from "../../constants/constants";
 import { useSwap } from "../../hooks/useSwap";
 import { Errors } from "../../constants/errors";
 import { motion } from "framer-motion";
-import { formatAmount } from "../../utils/utils";
+import { formatAmount, formatAmountByAsset } from "../../utils/utils";
 import debounce from "lodash.debounce";
 import { Asset } from "@gardenfi/orderbook";
+import BigNumber from "bignumber.js";
 
 type SwapComparisonProps = {
   visible: boolean;
@@ -246,6 +247,19 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
     return () => window.removeEventListener("keydown", handleEscape);
   }, [hide]);
 
+  const inputAmountInDecimals =
+    inputAmount &&
+    inputAsset &&
+    new BigNumber(inputAmount)
+      .multipliedBy(10 ** inputAsset.decimals)
+      .toFixed();
+  const outputAmountInDecimals =
+    outputAmount &&
+    outputAsset &&
+    new BigNumber(outputAmount)
+      .multipliedBy(10 ** outputAsset.decimals)
+      .toFixed();
+
   return (
     <motion.div
       {...animationConfig}
@@ -258,16 +272,27 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
         <ArrowLeftIcon className="cursor-pointer" onClick={hide} />
       </div>
 
-      {inputAsset && outputAsset && inputAmount && outputAmount && (
-        <div className="flex flex-col gap-2 rounded-2xl bg-white p-4">
-          <SwapInfo
-            sendAsset={inputAsset}
-            receiveAsset={outputAsset}
-            sendAmount={inputAmount}
-            receiveAmount={outputAmount}
-          />
-        </div>
-      )}
+      {inputAsset &&
+        outputAsset &&
+        inputAmountInDecimals &&
+        outputAmountInDecimals && (
+          <div className="flex flex-col gap-2 rounded-2xl bg-white p-4">
+            <SwapInfo
+              sendAsset={inputAsset}
+              receiveAsset={outputAsset}
+              sendAmount={formatAmountByAsset(
+                inputAmountInDecimals,
+                inputAsset.decimals,
+                inputAsset.symbol
+              )}
+              receiveAmount={formatAmountByAsset(
+                outputAmountInDecimals,
+                outputAsset.decimals,
+                outputAsset.symbol
+              )}
+            />
+          </div>
+        )}
 
       <div className="flex h-full flex-col gap-3 rounded-2xl bg-white p-4">
         {swapEntriesWithGarden.map(([key, { fee, time }], index) => {
