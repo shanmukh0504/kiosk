@@ -76,30 +76,30 @@ export const CreateSwap = () => {
   const { setOpenModal } = modalStore();
 
   const buttonLabel = useMemo(() => {
-    if (needsWalletConnection) {
-      return `Connect ${needsWalletConnection === "starknet" ? "Starknet" : "EVM"} Wallet`;
-    }
     return error.swapError === Errors.insufficientLiquidity
       ? "Insufficient liquidity"
-      : error.swapError === Errors.insufficientBalance
-        ? "Insufficient balance"
-        : isApproving
-          ? "Approving..."
-          : isSwapping
-            ? "Signing..."
-            : "Swap";
+      : needsWalletConnection
+        ? `Connect ${needsWalletConnection === "starknet" ? "Starknet" : "EVM"} Wallet`
+        : error.swapError === Errors.insufficientBalance
+          ? "Insufficient balance"
+          : isApproving
+            ? "Approving..."
+            : isSwapping
+              ? "Signing..."
+              : "Swap";
   }, [error.swapError, isApproving, isSwapping, needsWalletConnection]);
 
   const buttonVariant = useMemo(() => {
-    if (needsWalletConnection) return "primary";
-    return error.swapError === Errors.insufficientLiquidity ||
-      error.swapError === Errors.insufficientBalance
-      ? "disabled"
-      : isSwapping
-        ? "ternary"
-        : validSwap
-          ? "primary"
-          : "disabled";
+    return needsWalletConnection
+      ? "primary"
+      : error.swapError === Errors.insufficientLiquidity ||
+          error.swapError === Errors.insufficientBalance
+        ? "disabled"
+        : isSwapping
+          ? "ternary"
+          : validSwap
+            ? "primary"
+            : "disabled";
   }, [isSwapping, validSwap, error.swapError, needsWalletConnection]);
 
   const timeEstimate = useMemo(() => {

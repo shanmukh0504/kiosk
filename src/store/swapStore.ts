@@ -26,7 +26,6 @@ type SwapState = {
   outputAmount: string;
   btcAddress: string;
   isSwapping: boolean;
-  isInsufficientLiquidity: boolean;
   isApproving: boolean;
   strategy: string;
   tokenPrices: TokenPrices;
@@ -35,7 +34,6 @@ type SwapState = {
   isEditBTCAddress: boolean;
   setTokenPrices: (tokenPrices: TokenPrices) => void;
   setIsSwapping: (isSwapping: boolean) => void;
-  setIsInsufficientLiquidity: (isInsufficientLiquidity: boolean) => void;
   setIsApproving: (isApproving: boolean) => void;
   setStrategy: (strategy: string) => void;
   setAsset: (ioType: IOType, asset: Asset | undefined) => void;
@@ -64,7 +62,6 @@ export const swapStore = create<SwapState>((set) => ({
   inputAmount: "",
   outputAmount: "",
   btcAddress: "",
-  isInsufficientLiquidity: false,
   isApproving: false,
   swapInProgress: {
     isOpen: false,
@@ -79,7 +76,7 @@ export const swapStore = create<SwapState>((set) => ({
   error: {
     inputError: Errors.none,
     outputError: Errors.none,
-    quoteError: Errors.none
+    quoteError: Errors.none,
   },
   isFetchingQuote: {
     input: false,
@@ -142,9 +139,6 @@ export const swapStore = create<SwapState>((set) => ({
   setIsFetchingQuote: (isFetchingQuote) => {
     set({ isFetchingQuote });
   },
-  setIsInsufficientLiquidity: (isInsufficientLiquidity) => {
-    set({ isInsufficientLiquidity });
-  },
   setIsApproving: (isApproving) => {
     set({ isApproving });
   },
@@ -155,7 +149,6 @@ export const swapStore = create<SwapState>((set) => ({
       btcAddress: "",
       outputAsset: undefined,
       inputAsset: BTC,
-      isInsufficientLiquidity: false,
       isApproving: false,
       isSwapping: false,
       strategy: "",
@@ -166,7 +159,7 @@ export const swapStore = create<SwapState>((set) => ({
       error: {
         inputError: Errors.none,
         outputError: Errors.none,
-        swapError: Errors.none
+        swapError: Errors.none,
       },
       isFetchingQuote: {
         input: false,
@@ -183,7 +176,6 @@ export const swapStore = create<SwapState>((set) => ({
       outputAsset: undefined,
       inputAsset: BTC,
       isSwapping: false,
-      isInsufficientLiquidity: false,
       isApproving: false,
       strategy: "",
       tokenPrices: {
@@ -193,7 +185,7 @@ export const swapStore = create<SwapState>((set) => ({
       error: {
         inputError: Errors.none,
         outputError: Errors.none,
-        swapError: Errors.none
+        swapError: Errors.none,
       },
       isFetchingQuote: {
         input: false,

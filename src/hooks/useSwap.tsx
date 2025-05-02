@@ -47,7 +47,6 @@ export const useSwap = () => {
     setError,
     swapAssets,
     setIsFetchingQuote,
-    setIsInsufficientLiquidity,
     // setIsApproving,
     setTokenPrices,
     clearSwapState,
@@ -333,6 +332,7 @@ export const useSwap = () => {
   };
 
   const needsWalletConnection = useMemo(() => {
+    if (error.swapError === Errors.insufficientLiquidity) return null;
     if (!evmAddress && !starknetAddress && !account) return false;
     if (!inputAsset || !outputAsset) return false;
     if (isEVM(inputAsset.chain) && !evmAddress) return "evm";
@@ -342,7 +342,14 @@ export const useSwap = () => {
     if (isStarknet(outputAsset.chain) && !starknetAddress) return "starknet";
 
     return null;
-  }, [inputAsset, outputAsset, evmAddress, starknetAddress, account]);
+  }, [
+    inputAsset,
+    outputAsset,
+    evmAddress,
+    starknetAddress,
+    account,
+    error.swapError,
+  ]);
 
   const handleSwapClick = async () => {
     if (needsWalletConnection) {
@@ -488,38 +495,6 @@ export const useSwap = () => {
   }, [inputAsset, handleInputAmountChange, setError]);
 
   useEffect(() => {
-    setIsInsufficientLiquidity(false);
-    if (
-      inputAmount == "0" ||
-      outputAmount == "0" ||
-      !inputAmount ||
-      !outputAmount
-    ) {
-      setTokenPrices({ input: "0", output: "0" });
-      if (!isInsufficientBalance) {
-        setError({
-          outputError: Errors.none,
-          inputError: Errors.none,
-          swapError: Errors.none,
-        });
-      } else {
-        setError({
-          outputError: Errors.none,
-          inputError: Errors.none,
-          swapError: Errors.insufficientBalance,
-        });
-      }
-      return;
-    }
-  }, [
-    inputAmount,
-    outputAmount,
-    setTokenPrices,
-    setError,
-    isInsufficientBalance,
-  ]);
-
-  useEffect(() => {
     if (!inputAmount || !minAmount || !maxAmount) return;
     const amountInNumber = Number(inputAmount);
     if (!amountInNumber) return;
@@ -537,12 +512,16 @@ export const useSwap = () => {
     if (amountInNumber < minAmount && inputAsset) {
       setError({
         inputError: Errors.minError(minAmount.toString(), inputAsset?.symbol),
+        outputError: Errors.none,
+        swapError: Errors.none,
       });
       return;
     }
     if (amountInNumber > maxAmount && inputAsset) {
       setError({
         inputError: Errors.maxError(maxAmount.toString(), inputAsset?.symbol),
+        outputError: Errors.none,
+        swapError: Errors.none,
       });
       return;
     }
