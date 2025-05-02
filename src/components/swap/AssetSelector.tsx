@@ -57,15 +57,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   );
 
   const sortedResults = useMemo(() => {
-    if (results && comparisonToken && orderedChains.length > 0) {
-      const filteredAssets = [
-        ...results.filter(
-          (r) => r.atomicSwapAddress !== comparisonToken.atomicSwapAddress
-        ),
-        comparisonToken,
-      ];
-
-      return filteredAssets.sort((a, b) => {
+    if (results && orderedChains.length > 0) {
+      return results.sort((a, b) => {
         const chainA = chains?.[a.chain];
         const chainB = chains?.[b.chain];
         if (chainA && chainB) {
@@ -81,7 +74,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
       });
     }
     return results;
-  }, [results, orderedChains, comparisonToken, chains]);
+  }, [results, orderedChains, chains]);
 
   useEffect(() => {
     if (!assets || !strategies.val) return;
@@ -105,7 +98,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
               );
         return strategies.val && strategies.val[op] !== undefined;
       });
-      setResults(supportedTokens);
+      setResults([...supportedTokens, comparisonToken]);
     }
   }, [assets, comparisonToken, isAssetSelectorOpen.type, strategies.val]);
 
