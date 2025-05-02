@@ -46,7 +46,7 @@ type SwapState = {
   clear: () => void;
 };
 
-const BTC = {
+export const BTC = {
   name: "Bitcoin",
   decimals: 8,
   symbol: "BTC",
@@ -160,7 +160,7 @@ export const swapStore = create<SwapState>((set) => ({
       error: {
         inputError: "",
         outputError: "",
-        quoteError: QuoteError.None
+        quoteError: QuoteError.None,
       },
       isFetchingQuote: {
         input: false,
@@ -186,7 +186,7 @@ export const swapStore = create<SwapState>((set) => ({
       error: {
         inputError: "",
         outputError: "",
-        quoteError: QuoteError.None
+        quoteError: QuoteError.None,
       },
       isFetchingQuote: {
         input: false,
