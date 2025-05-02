@@ -15,6 +15,7 @@ export const useStarknetWallet = () => {
   const { disconnectAsync } = useDisconnect();
   const { address, status, account, chainId } = useAccount();
 
+  //for analytics tracking
   useEffect(() => {
     if (status === "connected" && address && activeConnector) {
       localStorage.setItem(
