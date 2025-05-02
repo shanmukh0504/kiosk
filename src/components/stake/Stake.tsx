@@ -103,8 +103,8 @@ export const Stake: FC = () => {
                 Stake
               </Link>{" "}
               SEED to participate in the Garden protocol and earn Bitcoin
-              rewards every week. Stake in multiples of 2100 SEED and choose
-              longer periods for higher APY.
+              rewards every week. Stake in multiples of 2100 SEED on Arbitrum
+              chain and choose longer periods for higher APY.
             </Typography>
             <div className="mt-3 flex gap-10">
               <StakeStats
