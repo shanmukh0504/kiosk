@@ -125,7 +125,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           isAssetSelectorOpen.type === IOType.input
             ? IOType.output
             : IOType.input,
-          undefined
+          isAssetSelectorOpen.type === IOType.input ? inputAsset : outputAsset
         );
       }
     }
