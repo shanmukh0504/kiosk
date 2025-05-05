@@ -108,8 +108,8 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
           setMaxCostSaved(cost);
         }}
       />
-      <div className="flex flex-col rounded-2xl bg-white/50 px-4 py-4">
-        <div className="flex items-center justify-between">
+      <div className="flex flex-col rounded-2xl bg-white/50 py-4">
+        <div className="flex items-center justify-between px-4">
           {isDetailsExpanded ? (
             <Typography size="h5" weight="bold" className="py-[2px]">
               Details
@@ -160,7 +160,7 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
                 mass: 0.8,
               }}
             >
-              <div className="mt-3 flex items-center justify-between gap-0 py-1">
+              <div className="mt-3 flex items-center justify-between gap-0 px-4 py-1">
                 <Typography
                   size="h5"
                   weight="medium"
@@ -174,7 +174,7 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
                   </Typography>
                 </div>
               </div>
-              <div className="flex items-center justify-between gap-0 py-1">
+              <div className="flex items-center justify-between gap-0 px-4 py-1">
                 <Typography
                   size="h5"
                   weight="medium"
@@ -188,78 +188,79 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
                   </Typography>
                 </div>
               </div>
-
-              {(maxTimeSaved > 0 || maxCostSaved > 0) && (
-                <motion.div {...animationConfig}>
-                  <div
-                    className="z-10 my-1 h-px bg-white"
-                    {...animationConfig}
-                  ></div>
-                  {maxTimeSaved > 0 && (
-                    <motion.div
-                      key="time-saved"
+              <AnimatePresence mode="wait">
+                {(maxTimeSaved > 0 || maxCostSaved > 0) && (
+                  <motion.div {...animationConfig}>
+                    <div
+                      className="z-10 mx-4 my-1 h-px bg-white"
                       {...animationConfig}
-                      className="w-full"
-                    >
-                      <div
-                        className="relative z-10 flex cursor-pointer items-center justify-between gap-0 hover:bg-white"
-                        onClick={() => handleShowComparison("time")}
+                    ></div>
+                    {maxTimeSaved > 0 && (
+                      <motion.div
+                        key="time-saved"
+                        {...animationConfig}
+                        className="w-full"
                       >
-                        <Typography
-                          size="h5"
-                          weight="medium"
-                          className="!text-mid-grey"
+                        <div
+                          className="relative z-10 flex cursor-pointer items-center justify-between gap-0 px-4 hover:bg-white"
+                          onClick={() => handleShowComparison("time")}
                         >
-                          Time saved
-                        </Typography>
-                        <div className="flex gap-5 py-1">
                           <Typography
-                            size="h4"
+                            size="h5"
                             weight="medium"
-                            className="!text-light-green"
+                            className="!text-mid-grey"
                           >
-                            {formatTime(maxTimeSaved)}
+                            Time saved
                           </Typography>
+                          <div className="flex gap-5 py-1">
+                            <Typography
+                              size="h4"
+                              weight="medium"
+                              className="!text-light-green"
+                            >
+                              {formatTime(maxTimeSaved)}
+                            </Typography>
+                          </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  )}
+                      </motion.div>
+                    )}
 
-                  {maxCostSaved > 0 && (
-                    <motion.div
-                      key="cost-saved"
-                      {...animationConfig}
-                      className="w-full"
-                    >
-                      <div
-                        className="flex cursor-pointer items-center justify-between gap-0 hover:bg-white"
-                        onClick={() => handleShowComparison("fees")}
+                    {maxCostSaved > 0 && (
+                      <motion.div
+                        key="cost-saved"
+                        {...animationConfig}
+                        className="w-full"
                       >
-                        <Typography
-                          size="h5"
-                          weight="medium"
-                          className="!text-mid-grey"
+                        <div
+                          className="flex cursor-pointer items-center justify-between gap-0 px-4 hover:bg-white"
+                          onClick={() => handleShowComparison("fees")}
                         >
-                          Cost saved
-                        </Typography>
-                        <div className="flex gap-5 py-1">
                           <Typography
-                            size="h4"
+                            size="h5"
                             weight="medium"
-                            className="!text-light-green"
+                            className="!text-mid-grey"
                           >
-                            {`$${formatAmount(maxCostSaved, 0, 2)}`}
+                            Cost saved
                           </Typography>
+                          <div className="flex gap-5 py-1">
+                            <Typography
+                              size="h4"
+                              weight="medium"
+                              className="!text-light-green"
+                            >
+                              {`$${formatAmount(maxCostSaved, 0, 2)}`}
+                            </Typography>
+                          </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </motion.div>
-              )}
+                      </motion.div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
               {(receiveAddress || refundAddress) && (
                 <>
-                  <div className="my-1 h-px bg-white"></div>
-                  <div className="flex flex-col items-stretch justify-center">
+                  <div className="mx-4 my-1 h-px bg-white"></div>
+                  <div className="flex flex-col items-stretch justify-center px-4">
                     {receiveAddress && (
                       <AddressDetails address={receiveAddress} />
                     )}
