@@ -6,7 +6,7 @@ import {
 import { useCallback, useMemo } from "react";
 import { SwapInfo } from "../../../common/SwapInfo";
 import { getTrimmedAddress } from "../../../utils/getTrimmedAddress";
-import { formatAmountByAsset, getAssetFromSwap } from "../../../utils/utils";
+import { formatAmount, getAssetFromSwap } from "../../../utils/utils";
 import { assetInfoStore } from "../../../store/assetInfoStore";
 import QRCode from "react-qr-code";
 import { OrderStatus } from "./OrderStatus";
@@ -68,15 +68,13 @@ export const SwapInProgress = () => {
           <SwapInfo
             sendAsset={inputAsset}
             receiveAsset={outputAsset}
-            sendAmount={formatAmountByAsset(
+            sendAmount={formatAmount(
               order.source_swap.amount,
-              inputAsset.decimals,
-              inputAsset.symbol
+              inputAsset.decimals
             )}
-            receiveAmount={formatAmountByAsset(
+            receiveAmount={formatAmount(
               order.destination_swap.amount,
-              outputAsset.decimals,
-              outputAsset.symbol
+              outputAsset.decimals
             )}
           />
         )}

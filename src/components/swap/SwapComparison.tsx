@@ -24,7 +24,7 @@ import { getTimeEstimates } from "../../constants/constants";
 import { useSwap } from "../../hooks/useSwap";
 import { Errors } from "../../constants/errors";
 import { motion } from "framer-motion";
-import { formatAmount, formatAmountByAsset } from "../../utils/utils";
+import { formatAmount } from "../../utils/utils";
 import debounce from "lodash.debounce";
 import { Asset } from "@gardenfi/orderbook";
 import BigNumber from "bignumber.js";

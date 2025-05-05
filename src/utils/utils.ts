@@ -80,35 +80,6 @@ export const formatAmount = (
   return Number(temp);
 };
 
-export const formatAmountByAsset = (
-  amount: string | number | bigint,
-  decimals: number,
-  symbol?: string
-) => {
-  const bigAmount = new BigNumber(amount);
-  if (bigAmount.isZero()) return 0;
-  const value = bigAmount.dividedBy(10 ** decimals);
-  const valStr = value.toFixed(7, BigNumber.ROUND_DOWN);
-
-  if (symbol?.includes("BTC")) {
-    const match = valStr.match(/\.(\d*?)(0{4,})/);
-    let formatted = match
-      ? valStr.slice(0, match.index! + match[1].length + 1)
-      : valStr;
-    formatted = formatted.replace(/\.?0+$/, "");
-    if (formatted.endsWith(".")) {
-      formatted = formatted.slice(0, -1);
-    }
-    return formatted;
-  }
-
-  if (symbol?.includes("USD") || symbol?.includes("SEED")) {
-    const decimalsToUse = value.lt(10000) ? 4 : 2;
-    return Number(value.toFixed(decimalsToUse, BigNumber.ROUND_DOWN));
-  }
-  return Number(value.toFixed(4, BigNumber.ROUND_DOWN));
-};
-
 export const isCurrentRoute = (route: string) =>
   window.location.pathname === route;
 
