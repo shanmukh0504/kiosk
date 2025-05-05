@@ -280,15 +280,13 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
             <SwapInfo
               sendAsset={inputAsset}
               receiveAsset={outputAsset}
-              sendAmount={formatAmountByAsset(
+              sendAmount={formatAmount(
                 inputAmountInDecimals,
-                inputAsset.decimals,
-                inputAsset.symbol
+                inputAsset.decimals
               )}
-              receiveAmount={formatAmountByAsset(
+              receiveAmount={formatAmount(
                 outputAmountInDecimals,
-                outputAsset.decimals,
-                outputAsset.symbol
+                outputAsset.decimals
               )}
             />
           </div>

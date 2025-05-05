@@ -9,39 +9,9 @@ import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useSearchParams } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { Errors } from "../../constants/errors";
-import { SwapDetails } from "./SwapDetails";
+import { SwapDetailsExpanded } from "./SwapDetailsExpanded";
 import { motion, Variants } from "framer-motion";
 import { isBitcoin } from "@gardenfi/orderbook";
-
-const detailsAnimation: Variants = {
-  hidden: {
-    opacity: 0,
-    height: 0,
-    marginTop: 0,
-    transition: { duration: 0.3, ease: "easeOut" },
-  },
-  visible: {
-    opacity: 1,
-    height: "auto",
-    marginTop: "12px",
-    transition: { duration: 0.3, ease: "easeOut" },
-  },
-};
-
-const addressAnimation = {
-  hidden: {
-    opacity: 0,
-    height: 0,
-    marginBottom: "0",
-    transition: { duration: 0.3, ease: "easeOut" },
-  },
-  visible: {
-    opacity: 1,
-    height: "auto",
-    marginBottom: "12px",
-    transition: { duration: 0.3, ease: "easeOut" },
-  },
-};
 import { modalNames, modalStore } from "../../store/modalStore";
 import { getAssetFromChainAndSymbol, getQueryParams } from "../../utils/utils";
 import { QUERY_PARAMS } from "../../constants/constants";
@@ -136,6 +106,39 @@ export const CreateSwap = () => {
         (outputAsset?.chain && isBitcoin(outputAsset.chain)))
     );
   }, [isEditBTCAddress, btcAddress, inputAsset, outputAsset]);
+
+  const detailsAnimation: Variants = {
+    hidden: {
+      opacity: 0,
+      height: 0,
+      marginTop: 0,
+      transition: { duration: 0.3, ease: "easeOut" },
+    },
+    visible: {
+      opacity: 1,
+      height: "auto",
+      marginTop: "12px",
+      pointerEvents: "auto",
+      transition: { duration: 0.3, ease: "easeOut" },
+    },
+  };
+
+  const addressAnimation: Variants = {
+    hidden: {
+      opacity: 0,
+      height: 0,
+      marginBottom: "0",
+      transition: { duration: 0.3, ease: "easeOut" },
+    },
+    visible: {
+      opacity: 1,
+      height: "auto",
+      marginBottom: "12px",
+      pointerEvents: "none" as const,
+      transition: { duration: 0.3, ease: "easeOut" },
+    },
+  };
+
   const handleConnectWallet = () => {
     if (needsWalletConnection === "starknet") {
       setOpenModal(modalNames.connectWallet, {
@@ -249,10 +252,7 @@ export const CreateSwap = () => {
           >
             <SwapAddress isValidAddress={isValidBitcoinAddress} />
           </motion.div>
-          <SwapDetails
-            tokenPrices={tokenPrices}
-            isExpanded={shouldShowDetails && !loading.output && !loading.input}
-          />
+          <SwapDetailsExpanded tokenPrices={tokenPrices} />
         </motion.div>
         <Button
           className={`mt-3 transition-colors duration-500 ${
