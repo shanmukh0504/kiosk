@@ -278,6 +278,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
         outputAmountInDecimals && (
           <div className="flex flex-col gap-2 rounded-2xl bg-white p-4">
             <SwapInfo
+              equalSplit={true}
               sendAsset={inputAsset}
               receiveAsset={outputAsset}
               sendAmount={formatAmount(
