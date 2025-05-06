@@ -20,7 +20,7 @@ export const CreateSwap = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [addParams, setAddParams] = useState(false);
 
-  const { swapAssets, setAsset } = swapStore();
+  const { swapAssets, setAsset, clearSwapState } = swapStore();
   const { assets } = assetInfoStore();
 
   const {
@@ -41,6 +41,7 @@ export const CreateSwap = () => {
     isValidBitcoinAddress,
     handleSwapClick,
     needsWalletConnection,
+    controller,
   } = useSwap();
   const { account: btcAddress } = useBitcoinWallet();
   const { setOpenModal } = modalStore();
@@ -203,6 +204,19 @@ export const CreateSwap = () => {
       return prev;
     });
   }, [addParams, inputAsset, outputAsset, setSearchParams]);
+
+  useEffect(() => {
+    console.log(outputAsset);
+  }, [outputAsset]);
+
+  useEffect(() => {
+    return () => {
+      if (controller.current) {
+        controller.current.abort();
+      }
+      clearSwapState();
+    };
+  }, [clearSwapState, controller]);
 
   return (
     <div

@@ -495,6 +495,8 @@ export const useSwap = () => {
   }, [inputAsset, handleInputAmountChange, setError]);
 
   useEffect(() => {
+    if (!inputAmount || !outputAmount)
+      setError({ outputError: "", inputError: "" });
     if (!inputAmount || !minAmount || !maxAmount) return;
     const amountInNumber = Number(inputAmount);
     if (!amountInNumber) return;
@@ -515,6 +517,7 @@ export const useSwap = () => {
         outputError: Errors.none,
         swapError: Errors.none,
       });
+      setTokenPrices({ input: "0", output: "0" });
       return;
     }
     if (amountInNumber > maxAmount && inputAsset) {
@@ -523,6 +526,7 @@ export const useSwap = () => {
         outputError: Errors.none,
         swapError: Errors.none,
       });
+      setTokenPrices({ input: "0", output: "0" });
       return;
     }
   }, [
@@ -534,6 +538,7 @@ export const useSwap = () => {
     outputAsset?.symbol,
     setError,
     isInsufficientBalance,
+    setTokenPrices,
   ]);
 
   useEffect(() => {
@@ -564,5 +569,6 @@ export const useSwap = () => {
     setIsEditBTCAddress,
     needsWalletConnection,
     handleSwapClick,
+    controller,
   };
 };
