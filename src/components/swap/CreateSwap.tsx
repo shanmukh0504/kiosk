@@ -129,13 +129,14 @@ export const CreateSwap = () => {
       opacity: 0,
       height: 0,
       marginBottom: "0",
+      pointerEvents: "none" as const,
       transition: { duration: 0.3, ease: "easeOut" },
     },
     visible: {
       opacity: 1,
       height: "auto",
       marginBottom: "12px",
-      pointerEvents: "none" as const,
+      pointerEvents: "auto" as const,
       transition: { duration: 0.3, ease: "easeOut" },
     },
   };

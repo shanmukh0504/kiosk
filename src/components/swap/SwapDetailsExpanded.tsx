@@ -108,44 +108,96 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
           setMaxCostSaved(cost);
         }}
       />
-      <div className="flex flex-col rounded-2xl bg-white/50 py-4">
-        <div className="flex items-center justify-between px-4">
-          {isDetailsExpanded ? (
-            <Typography size="h5" weight="bold" className="py-[2px]">
-              Details
-            </Typography>
-          ) : (
-            <div className="flex w-full items-center justify-between">
-              <div className="flex items-center gap-1">
-                <Typography size="h5" weight="medium">
-                  1
+      <div
+        className="flex cursor-pointer flex-col rounded-2xl bg-white/50 py-4"
+        onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}
+      >
+        <AnimatePresence mode="wait">
+          <div className="flex items-center justify-between px-4">
+            {isDetailsExpanded && (
+              <motion.div
+                initial={{ opacity: 0, translateY: 10 }}
+                animate={{
+                  opacity: 1,
+                  translateY: 0,
+                  transition: {
+                    type: "spring",
+                    stiffness: 160,
+                    damping: 25,
+                    mass: 0.8,
+                  },
+                }}
+                exit={{
+                  opacity: 0,
+                  translateY: 10,
+                  transition: {
+                    type: "spring",
+                    stiffness: 900,
+                    damping: 50,
+                    mass: 0.8,
+                  },
+                }}
+              >
+                <Typography size="h5" weight="bold" className="py-[2px]">
+                  Details
                 </Typography>
-                <Typography size="h5" weight="medium">
-                  {inputAsset?.symbol}
-                </Typography>
-                <SwapHorizontalIcon />
-                <Typography size="h5" weight="medium">
-                  {formatAmount(rate, 0, 3)}
-                </Typography>
-                <Typography size="h5" weight="medium">
-                  {outputAsset?.symbol}
-                </Typography>
-              </div>
-              <div className="flex items-center gap-1">
-                <GasStationIcon />
-                <Typography size="h5" weight="medium">
-                  {`$${formatAmount(fees + 0.23, 0, 2)}`}
-                </Typography>
-              </div>
-            </div>
-          )}
-          <KeyboardDownIcon
-            className={`h-4 w-4 cursor-pointer px-1 ${
-              !isDetailsExpanded ? "rotate-180" : ""
-            }`}
-            onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}
-          />
-        </div>
+              </motion.div>
+            )}
+            {!isDetailsExpanded && (
+              <motion.div
+                className="flex w-full items-center justify-between"
+                initial={{ opacity: 0, translateY: -10 }}
+                animate={{
+                  opacity: 1,
+                  translateY: 0,
+                  transition: {
+                    type: "spring",
+                    stiffness: 160,
+                    damping: 25,
+                    mass: 0.8,
+                  },
+                }}
+                exit={{
+                  opacity: 0,
+                  translateY: -10,
+                  transition: {
+                    type: "spring",
+                    stiffness: 900,
+                    damping: 50,
+                    mass: 0.8,
+                  },
+                }}
+              >
+                <div className="flex items-center gap-1">
+                  <Typography size="h5" weight="medium">
+                    1
+                  </Typography>
+                  <Typography size="h5" weight="medium">
+                    {inputAsset?.symbol}
+                  </Typography>
+                  <SwapHorizontalIcon />
+                  <Typography size="h5" weight="medium">
+                    {formatAmount(rate, 0, 3)}
+                  </Typography>
+                  <Typography size="h5" weight="medium">
+                    {outputAsset?.symbol}
+                  </Typography>
+                </div>
+                <div className="flex items-center gap-1">
+                  <GasStationIcon />
+                  <Typography size="h5" weight="medium">
+                    {`$${formatAmount(fees + 0.23, 0, 2)}`}
+                  </Typography>
+                </div>
+              </motion.div>
+            )}
+            <KeyboardDownIcon
+              className={`h-4 w-4 cursor-pointer px-1 ${
+                !isDetailsExpanded ? "rotate-180" : ""
+              }`}
+            />
+          </div>
+        </AnimatePresence>
         <AnimatePresence>
           {isDetailsExpanded && (
             <motion.div

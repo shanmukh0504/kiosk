@@ -37,7 +37,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
       window.open(redirect.explorer + "address/" + address, "_blank");
     else window.open(redirect.explorer + "/address/" + address, "_blank");
   };
-  
+
   return (
     <>
       {address && (
@@ -68,12 +68,18 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
                       ? "max-h-4 max-w-4 opacity-100"
                       : "-mr-3.5 max-h-0 max-w-0 opacity-0"
                   }`}
-                  onClick={() => setIsEditBTCAddress(true)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsEditBTCAddress(true);
+                  }}
                 />
               )}
               <ArrowNorthEastIcon
                 className="h-4 w-4 cursor-pointer p-[3px]"
-                onClick={() => handleAddressRedirect(address!, chain!)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddressRedirect(address!, chain!);
+                }}
               />
             </div>
           </div>
