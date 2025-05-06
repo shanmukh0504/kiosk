@@ -255,7 +255,10 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
                       >
                         <div
                           className="relative z-10 flex cursor-pointer items-center justify-between gap-0 px-4 hover:bg-white"
-                          onClick={() => handleShowComparison("time")}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleShowComparison("time");
+                          }}
                         >
                           <Typography
                             size="h5"
@@ -285,7 +288,10 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
                       >
                         <div
                           className="flex cursor-pointer items-center justify-between gap-0 px-4 hover:bg-white"
-                          onClick={() => handleShowComparison("fees")}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleShowComparison("fees");
+                          }}
                         >
                           <Typography
                             size="h5"
