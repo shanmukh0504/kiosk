@@ -204,7 +204,10 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
               onClick={handleClose}
             />
           )}
-          <CloseIcon className="h-[14px] w-6 cursor-pointer" onClick={close} />
+          <CloseIcon
+            className="hidden h-[14px] w-6 cursor-pointer sm:visible sm:block"
+            onClick={close}
+          />
         </div>
       </div>
 

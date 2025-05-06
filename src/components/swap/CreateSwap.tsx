@@ -207,13 +207,10 @@ export const CreateSwap = () => {
   }, [addParams, inputAsset, outputAsset, setSearchParams]);
 
   useEffect(() => {
-    console.log(outputAsset);
-  }, [outputAsset]);
-
-  useEffect(() => {
+    const currentController = controller.current;
     return () => {
-      if (controller.current) {
-        controller.current.abort();
+      if (currentController) {
+        currentController.abort();
       }
       clearSwapState();
     };

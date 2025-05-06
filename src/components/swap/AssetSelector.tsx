@@ -132,7 +132,10 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         <Typography size="h4" weight="bold">
           Token select
         </Typography>
-        <CloseIcon className="cursor-pointer" onClick={onClose} />
+        <CloseIcon
+          className="hidden cursor-pointer sm:visible sm:block"
+          onClick={onClose}
+        />
       </div>
 
       <div className="flex flex-wrap gap-3">
