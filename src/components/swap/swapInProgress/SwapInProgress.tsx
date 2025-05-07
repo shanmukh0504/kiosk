@@ -70,11 +70,13 @@ export const SwapInProgress = () => {
             receiveAsset={outputAsset}
             sendAmount={formatAmount(
               order.source_swap.amount,
-              inputAsset.decimals
+              inputAsset.decimals,
+              isBitcoin(inputAsset.chain) ? inputAsset.decimals : undefined
             )}
             receiveAmount={formatAmount(
               order.destination_swap.amount,
-              outputAsset.decimals
+              outputAsset.decimals,
+              isBitcoin(outputAsset.chain) ? outputAsset.decimals : undefined
             )}
           />
         )}
