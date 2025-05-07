@@ -70,7 +70,8 @@ export const SwapInProgress = () => {
             receiveAsset={outputAsset}
             sendAmount={formatAmount(
               order.source_swap.amount,
-              inputAsset.decimals
+              inputAsset.decimals,
+              order.source_swap.amount.length
             )}
             receiveAmount={formatAmount(
               order.destination_swap.amount,
