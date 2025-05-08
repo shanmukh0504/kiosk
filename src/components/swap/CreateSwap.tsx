@@ -2,7 +2,7 @@ import { Button, ExchangeIcon } from "@gardenfi/garden-book";
 import { SwapInput } from "./SwapInput";
 import { getTimeEstimates, IOType } from "../../constants/constants";
 import { SwapAddress } from "./SwapAddress";
-import { BTC, swapStore } from "../../store/swapStore";
+import { swapStore } from "../../store/swapStore";
 import { useEffect, useMemo, useState } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { SwapFees } from "./SwapFees";
@@ -18,7 +18,7 @@ export const CreateSwap = () => {
   const [addParams, setAddParams] = useState(false);
 
   const { swapAssets, setAsset } = swapStore();
-  const { assets } = assetInfoStore();
+  const { supportedAssets } = assetInfoStore();
 
   const {
     outputAmount,
@@ -103,7 +103,7 @@ export const CreateSwap = () => {
   };
 
   useEffect(() => {
-    if (!assets || addParams) return;
+    if (!supportedAssets || addParams) return;
     const {
       inputChain = "",
       inputAssetSymbol = "",
@@ -112,21 +112,33 @@ export const CreateSwap = () => {
     } = getQueryParams(searchParams);
 
     const fromAsset = getAssetFromChainAndSymbol(
-      assets,
+      supportedAssets,
       inputChain,
       inputAssetSymbol
     );
     const toAsset = getAssetFromChainAndSymbol(
-      assets,
+      supportedAssets,
       outputChain,
       outputAssetSymbol
     );
 
     setAsset(IOType.input, fromAsset);
     setAsset(IOType.output, toAsset);
-    if (!fromAsset && !toAsset) setAsset(IOType.input, BTC);
+    if (!fromAsset && !toAsset) {
+      const BTC = Object.values(supportedAssets).find(
+        (asset) => asset.name.toLowerCase() == "bitcoin"
+      );
+      BTC && !BTC.disabled ? setAsset(IOType.input, BTC) : null;
+    }
     setAddParams(true);
-  }, [addParams, assets, inputAsset, outputAsset, searchParams, setAsset]);
+  }, [
+    addParams,
+    supportedAssets,
+    inputAsset,
+    outputAsset,
+    searchParams,
+    setAsset,
+  ]);
 
   useEffect(() => {
     if (!addParams || (!inputAsset && !outputAsset)) return;

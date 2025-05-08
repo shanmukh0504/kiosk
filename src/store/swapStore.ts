@@ -57,7 +57,7 @@ export const BTC = {
 };
 
 export const swapStore = create<SwapState>((set) => ({
-  inputAsset: BTC,
+  inputAsset: undefined,
   inputAmount: "",
   outputAmount: "",
   btcAddress: "",
@@ -83,10 +83,10 @@ export const swapStore = create<SwapState>((set) => ({
     input: false,
     output: false,
   },
-  setAsset: (ioType, asset) => {
+  setAsset: (ioType, supportedAsset) => {
     set((state) => ({
       ...state,
-      [ioType === IOType.input ? "inputAsset" : "outputAsset"]: asset,
+      [ioType === IOType.input ? "inputAsset" : "outputAsset"]: supportedAsset,
     }));
   },
   setAmount: (ioType, amount) => {
@@ -148,7 +148,7 @@ export const swapStore = create<SwapState>((set) => ({
       outputAmount: "",
       btcAddress: "",
       outputAsset: undefined,
-      inputAsset: BTC,
+      inputAsset: undefined,
       isInsufficientLiquidity: false,
       isApproving: false,
       isSwapping: false,
@@ -174,7 +174,7 @@ export const swapStore = create<SwapState>((set) => ({
       outputAmount: "",
       btcAddress: "",
       outputAsset: undefined,
-      inputAsset: BTC,
+      inputAsset: undefined,
       isSwapping: false,
       isInsufficientLiquidity: false,
       isApproving: false,

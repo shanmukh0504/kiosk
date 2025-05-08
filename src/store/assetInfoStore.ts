@@ -18,6 +18,7 @@ export type ChainData = {
   networkType: string;
   name: string;
   identifier: Chain;
+  disabled: boolean;
 };
 
 export type Assets = Record<string, Asset>;
@@ -26,6 +27,8 @@ export type Chains = Partial<Record<Chain, ChainData>>;
 type AssetInfoState = {
   assets: Assets | null;
   chains: Chains | null;
+  supportedChains: Chains | null;
+  supportedAssets: Assets | null;
   isLoading: boolean;
   isAssetSelectorOpen: {
     isOpen: boolean;
@@ -46,6 +49,8 @@ type AssetInfoState = {
 export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   assets: null,
   chains: null,
+  supportedAssets: null,
+  supportedChains: null,
   isAssetSelectorOpen: {
     isOpen: false,
     type: IOType.input,
@@ -86,6 +91,8 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
 
       const assets: Assets = {};
       const chains: Chains = {};
+      const supportedChains: Chains = {};
+      const supportedAssets: Assets = {};
 
       for (const chainInfo of Object.values(assetsData)) {
         if (!SUPPORTED_CHAINS.includes(chainInfo.identifier)) continue;
@@ -97,18 +104,35 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           networkType: chainInfo.networkType,
           name: chainInfo.name,
           identifier: chainInfo.identifier,
+          disabled: chainInfo.disabled,
         };
 
+        if (chainInfo.disabled) {
+          continue;
+        }
+
+        let totalAssets = 0;
+
         for (const asset of chainInfo.assetConfig) {
-          assets[
-            generateTokenKey(chainInfo.identifier, asset.atomicSwapAddress)
-          ] = {
+          const tokenKey = generateTokenKey(
+            chainInfo.identifier,
+            asset.atomicSwapAddress
+          );
+          assets[tokenKey] = {
             ...asset,
             chain: chainInfo.identifier,
           };
+          if (!asset.disabled) {
+            supportedAssets[tokenKey] = assets[tokenKey];
+            totalAssets++;
+          }
+        }
+
+        if (totalAssets > 0) {
+          supportedChains[chainInfo.identifier] = chains[chainInfo.identifier];
         }
       }
-      set({ assets, chains });
+      set({ assets, chains, supportedAssets, supportedChains });
     } catch (error) {
       console.error("Failed to fetch assets data", error);
       set({ error: "Failed to fetch assets data" });
