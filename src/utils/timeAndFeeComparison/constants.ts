@@ -13,14 +13,86 @@ export enum SwapPlatform {
   RELAY = "relay",
 }
 
+export type ChainflipAssetInfo = {
+  chain: string;
+  asset: string;
+};
+
+export type ChainflipFeeDetail = {
+  type: "INGRESS" | "NETWORK" | "BROKER" | "EGRESS" | "BOOST";
+  chain: string;
+  asset: string;
+  amount: string;
+};
+
+export type ChainflipPoolInfo = {
+  baseAsset: ChainflipAssetInfo;
+  quoteAsset: ChainflipAssetInfo;
+  fee: {
+    chain: string;
+    asset: string;
+    amount: string;
+  };
+};
+
+export type ChainflipEstimatedDurations = {
+  swap: number;
+  deposit: number;
+  egress: number;
+};
+
+export type ChainflipBoostQuote = {
+  intermediateAmount: string;
+  egressAmount: string;
+  recommendedSlippageTolerancePercent: number;
+  includedFees: ChainflipFeeDetail[];
+  lowLiquidityWarning: boolean;
+  poolInfo: ChainflipPoolInfo[];
+  estimatedDurationsSeconds: ChainflipEstimatedDurations;
+  estimatedDurationSeconds: number;
+  estimatedPrice: string;
+  type: string;
+  srcAsset: ChainflipAssetInfo;
+  destAsset: ChainflipAssetInfo;
+  depositAmount: string;
+  isVaultSwap: boolean;
+  estimatedBoostFeeBps: number;
+  maxBoostFeeBps: number;
+};
+
+export type ChainflipQuote = {
+  intermediateAmount: string;
+  egressAmount: string;
+  recommendedSlippageTolerancePercent: number;
+  includedFees: ChainflipFeeDetail[];
+  lowLiquidityWarning: boolean;
+  poolInfo: ChainflipPoolInfo[];
+  estimatedDurationsSeconds: ChainflipEstimatedDurations;
+  estimatedDurationSeconds: number;
+  estimatedPrice: string;
+  type: string;
+  srcAsset: ChainflipAssetInfo;
+  destAsset: ChainflipAssetInfo;
+  depositAmount: string;
+  isVaultSwap: boolean;
+  boostQuote?: ChainflipBoostQuote;
+};
+
 export type AssetMappings = {
   [SwapPlatform.THORSWAP]: Record<string, string>;
   [SwapPlatform.RELAY]: Record<string, { chainId: string; currency: string }>;
   [SwapPlatform.CHAINFLIP]: Record<
     string,
-    { chain: Chain; asset: ChainflipAsset }
+    {
+      chain: Chain;
+      asset: ChainflipAsset;
+      htlc_address: string;
+      address: string;
+    }
   >;
 };
+
+export type comparisonMetric = { fee: number; time: number };
 
 export type AssetMappingType = keyof AssetMappings;
 
@@ -30,8 +102,8 @@ export const API_URLS = {
     network === Network.MAINNET
       ? "https://api.relay.link/quote"
       : "https://api.testnets.relay.link/quote",
-  coingecko: "https://api.coingecko.com/api/v3/simple/price",
   chainflip: "https://chainflip-swap.chainflip.io/v2/quote",
+  fiatValue: "https://cache-service.chainflip.io/graphql",
 };
 
 export const RELAY_BTC_SWAP_TIME = 1200; //in seconds
@@ -85,11 +157,24 @@ export const ASSET_MAPPINGS: AssetMappings = {
     },
   },
   [SwapPlatform.CHAINFLIP]: {
-    "bitcoin:BTC": { chain: Chains.Bitcoin, asset: Assets.BTC },
-    "bitcoin_testnet:BTC": { chain: Chains.Bitcoin, asset: Assets.BTC },
-    "ethereum:USDC": { chain: Chains.Ethereum, asset: Assets.USDC },
-    "ethereum_sepolia:WBTC": { chain: Chains.Ethereum, asset: Assets.ETH },
-    "arbitrum:USDC": { chain: Chains.Arbitrum, asset: Assets.USDC },
+    "bitcoin:BTC": {
+      chain: Chains.Bitcoin,
+      asset: Assets.BTC,
+      htlc_address: "primary",
+      address: "0x0000000000000000000000000000000000000000",
+    },
+    "ethereum:USDC": {
+      chain: Chains.Ethereum,
+      asset: Assets.USDC,
+      htlc_address: "0xD8a6E3FCA403d79b6AD6216b60527F51cc967D39",
+      address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    },
+    "arbitrum:USDC": {
+      chain: Chains.Arbitrum,
+      asset: Assets.USDC,
+      htlc_address: "0xeaE7721d779276eb0f5837e2fE260118724a2Ba4",
+      address: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+    },
   },
 };
 

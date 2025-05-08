@@ -1,5 +1,10 @@
 import { Asset } from "@gardenfi/orderbook";
-import { API_URLS, ASSET_MAPPINGS, AssetMappingType } from "./constants";
+import {
+  API_URLS,
+  ASSET_MAPPINGS,
+  AssetMappingType,
+  SwapPlatform,
+} from "./constants";
 import { Chain, Asset as ChainflipAsset } from "@chainflip/sdk/swap";
 import axios from "axios";
 
@@ -45,24 +50,48 @@ export type ThorSwapResponse = {
 export type ChainflipAssetAndChain = {
   chain: Chain;
   asset: ChainflipAsset;
+  htlc_address: string;
+  address: string;
 };
 
 type ChainflipFeeDetail = {
   amount: string;
 } & ChainflipAssetAndChain;
 
-type ChainflipPoolInfo = {
+export type ChainflipPoolInfo = {
   baseAsset: ChainflipAssetAndChain;
   quoteAsset: ChainflipAssetAndChain;
   fee: ChainflipFeeDetail;
 };
 
-type ChainflipIncludedFee = {
+export type ChainflipIncludedFee = {
   type: "INGRESS" | "NETWORK" | "EGRESS" | "BROKER" | "BOOST";
 } & ChainflipFeeDetail;
 
 type ChainflipIncludedFeeResponse = ChainflipIncludedFee[];
 type ChainflipPoolInfoResponse = ChainflipPoolInfo[];
+
+export type AssetPriceInfo = {
+  chain: string;
+  htlc_address: string;
+  token_price: number;
+  asset: string;
+};
+
+export type PriceResponse = {
+  status: string;
+  result: AssetPriceInfo[];
+};
+
+export type ChainflipPriceResponse = {
+  data: {
+    tokenPrices: Array<{
+      chainId: string;
+      address: string;
+      usdPrice: number;
+    }>;
+  };
+};
 
 export const formatTime = (totalSeconds: number | string): string => {
   const sec = Number(totalSeconds);
@@ -96,12 +125,10 @@ export const formatTimeDiff = (time: number, gardenSwapTime: string) => {
 export const getFormattedAsset = (asset: Asset, type: AssetMappingType) =>
   ASSET_MAPPINGS[type]?.[`${asset.chain}:${asset.symbol}`];
 
-export const getAssetPriceInUSD = async (assetIds: string[]) => {
+export const getAssetPriceInUSD = async () => {
   try {
-    const { data } = await axios.get(API_URLS.coingecko, {
-      params: { ids: assetIds.join(","), vs_currencies: "usd" },
-    });
-    return data;
+    const { data } = await axios.get(API_URLS.fiatValue);
+    return data.result;
   } catch {
     return { fee: "-", time: "-" };
   }
@@ -111,44 +138,68 @@ export const calculateChainflipFee = async (
   includedFee: ChainflipIncludedFeeResponse,
   poolInfo: ChainflipPoolInfoResponse
 ) => {
-  const prices = await getAssetPriceInUSD(["bitcoin", "ethereum", "usd-coin"]);
-  const feeMap: Record<string, number> = {
-    ETH: 0,
-    BTC: 0,
-    USDC: 0,
-  };
+  const prices = (await getAssetPriceInUSD()) as AssetPriceInfo[];
+  const feeMap: Record<string, number> = {};
 
-  includedFee.forEach((fee) => {
-    if (fee.asset in feeMap) {
-      feeMap[fee.asset] += parseFloat(fee.amount);
+  // Create a mapping of HTLC addresses to token prices for Chainflip supported chains
+  const chainflipSupportedChains = ["ethereum", "bitcoin", "arbitrum", "base"];
+  const htlcPriceMap = new Map<string, number>();
+
+  prices.forEach((price) => {
+    if (chainflipSupportedChains.includes(price.chain)) {
+      htlcPriceMap.set(price.htlc_address.toLowerCase(), price.token_price);
     }
   });
 
-  const poolFee = poolInfo[0].fee;
-  if (poolFee && poolFee.asset in feeMap) {
-    feeMap[poolFee.asset] += parseFloat(poolFee.amount);
-  }
-
-  const normalizationFactors: Record<string, number> = {
-    ETH: 1e18,
-    BTC: 1e8,
-    USDC: 1e6,
-  };
-
-  Object.keys(feeMap).forEach((key) => {
-    feeMap[key] /= normalizationFactors[key];
+  // Process included fees
+  includedFee.forEach((fee) => {
+    const key = `${fee.chain}_${fee.asset}`;
+    if (!feeMap[key]) {
+      feeMap[key] = 0;
+    }
+    feeMap[key] += parseFloat(fee.amount);
   });
 
-  const assetPrices: Record<string, number> = {
-    ETH: prices.ethereum.usd ?? 0,
-    BTC: prices.bitcoin.usd ?? 0,
-    USDC: prices["usd-coin"].usd ?? 1,
-  };
+  // Process pool fee
+  const poolFee = poolInfo[0].fee;
+  if (poolFee) {
+    const key = `${poolFee.chain}_${poolFee.asset}`;
+    if (!feeMap[key]) {
+      feeMap[key] = 0;
+    }
+    feeMap[key] += parseFloat(poolFee.amount);
+  }
 
-  const totalFeeInUsd = Object.keys(feeMap).reduce(
-    (sum, key) => sum + feeMap[key] * assetPrices[key],
-    0
-  );
+  // Normalize amounts based on HTLC addresses
+  const normalizedFees: Record<string, number> = {};
+  Object.entries(feeMap).forEach(([key, amount]) => {
+    const [, asset] = key.split("_");
+    let normalizationFactor = 1e18; // Default for ETH
+
+    if (asset === "BTC") {
+      normalizationFactor = 1e8;
+    } else if (asset === "USDC") {
+      normalizationFactor = 1e6;
+    }
+
+    normalizedFees[key] = amount / normalizationFactor;
+  });
+
+  let totalFeeInUsd = 0;
+  Object.entries(normalizedFees).forEach(([key, amount]) => {
+    const [chain, asset] = key.split("_");
+    const assetKey = `${chain.toLowerCase()}:${asset}`;
+    const assetMapping = ASSET_MAPPINGS[SwapPlatform.CHAINFLIP][assetKey];
+
+    if (assetMapping) {
+      const htlcAddress = assetMapping.htlc_address.toLowerCase();
+      const price = htlcPriceMap.get(htlcAddress);
+
+      if (price) {
+        totalFeeInUsd += amount * price;
+      }
+    }
+  });
 
   return Number(totalFeeInUsd.toFixed(2));
 };

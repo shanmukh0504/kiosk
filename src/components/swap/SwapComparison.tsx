@@ -10,12 +10,6 @@ import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { SwapInfo } from "../../common/SwapInfo";
 import { swapStore } from "../../store/swapStore";
 import {
-  comparisonMetric,
-  getChainflipFee,
-  getRelayFee,
-  getThorFee,
-} from "../../utils/timeAndFeeComparison/getFeeRateAndEstimatedSwapTime";
-import {
   formatTime,
   formatTimeDiff,
   parseTime,
@@ -28,6 +22,10 @@ import { formatAmount } from "../../utils/utils";
 import debounce from "lodash.debounce";
 import { Asset } from "@gardenfi/orderbook";
 import BigNumber from "bignumber.js";
+import { comparisonMetric } from "../../utils/timeAndFeeComparison/constants";
+import { getRelayFee } from "../../utils/timeAndFeeComparison/RelayFees";
+import { getChainflipFee } from "../../utils/timeAndFeeComparison/ChainFlipFees";
+import { getThorFee } from "../../utils/timeAndFeeComparison/ThosSwapFees";
 
 type SwapComparisonProps = {
   visible: boolean;
