@@ -723,9 +723,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/wallet-connectors@npm:2.0.4-beta.3":
-  version: 2.0.4-beta.3
-  resolution: "@gardenfi/wallet-connectors@npm:2.0.4-beta.3"
+"@gardenfi/wallet-connectors@npm:2.0.4-beta.4":
+  version: 2.0.4-beta.4
+  resolution: "@gardenfi/wallet-connectors@npm:2.0.4-beta.4"
   dependencies:
     "@catalogfi/utils": "npm:^0.1.11"
     "@catalogfi/wallets": "npm:^0.2.54"
@@ -734,7 +734,7 @@ __metadata:
     bitcoinjs-lib: "npm:^6.1.7"
     react: "npm:^18.3.1"
     tiny-secp256k1: "npm:^2.2.3"
-  checksum: 10c0/e9738310e2f1d247e60e5aacbfc4e525f1f2590035d1d19a430f6434660f61204e2214fa6e270e58309caf944c52304cc7a1601a8aaae909ef3779967ef1d134
+  checksum: 10c0/b4a9d36a59dc6530ad136ebdfcf63b206ab8bcdc3ac531a9e91cb013b24efa316000665832aec97f845ee2ee1973432e94a0014377f81bf59053034917619624
   languageName: node
   linkType: hard
 
@@ -6065,7 +6065,7 @@ __metadata:
     "@gardenfi/orderbook": "npm:2.1.3-beta.0"
     "@gardenfi/react-hooks": "npm:2.1.4-beta.1"
     "@gardenfi/utils": "npm:2.1.2-beta.13"
-    "@gardenfi/wallet-connectors": "npm:2.0.4-beta.3"
+    "@gardenfi/wallet-connectors": "npm:2.0.4-beta.4"
     "@starknet-react/core": "npm:^3.7.2"
     "@tanstack/react-query": "npm:^5.51.23"
     "@types/lodash.debounce": "npm:^4"
