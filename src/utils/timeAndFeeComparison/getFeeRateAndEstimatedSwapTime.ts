@@ -13,10 +13,11 @@ import {
 } from "./constants";
 import {
   getFormattedAsset,
-  calculateThorFee,
-  calculateRelayFee,
   calculateChainflipFee,
   ChainflipAssetAndChain,
+  ThorSwapResponse,
+  ThorSwapRoute,
+  ThorSwapAsset,
 } from "./utils";
 
 export type comparisonMetric = { fee: number; time: number };
@@ -35,21 +36,68 @@ export const getThorFee = async (
   }
 
   try {
-    const result = await axios.get(API_URLS.thorSwap, {
-      timeout: 10000,
-      params: {
+    const { data: result } = await axios.post<ThorSwapResponse>(
+      API_URLS.thorSwap,
+      {
         sellAsset: sellFormat,
         buyAsset: buyFormat,
-        sellAmount: amount,
+        sellAmount: amount.toString(),
+        sourceAddress: "",
+        destinationAddress: "",
+        affiliate: "t",
+        affiliateFee: 50,
+        slippage: 3,
+        includeTx: true,
+        cfBoost: false,
       },
-    });
+      {
+        timeout: 10000,
+        headers: {
+          "X-Api-Key": "3974e4d9-f662-4e6e-a5b6-d44881902dcb",
+          "X-Version": "2",
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-    const route = result.data.routes[0];
-    const thorFee = calculateThorFee(route.fees);
-    const swapDuration = route.estimatedTime;
+    const bestProvider = result.routes.reduce(
+      (best: ThorSwapRoute, current: ThorSwapRoute) => {
+        const bestAmount = parseFloat(best.expectedBuyAmount);
+        const currentAmount = parseFloat(current.expectedBuyAmount);
+        return currentAmount > bestAmount ? current : best;
+      },
+      result.routes[0]
+    );
+
+    const inputAssetsFormatted = getFormattedAsset(
+      srcAsset,
+      SwapPlatform.THORSWAP
+    );
+    const outputAssetsFormatted = getFormattedAsset(
+      destAsset,
+      SwapPlatform.THORSWAP
+    );
+
+    const inputTokenMeta = bestProvider.meta.assets.find(
+      (asset: ThorSwapAsset) => asset.asset === inputAssetsFormatted
+    );
+    const outputTokenMeta = bestProvider.meta.assets.find(
+      (asset: ThorSwapAsset) => asset.asset === outputAssetsFormatted
+    );
+
+    const inputValue = new BigNumber(amount)
+      .multipliedBy(inputTokenMeta?.price ?? 0)
+      .toNumber();
+
+    const outputValue = new BigNumber(bestProvider.expectedBuyAmount)
+      .multipliedBy(outputTokenMeta?.price ?? 0)
+      .toNumber();
+
+    const fee = inputValue - outputValue;
+    const swapDuration = bestProvider.estimatedTime.total;
 
     return {
-      fee: thorFee,
+      fee,
       time: swapDuration,
     };
   } catch {
@@ -114,7 +162,9 @@ export const getRelayFee = async (
 
     if (!data.fees) return { fee: 0, time: 0 };
 
-    const totalFee = calculateRelayFee(data.fees);
+    const totalFee =
+      Number(data.details.currencyIn.amountUsd) -
+      Number(data.details.currencyOut.amountUsd);
     let time = data.details.timeEstimate;
 
     if (isBitcoin(srcAsset.chain) || isBitcoin(destAsset.chain))

@@ -3,35 +3,43 @@ import { API_URLS, ASSET_MAPPINGS, AssetMappingType } from "./constants";
 import { Chain, Asset as ChainflipAsset } from "@chainflip/sdk/swap";
 import axios from "axios";
 
-type ThorFeeType = {
-  type: "inbound" | "outbound";
+export type ThorRoute = {
+  providers: string[];
+  expectedBuyAmount: string;
+  meta: {
+    assets: Array<{
+      asset: string;
+      price: number;
+    }>;
+  };
+  fees: Array<{
+    amount: string;
+    asset: string;
+  }>;
+  estimatedTime: {
+    total: number;
+  };
+};
+
+export type ThorSwapAsset = {
   asset: string;
-  networkFee: number;
-  networkFeeUSD: number;
-  affiliateFee: number;
-  affiliateFeeUSD: number;
-  totalFee: number;
-  totalFeeUSD: number;
-  isOutOfPocket: boolean;
+  price: number;
 };
 
-type ThorFeeResponse = {
-  THOR: ThorFeeType[];
+export type ThorSwapEstimatedTime = {
+  total: number;
 };
 
-type FeeDetail = {
-  amount: string;
-  amountFormatted: string;
-  amountUsd: string;
-  minimumAmount: string;
+export type ThorSwapRoute = {
+  expectedBuyAmount: string;
+  meta: {
+    assets: ThorSwapAsset[];
+  };
+  estimatedTime: ThorSwapEstimatedTime;
 };
 
-type RelayFeeResponse = {
-  gas: FeeDetail;
-  relayer: FeeDetail;
-  relayerGas: FeeDetail;
-  relayerService: FeeDetail;
-  app: FeeDetail;
+export type ThorSwapResponse = {
+  routes: ThorSwapRoute[];
 };
 
 export type ChainflipAssetAndChain = {
@@ -97,18 +105,6 @@ export const getAssetPriceInUSD = async (assetIds: string[]) => {
   } catch {
     return { fee: "-", time: "-" };
   }
-};
-
-export const calculateThorFee = (fees: ThorFeeResponse) => {
-  const inboundFee = fees.THOR[0].totalFeeUSD ?? 0;
-  const outboundFee = fees.THOR[1].totalFeeUSD ?? 0;
-  return Number((inboundFee + outboundFee).toFixed(2));
-};
-
-export const calculateRelayFee = (fees: RelayFeeResponse) => {
-  const gasFee = Number(fees.gas.amountUsd) || 0;
-  const relayerFee = Number(fees.relayer.amountUsd) || 0;
-  return Number((gasFee + relayerFee).toFixed(2));
 };
 
 export const calculateChainflipFee = async (

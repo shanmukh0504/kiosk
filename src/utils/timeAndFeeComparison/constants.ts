@@ -25,13 +25,13 @@ export type AssetMappings = {
 export type AssetMappingType = keyof AssetMappings;
 
 export const API_URLS = {
-  thorSwap: "https://api.thorswap.net/aggregator/tokens/quote",
+  thorSwap: "https://api.swapkit.dev/quote",
   relay:
     network === Network.MAINNET
       ? "https://api.relay.link/quote"
       : "https://api.testnets.relay.link/quote",
   coingecko: "https://api.coingecko.com/api/v3/simple/price",
-  chainflip: "https://chainflip-swap.chainflip.io/v2/quote"
+  chainflip: "https://chainflip-swap.chainflip.io/v2/quote",
 };
 
 export const RELAY_BTC_SWAP_TIME = 1200; //in seconds
@@ -39,8 +39,12 @@ export const RELAY_BTC_SWAP_TIME = 1200; //in seconds
 export const ASSET_MAPPINGS: AssetMappings = {
   [SwapPlatform.THORSWAP]: {
     "bitcoin:BTC": "BTC.BTC",
+    "arbitrum:USDC": "ARB.USDC-0xaf88d065e77c8cc2239327c5edb3a432268e5831",
     "ethereum:USDC": "ETH.USDC-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
     "ethereum:WBTC": "ETH.WBTC-0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+    "ethereum:cbBTC": "ETH.cbBTC-0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+    "base:USDC": "BASE.USDC-0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+    "base:cbBTC": "BASE.CBBTC-0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
   },
   [SwapPlatform.RELAY]: {
     "bitcoin:BTC": {
