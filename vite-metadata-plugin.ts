@@ -48,7 +48,9 @@ export function metadataPlugin(): Plugin {
           .replace(/<!--meta-description-->/g, metadata.description)
           .replace(/<!--meta-og-description-->/g, metadata.description)
           .replace(/<!--meta-og-image-->/g, metadata.ogImage)
-          .replace(/<!--meta-twt-image-->/g, metadata.ogImage);
+          .replace(/<!--meta-twt-image-->/g, metadata.ogImage)
+          .replace(/<!--meta-keywords-->/g, metadata.keywords.join(", "))
+          .replace(/<!--meta-canonical-->/g, metadata.canonical);
 
         res.setHeader("Content-Type", "text/html");
         res.end(html);
@@ -64,7 +66,7 @@ export function metadataPlugin(): Plugin {
           "utf-8"
         );
 
-        const routesToPrerender = ["/", "/swap", "/stake", "/quest"];
+        const routesToPrerender = ["/", "/swap", "/stake"];
 
         for (const route of routesToPrerender) {
           // Generate metadata for this route
@@ -77,7 +79,9 @@ export function metadataPlugin(): Plugin {
             .replace(/<!--meta-description-->/g, metadata.description)
             .replace(/<!--meta-og-description-->/g, metadata.description)
             .replace(/<!--meta-og-image-->/g, metadata.ogImage)
-            .replace(/<!--meta-twt-image-->/g, metadata.ogImage);
+            .replace(/<!--meta-twt-image-->/g, metadata.ogImage)
+            .replace(/<!--meta-keywords-->/g, metadata.keywords.join(", "))
+            .replace(/<!--meta-canonical-->/g, metadata.canonical);
 
           // Generate the correct file path
           const filePath =
@@ -97,46 +101,44 @@ export function metadataPlugin(): Plugin {
 function generatePageMetadata(path: string): Metadata {
   const baseMetadata: Record<string, Metadata> = {
     "/": {
-      title: "Garden Finance BTC Bridge: Swap Native Bitcoin",
+      title: "Bridge BTC to Ethereum, Arbitrum, Base, Hyperliquid | Garden",
       description:
-        "Effortlessly bridge native Bitcoin to chains like Solana, Ethereum, Base, Arbitrum, Avalanche, and more.",
+        "Bridge BTC across Ethereum, Arbitrum, Base, Berachain, Hyperliquid & more. Swap BTC, wBTC, cbBTC, USDC, and LBTC with fast, trustless settlements via Garden.",
       keywords: [
-        "Garden",
-        "Bitcoin exchange",
-        "Bitcoin bridge",
-        "fast BTC bridge",
-        "instant BTC bridge",
-        "decentralized BTC swap",
-        "atomic swap",
-        "cross-chain swap",
+        "bitcoin hyperliquid bridge",
+        "btc to wbtc swap",
+        "cross chain bitcoin bridge",
+        "trustless btc bridge",
+        "btc to cbBTC bridge",
       ],
       ogImage: "/metadata.png",
       canonical: "/",
     },
     "/stake": {
-      title: "Garden Finance: Stake SEED Token",
+      title: "Stake SEED Token | Earn APY & Join Governance | Garden",
       description:
-        "Stake SEED tokens to get revenue share and participate in governance while earning APY.",
+        "Stake your SEED tokens with Garden to earn APY, share in protocol revenue, and join governance decisions.",
       keywords: [
-        "SEED token staking",
-        "earn APY on SEED tokens",
-        "Garden Finance governance",
+        "seed token staking",
+        "earn apy on seed",
+        "garden finance governance",
+        "stake seed token",
       ],
       ogImage: "/stake.png",
       canonical: "/stake",
     },
-    "/quest": {
-      title: "Garden Finance Quests",
-      description:
-        "Get involved in the Garden ecosystem and earn SEED tokens by completing quests.",
-      keywords: [
-        "Earn SEED tokens",
-        "SEED token rewards",
-        "SEED token airdrop",
-      ],
-      ogImage: "/quest.png",
-      canonical: "/quest",
-    },
+    // "/quest": {
+    //   title: "Garden Finance Quests",
+    //   description:
+    //     "Get involved in the Garden ecosystem and earn SEED tokens by completing quests.",
+    //   keywords: [
+    //     "Earn SEED tokens",
+    //     "SEED token rewards",
+    //     "SEED token airdrop",
+    //   ],
+    //   ogImage: "/quest.png",
+    //   canonical: "/quest",
+    // },
   };
 
   if (path === "/swap") {

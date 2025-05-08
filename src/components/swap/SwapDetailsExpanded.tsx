@@ -109,7 +109,7 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
         }}
       />
       <div
-        className="flex cursor-pointer flex-col rounded-2xl bg-white/50 py-4 transition-all duration-300 hover:bg-white/75"
+        className="flex cursor-pointer flex-col rounded-2xl bg-white/50 py-4 transition-all duration-200 hover:bg-white/75"
         onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}
       >
         <AnimatePresence mode="wait">

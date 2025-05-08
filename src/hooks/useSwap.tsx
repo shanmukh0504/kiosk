@@ -23,6 +23,7 @@ import { ConnectingWalletStore } from "../store/connectWalletStore";
 import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import BigNumber from "bignumber.js";
+import { formatAmount } from "../utils/utils";
 // import { useWalletClient } from "wagmi";
 // import { Account } from "viem";
 // import { approve, checkAllowance } from "../utils/approve";
@@ -110,11 +111,14 @@ export const useSwap = () => {
     return isBitcoinSwap ? !!(_validSwap && btcAddress) : _validSwap;
   }, [_validSwap, isBitcoinSwap, btcAddress]);
 
-  const swapLimits = useMemo(() => {
-    return (
-      inputAsset &&
-      outputAsset &&
-      strategies.val &&
+  const { minAmount, maxAmount } = useMemo(() => {
+    const defaultLimits = {
+      minAmount: 0,
+      maxAmount: 0,
+    };
+    if (!inputAsset || !outputAsset || !strategies.val) return defaultLimits;
+
+    const limits =
       strategies.val[
         constructOrderPair(
           inputAsset.chain,
@@ -122,25 +126,23 @@ export const useSwap = () => {
           outputAsset.chain,
           outputAsset.atomicSwapAddress
         )
-      ]
-    );
+      ];
+
+    if (!limits) return defaultLimits;
+    else
+      return {
+        minAmount: formatAmount(
+          limits.minAmount,
+          inputAsset.decimals,
+          inputAsset.decimals
+        ),
+        maxAmount: formatAmount(
+          limits.maxAmount,
+          inputAsset.decimals,
+          inputAsset.decimals
+        ),
+      };
   }, [inputAsset, outputAsset, strategies.val]);
-
-  const minAmount = useMemo(() => {
-    return swapLimits && inputAsset
-      ? new BigNumber(swapLimits.minAmount)
-          .dividedBy(10 ** inputAsset.decimals)
-          .toNumber()
-      : undefined;
-  }, [swapLimits, inputAsset]);
-
-  const maxAmount = useMemo(() => {
-    return swapLimits && inputAsset
-      ? new BigNumber(swapLimits.maxAmount)
-          .dividedBy(10 ** inputAsset.decimals)
-          .toNumber()
-      : undefined;
-  }, [swapLimits, inputAsset]);
 
   const debouncedFetchQuote = useMemo(
     () =>
@@ -254,6 +256,7 @@ export const useSwap = () => {
   const handleInputAmountChange = useCallback(
     async (amount: string) => {
       setAmount(IOType.input, amount);
+
       const amountInNumber = Number(amount);
 
       if (!amountInNumber) {
@@ -307,6 +310,7 @@ export const useSwap = () => {
       debouncedFetchQuote,
       setAmount,
       setError,
+      setTokenPrices,
     ]
   );
 
@@ -487,6 +491,17 @@ export const useSwap = () => {
     }
   };
 
+  //interval for fetching quote in interval of 5 seconds
+  useEffect(() => {
+    if (!inputAsset || !outputAsset || !inputAmount || isSwapping) return;
+
+    const interval = setInterval(() => {
+      fetchQuote(inputAmount, inputAsset, outputAsset, false);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [inputAmount, inputAsset, outputAsset, fetchQuote, isSwapping]);
+
+  //call input amount handler when assets are changed
   useEffect(() => {
     if (!inputAsset || !outputAsset) return;
     setError({ outputError: "", inputError: "" });
@@ -494,6 +509,7 @@ export const useSwap = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputAsset, handleInputAmountChange, setError]);
 
+  //set token prices to 0 if input and output amounts are 0 and set liq error to false
   useEffect(() => {
     if (!inputAmount || !outputAmount)
       setError({ outputError: "", inputError: "" });
@@ -541,6 +557,7 @@ export const useSwap = () => {
     setTokenPrices,
   ]);
 
+  //set btc address if bitcoin wallet is connected
   useEffect(() => {
     if (account) {
       setBtcAddress(account);
