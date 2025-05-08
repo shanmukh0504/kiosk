@@ -1,4 +1,4 @@
-import { ThorSwapAsset, ThorSwapResponse, ThorSwapRoute } from "./utils";
+import { ThorSwapAsset, ThorSwapResponse, ThorSwapRoute } from "./constants";
 import { Asset } from "@gardenfi/orderbook";
 import { comparisonMetric } from "./constants";
 import { API_URLS, SwapPlatform } from "./constants";

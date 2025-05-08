@@ -1,4 +1,4 @@
-import { ChainflipAssetAndChain, ChainflipPriceResponse } from "./utils";
+import { ChainflipAssetAndChain, ChainflipPriceResponse } from "./constants";
 import { getFormattedAsset } from "./utils";
 import { Asset } from "@gardenfi/orderbook";
 import {

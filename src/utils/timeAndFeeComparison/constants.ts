@@ -35,6 +35,74 @@ export type ChainflipPoolInfo = {
   };
 };
 
+export type ThorRoute = {
+  providers: string[];
+  expectedBuyAmount: string;
+  meta: {
+    assets: Array<{
+      asset: string;
+      price: number;
+    }>;
+  };
+  fees: Array<{
+    amount: string;
+    asset: string;
+  }>;
+  estimatedTime: {
+    total: number;
+  };
+};
+
+export type ThorSwapAsset = {
+  asset: string;
+  price: number;
+};
+
+export type ThorSwapEstimatedTime = {
+  total: number;
+};
+
+export type ThorSwapRoute = {
+  expectedBuyAmount: string;
+  meta: {
+    assets: ThorSwapAsset[];
+  };
+  estimatedTime: ThorSwapEstimatedTime;
+};
+
+export type ThorSwapResponse = {
+  routes: ThorSwapRoute[];
+};
+
+export type ChainflipAssetAndChain = {
+  chain: Chain;
+  asset: ChainflipAsset;
+  htlc_address: string;
+  address: string;
+};
+
+export type AssetPriceInfo = {
+  chain: string;
+  htlc_address: string;
+  token_price: number;
+  asset: string;
+};
+
+export type PriceResponse = {
+  status: string;
+  result: AssetPriceInfo[];
+};
+
+export type ChainflipPriceResponse = {
+  data: {
+    tokenPrices: Array<{
+      chainId: string;
+      address: string;
+      usdPrice: number;
+    }>;
+  };
+};
+
 export type ChainflipEstimatedDurations = {
   swap: number;
   deposit: number;
