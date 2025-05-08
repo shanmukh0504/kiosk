@@ -3,10 +3,12 @@ import { network } from "../../../constants/constants";
 
 export const evmToBTCid: Record<string, string> = {
   "com.okex.wallet": "okx",
+  "app.phantom": "phantom",
 } as const;
 
 export const btcToEVMid: Record<string, string> = {
   okx: "com.okex.wallet",
+  phantom: "app.phantom",
 } as const;
 
 export const MAX_VISIBLE_WALLETS = 3;
@@ -75,8 +77,8 @@ export const GardenSupportedWallets: Record<
     logo: "https://garden-finance.imgix.net/wallets/phantom.svg",
     installLink:
       "https://chromewebstore.google.com/detail/phantom/bfnaelmomeimhlpmgjnjophhpkkoljpa?hl=en",
-    isBitcoinSupported: false,
-    isEVMSupported: network === Network.MAINNET,
+    isBitcoinSupported: true,
+    isEVMSupported: network === Network.MAINNET ? true : false,
     isStarknetSupported: false,
   },
   "com.coinbase.wallet": {
@@ -93,7 +95,7 @@ export const GardenSupportedWallets: Record<
     name: "OKX Wallet",
     logo: "https://garden-finance.imgix.net/wallets/okx.svg",
     installLink: "https://www.okx.com/download",
-    isBitcoinSupported: network === Network.MAINNET ? true : false,
+    isBitcoinSupported: true,
     isEVMSupported: true,
     isStarknetSupported: false,
   },
@@ -139,7 +141,16 @@ export const GardenSupportedWallets: Record<
     logo: "https://garden-finance.imgix.net/wallets/keplr.svg",
     installLink: "tallLink:",
     isStarknetSupported: true,
-    isBitcoinSupported: false,
+    isBitcoinSupported: network === Network.MAINNET ? true : false,
+    isEVMSupported: false,
+  },
+  xverse: {
+    id: "xverse",
+    name: "Xverse",
+    logo: "https://cdn.prod.website-files.com/624b08d53d7ac60ccfc11d8d/64637a04ad4e523a3e07675c_32x32.png",
+    installLink: "https://www.xverse.app/download",
+    isStarknetSupported: false,
+    isBitcoinSupported: true,
     isEVMSupported: false,
   },
 };

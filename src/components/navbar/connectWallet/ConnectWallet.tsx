@@ -15,15 +15,14 @@ import {
 } from "@gardenfi/wallet-connectors";
 import { WalletRow } from "./WalletRow";
 import { MultiWalletConnection } from "./MultiWalletConnection";
-import { handleEVMConnect } from "./handleConnect";
+import { handleEVMConnect, handleStarknetConnect } from "./handleConnect";
 import { modalNames, modalStore } from "../../../store/modalStore";
 import { ecosystems, evmToBTCid } from "./constants";
 import { AnimatePresence } from "framer-motion";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { ConnectingWalletStore } from "../../../store/connectWalletStore";
 import { BlockchainType } from "@gardenfi/orderbook";
-import { STARKNET_CONFIG } from "@gardenfi/core";
-import { network } from "../../../constants/constants";
+import { Connector as StarknetConnector } from "@starknet-react/core";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -32,8 +31,9 @@ type ConnectWalletProps = {
 
 export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   const [multiWalletConnector, setMultiWalletConnector] = useState<{
-    evm: Connector;
+    evm: Connector | undefined;
     btc: IInjectedBitcoinProvider;
+    starknet: StarknetConnector | undefined;
   }>();
   const [selectedEcosystem, setSelectedEcosystem] =
     useState<BlockchainType | null>(null);
@@ -110,12 +110,21 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     setConnectingWallet(connector.id);
 
     try {
-      if (connector.isBitcoin && connector.isEVM) {
-        if (!connector.wallet?.evmWallet || !connector.wallet?.btcWallet)
+      if (
+        (connector.isBitcoin && connector.isEVM) ||
+        (connector.isBitcoin && connector.isStarknet)
+      ) {
+        if (
+          (!connector.wallet?.evmWallet && !connector.wallet?.btcWallet) ||
+          (!connector.wallet?.btcWallet && !connector.wallet?.starknetWallet) ||
+          !connector.wallet?.btcWallet
+        )
           return;
+
         setMultiWalletConnector({
           evm: connector.wallet.evmWallet,
           btc: connector.wallet.btcWallet,
+          starknet: connector.wallet.starknetWallet,
         });
         return;
       }
@@ -166,23 +175,13 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         setConnectingWallet(null);
       } else if (connector.isStarknet) {
         if (!connector.wallet?.starknetWallet) return;
-        await starknetConnectAsync({
-          connector: connector.wallet.starknetWallet,
-        });
-        const chainId = await connector.wallet.starknetWallet.chainId();
-        // console.log("Current Chain ID:", chainId);
-
-        const targetChainId = STARKNET_CONFIG[network].chainId;
-        const currentChainIdHex = "0x" + chainId.toString(16);
-        if (currentChainIdHex.toLowerCase() !== targetChainId.toLowerCase()) {
-          try {
-            await starknetSwitchChain({ chainId: targetChainId });
-            // console.log("Network switched successfully!");
-          } catch (switchError: any) {
-            console.log(switchError);
-            await starknetDisconnect();
-          }
-        }
+        await handleStarknetConnect(
+          connector.wallet.starknetWallet,
+          starknetConnectAsync,
+          starknetSwitchChain,
+          starknetDisconnect
+        );
+        setConnectingWallet(null);
       }
     } catch (error) {
       console.error("Error connecting wallet:", error);

@@ -2,18 +2,21 @@ import { Button, CheckBox, Typography } from "@gardenfi/garden-book";
 import { EcosystemKeys, ecosystems } from "./constants";
 import { useState, FC } from "react";
 import { Connector } from "wagmi";
+import { Connector as StarknetConnector } from "@starknet-react/core";
 import {
   IInjectedBitcoinProvider,
   useBitcoinWallet,
 } from "@gardenfi/wallet-connectors";
-import { handleEVMConnect } from "./handleConnect";
+import { handleEVMConnect, handleStarknetConnect } from "./handleConnect";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
+import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 
 type Checked = Record<EcosystemKeys, boolean>;
 type MultiWalletConnectionProps = {
   connectors: {
-    evm: Connector;
+    evm?: Connector;
     btc: IInjectedBitcoinProvider;
+    starknet?: StarknetConnector;
   };
   handleClose: () => void;
 };
@@ -22,10 +25,16 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   connectors,
   handleClose,
 }) => {
+  const availableEcosystems = Object.entries(ecosystems).filter(
+    ([key]) =>
+      (key === "evm" && connectors.evm) ||
+      (key === "bitcoin" && connectors.btc) ||
+      (key === "starknet" && connectors.starknet)
+  );
+
   const [checked, setChecked] = useState(
-    Object.keys(ecosystems).reduce((acc, key) => {
-      if (key === "evm") acc[key as EcosystemKeys] = true;
-      else acc[key as EcosystemKeys] = false;
+    availableEcosystems.reduce((acc, [key]) => {
+      acc[key as EcosystemKeys] = false;
       return acc;
     }, {} as Checked)
   );
@@ -33,11 +42,10 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
 
   const { connect } = useBitcoinWallet();
   const { connectAsync } = useEVMWallet();
+  const { starknetConnectAsync, starknetDisconnect, starknetSwitchChain } =
+    useStarknetWallet();
 
   const handleCheck = (ecosystem: string) => {
-    if (ecosystem === "evm") {
-      return;
-    }
     setChecked((prev) => ({
       ...prev,
       [ecosystem]: !prev[ecosystem as EcosystemKeys],
@@ -47,25 +55,49 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   const handleConnect = async () => {
     setLoading(true);
 
-    const res = await handleEVMConnect(connectors.evm, connectAsync);
-
-    if (res.error) {
-      setLoading(false);
-      handleClose();
-      return;
+    if (checked.evm) {
+      if (connectors.evm) {
+        const res = await handleEVMConnect(connectors.evm, connectAsync);
+        if (res.error) {
+          setLoading(false);
+          handleClose();
+          return;
+        }
+      }
     }
 
-    if (!checked.bitcoin) {
-      setLoading(false);
-      handleClose();
-      return;
+    if (checked.bitcoin) {
+      if (!connectors.btc) {
+        setLoading(false);
+        handleClose();
+        return;
+      }
+
+      const bitcoinConnectRes = await connect(connectors.btc);
+      if (bitcoinConnectRes.error) {
+        setLoading(false);
+        handleClose();
+        return;
+      }
     }
 
-    const bitcoinConnectRes = await connect(connectors.btc);
-    if (!bitcoinConnectRes.error) {
-      setLoading(false);
-      handleClose();
-      return;
+    if (checked.starknet) {
+      if (!connectors.starknet) {
+        setLoading(false);
+        handleClose();
+        return;
+      }
+      const starknetConnectRes = await handleStarknetConnect(
+        connectors.starknet,
+        starknetConnectAsync,
+        starknetSwitchChain,
+        starknetDisconnect
+      );
+      if (starknetConnectRes.error) {
+        setLoading(false);
+        handleClose();
+        return;
+      }
     }
     setLoading(false);
   };
@@ -82,9 +114,9 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
         <Typography size="h5" weight="bold" className="px-4">
           Select ecosystems
         </Typography>
-        {Object.entries(ecosystems).map(([key, ecosystem], i) => (
+        {availableEcosystems.map(([key, ecosystem]) => (
           <div
-            key={i}
+            key={key}
             className="flex cursor-pointer items-center gap-4 rounded-xl px-4 py-4 hover:bg-off-white"
             onClick={() => {
               handleCheck(key);
