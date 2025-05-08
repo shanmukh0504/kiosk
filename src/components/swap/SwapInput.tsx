@@ -113,7 +113,7 @@ export const SwapInput: FC<SwapInputProps> = ({
             >
               {label}
             </Typography>
-            {Number(price) !== 0 && (
+            {amount && Number(price) !== 0 && (
               <Typography size="h5" weight="medium">
                 <span className="text-mid-grey">~${price}</span>
               </Typography>

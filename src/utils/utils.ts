@@ -80,21 +80,6 @@ export const formatAmount = (
   return Number(temp);
 };
 
-export const getChainId = (chain: string) => {
-  switch (chain.toLowerCase()) {
-    case "bitcoin":
-      return "btc";
-    case "ethereum":
-      return "evm-1";
-    case "arbitrum":
-      return "evm-42161";
-    case "base":
-      return "evm-8453";
-    default:
-      return `evm-${chain}`;
-  }
-};
-
 export const isCurrentRoute = (route: string) =>
   window.location.pathname === route;
 

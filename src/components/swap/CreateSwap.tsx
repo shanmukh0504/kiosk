@@ -1,7 +1,6 @@
 import { Button, ExchangeIcon } from "@gardenfi/garden-book";
 import { SwapInput } from "./SwapInput";
 import { getTimeEstimates, IOType } from "../../constants/constants";
-import { SwapAddress } from "./SwapAddress";
 import { BTC, swapStore } from "../../store/swapStore";
 import { useEffect, useMemo, useState } from "react";
 import { useSwap } from "../../hooks/useSwap";
@@ -9,12 +8,11 @@ import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useSearchParams } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { Errors } from "../../constants/errors";
-import { SwapDetailsExpanded } from "./SwapDetailsExpanded";
-import { motion, Variants } from "framer-motion";
 import { isBitcoin } from "@gardenfi/orderbook";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { getAssetFromChainAndSymbol, getQueryParams } from "../../utils/utils";
 import { QUERY_PARAMS } from "../../constants/constants";
+import SwapDetails from "./SwapDetails";
 
 export const CreateSwap = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -108,39 +106,6 @@ export const CreateSwap = () => {
     );
   }, [isEditBTCAddress, btcAddress, inputAsset, outputAsset]);
 
-  const detailsAnimation: Variants = {
-    hidden: {
-      opacity: 0,
-      height: 0,
-      marginTop: 0,
-      transition: { duration: 0.3, ease: "easeOut" },
-    },
-    visible: {
-      opacity: 1,
-      height: "auto",
-      marginTop: "12px",
-      pointerEvents: "auto",
-      transition: { duration: 0.3, ease: "easeOut" },
-    },
-  };
-
-  const addressAnimation: Variants = {
-    hidden: {
-      opacity: 0,
-      height: 0,
-      marginBottom: "0",
-      pointerEvents: "none" as const,
-      transition: { duration: 0.3, ease: "easeOut" },
-    },
-    visible: {
-      opacity: 1,
-      height: "auto",
-      marginBottom: "12px",
-      pointerEvents: "auto" as const,
-      transition: { duration: 0.3, ease: "easeOut" },
-    },
-  };
-
   const handleConnectWallet = () => {
     if (needsWalletConnection === "starknet") {
       setOpenModal(modalNames.connectWallet, {
@@ -206,6 +171,7 @@ export const CreateSwap = () => {
     });
   }, [addParams, inputAsset, outputAsset, setSearchParams]);
 
+  // Cleanup: Abort any pending requests and clear swap state when component unmounts
   useEffect(() => {
     const currentController = controller.current;
     return () => {
@@ -249,23 +215,12 @@ export const CreateSwap = () => {
             timeEstimate={timeEstimate}
           />
         </div>
-        <motion.div
-          variants={detailsAnimation}
-          initial="hidden"
-          animate={shouldShowDetails ? "visible" : "hidden"}
-          className={`flex flex-col overflow-hidden ${
-            shouldShowDetails ? "pointer-events-auto" : "pointer-events-none"
-          }`}
-        >
-          <motion.div
-            variants={addressAnimation}
-            initial="hidden"
-            animate={shouldShowAddress ? "visible" : "hidden"}
-          >
-            <SwapAddress isValidAddress={isValidBitcoinAddress} />
-          </motion.div>
-          <SwapDetailsExpanded tokenPrices={tokenPrices} />
-        </motion.div>
+        <SwapDetails
+          shouldShowDetails={shouldShowDetails}
+          shouldShowAddress={!!shouldShowAddress}
+          isValidBitcoinAddress={isValidBitcoinAddress}
+          tokenPrices={tokenPrices}
+        />
         <Button
           className={`mt-3 transition-colors duration-500 ${
             !needsWalletConnection && buttonLabel !== "Swap"

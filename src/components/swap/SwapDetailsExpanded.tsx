@@ -192,8 +192,8 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
               </motion.div>
             )}
             <KeyboardDownIcon
-              className={`h-4 w-4 cursor-pointer px-1 ${
-                !isDetailsExpanded ? "rotate-180" : ""
+              className={`h-4 w-4 cursor-pointer px-1 transition-transform duration-300 ${
+                isDetailsExpanded ? "-scale-[1]" : ""
               }`}
             />
           </div>
@@ -232,7 +232,7 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
                   weight="medium"
                   className="!text-mid-grey"
                 >
-                  Fees (0.03%)
+                  Fees (0.3%)
                 </Typography>
                 <div className="flex gap-5">
                   <Typography size="h4" weight="medium">

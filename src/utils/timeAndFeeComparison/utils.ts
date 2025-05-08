@@ -12,6 +12,21 @@ export const formatTime = (totalSeconds: number | string): string => {
   return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m ${seconds}s`;
 };
 
+export const getChainId = (chain: string) => {
+  switch (chain.toLowerCase()) {
+    case "bitcoin":
+      return "btc";
+    case "ethereum":
+      return "evm-1";
+    case "arbitrum":
+      return "evm-42161";
+    case "base":
+      return "evm-8453";
+    default:
+      return `evm-${chain}`;
+  }
+};
+
 export const parseTime = (time: string | undefined) => {
   if (!time) return 0;
   const cleanedTime = time.replace("~", "").trim();

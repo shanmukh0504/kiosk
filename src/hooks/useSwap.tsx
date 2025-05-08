@@ -238,6 +238,7 @@ export const useSwap = () => {
       setAmount,
       setTokenPrices,
       setError,
+      isSwapping,
     ]
   );
 
