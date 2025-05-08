@@ -38,7 +38,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   const [selectedEcosystem, setSelectedEcosystem] =
     useState<BlockchainType | null>(null);
 
-  const { connectors, connectAsync, connector, address } = useEVMWallet();
+  const { connectors, connectAsync, connector} = useEVMWallet();
   const {
     starknetConnectors,
     starknetConnector,
@@ -91,10 +91,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   }, [availableWallets, connectors, starknetConnectors, selectedEcosystem]);
 
   const handleClose = useCallback(() => {
-    if (address) onClose?.();
     setConnectingWallet(null);
     setMultiWalletConnector(undefined);
-  }, [address, onClose, setConnectingWallet]);
+  }, [setConnectingWallet]);
 
   const close = () => {
     onClose?.();

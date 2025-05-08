@@ -10,6 +10,7 @@ import {
 import { handleEVMConnect, handleStarknetConnect } from "./handleConnect";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
+import { BlockchainType } from "@gardenfi/orderbook";
 
 type Checked = Record<EcosystemKeys, boolean>;
 type MultiWalletConnectionProps = {
@@ -26,10 +27,10 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   handleClose,
 }) => {
   const availableEcosystems = Object.entries(ecosystems).filter(
-    ([key]) =>
-      (key === "evm" && connectors.evm) ||
-      (key === "bitcoin" && connectors.btc) ||
-      (key === "starknet" && connectors.starknet)
+    ([, value]) =>
+      (value.name === BlockchainType.EVM && connectors.evm) ||
+      (value.name === BlockchainType.Bitcoin && connectors.btc) ||
+      (value.name === BlockchainType.Starknet && connectors.starknet)
   );
 
   const [checked, setChecked] = useState(
