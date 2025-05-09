@@ -21,14 +21,14 @@ export const SwapDetails = ({
       opacity: 0,
       height: 0,
       marginTop: 0,
-      transition: { duration: 0.3, ease: "easeOut" },
+      transition: { duration: 0.3, delay: 0.2, ease: "easeOut" },
     },
     visible: {
       opacity: 1,
       height: "auto",
       marginTop: "12px",
       pointerEvents: "auto",
-      transition: { duration: 0.3, ease: "easeOut" },
+      transition: { duration: 0.3, delay: 0.2, ease: "easeOut" },
     },
   };
 

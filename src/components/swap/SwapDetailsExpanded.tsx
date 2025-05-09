@@ -32,30 +32,6 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
 
   const { inputAsset, outputAsset, inputAmount, outputAmount } = useSwap();
 
-  const animationConfig = {
-    initial: { opacity: 0, height: 0 },
-    animate: {
-      opacity: 1,
-      height: "auto",
-      transition: {
-        type: "spring",
-        stiffness: 160,
-        damping: 25,
-        mass: 0.8,
-      },
-    },
-    exit: {
-      opacity: 0,
-      height: 0,
-      transition: {
-        type: "spring",
-        stiffness: 900,
-        damping: 50,
-        mass: 0.2,
-      },
-    },
-  };
-
   const { account: btcAddress } = useBitcoinWallet();
   const { address } = useEVMWallet();
 
@@ -81,6 +57,44 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
         : 0,
     [outputAmount, inputAmount]
   );
+
+  const animationConfig = {
+    initial: { opacity: 0, height: 0 },
+    animate: {
+      opacity: 1,
+      height: "auto",
+      transition: {
+        duration: 0.3,
+        ease: "easeInOut",
+      },
+    },
+    exit: {
+      opacity: 0,
+      height: 0,
+      transition: {
+        duration: 0.15,
+        ease: "easeInOut",
+      },
+    },
+  };
+
+  const fadeAnimation = {
+    initial: { opacity: 0 },
+    animate: {
+      opacity: 1,
+      transition: {
+        duration: 0.2,
+        ease: "easeInOut",
+      },
+    },
+    exit: {
+      opacity: 0,
+      transition: {
+        duration: 0.2,
+        ease: "easeInOut",
+      },
+    },
+  };
 
   const handleShowComparison = (type: "time" | "fees") => {
     setIsShowComparison({
@@ -112,63 +126,25 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
         className="flex cursor-pointer flex-col rounded-2xl bg-white/50 py-4 transition-all duration-200 hover:bg-white/75"
         onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}
       >
-        <AnimatePresence mode="wait">
-          <div className="flex items-center justify-between px-4">
-            {isDetailsExpanded && (
-              <motion.div
-                initial={{ opacity: 0, translateY: 10 }}
-                animate={{
-                  opacity: 1,
-                  translateY: 0,
-                  transition: {
-                    type: "spring",
-                    stiffness: 160,
-                    damping: 25,
-                    mass: 0.8,
-                  },
-                }}
-                exit={{
-                  opacity: 0,
-                  translateY: 10,
-                  transition: {
-                    type: "spring",
-                    stiffness: 900,
-                    damping: 50,
-                    mass: 0.8,
-                  },
-                }}
-              >
-                <Typography size="h5" weight="bold" className="py-[2px]">
-                  Details
-                </Typography>
-              </motion.div>
-            )}
-            {!isDetailsExpanded && (
-              <motion.div
-                className="flex w-full items-center justify-between"
-                initial={{ opacity: 0, translateY: -10 }}
-                animate={{
-                  opacity: 1,
-                  translateY: 0,
-                  transition: {
-                    type: "spring",
-                    stiffness: 160,
-                    damping: 25,
-                    mass: 0.8,
-                  },
-                }}
-                exit={{
-                  opacity: 0,
-                  translateY: -10,
-                  transition: {
-                    type: "spring",
-                    stiffness: 900,
-                    damping: 50,
-                    mass: 0.8,
-                  },
-                }}
-              >
-                <div className="flex items-center gap-1">
+        <div className="flex w-full items-center justify-between px-4">
+          <div className="relative flex items-center justify-start">
+            <AnimatePresence mode="wait">
+              {isDetailsExpanded ? (
+                <motion.div
+                  key="details"
+                  {...fadeAnimation}
+                  className="absolute left-0"
+                >
+                  <Typography size="h5" weight="bold" className="py-[2px]">
+                    Details
+                  </Typography>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="rate"
+                  {...fadeAnimation}
+                  className="absolute left-0 flex items-center justify-start gap-1"
+                >
                   <Typography size="h5" weight="medium">
                     1
                   </Typography>
@@ -182,34 +158,69 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
                   <Typography size="h5" weight="medium">
                     {outputAsset?.symbol}
                   </Typography>
-                </div>
-                <div className="flex items-center gap-1">
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+          <div className="flex items-center gap-1">
+            <AnimatePresence mode="wait">
+              {!isDetailsExpanded && (
+                <motion.div
+                  key="fees-content"
+                  initial={{ opacity: 0 }}
+                  animate={{
+                    opacity: 1,
+                    transition: {
+                      duration: 0.2,
+                      delay: 0.2,
+                      ease: "easeInOut",
+                    },
+                  }}
+                  exit={{
+                    opacity: 0,
+                    transition: {
+                      duration: 0.2,
+                      ease: "easeInOut",
+                    },
+                  }}
+                  className="flex items-center gap-1"
+                >
                   <GasStationIcon />
                   <Typography size="h5" weight="medium">
                     {`$${formatAmount(fees + 0.23, 0, 2)}`}
                   </Typography>
-                </div>
-              </motion.div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
             <KeyboardDownIcon
               className={`h-4 w-4 cursor-pointer px-1 transition-transform duration-300 ${
-                isDetailsExpanded ? "-scale-[1]" : ""
+                isDetailsExpanded ? "rotate-180" : ""
               }`}
             />
           </div>
-        </AnimatePresence>
+        </div>
         <AnimatePresence>
           {isDetailsExpanded && (
             <motion.div
               className="flex flex-col"
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{
-                type: "spring",
-                stiffness: 160,
-                damping: 25,
-                mass: 0.8,
+              animate={{
+                opacity: 1,
+                height: "auto",
+                transition: {
+                  duration: 0.4,
+                  opacity: { delay: 0.1, ease: "easeOut" },
+                  ease: "easeOut",
+                },
+              }}
+              exit={{
+                opacity: 0,
+                height: 0,
+                transition: {
+                  duration: 0.4,
+                  height: { delay: 0.1, ease: "easeOut" },
+                  ease: "easeOut",
+                },
               }}
             >
               <div className="mt-3 flex items-center justify-between gap-0 px-4 py-1">
