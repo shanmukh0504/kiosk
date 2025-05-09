@@ -144,9 +144,13 @@ export const SwapInput: FC<SwapInputProps> = ({
               </Typography>
             ) : (
               timeEstimate && (
-                <div className="flex items-center gap-1">
+                <div className="flex items-end gap-1">
                   <TimerIcon className="h-4" />
-                  <Typography size="h5" weight="medium">
+                  <Typography
+                    size="h5"
+                    weight="medium"
+                    className="!leading-none"
+                  >
                     {timeEstimate}
                   </Typography>
                 </div>
@@ -177,8 +181,8 @@ export const SwapInput: FC<SwapInputProps> = ({
               </ScaleY>
               {/* Placeholder as a separate element to avoid scaleY animation on load */}
               {!amount && (
-                <span className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 transform text-mid-grey">
-                  0.0
+                <span className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 transform">
+                  0
                 </span>
               )}
             </div>

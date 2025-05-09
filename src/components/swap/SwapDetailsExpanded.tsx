@@ -1,11 +1,11 @@
-import { useState, FC, useMemo } from "react";
+import { useState, FC, useMemo, useEffect } from "react";
 import {
   GasStationIcon,
   KeyboardDownIcon,
   SwapHorizontalIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { TokenPrices } from "../../store/swapStore";
+import { swapStore, TokenPrices } from "../../store/swapStore";
 import { SwapComparison } from "./SwapComparison";
 import { AddressDetails } from "./AddressDetails";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
@@ -13,7 +13,7 @@ import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useSwap } from "../../hooks/useSwap";
 import { isBitcoin } from "@gardenfi/orderbook";
 import { motion, AnimatePresence } from "framer-motion";
-import { formatAmount } from "../../utils/utils";
+import { formatAmount, getProtocolFee } from "../../utils/utils";
 import { formatTime } from "../../utils/timeAndFeeComparison/utils";
 
 type SwapDetailsProps = {
@@ -23,14 +23,15 @@ type SwapDetailsProps = {
 export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
   const [showComparison, setIsShowComparison] = useState({
-    isOpen: false,
     isTime: false,
     isFees: false,
   });
   const [maxTimeSaved, setMaxTimeSaved] = useState<number>(0);
   const [maxCostSaved, setMaxCostSaved] = useState<number>(0);
+  const [rate, setRate] = useState(0);
 
   const { inputAsset, outputAsset, inputAmount, outputAmount } = useSwap();
+  const { setIsComparisonVisible } = swapStore();
 
   const { account: btcAddress } = useBitcoinWallet();
   const { address } = useEVMWallet();
@@ -40,6 +41,8 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
     [tokenPrices]
   );
 
+  const protocolFee = useMemo(() => getProtocolFee(fees), [fees]);
+
   const refundAddress = useMemo(
     () => (inputAsset && isBitcoin(inputAsset.chain) ? btcAddress : address),
     [inputAsset, btcAddress, address]
@@ -48,14 +51,6 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
   const receiveAddress = useMemo(
     () => (outputAsset && isBitcoin(outputAsset.chain) ? btcAddress : address),
     [outputAsset, btcAddress, address]
-  );
-
-  const rate = useMemo(
-    () =>
-      outputAmount && inputAmount
-        ? Number(outputAmount) / Number(inputAmount)
-        : 0,
-    [outputAmount, inputAmount]
   );
 
   const animationConfig = {
@@ -97,24 +92,36 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
   };
 
   const handleShowComparison = (type: "time" | "fees") => {
+    setIsComparisonVisible(true);
     setIsShowComparison({
-      isOpen: true,
       isTime: type === "time",
       isFees: type === "fees",
     });
   };
 
+  useEffect(() => {
+    if (!outputAmount || !inputAmount) {
+      setRate(0);
+      return;
+    }
+    const calculatedRate = (Number(outputAmount) / Number(inputAmount)).toFixed(
+      9
+    );
+    const formatted = Number(formatAmount(calculatedRate, 0, 7).toFixed(7));
+    setRate(formatted);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [outputAmount]);
+
   return (
     <>
       <SwapComparison
-        visible={showComparison.isOpen}
-        hide={() =>
+        hide={() => {
+          setIsComparisonVisible(false);
           setIsShowComparison({
-            isOpen: false,
             isTime: false,
             isFees: false,
-          })
-        }
+          });
+        }}
         isTime={showComparison.isTime}
         isFees={showComparison.isFees}
         onComparisonUpdate={(time, cost) => {
@@ -122,11 +129,11 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
           setMaxCostSaved(cost);
         }}
       />
-      <div
-        className="flex cursor-pointer flex-col rounded-2xl bg-white/50 py-4 transition-all duration-200 hover:bg-white/75"
-        onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}
-      >
-        <div className="flex w-full items-center justify-between px-4">
+      <div className="flex flex-col rounded-2xl bg-white/50 pb-4 transition-all duration-200">
+        <div
+          className="flex w-full cursor-pointer items-center justify-between rounded-2xl px-4 pt-4"
+          onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}
+        >
           <div className="relative flex items-center justify-start">
             <AnimatePresence mode="wait">
               {isDetailsExpanded ? (
@@ -153,7 +160,7 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
                   </Typography>
                   <SwapHorizontalIcon />
                   <Typography size="h5" weight="medium">
-                    {formatAmount(rate, 0, 3)}
+                    {rate}
                   </Typography>
                   <Typography size="h5" weight="medium">
                     {outputAsset?.symbol}
@@ -229,11 +236,11 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
                   weight="medium"
                   className="!py-[2px] !text-mid-grey"
                 >
-                  Network cost
+                  Protocol fee
                 </Typography>
                 <div className="flex gap-5">
                   <Typography size="h4" weight="medium">
-                    $0.23
+                    {fees ? "$" + protocolFee : ""}
                   </Typography>
                 </div>
               </div>
@@ -243,11 +250,11 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
                   weight="medium"
                   className="!text-mid-grey"
                 >
-                  Fees (0.3%)
+                  Network fee
                 </Typography>
                 <div className="flex gap-5">
                   <Typography size="h4" weight="medium">
-                    {fees ? "$" + formatAmount(fees, 0, 2) : ""}
+                    FREE
                   </Typography>
                 </div>
               </div>
@@ -317,7 +324,7 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
                               weight="medium"
                               className="!text-light-green"
                             >
-                              {`$${formatAmount(maxCostSaved, 0, 2)}`}
+                              {`$${formatAmount(maxCostSaved, 0, 2).toFixed(2)}`}
                             </Typography>
                           </div>
                         </div>

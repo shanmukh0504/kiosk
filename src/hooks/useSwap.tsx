@@ -48,6 +48,7 @@ export const useSwap = () => {
     setError,
     swapAssets,
     setIsFetchingQuote,
+    isComparisonVisible,
     // setIsApproving,
     setTokenPrices,
     clearSwapState,
@@ -494,13 +495,26 @@ export const useSwap = () => {
 
   //interval for fetching quote in interval of 5 seconds
   useEffect(() => {
-    if (!inputAsset || !outputAsset || !inputAmount || isSwapping) return;
-
+    if (
+      !inputAsset ||
+      !outputAsset ||
+      !inputAmount ||
+      isSwapping ||
+      isComparisonVisible
+    )
+      return;
     const interval = setInterval(() => {
       fetchQuote(inputAmount, inputAsset, outputAsset, false);
     }, 5000);
     return () => clearInterval(interval);
-  }, [inputAmount, inputAsset, outputAsset, fetchQuote, isSwapping]);
+  }, [
+    inputAmount,
+    inputAsset,
+    outputAsset,
+    fetchQuote,
+    isSwapping,
+    isComparisonVisible,
+  ]);
 
   //call input amount handler when assets are changed
   useEffect(() => {

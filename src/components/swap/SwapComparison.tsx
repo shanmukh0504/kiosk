@@ -28,7 +28,6 @@ import { getChainflipFee } from "../../utils/timeAndFeeComparison/ChainFlipFees"
 import { getThorFee } from "../../utils/timeAndFeeComparison/ThosSwapFees";
 
 type SwapComparisonProps = {
-  visible: boolean;
   hide: () => void;
   isTime?: boolean;
   isFees?: boolean;
@@ -36,23 +35,11 @@ type SwapComparisonProps = {
 };
 
 export const SwapComparison: FC<SwapComparisonProps> = ({
-  visible,
   hide,
   isTime,
   isFees,
   onComparisonUpdate,
 }) => {
-  const animationConfig = {
-    initial: { x: "100%" },
-    animate: { x: visible ? 0 : "100%" },
-    transition: {
-      type: "spring",
-      stiffness: 200,
-      damping: 25,
-      mass: 0.8,
-    },
-  };
-
   const [swapData, setSwapData] = useState<Record<
     string,
     comparisonMetric
@@ -63,8 +50,25 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
   const prevInputAssetRef = useRef<Asset | undefined>(undefined);
 
   const { error } = useSwap();
-  const { inputAsset, outputAsset, inputAmount, outputAmount, tokenPrices } =
-    swapStore();
+  const {
+    inputAsset,
+    outputAsset,
+    inputAmount,
+    outputAmount,
+    tokenPrices,
+    isComparisonVisible,
+  } = swapStore();
+
+  const animationConfig = {
+    initial: { x: "100%" },
+    animate: { x: isComparisonVisible ? 0 : "100%" },
+    transition: {
+      type: "spring",
+      stiffness: 200,
+      damping: 25,
+      mass: 0.8,
+    },
+  };
 
   const swapSources = [
     { name: "garden", key: "garden", icon: <GardenLogo /> },
@@ -166,6 +170,12 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
       }
     }, 300); // debounce delay
   }, []);
+
+  useEffect(() => {
+    if (isComparisonVisible) {
+      debouncedFetchAllData.cancel();
+    }
+  }, [debouncedFetchAllData, isComparisonVisible]);
 
   useEffect(() => {
     const numericInputAmount = Number(inputAmount);

@@ -42,11 +42,15 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
     <>
       {address && (
         <div
-          className={`flex items-center justify-between transition-all duration-500 ease-in-out ${
+          className={`flex cursor-pointer items-center justify-between transition-all duration-500 ease-in-out ${
             !isEditBTCAddress || (chain && !isBitcoin(chain))
               ? "pointer-events-auto max-h-7 py-1 opacity-100"
               : "pointer-events-none max-h-0 py-0 opacity-0"
           }`}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAddressRedirect(address!, chain!);
+          }}
         >
           <Typography
             data-tooltip-id={isRefund ? tooltipId : ""}
@@ -74,13 +78,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
                   }}
                 />
               )}
-              <ArrowNorthEastIcon
-                className="h-4 w-4 cursor-pointer p-[3px]"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAddressRedirect(address!, chain!);
-                }}
-              />
+              <ArrowNorthEastIcon className="h-4 w-4 cursor-pointer p-[3px]" />
             </div>
           </div>
         </div>
