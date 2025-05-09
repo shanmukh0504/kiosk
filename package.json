@@ -10,11 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@gardenfi/core": "2.1.4-beta.1",
+    "@gardenfi/core": "2.1.5",
     "@gardenfi/garden-book": "^0.1.85",
-    "@gardenfi/orderbook": "2.1.3-beta.0",
-    "@gardenfi/react-hooks": "2.1.4-beta.1",
-    "@gardenfi/utils": "2.1.2-beta.13",
+    "@gardenfi/orderbook": "2.1.4",
+    "@gardenfi/react-hooks": "2.1.6",
+    "@gardenfi/utils": "2.1.3",
     "@gardenfi/wallet-connectors": "2.0.3-beta.22",
     "@starknet-react/core": "^3.7.2",
     "@tanstack/react-query": "^5.51.23",
