@@ -111,7 +111,7 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
       formatAmount(
         calculatedRate,
         0,
-        isBitcoin(outputAsset.chain) ? 7 : Number(inputAmount) > 10000 ? 2 : 4
+        isBitcoin(outputAsset.chain) ? 7 : 2
       ).toFixed(7)
     );
     setRate(formatted);
