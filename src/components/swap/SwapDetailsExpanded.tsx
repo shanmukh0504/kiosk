@@ -100,14 +100,20 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
   };
 
   useEffect(() => {
-    if (!outputAmount || !inputAmount) {
+    if (!outputAmount || !inputAmount || !outputAsset) {
       setRate(0);
       return;
     }
     const calculatedRate = (Number(outputAmount) / Number(inputAmount)).toFixed(
       9
     );
-    const formatted = Number(formatAmount(calculatedRate, 0, 7).toFixed(7));
+    const formatted = Number(
+      formatAmount(
+        calculatedRate,
+        0,
+        isBitcoin(outputAsset.chain) ? 7 : Number(inputAmount) > 10000 ? 2 : 4
+      ).toFixed(7)
+    );
     setRate(formatted);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [outputAmount]);
