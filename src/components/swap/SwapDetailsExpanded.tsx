@@ -260,7 +260,7 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
                 </Typography>
                 <div className="flex gap-5">
                   <Typography size="h4" weight="medium">
-                    FREE
+                    Free
                   </Typography>
                 </div>
               </div>
@@ -342,7 +342,7 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
               {(receiveAddress || refundAddress) && (
                 <>
                   <div className="mx-4 my-1 h-px bg-white"></div>
-                  <div className="flex flex-col items-stretch justify-center px-4">
+                  <div className="flex flex-col items-stretch justify-center">
                     {receiveAddress && (
                       <AddressDetails address={receiveAddress} />
                     )}
