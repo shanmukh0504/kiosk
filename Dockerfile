@@ -21,7 +21,7 @@ RUN rm -rf /usr/share/nginx/html/*
 # Copy built frontend
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Generate nginx config dynamically
+# Generate nginx config for MPA
 RUN printf "server {\n\
     listen 80;\n\
     server_name _;\n\
@@ -29,8 +29,19 @@ RUN printf "server {\n\
     root /usr/share/nginx/html;\n\
     index index.html;\n\
 \n\
+    # First try to serve the exact file\n\
     location / {\n\
-        try_files \$uri \$uri/ /index.html;\n\
+        try_files \$uri \$uri.html \$uri/ =404;\n\
+    }\n\
+\n\
+    # Route /stake to stake.html\n\
+    location = /stake {\n\
+        try_files /stake.html =404;\n\
+    }\n\
+\n\
+    # Route /swap to swap.html\n\
+    location = /swap {\n\
+        try_files /swap.html =404;\n\
     }\n\
 \n\
     location ~* \\\\.(?:ico|css|js|gif|jpe?g|png|woff2?|eot|ttf|svg|otf)\$ {\n\
