@@ -41,7 +41,7 @@ export const SwapAddress: FC<SwapAddressProps> = ({ isValidAddress }) => {
           onClick={() => inputRef.current!.focus()}
           className="w-fit"
         >
-          {isRecoveryAddress ? "Recovery" : "Receive"} address
+          {isRecoveryAddress ? "Refund" : "Receive"} address
         </Typography>
         <Typography size="h3" weight="medium">
           <input
