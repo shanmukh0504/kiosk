@@ -123,7 +123,7 @@ export const SwapComparison: FC<SwapComparisonProps> = ({
 
   const debouncedFetchAllData = useMemo(() => {
     return debounce(async (inputAsset, outputAsset, inputAmount) => {
-      if (inputAsset && outputAsset && inputAmount) {
+      if (inputAsset && outputAsset && inputAmount && (!isTime || !isFees)) {
         setLoading(true);
         try {
           const sources = {
