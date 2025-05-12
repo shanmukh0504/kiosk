@@ -74,7 +74,7 @@ export const formatAmount = (
       .every((d) => d === "0") &&
     temp.split(".")[1].length < 8
   ) {
-    temp = value.toFixed(temp.split(".")[1].length + 1, BigNumber.ROUND_DOWN);
+    temp = value.toFixed(temp.split(".")[1].length + 2, BigNumber.ROUND_DOWN);
   }
 
   return Number(temp);

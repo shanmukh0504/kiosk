@@ -70,10 +70,10 @@ export const useSwap = () => {
   const { setOpenModal } = modalStore();
   const isInsufficientBalance = useMemo(
     () =>
-      !inputTokenBalance
+      !inputTokenBalance && (btcAddress || starknetAddress || evmAddress)
         ? true
         : new BigNumber(inputAmount).gt(inputTokenBalance),
-    [inputAmount, inputTokenBalance]
+    [inputAmount, inputTokenBalance, btcAddress, starknetAddress, evmAddress]
   );
 
   const isBitcoinSwap = useMemo(() => {

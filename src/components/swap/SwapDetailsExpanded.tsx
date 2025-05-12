@@ -174,7 +174,7 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
                   </Typography>
                   <SwapHorizontalIcon />
                   <Typography size="h5" weight="medium">
-                    {rate}
+                    {formatAmount(rate, 0, 3)}
                   </Typography>
                   <Typography size="h5" weight="medium">
                     {outputAsset?.symbol}

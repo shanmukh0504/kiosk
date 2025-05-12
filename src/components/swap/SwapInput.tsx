@@ -51,6 +51,7 @@ export const SwapInput: FC<SwapInputProps> = ({
   const label = type === IOType.input ? "Send" : "Receive";
 
   const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setTriggerAmountAnimation(true);
     const input = e.target.value;
     const parts = input.split(".");
     if (input === "-") return;
@@ -79,6 +80,7 @@ export const SwapInput: FC<SwapInputProps> = ({
     // If the last character is not a numerical digit or a dot, and the string
     // is not empty, do nothing and return.
     else {
+      setTriggerAmountAnimation(true);
       return;
     }
   };
