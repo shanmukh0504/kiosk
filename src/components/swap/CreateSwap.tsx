@@ -54,7 +54,7 @@ export const CreateSwap = () => {
           : isApproving
             ? "Approving..."
             : isSwapping
-              ? "Signing..."
+              ? "Signing"
               : "Swap";
   }, [error.swapError, isApproving, isSwapping, needsWalletConnection]);
 

@@ -15,6 +15,8 @@ import { isBitcoin } from "@gardenfi/orderbook";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatAmount, getProtocolFee } from "../../utils/utils";
 import { formatTime } from "../../utils/timeAndFeeComparison/utils";
+import { getBitcoinNetwork } from "../../constants/constants";
+import { useNetworkFees } from "../../hooks/useNetworkFees";
 
 type SwapDetailsProps = {
   tokenPrices: TokenPrices;
@@ -32,9 +34,13 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
 
   const { inputAsset, outputAsset, inputAmount, outputAmount } = useSwap();
   const { setIsComparisonVisible } = swapStore();
-
+  const network = getBitcoinNetwork();
   const { account: btcAddress } = useBitcoinWallet();
   const { address } = useEVMWallet();
+  const networkFeesValue = useNetworkFees(
+    network,
+    outputAsset ? isBitcoin(outputAsset.chain) : false
+  );
 
   const fees = useMemo(
     () => Number(tokenPrices.input) - Number(tokenPrices.output),
@@ -104,15 +110,17 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
       setRate(0);
       return;
     }
-    const calculatedRate = (Number(outputAmount) / Number(inputAmount)).toFixed(
-      9
-    );
+    const calculatedRate = Number(outputAmount) / Number(inputAmount);
+    const isBitcoinChain = isBitcoin(outputAsset.chain);
+    const decimals = isBitcoinChain ? 7 : 2;
+
+    if (calculatedRate < 0.000001) {
+      setRate(0);
+      return;
+    }
+
     const formatted = Number(
-      formatAmount(
-        calculatedRate,
-        0,
-        isBitcoin(outputAsset.chain) ? 7 : 2
-      ).toFixed(7)
+      formatAmount(calculatedRate, 0, decimals).toFixed(decimals)
     );
     setRate(formatted);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -200,7 +208,7 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
                 >
                   <GasStationIcon />
                   <Typography size="h5" weight="medium">
-                    {`$${formatAmount(fees + 0.23, 0, 2)}`}
+                    {fees ? "$" + protocolFee : ""}
                   </Typography>
                 </motion.div>
               )}
@@ -260,7 +268,7 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
                 </Typography>
                 <div className="flex gap-5">
                   <Typography size="h4" weight="medium">
-                    Free
+                    {networkFeesValue}
                   </Typography>
                 </div>
               </div>
@@ -278,7 +286,7 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
                         className="w-full"
                       >
                         <div
-                          className="relative z-10 flex cursor-pointer items-center justify-between gap-0 px-4 hover:bg-white"
+                          className="relative z-10 flex cursor-pointer items-center justify-between gap-0 px-4 transition-all duration-200 ease-in-out hover:bg-white"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleShowComparison("time");
@@ -311,7 +319,7 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
                         className="w-full"
                       >
                         <div
-                          className="flex cursor-pointer items-center justify-between gap-0 px-4 hover:bg-white"
+                          className="flex cursor-pointer items-center justify-between gap-0 px-4 transition-all duration-200 ease-in-out hover:bg-white"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleShowComparison("fees");

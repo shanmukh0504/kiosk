@@ -69,7 +69,10 @@ export const useSwap = () => {
   const { starknetAddress } = useStarknetWallet();
   const { setOpenModal } = modalStore();
   const isInsufficientBalance = useMemo(
-    () => new BigNumber(inputAmount).gt(inputTokenBalance),
+    () =>
+      !inputTokenBalance
+        ? true
+        : new BigNumber(inputAmount).gt(inputTokenBalance),
     [inputAmount, inputTokenBalance]
   );
 
@@ -312,7 +315,6 @@ export const useSwap = () => {
       debouncedFetchQuote,
       setAmount,
       setError,
-      setTokenPrices,
     ]
   );
 

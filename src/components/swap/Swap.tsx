@@ -5,7 +5,7 @@ import { Toast, ToastContainer } from "../toast/Toast";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { useGarden } from "@gardenfi/react-hooks";
 import { MatchedOrder } from "@gardenfi/orderbook";
-import { formatAmount, getAssetFromSwap } from "../../utils/utils";
+import { getAssetFromSwap } from "../../utils/utils";
 import { OrderActions, OrderStatus } from "@gardenfi/core";
 import orderInProgressStore from "../../store/orderInProgressStore";
 import pendingOrdersStore from "../../store/pendingOrdersStore";
@@ -48,14 +48,6 @@ export const Swap = () => {
       const outputAsset = getAssetFromSwap(destination_swap, assets);
       if (!inputAsset || !outputAsset) return;
 
-      const inputAmount = formatAmount(
-        order.source_swap.amount,
-        inputAsset.decimals
-      );
-      const outputAmount = formatAmount(
-        order.destination_swap.amount,
-        outputAsset.decimals
-      );
       console.log("order success ✅", order.create_order.create_id);
 
       const updatedOrder = {
@@ -69,7 +61,7 @@ export const Swap = () => {
       updateOrder(updatedOrder);
 
       Toast.success(
-        `Swap success ${inputAmount} ${inputAsset.symbol} to ${outputAmount} ${outputAsset.symbol}`
+        `Swap success ${inputAsset.symbol} to ${outputAsset.symbol}`
       );
     };
 

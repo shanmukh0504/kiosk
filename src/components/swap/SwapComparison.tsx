@@ -25,7 +25,7 @@ import BigNumber from "bignumber.js";
 import { comparisonMetric } from "../../utils/timeAndFeeComparison/constants";
 import { getRelayFee } from "../../utils/timeAndFeeComparison/RelayFees";
 import { getChainflipFee } from "../../utils/timeAndFeeComparison/ChainFlipFees";
-import { getThorFee } from "../../utils/timeAndFeeComparison/ThosSwapFees";
+import { getThorFee } from "../../utils/timeAndFeeComparison/ThorSwapFees";
 
 type SwapComparisonProps = {
   hide: () => void;

@@ -1,4 +1,5 @@
 import { Asset, Chain, isBitcoin, isEVM } from "@gardenfi/orderbook";
+import { BitcoinNetwork } from "@gardenfi/react-hooks";
 import { Network } from "@gardenfi/utils";
 
 export const INTERNAL_ROUTES: Record<string, { name: string; path: string[] }> =
@@ -45,6 +46,16 @@ export const getTimeEstimates = (inputAsset: Asset) => {
     return "~10m";
   }
   return "";
+};
+
+export const getBitcoinNetwork = (): BitcoinNetwork => {
+  if (network === Network.MAINNET) {
+    return BitcoinNetwork.Mainnet;
+  }
+  if (network === Network.TESTNET) {
+    return BitcoinNetwork.Testnet;
+  }
+  return BitcoinNetwork.Regtest;
 };
 
 export enum Environment {
