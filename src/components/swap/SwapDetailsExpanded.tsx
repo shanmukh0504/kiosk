@@ -144,10 +144,7 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
         }}
       />
       <div className="flex flex-col rounded-2xl bg-white/50 pb-4 transition-all duration-200">
-        <div
-          className="flex w-full cursor-pointer items-center justify-between rounded-2xl px-4 pt-4"
-          onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}
-        >
+        <div className="flex w-full items-center justify-between rounded-2xl px-4 pt-4">
           <div className="relative flex items-center justify-start">
             <AnimatePresence mode="wait">
               {isDetailsExpanded ? (
@@ -217,6 +214,7 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
               className={`h-4 w-4 cursor-pointer px-1 transition-transform duration-300 ${
                 isDetailsExpanded ? "rotate-180" : ""
               }`}
+              onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}
             />
           </div>
         </div>
