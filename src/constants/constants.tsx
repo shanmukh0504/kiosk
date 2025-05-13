@@ -55,7 +55,8 @@ export const getBitcoinNetwork = (): BitcoinNetwork => {
   if (network === Network.TESTNET) {
     return BitcoinNetwork.Testnet;
   }
-  return BitcoinNetwork.Regtest;
+  //TODO: Add regtest once we have a testnet for it
+  return BitcoinNetwork.Mainnet;
 };
 
 export enum Environment {
