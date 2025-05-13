@@ -23,6 +23,7 @@ function App() {
         environment:
           environment === Environment.Staging
             ? {
+                environment: GardenEnvironment.TESTNET,
                 orderbook: import.meta.env.VITE_ORDERBOOK_URL,
                 auth: import.meta.env.VITE_AUTH_URL,
                 quote: import.meta.env.VITE_QUOTE_URL,
