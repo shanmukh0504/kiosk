@@ -1,15 +1,10 @@
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { FeesAndRateDetails } from "./FeesAndRateDetails";
 import { InputAddress } from "./InputAddress";
 import { swapStore } from "../../store/swapStore";
-import {
-  addressExpandAnimation,
-  detailsExpandAnimation,
-} from "../../animations/animations";
+import { detailsExpandAnimation } from "../../animations/animations";
 import { Errors } from "../../constants/errors";
 import { useMemo } from "react";
-import { isBitcoin } from "@gardenfi/orderbook";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 
 type InputAddressAndFeeRateDetailsProps = {
   isValidBitcoinAddress: boolean;
@@ -18,23 +13,8 @@ type InputAddressAndFeeRateDetailsProps = {
 export const InputAddressAndFeeRateDetails = ({
   isValidBitcoinAddress,
 }: InputAddressAndFeeRateDetailsProps) => {
-  const {
-    inputAsset,
-    outputAsset,
-    error,
-    inputAmount,
-    outputAmount,
-    isEditBTCAddress,
-  } = swapStore();
-  const { account: btcAddress } = useBitcoinWallet();
-
-  const shouldShowAddress = useMemo(() => {
-    return (
-      (isEditBTCAddress || !btcAddress) &&
-      ((inputAsset?.chain && isBitcoin(inputAsset.chain)) ||
-        (outputAsset?.chain && isBitcoin(outputAsset.chain)))
-    );
-  }, [isEditBTCAddress, btcAddress, inputAsset, outputAsset]);
+  const { inputAsset, outputAsset, error, inputAmount, outputAmount } =
+    swapStore();
 
   const shouldShowDetails = useMemo(() => {
     return !!(
@@ -59,25 +39,21 @@ export const InputAddressAndFeeRateDetails = ({
   ]);
 
   return (
-    <motion.div
-      variants={detailsExpandAnimation}
-      initial="hidden"
-      animate={shouldShowDetails ? "visible" : "hidden"}
-      className={`flex flex-col overflow-hidden ${
-        shouldShowDetails ? "pointer-events-auto" : "pointer-events-none"
-      }`}
-    >
-      {shouldShowAddress && (
+    <AnimatePresence mode="wait">
+      {shouldShowDetails && (
         <motion.div
-          variants={addressExpandAnimation}
+          variants={detailsExpandAnimation}
           initial="hidden"
           animate="visible"
           exit="exit"
+          className={`flex flex-col overflow-hidden ${
+            shouldShowDetails ? "pointer-events-auto" : "pointer-events-none"
+          }`}
         >
           <InputAddress isValidAddress={isValidBitcoinAddress} />
+          <FeesAndRateDetails />
         </motion.div>
       )}
-      <FeesAndRateDetails />
-    </motion.div>
+    </AnimatePresence>
   );
 };

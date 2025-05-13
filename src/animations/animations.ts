@@ -93,6 +93,12 @@ export const detailsExpandAnimation: Variants = {
     pointerEvents: "auto",
     transition: { duration: 0.3, delay: 0.2, ease: "easeOut" },
   },
+  exit: {
+    opacity: 0,
+    height: 0,
+    marginTop: 0,
+    transition: { duration: 0.3, delay: 0.2, ease: "easeOut" },
+  },
 };
 
 export const addressExpandAnimation: Variants = {
