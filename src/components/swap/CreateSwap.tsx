@@ -10,8 +10,13 @@ import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useSearchParams } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
-import { getAssetFromChainAndSymbol, getQueryParams } from "../../utils/utils";
+import {
+  capitalizeChain,
+  getAssetFromChainAndSymbol,
+  getQueryParams,
+} from "../../utils/utils";
 import { QUERY_PARAMS } from "../../constants/constants";
+import { ecosystems } from "../navbar/connectWallet/constants";
 
 export const CreateSwap = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -44,7 +49,7 @@ export const CreateSwap = () => {
 
   const buttonLabel = useMemo(() => {
     if (needsWalletConnection) {
-      return `Connect ${needsWalletConnection === "starknet" ? "Starknet" : "EVM"} Wallet`;
+      return `Connect ${capitalizeChain(needsWalletConnection)} Wallet`;
     }
     return isInsufficientBalance
       ? "Insufficient balance"
@@ -86,20 +91,17 @@ export const CreateSwap = () => {
   }, [inputAsset, outputAsset]);
 
   const handleConnectWallet = () => {
-    if (needsWalletConnection === "starknet") {
-      setOpenModal(modalNames.connectWallet, {
-        Starknet: true,
-        Bitcoin: false,
-        EVM: false,
-      });
-    }
-    if (needsWalletConnection === "evm") {
-      setOpenModal(modalNames.connectWallet, {
-        EVM: true,
-        Starknet: false,
-        Bitcoin: false,
-      });
-    }
+    if (!needsWalletConnection) return;
+
+    const modalState = Object.values(ecosystems).reduce(
+      (acc, { name }) => {
+        acc[name] = name.toLowerCase() === needsWalletConnection;
+        return acc;
+      },
+      {} as Record<string, boolean>
+    );
+
+    setOpenModal(modalNames.connectWallet, modalState);
   };
 
   useEffect(() => {

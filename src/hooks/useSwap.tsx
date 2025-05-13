@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { swapStore } from "../store/swapStore";
 import { IOType, network, QuoteError } from "../constants/constants";
-import { Asset, isBitcoin } from "@gardenfi/orderbook";
+import { Asset, Chain, isBitcoin, isSolana } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
 import {
@@ -23,6 +23,7 @@ import { ConnectingWalletStore } from "../store/connectWalletStore";
 import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import { formatAmount } from "../utils/utils";
+import { useSolanaWallet } from "./useSolanaWallet";
 // import { useWalletClient } from "wagmi";
 // import { Account } from "viem";
 // import { approve, checkAllowance } from "../utils/approve";
@@ -68,6 +69,7 @@ export const useSwap = () => {
     () => new BigNumber(inputAmount).gt(inputTokenBalance),
     [inputAmount, inputTokenBalance]
   );
+  const { solanaAddress } = useSolanaWallet();
 
   const isBitcoinSwap = useMemo(() => {
     return !!(
@@ -312,17 +314,41 @@ export const useSwap = () => {
     fetchQuote(amount, inputAsset, outputAsset, true);
   };
 
-  const needsWalletConnection = useMemo(() => {
-    if (!evmAddress && !starknetAddress && !account) return false;
-    if (!inputAsset || !outputAsset) return false;
-    if (isEVM(inputAsset.chain) && !evmAddress) return "evm";
-    if (isStarknet(inputAsset.chain) && !starknetAddress) return "starknet";
+  const needsWalletConnection = useMemo<null | string>(() => {
+    if (!inputAsset || !outputAsset) return null;
 
-    if (isEVM(outputAsset.chain) && !evmAddress) return "evm";
-    if (isStarknet(outputAsset.chain) && !starknetAddress) return "starknet";
+    const chainRequirements = {
+      evm: {
+        check: (chain: Chain) => isEVM(chain),
+        address: evmAddress,
+      },
+      starknet: {
+        check: (chain: Chain) => isStarknet(chain),
+        address: starknetAddress,
+      },
+      solana: {
+        check: (chain: Chain) => isSolana(chain),
+        address: solanaAddress,
+      },
+    };
+
+    for (const [chainKey, { check, address }] of Object.entries(
+      chainRequirements
+    )) {
+      if ((check(inputAsset.chain) || check(outputAsset.chain)) && !address) {
+        return chainKey;
+      }
+    }
 
     return null;
-  }, [inputAsset, outputAsset, evmAddress, starknetAddress, account]);
+  }, [
+    inputAsset,
+    outputAsset,
+    evmAddress,
+    starknetAddress,
+    solanaAddress,
+    account,
+  ]);
 
   const handleSwapClick = async () => {
     if (needsWalletConnection) {
@@ -397,7 +423,6 @@ export const useSwap = () => {
         receiveAmount: outputAmountInDecimals,
         additionalData,
       });
-      console.log("swapandinitaite", res);
       if (res.error) {
         if (
           res.error.includes(

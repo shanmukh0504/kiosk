@@ -65,15 +65,17 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   const showOnlySolanaWallets = !!modalData.connectWallet?.Solana;
 
   useEffect(() => {
-    if (showOnlyStarknetWallets) {
-      setSelectedEcosystem(BlockchainType.Starknet);
-    } else if (showOnlyEVMWallets) {
-      setSelectedEcosystem(BlockchainType.EVM);
-    } else if (showOnlyBTCWallets) {
-      setSelectedEcosystem(BlockchainType.Bitcoin);
-    } else if (showOnlySolanaWallets) {
-      setSelectedEcosystem(BlockchainType.Solana);
-    }
+    const selected = showOnlyStarknetWallets
+      ? BlockchainType.Starknet
+      : showOnlyEVMWallets
+        ? BlockchainType.EVM
+        : showOnlyBTCWallets
+          ? BlockchainType.Bitcoin
+          : showOnlySolanaWallets
+            ? BlockchainType.Solana
+            : null;
+
+    if (selected) setSelectedEcosystem(selected);
   }, [
     showOnlyStarknetWallets,
     showOnlyEVMWallets,
@@ -82,22 +84,27 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   ]);
 
   const allAvailableWallets = useMemo(() => {
-    let allWallets;
-    allWallets = getAvailableWallets(
+    let allWallets = getAvailableWallets(
       availableWallets,
       connectors,
       starknetConnectors,
       solanaWallets
     );
 
-    if (selectedEcosystem === BlockchainType.Bitcoin)
-      return allWallets.filter((wallet) => wallet.isBitcoin);
-    else if (selectedEcosystem === BlockchainType.EVM)
-      return allWallets.filter((wallet) => wallet.isEVM);
-    else if (selectedEcosystem === BlockchainType.Starknet)
-      return allWallets.filter((wallet) => wallet.isStarknet);
-    else if (selectedEcosystem === BlockchainType.Solana)
-      return allWallets.filter((wallet) => wallet.isSolana);
+    switch (selectedEcosystem) {
+      case BlockchainType.Bitcoin:
+        allWallets = allWallets.filter((wallet) => wallet.isBitcoin);
+        break;
+      case BlockchainType.EVM:
+        allWallets = allWallets.filter((wallet) => wallet.isEVM);
+        break;
+      case BlockchainType.Starknet:
+        allWallets = allWallets.filter((wallet) => wallet.isStarknet);
+        break;
+      case BlockchainType.Solana:
+        allWallets = allWallets.filter((wallet) => wallet.isSolana);
+        break;
+    }
 
     if (
       typeof window !== "undefined" &&

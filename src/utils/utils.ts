@@ -99,6 +99,11 @@ export const scrollToTop = () => {
 export const toXOnly = (pubKey: string) =>
   pubKey.length === 64 ? pubKey : pubKey.slice(2);
 
+export const capitalizeChain = (chainKey: string) => {
+  if (chainKey === "evm") return "EVM";
+  return chainKey.charAt(0).toUpperCase() + chainKey.slice(1);
+};
+
 export const starknetAddressToXOnly = (address: string) => {
   const xOnly = address.slice(2);
   const trimmed = xOnly.replace(/^0+/, "");

@@ -1,7 +1,6 @@
 import { Network } from "@gardenfi/utils";
 import { network } from "../../../constants/constants";
 
-// Ecosystem enum
 export enum Ecosystem {
   BITCOIN = "bitcoin",
   EVM = "evm",
@@ -9,7 +8,6 @@ export enum Ecosystem {
   SOLANA = "solana",
 }
 
-// Ecosystem configuration
 export const ecosystems = {
   [Ecosystem.BITCOIN]: {
     name: "Bitcoin",
