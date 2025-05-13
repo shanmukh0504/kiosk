@@ -73,6 +73,8 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "starknet_sepolia",
   "hyperliquid",
   "starknet",
+  "solana",
+  "solana_testnet",
 ] as const;
 
 export const QUERY_PARAMS = {

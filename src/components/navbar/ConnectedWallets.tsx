@@ -9,12 +9,14 @@ import { OrderStatus } from "@gardenfi/core";
 import { useEffect } from "react";
 import { useGarden } from "@gardenfi/react-hooks";
 import { Loader } from "../../common/Loader";
+import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 
 const ConnectedWallets = () => {
   const { address } = useEVMWallet();
   const { setOpenModal } = modalStore();
   const { starknetAddress } = useStarknetWallet();
   const { account: btcAddress } = useBitcoinWallet();
+  const { solanaAddress } = useSolanaWallet();
   const { pendingOrders } = useGarden();
   const { pendingOrders: pendingOrdersFromStore, setPendingOrders } =
     pendingOrdersStore();
@@ -28,7 +30,6 @@ const ConnectedWallets = () => {
       order.status !== OrderStatus.CounterPartyRedeemed &&
       order.status !== OrderStatus.Completed
   ).length;
-
   useEffect(() => {
     if (pendingOrders) {
       setPendingOrders(pendingOrders);
@@ -64,6 +65,13 @@ const ConnectedWallets = () => {
             src={ecosystems.starknet.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="Starknet wallet"
+          />
+        )}
+        {solanaAddress && (
+          <img
+            src={ecosystems.solana.icon}
+            className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            alt="Solana wallet"
           />
         )}
         {pendingOrdersCount ? (

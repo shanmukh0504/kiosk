@@ -24,16 +24,18 @@ import { ConnectingWalletStore } from "../../../store/connectWalletStore";
 import { BlockchainType } from "@gardenfi/orderbook";
 import { STARKNET_CONFIG } from "@gardenfi/core";
 import { network } from "../../../constants/constants";
+import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
+import { Wallet as SolanaWallet } from "@solana/wallet-adapter-react";
 
 type ConnectWalletProps = {
   open: boolean;
   onClose: () => void;
 };
-
 export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   const [multiWalletConnector, setMultiWalletConnector] = useState<{
     evm: Connector;
-    btc: IInjectedBitcoinProvider;
+    btc?: IInjectedBitcoinProvider;
+    sol?: SolanaWallet;
   }>();
   const [selectedEcosystem, setSelectedEcosystem] =
     useState<BlockchainType | null>(null);
@@ -49,12 +51,19 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   } = useStarknetWallet();
   const { availableWallets, connect, provider } = useBitcoinWallet();
   const { connectingWallet, setConnectingWallet } = ConnectingWalletStore();
+  const {
+    solanaWallets,
+    solanaConnect,
+    solanaConnected,
+    solanaDisconnect,
+    solanaSelectedWallet,
+  } = useSolanaWallet();
   const { modalData, setOpenModal } = modalStore();
   const showOnlyBTCWallets = !!modalData.connectWallet?.Bitcoin;
   const showOnlyStarknetWallets = !!modalData.connectWallet?.Starknet;
   const showOnlyEVMWallets = !!modalData.connectWallet?.EVM;
+  const showOnlySolanaWallets = !!modalData.connectWallet?.Solana;
 
-  // Add useEffect to handle initial ecosystem selection
   useEffect(() => {
     if (showOnlyStarknetWallets) {
       setSelectedEcosystem(BlockchainType.Starknet);
@@ -62,15 +71,23 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       setSelectedEcosystem(BlockchainType.EVM);
     } else if (showOnlyBTCWallets) {
       setSelectedEcosystem(BlockchainType.Bitcoin);
+    } else if (showOnlySolanaWallets) {
+      setSelectedEcosystem(BlockchainType.Solana);
     }
-  }, [showOnlyStarknetWallets, showOnlyEVMWallets, showOnlyBTCWallets]);
+  }, [
+    showOnlyStarknetWallets,
+    showOnlyEVMWallets,
+    showOnlyBTCWallets,
+    showOnlySolanaWallets,
+  ]);
 
   const allAvailableWallets = useMemo(() => {
     let allWallets;
     allWallets = getAvailableWallets(
       availableWallets,
       connectors,
-      starknetConnectors
+      starknetConnectors,
+      solanaWallets
     );
 
     if (selectedEcosystem === BlockchainType.Bitcoin)
@@ -79,6 +96,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       return allWallets.filter((wallet) => wallet.isEVM);
     else if (selectedEcosystem === BlockchainType.Starknet)
       return allWallets.filter((wallet) => wallet.isStarknet);
+    else if (selectedEcosystem === BlockchainType.Solana)
+      return allWallets.filter((wallet) => wallet.isSolana);
 
     if (
       typeof window !== "undefined" &&
@@ -108,7 +127,6 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       return;
     }
     setConnectingWallet(connector.id);
-
     try {
       if (connector.isBitcoin && connector.isEVM) {
         if (!connector.wallet?.evmWallet || !connector.wallet?.btcWallet)
@@ -116,6 +134,16 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         setMultiWalletConnector({
           evm: connector.wallet.evmWallet,
           btc: connector.wallet.btcWallet,
+        });
+        return;
+      }
+
+      if (connector.isSolana && connector.isEVM) {
+        if (!connector.wallet?.evmWallet || !connector.wallet?.solanaWallet)
+          return;
+        setMultiWalletConnector({
+          evm: connector.wallet.evmWallet,
+          sol: connector.wallet.solanaWallet,
         });
         return;
       }
@@ -172,7 +200,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         const chainId = await connector.wallet.starknetWallet.chainId();
         // console.log("Current Chain ID:", chainId);
 
-        const targetChainId = STARKNET_CONFIG[network].chainId;
+        const targetChainId =
+          STARKNET_CONFIG[network as keyof typeof STARKNET_CONFIG].chainId;
         const currentChainIdHex = "0x" + chainId.toString(16);
         if (currentChainIdHex.toLowerCase() !== targetChainId.toLowerCase()) {
           try {
@@ -183,9 +212,14 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
             await starknetDisconnect();
           }
         }
+      } else if (connector.isSolana) {
+        if (!connector.wallet.solanaWallet) return;
+        solanaConnect(connector.wallet.solanaWallet.adapter.name);
+        // console.log("success", success);
       }
     } catch (error) {
       console.error("Error connecting wallet:", error);
+      await solanaDisconnect();
     } finally {
       setConnectingWallet(null);
     }
@@ -258,7 +292,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                   onClick={async () => {
                     await handleConnect(wallet);
                   }}
-                  isConnecting={connectingWallet === wallet.id}
+                  isConnecting={connectingWallet === wallet.id.toLowerCase()}
                   isConnected={{
                     bitcoin: !!(
                       provider &&
@@ -279,6 +313,15 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                       wallet.isStarknet &&
                       starknetConnector.id === wallet.id &&
                       starknetStatus === "connected"
+                    ),
+                    solana: !!(
+                      wallet.isSolana &&
+                      solanaConnected &&
+                      ((wallet.id === "app.phantom" &&
+                        solanaSelectedWallet?.adapter.name === "Phantom") ||
+                        (wallet.id !== "app.phantom" &&
+                          solanaSelectedWallet?.adapter.name.toLowerCase() ===
+                            wallet.id.toLowerCase()))
                     ),
                   }}
                   isAvailable={wallet.isAvailable}

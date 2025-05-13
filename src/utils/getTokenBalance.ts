@@ -56,6 +56,49 @@ const erc20ABI = [
   },
 ];
 
+// const TOKEN_PROGRAM_ID = new PublicKey(
+//   "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+// );
+
+// export const getSolanaTokenBalance = async (
+//   address: string,
+//   asset: Asset
+// ): Promise<number> => {
+//   // if (!p(asset.chain)) return 0;
+
+//   try {
+//     const connection = new Connection("https://api.mainnet-beta.solana.com");
+//     const publicKey = new PublicKey(address);
+
+//     if (asset.tokenAddress === "11111111111111111111111111111111") {
+//       // Native SOL balance
+//       const balance = await connection.getBalance(publicKey);
+//       return formatAmount(balance, asset.decimals, 8);
+//     } else {
+//       // SPL Token balance
+//       const tokenPublicKey = new PublicKey(asset.tokenAddress);
+//       const tokenAccounts = await connection.getTokenAccountsByOwner(
+//         publicKey,
+//         {
+//           mint: tokenPublicKey,
+//           programId: TOKEN_PROGRAM_ID,
+//         }
+//       );
+
+//       if (tokenAccounts.value.length === 0) return 0;
+
+//       const balance = await connection.getTokenAccountBalance(
+//         tokenAccounts.value[0].pubkey
+//       );
+
+//       return balance.value.uiAmount || 0;
+//     }
+//   } catch (error) {
+//     console.error("Error fetching Solana balance:", error);
+//     return 0;
+//   }
+// };
+
 export const getStarknetTokenBalance = async (
   address: string,
   asset: Asset
@@ -64,7 +107,7 @@ export const getStarknetTokenBalance = async (
 
   try {
     const provider = new RpcProvider({
-      nodeUrl: STARKNET_CONFIG[network].nodeUrl,
+      nodeUrl: STARKNET_CONFIG[network as keyof typeof STARKNET_CONFIG].nodeUrl,
     });
 
     const erc20Contract = new Contract(erc20ABI, asset.tokenAddress, provider);

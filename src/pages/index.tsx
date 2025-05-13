@@ -12,10 +12,12 @@ import { GardenProvider } from "@gardenfi/react-hooks";
 import { useWalletClient } from "wagmi";
 import { useAccount } from "@starknet-react/core";
 import { Environment as GardenEnvironment } from "@gardenfi/utils";
+import { useSolanaWallet } from "../hooks/useSolanaWallet";
 
 function App() {
   const { data: walletClient } = useWalletClient();
   const { account: starknetWallet } = useAccount();
+  const { solanaAnchorProvider } = useSolanaWallet();
 
   return (
     <GardenProvider
@@ -29,11 +31,13 @@ function App() {
                 info: import.meta.env.VITE_INFO_URL,
                 evmRelay: import.meta.env.VITE_RELAYER_URL,
                 starknetRelay: import.meta.env.VITE_STARKNET_URL,
+                environment: GardenEnvironment.TESTNET,
               }
             : (network as unknown as GardenEnvironment),
         wallets: {
           evm: walletClient,
           starknet: starknetWallet,
+          solana: solanaAnchorProvider!,
         },
       }}
     >
