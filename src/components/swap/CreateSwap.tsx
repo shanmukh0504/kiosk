@@ -4,15 +4,13 @@ import { getTimeEstimates, IOType } from "../../constants/constants";
 import { BTC, swapStore } from "../../store/swapStore";
 import { useEffect, useMemo, useState } from "react";
 import { useSwap } from "../../hooks/useSwap";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useSearchParams } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { Errors } from "../../constants/errors";
-import { isBitcoin } from "@gardenfi/orderbook";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { getAssetFromChainAndSymbol, getQueryParams } from "../../utils/utils";
 import { QUERY_PARAMS } from "../../constants/constants";
-import SwapDetails from "./SwapDetails";
+import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
 
 export const CreateSwap = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -33,7 +31,6 @@ export const CreateSwap = () => {
     tokenPrices,
     validSwap,
     inputTokenBalance,
-    isEditBTCAddress,
     isApproving,
     isSwapping,
     isValidBitcoinAddress,
@@ -41,7 +38,6 @@ export const CreateSwap = () => {
     needsWalletConnection,
     controller,
   } = useSwap();
-  const { account: btcAddress } = useBitcoinWallet();
   const { setOpenModal } = modalStore();
 
   const buttonLabel = useMemo(() => {
@@ -75,36 +71,6 @@ export const CreateSwap = () => {
     if (!inputAsset || !outputAsset) return "";
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
-
-  const shouldShowDetails = useMemo(() => {
-    return !!(
-      inputAsset &&
-      outputAsset &&
-      !error.inputError &&
-      !error.outputError &&
-      error.swapError !== Errors.insufficientLiquidity &&
-      inputAmount &&
-      outputAmount &&
-      Number(inputAmount) !== 0 &&
-      Number(outputAmount) !== 0
-    );
-  }, [
-    inputAsset,
-    outputAsset,
-    error.inputError,
-    error.outputError,
-    error.swapError,
-    inputAmount,
-    outputAmount,
-  ]);
-
-  const shouldShowAddress = useMemo(() => {
-    return (
-      (isEditBTCAddress || !btcAddress) &&
-      ((inputAsset?.chain && isBitcoin(inputAsset.chain)) ||
-        (outputAsset?.chain && isBitcoin(outputAsset.chain)))
-    );
-  }, [isEditBTCAddress, btcAddress, inputAsset, outputAsset]);
 
   const handleConnectWallet = () => {
     if (needsWalletConnection === "starknet") {
@@ -215,11 +181,8 @@ export const CreateSwap = () => {
             timeEstimate={timeEstimate}
           />
         </div>
-        <SwapDetails
-          shouldShowDetails={shouldShowDetails}
-          shouldShowAddress={!!shouldShowAddress}
+        <InputAddressAndFeeRateDetails
           isValidBitcoinAddress={isValidBitcoinAddress}
-          tokenPrices={tokenPrices}
         />
         <Button
           className={`mt-3 transition-colors duration-500 ${

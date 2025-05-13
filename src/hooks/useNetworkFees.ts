@@ -8,25 +8,34 @@ export const useNetworkFees = (
   isBitcoinOutput: boolean
 ) => {
   const [networkFeesValue, setNetworkFeesValue] = useState<string>("Free");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     let intervalId: number | null = null;
     const fetchNetworkFees = async () => {
       if (isBitcoinOutput) {
-        const fees = await calculateNetworkFees(network);
-        setNetworkFeesValue(`$${formatAmount(fees, 0, 2)}`);
+        setIsLoading(true);
+        try {
+          const fees = await calculateNetworkFees(network);
+          setNetworkFeesValue(`$${formatAmount(fees, 0, 2)}`);
+        } catch (error) {
+          console.error(error);
+          setNetworkFeesValue("Free");
+        } finally {
+          setIsLoading(false);
+        }
       } else {
         setNetworkFeesValue("Free");
       }
     };
     fetchNetworkFees();
     if (isBitcoinOutput) {
-      intervalId = window.setInterval(fetchNetworkFees, 5000);
+      intervalId = window.setInterval(fetchNetworkFees, 15000);
     }
     return () => {
       if (intervalId) window.clearInterval(intervalId);
     };
   }, [network, isBitcoinOutput]);
 
-  return networkFeesValue;
+  return { networkFeesValue, isLoading };
 };

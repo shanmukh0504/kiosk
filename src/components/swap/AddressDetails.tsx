@@ -40,7 +40,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
 
   return (
     <>
-      {address && (
+      {address && chain && (
         <div
           className={`flex cursor-pointer items-center justify-between px-4 transition-all duration-200 ease-in-out hover:bg-white ${
             !isEditBTCAddress || (chain && !isBitcoin(chain))
@@ -49,7 +49,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
           }`}
           onClick={(e) => {
             e.stopPropagation();
-            handleAddressRedirect(address!, chain!);
+            handleAddressRedirect(address, chain);
           }}
         >
           <Typography
@@ -62,7 +62,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
           </Typography>
           <div className="flex items-center gap-2">
             <Typography size="h4" weight="medium">
-              {getTrimmedAddress(address!)}
+              {getTrimmedAddress(address)}
             </Typography>
             <div className="flex gap-1">
               {!isEditBTCAddress && (

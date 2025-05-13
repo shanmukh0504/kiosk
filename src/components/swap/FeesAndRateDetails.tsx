@@ -1,12 +1,12 @@
-import { useState, FC, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   GasStationIcon,
   KeyboardDownIcon,
   SwapHorizontalIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { swapStore, TokenPrices } from "../../store/swapStore";
-import { SwapComparison } from "./SwapComparison";
+import { swapStore } from "../../store/swapStore";
+import { CompetitorComparisons } from "./CompetitorComparisons";
 import { AddressDetails } from "./AddressDetails";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
@@ -17,12 +17,15 @@ import { formatAmount, getProtocolFee } from "../../utils/utils";
 import { formatTime } from "../../utils/timeAndFeeComparison/utils";
 import { getBitcoinNetwork } from "../../constants/constants";
 import { useNetworkFees } from "../../hooks/useNetworkFees";
+import {
+  expandAnimation,
+  fadeAnimation,
+  delayedFadeAnimation,
+  expandWithDelayAnimation,
+} from "../../animations/animations";
 
-type SwapDetailsProps = {
-  tokenPrices: TokenPrices;
-};
-
-export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
+export const FeesAndRateDetails = () => {
+  const { tokenPrices } = swapStore();
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
   const [showComparison, setIsShowComparison] = useState({
     isTime: false,
@@ -37,7 +40,7 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
   const network = getBitcoinNetwork();
   const { account: btcAddress } = useBitcoinWallet();
   const { address } = useEVMWallet();
-  const networkFeesValue = useNetworkFees(
+  const { networkFeesValue, isLoading: isNetworkFeesLoading } = useNetworkFees(
     network,
     outputAsset ? isBitcoin(outputAsset.chain) : false
   );
@@ -58,44 +61,6 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
     () => (outputAsset && isBitcoin(outputAsset.chain) ? btcAddress : address),
     [outputAsset, btcAddress, address]
   );
-
-  const animationConfig = {
-    initial: { opacity: 0, height: 0 },
-    animate: {
-      opacity: 1,
-      height: "auto",
-      transition: {
-        duration: 0.3,
-        ease: "easeInOut",
-      },
-    },
-    exit: {
-      opacity: 0,
-      height: 0,
-      transition: {
-        duration: 0.15,
-        ease: "easeInOut",
-      },
-    },
-  };
-
-  const fadeAnimation = {
-    initial: { opacity: 0 },
-    animate: {
-      opacity: 1,
-      transition: {
-        duration: 0.2,
-        ease: "easeInOut",
-      },
-    },
-    exit: {
-      opacity: 0,
-      transition: {
-        duration: 0.2,
-        ease: "easeInOut",
-      },
-    },
-  };
 
   const handleShowComparison = (type: "time" | "fees") => {
     setIsComparisonVisible(true);
@@ -123,12 +88,11 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
       formatAmount(calculatedRate, 0, decimals).toFixed(decimals)
     );
     setRate(formatted);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [outputAmount]);
+  }, [outputAmount, inputAmount, outputAsset]);
 
   return (
     <>
-      <SwapComparison
+      <CompetitorComparisons
         hide={() => {
           setIsComparisonVisible(false);
           setIsShowComparison({
@@ -185,22 +149,7 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
               {!isDetailsExpanded && (
                 <motion.div
                   key="fees-content"
-                  initial={{ opacity: 0 }}
-                  animate={{
-                    opacity: 1,
-                    transition: {
-                      duration: 0.2,
-                      delay: 0.2,
-                      ease: "easeInOut",
-                    },
-                  }}
-                  exit={{
-                    opacity: 0,
-                    transition: {
-                      duration: 0.2,
-                      ease: "easeInOut",
-                    },
-                  }}
+                  {...delayedFadeAnimation}
                   className="flex items-center gap-1"
                 >
                   <GasStationIcon />
@@ -220,28 +169,7 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
         </div>
         <AnimatePresence>
           {isDetailsExpanded && (
-            <motion.div
-              className="flex flex-col"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{
-                opacity: 1,
-                height: "auto",
-                transition: {
-                  duration: 0.4,
-                  opacity: { delay: 0.1, ease: "easeOut" },
-                  ease: "easeOut",
-                },
-              }}
-              exit={{
-                opacity: 0,
-                height: 0,
-                transition: {
-                  duration: 0.4,
-                  height: { delay: 0.1, ease: "easeOut" },
-                  ease: "easeOut",
-                },
-              }}
-            >
+            <motion.div className="flex flex-col" {...expandWithDelayAnimation}>
               <div className="mt-3 flex items-center justify-between gap-0 px-4 py-1">
                 <Typography
                   size="h5"
@@ -264,23 +192,27 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
                 >
                   Network fee
                 </Typography>
-                <div className="flex gap-5">
-                  <Typography size="h4" weight="medium">
-                    {networkFeesValue}
-                  </Typography>
+                <div className="relative flex gap-5 overflow-hidden rounded-md">
+                  {isNetworkFeesLoading ? (
+                    <div className="shine h-5 w-8 rounded-md" />
+                  ) : (
+                    <Typography size="h4" weight="medium">
+                      {networkFeesValue}
+                    </Typography>
+                  )}
                 </div>
               </div>
               <AnimatePresence mode="wait">
                 {(maxTimeSaved > 0 || maxCostSaved > 0) && (
-                  <motion.div {...animationConfig}>
+                  <motion.div {...expandAnimation}>
                     <div
                       className="z-10 mx-4 my-1 h-px bg-white"
-                      {...animationConfig}
+                      {...expandAnimation}
                     ></div>
                     {maxTimeSaved > 0 && (
                       <motion.div
                         key="time-saved"
-                        {...animationConfig}
+                        {...expandAnimation}
                         className="w-full"
                       >
                         <div
@@ -313,7 +245,7 @@ export const SwapDetailsExpanded: FC<SwapDetailsProps> = ({ tokenPrices }) => {
                     {maxCostSaved > 0 && (
                       <motion.div
                         key="cost-saved"
-                        {...animationConfig}
+                        {...expandAnimation}
                         className="w-full"
                       >
                         <div
