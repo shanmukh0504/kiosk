@@ -528,17 +528,6 @@ export const useSwap = () => {
     const amountInNumber = Number(inputAmount);
     if (!amountInNumber) return;
 
-    if (!isInsufficientBalance) {
-      setError({ outputError: Errors.none, inputError: Errors.none });
-    } else {
-      setError({
-        swapError: Errors.insufficientBalance,
-        outputError: Errors.none,
-        inputError: Errors.none,
-      });
-      return;
-    }
-
     if (amountInNumber < minAmount && inputAsset) {
       setError({
         inputError: Errors.minError(minAmount.toString(), inputAsset?.symbol),
@@ -559,6 +548,18 @@ export const useSwap = () => {
       setAmount(IOType.output, "");
       return;
     }
+
+    if (!isInsufficientBalance) {
+      setError({ outputError: Errors.none, inputError: Errors.none });
+    } else {
+      setError({
+        swapError: Errors.insufficientBalance,
+        outputError: Errors.none,
+        inputError: Errors.none,
+      });
+      return;
+    }
+
     handleInputAmountChange(inputAmount);
   }, [
     inputAmount,
