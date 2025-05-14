@@ -40,10 +40,8 @@ export const FeesAndRateDetails = () => {
   const network = getBitcoinNetwork();
   const { account: btcAddress } = useBitcoinWallet();
   const { address } = useEVMWallet();
-  const { networkFeesValue, isLoading: isNetworkFeesLoading } = useNetworkFees(
-    network,
-    outputAsset ? isBitcoin(outputAsset.chain) : false
-  );
+  const { networkFeesValue, isLoading: isNetworkFeesLoading } =
+    useNetworkFees(network);
 
   const fees = useMemo(
     () => Number(tokenPrices.input) - Number(tokenPrices.output),
@@ -193,11 +191,17 @@ export const FeesAndRateDetails = () => {
                   Network fee
                 </Typography>
                 <div className="relative flex gap-5 overflow-hidden rounded-md">
-                  {isNetworkFeesLoading ? (
-                    <div className="shine h-5 w-8 rounded-md" />
+                  {outputAsset && !isBitcoin(outputAsset.chain) ? (
+                    <Typography size="h4" weight="medium">
+                      Free
+                    </Typography>
                   ) : (
                     <Typography size="h4" weight="medium">
-                      {networkFeesValue}
+                      {isNetworkFeesLoading ? (
+                        <div className="h-5 w-10 animate-pulse rounded-md bg-gray-200" />
+                      ) : (
+                        networkFeesValue
+                      )}
                     </Typography>
                   )}
                 </div>
@@ -213,7 +217,7 @@ export const FeesAndRateDetails = () => {
                       <motion.div
                         key="time-saved"
                         {...expandAnimation}
-                        className="w-full"
+                        className="h-full w-full"
                       >
                         <div
                           className="relative z-10 flex cursor-pointer items-center justify-between gap-0 px-4 transition-all duration-200 ease-in-out hover:bg-white"

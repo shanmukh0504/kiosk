@@ -228,6 +228,9 @@ export const useSwap = () => {
             .multipliedBy(quote.val.output_token_price)
             .toFixed(2);
 
+          console.log("inputTokenPrice", inputTokenPrice);
+          console.log("outputTokenPrice", outputTokenPrice);
+
           setTokenPrices({
             input: inputTokenPrice,
             output: outputTokenPrice,
@@ -260,16 +263,20 @@ export const useSwap = () => {
 
   const handleInputAmountChange = useCallback(
     async (amount: string) => {
+      console.log("Called INPUT CHANGE", amount);
+
       setAmount(IOType.input, amount);
 
       const amountInNumber = Number(amount);
 
       if (!amountInNumber) {
+        console.log("INPUT AMOUNT IS 0");
         // cancel debounced fetch quote
         debouncedFetchQuote.cancel();
         // abort if any calls are already in progress
         if (controller.current) controller.current.abort();
         setAmount(IOType.output, "");
+        setTokenPrices({ input: "0", output: "0" });
         setError({ inputError: Errors.none, swapError: undefined });
         return;
       }
@@ -279,7 +286,8 @@ export const useSwap = () => {
           inputError: Errors.minError(minAmount.toString(), inputAsset?.symbol),
           swapError: undefined,
         });
-        setAmount(IOType.output, "0");
+        setAmount(IOType.output, "");
+        setTokenPrices({ input: "0", output: "0" });
         // cancel debounced fetch quote
         debouncedFetchQuote.cancel();
         // abort if any calls are already in progress
@@ -315,6 +323,7 @@ export const useSwap = () => {
       debouncedFetchQuote,
       setAmount,
       setError,
+      setTokenPrices,
     ]
   );
 
@@ -518,18 +527,14 @@ export const useSwap = () => {
     isComparisonVisible,
   ]);
 
-  //call input amount handler when assets are changed
-  useEffect(() => {
-    if (!inputAsset || !outputAsset) return;
-    setError({ outputError: "", inputError: "" });
-    handleInputAmountChange(inputAmount);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inputAsset, handleInputAmountChange, setError]);
-
   //set token prices to 0 if input and output amounts are 0 and set liq error to false
   useEffect(() => {
-    if (!inputAmount || !outputAmount)
+    if (!inputAmount && !outputAmount) {
       setError({ outputError: "", inputError: "" });
+      setTokenPrices({ input: "0", output: "0" });
+      handleInputAmountChange(inputAmount);
+      return;
+    }
     if (!inputAmount || !minAmount || !maxAmount) return;
     const amountInNumber = Number(inputAmount);
     if (!amountInNumber) return;
@@ -551,6 +556,7 @@ export const useSwap = () => {
         swapError: Errors.none,
       });
       setTokenPrices({ input: "0", output: "0" });
+      setAmount(IOType.output, "");
       return;
     }
     if (amountInNumber > maxAmount && inputAsset) {
@@ -560,10 +566,13 @@ export const useSwap = () => {
         swapError: Errors.none,
       });
       setTokenPrices({ input: "0", output: "0" });
+      setAmount(IOType.output, "");
       return;
     }
+    handleInputAmountChange(inputAmount);
   }, [
     inputAmount,
+    outputAmount,
     inputAsset,
     minAmount,
     maxAmount,
@@ -572,6 +581,8 @@ export const useSwap = () => {
     setError,
     isInsufficientBalance,
     setTokenPrices,
+    handleInputAmountChange,
+    setAmount,
   ]);
 
   //set btc address if bitcoin wallet is connected
@@ -597,12 +608,12 @@ export const useSwap = () => {
     isBitcoinSwap,
     inputTokenBalance,
     isValidBitcoinAddress,
+    needsWalletConnection,
+    controller,
     swapAssets,
     handleInputAmountChange,
     handleOutputAmountChange,
     setIsEditBTCAddress,
-    needsWalletConnection,
     handleSwapClick,
-    controller,
   };
 };

@@ -25,14 +25,14 @@ export const fadeAnimation: Variants = {
   animate: {
     opacity: 1,
     transition: {
-      duration: 0.2,
+      duration: 0.3,
       ease: "easeInOut",
     },
   },
   exit: {
     opacity: 0,
     transition: {
-      duration: 0.2,
+      duration: 0.1,
       ease: "easeInOut",
     },
   },
@@ -43,15 +43,15 @@ export const delayedFadeAnimation: Variants = {
   animate: {
     opacity: 1,
     transition: {
-      duration: 0.2,
-      delay: 0.2,
+      duration: 0.3,
+      delay: 0.1,
       ease: "easeInOut",
     },
   },
   exit: {
     opacity: 0,
     transition: {
-      duration: 0.2,
+      duration: 0.1,
       ease: "easeInOut",
     },
   },
@@ -110,7 +110,7 @@ export const addressExpandAnimation: Variants = {
     transition: {
       duration: 0.3,
       ease: "easeOut",
-      opacity: { duration: 0.15 },
+      height: { duration: 0.2, ease: "easeOut" },
     },
   },
   visible: {
@@ -121,7 +121,7 @@ export const addressExpandAnimation: Variants = {
     transition: {
       duration: 0.3,
       ease: "easeOut",
-      opacity: { duration: 0.15 },
+      height: { duration: 0.2, ease: "easeOut" },
     },
   },
   exit: {
@@ -132,7 +132,7 @@ export const addressExpandAnimation: Variants = {
     transition: {
       duration: 0.3,
       ease: "easeOut",
-      opacity: { duration: 0.15 },
+      opacity: { duration: 0.2, ease: "easeOut" },
     },
   },
 };

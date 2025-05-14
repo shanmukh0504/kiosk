@@ -32,6 +32,7 @@ export const getThorFee = async (
         slippage: 3,
         includeTx: true,
         cfBoost: false,
+        provider: "THORCHAIN",
       },
       {
         timeout: 10000,
@@ -75,6 +76,9 @@ export const getThorFee = async (
     const outputValue = new BigNumber(bestProvider.expectedBuyAmount)
       .multipliedBy(outputTokenMeta?.price ?? 0)
       .toNumber();
+
+    console.log("input Value", inputValue);
+    console.log("output Value", outputValue);
 
     const fee = inputValue - outputValue;
     const swapDuration = bestProvider.estimatedTime.total;
