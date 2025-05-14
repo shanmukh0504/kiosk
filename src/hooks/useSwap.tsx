@@ -166,8 +166,10 @@ export const useSwap = () => {
             toAsset,
             amount: amountInDecimals.toNumber(),
             isExactOut,
-            request: {
-              signal: controller.current.signal,
+            options: {
+              request: {
+                signal: controller.current.signal,
+              },
             },
           });
           if (!quote || quote.error) {
