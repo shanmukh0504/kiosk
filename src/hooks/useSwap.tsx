@@ -68,10 +68,7 @@ export const useSwap = () => {
   const { starknetAddress } = useStarknetWallet();
   const { setOpenModal } = modalStore();
   const isInsufficientBalance = useMemo(
-    () =>
-      !inputTokenBalance
-        ? true
-        : new BigNumber(inputAmount).gt(inputTokenBalance),
+    () => new BigNumber(inputAmount).gt(inputTokenBalance),
     [inputAmount, inputTokenBalance]
   );
 
@@ -530,8 +527,6 @@ export const useSwap = () => {
     if (!inputAmount || !minAmount || !maxAmount) return;
     const amountInNumber = Number(inputAmount);
     if (!amountInNumber) return;
-
-    console.log("isInsufficientBalance", isInsufficientBalance);
 
     if (!isInsufficientBalance) {
       setError({ outputError: Errors.none, inputError: Errors.none });
