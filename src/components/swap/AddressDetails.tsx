@@ -6,6 +6,7 @@ import { ArrowNorthEastIcon, EditIcon } from "@gardenfi/garden-book";
 import { Typography } from "@gardenfi/garden-book";
 import { useSwap } from "../../hooks/useSwap";
 import { Tooltip } from "../../common/Tooltip";
+import { swapStore } from "../../store/swapStore";
 
 type AddressDetailsProps = {
   isRefund?: boolean;
@@ -18,8 +19,8 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
 }) => {
   const { chains } = assetInfoStore();
   const tooltipId = useId();
-  const { inputAsset, outputAsset, setIsEditBTCAddress, isEditBTCAddress } =
-    useSwap();
+  const { inputAsset, outputAsset, isEditBTCAddress } = useSwap();
+  const { setIsEditBTCAddress } = swapStore();
 
   const chain = useMemo(() => {
     return isRefund

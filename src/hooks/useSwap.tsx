@@ -53,7 +53,6 @@ export const useSwap = () => {
     setTokenPrices,
     clearSwapState,
     setBtcAddress,
-    setIsEditBTCAddress,
   } = swapStore();
   const { tokenBalance: inputTokenBalance } = useBalances(inputAsset);
   const { strategies } = assetInfoStore();
@@ -70,10 +69,10 @@ export const useSwap = () => {
   const { setOpenModal } = modalStore();
   const isInsufficientBalance = useMemo(
     () =>
-      !inputTokenBalance && (btcAddress || starknetAddress || evmAddress)
+      !inputTokenBalance
         ? true
         : new BigNumber(inputAmount).gt(inputTokenBalance),
-    [inputAmount, inputTokenBalance, btcAddress, starknetAddress, evmAddress]
+    [inputAmount, inputTokenBalance]
   );
 
   const isBitcoinSwap = useMemo(() => {
@@ -228,9 +227,6 @@ export const useSwap = () => {
             .multipliedBy(quote.val.output_token_price)
             .toFixed(2);
 
-          console.log("inputTokenPrice", inputTokenPrice);
-          console.log("outputTokenPrice", outputTokenPrice);
-
           setTokenPrices({
             input: inputTokenPrice,
             output: outputTokenPrice,
@@ -263,14 +259,11 @@ export const useSwap = () => {
 
   const handleInputAmountChange = useCallback(
     async (amount: string) => {
-      console.log("Called INPUT CHANGE", amount);
-
       setAmount(IOType.input, amount);
 
       const amountInNumber = Number(amount);
 
       if (!amountInNumber) {
-        console.log("INPUT AMOUNT IS 0");
         // cancel debounced fetch quote
         debouncedFetchQuote.cancel();
         // abort if any calls are already in progress
@@ -533,20 +526,22 @@ export const useSwap = () => {
       setError({ outputError: "", inputError: "" });
       setTokenPrices({ input: "0", output: "0" });
       handleInputAmountChange(inputAmount);
-      return;
     }
     if (!inputAmount || !minAmount || !maxAmount) return;
     const amountInNumber = Number(inputAmount);
     if (!amountInNumber) return;
 
+    console.log("isInsufficientBalance", isInsufficientBalance);
+
     if (!isInsufficientBalance) {
       setError({ outputError: Errors.none, inputError: Errors.none });
     } else {
       setError({
+        swapError: Errors.insufficientBalance,
         outputError: Errors.none,
         inputError: Errors.none,
-        swapError: Errors.insufficientBalance,
       });
+      return;
     }
 
     if (amountInNumber < minAmount && inputAsset) {
@@ -613,7 +608,6 @@ export const useSwap = () => {
     swapAssets,
     handleInputAmountChange,
     handleOutputAmountChange,
-    setIsEditBTCAddress,
     handleSwapClick,
   };
 };

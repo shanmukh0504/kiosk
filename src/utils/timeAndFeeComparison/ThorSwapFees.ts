@@ -77,9 +77,6 @@ export const getThorFee = async (
       .multipliedBy(outputTokenMeta?.price ?? 0)
       .toNumber();
 
-    console.log("input Value", inputValue);
-    console.log("output Value", outputValue);
-
     const fee = inputValue - outputValue;
     const swapDuration = bestProvider.estimatedTime.total;
 

@@ -1,26 +1,27 @@
-import { useId, useRef, ChangeEvent, FC, useMemo } from "react";
+import { useId, useRef, ChangeEvent, useMemo } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { Tooltip } from "../../common/Tooltip";
 import { swapStore } from "../../store/swapStore";
 import { isBitcoin } from "@gardenfi/orderbook";
 import { motion } from "framer-motion";
 import { addressExpandAnimation } from "../../animations/animations";
+import { useSwap } from "../../hooks/useSwap";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 
-type InputAddressProps = {
-  isValidAddress: boolean;
-};
-
-export const InputAddress: FC<InputAddressProps> = ({ isValidAddress }) => {
+export const InputAddress = () => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const { isValidBitcoinAddress } = useSwap();
 
   const tooltipId = useId();
   const {
     inputAsset,
-    btcAddress,
     isEditBTCAddress,
     outputAsset,
     setBtcAddress,
+    btcAddress: storedBtcAddress,
   } = swapStore();
+
+  const { account: walletBtcAddress } = useBitcoinWallet();
 
   const isRecoveryAddress = useMemo(
     () => !!(inputAsset && isBitcoin(inputAsset.chain)),
@@ -29,11 +30,11 @@ export const InputAddress: FC<InputAddressProps> = ({ isValidAddress }) => {
 
   const shouldShowAddress = useMemo(() => {
     return (
-      (isEditBTCAddress || !btcAddress) &&
+      (isEditBTCAddress || !walletBtcAddress) &&
       ((inputAsset?.chain && isBitcoin(inputAsset.chain)) ||
         (outputAsset?.chain && isBitcoin(outputAsset.chain)))
     );
-  }, [isEditBTCAddress, btcAddress, inputAsset, outputAsset]);
+  }, [isEditBTCAddress, walletBtcAddress, inputAsset, outputAsset]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value;
@@ -42,6 +43,9 @@ export const InputAddress: FC<InputAddressProps> = ({ isValidAddress }) => {
     }
     setBtcAddress(input);
   };
+
+  // Use stored address if available, otherwise use wallet address
+  const displayAddress = storedBtcAddress || walletBtcAddress || "";
 
   return (
     shouldShowAddress && (
@@ -65,10 +69,10 @@ export const InputAddress: FC<InputAddressProps> = ({ isValidAddress }) => {
             <input
               ref={inputRef}
               className={`w-full outline-none placeholder:text-mid-grey ${
-                !isValidAddress ? "text-red-600" : ""
+                !isValidBitcoinAddress ? "text-red-600" : ""
               }`}
               type="text"
-              value={btcAddress}
+              value={displayAddress}
               placeholder="Your Bitcoin address"
               onChange={handleChange}
             />

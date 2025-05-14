@@ -33,7 +33,6 @@ export const CreateSwap = () => {
     inputTokenBalance,
     isApproving,
     isSwapping,
-    isValidBitcoinAddress,
     handleSwapClick,
     needsWalletConnection,
     controller,
@@ -181,9 +180,7 @@ export const CreateSwap = () => {
             timeEstimate={timeEstimate}
           />
         </div>
-        <InputAddressAndFeeRateDetails
-          isValidBitcoinAddress={isValidBitcoinAddress}
-        />
+        <InputAddressAndFeeRateDetails />
         <Button
           className={`mt-3 transition-colors duration-500 ${
             !needsWalletConnection && buttonLabel !== "Swap"

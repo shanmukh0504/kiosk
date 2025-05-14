@@ -6,13 +6,7 @@ import { detailsExpandAnimation } from "../../animations/animations";
 import { Errors } from "../../constants/errors";
 import { useMemo } from "react";
 
-type InputAddressAndFeeRateDetailsProps = {
-  isValidBitcoinAddress: boolean;
-};
-
-export const InputAddressAndFeeRateDetails = ({
-  isValidBitcoinAddress,
-}: InputAddressAndFeeRateDetailsProps) => {
+export const InputAddressAndFeeRateDetails = () => {
   const { inputAsset, outputAsset, error, inputAmount, outputAmount } =
     swapStore();
 
@@ -50,7 +44,7 @@ export const InputAddressAndFeeRateDetails = ({
             shouldShowDetails ? "pointer-events-auto" : "pointer-events-none"
           }`}
         >
-          <InputAddress isValidAddress={isValidBitcoinAddress} />
+          <InputAddress />
           <FeesAndRateDetails />
         </motion.div>
       )}
