@@ -31,14 +31,14 @@ type ConnectWalletProps = {
 
 export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   const [multiWalletConnector, setMultiWalletConnector] = useState<{
-    evm: Connector | undefined;
-    btc: IInjectedBitcoinProvider;
-    starknet: StarknetConnector | undefined;
+    [BlockchainType.EVM]?: Connector | undefined;
+    [BlockchainType.Bitcoin]?: IInjectedBitcoinProvider;
+    [BlockchainType.Starknet]?: StarknetConnector | undefined;
   }>();
   const [selectedEcosystem, setSelectedEcosystem] =
     useState<BlockchainType | null>(null);
 
-  const { connectors, connectAsync, connector} = useEVMWallet();
+  const { connectors, connectAsync, connector } = useEVMWallet();
   const {
     starknetConnectors,
     starknetConnector,
@@ -121,9 +121,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           return;
 
         setMultiWalletConnector({
-          evm: connector.wallet.evmWallet,
-          btc: connector.wallet.btcWallet,
-          starknet: connector.wallet.starknetWallet,
+          [BlockchainType.EVM]: connector.wallet.evmWallet,
+          [BlockchainType.Bitcoin]: connector.wallet.btcWallet,
+          [BlockchainType.Starknet]: connector.wallet.starknetWallet,
         });
         return;
       }
@@ -258,12 +258,12 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                   }}
                   isConnecting={connectingWallet === wallet.id}
                   isConnected={{
-                    bitcoin: !!(
+                    [BlockchainType.Bitcoin]: !!(
                       provider &&
                       (provider.id === wallet.id ||
                         provider.id === evmToBTCid[wallet.id])
                     ),
-                    evm: !!(
+                    [BlockchainType.EVM]: !!(
                       connector &&
                       (connector.id === wallet.id ||
                         (typeof window !== "undefined" &&
@@ -272,7 +272,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                           connector.id === "injected" &&
                           wallet.id === "com.coinbase.wallet"))
                     ),
-                    starknet: !!(
+                    [BlockchainType.Starknet]: !!(
                       starknetConnector &&
                       wallet.isStarknet &&
                       starknetConnector.id === wallet.id &&

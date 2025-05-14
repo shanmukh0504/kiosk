@@ -1,5 +1,5 @@
 import { Button, CheckBox, Typography } from "@gardenfi/garden-book";
-import { EcosystemKeys, ecosystems } from "./constants";
+import { blockChainType, EcosystemKeys, ecosystems } from "./constants";
 import { useState, FC } from "react";
 import { Connector } from "wagmi";
 import { Connector as StarknetConnector } from "@starknet-react/core";
@@ -15,9 +15,9 @@ import { BlockchainType } from "@gardenfi/orderbook";
 type Checked = Record<EcosystemKeys, boolean>;
 type MultiWalletConnectionProps = {
   connectors: {
-    evm?: Connector;
-    btc: IInjectedBitcoinProvider;
-    starknet?: StarknetConnector;
+    [BlockchainType.EVM]?: Connector;
+    [BlockchainType.Bitcoin]?: IInjectedBitcoinProvider;
+    [BlockchainType.Starknet]?: StarknetConnector;
   };
   handleClose: () => void;
 };
@@ -26,16 +26,9 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   connectors,
   handleClose,
 }) => {
-  const availableEcosystems = Object.entries(ecosystems).filter(
-    ([, value]) =>
-      (value.name === BlockchainType.EVM && connectors.evm) ||
-      (value.name === BlockchainType.Bitcoin && connectors.btc) ||
-      (value.name === BlockchainType.Starknet && connectors.starknet)
-  );
-
   const [checked, setChecked] = useState(
-    availableEcosystems.reduce((acc, [key]) => {
-      acc[key as EcosystemKeys] = false;
+    Object.keys(ecosystems).reduce((acc, [key]) => {
+      acc[key as blockChainType] = false;
       return acc;
     }, {} as Checked)
   );
@@ -45,6 +38,13 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   const { connectAsync } = useEVMWallet();
   const { starknetConnectAsync, starknetDisconnect, starknetSwitchChain } =
     useStarknetWallet();
+
+  const availableEcosystems = Object.entries(ecosystems).filter(
+    ([, value]) =>
+      (value.name === BlockchainType.EVM && connectors.EVM) ||
+      (value.name === BlockchainType.Bitcoin && connectors.Bitcoin) ||
+      (value.name === BlockchainType.Starknet && connectors.Starknet)
+  );
 
   const handleCheck = (ecosystem: string) => {
     setChecked((prev) => ({
@@ -56,9 +56,9 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   const handleConnect = async () => {
     setLoading(true);
 
-    if (checked.evm) {
-      if (connectors.evm) {
-        const res = await handleEVMConnect(connectors.evm, connectAsync);
+    if (checked[BlockchainType.EVM]) {
+      if (connectors.EVM) {
+        const res = await handleEVMConnect(connectors.EVM, connectAsync);
         if (res.error) {
           setLoading(false);
           handleClose();
@@ -67,14 +67,14 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
       }
     }
 
-    if (checked.bitcoin) {
-      if (!connectors.btc) {
+    if (checked[BlockchainType.Bitcoin]) {
+      if (!connectors.Bitcoin) {
         setLoading(false);
         handleClose();
         return;
       }
 
-      const bitcoinConnectRes = await connect(connectors.btc);
+      const bitcoinConnectRes = await connect(connectors.Bitcoin);
       if (bitcoinConnectRes.error) {
         setLoading(false);
         handleClose();
@@ -82,14 +82,14 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
       }
     }
 
-    if (checked.starknet) {
-      if (!connectors.starknet) {
+    if (checked[BlockchainType.Starknet]) {
+      if (!connectors.Starknet) {
         setLoading(false);
         handleClose();
         return;
       }
       const starknetConnectRes = await handleStarknetConnect(
-        connectors.starknet,
+        connectors.Starknet,
         starknetConnectAsync,
         starknetSwitchChain,
         starknetDisconnect
@@ -106,9 +106,9 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   return (
     <div className="flex flex-col gap-5">
       <div className="flex w-fit items-center gap-2 rounded-full bg-white px-3 py-1">
-        <img src={connectors.btc.icon} alt={"icon"} className="h-5 w-5" />
+        <img src={connectors.Bitcoin?.icon} alt={"icon"} className="h-5 w-5" />
         <Typography size="h3" weight="medium">
-          {connectors.btc.name}
+          {connectors.Bitcoin?.name}
         </Typography>
       </div>
       <div className="flex flex-col gap-1 rounded-2xl bg-white/50 py-4">

@@ -1,5 +1,6 @@
 import { Network } from "@gardenfi/utils";
 import { network } from "../../../constants/constants";
+import { BlockchainType } from "@gardenfi/orderbook";
 
 export const evmToBTCid: Record<string, string> = {
   "com.okex.wallet": "okx",
@@ -14,21 +15,23 @@ export const btcToEVMid: Record<string, string> = {
 export const MAX_VISIBLE_WALLETS = 3;
 
 export const ecosystems = {
-  bitcoin: {
+  [BlockchainType.Bitcoin]: {
     name: "Bitcoin",
     icon: "https://garden-finance.imgix.net/token-images/bitcoin.svg",
   },
-  evm: {
+  [BlockchainType.EVM]: {
     name: "EVM",
     icon: "https://garden-finance.imgix.net/token-images/ethereum.svg",
   },
-  starknet: {
+  [BlockchainType.Starknet]: {
     name: "Starknet",
     icon: "https://garden-finance.imgix.net/starknet-logo.svg",
   },
 } as const;
 
 export type EcosystemKeys = keyof typeof ecosystems;
+
+export type blockChainType = keyof typeof BlockchainType;
 
 type GardenSupportedWalletsType = {
   id: string;
@@ -147,7 +150,7 @@ export const GardenSupportedWallets: Record<
   xverse: {
     id: "xverse",
     name: "Xverse",
-    logo: "https://cdn.prod.website-files.com/624b08d53d7ac60ccfc11d8d/64637a04ad4e523a3e07675c_32x32.png",
+    logo: "https://garden-finance.imgix.net/wallets/xverse.svg",
     installLink: "https://www.xverse.app/download",
     isStarknetSupported: false,
     isBitcoinSupported: true,
