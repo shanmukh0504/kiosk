@@ -504,6 +504,9 @@ export const useSwap = () => {
       isComparisonVisible
     )
       return;
+
+    fetchQuote(inputAmount, inputAsset, outputAsset, false);
+
     const interval = setInterval(() => {
       fetchQuote(inputAmount, inputAsset, outputAsset, false);
     }, 5000);
