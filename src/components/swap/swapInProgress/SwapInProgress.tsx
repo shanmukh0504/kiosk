@@ -21,7 +21,7 @@ import orderInProgressStore from "../../../store/orderInProgressStore";
 export const SwapInProgress = () => {
   const { order, setIsOpen } = orderInProgressStore();
   const { assets } = assetInfoStore();
-  const { orderProgress, viewableStatus } = useOrderStatus();
+  const { orderProgress, viewableStatus, confirmationsString } = useOrderStatus();
 
   const { depositAddress, inputAsset, outputAsset } = useMemo(() => {
     return {
@@ -103,6 +103,7 @@ export const SwapInProgress = () => {
       <OrderStatus
         orderProgress={orderProgress}
         viewableStatus={viewableStatus}
+        confirmationString={confirmationsString}
       />
       <OrderDetails order={order} />
     </div>

@@ -141,7 +141,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     <div className="transition-left left-auto top-60 z-40 flex flex-col gap-3 rounded-[20px] duration-700 ease-cubic-in-out sm:w-[480px]">
       <div className="flex items-center justify-between p-1">
         <Typography size="h4" weight="bold">
-          Token select
+          {`Select token to ${isAssetSelectorOpen.type === IOType.input ? "send" : "recieve"}`}
         </Typography>
         <CloseIcon className="cursor-pointer" onClick={onClose} />
       </div>

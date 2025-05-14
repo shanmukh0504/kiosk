@@ -1,4 +1,5 @@
 import {
+  CancelIcon,
   KeyboardDownIcon,
   RadioCheckedIcon,
   Typography,
@@ -9,11 +10,13 @@ import { OrderProgress } from "../../../hooks/useOrderStatus";
 type OrderStatusProps = {
   orderProgress: OrderProgress | undefined;
   viewableStatus?: string | null;
+  confirmationString: string;
 };
 
 export const OrderStatus: FC<OrderStatusProps> = ({
   orderProgress,
   viewableStatus,
+  confirmationString,
 }) => {
   const [dropdown, setDropdown] = useState(false);
 
@@ -81,7 +84,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({
                         <span
                           className="absolute top-2 z-10 h-full border-l-[1px] border-dark-grey"
                           style={{
-                            height: "calc(100% + 8px)",
+                            height: "calc(100% + 6px)",
                             borderImage:
                               Object.values(orderProgress)[index + 1].status ===
                               "inProgress"
@@ -101,12 +104,26 @@ export const OrderStatus: FC<OrderStatusProps> = ({
                     {step.status === "pending" && (
                       <div className="h-2 w-2 -translate-x-[3.5px] rounded-full border-[1px] border-dark-grey" />
                     )}
-                    <Typography
-                      size="h3"
-                      weight={currentStatus === step.title ? "bold" : "medium"}
-                    >
-                      {step.title}
-                    </Typography>
+                    {step.status === "cancel" && (
+                      <span className="border-error-red relative z-20 flex h-2 w-2 -translate-x-[3.5px] items-center justify-center rounded-full border bg-white">
+                        <CancelIcon className="absolute h-2 w-2" />
+                      </span>
+                    )}
+                    <div className="flex w-full items-center justify-between">
+                      <Typography
+                        size="h4"
+                        weight={
+                          currentStatus === step.title ? "bold" : "medium"
+                        }
+                      >
+                        {step.title}
+                      </Typography>
+                      {index === 1 && step.status === "inProgress" && (
+                        <Typography size="h5" weight="medium">
+                          {confirmationString}
+                        </Typography>
+                      )}
+                    </div>
                   </li>
                 ))}
             </ul>
