@@ -220,9 +220,11 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           }
         }
       } else if (connector.isSolana) {
-        if (!connector.wallet.solanaWallet) return;
-        solanaConnect(connector.wallet.solanaWallet.adapter.name);
-        // console.log("success", success);
+        if (!connector.wallet?.solanaWallet) return;
+        const success = await solanaConnect(
+          connector.wallet.solanaWallet.adapter.name
+        );
+        if (!success) throw new Error("Solana connection failed");
       }
     } catch (error) {
       console.error("Error connecting wallet:", error);

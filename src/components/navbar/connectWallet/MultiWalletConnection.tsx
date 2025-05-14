@@ -14,7 +14,7 @@ import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
 type Checked = Record<EcosystemKeys, boolean>;
 type MultiWalletConnectionProps = {
   connectors: {
-    evm: Connector;
+    evm?: Connector;
     btc?: IInjectedBitcoinProvider;
     sol?: SolanaWallet;
   };
@@ -52,16 +52,12 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
 
   const [checked, setChecked] = useState(
     Object.keys(supportedEcosystems).reduce((acc, key) => {
-      if (key === "evm") acc[key as EcosystemKeys] = true;
-      else acc[key as EcosystemKeys] = false;
+      acc[key as EcosystemKeys] = false;
       return acc;
     }, {} as Checked)
   );
 
   const handleCheck = (ecosystem: string) => {
-    if (ecosystem === "evm") {
-      return;
-    }
     setChecked((prev) => ({
       ...prev,
       [ecosystem]: !prev[ecosystem as EcosystemKeys],
@@ -72,12 +68,13 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
     setLoading(true);
 
     try {
-      const res = await handleEVMConnect(connectors.evm, connectAsync);
-
-      if (res.error) {
-        setLoading(false);
-        handleClose();
-        return;
+      if (checked.evm && connectors.evm) {
+        const res = await handleEVMConnect(connectors.evm, connectAsync);
+        if (res.error) {
+          setLoading(false);
+          handleClose();
+          return;
+        }
       }
 
       if (checked.bitcoin && connectors.btc) {
@@ -99,6 +96,8 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
       handleClose();
     }
   };
+
+  const isAnyEcosystemSelected = Object.values(checked).some((value) => value);
 
   return (
     <div className="flex flex-col gap-5">
@@ -124,7 +123,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
           </>
         )}
       </div>
-      <div className="flex flex-col gap-1 rounded-2xl bg-white/50 py-4">
+      <div className="flex flex-col gap-1 rounded-2xl bg-white/50 p-4">
         <Typography size="h5" weight="bold" className="px-4">
           Select ecosystems
         </Typography>
@@ -150,10 +149,11 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
         ))}
       </div>
       <Button
-        variant={loading ? "disabled" : "primary"}
+        variant={loading || !isAnyEcosystemSelected ? "disabled" : "primary"}
         className="w-full cursor-pointer"
         onClick={handleConnect}
         loading={loading}
+        disabled={!isAnyEcosystemSelected}
       >
         {loading ? "Connecting" : "Connect"}
       </Button>

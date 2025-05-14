@@ -6,7 +6,7 @@ import {
   isEvmNativeToken,
   isStarknet,
 } from "@gardenfi/orderbook";
-import { with0x } from "@gardenfi/utils";
+import { Network, with0x } from "@gardenfi/utils";
 import BigNumber from "bignumber.js";
 import {
   createPublicClient,
@@ -18,6 +18,7 @@ import { formatAmount } from "./utils";
 import { RpcProvider, Contract } from "starknet";
 import { STARKNET_CONFIG } from "@gardenfi/core";
 import { network } from "../constants/constants";
+import { Connection, PublicKey } from "@solana/web3.js";
 
 const erc20ABI = [
   {
@@ -56,48 +57,49 @@ const erc20ABI = [
   },
 ];
 
-// const TOKEN_PROGRAM_ID = new PublicKey(
-//   "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
-// );
+export const getSolanaTokenBalance = async (
+  address: PublicKey,
+  asset: Asset
+): Promise<number> => {
+  try {
+    const endpoint =
+      network === Network.TESTNET
+        ? "https://api.devnet.solana.com"
+        : "https://api.mainnet-beta.solana.com";
 
-// export const getSolanaTokenBalance = async (
-//   address: string,
-//   asset: Asset
-// ): Promise<number> => {
-//   // if (!p(asset.chain)) return 0;
+    const connection = new Connection(endpoint);
 
-//   try {
-//     const connection = new Connection("https://api.mainnet-beta.solana.com");
-//     const publicKey = new PublicKey(address);
+    const publicKey =
+      typeof address === "string" ? new PublicKey(address) : address;
 
-//     if (asset.tokenAddress === "11111111111111111111111111111111") {
-//       // Native SOL balance
-//       const balance = await connection.getBalance(publicKey);
-//       return formatAmount(balance, asset.decimals, 8);
-//     } else {
-//       // SPL Token balance
-//       const tokenPublicKey = new PublicKey(asset.tokenAddress);
-//       const tokenAccounts = await connection.getTokenAccountsByOwner(
-//         publicKey,
-//         {
-//           mint: tokenPublicKey,
-//           programId: TOKEN_PROGRAM_ID,
-//         }
-//       );
+    if (asset.tokenAddress === "primary") {
+      // Native SOL balance
+      const balance = await connection.getBalance(publicKey);
+      return formatAmount(balance, asset.decimals, 8);
+    }
 
-//       if (tokenAccounts.value.length === 0) return 0;
+    let tokenMint: PublicKey;
+    try {
+      tokenMint = new PublicKey(asset.tokenAddress);
+    } catch (err) {
+      console.error("Invalid token mint address:", asset.tokenAddress);
+      return 0;
+    }
 
-//       const balance = await connection.getTokenAccountBalance(
-//         tokenAccounts.value[0].pubkey
-//       );
+    const tokenAccounts = await connection.getTokenAccountsByOwner(publicKey, {
+      mint: tokenMint,
+    });
 
-//       return balance.value.uiAmount || 0;
-//     }
-//   } catch (error) {
-//     console.error("Error fetching Solana balance:", error);
-//     return 0;
-//   }
-// };
+    if (tokenAccounts.value.length === 0) return 0;
+    const balance = await connection.getTokenAccountBalance(
+      tokenAccounts.value[0].pubkey
+    );
+    return formatAmount(balance.value.amount, balance.value.decimals, 8);
+  } catch (error) {
+    console.error("Error fetching Solana token balance:", error);
+    return 0;
+  }
+};
 
 export const getStarknetTokenBalance = async (
   address: string,

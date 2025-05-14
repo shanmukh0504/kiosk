@@ -12,6 +12,7 @@ import { useEVMWallet } from "./useEVMWallet";
 import {
   getTokenBalance,
   getStarknetTokenBalance,
+  getSolanaTokenBalance,
 } from "../utils/getTokenBalance";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import BigNumber from "bignumber.js";
@@ -24,7 +25,7 @@ export const useBalances = (asset: Asset | undefined) => {
   const { address } = useEVMWallet();
   const { provider } = useBitcoinWallet();
   const { starknetAccount } = useStarknetWallet();
-  const { solanaAnchorProvider } = useSolanaWallet();
+  const { solanaAnchorProvider, connection } = useSolanaWallet();
 
   const tokenBalance = useMemo(
     () => balances[`${asset?.chain}_${asset?.tokenAddress.toLowerCase()}`],
@@ -68,13 +69,14 @@ export const useBalances = (asset: Asset | undefined) => {
           clearBalances();
           return;
         }
-        const balance = await solanaAnchorProvider.connection.getBalance(
-          solanaAnchorProvider.publicKey
+        const balance = await getSolanaTokenBalance(
+          solanaAnchorProvider.publicKey,
+          asset
         );
-        const bal = new BigNumber(balance)
-          .dividedBy(10 ** asset.decimals)
-          .toNumber();
-        setBalance(asset, bal);
+        // const bal = new BigNumber(balance)
+        //   .dividedBy(10 ** asset.decimals)
+        //   .toNumber();
+        setBalance(asset, balance);
       }
     };
 
@@ -90,6 +92,7 @@ export const useBalances = (asset: Asset | undefined) => {
     setBalance,
     starknetAccount,
     solanaAnchorProvider,
+    connection.onAccountChange,
   ]);
 
   return { balances, tokenBalance };

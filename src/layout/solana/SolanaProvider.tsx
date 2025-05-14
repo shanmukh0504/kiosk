@@ -21,7 +21,7 @@ export const SolanaProvider: FC<SolanaProviderProps> = ({ children }) => {
       : WalletAdapterNetwork.Devnet;
 
   const endpoint = useMemo(() => clusterApiUrl(solanaNetwork), [solanaNetwork]);
-  const wallets = useMemo(() => [], []);
+  const wallets = useMemo(() => [], [solanaNetwork]);
 
   return (
     <ConnectionProvider endpoint={endpoint}>

@@ -3,7 +3,7 @@ import {
   useAnchorWallet,
   useConnection,
 } from "@solana/wallet-adapter-react";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import { WalletName } from "@solana/wallet-adapter-base";
 
@@ -15,22 +15,41 @@ export const useSolanaWallet = () => {
     disconnect,
     connecting,
     connected,
-    publicKey,
   } = useWallet();
 
   const { connection } = useConnection();
   const anchorWallet = useAnchorWallet();
 
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [pendingConnect, setPendingConnect] = useState<(() => void) | null>(
+    null
+  );
+
   const provider = useMemo(() => {
-    if (!anchorWallet) return null;
-    return new AnchorProvider(connection, anchorWallet, {});
+    return anchorWallet
+      ? new AnchorProvider(connection, anchorWallet, {})
+      : null;
   }, [connection, anchorWallet]);
 
+  useEffect(() => {
+    if (connected && pendingConnect) {
+      pendingConnect();
+      setPendingConnect(null);
+      setIsConnecting(false);
+    }
+  }, [connected, pendingConnect]);
+
   const handleWalletClick = useCallback(
-    (walletName: WalletName) => {
+    async (walletName: WalletName) => {
+      setIsConnecting(true);
+      const w = wallets.find(
+        (w) => w.adapter.name.toLowerCase() === walletName.toLowerCase()
+      );
       select(walletName);
+      await w?.adapter.connect();
+      return true;
     },
-    [select]
+    [select, connected]
   );
 
   const solanaDisconnect = useCallback(async () => {
@@ -49,11 +68,11 @@ export const useSolanaWallet = () => {
     solanaWallets: wallets,
     solanaSelectedWallet: selectedWallet,
     solanaDisconnect,
-    solanaConnecting: connecting,
+    solanaConnecting: isConnecting || connecting,
     solanaConnected: connected,
-    solanaAddress: publicKey?.toBase58(),
+    solanaAddress: provider?.publicKey.toBase58(),
     solanaAnchorProvider: provider,
     connection,
-    solanaConnectionError: null,
+    // solanaConnectionError: connectionError,
   };
 };
