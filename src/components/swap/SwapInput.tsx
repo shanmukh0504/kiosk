@@ -11,7 +11,7 @@ import { IOType } from "../../constants/constants";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { modalNames, modalStore } from "../../store/modalStore";
-
+import { ErrorFormat } from "../../constants/errors";
 type SwapInputProps = {
   type: IOType;
   amount: string;
@@ -19,7 +19,7 @@ type SwapInputProps = {
   asset?: Asset;
   loading: boolean;
   price: string;
-  error?: string;
+  error?: ErrorFormat;
   balance?: number;
   timeEstimate?: string;
 };

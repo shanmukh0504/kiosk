@@ -47,6 +47,7 @@ export const useSwap = () => {
     setAmount,
     setError,
     swapAssets,
+    setAsset,
     setIsFetchingQuote,
     isComparisonVisible,
     // setIsApproving,
@@ -95,7 +96,8 @@ export const useSwap = () => {
       isValidBitcoinAddress &&
       !error.inputError &&
       !error.outputError &&
-      !error.swapError
+      !error.liquidityError &&
+      !error.insufficientBalanceError
     );
   }, [
     inputAsset,
@@ -175,12 +177,12 @@ export const useSwap = () => {
           });
           if (!quote || quote.error) {
             if (quote?.error?.includes("AbortError")) {
-              setError({ swapError: Errors.none });
+              setError({ liquidityError: Errors.none });
               setIsFetchingQuote({ input: false, output: false });
               setStrategy("");
               return;
             } else if (quote?.error?.includes("insufficient liquidity")) {
-              setError({ swapError: Errors.insufficientLiquidity });
+              setError({ liquidityError: Errors.insufficientLiquidity });
               setAmount(isExactOut ? IOType.input : IOType.output, "");
             } else if (quote?.error?.includes("output amount too less")) {
               setError({ outputError: Errors.outLow });
@@ -228,6 +230,9 @@ export const useSwap = () => {
             input: inputTokenPrice,
             output: outputTokenPrice,
           });
+          setError({
+            liquidityError: Errors.none,
+          });
         },
         500
       ),
@@ -267,14 +272,13 @@ export const useSwap = () => {
         if (controller.current) controller.current.abort();
         setAmount(IOType.output, "");
         setTokenPrices({ input: "0", output: "0" });
-        setError({ inputError: Errors.none, swapError: undefined });
+        setError({ inputError: Errors.none, liquidityError: Errors.none });
         return;
       }
 
       if (inputAsset && minAmount && amountInNumber < minAmount) {
         setError({
           inputError: Errors.minError(minAmount.toString(), inputAsset?.symbol),
-          swapError: undefined,
         });
         setAmount(IOType.output, "");
         setTokenPrices({ input: "0", output: "0" });
@@ -288,7 +292,6 @@ export const useSwap = () => {
       if (inputAsset && maxAmount && amountInNumber > maxAmount) {
         setError({
           inputError: Errors.maxError(maxAmount.toString(), inputAsset?.symbol),
-          swapError: undefined,
         });
         setAmount(IOType.output, "");
         // cancel debounced fetch quote
@@ -298,7 +301,7 @@ export const useSwap = () => {
         return;
       }
 
-      setError({ inputError: Errors.none, swapError: undefined });
+      setError({ inputError: Errors.none });
 
       if (!inputAsset || !outputAsset || !Number(amount)) return;
 
@@ -327,11 +330,11 @@ export const useSwap = () => {
       // abort if any calls are already in progress
       if (controller.current) controller.current.abort();
       setAmount(IOType.input, "");
-      setError({ outputError: Errors.none, swapError: undefined });
+      setError({ outputError: Errors.none });
       return;
     }
 
-    setError({ outputError: Errors.none, swapError: undefined });
+    setError({ outputError: Errors.none });
 
     if (!inputAsset || !outputAsset || !amountInNumber) return;
 
@@ -339,9 +342,10 @@ export const useSwap = () => {
   };
 
   const needsWalletConnection = useMemo(() => {
-    if (error.swapError === Errors.insufficientLiquidity) return null;
-    if (!evmAddress && !starknetAddress && !account) return false;
-    if (!inputAsset || !outputAsset) return false;
+    if (error.liquidityError) return null;
+    if (!inputAsset || !outputAsset || !inputAmount || !outputAmount)
+      return null;
+    if (!evmAddress && !starknetAddress && !account) return "evm";
     if (isEVM(inputAsset.chain) && !evmAddress) return "evm";
     if (isStarknet(inputAsset.chain) && !starknetAddress) return "starknet";
 
@@ -355,7 +359,9 @@ export const useSwap = () => {
     evmAddress,
     starknetAddress,
     account,
-    error.swapError,
+    error.liquidityError,
+    inputAmount,
+    outputAmount,
   ]);
 
   const handleSwapClick = async () => {
@@ -505,8 +511,6 @@ export const useSwap = () => {
     )
       return;
 
-    fetchQuote(inputAmount, inputAsset, outputAsset, false);
-
     const interval = setInterval(() => {
       fetchQuote(inputAmount, inputAsset, outputAsset, false);
     }, 5000);
@@ -522,20 +526,28 @@ export const useSwap = () => {
 
   //set token prices to 0 if input and output amounts are 0 and set liq error to false
   useEffect(() => {
-    if (!inputAmount && !outputAmount) {
-      setError({ outputError: "", inputError: "" });
+    if (
+      outputAmount == "0" ||
+      !outputAmount ||
+      inputAmount == "0" ||
+      !inputAmount
+    ) {
       setTokenPrices({ input: "0", output: "0" });
-      handleInputAmountChange(inputAmount);
+      setError({ outputError: "", inputError: "" });
+      return;
     }
+  }, [inputAmount, outputAmount, setTokenPrices, setError]);
+
+  //set min and max amount errors when amounts are changed
+  useEffect(() => {
     if (!inputAmount || !minAmount || !maxAmount) return;
     const amountInNumber = Number(inputAmount);
+
     if (!amountInNumber) return;
 
     if (amountInNumber < minAmount && inputAsset) {
       setError({
-        inputError: Errors.minError(minAmount.toString(), inputAsset?.symbol),
-        outputError: Errors.none,
-        swapError: Errors.none,
+        inputError: Errors.minError(minAmount.toString(), inputAsset.symbol),
       });
       setTokenPrices({ input: "0", output: "0" });
       setAmount(IOType.output, "");
@@ -543,41 +555,30 @@ export const useSwap = () => {
     }
     if (amountInNumber > maxAmount && inputAsset) {
       setError({
-        inputError: Errors.maxError(maxAmount.toString(), inputAsset?.symbol),
-        outputError: Errors.none,
-        swapError: Errors.none,
+        inputError: Errors.maxError(maxAmount.toString(), inputAsset.symbol),
       });
       setTokenPrices({ input: "0", output: "0" });
       setAmount(IOType.output, "");
       return;
     }
-
-    if (!isInsufficientBalance) {
-      setError({ outputError: Errors.none, inputError: Errors.none });
-    } else {
-      setError({
-        swapError: Errors.insufficientBalance,
-        outputError: Errors.none,
-        inputError: Errors.none,
-      });
-      return;
-    }
-
-    handleInputAmountChange(inputAmount);
   }, [
     inputAmount,
-    outputAmount,
-    inputAsset,
     minAmount,
     maxAmount,
-    inputAsset?.symbol,
-    outputAsset?.symbol,
+    inputAsset,
     setError,
-    isInsufficientBalance,
     setTokenPrices,
     handleInputAmountChange,
     setAmount,
   ]);
+
+  useEffect(() => {
+    if (isInsufficientBalance) {
+      setError({ insufficientBalanceError: Errors.insufficientBalance });
+      return;
+    }
+    setError({ insufficientBalanceError: Errors.none });
+  }, [isInsufficientBalance, setError, inputAsset, outputAsset, inputAmount]);
 
   //set btc address if bitcoin wallet is connected
   useEffect(() => {
@@ -603,10 +604,14 @@ export const useSwap = () => {
     inputTokenBalance,
     isValidBitcoinAddress,
     needsWalletConnection,
+    btcAddress,
     controller,
+    setBtcAddress,
     swapAssets,
     handleInputAmountChange,
     handleOutputAmountChange,
     handleSwapClick,
+    setAsset,
+    clearSwapState,
   };
 };

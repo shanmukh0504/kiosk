@@ -1,12 +1,11 @@
 import { Button, ExchangeIcon } from "@gardenfi/garden-book";
 import { SwapInput } from "./SwapInput";
 import { getTimeEstimates, IOType } from "../../constants/constants";
-import { BTC, swapStore } from "../../store/swapStore";
+import { BTC } from "../../store/swapStore";
 import { useEffect, useMemo, useState } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { useSearchParams } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
-import { Errors } from "../../constants/errors";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { getAssetFromChainAndSymbol, getQueryParams } from "../../utils/utils";
 import { QUERY_PARAMS } from "../../constants/constants";
@@ -15,8 +14,6 @@ import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
 export const CreateSwap = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [addParams, setAddParams] = useState(false);
-
-  const { swapAssets, setAsset, clearSwapState } = swapStore();
   const { assets } = assetInfoStore();
 
   const {
@@ -36,35 +33,49 @@ export const CreateSwap = () => {
     handleSwapClick,
     needsWalletConnection,
     controller,
+    setAsset,
+    clearSwapState,
+    swapAssets,
   } = useSwap();
   const { setOpenModal } = modalStore();
 
   const buttonLabel = useMemo(() => {
-    return error.swapError === Errors.insufficientLiquidity
+    return error.liquidityError
       ? "Insufficient liquidity"
       : needsWalletConnection
         ? `Connect ${needsWalletConnection === "starknet" ? "Starknet" : "EVM"} Wallet`
-        : error.swapError === Errors.insufficientBalance
+        : error.insufficientBalanceError
           ? "Insufficient balance"
           : isApproving
             ? "Approving..."
             : isSwapping
               ? "Signing"
               : "Swap";
-  }, [error.swapError, isApproving, isSwapping, needsWalletConnection]);
+  }, [
+    error.liquidityError,
+    isApproving,
+    isSwapping,
+    needsWalletConnection,
+    error.insufficientBalanceError,
+  ]);
 
   const buttonVariant = useMemo(() => {
     return needsWalletConnection
       ? "primary"
-      : error.swapError === Errors.insufficientLiquidity ||
-          error.swapError === Errors.insufficientBalance
+      : !!error.liquidityError || !!error.insufficientBalanceError
         ? "disabled"
         : isSwapping
           ? "ternary"
           : validSwap
             ? "primary"
             : "disabled";
-  }, [isSwapping, validSwap, error.swapError, needsWalletConnection]);
+  }, [
+    isSwapping,
+    validSwap,
+    error.liquidityError,
+    error.insufficientBalanceError,
+    needsWalletConnection,
+  ]);
 
   const timeEstimate = useMemo(() => {
     if (!inputAsset || !outputAsset) return "";
@@ -194,7 +205,10 @@ export const CreateSwap = () => {
           }
           disabled={
             isSwapping ||
-            (!needsWalletConnection && (!validSwap || !!error.swapError))
+            (!needsWalletConnection &&
+              (!validSwap ||
+                !!error.liquidityError ||
+                !!error.insufficientBalanceError))
           }
         >
           {buttonLabel}

@@ -20,11 +20,6 @@ export enum IOType {
   output = "output",
 }
 
-export enum QuoteError {
-  InsufficientLiquidity = "Insufficient Liquidity",
-  None = "",
-}
-
 export const LOCAL_STORAGE_KEYS = {
   notification: "notificationId",
 };

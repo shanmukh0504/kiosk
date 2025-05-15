@@ -8,7 +8,6 @@ import { Asset } from "@gardenfi/orderbook";
 import { swapStore } from "../store/swapStore";
 import { parseTime } from "../utils/timeAndFeeComparison/utils";
 import { getTimeEstimates } from "../constants/constants";
-import { Errors } from "../constants/errors";
 import { useSwap } from "./useSwap";
 import { ChainflipIcon } from "@gardenfi/garden-book";
 import { RelayLinkIcon } from "@gardenfi/garden-book";
@@ -153,7 +152,7 @@ export const useCompetitorTimeFees = ({
       debouncedFetchAllData.cancel();
       setSwapData(null);
     }
-  }, [debouncedFetchAllData]);
+  }, [debouncedFetchAllData, isComparisonVisible]);
 
   useEffect(() => {
     if (
@@ -163,7 +162,7 @@ export const useCompetitorTimeFees = ({
       !inputAmount ||
       error.inputError ||
       error.outputError ||
-      error.swapError === Errors.insufficientLiquidity
+      error.liquidityError
     ) {
       onComparisonUpdate(0, 0);
       return;
@@ -189,7 +188,7 @@ export const useCompetitorTimeFees = ({
     inputAmount,
     error.inputError,
     error.outputError,
-    error.swapError,
+    error.liquidityError,
     swapEntriesWithGarden.length,
   ]);
 

@@ -16,7 +16,8 @@ export type FetchingQuote = {
 export type SwapErrors = {
   inputError?: ErrorFormat;
   outputError?: ErrorFormat;
-  swapError?: ErrorFormat;
+  liquidityError?: ErrorFormat;
+  insufficientBalanceError?: ErrorFormat;
 };
 
 type SwapState = {
@@ -78,7 +79,8 @@ export const swapStore = create<SwapState>((set) => ({
   error: {
     inputError: Errors.none,
     outputError: Errors.none,
-    quoteError: Errors.none,
+    liquidityError: Errors.none,
+    insufficientBalanceError: Errors.none,
   },
   isFetchingQuote: {
     input: false,
@@ -121,6 +123,13 @@ export const swapStore = create<SwapState>((set) => ({
         outputAsset: state.inputAsset,
         inputAmount: newInputAmount,
         outputAmount: newOutputAmount,
+        error: {
+          ...state.error,
+          inputError: Errors.none,
+          outputError: Errors.none,
+          liquidityError: Errors.none,
+          insufficientBalanceError: Errors.none,
+        },
       };
     });
   },
@@ -137,7 +146,7 @@ export const swapStore = create<SwapState>((set) => ({
     set({ tokenPrices });
   },
   setError: (error) => {
-    set({ error });
+    set((state) => ({ error: { ...state.error, ...error } }));
   },
   setIsFetchingQuote: (isFetchingQuote) => {
     set({ isFetchingQuote });
@@ -165,7 +174,8 @@ export const swapStore = create<SwapState>((set) => ({
       error: {
         inputError: Errors.none,
         outputError: Errors.none,
-        swapError: Errors.none,
+        liquidityError: Errors.none,
+        insufficientBalanceError: Errors.none,
       },
       isFetchingQuote: {
         input: false,
@@ -191,7 +201,8 @@ export const swapStore = create<SwapState>((set) => ({
       error: {
         inputError: Errors.none,
         outputError: Errors.none,
-        swapError: Errors.none,
+        liquidityError: Errors.none,
+        insufficientBalanceError: Errors.none,
       },
       isFetchingQuote: {
         input: false,

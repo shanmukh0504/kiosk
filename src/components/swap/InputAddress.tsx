@@ -1,7 +1,6 @@
 import { useId, useRef, ChangeEvent, useMemo } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { Tooltip } from "../../common/Tooltip";
-import { swapStore } from "../../store/swapStore";
 import { isBitcoin } from "@gardenfi/orderbook";
 import { motion } from "framer-motion";
 import { addressExpandAnimation } from "../../animations/animations";
@@ -10,7 +9,6 @@ import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 
 export const InputAddress = () => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { isValidBitcoinAddress } = useSwap();
 
   const tooltipId = useId();
   const {
@@ -19,7 +17,8 @@ export const InputAddress = () => {
     outputAsset,
     setBtcAddress,
     btcAddress: storedBtcAddress,
-  } = swapStore();
+    isValidBitcoinAddress,
+  } = useSwap();
 
   const { account: walletBtcAddress } = useBitcoinWallet();
 
