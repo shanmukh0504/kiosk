@@ -524,6 +524,14 @@ export const useSwap = () => {
     isComparisonVisible,
   ]);
 
+  //call input amount handler when assets are changed
+  useEffect(() => {
+    if (!inputAsset || !outputAsset) return;
+    setError({ inputError: "" });
+    handleInputAmountChange(inputAmount);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inputAsset, handleInputAmountChange, setError]);
+
   //set token prices to 0 if input and output amounts are 0 and set liq error to false
   useEffect(() => {
     if (
