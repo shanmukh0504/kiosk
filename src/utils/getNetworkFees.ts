@@ -11,7 +11,7 @@ type AssetEntry = {
 };
 
 const getBTCPrice = async (): Promise<number> => {
-  const response = await axios.get(API().fiatValues.toString(), {
+  const response = await axios.get(API().quote.fiatValues.toString(), {
     timeout: 2000,
   });
   const data = response.data;

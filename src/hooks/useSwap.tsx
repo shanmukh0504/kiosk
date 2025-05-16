@@ -515,7 +515,6 @@ export const useSwap = () => {
       return;
 
     const interval = setInterval(() => {
-      console.log("fetching quote");
       fetchQuote(inputAmount, inputAsset, outputAsset, false);
     }, 5000);
     return () => clearInterval(interval);
