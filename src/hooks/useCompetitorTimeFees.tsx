@@ -8,7 +8,6 @@ import { Asset } from "@gardenfi/orderbook";
 import { swapStore } from "../store/swapStore";
 import { parseTime } from "../utils/timeAndFeeComparison/utils";
 import { getTimeEstimates } from "../constants/constants";
-import { useSwap } from "./useSwap";
 import { ChainflipIcon } from "@gardenfi/garden-book";
 import { RelayLinkIcon } from "@gardenfi/garden-book";
 import { GardenLogo } from "@gardenfi/garden-book";
@@ -41,20 +40,12 @@ export const useCompetitorTimeFees = ({
     { name: "THORSwap", key: "Thorswap", icon: <ThorswapIcon /> },
   ];
 
-  const {
-    inputAsset,
-    outputAsset,
-    inputAmount,
-    outputAmount,
-    tokenPrices,
-    isComparisonVisible,
-  } = swapStore();
-
-  const { error } = useSwap();
+  const { inputAsset, outputAsset, inputAmount, tokenPrices, error } =
+    swapStore();
 
   const debouncedFetchAllData = useMemo(() => {
     return debounce(async (inputAsset, outputAsset, inputAmount) => {
-      if (inputAsset && outputAsset && inputAmount && (!isTime || !isFees)) {
+      if (inputAsset && outputAsset && inputAmount) {
         setLoading(true);
         try {
           const sources = {
@@ -148,11 +139,28 @@ export const useCompetitorTimeFees = ({
   }, [swapData, gardenFee, gardenSwapTime, isTime, isFees]);
 
   useEffect(() => {
-    if (isComparisonVisible) {
-      debouncedFetchAllData.cancel();
-      setSwapData(null);
+    if (inputAsset && outputAsset && inputAmount) {
+      debouncedFetchAllData(inputAsset, outputAsset, Number(inputAmount));
     }
-  }, [debouncedFetchAllData, isComparisonVisible]);
+  }, [inputAsset, outputAsset, inputAmount, debouncedFetchAllData]);
+
+  useEffect(() => {
+    const numericInputAmount = Number(inputAmount);
+    const prevNumericInputAmount = Number(prevInputAmountRef.current);
+
+    if (
+      inputAsset &&
+      outputAsset &&
+      ((numericInputAmount && prevNumericInputAmount !== numericInputAmount) ||
+        outputAsset !== prevOutputAssetRef.current ||
+        inputAsset !== prevInputAssetRef.current)
+    ) {
+      prevInputAmountRef.current = numericInputAmount;
+      prevOutputAssetRef.current = outputAsset;
+      prevInputAssetRef.current = inputAsset;
+      debouncedFetchAllData(inputAsset, outputAsset, numericInputAmount);
+    }
+  }, [inputAmount, inputAsset, outputAsset, debouncedFetchAllData]);
 
   useEffect(() => {
     if (
@@ -190,29 +198,6 @@ export const useCompetitorTimeFees = ({
     error.outputError,
     error.liquidityError,
     swapEntriesWithGarden.length,
-  ]);
-
-  useEffect(() => {
-    const numericInputAmount = Number(inputAmount);
-    const prevNumericInputAmount = Number(prevInputAmountRef.current);
-
-    if (
-      inputAsset &&
-      outputAsset &&
-      ((numericInputAmount && prevNumericInputAmount !== numericInputAmount) ||
-        outputAsset !== prevOutputAssetRef.current ||
-        inputAsset !== prevInputAssetRef.current)
-    ) {
-      prevInputAmountRef.current = numericInputAmount;
-      prevOutputAssetRef.current = outputAsset;
-      debouncedFetchAllData(inputAsset, outputAsset, numericInputAmount);
-    }
-  }, [
-    inputAmount,
-    inputAsset,
-    outputAsset,
-    outputAmount,
-    debouncedFetchAllData,
   ]);
 
   return {

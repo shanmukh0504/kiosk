@@ -10,7 +10,6 @@ import { CompetitorComparisons } from "./CompetitorComparisons";
 import { AddressDetails } from "./AddressDetails";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { useSwap } from "../../hooks/useSwap";
 import { isBitcoin } from "@gardenfi/orderbook";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatAmount, getProtocolFee } from "../../utils/utils";
@@ -35,7 +34,7 @@ export const FeesAndRateDetails = () => {
   const [maxCostSaved, setMaxCostSaved] = useState<number>(0);
   const [rate, setRate] = useState(0);
 
-  const { inputAsset, outputAsset, inputAmount, outputAmount } = useSwap();
+  const { inputAsset, outputAsset, inputAmount, outputAmount } = swapStore();
   const { setIsComparisonVisible } = swapStore();
   const network = getBitcoinNetwork();
   const { account: btcAddress } = useBitcoinWallet();

@@ -50,10 +50,12 @@ export const useSwap = () => {
     setAsset,
     setIsFetchingQuote,
     isComparisonVisible,
+    setIsValidBitcoinAddress,
     // setIsApproving,
     setTokenPrices,
     clearSwapState,
     setBtcAddress,
+    setIsComparisonVisible,
   } = swapStore();
   const { tokenBalance: inputTokenBalance } = useBalances(inputAsset);
   const { strategies } = assetInfoStore();
@@ -86,6 +88,7 @@ export const useSwap = () => {
       ? validateBTCAddress(btcAddress, network as unknown as Environment)
       : false;
   }, [btcAddress, isBitcoinSwap]);
+
   const _validSwap = useMemo(() => {
     return !!(
       inputAsset &&
@@ -512,6 +515,7 @@ export const useSwap = () => {
       return;
 
     const interval = setInterval(() => {
+      console.log("fetching quote");
       fetchQuote(inputAmount, inputAsset, outputAsset, false);
     }, 5000);
     return () => clearInterval(interval);
@@ -541,7 +545,6 @@ export const useSwap = () => {
       !inputAmount
     ) {
       setTokenPrices({ input: "0", output: "0" });
-      setError({ outputError: "", inputError: "" });
       return;
     }
   }, [inputAmount, outputAmount, setTokenPrices, setError]);
@@ -595,6 +598,18 @@ export const useSwap = () => {
     }
   }, [account, setBtcAddress]);
 
+  // Update isValidBitcoinAddress state in an effect
+  useEffect(() => {
+    if (!isBitcoinSwap) {
+      setIsValidBitcoinAddress(true);
+      return;
+    }
+    const isValid = btcAddress
+      ? validateBTCAddress(btcAddress, network as unknown as Environment)
+      : false;
+    setIsValidBitcoinAddress(isValid);
+  }, [btcAddress, isBitcoinSwap, setIsValidBitcoinAddress]);
+
   return {
     inputAmount,
     outputAmount,
@@ -610,10 +625,10 @@ export const useSwap = () => {
     isApproving,
     isBitcoinSwap,
     inputTokenBalance,
-    isValidBitcoinAddress,
     needsWalletConnection,
     btcAddress,
     controller,
+    isComparisonVisible,
     setBtcAddress,
     swapAssets,
     handleInputAmountChange,
@@ -621,5 +636,6 @@ export const useSwap = () => {
     handleSwapClick,
     setAsset,
     clearSwapState,
+    setIsComparisonVisible,
   };
 };

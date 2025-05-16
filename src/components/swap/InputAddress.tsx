@@ -2,10 +2,10 @@ import { useId, useRef, ChangeEvent, useMemo } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { Tooltip } from "../../common/Tooltip";
 import { isBitcoin } from "@gardenfi/orderbook";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { addressExpandAnimation } from "../../animations/animations";
-import { useSwap } from "../../hooks/useSwap";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { swapStore } from "../../store/swapStore";
 
 export const InputAddress = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -18,7 +18,7 @@ export const InputAddress = () => {
     setBtcAddress,
     btcAddress: storedBtcAddress,
     isValidBitcoinAddress,
-  } = useSwap();
+  } = swapStore();
 
   const { account: walletBtcAddress } = useBitcoinWallet();
 
@@ -47,45 +47,47 @@ export const InputAddress = () => {
   const displayAddress = storedBtcAddress || walletBtcAddress || "";
 
   return (
-    shouldShowAddress && (
-      <motion.div
-        variants={addressExpandAnimation}
-        initial="hidden"
-        animate="visible"
-        exit="exit"
-      >
-        <div className="flex flex-col gap-2 rounded-2xl bg-white p-4">
-          <Typography
-            data-tooltip-id={isRecoveryAddress ? tooltipId : ""}
-            size="h5"
-            weight="bold"
-            onClick={() => inputRef.current!.focus()}
-            className="w-fit"
-          >
-            {isRecoveryAddress ? "Refund" : "Receive"} address
-          </Typography>
-          <Typography size="h3" weight="medium">
-            <input
-              ref={inputRef}
-              className={`w-full outline-none placeholder:text-mid-grey ${
-                !isValidBitcoinAddress ? "text-red-600" : ""
-              }`}
-              type="text"
-              value={displayAddress}
-              placeholder="Your Bitcoin address"
-              onChange={handleChange}
-            />
-            {isRecoveryAddress && (
-              <Tooltip
-                id={tooltipId}
-                place="right"
-                content="In case your swap expires, your Bitcoin will be automatically refunded to this address."
-                multiline={true}
+    <AnimatePresence mode="wait">
+      {shouldShowAddress && (
+        <motion.div
+          variants={addressExpandAnimation}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+        >
+          <div className="flex flex-col gap-2 rounded-2xl bg-white p-4">
+            <Typography
+              data-tooltip-id={isRecoveryAddress ? tooltipId : ""}
+              size="h5"
+              weight="bold"
+              onClick={() => inputRef.current!.focus()}
+              className="w-fit"
+            >
+              {isRecoveryAddress ? "Refund" : "Receive"} address
+            </Typography>
+            <Typography size="h3" weight="medium">
+              <input
+                ref={inputRef}
+                className={`w-full outline-none placeholder:text-mid-grey ${
+                  !isValidBitcoinAddress ? "text-red-600" : ""
+                }`}
+                type="text"
+                value={displayAddress}
+                placeholder="Your Bitcoin address"
+                onChange={handleChange}
               />
-            )}
-          </Typography>
-        </div>
-      </motion.div>
-    )
+              {isRecoveryAddress && (
+                <Tooltip
+                  id={tooltipId}
+                  place="right"
+                  content="In case your swap expires, your Bitcoin will be automatically refunded to this address."
+                  multiline={true}
+                />
+              )}
+            </Typography>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
