@@ -35,7 +35,7 @@ export const Notification: FC<NotificationProps> = ({
 
   return (
     <div
-      className={`fixed bottom-10 left-2 right-2 z-40 bg-white/50 p-4 backdrop-blur-[20px] transition-[border-radius,width,height,transform] duration-300 ease-cubic-in-out sm:left-10 ${
+      className={`fixed bottom-5 left-5 right-5 z-40 bg-white/50 p-4 backdrop-blur-[20px] transition-[border-radius,width,height,transform] duration-300 ease-cubic-in-out sm:bottom-10 sm:left-10 ${
         visible
           ? "h-24 w-[344px] rounded-2xl sm:w-[460px]"
           : "h-12 w-12 cursor-pointer rounded-3xl hover:scale-105"
