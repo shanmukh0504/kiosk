@@ -32,7 +32,7 @@ export const useNetworkFees = (
     return () => {
       if (intervalId) window.clearInterval(intervalId);
     };
-  }, [network]);
+  }, [network, outputAsset]);
   return {
     networkFeesValue,
     isLoading,
