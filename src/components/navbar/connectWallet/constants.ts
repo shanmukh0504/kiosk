@@ -1,32 +1,37 @@
 import { Network } from "@gardenfi/utils";
 import { network } from "../../../constants/constants";
+import { BlockchainType } from "@gardenfi/orderbook";
 
 export const evmToBTCid: Record<string, string> = {
   "com.okex.wallet": "okx",
+  "app.phantom": "phantom",
 } as const;
 
 export const btcToEVMid: Record<string, string> = {
   okx: "com.okex.wallet",
+  phantom: "app.phantom",
 } as const;
 
 export const MAX_VISIBLE_WALLETS = 3;
 
 export const ecosystems = {
-  bitcoin: {
+  [BlockchainType.Bitcoin]: {
     name: "Bitcoin",
     icon: "https://garden-finance.imgix.net/token-images/bitcoin.svg",
   },
-  evm: {
+  [BlockchainType.EVM]: {
     name: "EVM",
     icon: "https://garden-finance.imgix.net/token-images/ethereum.svg",
   },
-  starknet: {
+  [BlockchainType.Starknet]: {
     name: "Starknet",
     icon: "https://garden-finance.imgix.net/starknet-logo.svg",
   },
 } as const;
 
 export type EcosystemKeys = keyof typeof ecosystems;
+
+export type blockChainType = keyof typeof BlockchainType;
 
 type GardenSupportedWalletsType = {
   id: string;
@@ -75,8 +80,8 @@ export const GardenSupportedWallets: Record<
     logo: "https://garden-finance.imgix.net/wallets/phantom.svg",
     installLink:
       "https://chromewebstore.google.com/detail/phantom/bfnaelmomeimhlpmgjnjophhpkkoljpa?hl=en",
-    isBitcoinSupported: false,
-    isEVMSupported: network === Network.MAINNET,
+    isBitcoinSupported: true,
+    isEVMSupported: network === Network.MAINNET ? true : false,
     isStarknetSupported: false,
   },
   "com.coinbase.wallet": {
@@ -93,7 +98,7 @@ export const GardenSupportedWallets: Record<
     name: "OKX Wallet",
     logo: "https://garden-finance.imgix.net/wallets/okx.svg",
     installLink: "https://www.okx.com/download",
-    isBitcoinSupported: network === Network.MAINNET ? true : false,
+    isBitcoinSupported: true,
     isEVMSupported: true,
     isStarknetSupported: false,
   },
@@ -139,7 +144,16 @@ export const GardenSupportedWallets: Record<
     logo: "https://garden-finance.imgix.net/wallets/keplr.svg",
     installLink: "tallLink:",
     isStarknetSupported: true,
-    isBitcoinSupported: false,
+    isBitcoinSupported: network === Network.MAINNET ? true : false,
+    isEVMSupported: false,
+  },
+  xverse: {
+    id: "xverse",
+    name: "Xverse",
+    logo: "https://garden-finance.imgix.net/wallets/xverse.svg",
+    installLink: "https://www.xverse.app/download",
+    isStarknetSupported: false,
+    isBitcoinSupported: true,
     isEVMSupported: false,
   },
 };

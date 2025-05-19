@@ -8,7 +8,7 @@ import {
 import { FC, useMemo, useRef, ChangeEvent, useState, useEffect } from "react";
 import { IOType } from "../../constants/constants";
 import { assetInfoStore } from "../../store/assetInfoStore";
-import { Asset, isBitcoin } from "@gardenfi/orderbook";
+import { Asset, isBitcoin, isEvmNativeToken } from "@gardenfi/orderbook";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { ErrorFormat } from "../../constants/errors";
 import NumberFlow from "@number-flow/react";
@@ -95,9 +95,14 @@ export const SwapInput: FC<SwapInputProps> = ({
   };
 
   const handleBalanceClick = () => {
-    if (type === IOType.input && balance) {
-      const balanceStr = balance.toString();
-      onChange(balanceStr);
+    if (type === IOType.input && balance && asset) {
+      if (
+        !isBitcoin(asset?.chain) &&
+        !isEvmNativeToken(asset?.chain, asset.tokenAddress)
+      ) {
+        const balanceStr = balance.toString();
+        onChange(balanceStr);
+      }
     }
   };
 

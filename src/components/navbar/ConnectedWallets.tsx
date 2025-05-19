@@ -46,21 +46,21 @@ const ConnectedWallets = () => {
         <WalletIcon className="h-4 w-4 sm:h-5 sm:w-5" />
         {address && (
           <img
-            src={ecosystems.evm.icon}
+            src={ecosystems.EVM.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="EVM wallet"
           />
         )}
         {btcAddress && (
           <img
-            src={ecosystems.bitcoin.icon}
+            src={ecosystems.Bitcoin.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="Bitcoin wallet"
           />
         )}
         {starknetAddress && (
           <img
-            src={ecosystems.starknet.icon}
+            src={ecosystems.Starknet.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="Starknet wallet"
           />
