@@ -1510,6 +1510,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@number-flow/react@npm:^0.5.9":
+  version: 0.5.9
+  resolution: "@number-flow/react@npm:0.5.9"
+  dependencies:
+    esm-env: "npm:^1.1.4"
+    number-flow: "npm:0.5.7"
+  peerDependencies:
+    react: ^18 || ^19
+    react-dom: ^18 || ^19
+  checksum: 10c0/73403c131c371bda892d83ec2c9d5b931f53b9d3db987d0b14aa2e93c950598a8b7fc21f8b59fa2807dadbe3f76d1d3a833360606953c199a91b751d69a67dd5
+  languageName: node
+  linkType: hard
+
 "@paulmillr/qr@npm:^0.2.1":
   version: 0.2.1
   resolution: "@paulmillr/qr@npm:0.2.1"
@@ -6157,6 +6170,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"esm-env@npm:^1.1.4":
+  version: 1.2.2
+  resolution: "esm-env@npm:1.2.2"
+  checksum: 10c0/3d25c973f2fd69c25ffff29c964399cea573fe10795ecc1d26f6f957ce0483d3254e1cceddb34bf3296a0d7b0f1d53a28992f064ba509dfe6366751e752c4166
+  languageName: node
+  linkType: hard
+
 "espree@npm:^10.0.1, espree@npm:^10.3.0":
   version: 10.3.0
   resolution: "espree@npm:10.3.0"
@@ -6940,6 +6960,7 @@ __metadata:
     "@gardenfi/react-hooks": "npm:2.1.4-beta.1"
     "@gardenfi/utils": "npm:2.1.2-beta.13"
     "@gardenfi/wallet-connectors": "npm:2.0.3-beta.22"
+    "@number-flow/react": "npm:^0.5.9"
     "@starknet-react/core": "npm:^3.7.2"
     "@tanstack/react-query": "npm:^5.51.23"
     "@trpc/server": "npm:^10.45.2"
@@ -8949,6 +8970,15 @@ __metadata:
   version: 0.1.2
   resolution: "normalize-range@npm:0.1.2"
   checksum: 10c0/bf39b73a63e0a42ad1a48c2bd1bda5a07ede64a7e2567307a407674e595bcff0fa0d57e8e5f1e7fa5e91000797c7615e13613227aaaa4d6d6e87f5bd5cc95de6
+  languageName: node
+  linkType: hard
+
+"number-flow@npm:0.5.7":
+  version: 0.5.7
+  resolution: "number-flow@npm:0.5.7"
+  dependencies:
+    esm-env: "npm:^1.1.4"
+  checksum: 10c0/3e7dbd90793b22246696cc9a1c1aecf98e1cae54cc91fb98852fe46515d2e81a07f9434dd8da690d972738d39719d4d185512c655055695049054cf79934172f
   languageName: node
   linkType: hard
 

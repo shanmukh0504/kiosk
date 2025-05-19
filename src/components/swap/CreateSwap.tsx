@@ -12,6 +12,8 @@ import { QUERY_PARAMS } from "../../constants/constants";
 import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
 
 export const CreateSwap = () => {
+  const [loadingDisabled, setLoadingDisabled] = useState(false);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [addParams, setAddParams] = useState(false);
   const { assets } = assetInfoStore();
@@ -62,7 +64,9 @@ export const CreateSwap = () => {
   const buttonVariant = useMemo(() => {
     return needsWalletConnection
       ? "primary"
-      : !!error.liquidityError || !!error.insufficientBalanceError
+      : !!error.liquidityError ||
+          !!error.insufficientBalanceError ||
+          loadingDisabled
         ? "disabled"
         : isSwapping
           ? "ternary"
@@ -75,6 +79,7 @@ export const CreateSwap = () => {
     error.liquidityError,
     error.insufficientBalanceError,
     needsWalletConnection,
+    loadingDisabled,
   ]);
 
   const timeEstimate = useMemo(() => {
@@ -147,6 +152,20 @@ export const CreateSwap = () => {
     });
   }, [addParams, inputAsset, outputAsset, setSearchParams]);
 
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    if (loading.input || loading.output) {
+      timeoutId = setTimeout(() => {
+        setLoadingDisabled(true);
+      }, 300);
+    } else {
+      setLoadingDisabled(false);
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [loading]);
+
   // Cleanup: Abort any pending requests and clear swap state when component unmounts
   useEffect(() => {
     const currentController = controller.current;
@@ -204,6 +223,7 @@ export const CreateSwap = () => {
             needsWalletConnection ? handleConnectWallet : handleSwapClick
           }
           disabled={
+            loadingDisabled ||
             isSwapping ||
             (!needsWalletConnection &&
               (!validSwap ||

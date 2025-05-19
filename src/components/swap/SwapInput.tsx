@@ -1,6 +1,5 @@
 import {
   KeyboardDownIcon,
-  ScaleY,
   TimerIcon,
   TokenInfo,
   Typography,
@@ -12,6 +11,9 @@ import { assetInfoStore } from "../../store/assetInfoStore";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { ErrorFormat } from "../../constants/errors";
+import NumberFlow from "@number-flow/react";
+import clsx from "clsx/lite";
+
 type SwapInputProps = {
   type: IOType;
   amount: string;
@@ -33,9 +35,12 @@ export const SwapInput: FC<SwapInputProps> = ({
   error,
   balance,
   timeEstimate,
+  loading,
 }) => {
-  const [triggerAmountAnimation, setTriggerAmountAnimation] = useState(true);
-  const [isInFocus, setIsInFocus] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const [animated, setAnimated] = useState(true);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [showLoadingOpacity, setShowLoadingOpacity] = useState(false);
 
   const { setOpenAssetSelector, chains } = assetInfoStore();
   const { setOpenModal } = modalStore();
@@ -51,37 +56,41 @@ export const SwapInput: FC<SwapInputProps> = ({
   const label = type === IOType.input ? "Send" : "Receive";
 
   const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setTriggerAmountAnimation(true);
-    const input = e.target.value;
+    let input = e.target.value;
+
+    // Strict validation: only allow numbers and a single decimal point
+    if (!/^[0-9]*\.?[0-9]*$/.test(input)) {
+      setAnimated(false);
+      setTimeout(() => {
+        setAnimated(true);
+      }, 800);
+      return;
+    }
+    setAnimated(false);
+
+    if (input.startsWith(".")) {
+      input = "0" + input;
+    }
+
     const parts = input.split(".");
     if (input === "-") return;
-    // Check if the last character is a digit or a dot.
-    if (
-      // If it's a digit
-      /^[0-9]$/.test(input.at(-1)!) ||
-      // or it's a dot and there is only one dot in the entire string
-      (input.at(-1) === "." && parts.length - 1 === 1)
-    ) {
-      const decimals = (parts[1] || "").length;
-      // If there are more than the maximum decimals after the point.
-      if (asset && decimals > asset.decimals && parts[1]) {
-        // Trim decimals to only keep the maximum amount.
-        onChange(parts[0] + "." + parts[1].slice(0, asset.decimals));
-      } else {
-        // Otherwise, just set the input.
-        onChange(input);
-      }
+
+    // If there's more than one decimal point, reject the input
+    if (parts.length > 2) {
+      setTimeout(() => {
+        setAnimated(true);
+      }, 800);
       return;
     }
-    // If it's an empty string, just set the input.
-    else if (input.length === 0) {
+
+    const decimals = (parts[1] || "").length;
+    // If there are more than the maximum decimals after the point.
+    if (asset && decimals > asset.decimals && parts[1]) {
+      // Trim decimals to only keep the maximum amount.
+      onChange(parts[0] + "." + parts[1].slice(0, asset.decimals));
+    } else {
+      // Otherwise, just set the input.
       onChange(input);
-    }
-    // If the last character is not a numerical digit or a dot, and the string
-    // is not empty, do nothing and return.
-    else {
-      setTriggerAmountAnimation(true);
-      return;
     }
   };
 
@@ -98,10 +107,25 @@ export const SwapInput: FC<SwapInputProps> = ({
   };
 
   useEffect(() => {
-    setTriggerAmountAnimation(true);
-    const timer = setTimeout(() => setTriggerAmountAnimation(false), 500);
+    const timer = setTimeout(() => {
+      setAnimated(true);
+    }, 800);
     return () => clearTimeout(timer);
   }, [amount]);
+
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    if (loading) {
+      timeoutId = setTimeout(() => {
+        setShowLoadingOpacity(true);
+      }, 300);
+    } else {
+      setShowLoadingOpacity(false);
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [loading]);
 
   return (
     <>
@@ -167,26 +191,61 @@ export const SwapInput: FC<SwapInputProps> = ({
             }}
             weight="bold"
           >
-            <div className="relative max-w-[150px] md:max-w-[200px]">
-              <ScaleY triggerAnimation={triggerAmountAnimation && !isInFocus}>
-                <input
-                  ref={inputRef}
-                  className="w-full outline-none"
-                  type="text"
-                  value={amount}
-                  onChange={handleAmountChange}
-                  onFocus={() => setIsInFocus(true)}
-                  onBlur={() => {
-                    setIsInFocus(false);
-                  }}
-                />
-              </ScaleY>
-              {/* Placeholder as a separate element to avoid scaleY animation on load */}
-              {!amount && (
-                <span className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 transform">
-                  0
-                </span>
-              )}
+            <div className="relative w-[150px] max-w-[150px] md:w-[200px] md:max-w-[200px]">
+              <div
+                className={clsx(
+                  "relative flex w-full items-center",
+                  !isAnimating && "cursor-text"
+                )}
+                onClick={(e) => {
+                  if (isAnimating) return;
+                  e.preventDefault();
+                  setIsFocused(true);
+                  // Use setTimeout to ensure the input is mounted before focusing
+                  setTimeout(() => {
+                    inputRef.current?.focus();
+                  }, 0);
+                }}
+              >
+                {isFocused ? (
+                  <input
+                    ref={inputRef}
+                    className={clsx(
+                      "w-full bg-transparent py-[1px] text-start font-[inherit] outline-none",
+                      isAnimating && "pointer-events-none"
+                    )}
+                    style={{ fontKerning: "none" }}
+                    type="tel"
+                    value={amount}
+                    onChange={handleAmountChange}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                  />
+                ) : (
+                  <NumberFlow
+                    value={Number(amount) || 0}
+                    locales="en-US"
+                    style={{ fontKerning: "none", width: "100%" }}
+                    format={{
+                      useGrouping: false,
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 20,
+                    }}
+                    aria-hidden="true"
+                    animated={animated}
+                    onAnimationsStart={() => {
+                      setIsAnimating(true);
+                    }}
+                    onAnimationsFinish={() => {
+                      setIsAnimating(false);
+                    }}
+                    className={`w-full text-start font-[inherit] tracking-normal duration-200 ease-in-out ${
+                      showLoadingOpacity ? "opacity-75" : ""
+                    }`}
+                    willChange
+                  />
+                )}
+              </div>
             </div>
           </Typography>
           {asset ? (
