@@ -86,6 +86,7 @@ export default defineConfig({
   build: {
     target: "esnext",
     sourcemap: false,
+    minify: "terser",
     rollupOptions: {
       output: {
         manualChunks: {

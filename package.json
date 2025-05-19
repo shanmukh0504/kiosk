@@ -36,6 +36,7 @@
     "react-tooltip": "^5.28.0",
     "starknet": "6.23.1",
     "starknetkit": "^2.10.4",
+    "terser": "^5.39.2",
     "tw-colors": "^3.3.1",
     "vaul": "^1.1.0",
     "viem": "^2.28.0",
