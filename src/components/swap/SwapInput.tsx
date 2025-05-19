@@ -94,6 +94,10 @@ export const SwapInput: FC<SwapInputProps> = ({
     }
   };
 
+  useEffect(() => {
+    setAnimated(true);
+  }, [asset, isFocused]);
+
   const handleBalanceClick = () => {
     if (type === IOType.input && balance && asset) {
       if (
