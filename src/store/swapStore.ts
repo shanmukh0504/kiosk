@@ -56,7 +56,7 @@ export const BTC = {
   name: "Bitcoin",
   decimals: 8,
   symbol: "BTC",
-  logo: "https://garden-finance.imgix.net/token-images/bitcoin.svg",
+  logo: "https://garden.imgix.net/token-images/bitcoin.svg",
   tokenAddress: "primary",
   atomicSwapAddress: "primary",
   chain: network === "mainnet" ? Chains.bitcoin : Chains.bitcoin_testnet,

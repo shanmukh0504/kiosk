@@ -106,13 +106,7 @@ export const SwapInput: FC<SwapInputProps> = ({
     setOpenModal(modalNames.assetList);
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setAnimated(true);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, [amount]);
-
+  // Show loading opacity when loading
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout>;
     if (loading) {

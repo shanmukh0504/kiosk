@@ -152,6 +152,7 @@ export const CreateSwap = () => {
     });
   }, [addParams, inputAsset, outputAsset, setSearchParams]);
 
+  // Disable button when loading
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout>;
     if (loading.input || loading.output) {

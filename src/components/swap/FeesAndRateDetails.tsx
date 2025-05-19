@@ -39,8 +39,10 @@ export const FeesAndRateDetails = () => {
   const network = getBitcoinNetwork();
   const { account: btcAddress } = useBitcoinWallet();
   const { address } = useEVMWallet();
-  const { networkFeesValue, isLoading: isNetworkFeesLoading } =
-    useNetworkFees(network);
+  const { networkFeesValue, isLoading: isNetworkFeesLoading } = useNetworkFees(
+    network,
+    outputAsset
+  );
 
   const fees = useMemo(
     () => Number(tokenPrices.input) - Number(tokenPrices.output),
@@ -67,6 +69,19 @@ export const FeesAndRateDetails = () => {
     });
   };
 
+  const handleComparisonUpdate = (time: number, cost: number) => {
+    setMaxTimeSaved(time);
+    setMaxCostSaved(cost);
+  };
+
+  const handleHideComparison = () => {
+    setIsComparisonVisible(false);
+    setIsShowComparison({
+      isTime: false,
+      isFees: false,
+    });
+  };
+
   useEffect(() => {
     if (!outputAmount || !inputAmount || !outputAsset) {
       setRate(0);
@@ -90,19 +105,10 @@ export const FeesAndRateDetails = () => {
   return (
     <>
       <CompetitorComparisons
-        hide={() => {
-          setIsComparisonVisible(false);
-          setIsShowComparison({
-            isTime: false,
-            isFees: false,
-          });
-        }}
+        hide={handleHideComparison}
         isTime={showComparison.isTime}
         isFees={showComparison.isFees}
-        onComparisonUpdate={(time, cost) => {
-          setMaxTimeSaved(time);
-          setMaxCostSaved(cost);
-        }}
+        onComparisonUpdate={handleComparisonUpdate}
       />
       <div className="flex flex-col rounded-2xl bg-white/50 pb-4 transition-all duration-200">
         <div className="flex w-full items-center justify-between rounded-2xl px-4 pt-4">

@@ -2,8 +2,12 @@ import { useEffect, useState } from "react";
 import { BitcoinNetwork } from "@catalogfi/wallets";
 import { calculateNetworkFees } from "../utils/getNetworkFees";
 import { formatAmount } from "../utils/utils";
+import { Asset } from "@gardenfi/orderbook";
 
-export const useNetworkFees = (network: BitcoinNetwork) => {
+export const useNetworkFees = (
+  network: BitcoinNetwork,
+  outputAsset?: Asset
+) => {
   const [networkFeesValue, setNetworkFeesValue] = useState<string>("Free");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -12,7 +16,7 @@ export const useNetworkFees = (network: BitcoinNetwork) => {
     const fetchNetworkFees = async () => {
       setIsLoading(true);
       try {
-        const fees = await calculateNetworkFees(network);
+        const fees = await calculateNetworkFees(network, outputAsset);
         setNetworkFeesValue(`$${formatAmount(fees, 0, 2)}`);
       } catch (error) {
         console.error(error);
