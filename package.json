@@ -42,7 +42,6 @@
     "wagmi": "^2.12.5"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.10",
     "@babel/plugin-transform-react-jsx": "^7.25.9",
     "@eslint/js": "^9.13.0",
     "@types/babel__core": "^7",

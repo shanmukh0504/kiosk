@@ -6683,7 +6683,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "garden-kiosk@workspace:."
   dependencies:
-    "@babel/core": "npm:^7.26.10"
     "@babel/plugin-transform-react-jsx": "npm:^7.25.9"
     "@catalogfi/wallets": "npm:^0.2.59"
     "@chainflip/sdk": "npm:^1.8.3"
