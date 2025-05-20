@@ -57,8 +57,8 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
           id="act-2:bloom"
           title="Swap to Unichain, pay no fees! 🦄"
           description={`Zero protocol fees on all swaps to Unichain for the next ${remainingTime} hours.`}
-          image="https://wbtc-garden.ghost.io/content/images/size/w1000/2025/04/act2-1.png"
-          link="https://garden.finance/blog/leveling-up-garden"
+          image="/ZeroFees.png"
+          link="https://garden.finance/blog/bitcoin-to-unichain-in-30-seconds-2"
         />
         <Footer className={"mt-auto"} />
       </div>
