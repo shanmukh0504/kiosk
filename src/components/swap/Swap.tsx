@@ -19,9 +19,8 @@ export const Swap = () => {
   const { updateOrder } = pendingOrdersStore();
 
   useEffect(() => {
-    if (!garden) return;
-    fetchAndSetStrategies(garden.quote);
-  }, [fetchAndSetStrategies, garden]);
+    fetchAndSetStrategies();
+  }, [fetchAndSetStrategies]);
 
   const handleErrorLog = (order: MatchedOrder, error: string) =>
     console.error("garden error", order.create_order.create_id, error);

@@ -3,9 +3,8 @@ import { IOType, network, SUPPORTED_CHAINS } from "../constants/constants";
 import { Asset, Chain } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
-import { IQuote, Strategies } from "@gardenfi/core";
+import { Quote, Strategies, API as gardenAPI } from "@gardenfi/core";
 import { generateTokenKey } from "../utils/generateTokenKey";
-import { Network } from "@gardenfi/utils";
 
 export type Networks = {
   [chain in Chain]: ChainData & { assetConfig: Omit<Asset, "chain">[] };
@@ -40,7 +39,7 @@ type AssetInfoState = {
   setOpenAssetSelector: (type: IOType) => void;
   CloseAssetSelector: () => void;
   fetchAndSetAssetsAndChains: () => Promise<void>;
-  fetchAndSetStrategies: (quote: IQuote) => Promise<void>;
+  fetchAndSetStrategies: () => Promise<void>;
 };
 
 export const assetInfoStore = create<AssetInfoState>((set, get) => ({
@@ -78,9 +77,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     try {
       set({ isLoading: true });
       const res = await axios.get<Networks>(
-        API()
-          .data.assets(network as Network)
-          .toString()
+        API().data.assets(network).toString()
       );
       const assetsData = res.data;
 
@@ -116,8 +113,9 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       set({ isLoading: false });
     }
   },
-  fetchAndSetStrategies: async (quote) => {
+  fetchAndSetStrategies: async () => {
     try {
+      const quote = new Quote(gardenAPI[network].quote);
       set({ strategies: { ...get().strategies, isLoading: true } });
       const res = await quote.getStrategies();
       if (res.error) return;
