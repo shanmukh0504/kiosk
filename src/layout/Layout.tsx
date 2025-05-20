@@ -55,7 +55,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
         </div>
         <Notification
           id="act-2:bloom"
-          title={`0 Fees. ${remainingTime} Hours. Unichain. 🦄 `}
+          title="Swap to Unichain, pay no fees! 🦄"
           description={`Zero protocol fees on all swaps to Unichain for the next ${remainingTime} hours.`}
           image="https://wbtc-garden.ghost.io/content/images/size/w1000/2025/04/act2-1.png"
           link="https://garden.finance/blog/leveling-up-garden"
