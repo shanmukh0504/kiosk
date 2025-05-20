@@ -3,7 +3,7 @@ import { IOType, network, SUPPORTED_CHAINS } from "../constants/constants";
 import { Asset, Chain } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
-import { IQuote, Strategies } from "@gardenfi/core";
+import { Quote, Strategies } from "@gardenfi/core";
 import { generateTokenKey } from "../utils/generateTokenKey";
 import { Network } from "@gardenfi/utils";
 
@@ -40,7 +40,7 @@ type AssetInfoState = {
   setOpenAssetSelector: (type: IOType) => void;
   CloseAssetSelector: () => void;
   fetchAndSetAssetsAndChains: () => Promise<void>;
-  fetchAndSetStrategies: (quote: IQuote) => Promise<void>;
+  fetchAndSetStrategies: () => Promise<void>;
 };
 
 export const assetInfoStore = create<AssetInfoState>((set, get) => ({
@@ -116,8 +116,9 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       set({ isLoading: false });
     }
   },
-  fetchAndSetStrategies: async (quote) => {
+  fetchAndSetStrategies: async () => {
     try {
+      const quote = new Quote(API().quote.toString());
       set({ strategies: { ...get().strategies, isLoading: true } });
       const res = await quote.getStrategies();
       if (res.error) return;
