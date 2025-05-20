@@ -3,7 +3,7 @@ import { IOType, network, SUPPORTED_CHAINS } from "../constants/constants";
 import { Asset, Chain } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
-import { Quote, Strategies, API as gardenAPI } from "@gardenfi/core";
+import { Quote, Strategies } from "@gardenfi/core";
 import { generateTokenKey } from "../utils/generateTokenKey";
 
 export type Networks = {
@@ -115,7 +115,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   },
   fetchAndSetStrategies: async () => {
     try {
-      const quote = new Quote(gardenAPI[network].quote);
+      const quote = new Quote(API().quote.quote.toString());
       set({ strategies: { ...get().strategies, isLoading: true } });
       const res = await quote.getStrategies();
       if (res.error) return;
