@@ -1,5 +1,5 @@
 import { Footer } from "@gardenfi/garden-book";
-import { FC, ReactNode, useEffect } from "react";
+import { FC, ReactNode, useEffect, useMemo } from "react";
 import { Orb } from "../common/Orb";
 import { getCurrentTheme } from "../utils/utils";
 import { Navbar } from "../components/navbar/Navbar";
@@ -15,6 +15,28 @@ type LayoutProps = {
 export const Layout: FC<LayoutProps> = ({ children }) => {
   const { fetchAndSetAssetsAndChains } = assetInfoStore();
   const theme = getCurrentTheme();
+
+  const remainingTime = useMemo(() => {
+    const now = new Date();
+
+    // Create a UTC timestamp for tomorrow at 14:00 UTC (2 PM)
+    const nextUTC2PM = new Date(
+      Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate() + 1, // tomorrow
+        14,
+        0,
+        0,
+        0
+      )
+    );
+
+    const msRemaining = nextUTC2PM.getTime() - now.getTime(); // both are UTC-based
+    const hoursRemaining = msRemaining / (1000 * 60 * 60);
+
+    return Math.floor(hoursRemaining);
+  }, []);
 
   useEffect(() => {
     fetchAndSetAssetsAndChains();
@@ -33,8 +55,8 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
         </div>
         <Notification
           id="act-2:bloom"
-          title="introducing act 2: bloom"
-          description="Explore faster swaps, new assets and chains, and all that's new around here!"
+          title={`0 Fees. ${remainingTime} Hours. Unichain. 🦄 `}
+          description={`Zero protocol fees on all swaps to Unichain for the next ${remainingTime} hours.`}
           image="https://wbtc-garden.ghost.io/content/images/size/w1000/2025/04/act2-1.png"
           link="https://garden.finance/blog/leveling-up-garden"
         />

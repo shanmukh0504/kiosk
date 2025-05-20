@@ -8,12 +8,13 @@ import {
   Typography,
 } from "@gardenfi/garden-book";
 import { FC, useState, ChangeEvent, useEffect, useMemo } from "react";
-import { Asset, isBitcoin } from "@gardenfi/orderbook";
+import { Asset, Chains, isBitcoin } from "@gardenfi/orderbook";
 import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { swapStore } from "../../store/swapStore";
 import { IOType } from "../../constants/constants";
 import { constructOrderPair } from "@gardenfi/core";
 import { AssetChainLogos } from "../../common/AssetChainLogos";
+import { NoFees } from "./NoFees";
 
 type props = {
   onClose: () => void;
@@ -150,7 +151,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         {orderedChains.map((c, i) => (
           <Chip
             key={i}
-            className={`${
+            className={`flex items-center ${
               !chain || c.chainId !== chain.chainId
                 ? "bg-opacity-50 pr-1"
                 : "pr-2"
@@ -160,6 +161,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             <Typography size="h3" weight="medium">
               {c.name}
             </Typography>
+            {c.identifier === Chains.unichain && <NoFees />}
             <RadioCheckedIcon
               className={`${
                 c === chain ? "w-4" : "w-0"
@@ -200,7 +202,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                   className="flex w-full cursor-pointer items-center justify-between px-4 py-1.5 hover:bg-off-white"
                   onClick={() => handleClick(asset)}
                 >
-                  <div className="flex w-full items-center gap-2">
+                  <div className="flex w-[80%] items-center gap-2">
                     <div className="w-10">
                       <AssetChainLogos
                         tokenLogo={asset.logo}
@@ -221,7 +223,11 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                       {asset.name}
                     </Typography>
                   </div>
-                  <StarIcon className={`fill-light-grey`} />
+                  {asset.chain === Chains.unichain ? (
+                    <NoFees />
+                  ) : (
+                    <StarIcon className={`fill-light-grey`} />
+                  )}
                 </div>
               )
             );
