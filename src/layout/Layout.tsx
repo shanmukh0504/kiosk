@@ -54,7 +54,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
           {children}
         </div>
         <Notification
-          id="act-2:bloom"
+          id="unichain-noFees"
           title="Swap to Unichain, pay no fees! 🦄"
           description={`Zero protocol fees on all swaps to Unichain for the next ${remainingTime} hours.`}
           image="/ZeroFees.png"
