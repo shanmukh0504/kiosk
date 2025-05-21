@@ -7,7 +7,6 @@ import { assetInfoStore } from "../store/assetInfoStore";
 import {
   constructOrderPair,
   OrderStatus,
-  // switchOrAddNetwork,
   validateBTCAddress,
 } from "@gardenfi/core";
 import BigNumber from "bignumber.js";
@@ -60,7 +59,6 @@ export const useSwap = () => {
   const { provider, account } = useBitcoinWallet();
   const controller = useRef<AbortController | null>(null);
   const { setConnectingWallet } = ConnectingWalletStore();
-  // let { data: wallet } = useWalletClient();
   const { address: evmAddress } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { setOpenModal } = modalStore();
