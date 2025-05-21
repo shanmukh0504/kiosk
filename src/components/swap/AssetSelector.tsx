@@ -8,13 +8,12 @@ import {
   Typography,
 } from "@gardenfi/garden-book";
 import { FC, useState, ChangeEvent, useEffect, useMemo } from "react";
-import { Asset, Chains, isBitcoin } from "@gardenfi/orderbook";
+import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { swapStore } from "../../store/swapStore";
 import { IOType } from "../../constants/constants";
 import { constructOrderPair } from "@gardenfi/core";
 import { AssetChainLogos } from "../../common/AssetChainLogos";
-import { NoFees } from "./NoFees";
 
 type props = {
   onClose: () => void;
