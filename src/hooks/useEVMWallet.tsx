@@ -1,6 +1,7 @@
 import { useAccount, useConnect, useDisconnect, useWalletClient } from "wagmi";
 import { useChainId } from "wagmi";
 import { ClearLocalStorageExceptNotification } from "../utils/utils";
+
 export const useEVMWallet = () => {
   const { data: walletClient } = useWalletClient();
   const { address, isConnected, connector } = useAccount();
