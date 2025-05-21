@@ -115,7 +115,7 @@ export const getTokenBalance = async (address: string, asset: Asset) => {
       ..._chain,
       rpcUrls: {
         default: {
-          http: ["https://eth.llamarpc.com"],
+          http: ["https://eth-mainnet.public.blastapi.io"],
         },
       },
     };
