@@ -18,24 +18,12 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
 
   const remainingTime = useMemo(() => {
     const now = new Date();
+    const target = new Date(Date.UTC(2025, 4, 21, 14, 0, 0)); // 21 May 2025, 2PM UTC
 
-    // Create a UTC timestamp for tomorrow at 14:00 UTC (2 PM)
-    const nextUTC2PM = new Date(
-      Date.UTC(
-        now.getUTCFullYear(),
-        now.getUTCMonth(),
-        now.getUTCDate() + 1, // tomorrow
-        14,
-        0,
-        0,
-        0
-      )
-    );
-
-    const msRemaining = nextUTC2PM.getTime() - now.getTime(); // both are UTC-based
+    const msRemaining = target.getTime() - now.getTime();
     const hoursRemaining = msRemaining / (1000 * 60 * 60);
 
-    return Math.floor(hoursRemaining);
+    return Math.max(0, Math.floor(hoursRemaining)); // never go below 0
   }, []);
 
   useEffect(() => {
