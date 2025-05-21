@@ -161,8 +161,6 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             <Typography size="h3" weight="medium">
               {c.name}
             </Typography>
-            {isAssetSelectorOpen.type === IOType.output &&
-              c.identifier === Chains.unichain && <NoFees />}
             <RadioCheckedIcon
               className={`${
                 c === chain ? "w-4" : "w-0"
@@ -224,12 +222,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                       {asset.name}
                     </Typography>
                   </div>
-                  {isAssetSelectorOpen.type === IOType.output &&
-                  asset.chain === Chains.unichain ? (
-                    <NoFees />
-                  ) : (
-                    <StarIcon className={`fill-light-grey`} />
-                  )}
+                  <StarIcon className={`fill-light-grey`} />
                 </div>
               )
             );

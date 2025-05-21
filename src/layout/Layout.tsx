@@ -1,5 +1,5 @@
 import { Footer } from "@gardenfi/garden-book";
-import { FC, ReactNode, useEffect, useMemo } from "react";
+import { FC, ReactNode, useEffect } from "react";
 import { Orb } from "../common/Orb";
 import { getCurrentTheme } from "../utils/utils";
 import { Navbar } from "../components/navbar/Navbar";
@@ -15,16 +15,6 @@ type LayoutProps = {
 export const Layout: FC<LayoutProps> = ({ children }) => {
   const { fetchAndSetAssetsAndChains } = assetInfoStore();
   const theme = getCurrentTheme();
-
-  const remainingTime = useMemo(() => {
-    const now = new Date();
-    const target = new Date(Date.UTC(2025, 4, 21, 14, 0, 0)); // 21 May 2025, 2PM UTC
-
-    const msRemaining = target.getTime() - now.getTime();
-    const hoursRemaining = msRemaining / (1000 * 60 * 60);
-
-    return Math.max(0, Math.floor(hoursRemaining)); // never go below 0
-  }, []);
 
   useEffect(() => {
     fetchAndSetAssetsAndChains();
@@ -42,10 +32,10 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
           {children}
         </div>
         <Notification
-          id="unichain-noFees"
-          title="Swap to Unichain, pay no fees! 🦄"
-          description={`Zero protocol fees on all swaps to Unichain for the next ${remainingTime} hours.`}
-          image="/ZeroFees.png"
+          id="unichain-launch"
+          title="We are now live on Unichain! 🦄"
+          description="Swap in and out of Unichain in as little as 30 seconds."
+          image="https://wbtc-garden.ghost.io/content/images/2025/05/Unichain-2.png"
           link="https://garden.finance/blog/bitcoin-to-unichain-in-30-seconds-2"
         />
         <Footer className={"mt-auto"} />
