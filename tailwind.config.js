@@ -14,6 +14,7 @@ export default {
         "light-grey": "#E3E0EB",
         "off-white": "#F4F0FC",
         "error-red": "#FF005C",
+        "light-green": "#4DCB75",
       },
       screens: {
         xs: "360px",

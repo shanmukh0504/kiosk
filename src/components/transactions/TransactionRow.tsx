@@ -1,10 +1,7 @@
 import { FC, useMemo } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { SwapInfo } from "../../common/SwapInfo";
-import {
-  isBitcoin,
-  MatchedOrder,
-} from "@gardenfi/orderbook";
+import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
 import {
   formatAmount,
   getAssetFromSwap,

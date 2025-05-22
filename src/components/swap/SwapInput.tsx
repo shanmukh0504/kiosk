@@ -5,11 +5,14 @@ import {
   Typography,
   WalletIcon,
 } from "@gardenfi/garden-book";
-import { FC, useMemo, useRef, ChangeEvent } from "react";
+import { FC, useMemo, useRef, ChangeEvent, useState, useEffect } from "react";
 import { IOType } from "../../constants/constants";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { Asset, isBitcoin, isEvmNativeToken } from "@gardenfi/orderbook";
 import { modalNames, modalStore } from "../../store/modalStore";
+import { ErrorFormat } from "../../constants/errors";
+import NumberFlow from "@number-flow/react";
+import clsx from "clsx/lite";
 
 type SwapInputProps = {
   type: IOType;
@@ -18,7 +21,7 @@ type SwapInputProps = {
   asset?: Asset;
   loading: boolean;
   price: string;
-  error?: string;
+  error?: ErrorFormat;
   balance?: number;
   timeEstimate?: string;
 };
@@ -28,15 +31,21 @@ export const SwapInput: FC<SwapInputProps> = ({
   amount,
   asset,
   onChange,
-  loading,
   price,
   error,
   balance,
   timeEstimate,
+  loading,
 }) => {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [isFocused, setIsFocused] = useState(false);
+  const [animated, setAnimated] = useState(true);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [showLoadingOpacity, setShowLoadingOpacity] = useState(false);
+
   const { setOpenAssetSelector, chains } = assetInfoStore();
   const { setOpenModal } = modalStore();
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const network = useMemo(() => {
     if (!chains || (asset && isBitcoin(asset.chain))) return;
@@ -47,36 +56,47 @@ export const SwapInput: FC<SwapInputProps> = ({
   const label = type === IOType.input ? "Send" : "Receive";
 
   const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value;
-    const parts = input.split(".");
-    // Check if the last character is a digit or a dot.
-    if (
-      // If it's a digit
-      /^[0-9]$/.test(input.at(-1)!) ||
-      // or it's a dot and there is only one dot in the entire string
-      (input.at(-1) === "." && parts.length - 1 === 1)
-    ) {
-      const decimals = (parts[1] || "").length;
-      // If there are more than the maximum decimals after the point.
-      if (asset && decimals > asset.decimals && parts[1]) {
-        // Trim decimals to only keep the maximum amount.
-        onChange(parts[0] + "." + parts[1].slice(0, asset.decimals));
-      } else {
-        // Otherwise, just set the input.
-        onChange(input);
-      }
+    let input = e.target.value;
+
+    // Strict validation: only allow numbers and a single decimal point
+    if (!/^[0-9]*\.?[0-9]*$/.test(input)) {
+      setAnimated(false);
+      setTimeout(() => {
+        setAnimated(true);
+      }, 800);
       return;
     }
-    // If it's an empty string, just set the input.
-    else if (input.length === 0) {
+    setAnimated(false);
+
+    if (input.startsWith(".")) {
+      input = "0" + input;
+    }
+
+    const parts = input.split(".");
+    if (input === "-") return;
+
+    // If there's more than one decimal point, reject the input
+    if (parts.length > 2) {
+      setTimeout(() => {
+        setAnimated(true);
+      }, 800);
+      return;
+    }
+
+    const decimals = (parts[1] || "").length;
+    // If there are more than the maximum decimals after the point.
+    if (asset && decimals > asset.decimals && parts[1]) {
+      // Trim decimals to only keep the maximum amount.
+      onChange(parts[0] + "." + parts[1].slice(0, asset.decimals));
+    } else {
+      // Otherwise, just set the input.
       onChange(input);
     }
-    // If the last character is not a numerical digit or a dot, and the string
-    // is not empty, do nothing and return.
-    else {
-      return;
-    }
   };
+
+  useEffect(() => {
+    setAnimated(true);
+  }, [asset, isFocused]);
 
   const handleBalanceClick = () => {
     if (type === IOType.input && balance && asset) {
@@ -95,6 +115,21 @@ export const SwapInput: FC<SwapInputProps> = ({
     setOpenModal(modalNames.assetList);
   };
 
+  // Show loading opacity when loading
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    if (loading) {
+      timeoutId = setTimeout(() => {
+        setShowLoadingOpacity(true);
+      }, 300);
+    } else {
+      setShowLoadingOpacity(false);
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [loading]);
+
   return (
     <>
       <div className="flex flex-col gap-2 rounded-2xl bg-white p-4">
@@ -107,14 +142,16 @@ export const SwapInput: FC<SwapInputProps> = ({
             >
               {label}
             </Typography>
-            <Typography size="h5" weight="medium" className="!text-mid-grey">
-              {Number(price) ? `$${price}` : ""}
-            </Typography>
+            {amount && Number(price) !== 0 && (
+              <Typography size="h5" weight="medium">
+                <span className="text-mid-grey">~${price}</span>
+              </Typography>
+            )}
           </div>
           {type === IOType.input &&
             (error ? (
-              <Typography size="h5" weight="medium">
-                <div className="text-red-500">{error}</div>
+              <Typography size="h5" weight="medium" className="!text-red-500">
+                {error}
               </Typography>
             ) : balance !== undefined ? (
               <div
@@ -129,36 +166,91 @@ export const SwapInput: FC<SwapInputProps> = ({
             ) : (
               <></>
             ))}
-          {type === IOType.output && timeEstimate && (
-            <div className="flex items-center gap-1">
-              <TimerIcon className="h-4" />
-              <Typography size="h5" weight="medium">
-                {timeEstimate}
+          {type === IOType.output &&
+            (error ? (
+              <Typography size="h5" weight="medium" className="!text-red-500">
+                {error}
               </Typography>
-            </div>
-          )}
+            ) : (
+              timeEstimate && (
+                <div className="flex items-end gap-1">
+                  <TimerIcon className="h-4" />
+                  <Typography
+                    size="h5"
+                    weight="medium"
+                    className="!leading-none"
+                  >
+                    {timeEstimate}
+                  </Typography>
+                </div>
+              )
+            ))}
         </div>
-        <div className="flex h-6 items-center justify-between">
-          {loading ? (
-            <div className="text-mid-grey">loading...</div>
-          ) : (
-            <Typography
-              size={"h3"}
-              breakpoints={{
-                sm: "h2",
-              }}
-              weight="bold"
-            >
-              <input
-                ref={inputRef}
-                className="max-w-[150px] outline-none placeholder:text-dark-grey"
-                type="text"
-                value={type == IOType.output && amount == "0" ? "" : amount}
-                placeholder="0"
-                onChange={handleAmountChange}
-              />
-            </Typography>
-          )}
+        <div className="flex h-6 justify-between sm:h-7">
+          <Typography
+            size={"h3"}
+            breakpoints={{
+              sm: "h2",
+            }}
+            weight="bold"
+          >
+            <div className="relative w-[150px] max-w-[150px] md:w-[200px] md:max-w-[200px]">
+              <div
+                className={clsx(
+                  "relative flex w-full items-center",
+                  !isAnimating && "cursor-text"
+                )}
+                onClick={(e) => {
+                  if (isAnimating) return;
+                  e.preventDefault();
+                  setIsFocused(true);
+                  // Use setTimeout to ensure the input is mounted before focusing
+                  setTimeout(() => {
+                    inputRef.current?.focus();
+                  }, 0);
+                }}
+              >
+                {isFocused ? (
+                  <input
+                    ref={inputRef}
+                    className={clsx(
+                      "w-full bg-transparent py-[1px] text-start font-[inherit] outline-none",
+                      isAnimating && "pointer-events-none"
+                    )}
+                    style={{ fontKerning: "none" }}
+                    type="tel"
+                    value={amount}
+                    onChange={handleAmountChange}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                  />
+                ) : (
+                  <NumberFlow
+                    value={Number(amount) || 0}
+                    locales="en-US"
+                    style={{ fontKerning: "none", width: "100%" }}
+                    format={{
+                      useGrouping: false,
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 20,
+                    }}
+                    aria-hidden="true"
+                    animated={animated}
+                    onAnimationsStart={() => {
+                      setIsAnimating(true);
+                    }}
+                    onAnimationsFinish={() => {
+                      setIsAnimating(false);
+                    }}
+                    className={`w-full text-start font-[inherit] tracking-normal duration-200 ease-in-out ${
+                      showLoadingOpacity ? "opacity-75" : ""
+                    }`}
+                    willChange
+                  />
+                )}
+              </div>
+            </div>
+          </Typography>
           {asset ? (
             <TokenInfo
               symbol={asset.symbol}

@@ -7,6 +7,7 @@ import fs from "fs";
 import wasm from "vite-plugin-wasm";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import topLevelAwait from "vite-plugin-top-level-await";
+import { metadataPlugin } from "./vite-metadata-plugin";
 
 const getRecentGitCommitHash = () => {
   try {
@@ -27,19 +28,10 @@ const buildId = getRecentGitCommitHash();
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  build: {
-    rollupOptions: {
-      input: {
-        main: "index.html",
-        stake: "stake.html",
-        swap: "swap.html",
-      },
-    },
-  },
   plugins: [
     react(),
     wasm(),
-    // metadataPlugin(),
+    metadataPlugin(),
     nodePolyfills({
       globals: {
         process: true,
@@ -91,6 +83,20 @@ export default defineConfig({
       },
     },
   ],
+  build: {
+    target: "esnext",
+    sourcemap: false,
+    minify: "terser",
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "react-vendor": ["react", "react-dom"],
+          "ui-vendor": ["@gardenfi/garden-book", "framer-motion"],
+          "wallet-vendor": ["@gardenfi/wallet-connectors", "wagmi", "viem"],
+        },
+      },
+    },
+  },
   preview: {
     allowedHosts: true,
   },

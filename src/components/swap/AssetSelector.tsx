@@ -7,13 +7,14 @@ import {
   StarIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { FC, useState, ChangeEvent, useEffect, useMemo } from "react";
+import { FC, useState, ChangeEvent, useEffect, useMemo, useRef } from "react";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { swapStore } from "../../store/swapStore";
 import { IOType } from "../../constants/constants";
 import { constructOrderPair } from "@gardenfi/core";
 import { AssetChainLogos } from "../../common/AssetChainLogos";
+import { modalStore } from "../../store/modalStore";
 
 type props = {
   onClose: () => void;
@@ -23,6 +24,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const [chain, setChain] = useState<ChainData>();
   const [input, setInput] = useState<string>("");
   const [results, setResults] = useState<Asset[]>();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const {
     isAssetSelectorOpen,
@@ -31,6 +33,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     chains,
     strategies,
   } = assetInfoStore();
+  const { modalName } = modalStore();
   const { setAsset, inputAsset, outputAsset } = swapStore();
 
   const orderedChains = useMemo(() => {
@@ -137,13 +140,24 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     onClose();
   };
 
+  useEffect(() => {
+    if (isAssetSelectorOpen.isOpen) {
+      setChain(undefined);
+      setInput("");
+      inputRef.current?.focus();
+    }
+  }, [isAssetSelectorOpen]);
+
   return (
     <div className="transition-left left-auto top-60 z-40 flex flex-col gap-3 rounded-[20px] duration-700 ease-cubic-in-out sm:w-[480px]">
       <div className="flex items-center justify-between p-1">
         <Typography size="h4" weight="bold">
           {`Select token to ${isAssetSelectorOpen.type === IOType.input ? "send" : "recieve"}`}
         </Typography>
-        <CloseIcon className="cursor-pointer" onClick={onClose} />
+        <CloseIcon
+          className="hidden cursor-pointer sm:visible sm:block"
+          onClick={onClose}
+        />
       </div>
 
       <div className="flex flex-wrap gap-3">
@@ -172,6 +186,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         <div className="flex-grow">
           <Typography size="h4" weight="medium">
             <input
+              ref={inputRef}
               className="w-full outline-none placeholder:text-mid-grey"
               type="text"
               value={input}
@@ -188,7 +203,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             Assets
           </Typography>
         </div>
-        <GradientScroll height={288}>
+        <GradientScroll height={288} onClose={!modalName.assetList}>
           {sortedResults?.map((asset) => {
             const network = !isBitcoin(asset.chain)
               ? chains?.[asset.chain]
