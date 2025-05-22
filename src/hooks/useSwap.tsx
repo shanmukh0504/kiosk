@@ -7,7 +7,6 @@ import { assetInfoStore } from "../store/assetInfoStore";
 import {
   constructOrderPair,
   OrderStatus,
-  // switchOrAddNetwork,
   validateBTCAddress,
 } from "@gardenfi/core";
 import { useGarden } from "@gardenfi/react-hooks";
@@ -66,7 +65,6 @@ export const useSwap = () => {
   const { provider, account } = useBitcoinWallet();
   const controller = useRef<AbortController | null>(null);
   const { setConnectingWallet } = ConnectingWalletStore();
-  // let { data: wallet } = useWalletClient();
   const { address: evmAddress } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { setOpenModal } = modalStore();
@@ -452,8 +450,12 @@ export const useSwap = () => {
           disconnect();
           setConnectingWallet(null);
           setOpenModal(modalNames.versionUpdate);
+        } else if (res.error.includes("destination amount too high")) {
+          //order failed due to price fluctuation, refresh quote here
+          fetchQuote(inputAmount, inputAsset, outputAsset, false);
+        } else {
+          console.error("failed to create order ❌", res.error);
         }
-        console.error("failed to create order ❌", res.error);
         setIsSwapping(false);
         return;
       }
