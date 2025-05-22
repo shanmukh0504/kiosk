@@ -164,7 +164,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         {orderedChains.map((c, i) => (
           <Chip
             key={i}
-            className={`${
+            className={`flex items-center ${
               !chain || c.chainId !== chain.chainId
                 ? "bg-opacity-50 pr-1"
                 : "pr-2"
@@ -215,7 +215,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                   className="flex w-full cursor-pointer items-center justify-between px-4 py-1.5 hover:bg-off-white"
                   onClick={() => handleClick(asset)}
                 >
-                  <div className="flex w-full items-center gap-2">
+                  <div className="flex w-[80%] items-center gap-2">
                     <div className="w-10">
                       <AssetChainLogos
                         tokenLogo={asset.logo}
