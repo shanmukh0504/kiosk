@@ -1,12 +1,15 @@
 import { Footer } from "@gardenfi/garden-book";
-import { FC, ReactNode, useEffect } from "react";
+import { FC, ReactNode, useEffect, useState } from "react";
 import { Orb } from "../common/Orb";
 import { getCurrentTheme } from "../utils/utils";
 import { Navbar } from "../components/navbar/Navbar";
 import { Modal } from "../components/modal/Modal";
-import { Notification } from "../common/Notification";
+import { Notification, NotificationProps } from "../common/Notification";
 import { ViewPortListener } from "../common/ViewPortListener";
 import { assetInfoStore } from "../store/assetInfoStore";
+import axios from "axios";
+import { API } from "../constants/api";
+import { notificationId } from "../constants/constants";
 
 type LayoutProps = {
   children: ReactNode;
@@ -15,9 +18,23 @@ type LayoutProps = {
 export const Layout: FC<LayoutProps> = ({ children }) => {
   const { fetchAndSetAssetsAndChains } = assetInfoStore();
   const theme = getCurrentTheme();
+  const [notification, setNotification] = useState<NotificationProps | null>(
+    null
+  );
 
   useEffect(() => {
     fetchAndSetAssetsAndChains();
+    const fetchNotification = async () => {
+      try {
+        const response = await axios.get(
+          API().data.notification(notificationId).toString()
+        );
+        setNotification(response.data.result);
+      } catch (error) {
+        console.log("Error fetching notification", error);
+      }
+    };
+    fetchNotification();
   }, [fetchAndSetAssetsAndChains]);
 
   return (
@@ -31,13 +48,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
           <Navbar />
           {children}
         </div>
-        <Notification
-          id="unichain-launch"
-          title="We are now live on Unichain! 🦄"
-          description="Swap in and out of Unichain in as little as 30 seconds."
-          image="https://wbtc-garden.ghost.io/content/images/2025/05/Unichain-2.png"
-          link="https://garden.finance/blog/bitcoin-to-unichain-in-30-seconds-2"
-        />
+        {notification && <Notification {...notification} />}
         <Footer className={"mt-auto"} />
       </div>
     </div>

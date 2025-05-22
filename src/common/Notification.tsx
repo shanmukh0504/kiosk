@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { LOCAL_STORAGE_KEYS } from "../constants/constants";
 
-type NotificationProps = {
+export type NotificationProps = {
   id: string;
   title: string;
   description: string;

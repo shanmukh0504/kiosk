@@ -55,6 +55,7 @@ export enum Environment {
 
 export const network: Network = import.meta.env.VITE_NETWORK;
 export const environment: Environment = import.meta.env.VITE_ENVIRONMENT;
+export const notificationId: string = import.meta.env.VITE_NOTIFICATION_ID;
 
 export const SUPPORTED_CHAINS: Chain[] = [
   "arbitrum",
