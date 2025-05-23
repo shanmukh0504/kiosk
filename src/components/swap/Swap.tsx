@@ -5,7 +5,7 @@ import { Toast, ToastContainer } from "../toast/Toast";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { useGarden } from "@gardenfi/react-hooks";
 import { MatchedOrder } from "@gardenfi/orderbook";
-import { formatAmount, getAssetFromSwap } from "../../utils/utils";
+import { getAssetFromSwap } from "../../utils/utils";
 import { OrderActions, OrderStatus } from "@gardenfi/core";
 import orderInProgressStore from "../../store/orderInProgressStore";
 import pendingOrdersStore from "../../store/pendingOrdersStore";
@@ -19,9 +19,8 @@ export const Swap = () => {
   const { updateOrder } = pendingOrdersStore();
 
   useEffect(() => {
-    if (!garden) return;
-    fetchAndSetStrategies(garden.quote);
-  }, [fetchAndSetStrategies, garden]);
+    fetchAndSetStrategies();
+  }, [fetchAndSetStrategies]);
 
   const handleErrorLog = (order: MatchedOrder, error: string) =>
     console.error("garden error", order.create_order.create_id, error);
@@ -48,14 +47,6 @@ export const Swap = () => {
       const outputAsset = getAssetFromSwap(destination_swap, supportedAssets);
       if (!inputAsset || !outputAsset) return;
 
-      const inputAmount = formatAmount(
-        order.source_swap.amount,
-        inputAsset.decimals
-      );
-      const outputAmount = formatAmount(
-        order.destination_swap.amount,
-        outputAsset.decimals
-      );
       console.log("order success ✅", order.create_order.create_id);
 
       const updatedOrder = {
@@ -69,7 +60,7 @@ export const Swap = () => {
       updateOrder(updatedOrder);
 
       Toast.success(
-        `Swap success ${inputAmount} ${inputAsset.symbol} to ${outputAmount} ${outputAsset.symbol}`
+        `Swap success ${inputAsset.symbol} to ${outputAsset.symbol}`
       );
     };
 
@@ -85,10 +76,14 @@ export const Swap = () => {
   }, [garden, supportedAssets, order, updateOrder]);
 
   return (
-    <div className="mx-auto mt-10 flex w-full max-w-[328px] flex-col gap-4 pb-60 sm:max-w-[424px]">
-      <ToastContainer />
-      <div className="relative overflow-hidden rounded-[20px] bg-white/50">
-        {isOpen ? <SwapInProgress /> : <CreateSwap />}
+    <div className="mx-auto flex h-full w-full max-w-[328px] flex-col justify-center gap-4 sm:max-w-[424px] lg:min-h-[calc(100vh-96px)]">
+      <div className="flex h-full flex-col justify-center gap-4 lg:-translate-y-7">
+        <ToastContainer />
+        <div
+          className={`relative overflow-hidden rounded-[20px] bg-white/50 lg:translate-y-[-48px]`}
+        >
+          {isOpen ? <SwapInProgress /> : <CreateSwap />}
+        </div>
       </div>
     </div>
   );

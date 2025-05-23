@@ -1,7 +1,7 @@
-import { BottomSheet } from "../../common/BottomSheet";
 import { AddressMenu } from "./header/AddressMenu";
 import { FC } from "react";
 import { Transactions } from "./Transactions";
+import { BottomSheet } from "@gardenfi/garden-book";
 
 type BottomSheetProps = {
   open: boolean;

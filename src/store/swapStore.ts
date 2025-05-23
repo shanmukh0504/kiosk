@@ -1,21 +1,23 @@
 import { create } from "zustand";
-import { IOType, network, QuoteError } from "../constants/constants";
+import { IOType, network } from "../constants/constants";
 import { Asset, Chains } from "@gardenfi/orderbook";
+import { ErrorFormat, Errors } from "../constants/errors";
 
 export type TokenPrices = {
   input: string;
   output: string;
 };
 
-export type SwapErrors = {
-  inputError?: string;
-  outputError?: string;
-  quoteError?: QuoteError;
-};
-
 export type FetchingQuote = {
   input: boolean;
   output: boolean;
+};
+
+export type SwapErrors = {
+  inputError?: ErrorFormat;
+  outputError?: ErrorFormat;
+  liquidityError?: ErrorFormat;
+  insufficientBalanceError?: ErrorFormat;
 };
 
 type SwapState = {
@@ -25,15 +27,16 @@ type SwapState = {
   outputAmount: string;
   btcAddress: string;
   isSwapping: boolean;
-  isInsufficientLiquidity: boolean;
   isApproving: boolean;
   strategy: string;
   tokenPrices: TokenPrices;
   error: SwapErrors;
   isFetchingQuote: FetchingQuote;
+  isEditBTCAddress: boolean;
+  isComparisonVisible: boolean;
+  isValidBitcoinAddress: boolean;
   setTokenPrices: (tokenPrices: TokenPrices) => void;
   setIsSwapping: (isSwapping: boolean) => void;
-  setIsInsufficientLiquidity: (isInsufficientLiquidity: boolean) => void;
   setIsApproving: (isApproving: boolean) => void;
   setStrategy: (strategy: string) => void;
   setAsset: (ioType: IOType, asset: Asset | undefined) => void;
@@ -42,6 +45,9 @@ type SwapState = {
   swapAssets: () => void;
   setError: (error: SwapErrors) => void;
   setIsFetchingQuote: (isFetchingQuote: FetchingQuote) => void;
+  setIsEditBTCAddress: (isEditBTCAddress: boolean) => void;
+  setIsComparisonVisible: (isComparisonVisible: boolean) => void;
+  setIsValidBitcoinAddress: (isValidBitcoinAddress: boolean) => void;
   clearSwapState: () => void;
   clear: () => void;
 };
@@ -50,7 +56,7 @@ export const BTC = {
   name: "Bitcoin",
   decimals: 8,
   symbol: "BTC",
-  logo: "https://garden-finance.imgix.net/token-images/bitcoin.svg",
+  logo: "https://garden.imgix.net/token-images/bitcoin.svg",
   tokenAddress: "primary",
   atomicSwapAddress: "primary",
   chain: network === "mainnet" ? Chains.bitcoin : Chains.bitcoin_testnet,
@@ -61,7 +67,6 @@ export const swapStore = create<SwapState>((set) => ({
   inputAmount: "",
   outputAmount: "",
   btcAddress: "",
-  isInsufficientLiquidity: false,
   isApproving: false,
   swapInProgress: {
     isOpen: false,
@@ -74,15 +79,18 @@ export const swapStore = create<SwapState>((set) => ({
     output: "0",
   },
   error: {
-    inputError: "",
-    outputError: "",
-    quoteError: QuoteError.None,
+    inputError: Errors.none,
+    outputError: Errors.none,
+    liquidityError: Errors.none,
+    insufficientBalanceError: Errors.none,
   },
-  quoteError: QuoteError.None,
   isFetchingQuote: {
     input: false,
     output: false,
   },
+  isEditBTCAddress: false,
+  isComparisonVisible: false,
+  isValidBitcoinAddress: false,
   setAsset: (ioType, supportedAsset) => {
     set((state) => ({
       ...state,
@@ -118,11 +126,21 @@ export const swapStore = create<SwapState>((set) => ({
         outputAsset: state.inputAsset,
         inputAmount: newInputAmount,
         outputAmount: newOutputAmount,
+        error: {
+          ...state.error,
+          inputError: Errors.none,
+          outputError: Errors.none,
+          liquidityError: Errors.none,
+          insufficientBalanceError: Errors.none,
+        },
       };
     });
   },
   setIsSwapping: (isSwapping) => {
     set({ isSwapping });
+  },
+  setIsEditBTCAddress: (isEditBTCAddress) => {
+    set({ isEditBTCAddress });
   },
   setStrategy: (strategy) => {
     set({ strategy });
@@ -131,16 +149,19 @@ export const swapStore = create<SwapState>((set) => ({
     set({ tokenPrices });
   },
   setError: (error) => {
-    set({ error });
+    set((state) => ({ error: { ...state.error, ...error } }));
   },
   setIsFetchingQuote: (isFetchingQuote) => {
     set({ isFetchingQuote });
   },
-  setIsInsufficientLiquidity: (isInsufficientLiquidity) => {
-    set({ isInsufficientLiquidity });
-  },
   setIsApproving: (isApproving) => {
     set({ isApproving });
+  },
+  setIsComparisonVisible: (isComparisonVisible) => {
+    set({ isComparisonVisible });
+  },
+  setIsValidBitcoinAddress: (isValidBitcoinAddress) => {
+    set({ isValidBitcoinAddress });
   },
   clearSwapState: () => {
     set({
@@ -149,7 +170,6 @@ export const swapStore = create<SwapState>((set) => ({
       btcAddress: "",
       outputAsset: undefined,
       inputAsset: undefined,
-      isInsufficientLiquidity: false,
       isApproving: false,
       isSwapping: false,
       strategy: "",
@@ -158,14 +178,17 @@ export const swapStore = create<SwapState>((set) => ({
         output: "0",
       },
       error: {
-        inputError: "",
-        outputError: "",
-        quoteError: QuoteError.None,
+        inputError: Errors.none,
+        outputError: Errors.none,
+        liquidityError: Errors.none,
+        insufficientBalanceError: Errors.none,
       },
       isFetchingQuote: {
         input: false,
         output: false,
       },
+      isEditBTCAddress: false,
+      isValidBitcoinAddress: false,
     });
   },
   clear: () => {
@@ -176,7 +199,6 @@ export const swapStore = create<SwapState>((set) => ({
       outputAsset: undefined,
       inputAsset: undefined,
       isSwapping: false,
-      isInsufficientLiquidity: false,
       isApproving: false,
       strategy: "",
       tokenPrices: {
@@ -184,14 +206,17 @@ export const swapStore = create<SwapState>((set) => ({
         output: "0",
       },
       error: {
-        inputError: "",
-        outputError: "",
-        quoteError: QuoteError.None,
+        inputError: Errors.none,
+        outputError: Errors.none,
+        liquidityError: Errors.none,
+        insufficientBalanceError: Errors.none,
       },
       isFetchingQuote: {
         input: false,
         output: false,
       },
+      isEditBTCAddress: false,
+      isValidBitcoinAddress: false,
     });
   },
 }));

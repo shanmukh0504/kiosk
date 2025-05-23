@@ -1,4 +1,5 @@
 import { Asset, Chain, isBitcoin, isEVM } from "@gardenfi/orderbook";
+import { BitcoinNetwork } from "@gardenfi/react-hooks";
 import { Network } from "@gardenfi/utils";
 
 export const INTERNAL_ROUTES: Record<string, { name: string; path: string[] }> =
@@ -17,11 +18,6 @@ export const THEMES = {
 export enum IOType {
   input = "input",
   output = "output",
-}
-
-export enum QuoteError {
-  InsufficientLiquidity = "Insufficient Liquidity",
-  None = "",
 }
 
 export const LOCAL_STORAGE_KEYS = {
@@ -45,6 +41,17 @@ export const getTimeEstimates = (inputAsset: Asset) => {
     return "~10m";
   }
   return "";
+};
+
+export const getBitcoinNetwork = (): BitcoinNetwork => {
+  if (network === Network.MAINNET) {
+    return BitcoinNetwork.Mainnet;
+  }
+  if (network === Network.TESTNET) {
+    return BitcoinNetwork.Testnet;
+  }
+  //TODO: Add regtest once we have a testnet for it
+  return BitcoinNetwork.Mainnet;
 };
 
 export enum Environment {
@@ -73,6 +80,7 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "starknet_sepolia",
   "hyperliquid",
   "starknet",
+  "unichain",
 ] as const;
 
 export const QUERY_PARAMS = {

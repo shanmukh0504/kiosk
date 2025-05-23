@@ -1,10 +1,7 @@
 import { FC, useMemo } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { SwapInfo } from "../../common/SwapInfo";
-import {
-  //  isBitcoin,
-  MatchedOrder,
-} from "@gardenfi/orderbook";
+import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
 import {
   formatAmount,
   getAssetFromSwap,
@@ -80,16 +77,24 @@ export const TransactionRow: FC<TransactionProps> = ({
     [status]
   );
   const sendAmount = useMemo(
-    () => formatAmount(create_order.source_amount, sendAsset?.decimals ?? 0),
-    [create_order.source_amount, sendAsset?.decimals]
+    () =>
+      sendAsset &&
+      formatAmount(
+        create_order.source_amount,
+        sendAsset?.decimals ?? 0,
+        isBitcoin(sendAsset.chain) ? sendAsset.decimals : undefined
+      ),
+    [create_order.source_amount, sendAsset]
   );
   const receiveAmount = useMemo(
     () =>
+      receiveAsset &&
       formatAmount(
         create_order.destination_amount,
-        receiveAsset?.decimals ?? 0
+        receiveAsset?.decimals ?? 0,
+        isBitcoin(receiveAsset.chain) ? receiveAsset.decimals : undefined
       ),
-    [create_order.destination_amount, receiveAsset?.decimals]
+    [create_order.destination_amount, receiveAsset]
   );
   const dayDifference = useMemo(
     () => getDayDifference(create_order.updated_at),
@@ -124,12 +129,14 @@ export const TransactionRow: FC<TransactionProps> = ({
       onClick={handleTransactionClick}
     >
       <div className={`flex flex-col gap-1`}>
-        <SwapInfo
-          sendAsset={sendAsset}
-          receiveAsset={receiveAsset}
-          sendAmount={sendAmount}
-          receiveAmount={receiveAmount}
-        />
+        {sendAmount && receiveAmount && (
+          <SwapInfo
+            sendAsset={sendAsset}
+            receiveAsset={receiveAsset}
+            sendAmount={sendAmount}
+            receiveAmount={receiveAmount}
+          />
+        )}
         <div className="flex justify-between">
           <Typography size="h5" weight="medium">
             {statusLabel}
