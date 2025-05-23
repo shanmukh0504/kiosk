@@ -7,8 +7,12 @@ import { IQuote, Strategies } from "@gardenfi/core";
 import { generateTokenKey } from "../utils/generateTokenKey";
 import { Network } from "@gardenfi/utils";
 
+type AssetConfig = Asset & {
+  disabled?: boolean;
+};
+
 export type Networks = {
-  [chain in Chain]: ChainData & { assetConfig: Omit<Asset, "chain">[] };
+  [chain in Chain]: ChainData & { assetConfig: Omit<AssetConfig, "chain">[] };
 };
 
 export type ChainData = {
@@ -21,7 +25,7 @@ export type ChainData = {
   disabled: boolean;
 };
 
-export type Assets = Record<string, Asset>;
+export type Assets = Record<string, AssetConfig>;
 export type Chains = Partial<Record<Chain, ChainData>>;
 
 type AssetInfoState = {
