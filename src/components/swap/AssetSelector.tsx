@@ -29,8 +29,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const {
     isAssetSelectorOpen,
     CloseAssetSelector,
-    supportedAssets,
-    supportedChains,
+    assets,
+    chains,
     strategies,
   } = assetInfoStore();
   const { modalName } = modalStore();
@@ -38,8 +38,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
 
   const orderedChains = useMemo(() => {
     const order = ["bitcoin", "ethereum", "base", "arbitrum"];
-    return supportedChains
-      ? Object.values(supportedChains).sort((a, b) => {
+    return chains
+      ? Object.values(chains).sort((a, b) => {
           const indexA = order.findIndex((name) =>
             a.name.toLowerCase().includes(name)
           );
@@ -51,7 +51,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           return indexA - indexB;
         })
       : [];
-  }, [supportedChains]);
+  }, [chains]);
 
   const comparisonToken = useMemo(
     () =>
@@ -62,8 +62,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const sortedResults = useMemo(() => {
     if (results && orderedChains.length > 0) {
       return results.sort((a, b) => {
-        const chainA = supportedChains?.[a.chain];
-        const chainB = supportedChains?.[b.chain];
+        const chainA = chains?.[a.chain];
+        const chainB = chains?.[b.chain];
         if (chainA && chainB) {
           const indexA = orderedChains.findIndex(
             (c) => c.identifier === chainA.identifier
@@ -77,14 +77,14 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
       });
     }
     return results;
-  }, [results, orderedChains, supportedChains]);
+  }, [results, orderedChains, chains]);
 
   useEffect(() => {
-    if (!supportedAssets || !strategies.val) return;
+    if (!assets || !strategies.val) return;
     if (!comparisonToken) {
-      setResults(Object.values(supportedAssets));
+      setResults(Object.values(assets));
     } else {
-      const supportedTokens = Object.values(supportedAssets).filter((asset) => {
+      const supportedTokens = Object.values(assets).filter((asset) => {
         const op =
           isAssetSelectorOpen.type === IOType.input
             ? constructOrderPair(
@@ -103,17 +103,12 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
       });
       setResults([...supportedTokens, comparisonToken]);
     }
-  }, [
-    supportedAssets,
-    comparisonToken,
-    isAssetSelectorOpen.type,
-    strategies.val,
-  ]);
+  }, [assets, comparisonToken, isAssetSelectorOpen.type, strategies.val]);
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-    if (!supportedAssets) return;
+    if (!assets) return;
     const input = e.target.value.toLowerCase();
-    const filteredAssets = Object.values(supportedAssets).filter(
+    const filteredAssets = Object.values(assets).filter(
       (asset) =>
         asset.name?.toLowerCase().includes(input) ||
         asset.symbol?.toLowerCase().includes(input)
@@ -211,7 +206,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         <GradientScroll height={288} onClose={!modalName.assetList}>
           {sortedResults?.map((asset) => {
             const network = !isBitcoin(asset.chain)
-              ? supportedChains?.[asset.chain]
+              ? chains?.[asset.chain]
               : undefined;
             return (
               (!chain || asset.chain === chain.identifier) && (

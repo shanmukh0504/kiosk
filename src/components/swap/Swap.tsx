@@ -13,7 +13,7 @@ import { useSearchParams } from "react-router-dom";
 export const Swap = () => {
   const [, setSearchParams] = useSearchParams();
 
-  const { fetchAndSetStrategies, supportedAssets } = assetInfoStore();
+  const { fetchAndSetStrategies, assets } = assetInfoStore();
   const { garden } = useGarden();
   const { order, isOpen } = orderInProgressStore();
   const { updateOrder } = pendingOrdersStore();
@@ -43,8 +43,8 @@ export const Swap = () => {
       result: string
     ) => {
       const { source_swap, destination_swap } = order;
-      const inputAsset = getAssetFromSwap(source_swap, supportedAssets);
-      const outputAsset = getAssetFromSwap(destination_swap, supportedAssets);
+      const inputAsset = getAssetFromSwap(source_swap, assets);
+      const outputAsset = getAssetFromSwap(destination_swap, assets);
       if (!inputAsset || !outputAsset) return;
 
       console.log("order success ✅", order.create_order.create_id);
@@ -73,7 +73,7 @@ export const Swap = () => {
       garden.off("log", handleLog);
       garden.off("success", handleSuccess);
     };
-  }, [garden, supportedAssets, order, updateOrder]);
+  }, [garden, assets, order, updateOrder]);
 
   return (
     <div className="mx-auto flex h-full w-full max-w-[328px] flex-col justify-center gap-4 sm:max-w-[424px] lg:min-h-[calc(100vh-96px)]">

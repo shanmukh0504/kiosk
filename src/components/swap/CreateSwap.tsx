@@ -16,7 +16,7 @@ export const CreateSwap = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [addParams, setAddParams] = useState(false);
 
-  const { supportedAssets } = assetInfoStore();
+  const { assets } = assetInfoStore();
 
   const {
     outputAmount,
@@ -105,7 +105,7 @@ export const CreateSwap = () => {
   };
 
   useEffect(() => {
-    if (!supportedAssets || addParams) return;
+    if (!assets || addParams) return;
     const {
       inputChain = "",
       inputAssetSymbol = "",
@@ -114,12 +114,12 @@ export const CreateSwap = () => {
     } = getQueryParams(searchParams);
 
     const fromAsset = getAssetFromChainAndSymbol(
-      supportedAssets,
+      assets,
       inputChain,
       inputAssetSymbol
     );
     const toAsset = getAssetFromChainAndSymbol(
-      supportedAssets,
+      assets,
       outputChain,
       outputAssetSymbol
     );
@@ -127,20 +127,13 @@ export const CreateSwap = () => {
     setAsset(IOType.input, fromAsset);
     setAsset(IOType.output, toAsset);
     if (!fromAsset && !toAsset) {
-      const BTC = Object.values(supportedAssets).find(
+      const BTC = Object.values(assets).find(
         (asset) => asset.name.toLowerCase() == "bitcoin"
       );
       BTC && !BTC.disabled ? setAsset(IOType.input, BTC) : null;
     }
     setAddParams(true);
-  }, [
-    addParams,
-    supportedAssets,
-    inputAsset,
-    outputAsset,
-    searchParams,
-    setAsset,
-  ]);
+  }, [addParams, assets, inputAsset, outputAsset, searchParams, setAsset]);
 
   useEffect(() => {
     if (!addParams || (!inputAsset && !outputAsset)) return;

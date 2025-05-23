@@ -20,7 +20,7 @@ import orderInProgressStore from "../../../store/orderInProgressStore";
 
 export const SwapInProgress = () => {
   const { order, setIsOpen } = orderInProgressStore();
-  const { supportedAssets } = assetInfoStore();
+  const { assets } = assetInfoStore();
   const { orderProgress, viewableStatus } = useOrderStatus();
 
   const { depositAddress, inputAsset, outputAsset } = useMemo(() => {
@@ -29,14 +29,13 @@ export const SwapInProgress = () => {
         order && isBitcoin(order?.source_swap.chain)
           ? order.source_swap.swap_id
           : "",
-      inputAsset: order && getAssetFromSwap(order.source_swap, supportedAssets),
-      outputAsset:
-        order && getAssetFromSwap(order.destination_swap, supportedAssets),
+      inputAsset: order && getAssetFromSwap(order.source_swap, assets),
+      outputAsset: order && getAssetFromSwap(order.destination_swap, assets),
       btcAddress: order
         ? order.create_order.additional_data.bitcoin_optional_recipient
         : "",
     };
-  }, [supportedAssets, order]);
+  }, [assets, order]);
 
   const goBack = useCallback(() => {
     setIsOpen(false);
