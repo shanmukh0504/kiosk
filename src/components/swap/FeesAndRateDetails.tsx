@@ -5,7 +5,7 @@ import {
   SwapHorizontalIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { swapStore } from "../../store/swapStore";
+import { BTC, swapStore } from "../../store/swapStore";
 import { CompetitorComparisons } from "./CompetitorComparisons";
 import { AddressDetails } from "./AddressDetails";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
@@ -87,19 +87,19 @@ export const FeesAndRateDetails = () => {
       setRate(0);
       return;
     }
-    const calculatedRate = Number(outputAmount) / Number(inputAmount);
-    const isBitcoinChain = isBitcoin(outputAsset.chain);
-    const decimals = isBitcoinChain ? 7 : 2;
+      const calculatedRate = Number(outputAmount) / Number(inputAmount);
+      const isBitcoinChain = outputAsset.symbol.includes(BTC.symbol);
+      const decimals = isBitcoinChain ? 7 : 2;
 
-    if (calculatedRate < 0.000001) {
-      setRate(0);
-      return;
-    }
+      if (calculatedRate < 0.000001) {
+        setRate(0);
+        return;
+      }
 
-    const formatted = Number(
-      formatAmount(calculatedRate, 0, decimals).toFixed(decimals)
-    );
-    setRate(formatted);
+      const formatted = Number(
+        formatAmount(calculatedRate, 0, decimals).toFixed(decimals)
+      );
+      setRate(formatted);
   }, [outputAmount, inputAmount, outputAsset]);
 
   return (
