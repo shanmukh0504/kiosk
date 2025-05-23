@@ -2,13 +2,12 @@ import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { ecosystems } from "./connectWallet/constants";
-import { Opacity, WalletIcon } from "@gardenfi/garden-book";
+import { Opacity, Typography, WalletIcon } from "@gardenfi/garden-book";
 import { modalNames, modalStore } from "../../store/modalStore";
 import pendingOrdersStore from "../../store/pendingOrdersStore";
 import { OrderStatus } from "@gardenfi/core";
 import { useEffect } from "react";
 import { useGarden } from "@gardenfi/react-hooks";
-import { Loader } from "../../common/Loader";
 
 const ConnectedWallets = () => {
   const { address } = useEVMWallet();
@@ -47,31 +46,30 @@ const ConnectedWallets = () => {
         <WalletIcon className="h-4 w-4 sm:h-5 sm:w-5" />
         {address && (
           <img
-            src={ecosystems.evm.icon}
+            src={ecosystems.EVM.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="EVM wallet"
           />
         )}
         {btcAddress && (
           <img
-            src={ecosystems.bitcoin.icon}
+            src={ecosystems.Bitcoin.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="Bitcoin wallet"
           />
         )}
         {starknetAddress && (
           <img
-            src={ecosystems.starknet.icon}
+            src={ecosystems.Starknet.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="Starknet wallet"
           />
         )}
         {pendingOrdersCount ? (
-          <div className="relative">
-            <Loader />
-            <div className="absolute left-[34%] top-[10%] text-sm font-bold text-rose">
+          <div className="flex h-5 w-5 items-center justify-center rounded-full border border-rose p-2">
+            <Typography size="h5" weight="bold" className="h-4 !text-rose">
               {pendingOrdersCount}
-            </div>
+            </Typography>
           </div>
         ) : (
           <></>
