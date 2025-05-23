@@ -83,7 +83,7 @@ export const TransactionRow: FC<TransactionProps> = ({
       formatAmount(
         create_order.source_amount,
         sendAsset?.decimals ?? 0,
-        sendAsset.symbol.includes(BTC.symbol) ? sendAsset.decimals : undefined
+        Math.min(sendAsset.decimals, BTC.decimals)
       ),
     [create_order.source_amount, sendAsset]
   );
@@ -93,9 +93,7 @@ export const TransactionRow: FC<TransactionProps> = ({
       formatAmount(
         create_order.destination_amount,
         receiveAsset?.decimals ?? 0,
-        receiveAsset.symbol.includes(BTC.symbol)
-          ? receiveAsset.decimals
-          : undefined
+        Math.min(receiveAsset.decimals, BTC.decimals)
       ),
     [create_order.destination_amount, receiveAsset]
   );

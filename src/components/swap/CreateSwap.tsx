@@ -195,10 +195,10 @@ export const CreateSwap = () => {
             balance={inputTokenBalance}
           />
           <div
-            className="group absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
             onClick={swapAssets}
           >
-            <div className="h-8 w-8 origin-center rounded-full border border-light-grey bg-white p-1.5 transition-transform group-hover:scale-[1.1]"></div>
+            <div className="h-8 w-8 origin-center rounded-full border border-light-grey bg-white p-1.5 transition-transform hover:scale-[1.1]"></div>
             <ExchangeIcon className="pointer-events-none absolute bottom-1.5 left-1.5" />
           </div>
 

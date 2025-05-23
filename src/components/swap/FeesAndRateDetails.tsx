@@ -24,7 +24,6 @@ import {
 } from "../../animations/animations";
 
 export const FeesAndRateDetails = () => {
-  const { tokenPrices } = swapStore();
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
   const [showComparison, setIsShowComparison] = useState({
     isTime: false,
@@ -34,8 +33,15 @@ export const FeesAndRateDetails = () => {
   const [maxCostSaved, setMaxCostSaved] = useState<number>(0);
   const [rate, setRate] = useState(0);
 
-  const { inputAsset, outputAsset, inputAmount, outputAmount } = swapStore();
-  const { setIsComparisonVisible } = swapStore();
+  const {
+    tokenPrices,
+    inputAsset,
+    outputAsset,
+    inputAmount,
+    outputAmount,
+    isFetchingQuote,
+    setIsComparisonVisible,
+  } = swapStore();
   const network = getBitcoinNetwork();
   const { account: btcAddress } = useBitcoinWallet();
   const { address } = useEVMWallet();
@@ -87,8 +93,12 @@ export const FeesAndRateDetails = () => {
       setRate(0);
       return;
     }
+    if (isFetchingQuote.input || isFetchingQuote.output) {
+      return;
+    }
+    const timer = setTimeout(() => {
       const calculatedRate = Number(outputAmount) / Number(inputAmount);
-      const isBitcoinChain = outputAsset.symbol.includes(BTC.symbol);
+      const isBitcoinChain = outputAsset.decimals === BTC.decimals;
       const decimals = isBitcoinChain ? 7 : 2;
 
       if (calculatedRate < 0.000001) {
@@ -100,7 +110,18 @@ export const FeesAndRateDetails = () => {
         formatAmount(calculatedRate, 0, decimals).toFixed(decimals)
       );
       setRate(formatted);
-  }, [outputAmount, inputAmount, outputAsset]);
+    }, 500);
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [
+    outputAmount,
+    inputAmount,
+    outputAsset,
+    isFetchingQuote.input,
+    isFetchingQuote.output,
+  ]);
 
   return (
     <>

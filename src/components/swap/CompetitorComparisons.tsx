@@ -98,16 +98,12 @@ export const CompetitorComparisons: FC<CompetitorComparisonsProps> = ({
               sendAmount={formatAmount(
                 inputAmountInDecimals,
                 inputAsset.decimals,
-                inputAsset.symbol.includes(BTC.symbol)
-                  ? inputAsset.decimals
-                  : undefined
+                Math.min(inputAsset.decimals, BTC.decimals)
               )}
               receiveAmount={formatAmount(
                 outputAmountInDecimals,
                 outputAsset.decimals,
-                outputAsset.symbol.includes(BTC.symbol)
-                  ? outputAsset.decimals
-                  : undefined
+                Math.min(outputAsset.decimals, BTC.decimals)
               )}
             />
           </div>
