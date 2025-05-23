@@ -29,7 +29,9 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
         const response = await axios.get(
           API().data.notification(notificationId).toString()
         );
-        setNotification(response.data.result);
+        if (response.data) {
+          setNotification(response.data.result);
+        }
       } catch (error) {
         console.log("Error fetching notification", error);
       }
