@@ -1,6 +1,7 @@
 import {
   ArrowNorthEastIcon,
   CloseIcon,
+  DeleteIcon,
   Typography,
 } from "@gardenfi/garden-book";
 import { useCallback, useMemo } from "react";
@@ -18,10 +19,12 @@ import { OrderStatus as OrderStatusEnum } from "@gardenfi/core";
 import { API } from "../../../constants/api";
 import orderInProgressStore from "../../../store/orderInProgressStore";
 import { BTC } from "../../../store/swapStore";
+import { deletedOrdersStore } from "../../../store/deletedOrdersStore";
 
 export const SwapInProgress = () => {
   const { order, setIsOpen } = orderInProgressStore();
   const { assets } = assetInfoStore();
+  const { addDeletedOrder } = deletedOrdersStore();
   const { orderProgress, viewableStatus } = useOrderStatus();
 
   const { depositAddress, inputAsset, outputAsset } = useMemo(() => {
@@ -47,13 +50,31 @@ export const SwapInProgress = () => {
     window.open(API().explorer(order.create_order.create_id));
   };
 
+  const handleDeleteOrder = useCallback(() => {
+    if (!order) return;
+    addDeletedOrder(order);
+    goBack();
+  }, [order, addDeletedOrder, goBack]);
+
+  const showDeleteButton = useMemo(() => {
+    return order?.status === OrderStatusEnum.Matched;
+  }, [order?.status]);
+
   return order ? (
     <div className="animate-fade-out flex flex-col gap-3 p-3">
       <div className="flex items-center justify-between p-1">
         <Typography size="h4" weight="bold">
           Swap progress
         </Typography>
-        <CloseIcon className="m-1 h-3 w-3 cursor-pointer" onClick={goBack} />
+        <div className="flex items-center justify-center gap-3">
+          {showDeleteButton && (
+            <DeleteIcon
+              className="m-1 cursor-pointer"
+              onClick={handleDeleteOrder}
+            />
+          )}
+          <CloseIcon className="m-1 h-3 w-3 cursor-pointer" onClick={goBack} />
+        </div>
       </div>
       <div
         className="flex cursor-pointer flex-col gap-2 rounded-2xl bg-white/50 p-4 hover:bg-white"
