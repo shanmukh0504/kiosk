@@ -1,9 +1,26 @@
 import { Typography } from "@gardenfi/garden-book";
 import pendingOrdersStore from "../../store/pendingOrdersStore";
 import { TransactionRow } from "./TransactionRow";
+import { useGarden } from "@gardenfi/react-hooks";
+import { OrderStatus, OrderWithStatus } from "@gardenfi/core";
+import { isEVM } from "@gardenfi/orderbook";
 
 export const PendingTransactions = () => {
   const { pendingOrders } = pendingOrdersStore();
+  const { garden } = useGarden();
+
+  const handlePendingTransactionsClick = async (order: OrderWithStatus) => {
+    if (!garden || !garden.evmHTLC) return;
+    if (!isEVM(order.source_swap.chain)) return;
+    if (order.status !== OrderStatus.Matched) return;
+
+    const tx = await garden.evmHTLC.initiate(order);
+    if (!tx.ok) {
+      console.error(tx.error);
+      return;
+    }
+    console.log(tx.val);
+  };
 
   return (
     <div className="flex w-full flex-col overflow-y-auto">
@@ -18,6 +35,7 @@ export const PendingTransactions = () => {
               order={order}
               status={order.status}
               isLast={index === pendingOrders.length - 1}
+              onClick={() => handlePendingTransactionsClick(order)}
             />
             {index !== pendingOrders.length - 1 ? (
               <div className="h-px w-full bg-white/50"></div>
