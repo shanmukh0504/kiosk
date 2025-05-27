@@ -5,7 +5,6 @@ import { API } from "../constants/api";
 import axios from "axios";
 import { Quote, Strategies } from "@gardenfi/core";
 import { generateTokenKey } from "../utils/generateTokenKey";
-import { Network } from "@gardenfi/utils";
 
 export type Networks = {
   [chain in Chain]: ChainData & { assetConfig: Omit<Asset, "chain">[] };
@@ -78,9 +77,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     try {
       set({ isLoading: true });
       const res = await axios.get<Networks>(
-        API()
-          .data.assets(network as Network)
-          .toString()
+        API().data.assets(network).toString()
       );
       const assetsData = res.data;
 
@@ -118,7 +115,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   },
   fetchAndSetStrategies: async () => {
     try {
-      const quote = new Quote(API().quote.toString());
+      const quote = new Quote(API().quote.quote.toString());
       set({ strategies: { ...get().strategies, isLoading: true } });
       const res = await quote.getStrategies();
       if (res.error) return;

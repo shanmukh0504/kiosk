@@ -1,5 +1,4 @@
-import { Modal, OpacityVariants } from "@gardenfi/garden-book";
-import { BottomSheet } from "../../common/BottomSheet";
+import { BottomSheet, Modal, OpacityVariants } from "@gardenfi/garden-book";
 import { FC, ReactNode } from "react";
 import { ModalProps } from "./Modal";
 import { viewPortStore } from "../../store/viewPortStore";
