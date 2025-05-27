@@ -52,7 +52,7 @@ export const deletedOrdersStore = create<DeletedOrdersState>()(
       },
     }),
     {
-      name: "deleted-orders-storage",
+      name: "deleted_orders",
     }
   )
 );
