@@ -19,11 +19,12 @@ import { OrderStatus as OrderStatusEnum } from "@gardenfi/core";
 import { API } from "../../../constants/api";
 import orderInProgressStore from "../../../store/orderInProgressStore";
 import { BTC } from "../../../store/swapStore";
-import { addDeletedOrder } from "../../../utils/deletedOrder";
+import { deletedOrdersStore } from "../../../store/deletedOrdersStore";
 
 export const SwapInProgress = () => {
   const { order, setIsOpen } = orderInProgressStore();
   const { assets } = assetInfoStore();
+  const { addDeletedOrder } = deletedOrdersStore();
   const { orderProgress, viewableStatus } = useOrderStatus();
 
   const { depositAddress, inputAsset, outputAsset } = useMemo(() => {
@@ -53,7 +54,7 @@ export const SwapInProgress = () => {
     if (!order) return;
     addDeletedOrder(order);
     goBack();
-  }, [order, goBack]);
+  }, [order, addDeletedOrder, goBack]);
 
   const showDeleteButton = useMemo(() => {
     return order?.status === OrderStatusEnum.Matched;
