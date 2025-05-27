@@ -5,7 +5,7 @@ import {
   SwapHorizontalIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { swapStore } from "../../store/swapStore";
+import { BTC, swapStore } from "../../store/swapStore";
 import { CompetitorComparisons } from "./CompetitorComparisons";
 import { AddressDetails } from "./AddressDetails";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
@@ -24,7 +24,6 @@ import {
 } from "../../animations/animations";
 
 export const FeesAndRateDetails = () => {
-  const { tokenPrices } = swapStore();
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
   const [showComparison, setIsShowComparison] = useState({
     isTime: false,
@@ -34,8 +33,15 @@ export const FeesAndRateDetails = () => {
   const [maxCostSaved, setMaxCostSaved] = useState<number>(0);
   const [rate, setRate] = useState(0);
 
-  const { inputAsset, outputAsset, inputAmount, outputAmount } = swapStore();
-  const { setIsComparisonVisible } = swapStore();
+  const {
+    tokenPrices,
+    inputAsset,
+    outputAsset,
+    inputAmount,
+    outputAmount,
+    isFetchingQuote,
+    setIsComparisonVisible,
+  } = swapStore();
   const network = getBitcoinNetwork();
   const { account: btcAddress } = useBitcoinWallet();
   const { address } = useEVMWallet();
@@ -87,20 +93,35 @@ export const FeesAndRateDetails = () => {
       setRate(0);
       return;
     }
-    const calculatedRate = Number(outputAmount) / Number(inputAmount);
-    const isBitcoinChain = isBitcoin(outputAsset.chain);
-    const decimals = isBitcoinChain ? 7 : 2;
-
-    if (calculatedRate < 0.000001) {
-      setRate(0);
+    if (isFetchingQuote.input || isFetchingQuote.output) {
       return;
     }
+    const timer = setTimeout(() => {
+      const calculatedRate = Number(outputAmount) / Number(inputAmount);
+      const isBitcoinChain = outputAsset.decimals === BTC.decimals;
+      const decimals = isBitcoinChain ? 7 : 2;
 
-    const formatted = Number(
-      formatAmount(calculatedRate, 0, decimals).toFixed(decimals)
-    );
-    setRate(formatted);
-  }, [outputAmount, inputAmount, outputAsset]);
+      if (calculatedRate < 0.000001) {
+        setRate(0);
+        return;
+      }
+
+      const formatted = Number(
+        formatAmount(calculatedRate, 0, decimals).toFixed(decimals)
+      );
+      setRate(formatted);
+    }, 500);
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [
+    outputAmount,
+    inputAmount,
+    outputAsset,
+    isFetchingQuote.input,
+    isFetchingQuote.output,
+  ]);
 
   return (
     <>

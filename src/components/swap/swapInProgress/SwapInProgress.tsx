@@ -18,6 +18,7 @@ import { useOrderStatus } from "../../../hooks/useOrderStatus";
 import { OrderStatus as OrderStatusEnum } from "@gardenfi/core";
 import { API } from "../../../constants/api";
 import orderInProgressStore from "../../../store/orderInProgressStore";
+import { BTC } from "../../../store/swapStore";
 import { addDeletedOrder } from "../../../utils/deletedOrder";
 
 export const SwapInProgress = () => {
@@ -91,12 +92,16 @@ export const SwapInProgress = () => {
             sendAmount={formatAmount(
               order.source_swap.amount,
               inputAsset.decimals,
-              isBitcoin(inputAsset.chain) ? inputAsset.decimals : undefined
+              inputAsset.symbol.includes(BTC.symbol)
+                ? inputAsset.decimals
+                : undefined
             )}
             receiveAmount={formatAmount(
               order.destination_swap.amount,
               outputAsset.decimals,
-              isBitcoin(outputAsset.chain) ? outputAsset.decimals : undefined
+              outputAsset.symbol.includes(BTC.symbol)
+                ? outputAsset.decimals
+                : undefined
             )}
           />
         )}

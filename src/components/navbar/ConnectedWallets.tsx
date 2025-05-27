@@ -6,13 +6,9 @@ import { Opacity, Typography, WalletIcon } from "@gardenfi/garden-book";
 import { modalNames, modalStore } from "../../store/modalStore";
 import pendingOrdersStore from "../../store/pendingOrdersStore";
 import { OrderStatus } from "@gardenfi/core";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useGarden } from "@gardenfi/react-hooks";
-import {
-  cleanupExpiredOrders,
-  isOrderDeleted,
-  restoreDeletedOrder,
-} from "../../utils/deletedOrder";
+import { cleanupDeletedOrders, isOrderDeleted } from "../../utils/deletedOrder";
 
 const ConnectedWallets = () => {
   const { address } = useEVMWallet();
@@ -33,51 +29,17 @@ const ConnectedWallets = () => {
       order.status !== OrderStatus.Completed
   ).length;
 
-  const filteredOrders = useMemo(() => {
-    return pendingOrders.filter(
-      (order) => !isOrderDeleted(order.create_order.create_id)
-    );
-  }, [pendingOrders]);
-
   useEffect(() => {
-    if (filteredOrders) {
+    if (pendingOrders) {
+      cleanupDeletedOrders(pendingOrders);
+      const filteredOrders = pendingOrders.filter(
+        (orders) => !isOrderDeleted(orders.create_order.create_id)
+      );
       setPendingOrders(filteredOrders);
     } else {
       setPendingOrders([]);
     }
-  }, [filteredOrders, setPendingOrders]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      pendingOrders.forEach((order) => {
-        const orderId = order.create_order.create_id;
-        if (isOrderDeleted(orderId)) {
-          const currentStatus = order.status;
-          if (currentStatus && currentStatus !== OrderStatus.Matched) {
-            restoreDeletedOrder(orderId);
-          }
-        }
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [pendingOrders]);
-
-  useEffect(() => {
-    if (pendingOrders.length > 0) {
-      cleanupExpiredOrders(pendingOrders);
-    }
-
-    const cleanupInterval = setInterval(
-      () => {
-        if (pendingOrders.length > 0) {
-          cleanupExpiredOrders(pendingOrders);
-        }
-      },
-      5 * 60 * 1000
-    );
-
-    return () => clearInterval(cleanupInterval);
-  }, [pendingOrders]);
+  }, [pendingOrders, setPendingOrders]);
 
   return (
     <>

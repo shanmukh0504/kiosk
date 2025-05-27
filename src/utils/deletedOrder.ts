@@ -34,7 +34,7 @@ export const isOrderDeleted = (orderId: string): boolean => {
   );
 };
 
-export const cleanupExpiredOrders = (
+export const cleanupDeletedOrders = (
   pendingOrders: OrderWithStatus[]
 ): void => {
   const storedData = localStorage.getItem(LOCAL_STORAGE_KEYS.deletedOrders);
@@ -43,44 +43,18 @@ export const cleanupExpiredOrders = (
   const pendingOrdersMap = new Map(
     pendingOrders.map((order) => [order.create_order.create_id, order])
   );
-  const validOrders = deletedOrders.filter((entry) => {
-    const pendingOrder = pendingOrdersMap.get(
-      entry.order.create_order.create_id
-    );
-    return pendingOrder && pendingOrder.status !== OrderStatus.Expired;
+  const validDeletedOrders = deletedOrders.filter((entry) => {
+    const orderId = entry.order.create_order.create_id;
+    const orderInPending = pendingOrdersMap.get(orderId);
+    return orderInPending && orderInPending.status === OrderStatus.Matched;
   });
-  if (validOrders.length === 0) {
+  if (validDeletedOrders.length === 0) {
     localStorage.removeItem(LOCAL_STORAGE_KEYS.deletedOrders);
   } else {
     localStorage.setItem(
       LOCAL_STORAGE_KEYS.deletedOrders,
-      JSON.stringify(validOrders)
+      JSON.stringify(validDeletedOrders)
     );
   }
 };
 
-export const restoreDeletedOrder = (orderId: string): void => {
-  const storedData = localStorage.getItem(LOCAL_STORAGE_KEYS.deletedOrders);
-  if (!storedData) return;
-
-  const deletedOrders: DeletedOrderEntry[] = JSON.parse(storedData);
-  const updatedOrders = deletedOrders.filter(
-    (entry) => entry.order.create_order.create_id !== orderId
-  );
-  console.log("updatedOrders", updatedOrders);
-  if (updatedOrders.length === 0) {
-    localStorage.removeItem(LOCAL_STORAGE_KEYS.deletedOrders);
-  } else {
-    localStorage.setItem(
-      LOCAL_STORAGE_KEYS.deletedOrders,
-      JSON.stringify(updatedOrders)
-    );
-  }
-};
-
-export const deletedOrdersLength = () => {
-  const storedDeletedOrders = localStorage.getItem(
-    LOCAL_STORAGE_KEYS.deletedOrders
-  );
-  return storedDeletedOrders ? JSON.parse(storedDeletedOrders).length : 0;
-};

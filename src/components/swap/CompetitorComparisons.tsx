@@ -1,7 +1,7 @@
 import { ArrowLeftIcon, Typography } from "@gardenfi/garden-book";
 import { FC, useEffect } from "react";
 import { SwapInfo } from "../../common/SwapInfo";
-import { swapStore } from "../../store/swapStore";
+import { BTC, swapStore } from "../../store/swapStore";
 import {
   formatTime,
   formatTimeDiff,
@@ -97,11 +97,13 @@ export const CompetitorComparisons: FC<CompetitorComparisonsProps> = ({
               receiveAsset={outputAsset}
               sendAmount={formatAmount(
                 inputAmountInDecimals,
-                inputAsset.decimals
+                inputAsset.decimals,
+                Math.min(inputAsset.decimals, BTC.decimals)
               )}
               receiveAmount={formatAmount(
                 outputAmountInDecimals,
-                outputAsset.decimals
+                outputAsset.decimals,
+                Math.min(outputAsset.decimals, BTC.decimals)
               )}
             />
           </div>
