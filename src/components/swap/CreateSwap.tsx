@@ -1,23 +1,21 @@
 import { Button, ExchangeIcon } from "@gardenfi/garden-book";
 import { SwapInput } from "./SwapInput";
 import { getTimeEstimates, IOType } from "../../constants/constants";
-import { SwapAddress } from "./SwapAddress";
-import { BTC, swapStore } from "../../store/swapStore";
+import { BTC } from "../../store/swapStore";
 import { useEffect, useMemo, useState } from "react";
 import { useSwap } from "../../hooks/useSwap";
-import { SwapFees } from "./SwapFees";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useSearchParams } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { getAssetFromChainAndSymbol, getQueryParams } from "../../utils/utils";
 import { QUERY_PARAMS } from "../../constants/constants";
+import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
 
 export const CreateSwap = () => {
+  const [loadingDisabled, setLoadingDisabled] = useState(false);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [addParams, setAddParams] = useState(false);
-
-  const { swapAssets, setAsset } = swapStore();
   const { assets } = assetInfoStore();
 
   const {
@@ -32,52 +30,56 @@ export const CreateSwap = () => {
     tokenPrices,
     validSwap,
     inputTokenBalance,
-    isInsufficientBalance,
     isApproving,
     isSwapping,
-    isValidBitcoinAddress,
     handleSwapClick,
     needsWalletConnection,
+    controller,
+    setAsset,
+    clearSwapState,
+    swapAssets,
   } = useSwap();
-  const { account: btcAddress } = useBitcoinWallet();
   const { setOpenModal } = modalStore();
 
   const buttonLabel = useMemo(() => {
-    if (needsWalletConnection) {
-      return `Connect ${needsWalletConnection === "starknet" ? "Starknet" : "EVM"} Wallet`;
-    }
-    return isInsufficientBalance
-      ? "Insufficient balance"
-      : isApproving
-        ? "Approving..."
-        : isSwapping
-          ? "Signing..."
-          : error.quoteError
-            ? "Insufficient Liquidity"
-            : "Swap";
+    return error.liquidityError
+      ? "Insufficient liquidity"
+      : needsWalletConnection
+        ? `Connect ${needsWalletConnection === "starknet" ? "Starknet" : "EVM"} Wallet`
+        : error.insufficientBalanceError
+          ? "Insufficient balance"
+          : isApproving
+            ? "Approving..."
+            : isSwapping
+              ? "Signing"
+              : "Swap";
   }, [
-    isInsufficientBalance,
+    error.liquidityError,
     isApproving,
     isSwapping,
-    error.quoteError,
     needsWalletConnection,
+    error.insufficientBalanceError,
   ]);
 
   const buttonVariant = useMemo(() => {
-    if (needsWalletConnection) return "primary";
-    return isInsufficientBalance || error.quoteError
-      ? "disabled"
-      : isSwapping
-        ? "ternary"
-        : validSwap
-          ? "primary"
-          : "disabled";
+    return needsWalletConnection
+      ? "primary"
+      : !!error.liquidityError ||
+          !!error.insufficientBalanceError ||
+          loadingDisabled
+        ? "disabled"
+        : isSwapping
+          ? "ternary"
+          : validSwap
+            ? "primary"
+            : "disabled";
   }, [
-    isInsufficientBalance,
     isSwapping,
     validSwap,
-    error.quoteError,
+    error.liquidityError,
+    error.insufficientBalanceError,
     needsWalletConnection,
+    loadingDisabled,
   ]);
 
   const timeEstimate = useMemo(() => {
@@ -150,12 +152,38 @@ export const CreateSwap = () => {
     });
   }, [addParams, inputAsset, outputAsset, setSearchParams]);
 
+  // Disable button when loading
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    if (loading.input || loading.output) {
+      timeoutId = setTimeout(() => {
+        setLoadingDisabled(true);
+      }, 300);
+    } else {
+      setLoadingDisabled(false);
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [loading]);
+
+  // Cleanup: Abort any pending requests and clear swap state when component unmounts
+  useEffect(() => {
+    const currentController = controller.current;
+    return () => {
+      if (currentController) {
+        currentController.abort();
+      }
+      clearSwapState();
+    };
+  }, [clearSwapState, controller]);
+
   return (
     <div
       className={`before:pointer-events-none before:absolute before:left-0 before:top-0 before:h-full before:w-full before:bg-black before:bg-opacity-0 before:transition-colors before:duration-700 before:content-['']`}
     >
-      <div className="flex flex-col gap-4 p-3">
-        <div className="relative flex flex-col gap-4">
+      <div className="flex flex-col px-2 pb-3 pt-2 sm:px-3 sm:pb-4 sm:pt-3">
+        <div className="relative flex flex-col gap-3">
           <SwapInput
             type={IOType.input}
             amount={inputAmount}
@@ -167,25 +195,27 @@ export const CreateSwap = () => {
             balance={inputTokenBalance}
           />
           <div
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full border border-light-grey bg-white p-1.5 transition-transform hover:scale-[1.1]"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
             onClick={swapAssets}
           >
-            <ExchangeIcon />
+            <div className="h-8 w-8 origin-center rounded-full border border-light-grey bg-white p-1.5 transition-transform hover:scale-[1.1]"></div>
+            <ExchangeIcon className="pointer-events-none absolute bottom-1.5 left-1.5" />
           </div>
+
           <SwapInput
             type={IOType.output}
             amount={outputAmount}
             asset={outputAsset}
             onChange={handleOutputAmountChange}
             loading={loading.output}
+            error={error.outputError}
             price={tokenPrices.output}
             timeEstimate={timeEstimate}
           />
         </div>
-        {!btcAddress && <SwapAddress isValidAddress={isValidBitcoinAddress} />}
-        <SwapFees tokenPrices={tokenPrices} />
+        <InputAddressAndFeeRateDetails />
         <Button
-          className={`transition-colors duration-500 ${
+          className={`mt-3 transition-colors duration-500 ${
             !needsWalletConnection && buttonLabel !== "Swap"
               ? "pointer-events-none"
               : ""
@@ -196,9 +226,12 @@ export const CreateSwap = () => {
             needsWalletConnection ? handleConnectWallet : handleSwapClick
           }
           disabled={
+            loadingDisabled ||
             isSwapping ||
             (!needsWalletConnection &&
-              (!validSwap || isInsufficientBalance || !!error.quoteError))
+              (!validSwap ||
+                !!error.liquidityError ||
+                !!error.insufficientBalanceError))
           }
         >
           {buttonLabel}
