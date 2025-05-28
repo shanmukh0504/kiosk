@@ -24,6 +24,7 @@ import { deletedOrdersStore } from "../../../store/deletedOrdersStore";
 export const SwapInProgress = () => {
   const { order, setIsOpen } = orderInProgressStore();
   const { allAssets } = assetInfoStore();
+  const { addDeletedOrder } = deletedOrdersStore();
   const { orderProgress, viewableStatus } = useOrderStatus();
 
   const { depositAddress, inputAsset, outputAsset } = useMemo(() => {
