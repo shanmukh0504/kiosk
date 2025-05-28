@@ -3,13 +3,13 @@ import { persist } from "zustand/middleware";
 import { OrderStatus, OrderWithStatus } from "@gardenfi/core";
 
 type DeletedOrderEntry = {
-  order: OrderWithStatus;
+  orderId: string;
   deletedAt: number;
 };
 
 type DeletedOrdersState = {
   deletedOrders: DeletedOrderEntry[];
-  addDeletedOrder: (order: OrderWithStatus) => void;
+  addDeletedOrder: (orderId: string) => void;
   isOrderDeleted: (orderId: string) => boolean;
   cleanupDeletedOrders: (pendingOrders: OrderWithStatus[]) => void;
 };
@@ -19,9 +19,9 @@ export const deletedOrdersStore = create<DeletedOrdersState>()(
     (set, get) => ({
       deletedOrders: [],
 
-      addDeletedOrder: (order: OrderWithStatus) => {
+      addDeletedOrder: (orderId: string) => {
         const newEntry: DeletedOrderEntry = {
-          order,
+          orderId,
           deletedAt: Date.now(),
         };
         set((state) => ({
@@ -30,9 +30,7 @@ export const deletedOrdersStore = create<DeletedOrdersState>()(
       },
 
       isOrderDeleted: (orderId: string) => {
-        return get().deletedOrders.some(
-          (entry) => entry.order.create_order.create_id === orderId
-        );
+        return get().deletedOrders.some((entry) => entry.orderId === orderId);
       },
 
       cleanupDeletedOrders: (pendingOrders: OrderWithStatus[]) => {
@@ -41,8 +39,8 @@ export const deletedOrdersStore = create<DeletedOrdersState>()(
         );
 
         const validDeletedOrders = get().deletedOrders.filter((entry) => {
-          const orderId = entry.order.create_order.create_id;
-          const orderInPending = pendingOrdersMap.get(orderId);
+          const orderId = entry.orderId;
+          const orderInPending = pendingOrdersMap.get(orderId.toLowerCase());
           return (
             orderInPending && orderInPending.status === OrderStatus.Matched
           );

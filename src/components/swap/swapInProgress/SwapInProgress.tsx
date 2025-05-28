@@ -52,7 +52,7 @@ export const SwapInProgress = () => {
 
   const handleDeleteOrder = useCallback(() => {
     if (!order) return;
-    addDeletedOrder(order);
+    addDeletedOrder(order.create_order.create_id);
     goBack();
   }, [order, addDeletedOrder, goBack]);
 
