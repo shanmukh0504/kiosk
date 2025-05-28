@@ -1,7 +1,7 @@
 import { FC, useMemo } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { SwapInfo } from "../../common/SwapInfo";
-import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
+import { MatchedOrder } from "@gardenfi/orderbook";
 import {
   formatAmount,
   getAssetFromSwap,
@@ -11,6 +11,7 @@ import { OrderStatus } from "@gardenfi/core";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
 import orderInProgressStore from "../../store/orderInProgressStore";
+import { BTC } from "../../store/swapStore";
 
 type TransactionProps = {
   order: MatchedOrder;
@@ -82,7 +83,7 @@ export const TransactionRow: FC<TransactionProps> = ({
       formatAmount(
         create_order.source_amount,
         sendAsset?.decimals ?? 0,
-        isBitcoin(sendAsset.chain) ? sendAsset.decimals : undefined
+        Math.min(sendAsset.decimals, BTC.decimals)
       ),
     [create_order.source_amount, sendAsset]
   );
@@ -92,7 +93,7 @@ export const TransactionRow: FC<TransactionProps> = ({
       formatAmount(
         create_order.destination_amount,
         receiveAsset?.decimals ?? 0,
-        isBitcoin(receiveAsset.chain) ? receiveAsset.decimals : undefined
+        Math.min(receiveAsset.decimals, BTC.decimals)
       ),
     [create_order.destination_amount, receiveAsset]
   );

@@ -19,7 +19,7 @@ export const ToastContainer: FC = () => {
   }, [isVisible, hideToast]);
 
   return (
-    <div className="min-h-10 -translate-y-[48px]">
+    <div className="min-h-10 lg:-translate-y-[48px]">
       {isVisible && (
         <div
           className={`shine relative flex items-center justify-between overflow-hidden rounded-2xl bg-white/25 px-4 py-2 backdrop-blur-[20px]`}

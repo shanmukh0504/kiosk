@@ -8,13 +8,15 @@ import pendingOrdersStore from "../../store/pendingOrdersStore";
 import { OrderStatus } from "@gardenfi/core";
 import { useEffect } from "react";
 import { useGarden } from "@gardenfi/react-hooks";
+import { deletedOrdersStore } from "../../store/deletedOrdersStore";
 
 const ConnectedWallets = () => {
   const { address } = useEVMWallet();
-  const { setOpenModal } = modalStore();
   const { starknetAddress } = useStarknetWallet();
   const { account: btcAddress } = useBitcoinWallet();
   const { pendingOrders } = useGarden();
+  const { setOpenModal } = modalStore();
+  const { isOrderDeleted, cleanupDeletedOrders } = deletedOrdersStore();
   const { pendingOrders: pendingOrdersFromStore, setPendingOrders } =
     pendingOrdersStore();
   const handleAddressClick = () => setOpenModal(modalNames.transactions);
@@ -30,11 +32,15 @@ const ConnectedWallets = () => {
 
   useEffect(() => {
     if (pendingOrders) {
-      setPendingOrders(pendingOrders);
+      cleanupDeletedOrders(pendingOrders);
+      const filteredOrders = pendingOrders.filter(
+        (orders) => !isOrderDeleted(orders.create_order.create_id)
+      );
+      setPendingOrders(filteredOrders);
     } else {
       setPendingOrders([]);
     }
-  }, [pendingOrders, setPendingOrders]);
+  }, [cleanupDeletedOrders, isOrderDeleted, pendingOrders, setPendingOrders]);
 
   return (
     <>
