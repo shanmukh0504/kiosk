@@ -21,9 +21,13 @@ export const Notification = () => {
 
   useEffect(() => {
     const fetchNotification = async () => {
-      const response = await axios.get(API().data.notification().toString());
-      if (response.data) {
-        setNotification(response.data.result);
+      try {
+        const response = await axios.get(API().data.notification().toString());
+        if (response.data) {
+          setNotification(response.data.result);
+        }
+      } catch (error) {
+        console.log("Error getting notification", error);
       }
     };
     fetchNotification();
