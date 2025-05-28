@@ -1,11 +1,7 @@
 # Changelog
 
-## [1.0.0]
+## [1.0.2]
 
 ### Added
 
-- Smooth animations for swap component transitions.
-- Rolling number animations for input and output amounts using NumberFlow.
-- Competitor fee and time comparison features.
-- Network fee calculation for Bitcoin output transactions.
-- Fee breakdown display showing both protocol and network fees.
+- Fetch latest announcement notification from info-server without any code change.
