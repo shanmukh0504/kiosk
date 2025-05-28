@@ -157,7 +157,6 @@ export const useSwap = () => {
           isExactOut: boolean
         ) => {
           if (!getQuote || isSwapping) return;
-
           setIsFetchingQuote({ input: isExactOut, output: !isExactOut });
 
           if (controller.current) controller.current.abort();
@@ -204,7 +203,6 @@ export const useSwap = () => {
 
           const [_strategy, quoteAmount] = Object.entries(quote.val.quotes)[0];
           setStrategy(_strategy);
-          setIsFetchingQuote({ input: false, output: false });
           const assetToChange = isExactOut ? fromAsset : toAsset;
           const quoteAmountInDecimals = new BigNumber(Number(quoteAmount)).div(
             Math.pow(10, assetToChange.decimals)
@@ -215,6 +213,7 @@ export const useSwap = () => {
               quoteAmountInDecimals.toFixed(8, BigNumber.ROUND_DOWN)
             ).toString()
           );
+          setIsFetchingQuote({ input: false, output: false });
 
           const inputAmount = isExactOut
             ? quoteAmountInDecimals
