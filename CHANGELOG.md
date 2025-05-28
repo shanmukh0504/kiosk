@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.2]
+
+### Added
+
+- Integrated support for dynamically fetching the latest announcement notifications from the info-server without requiring a code update.
+
 ## [1.0.1]
 
 ### Added
