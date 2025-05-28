@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.1]
+
+### Added
+
+- Added a new feature to delete orders from the pending orders list.
+
+### Fixed
+
+- Connect button label when wallets are not connected.
+
 ## [1.0.0]
 
 ### Added
