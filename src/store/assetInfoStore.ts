@@ -108,10 +108,6 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           disabled: chainInfo.disabled,
         };
 
-        if (chainInfo.disabled) {
-          continue;
-        }
-
         let totalAssets = 0;
 
         for (const asset of chainInfo.assetConfig) {
@@ -123,7 +119,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
             ...asset,
             chain: chainInfo.identifier,
           };
-          if (!asset.disabled) {
+          if (!asset.disabled && !chainInfo.disabled) {
             assets[tokenKey] = allAssets[tokenKey];
             totalAssets++;
           }
