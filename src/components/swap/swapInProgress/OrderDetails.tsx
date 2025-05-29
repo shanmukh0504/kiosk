@@ -56,7 +56,7 @@ export const OrderDetailsRow: FC<OrderDetailsRowProps> = ({
 
 export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
   const [dropdown, setDropdown] = useState(false);
-  const { assets, chains } = assetInfoStore();
+  const { allAssets, allChains } = assetInfoStore();
 
   const { inputAsset, outputAsset, btcAddress } = useMemo(() => {
     return {
@@ -64,13 +64,13 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
         order && isBitcoin(order?.source_swap.chain)
           ? order.source_swap.swap_id
           : "",
-      inputAsset: order && getAssetFromSwap(order.source_swap, assets),
-      outputAsset: order && getAssetFromSwap(order.destination_swap, assets),
+      inputAsset: order && getAssetFromSwap(order.source_swap, allAssets),
+      outputAsset: order && getAssetFromSwap(order.destination_swap, allAssets),
       btcAddress: order
         ? order.create_order.additional_data.bitcoin_optional_recipient
         : "",
     };
-  }, [assets, order]);
+  }, [allAssets, order]);
 
   const chain = isBitcoin(order.source_swap.chain)
     ? order.source_swap.chain
@@ -79,9 +79,10 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
       : "";
   const baseUrl =
     order &&
-    chains &&
-    chain && chains[chain] &&
-    new Url("address", chains[chain].explorer.toString());
+    allChains &&
+    chain &&
+    allChains[chain] &&
+    new Url("address", allChains[chain].explorer.toString());
 
   const link = baseUrl && btcAddress && baseUrl.endpoint(btcAddress);
 
