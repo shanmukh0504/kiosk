@@ -74,7 +74,7 @@ export const formatAmount = (
       .every((d) => d === "0") &&
     temp.split(".")[1].length < 8
   ) {
-    temp = value.toFixed(temp.split(".")[1].length + 1, BigNumber.ROUND_DOWN);
+    temp = value.toFixed(temp.split(".")[1].length + 2, BigNumber.ROUND_DOWN);
   }
 
   return Number(temp);
@@ -115,4 +115,11 @@ export const getAssetFromChainAndSymbol = (
     return asset.chain === chain && asset.symbol === assetSymbol;
   });
   return assetKey ? assets[assetKey] : undefined;
+};
+
+export const getProtocolFee = (fees: number) => {
+  const protocolBips = 7;
+  const totalBips = 30;
+  const protocolFee = fees * (protocolBips / totalBips);
+  return formatAmount(protocolFee, 0, 2);
 };
