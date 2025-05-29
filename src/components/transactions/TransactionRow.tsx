@@ -101,7 +101,7 @@ export const TransactionRow: FC<TransactionProps> = ({
   const handleTransactionClick = async () => {
     if (statusLabel !== StatusLabel.Expired && status) {
       setOrder({ ...order, status: status });
-      await onClick;
+      onClick?.();
       setIsOpen(true);
       setCloseModal(modalNames.transactions);
     }

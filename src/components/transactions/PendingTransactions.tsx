@@ -6,7 +6,7 @@ import { OrderStatus, OrderWithStatus } from "@gardenfi/core";
 import { isEVM } from "@gardenfi/orderbook";
 
 export const PendingTransactions = () => {
-  const { pendingOrders } = pendingOrdersStore();
+  const { pendingOrders, updateOrder } = pendingOrdersStore();
   const { garden } = useGarden();
 
   const handlePendingTransactionsClick = async (order: OrderWithStatus) => {
@@ -20,6 +20,17 @@ export const PendingTransactions = () => {
       return;
     }
     console.log(tx.val);
+
+    const updatedOrder = {
+      ...order,
+      source_swap: {
+        ...order.source_swap,
+        initiate_tx_hash: tx.val ?? "",
+      },
+      status: OrderStatus.InitiateDetected,
+    };
+
+    updateOrder({ ...updatedOrder });
   };
 
   return (
