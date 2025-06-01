@@ -10,6 +10,10 @@ import { IOType } from "../../constants/constants";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { Asset, isBitcoin, isEvmNativeToken } from "@gardenfi/orderbook";
 import { modalNames, modalStore } from "../../store/modalStore";
+import { getSpendableBalance } from "../../utils/getmaxBtc";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { BitcoinProvider } from '@catalogfi/wallets';
+import { BitcoinNetwork } from "@gardenfi/react-hooks";
 import { ErrorFormat } from "../../constants/errors";
 import NumberFlow from "@number-flow/react";
 import clsx from "clsx/lite";
@@ -44,6 +48,9 @@ export const SwapInput: FC<SwapInputProps> = ({
 
   const { setOpenAssetSelector, chains } = assetInfoStore();
   const { setOpenModal } = modalStore();
+  const { account: btcAddress } = useBitcoinWallet();
+  const [spendableBalance, setSpendableBalance] = useState<number | undefined>(undefined);
+  const provider = new BitcoinProvider(BitcoinNetwork.Testnet);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -54,6 +61,32 @@ export const SwapInput: FC<SwapInputProps> = ({
   }, [asset, chains]);
 
   const label = type === IOType.input ? "Send" : "Receive";
+
+  useEffect(() => {
+    const calculateInitialSpendableBalance = async () => {
+      if (balance && btcAddress && type === IOType.input) {
+        try {
+          const balanceInSats = Math.floor(balance * 100000000);
+          const utxos = await provider.getUTXOs(btcAddress, balanceInSats);
+          const feeRate = await provider.getFeeRates();
+
+          const spendable = await getSpendableBalance(
+            btcAddress,
+            balanceInSats,
+            utxos.length,
+            feeRate.minimumFee
+          );
+
+          setSpendableBalance(spendable / 100000000);
+        } catch (error) {
+          console.error('Error calculating initial spendable balance:', error);
+          setSpendableBalance(balance);
+        }
+      }
+    };
+
+    calculateInitialSpendableBalance();
+  }, [balance, btcAddress, type]);
 
   const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value;
@@ -101,11 +134,14 @@ export const SwapInput: FC<SwapInputProps> = ({
   const handleBalanceClick = () => {
     if (type === IOType.input && balance && asset) {
       if (
-        !isBitcoin(asset?.chain) &&
         !isEvmNativeToken(asset?.chain, asset.tokenAddress)
       ) {
-        const balanceStr = balance.toString();
-        onChange(balanceStr);
+        try {
+          onChange(spendableBalance?.toString() ?? balance.toString());
+        } catch (error) {
+          console.error('Error calculating spendable balance:', error);
+          onChange(balance.toString());
+        }
       }
     }
   };
@@ -160,7 +196,7 @@ export const SwapInput: FC<SwapInputProps> = ({
               >
                 <WalletIcon className="h-2.5 w-2.5" />
                 <Typography size="h5" weight="medium">
-                  {balance}
+                  {spendableBalance !== undefined ? spendableBalance : "loading..."}
                 </Typography>
               </div>
             ) : (
