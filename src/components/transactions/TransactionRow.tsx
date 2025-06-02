@@ -17,6 +17,7 @@ type TransactionProps = {
   order: MatchedOrder;
   status?: OrderStatus;
   isLast: boolean;
+  onClick?: () => void;
 };
 
 enum StatusLabel {
@@ -58,6 +59,7 @@ export const TransactionRow: FC<TransactionProps> = ({
   order,
   status,
   isLast,
+  onClick,
 }) => {
   const { create_order, source_swap, destination_swap } = order;
   const { assets } = assetInfoStore();
@@ -105,6 +107,7 @@ export const TransactionRow: FC<TransactionProps> = ({
   const handleTransactionClick = async () => {
     if (statusLabel !== StatusLabel.Expired && status) {
       setOrder({ ...order, status: status });
+      onClick?.();
       setIsOpen(true);
       setCloseModal(modalNames.transactions);
     }

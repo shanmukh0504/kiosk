@@ -63,10 +63,17 @@ export const getThorFee = async (
     );
 
     const inputTokenMeta = bestProvider.meta.assets.find(
-      (asset: ThorSwapAsset) => asset.asset === inputAssetsFormatted
+      (asset: ThorSwapAsset) =>
+        typeof asset.asset === "string" &&
+        typeof inputAssetsFormatted === "string" &&
+        asset.asset.toLowerCase() === inputAssetsFormatted.toLowerCase()
     );
+
     const outputTokenMeta = bestProvider.meta.assets.find(
-      (asset: ThorSwapAsset) => asset.asset === outputAssetsFormatted
+      (asset: ThorSwapAsset) =>
+        typeof asset.asset === "string" &&
+        typeof outputAssetsFormatted === "string" &&
+        asset.asset.toLowerCase() === outputAssetsFormatted.toLowerCase()
     );
 
     const inputValue = new BigNumber(amount)
