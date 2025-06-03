@@ -227,7 +227,7 @@ export const CreateSwap = () => {
         <InputAddressAndFeeRateDetails />
         <Button
           className="mt-3 transition-colors duration-500"
-          variant={buttonDisabled ? "disabled" : buttonVariant}
+          variant={buttonVariant}
           size="lg"
           onClick={
             needsWalletConnection ? handleConnectWallet : handleSwapClick
