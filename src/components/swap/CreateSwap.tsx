@@ -7,7 +7,11 @@ import { useSwap } from "../../hooks/useSwap";
 import { useSearchParams } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
-import { getAssetFromChainAndSymbol, getQueryParams } from "../../utils/utils";
+import {
+  capitalizeChain,
+  getAssetFromChainAndSymbol,
+  getQueryParams,
+} from "../../utils/utils";
 import { QUERY_PARAMS } from "../../constants/constants";
 import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
 
@@ -47,7 +51,7 @@ export const CreateSwap = () => {
       : error.insufficientBalanceError
         ? "Insufficient balance"
         : needsWalletConnection
-          ? `Connect ${needsWalletConnection === "starknet" ? "Starknet" : "EVM"} Wallet`
+          ? `Connect ${capitalizeChain(needsWalletConnection)} Wallet`
           : isApproving
             ? "Approving..."
             : isSwapping
@@ -59,25 +63,6 @@ export const CreateSwap = () => {
     isSwapping,
     needsWalletConnection,
     error.insufficientBalanceError,
-  ]);
-
-  const buttonVariant = useMemo(() => {
-    return !!error.liquidityError ||
-      !!error.insufficientBalanceError ||
-      loadingDisabled
-      ? "disabled"
-      : isSwapping
-        ? "ternary"
-        : needsWalletConnection || validSwap
-          ? "primary"
-          : "disabled";
-  }, [
-    isSwapping,
-    validSwap,
-    error.liquidityError,
-    error.insufficientBalanceError,
-    needsWalletConnection,
-    loadingDisabled,
   ]);
 
   const buttonDisabled = useMemo(() => {
@@ -97,6 +82,16 @@ export const CreateSwap = () => {
     needsWalletConnection,
     loadingDisabled,
   ]);
+
+  const buttonVariant = useMemo(() => {
+    return buttonDisabled
+      ? "disabled"
+      : isSwapping
+        ? "ternary"
+        : needsWalletConnection || validSwap
+          ? "primary"
+          : "disabled";
+  }, [buttonDisabled, isSwapping, validSwap, needsWalletConnection]);
 
   const timeEstimate = useMemo(() => {
     if (!inputAsset || !outputAsset) return "";
@@ -231,17 +226,12 @@ export const CreateSwap = () => {
         </div>
         <InputAddressAndFeeRateDetails />
         <Button
-          className={`mt-3 transition-colors duration-500 ${
-            !needsWalletConnection && buttonLabel !== "Swap"
-              ? "pointer-events-none"
-              : ""
-          }`}
-          variant={buttonVariant}
+          className="mt-3 transition-colors duration-500"
+          variant={buttonDisabled ? "disabled" : buttonVariant}
           size="lg"
           onClick={
             needsWalletConnection ? handleConnectWallet : handleSwapClick
           }
-          disabled={buttonDisabled}
         >
           {buttonLabel}
         </Button>
