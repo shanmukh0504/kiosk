@@ -44,10 +44,10 @@ export const CreateSwap = () => {
   const buttonLabel = useMemo(() => {
     return error.liquidityError
       ? "Insufficient liquidity"
-      : needsWalletConnection
-        ? `Connect ${needsWalletConnection === "starknet" ? "Starknet" : "EVM"} Wallet`
-        : error.insufficientBalanceError
-          ? "Insufficient balance"
+      : error.insufficientBalanceError
+        ? "Insufficient balance"
+        : needsWalletConnection
+          ? `Connect ${needsWalletConnection === "starknet" ? "Starknet" : "EVM"} Wallet`
           : isApproving
             ? "Approving..."
             : isSwapping
@@ -62,17 +62,33 @@ export const CreateSwap = () => {
   ]);
 
   const buttonVariant = useMemo(() => {
-    return needsWalletConnection
-      ? "primary"
-      : !!error.liquidityError ||
-          !!error.insufficientBalanceError ||
-          loadingDisabled
-        ? "disabled"
-        : isSwapping
-          ? "ternary"
-          : validSwap
-            ? "primary"
-            : "disabled";
+    return !!error.liquidityError ||
+      !!error.insufficientBalanceError ||
+      loadingDisabled
+      ? "disabled"
+      : isSwapping
+        ? "ternary"
+        : needsWalletConnection || validSwap
+          ? "primary"
+          : "disabled";
+  }, [
+    isSwapping,
+    validSwap,
+    error.liquidityError,
+    error.insufficientBalanceError,
+    needsWalletConnection,
+    loadingDisabled,
+  ]);
+
+  const buttonDisabled = useMemo(() => {
+    return !!error.liquidityError ||
+      !!error.insufficientBalanceError ||
+      loadingDisabled ||
+      isSwapping
+      ? true
+      : needsWalletConnection || validSwap
+        ? false
+        : true;
   }, [
     isSwapping,
     validSwap,
@@ -225,14 +241,7 @@ export const CreateSwap = () => {
           onClick={
             needsWalletConnection ? handleConnectWallet : handleSwapClick
           }
-          disabled={
-            loadingDisabled ||
-            isSwapping ||
-            (!needsWalletConnection &&
-              (!validSwap ||
-                !!error.liquidityError ||
-                !!error.insufficientBalanceError))
-          }
+          disabled={buttonDisabled}
         >
           {buttonLabel}
         </Button>
