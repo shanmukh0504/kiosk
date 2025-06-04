@@ -32,11 +32,11 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
           {children}
         </div>
         <Notification
-          id="unichain-launch"
-          title="We are now live on Unichain! 🦄"
-          description="Swap in and out of Unichain in as little as 30 seconds."
-          image="https://wbtc-garden.ghost.io/content/images/2025/05/Unichain-2.png"
-          link="https://garden.finance/blog/bitcoin-to-unichain-in-30-seconds-2"
+          id="corn-launch"
+          title="We now support Corn! 🌽"
+          description="Swap in and out of Corn in as little as 30 seconds."
+          image="https://garden-finance.imgix.net/blog_banner/corn_blog.png"
+          link="https://garden.finance/blog/bitcoin-to-corn-in-30-seconds"
         />
         <Footer className={"mt-auto"} />
       </div>
