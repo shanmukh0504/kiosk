@@ -26,6 +26,8 @@ export const API = () => {
         new Url(REQUIRED_ENV_VARS.INFO_URL)
           .endpoint("blocknumbers")
           .endpoint(network),
+      notification: () =>
+        new Url(REQUIRED_ENV_VARS.INFO_URL).endpoint("notification"),
     },
     buildId: "/build-id.json",
     orderbook: new Url(REQUIRED_ENV_VARS.ORDERBOOK_URL),

@@ -22,6 +22,7 @@ export enum IOType {
 
 export const LOCAL_STORAGE_KEYS = {
   notification: "notificationId",
+  deletedOrders: "deleted_orders",
 };
 
 export const BREAKPOINTS = {
