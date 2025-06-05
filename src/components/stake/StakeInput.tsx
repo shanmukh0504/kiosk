@@ -27,8 +27,6 @@ export const StakeInput = ({ balance }: { balance: number }) => {
   );
 
   const handleBalanceClick = () => {
-    if (isAnimating) return;
-
     if (!balance || balance === 0 || balance < MIN_STAKE_AMOUNT) return;
 
     if (stakeType === StakeType.GARDEN_PASS) {
@@ -90,8 +88,6 @@ export const StakeInput = ({ balance }: { balance: number }) => {
   };
 
   const handleMinusClick = () => {
-    if (isAnimating) return;
-
     if (stakeType === StakeType.GARDEN_PASS) {
       if (passCount > 1) {
         const newPassCount = passCount - 1;
@@ -116,8 +112,6 @@ export const StakeInput = ({ balance }: { balance: number }) => {
   };
 
   const handlePlusClick = () => {
-    if (isAnimating) return;
-
     if (stakeType === StakeType.GARDEN_PASS) {
       const newPassCount = passCount + 1;
       setPassCount(newPassCount);
@@ -152,7 +146,7 @@ export const StakeInput = ({ balance }: { balance: number }) => {
           className="cursor-pointer"
           onClick={handleBalanceClick}
         >
-          {balance ? balance.toFixed(3) : 0} available
+          {balance && balance.toFixed(3)} available
         </Typography>
       </div>
       <div className="flex items-center justify-between">
