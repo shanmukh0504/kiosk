@@ -11,6 +11,11 @@ import {
 import { formatAmount } from "../utils/utils";
 import { CIRCULATING_SEED_SUPPLY } from "../constants/stake";
 
+export enum StakeType {
+  GARDEN_PASS = "garden-pass",
+  CUSTOM = "custom",
+}
+
 const SEED: Asset = {
   name: "Seed",
   decimals: 18,
@@ -37,6 +42,7 @@ type StakeStoreState = {
   stakePosData: StakingPosition[] | null;
   stakeApys: Record<string, number>;
   stakingStats: StakingStats | null;
+  stakeType: StakeType;
   loading: {
     stakeRewards: boolean;
   };
@@ -50,6 +56,7 @@ type StakeStoreState = {
     accumulatedRewardUSD: number;
   } | null;
   setInputAmount: (value: string) => void;
+  setStakeType: (type: StakeType) => void;
   fetchStakePosData: (address: string) => Promise<void>;
   fetchAndSetStakingStats: () => Promise<void>;
   fetchAndSetStakeApy: (address: string) => Promise<void>;
@@ -117,10 +124,12 @@ export const stakeStore = create<StakeStoreState>((set) => ({
   stakingStats: null,
   stakeApys: {},
   stakeRewards: null,
+  stakeType: StakeType.CUSTOM,
   loading: {
     stakeRewards: false,
   },
   setInputAmount: (value: string) => set({ inputAmount: value }),
+  setStakeType: (type: StakeType) => set({ stakeType: type }),
   fetchStakePosData: async (address: string) => {
     try {
       const response = await axios.get<StakingPositionApiResponse>(

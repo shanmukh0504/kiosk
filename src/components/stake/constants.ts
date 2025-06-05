@@ -86,3 +86,5 @@ export const STAKE_REWARD = {
   SEED: REWARD_CONFIG.SEED[STAKING_CHAIN],
   CBBTC: REWARD_CONFIG.CBBTC[REWARD_CHAIN],
 };
+
+export const GardenPassVotes = 70;
