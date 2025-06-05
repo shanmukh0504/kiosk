@@ -11,10 +11,11 @@ const GARDEN_PASS_COST = 21000;
 const ROUNDING_MULTIPLE = 2100;
 
 export const StakeInput = ({ balance }: { balance: number }) => {
-  const { inputAmount, setInputAmount, stakeType } = stakeStore();
+  const { stakeType } = stakeStore();
   const [passCount, setPassCount] = useState(1);
   const [passSeed, setPassSeed] = useState(GARDEN_PASS_COST);
   const [customSeed, setCustomSeed] = useState(0);
+  const [customInputAmount, setCustomInputAmount] = useState("0");
   const [animated] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -34,10 +35,9 @@ export const StakeInput = ({ balance }: { balance: number }) => {
       setPassCount(maxPasses);
       const newPassSeed = maxPasses * GARDEN_PASS_COST;
       setPassSeed(newPassSeed);
-      setInputAmount(newPassSeed.toString());
     } else {
       setCustomSeed(stakeableBalance);
-      setInputAmount(stakeableBalance.toString());
+      setCustomInputAmount(stakeableBalance.toString());
     }
   };
 
@@ -67,7 +67,7 @@ export const StakeInput = ({ balance }: { balance: number }) => {
       return;
     }
 
-    setInputAmount(input);
+    setCustomInputAmount(input);
     setCustomSeed(Number(input) || 0);
   };
 
@@ -78,9 +78,9 @@ export const StakeInput = ({ balance }: { balance: number }) => {
       }
 
       timeoutRef.current = setTimeout(() => {
-        const currentValue = Number(inputAmount) || 0;
+        const currentValue = Number(customInputAmount) || 0;
         const roundedValue = roundToNearestMultiple(currentValue);
-        setInputAmount(roundedValue.toString());
+        setCustomInputAmount(roundedValue.toString());
         setCustomSeed(roundedValue);
       }, 500);
     }
@@ -94,19 +94,18 @@ export const StakeInput = ({ balance }: { balance: number }) => {
         setPassCount(newPassCount);
         const newPassSeed = newPassCount * GARDEN_PASS_COST;
         setPassSeed(newPassSeed);
-        setInputAmount(newPassSeed.toString());
       }
     } else {
-      const currentAmount = Number(inputAmount) || 0;
+      const currentAmount = Number(customInputAmount) || 0;
       if (currentAmount % MIN_STAKE_AMOUNT === 0) {
         const newAmount = Math.max(currentAmount - MIN_STAKE_AMOUNT, 0);
         setCustomSeed(newAmount);
-        setInputAmount(newAmount.toString());
+        setCustomInputAmount(newAmount.toString());
       } else {
         const newAmount =
           Math.floor(currentAmount / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT;
         setCustomSeed(newAmount);
-        setInputAmount(newAmount.toString());
+        setCustomInputAmount(newAmount.toString());
       }
     }
   };
@@ -117,19 +116,18 @@ export const StakeInput = ({ balance }: { balance: number }) => {
       setPassCount(newPassCount);
       const newPassSeed = newPassCount * GARDEN_PASS_COST;
       setPassSeed(newPassSeed);
-      setInputAmount(newPassSeed.toString());
     } else {
-      const currentAmount = Number(inputAmount) || 0;
+      const currentAmount = Number(customInputAmount) || 0;
       if (currentAmount % MIN_STAKE_AMOUNT === 0) {
         const newAmount = currentAmount + MIN_STAKE_AMOUNT;
         setCustomSeed(newAmount);
-        setInputAmount(newAmount.toString());
+        setCustomInputAmount(newAmount.toString());
       } else {
         const newAmount =
           Math.floor(currentAmount / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT +
           MIN_STAKE_AMOUNT;
         setCustomSeed(newAmount);
-        setInputAmount(newAmount.toString());
+        setCustomInputAmount(newAmount.toString());
       }
     }
   };
@@ -206,7 +204,7 @@ export const StakeInput = ({ balance }: { balance: number }) => {
                         if (isAnimating) return;
                         e.preventDefault();
                         setIsFocused(true);
-                        if (inputAmount === "0") setInputAmount("");
+                        if (customInputAmount === "0") setCustomInputAmount("");
                         setTimeout(() => {
                           inputRef.current?.focus();
                         }, 0);
@@ -221,7 +219,7 @@ export const StakeInput = ({ balance }: { balance: number }) => {
                           )}
                           style={{ fontKerning: "none" }}
                           type="tel"
-                          value={inputAmount}
+                          value={customInputAmount}
                           onChange={handleInputChange}
                           onFocus={() => setIsFocused(true)}
                           onBlur={handleInputBlur}
