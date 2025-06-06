@@ -17,7 +17,7 @@ import { modalNames, modalStore } from "../../../store/modalStore";
 import { StakeStats } from "../shared/StakeStats";
 import { UnstakeAndRestake } from "./UnstakeAndRestake";
 import { AnimatePresence, motion } from "framer-motion";
-import { TooltipWrapper } from "../shared/ToolTipWrapper";
+// import { RewardsToolTip } from "../shared/RewardsToolTip";
 
 type props = {
   stakePos: StakingPosition;
@@ -207,12 +207,9 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
                     title={"Rewards"}
                     value={`~$${reward}`}
                     size="xs"
-                    toolTip={
-                      <TooltipWrapper
-                        seedReward={seedReward}
-                        cbBtcReward={stakeReward}
-                      />
-                    }
+                    // toolTip={
+                    //   <RewardsToolTip seed={seedReward} cbBtc={stakeReward} />
+                    // }
                   />
                 </div>
               </div>
