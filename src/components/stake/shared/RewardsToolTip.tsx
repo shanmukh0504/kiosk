@@ -19,10 +19,10 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.8, y: -10 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="mx-auto flex"
+      className="relative mx-auto flex"
     >
-      <div className="absolute z-50 mb-[15px] ml-4 mt-[-5px] h-[14px] w-[14px] rotate-45 rounded-sm bg-white sm:mb-0 sm:ml-[-5px] sm:mt-[15px]"></div>
-      <div className="flex flex-col gap-2 rounded-2xl bg-white px-4 py-3 shadow-custom">
+      <div className="absolute mb-[15px] ml-4 mt-[-5px] h-[14px] w-[14px] rotate-45 rounded-sm bg-white sm:mb-0 sm:ml-[-5px] sm:mt-[15px]"></div>
+      <div className="flex max-w-[240px] flex-col gap-2 rounded-2xl bg-white px-4 py-3 shadow-custom">
         <Typography size="h5" weight="bold" className="!text-mid-grey">
           Breakdown
         </Typography>
@@ -34,7 +34,7 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
             <Typography
               size="h4"
               weight="medium"
-              className={`relative w-11 before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
+              className={`relative w-11 cursor-pointer before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
               onClick={() =>
                 handleRedirect(
                   STAKE_REWARD.CBBTC.EXPLORER,
@@ -57,7 +57,7 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
             <Typography
               size="h4"
               weight="medium"
-              className={`relative mr-2 w-9 before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
+              className={`relative mr-2 w-9 cursor-pointer before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
               onClick={() =>
                 handleRedirect(
                   STAKE_REWARD.SEED.EXPLORER,

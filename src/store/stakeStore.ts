@@ -33,6 +33,23 @@ type StakingStats = {
   seedLockedPercentage: string;
 };
 
+type EpochResponse = {
+  epoch: string;
+  reward_token: string;
+  total_rewards_usd: string;
+  total_rewards_tokens: string;
+  fees_collected_usd: string;
+  total_active_votes: number;
+  remaining_pool_usd: string;
+  eth_block_number: number;
+};
+
+type EpochEarnings = {
+  epoch: string;
+  rewards_value_usd: string;
+  rewards_value_cbbtc: string;
+};
+
 type StakeStoreState = {
   asset: Asset;
   inputAmount: string;
@@ -43,6 +60,8 @@ type StakeStoreState = {
   stakeApys: Record<string, number>;
   stakingStats: StakingStats | null;
   stakeType: StakeType;
+  epochData: EpochResponse[] | null;
+  epochEarnings: EpochEarnings[] | null;
   loading: {
     stakeRewards: boolean;
   };
@@ -61,6 +80,7 @@ type StakeStoreState = {
   fetchAndSetStakingStats: () => Promise<void>;
   fetchAndSetStakeApy: (address: string) => Promise<void>;
   fetchAndSetRewards: (address: string) => Promise<void>;
+  fetchAndSetEpoch: () => Promise<void>;
   clearStakePosData: () => void;
 };
 
@@ -81,6 +101,12 @@ export type StakingReward = {
   stakes: {
     id: string;
     cumulative_reward_cbbtc: number;
+  }[];
+  epochs: {
+    epoch: string;
+    rewards_value_cbbtc: number;
+    rewards_value_usd: string;
+    active_votes: string;
   }[];
 };
 
@@ -125,6 +151,8 @@ export const stakeStore = create<StakeStoreState>((set) => ({
   stakeApys: {},
   stakeRewards: null,
   stakeType: StakeType.CUSTOM,
+  epochData: null,
+  epochEarnings: null,
   loading: {
     stakeRewards: false,
   },
@@ -228,8 +256,16 @@ export const stakeStore = create<StakeStoreState>((set) => ({
     try {
       set({ loading: { stakeRewards: true } });
       const resp = await axios.get<StakingReward>(
-        API().reward(address).toString()
+        API().rewards.reward(address).toString()
       );
+
+      const epochResp = resp.data.epochs;
+      const epochEarnings = epochResp.map((epoch) => ({
+        epoch: epoch.epoch,
+        rewards_value_usd: epoch.rewards_value_usd,
+        rewards_value_cbbtc: epoch.rewards_value_cbbtc.toString(),
+      }));
+      set({ epochEarnings });
       const accResp = await axios.get<StakingAccumulatedRewards>(
         API().stake.accumulatedReward(address).toString()
       );
@@ -264,6 +300,16 @@ export const stakeStore = create<StakeStoreState>((set) => ({
       console.error("Error fetching rewards :", error);
     } finally {
       set({ loading: { stakeRewards: false } });
+    }
+  },
+  fetchAndSetEpoch: async () => {
+    try {
+      const response = await axios.get<EpochResponse[]>(
+        API().rewards.epoch.toString()
+      );
+      set({ epochData: response.data });
+    } catch (error) {
+      console.error("Error fetching current epoch :", error);
     }
   },
   clearStakePosData: () => set({ stakePosData: null }),

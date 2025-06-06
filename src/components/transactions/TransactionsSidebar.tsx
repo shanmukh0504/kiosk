@@ -30,7 +30,7 @@ export const TransactionsSidebar: FC<SidebarProps> = ({ open, onClose }) => {
 
   return (
     <div
-      className={`absolute left-0 top-0 z-50 h-full w-full bg-dark-grey transition-colors duration-500 ease-cubic-in-out ${open ? "bg-opacity-40" : "pointer-events-none bg-opacity-0"}`}
+      className={`absolute left-0 top-0 h-full w-full bg-dark-grey transition-colors duration-500 ease-cubic-in-out ${open ? "bg-opacity-40" : "pointer-events-none bg-opacity-0"}`}
     >
       <div
         ref={sliderRef}

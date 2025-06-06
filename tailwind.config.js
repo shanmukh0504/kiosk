@@ -13,7 +13,7 @@ export default {
         "mid-grey": "#817A90",
         "light-grey": "#E3E0EB",
         "off-white": "#F4F0FC",
-        "light-green": "#4DCB75",
+        "light-green": "#2CC994",
       },
       screens: {
         xs: "360px",

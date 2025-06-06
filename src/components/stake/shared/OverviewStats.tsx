@@ -1,6 +1,7 @@
-import { Typography } from "@gardenfi/garden-book";
-import { FC, ReactNode, useState } from "react";
+import { InfoIcon, Typography } from "@gardenfi/garden-book";
+import React, { FC, ReactNode, useState } from "react";
 import { viewPortStore } from "../../../store/viewPortStore";
+import { TooltipWrapper } from "./ToolTipWrapper";
 
 type props = {
   title: ReactNode;
@@ -8,7 +9,10 @@ type props = {
   size?: "xs" | "sm" | "md";
   isPink?: boolean;
   className?: string;
+  info?: boolean;
   toolTip?: ReactNode;
+  targetRef?: React.RefObject<HTMLDivElement>;
+  stat: boolean;
 };
 
 export const OverviewStats: FC<props> = ({
@@ -17,7 +21,10 @@ export const OverviewStats: FC<props> = ({
   size = "sm",
   isPink = false,
   className,
+  info,
   toolTip,
+  targetRef,
+  stat,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const { isTab } = viewPortStore();
@@ -34,8 +41,6 @@ export const OverviewStats: FC<props> = ({
   return (
     <div
       className={`relative flex flex-col items-start justify-center gap-y-1 ${className}`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       <Typography
         size={titleSize}
@@ -44,19 +49,31 @@ export const OverviewStats: FC<props> = ({
           sm: titleSize,
         }}
         weight={size === "xs" ? "medium" : "bold"}
-        className={`${textColor} whitespace-nowrap`}
+        className={`${textColor} flex items-center gap-0.5 whitespace-nowrap`}
       >
         {title}
+        {info && (
+          <span
+            ref={targetRef}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            className="inline-block cursor-pointer"
+          >
+            <InfoIcon className="h-3 w-3 p-[0.5px]" />
+            {isHovered && toolTip && targetRef && (
+              <TooltipWrapper targetRef={targetRef}>{toolTip}</TooltipWrapper>
+            )}
+          </span>
+        )}
       </Typography>
       <Typography
         size={valueSize}
         breakpoints={valueBreakpoints}
-        weight={size === "xs" ? "medium" : size === "sm" ? "medium" : "bold"}
+        weight={size === "xs" || size === "sm" ? "medium" : "bold"}
         className={`${textColor} lg:whitespace-nowrap`}
       >
-        {value}
+        {stat ? <span className="text-mid-grey">{value}</span> : value}
       </Typography>
-      {isHovered && toolTip}
     </div>
   );
 };

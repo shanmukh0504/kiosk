@@ -24,7 +24,7 @@ export const StakePositions = () => {
       }}
       style={{ transformOrigin: "top" }}
     >
-      <div className="mx-auto mb-8 flex w-[328px] flex-col rounded-2xl bg-white/50 p-6 sm:w-[424px] md:w-[740px] lg:w-[1000px]">
+      <div className="mx-auto mb-8 flex w-[328px] flex-col rounded-2xl bg-white/50 p-6 sm:w-[424px] md:w-[740px]">
         <Typography size="h5" weight="bold">
           Staking positions
         </Typography>

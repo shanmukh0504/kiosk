@@ -130,3 +130,38 @@ export const getProtocolFee = (fees: number) => {
   const protocolFee = fees * (protocolBips / totalBips);
   return formatAmount(protocolFee, 0, 2);
 };
+
+export const getDaysUntilNextEpoch = (
+  epochData: { epoch: string }[] | null
+) => {
+  const now = new Date();
+  const currentDay = now.getUTCDay();
+  const currentHour = now.getUTCHours();
+  const currentMinutes = now.getUTCMinutes();
+
+  if (epochData && epochData.length > 0) {
+    const lastEpoch = new Date(epochData[0].epoch);
+    const nextEpoch = new Date(lastEpoch);
+    nextEpoch.setDate(nextEpoch.getDate() + 7);
+
+    const diffTime = nextEpoch.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (currentDay === 0 && currentHour === 0 && currentMinutes === 0) {
+      return 7;
+    }
+
+    return diffDays;
+  }
+
+  if (currentDay === 0 && currentHour === 0 && currentMinutes === 0) {
+    return 7;
+  }
+
+  if (currentDay === 0) {
+    return 7;
+  }
+
+  const daysUntilNextSunday = (7 - currentDay) % 7;
+  return daysUntilNextSunday;
+};

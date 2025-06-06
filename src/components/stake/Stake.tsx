@@ -6,6 +6,7 @@ import { StakePositions } from "./stakePosition/StakePositions";
 import { AnimatePresence } from "framer-motion";
 import { StakeComponent } from "./StakeComponent";
 import { GardenPass } from "./shared/GardenPass";
+import { StakeRewards } from "./StakeRewards";
 
 export const Stake: FC = () => {
   const { stakePosData, stakeType } = stakeStore();
@@ -24,6 +25,7 @@ export const Stake: FC = () => {
       {stakePosData && stakePosData.length > 0 && (
         <AnimatePresence>
           <>
+            <StakeRewards />
             <StakeOverview />
             <StakePositions />
           </>

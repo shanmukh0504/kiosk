@@ -19,7 +19,7 @@ export const Switch = <T extends string>({
     <div className="h-full w-fit items-center justify-end overflow-hidden rounded-full bg-white/50">
       {options.map((option) => (
         <span
-          className={`inline-block cursor-pointer rounded-full px-3 pb-[7px] pt-[5px] transition-all duration-150 ease-in-out ${
+          className={`inline-block cursor-pointer rounded-full px-3 pb-1.5 pt-1 transition-all duration-150 ease-in-out ${
             value === option.value ? "bg-white" : ""
           }`}
           key={option.value}

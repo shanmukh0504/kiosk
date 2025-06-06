@@ -25,6 +25,7 @@ export const StakeComponent = () => {
     stakingStats,
     clearStakePosData,
     fetchAndSetRewards,
+    fetchAndSetEpoch,
     stakeType,
     setStakeType,
   } = stakeStore();
@@ -52,7 +53,8 @@ export const StakeComponent = () => {
 
   useEffect(() => {
     fetchAndSetStakingStats();
-  }, [fetchAndSetStakingStats]);
+    fetchAndSetEpoch();
+  }, [fetchAndSetStakingStats, fetchAndSetEpoch]);
 
   useEffect(() => {
     if (!address) {
@@ -66,9 +68,10 @@ export const StakeComponent = () => {
 
       try {
         isFetching = true;
-        await fetchAndSetStakeApy(address);
-        await fetchStakePosData(address);
-        await fetchAndSetRewards(address);
+        // TODO: Back to address
+        await fetchAndSetStakeApy("0xeb7e1c4b16203187d2f46071203494662b4ee5c6");
+        await fetchStakePosData("0xeb7e1c4b16203187d2f46071203494662b4ee5c6");
+        await fetchAndSetRewards("0xeb7e1c4b16203187d2f46071203494662b4ee5c6");
       } finally {
         isFetching = false;
       }
@@ -103,12 +106,23 @@ export const StakeComponent = () => {
         </div>
         <div className="flex flex-col gap-6">
           <Typography size="h4" weight="medium">
-            Deposit SEED into Garden and unlock new opportunities like
-            discounted fees. Stake in multiples of{" "}
-            <Typography className="!text-rose" weight="bold">
-              2100 SEED
-            </Typography>{" "}
-            to participate
+            <AnimatePresence mode="wait">
+              {stakeType === StakeType.CUSTOM ? (
+                <motion.span key="custom" {...fadeAnimation}>
+                  Deposit SEED into Garden and unlock new opportunities like
+                  discounted fees. Stake in multiples of{" "}
+                  <Typography className="!text-rose" weight="bold">
+                    2100 SEED
+                  </Typography>{" "}
+                  to participate
+                </motion.span>
+              ) : (
+                <motion.span key="garden-pass" {...fadeAnimation}>
+                  Stake 21,000 SEED to unlock a Gardener Pass. Max staking
+                  yield, full voting power.
+                </motion.span>
+              )}
+            </AnimatePresence>
           </Typography>
           <div className="flex gap-10">
             <StakeStats

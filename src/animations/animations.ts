@@ -162,7 +162,7 @@ export const gardenPassContentVariants: Variants = {
   initial: {
     opacity: 0,
     marginRight: 0,
-    scale: 0.8,
+    scale: 0.95,
   },
   animate: {
     opacity: 1,
@@ -174,7 +174,7 @@ export const gardenPassContentVariants: Variants = {
       damping: 25,
       mass: 1,
       scale: {
-        delay: 0.16,
+        delay: 0.2,
       },
       opacity: {
         delay: 0.12,
@@ -184,7 +184,7 @@ export const gardenPassContentVariants: Variants = {
   exit: {
     opacity: 0,
     marginRight: 0,
-    scale: 0.8,
+    scale: 0.95,
   },
 };
 
