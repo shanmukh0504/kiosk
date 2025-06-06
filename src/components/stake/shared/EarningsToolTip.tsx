@@ -1,6 +1,13 @@
 import { Typography } from "@gardenfi/garden-book";
 import { motion } from "framer-motion";
 import { Bar, BarChart, XAxis, ResponsiveContainer, BarProps } from "recharts";
+import { ChartContainer, ChartConfig } from "../../../common/Chart";
+
+const chartConfig = {
+  earnings: {
+    color: "#F7CFDB",
+  },
+} satisfies ChartConfig;
 
 type TooltipProps = {
   earnings: number | null;
@@ -22,11 +29,17 @@ export const EarningsToolTip = ({ earnings, earningsData }: TooltipProps) => {
           This earning is from the previous epoch that has already passed.
         </Typography>
         <div className="flex gap-2">
-          <Typography size="h5" weight="medium">
+          <Typography
+            size="h5"
+            weight="medium"
+            className={
+              Number(earnings) > 0 ? "!text-light-green" : "!text-red-500"
+            }
+          >
             {earnings}% <span className="text-mid-grey">vs previous epoch</span>
           </Typography>
         </div>
-        <div className="h-[120px] w-full">
+        <ChartContainer config={chartConfig} className="h-[100px] w-full">
           <Typography size="h5" weight="medium">
             <ResponsiveContainer width="100%" height="105%">
               <BarChart data={earningsData ?? []} barGap={20}>
@@ -63,7 +76,7 @@ export const EarningsToolTip = ({ earnings, earningsData }: TooltipProps) => {
               </BarChart>
             </ResponsiveContainer>
           </Typography>
-        </div>
+        </ChartContainer>
       </div>
     </motion.div>
   );

@@ -1,4 +1,9 @@
-import { InfoIcon, Typography } from "@gardenfi/garden-book";
+import {
+  ArrowDownwardIcon,
+  ArrowUpwardIcon,
+  InfoIcon,
+  Typography,
+} from "@gardenfi/garden-book";
 import React, { FC, ReactNode, useState } from "react";
 import { viewPortStore } from "../../../store/viewPortStore";
 import { TooltipWrapper } from "./ToolTipWrapper";
@@ -12,7 +17,7 @@ type props = {
   info?: boolean;
   toolTip?: ReactNode;
   targetRef?: React.RefObject<HTMLDivElement>;
-  stat: boolean;
+  showStat?: boolean;
 };
 
 export const OverviewStats: FC<props> = ({
@@ -24,7 +29,7 @@ export const OverviewStats: FC<props> = ({
   info,
   toolTip,
   targetRef,
-  stat,
+  showStat = false,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const { isTab } = viewPortStore();
@@ -70,9 +75,15 @@ export const OverviewStats: FC<props> = ({
         size={valueSize}
         breakpoints={valueBreakpoints}
         weight={size === "xs" || size === "sm" ? "medium" : "bold"}
-        className={`${textColor} lg:whitespace-nowrap`}
+        className={`${textColor} flex items-center gap-1 lg:whitespace-nowrap`}
       >
-        {stat ? <span className="text-mid-grey">{value}</span> : value}
+        {value?.toString().slice(1)}
+        {showStat &&
+          (Number(value) > 0 ? (
+            <ArrowUpwardIcon className="h-3 w-3 !fill-light-green" />
+          ) : (
+            <ArrowDownwardIcon className="h-3 w-3 !fill-red-500" />
+          ))}
       </Typography>
     </div>
   );

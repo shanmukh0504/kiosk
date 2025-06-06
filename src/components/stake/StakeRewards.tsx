@@ -153,6 +153,7 @@ export const StakeRewards = () => {
                 <OverviewStats
                   title={"Earnings"}
                   info
+                  showStat
                   value={`${earningRate.toFixed(2)}%`}
                   size="sm"
                   toolTip={
