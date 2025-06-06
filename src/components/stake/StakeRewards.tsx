@@ -116,6 +116,18 @@ export const StakeRewards = () => {
     return ((latestEpoch - previousEpoch) / previousEpoch) * 100;
   }, [epochData]);
 
+  const earnings = useMemo(() => {
+    if (
+      !stakeRewards ||
+      !stakeRewards.rewardResponse ||
+      !stakeRewards.rewardResponse.epochs
+    )
+      return 0;
+    const epochs = stakeRewards.rewardResponse.epochs;
+    if (!epochs.length) return 0;
+    return Number(epochs[epochs.length - 1].rewards_value_usd);
+  }, [stakeRewards]);
+
   return (
     <motion.div
       animate={{
@@ -134,7 +146,7 @@ export const StakeRewards = () => {
       }}
       style={{ transformOrigin: "top" }}
     >
-      <div className="mx-auto flex w-[328px] flex-col gap-[20px] rounded-[15px] bg-white/50 p-6 sm:w-[424px] md:w-[740px]">
+      <div className="mx-auto flex w-[328px] flex-col gap-[20px] rounded-[15px] bg-white p-6 sm:w-[424px] md:w-[740px]">
         <Typography size="h5" weight="bold">
           Rewards
         </Typography>
@@ -154,12 +166,13 @@ export const StakeRewards = () => {
                   title={"Earnings"}
                   info
                   showStat
-                  value={`${earningRate.toFixed(2)}%`}
+                  value={formatAmount(earningRate ?? 0, 0, 2)}
                   size="sm"
                   toolTip={
                     <TooltipWrapper targetRef={statRef}>
                       <EarningsToolTip
-                        earnings={Number(earningRate.toFixed(2))}
+                        earnings={earnings}
+                        earningRate={earningRate}
                         earningsData={earningsData?.slice(0, 8) ?? []}
                       />
                     </TooltipWrapper>

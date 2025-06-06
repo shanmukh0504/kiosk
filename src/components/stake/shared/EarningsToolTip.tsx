@@ -2,6 +2,7 @@ import { Typography } from "@gardenfi/garden-book";
 import { motion } from "framer-motion";
 import { Bar, BarChart, XAxis, ResponsiveContainer, BarProps } from "recharts";
 import { ChartContainer, ChartConfig } from "../../../common/Chart";
+import { formatAmount } from "../../../utils/utils";
 
 const chartConfig = {
   earnings: {
@@ -11,10 +12,15 @@ const chartConfig = {
 
 type TooltipProps = {
   earnings: number | null;
+  earningRate: number | null;
   earningsData: { epoch: number; earnings: number }[] | null;
 };
 
-export const EarningsToolTip = ({ earnings, earningsData }: TooltipProps) => {
+export const EarningsToolTip = ({
+  earnings,
+  earningRate,
+  earningsData,
+}: TooltipProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8, y: -10 }}
@@ -24,22 +30,31 @@ export const EarningsToolTip = ({ earnings, earningsData }: TooltipProps) => {
       className="relative mx-auto flex"
     >
       <div className="absolute mb-[15px] ml-4 mt-[-5px] h-[14px] w-[14px] rotate-45 rounded-sm bg-white sm:mb-0 sm:ml-[-5px] sm:mt-[15px]"></div>
-      <div className="flex max-w-[240px] flex-col gap-2 rounded-2xl bg-white px-3 pb-0 pt-3 shadow-custom">
-        <Typography size="h5" weight="medium">
+      <div className="flex max-w-[240px] flex-col gap-2 rounded-2xl bg-white shadow-custom">
+        <Typography size="h5" weight="medium" className="px-3 pt-3">
           This earning is from the previous epoch that has already passed.
         </Typography>
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-1 px-3">
+          <Typography size="h5" weight="bold">
+            ${formatAmount(earnings ?? 0, 0, 2)}
+          </Typography>
           <Typography
             size="h5"
             weight="medium"
             className={
-              Number(earnings) > 0 ? "!text-light-green" : "!text-red-500"
+              Number(earningRate ?? 0) > 0
+                ? "!text-light-green"
+                : "!text-red-500"
             }
           >
-            {earnings}% <span className="text-mid-grey">vs previous epoch</span>
+            {formatAmount(earningRate ?? 0, 0, 2)}%{" "}
+            <span className="text-mid-grey">vs previous epoch</span>
           </Typography>
         </div>
-        <ChartContainer config={chartConfig} className="h-[100px] w-full">
+        <ChartContainer
+          config={chartConfig}
+          className="h-[100px] w-full px-1 pb-0.5"
+        >
           <Typography size="h5" weight="medium">
             <ResponsiveContainer width="100%" height="105%">
               <BarChart data={earningsData ?? []} barGap={20}>

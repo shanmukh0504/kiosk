@@ -9,8 +9,8 @@ import { viewPortStore } from "../../../store/viewPortStore";
 import { TooltipWrapper } from "./ToolTipWrapper";
 
 type props = {
-  title: ReactNode;
-  value: ReactNode;
+  title: string;
+  value: string | number;
   size?: "xs" | "sm" | "md";
   isPink?: boolean;
   className?: string;
@@ -64,7 +64,7 @@ export const OverviewStats: FC<props> = ({
             onMouseLeave={() => setIsHovered(false)}
             className="inline-block cursor-pointer"
           >
-            <InfoIcon className="h-3 w-3 p-[0.5px]" />
+            <InfoIcon className="h-3 w-3" />
             {isHovered && toolTip && targetRef && (
               <TooltipWrapper targetRef={targetRef}>{toolTip}</TooltipWrapper>
             )}
@@ -77,7 +77,7 @@ export const OverviewStats: FC<props> = ({
         weight={size === "xs" || size === "sm" ? "medium" : "bold"}
         className={`${textColor} flex items-center gap-1 lg:whitespace-nowrap`}
       >
-        {value?.toString().slice(1)}
+        {Number(value) < 0 ? value?.toString().slice(1) : value}
         {showStat &&
           (Number(value) > 0 ? (
             <ArrowUpwardIcon className="h-3 w-3 !fill-light-green" />
