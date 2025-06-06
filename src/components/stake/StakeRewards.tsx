@@ -20,7 +20,7 @@ export const StakeRewards = () => {
   const [isClaimLoading, setIsClaimLoading] = useState(false);
   const statRef = useRef<HTMLDivElement>(null);
 
-  const { epochData, stakeRewards } = stakeStore();
+  const { epochEarnings, epochData, stakeRewards } = stakeStore();
   const { writeContractAsync } = useWriteContract();
   const { address, chainId } = useEVMWallet();
   const { switchChainAsync } = useSwitchChain();
@@ -91,30 +91,30 @@ export const StakeRewards = () => {
   };
 
   const earningsData = useMemo(() => {
-    if (!epochData) return [];
-    return epochData.slice(-8).map((epoch, index) => {
-      const epochNumber = epochData.length - (8 - index - 1);
+    if (!epochEarnings) return [];
+    return epochEarnings.slice(-8).map((epoch, index) => {
+      const epochNumber = epochEarnings.length - (8 - index - 1);
       return {
         epoch: epochNumber,
-        earnings: Number(epoch.total_rewards_usd),
+        earnings: Number(epoch.rewards_value_usd),
       };
     });
-  }, [epochData]);
+  }, [epochEarnings]);
 
   const earningRate = useMemo(() => {
-    if (!epochData || epochData.length < 2) return 0;
+    if (!epochEarnings || epochEarnings.length < 2) return 0;
 
     const latestEpoch = Number(
-      epochData[epochData.length - 1].total_rewards_usd
+      epochEarnings[epochEarnings.length - 1].rewards_value_usd
     );
     const previousEpoch = Number(
-      epochData[epochData.length - 2].total_rewards_usd
+      epochEarnings[epochEarnings.length - 2].rewards_value_usd
     );
 
     if (previousEpoch === 0) return 0;
 
     return ((latestEpoch - previousEpoch) / previousEpoch) * 100;
-  }, [epochData]);
+  }, [epochEarnings]);
 
   const earnings = useMemo(() => {
     if (
