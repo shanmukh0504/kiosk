@@ -94,7 +94,7 @@ export const EarningsToolTip = ({
                   content={({ payload }) => {
                     if (!payload?.[0]?.value) return null;
                     return (
-                      <div className="rounded-md bg-white/50 px-2 py-1">
+                      <div className="rounded-md bg-white/75 px-2 py-1">
                         <Typography size="h5" weight="medium">
                           ${formatAmount(Number(payload[0].value), 0, 2)}
                         </Typography>
