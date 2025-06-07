@@ -68,9 +68,14 @@ export const StakeComponent = () => {
 
       try {
         isFetching = true;
-        await fetchAndSetStakeApy(address);
-        await fetchStakePosData(address);
-        await fetchAndSetRewards(address);
+        // TODO: Back to address
+        await fetchAndSetStakeApy(
+          import.meta.env.VITE_REWARD_ADDRESS ?? address
+        );
+        await fetchStakePosData(import.meta.env.VITE_REWARD_ADDRESS ?? address);
+        await fetchAndSetRewards(
+          import.meta.env.VITE_REWARD_ADDRESS ?? address
+        );
       } finally {
         isFetching = false;
       }
