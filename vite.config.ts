@@ -89,10 +89,14 @@ export default defineConfig({
     minify: "terser",
     rollupOptions: {
       output: {
-        manualChunks: {
-          "react-vendor": ["react", "react-dom"],
-          "ui-vendor": ["@gardenfi/garden-book", "framer-motion"],
-          "wallet-vendor": ["@gardenfi/wallet-connectors", "wagmi", "viem"],
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            const dirs = id.split("node_modules/")[1].split("/");
+            if (dirs[0].startsWith("@")) {
+              return dirs.slice(0, 2).join("/");
+            }
+            return dirs[0];
+          }
         },
       },
     },

@@ -6,11 +6,15 @@ import { Portal } from "../../Portal";
 interface TooltipWrapperProps {
   children: ReactNode;
   targetRef: React.RefObject<HTMLElement>;
+  offsetY?: number;
+  offsetX?: number;
 }
 
 export const TooltipWrapper: FC<TooltipWrapperProps> = ({
   children,
   targetRef,
+  offsetY = 16,
+  offsetX = 10,
 }) => {
   const [position, setPosition] = useState<{ top: number; left: number }>({
     top: 0,
@@ -27,8 +31,8 @@ export const TooltipWrapper: FC<TooltipWrapperProps> = ({
       if (!rect) return;
 
       setPosition({
-        top: rect.top - 16,
-        left: rect.right + 10,
+        top: rect.top - offsetY,
+        left: rect.right + offsetX,
       });
     };
 

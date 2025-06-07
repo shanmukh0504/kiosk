@@ -1,7 +1,12 @@
 import { Typography } from "@gardenfi/garden-book";
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { Bar, BarChart, XAxis, ResponsiveContainer, BarProps } from "recharts";
-import { ChartContainer, ChartConfig } from "../../../common/Chart";
+import {
+  ChartContainer,
+  ChartConfig,
+  ChartTooltip,
+} from "../../../common/Chart";
 import { formatAmount } from "../../../utils/utils";
 
 const chartConfig = {
@@ -21,6 +26,7 @@ export const EarningsToolTip = ({
   earningRate,
   earningsData,
 }: TooltipProps) => {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8, y: -10 }}
@@ -57,7 +63,21 @@ export const EarningsToolTip = ({
         >
           <Typography size="h5" weight="medium">
             <ResponsiveContainer width="100%" height="105%">
-              <BarChart data={earningsData ?? []} barGap={20}>
+              <BarChart
+                data={earningsData ?? []}
+                barGap={20}
+                onMouseMove={(state: {
+                  isTooltipActive?: boolean;
+                  activeTooltipIndex?: number;
+                }) => {
+                  if (state.isTooltipActive) {
+                    setActiveIndex(state.activeTooltipIndex ?? null);
+                  } else {
+                    setActiveIndex(null);
+                  }
+                }}
+                onMouseLeave={() => setActiveIndex(null)}
+              >
                 <XAxis
                   dataKey="epoch"
                   tickLine={false}
@@ -69,20 +89,41 @@ export const EarningsToolTip = ({
                     fontFamily: "Satoshi",
                   }}
                 />
+                <ChartTooltip
+                  cursor={false}
+                  content={({ payload }) => {
+                    if (!payload?.[0]?.value) return null;
+                    return (
+                      <div className="rounded-md bg-white/50 px-2 py-1">
+                        <Typography size="h5" weight="medium">
+                          ${formatAmount(Number(payload[0].value), 0, 2)}
+                        </Typography>
+                      </div>
+                    );
+                  }}
+                  label={false}
+                />
                 <Bar
                   dataKey="earnings"
-                  fill="#E5E7EB"
+                  fill="#F3F4F6"
                   barSize={16}
                   shape={(props: BarProps) => {
                     const { x, y, width, height, index } = props;
                     const isLatest = index === (earningsData?.length ?? 0) - 1;
+                    const isActive = index === activeIndex;
                     return (
                       <rect
                         x={x}
                         y={y}
                         width={width}
                         height={height}
-                        fill={isLatest ? "#F7CFDB" : "#E5E7EB"}
+                        fill={
+                          isActive
+                            ? "#E36492"
+                            : isLatest
+                              ? "#F7CFDB"
+                              : "#F3F4F6"
+                        }
                         rx={4}
                       />
                     );

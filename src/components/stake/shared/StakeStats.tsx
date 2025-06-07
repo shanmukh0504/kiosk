@@ -1,5 +1,6 @@
 import { Typography } from "@gardenfi/garden-book";
-import { FC, ReactNode, useState } from "react";
+import React, { FC, ReactNode, useState } from "react";
+import { TooltipWrapper } from "./ToolTipWrapper";
 
 type props = {
   title: ReactNode;
@@ -8,6 +9,7 @@ type props = {
   isPink?: boolean;
   className?: string;
   toolTip?: ReactNode;
+  targetRef?: React.RefObject<HTMLDivElement>;
 };
 
 export const StakeStats: FC<props> = ({
@@ -17,6 +19,7 @@ export const StakeStats: FC<props> = ({
   isPink = false,
   className,
   toolTip,
+  targetRef,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -47,15 +50,21 @@ export const StakeStats: FC<props> = ({
       >
         {title}
       </Typography>
-      <Typography
-        size={valueSize}
-        breakpoints={valueBreakpoints}
-        weight={size === "xs" ? "medium" : size === "sm" ? "medium" : "bold"}
-        className={`${textColor} whitespace-nowrap`}
-      >
-        {value}
-      </Typography>
-      {isHovered && toolTip}
+      <span ref={targetRef} className="inline-block cursor-pointer">
+        <Typography
+          size={valueSize}
+          breakpoints={valueBreakpoints}
+          weight={size === "xs" ? "medium" : size === "sm" ? "medium" : "bold"}
+          className={`${textColor} whitespace-nowrap`}
+        >
+          {value}
+        </Typography>
+      </span>
+      {isHovered && targetRef && (
+        <TooltipWrapper offsetX={10} offsetY={12} targetRef={targetRef}>
+          {toolTip}
+        </TooltipWrapper>
+      )}
     </div>
   );
 };

@@ -4,7 +4,7 @@ import {
   KeyboardUpIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { FC, useState } from "react";
+import { FC, useRef, useState } from "react";
 import {
   StakePositionStatus,
   stakeStore,
@@ -17,7 +17,7 @@ import { modalNames, modalStore } from "../../../store/modalStore";
 import { StakeStats } from "../shared/StakeStats";
 import { UnstakeAndRestake } from "./UnstakeAndRestake";
 import { AnimatePresence, motion } from "framer-motion";
-// import { RewardsToolTip } from "../shared/RewardsToolTip";
+import { RewardsToolTip } from "../shared/RewardsToolTip";
 
 type props = {
   stakePos: StakingPosition;
@@ -25,6 +25,7 @@ type props = {
 
 export const StakeDetails: FC<props> = ({ stakePos }) => {
   const [showDetails, setShowDetails] = useState(false);
+  const targetRef = useRef<HTMLDivElement>(null);
 
   const { setOpenModal } = modalStore();
   const { stakeApys, stakeRewards } = stakeStore();
@@ -204,12 +205,13 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
 
                 <div className="relative">
                   <StakeStats
+                    targetRef={targetRef}
                     title={"Rewards"}
                     value={`~$${reward}`}
                     size="xs"
-                    // toolTip={
-                    //   <RewardsToolTip seed={seedReward} cbBtc={stakeReward} />
-                    // }
+                    toolTip={
+                      <RewardsToolTip seed={seedReward} cbBtc={stakeReward} />
+                    }
                   />
                 </div>
               </div>
