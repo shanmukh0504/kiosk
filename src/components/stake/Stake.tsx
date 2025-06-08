@@ -24,11 +24,11 @@ export const Stake: FC = () => {
       </div>
       {stakePosData && stakePosData.length > 0 && (
         <AnimatePresence>
-          <>
+          <div className="z-0 flex flex-col gap-6">
             <StakeRewards />
             <StakeOverview />
             <StakePositions />
-          </>
+          </div>
         </AnimatePresence>
       )}
     </div>

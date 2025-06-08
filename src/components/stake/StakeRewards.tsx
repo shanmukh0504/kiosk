@@ -91,42 +91,29 @@ export const StakeRewards = () => {
   };
 
   const earningsData = useMemo(() => {
-    if (!epochEarnings) return [];
-    return epochEarnings.slice(-8).map((epoch, index) => {
-      const epochNumber = epochEarnings.length - (8 - index - 1);
-      return {
-        epoch: epochNumber,
-        earnings: Number(epoch.rewards_value_usd),
-      };
-    });
-  }, [epochEarnings]);
+    if (!epochEarnings || !epochData) return [];
+    return epochEarnings
+      .slice(0, 8)
+      .reverse()
+      .map((epoch, index) => {
+        const epochNumber = epochData.length - 7 + index;
+        return {
+          epoch: epochNumber,
+          earnings: Number(epoch.rewards_value_usd),
+        };
+      });
+  }, [epochEarnings, epochData]);
 
   const earningRate = useMemo(() => {
     if (!epochEarnings || epochEarnings.length < 2) return 0;
 
-    const latestEpoch = Number(
-      epochEarnings[epochEarnings.length - 1].rewards_value_usd
-    );
-    const previousEpoch = Number(
-      epochEarnings[epochEarnings.length - 2].rewards_value_usd
-    );
+    const latestEpoch = Number(epochEarnings[0].rewards_value_usd);
+    const previousEpoch = Number(epochEarnings[1].rewards_value_usd);
 
     if (previousEpoch === 0) return 0;
 
     return ((latestEpoch - previousEpoch) / previousEpoch) * 100;
   }, [epochEarnings]);
-
-  const earnings = useMemo(() => {
-    if (
-      !stakeRewards ||
-      !stakeRewards.rewardResponse ||
-      !stakeRewards.rewardResponse.epochs
-    )
-      return 0;
-    const epochs = stakeRewards.rewardResponse.epochs;
-    if (!epochs.length) return 0;
-    return Number(epochs[epochs.length - 1].rewards_value_usd);
-  }, [stakeRewards]);
 
   return (
     <motion.div
@@ -171,7 +158,7 @@ export const StakeRewards = () => {
                   toolTip={
                     <TooltipWrapper targetRef={statRef}>
                       <EarningsToolTip
-                        earnings={earnings}
+                        earnings={earningsData?.at(-1)?.earnings ?? 0}
                         earningRate={earningRate}
                         earningsData={earningsData?.slice(0, 8) ?? []}
                       />
@@ -196,22 +183,24 @@ export const StakeRewards = () => {
               />
             </div>
           </div>
-          <Button
-            variant={
-              isClaimLoading || availableReward === 0 ? "disabled" : "primary"
-            }
-            size="sm"
-            className={`w-full md:w-[120px] ${
-              isClaimLoading || !availableReward
-                ? "flex items-center justify-center self-center transition-colors duration-500"
-                : ""
-            }`}
-            onClick={handleRewardClick}
-            disabled={isClaimLoading || !availableReward}
-            loading={isClaimLoading}
-          >
-            {isClaimLoading ? "Claiming..." : "Claim"}
-          </Button>
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <Button
+              variant={
+                isClaimLoading || availableReward === 0 ? "disabled" : "primary"
+              }
+              size="sm"
+              className={`w-full md:w-[120px] ${
+                isClaimLoading || !availableReward
+                  ? "flex items-center justify-center self-center transition-colors duration-500"
+                  : ""
+              }`}
+              onClick={handleRewardClick}
+              disabled={isClaimLoading || !availableReward}
+              loading={isClaimLoading}
+            >
+              {isClaimLoading ? "Claiming..." : "Claim"}
+            </Button>
+          </div>
         </div>
       </div>
     </motion.div>

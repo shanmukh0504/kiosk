@@ -14,7 +14,7 @@ export const GardenPass = () => {
       animate="animate"
       exit="exit"
       transition={springTransition}
-      className="relative flex max-h-[384px] min-h-[384px] items-center justify-start overflow-hidden rounded-xl"
+      className="relative -z-10 flex max-h-[384px] min-h-[384px] items-center justify-start overflow-hidden rounded-xl"
     >
       <motion.div
         variants={gardenPassContentVariants}
