@@ -7,6 +7,7 @@ import { Modal } from "../components/modal/Modal";
 import { Notification } from "../common/Notification";
 import { ViewPortListener } from "../common/ViewPortListener";
 import { assetInfoStore } from "../store/assetInfoStore";
+import { network } from "../constants/constants";
 
 type LayoutProps = {
   children: ReactNode;
@@ -32,7 +33,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
           {children}
         </div>
         <Notification />
-        <Footer className={"mt-auto"} />
+        <Footer className={"mt-auto"} network={network} />
       </div>
     </div>
   );
