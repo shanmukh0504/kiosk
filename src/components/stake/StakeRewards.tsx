@@ -153,7 +153,7 @@ export const StakeRewards = () => {
                   title={"Earnings"}
                   info
                   showStat
-                  value={formatAmount(earningRate ?? 0, 0, 2)}
+                  value={`${formatAmount(earningRate ?? 0, 0, 2, true)}%`}
                   size="sm"
                   toolTip={
                     <TooltipWrapper targetRef={statRef}>

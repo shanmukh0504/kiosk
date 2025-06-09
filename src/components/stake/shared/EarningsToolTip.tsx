@@ -53,7 +53,9 @@ export const EarningsToolTip = ({
                 : "!text-red-500"
             }
           >
-            {formatAmount(earningRate ?? 0, 0, 2)}%{" "}
+            {Number(earningRate ?? 0) > 0
+              ? `+${formatAmount(earningRate ?? 0, 0, 2)}%`
+              : `-${formatAmount(earningRate ?? 0, 0, 2)}%`}{" "}
             <span className="text-mid-grey">vs previous epoch</span>
           </Typography>
         </div>

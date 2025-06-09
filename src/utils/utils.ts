@@ -59,9 +59,10 @@ export const getDayDifference = (date: string) => {
 export const formatAmount = (
   amount: string | number | bigint,
   decimals: number,
-  toFixed = 4
+  toFixed = 4,
+  modulus = false
 ) => {
-  const bigAmount = new BigNumber(amount);
+  const bigAmount = new BigNumber(amount).abs();
   if (bigAmount.isZero()) return 0;
 
   const value = bigAmount.dividedBy(10 ** decimals);
@@ -77,7 +78,7 @@ export const formatAmount = (
     temp = value.toFixed(temp.split(".")[1].length + 2, BigNumber.ROUND_DOWN);
   }
 
-  return Number(temp);
+  return modulus && Number(temp) < 0 ? Number(temp) * -1 : Number(temp);
 };
 
 export const isCurrentRoute = (route: string) =>
