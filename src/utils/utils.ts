@@ -16,6 +16,11 @@ export const getCurrentTheme = () => {
   return THEMES.swap;
 };
 
+export const capitalizeChain = (chainKey: string) => {
+  if (chainKey === "evm") return "EVM";
+  return chainKey.charAt(0).toUpperCase() + chainKey.slice(1);
+};
+
 /**
  * Gets the {Asset} from assets in store using the swap object
  * @param {Swap} swap

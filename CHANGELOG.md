@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.3]
+
+### Added
+
+- Added a new feature to delete orders from the pending orders list.
+
 ## [1.0.2]
 
 ### Added
