@@ -61,7 +61,6 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
         const res = await handleEVMConnect(connectors.EVM, connectAsync);
         if (res.error) {
           setLoading(false);
-          handleClose();
           return;
         }
       }
@@ -70,14 +69,12 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
     if (checked[BlockchainType.Bitcoin]) {
       if (!connectors.Bitcoin) {
         setLoading(false);
-        handleClose();
         return;
       }
 
       const bitcoinConnectRes = await connect(connectors.Bitcoin);
       if (bitcoinConnectRes.error) {
         setLoading(false);
-        handleClose();
         return;
       }
     }
@@ -85,7 +82,6 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
     if (checked[BlockchainType.Starknet]) {
       if (!connectors.Starknet) {
         setLoading(false);
-        handleClose();
         return;
       }
       const starknetConnectRes = await handleStarknetConnect(
@@ -96,11 +92,11 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
       );
       if (starknetConnectRes.error) {
         setLoading(false);
-        handleClose();
         return;
       }
     }
     setLoading(false);
+    handleClose();
   };
 
   return (

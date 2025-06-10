@@ -22,6 +22,7 @@ export enum IOType {
 
 export const LOCAL_STORAGE_KEYS = {
   notification: "notificationId",
+  deletedOrders: "deleted_orders",
 };
 
 export const BREAKPOINTS = {
@@ -81,6 +82,7 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "hyperliquid",
   "starknet",
   "unichain",
+  "corn",
 ] as const;
 
 export const QUERY_PARAMS = {

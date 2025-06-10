@@ -1,7 +1,7 @@
 import { FC, useMemo } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { SwapInfo } from "../../common/SwapInfo";
-import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
+import { MatchedOrder } from "@gardenfi/orderbook";
 import {
   formatAmount,
   getAssetFromSwap,
@@ -11,11 +11,13 @@ import { OrderStatus } from "@gardenfi/core";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
 import orderInProgressStore from "../../store/orderInProgressStore";
+import { BTC } from "../../store/swapStore";
 
 type TransactionProps = {
   order: MatchedOrder;
   status?: OrderStatus;
   isLast: boolean;
+  onClick?: () => void;
 };
 
 enum StatusLabel {
@@ -57,20 +59,21 @@ export const TransactionRow: FC<TransactionProps> = ({
   order,
   status,
   isLast,
+  onClick,
 }) => {
   const { create_order, source_swap, destination_swap } = order;
-  const { assets } = assetInfoStore();
+  const { allAssets } = assetInfoStore();
   const { setOrder, setIsOpen } = orderInProgressStore();
   const { setCloseModal } = modalStore();
   // const { evmInitiate } = useGarden();
 
   const sendAsset = useMemo(
-    () => getAssetFromSwap(source_swap, assets),
-    [source_swap, assets]
+    () => getAssetFromSwap(source_swap, allAssets),
+    [source_swap, allAssets]
   );
   const receiveAsset = useMemo(
-    () => getAssetFromSwap(destination_swap, assets),
-    [destination_swap, assets]
+    () => getAssetFromSwap(destination_swap, allAssets),
+    [destination_swap, allAssets]
   );
   const statusLabel = useMemo(
     () => status && getOrderStatusLabel(status),
@@ -82,7 +85,7 @@ export const TransactionRow: FC<TransactionProps> = ({
       formatAmount(
         create_order.source_amount,
         sendAsset?.decimals ?? 0,
-        isBitcoin(sendAsset.chain) ? sendAsset.decimals : undefined
+        Math.min(sendAsset.decimals, BTC.decimals)
       ),
     [create_order.source_amount, sendAsset]
   );
@@ -92,7 +95,7 @@ export const TransactionRow: FC<TransactionProps> = ({
       formatAmount(
         create_order.destination_amount,
         receiveAsset?.decimals ?? 0,
-        isBitcoin(receiveAsset.chain) ? receiveAsset.decimals : undefined
+        Math.min(receiveAsset.decimals, BTC.decimals)
       ),
     [create_order.destination_amount, receiveAsset]
   );
@@ -104,6 +107,7 @@ export const TransactionRow: FC<TransactionProps> = ({
   const handleTransactionClick = async () => {
     if (statusLabel !== StatusLabel.Expired && status) {
       setOrder({ ...order, status: status });
+      onClick?.();
       setIsOpen(true);
       setCloseModal(modalNames.transactions);
     }

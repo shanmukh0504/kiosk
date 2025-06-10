@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { swapStore } from "../store/swapStore";
 import { IOType, network } from "../constants/constants";
-import { Asset, isBitcoin } from "@gardenfi/orderbook";
+import { Asset, Chain, isBitcoin } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
 import {
@@ -157,7 +157,6 @@ export const useSwap = () => {
           isExactOut: boolean
         ) => {
           if (!getQuote || isSwapping) return;
-
           setIsFetchingQuote({ input: isExactOut, output: !isExactOut });
 
           if (controller.current) controller.current.abort();
@@ -204,7 +203,6 @@ export const useSwap = () => {
 
           const [_strategy, quoteAmount] = Object.entries(quote.val.quotes)[0];
           setStrategy(_strategy);
-          setIsFetchingQuote({ input: false, output: false });
           const assetToChange = isExactOut ? fromAsset : toAsset;
           const quoteAmountInDecimals = new BigNumber(Number(quoteAmount)).div(
             Math.pow(10, assetToChange.decimals)
@@ -215,6 +213,7 @@ export const useSwap = () => {
               quoteAmountInDecimals.toFixed(8, BigNumber.ROUND_DOWN)
             ).toString()
           );
+          setIsFetchingQuote({ input: false, output: false });
 
           const inputAmount = isExactOut
             ? quoteAmountInDecimals
@@ -344,28 +343,30 @@ export const useSwap = () => {
     fetchQuote(amount, inputAsset, outputAsset, true);
   };
 
-  const needsWalletConnection = useMemo(() => {
-    if (error.liquidityError) return null;
-    if (!inputAsset || !outputAsset || !inputAmount || !outputAmount)
-      return null;
-    if (!evmAddress && !starknetAddress && !account) return "evm";
-    if (isEVM(inputAsset.chain) && !evmAddress) return "evm";
-    if (isStarknet(inputAsset.chain) && !starknetAddress) return "starknet";
+  const needsWalletConnection = useMemo<null | string>(() => {
+    if (!inputAsset || !outputAsset) return null;
 
-    if (isEVM(outputAsset.chain) && !evmAddress) return "evm";
-    if (isStarknet(outputAsset.chain) && !starknetAddress) return "starknet";
+    const chainRequirements = {
+      evm: {
+        check: (chain: Chain) => isEVM(chain),
+        address: evmAddress,
+      },
+      starknet: {
+        check: (chain: Chain) => isStarknet(chain),
+        address: starknetAddress,
+      },
+    };
+
+    for (const [chainKey, { check, address }] of Object.entries(
+      chainRequirements
+    )) {
+      if ((check(inputAsset.chain) || check(outputAsset.chain)) && !address) {
+        return chainKey;
+      }
+    }
 
     return null;
-  }, [
-    inputAsset,
-    outputAsset,
-    evmAddress,
-    starknetAddress,
-    account,
-    error.liquidityError,
-    inputAmount,
-    outputAmount,
-  ]);
+  }, [inputAsset, outputAsset, evmAddress, starknetAddress]);
 
   const handleSwapClick = async () => {
     if (needsWalletConnection) {

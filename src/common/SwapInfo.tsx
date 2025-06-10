@@ -19,12 +19,14 @@ export const SwapInfo: FC<SwapInfoProps> = ({
   receiveAmount,
   equalSplit = false,
 }) => {
-  const { chains } = assetInfoStore();
+  const { allChains } = assetInfoStore();
   const sendChain =
-    chains && !isBitcoin(sendAsset.chain) ? chains[sendAsset.chain] : undefined;
+    allChains && !isBitcoin(sendAsset.chain)
+      ? allChains[sendAsset.chain]
+      : undefined;
   const receiveChain =
-    chains && !isBitcoin(receiveAsset.chain)
-      ? chains[receiveAsset.chain]
+    allChains && !isBitcoin(receiveAsset.chain)
+      ? allChains[receiveAsset.chain]
       : undefined;
 
   return (

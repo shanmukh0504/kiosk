@@ -1,10 +1,5 @@
 import BigNumber from "bignumber.js";
-import {
-  INTERNAL_ROUTES,
-  LOCAL_STORAGE_KEYS,
-  QUERY_PARAMS,
-  THEMES,
-} from "../constants/constants";
+import { INTERNAL_ROUTES, QUERY_PARAMS, THEMES } from "../constants/constants";
 import { Assets } from "../store/assetInfoStore";
 import { Swap } from "@gardenfi/orderbook";
 
@@ -19,6 +14,11 @@ export const getCurrentTheme = () => {
   if (INTERNAL_ROUTES.stake.path.includes(path)) return THEMES.stake;
 
   return THEMES.swap;
+};
+
+export const capitalizeChain = (chainKey: string) => {
+  if (chainKey === "evm") return "EVM";
+  return chainKey.charAt(0).toUpperCase() + chainKey.slice(1);
 };
 
 /**
@@ -83,15 +83,22 @@ export const formatAmount = (
 export const isCurrentRoute = (route: string) =>
   window.location.pathname === route;
 
-export const ClearLocalStorageExceptNotification = () => {
-  const notificationId = localStorage.getItem(LOCAL_STORAGE_KEYS.notification);
+export const clearLocalStorageExcept = (keysToKeep: string[]) => {
+  const preservedData: Record<string, string | null> = {};
+
+  keysToKeep.forEach((key) => {
+    preservedData[key] = localStorage.getItem(key);
+  });
 
   localStorage.clear();
 
-  if (notificationId) {
-    localStorage.setItem(LOCAL_STORAGE_KEYS.notification, notificationId);
-  }
+  keysToKeep.forEach((key) => {
+    if (preservedData[key] !== null) {
+      localStorage.setItem(key, preservedData[key] as string);
+    }
+  });
 };
+
 export const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 };

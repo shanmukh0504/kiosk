@@ -7,6 +7,7 @@ import { Modal } from "../components/modal/Modal";
 import { Notification } from "../common/Notification";
 import { ViewPortListener } from "../common/ViewPortListener";
 import { assetInfoStore } from "../store/assetInfoStore";
+import { network } from "../constants/constants";
 
 type LayoutProps = {
   children: ReactNode;
@@ -31,14 +32,8 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
           <Navbar />
           {children}
         </div>
-        <Notification
-          id="unichain-launch"
-          title="We are now live on Unichain! 🦄"
-          description="Swap in and out of Unichain in as little as 30 seconds."
-          image="https://wbtc-garden.ghost.io/content/images/2025/05/Unichain-2.png"
-          link="https://garden.finance/blog/bitcoin-to-unichain-in-30-seconds-2"
-        />
-        <Footer className={"mt-auto"} />
+        <Notification />
+        <Footer className={"mt-auto"} network={network} />
       </div>
     </div>
   );

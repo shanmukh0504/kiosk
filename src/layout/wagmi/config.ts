@@ -16,6 +16,7 @@ import {
   citreaTestnet,
   monadTestnet,
   Chain,
+  corn,
 } from "wagmi/chains";
 
 import { injected, metaMask } from "wagmi/connectors";
@@ -58,6 +59,7 @@ export const SupportedChains = [
   monadTestnet,
   hyperliquidTestnet,
   hyperliquid,
+  corn,
 ] as const;
 
 export const config = createConfig({
@@ -80,5 +82,6 @@ export const config = createConfig({
     [monadTestnet.id]: http(),
     [hyperliquidTestnet.id]: http(),
     [hyperliquid.id]: http(),
+    [corn.id]: http(),
   },
 });
