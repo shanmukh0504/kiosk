@@ -13,7 +13,7 @@
     "@catalogfi/wallets": "^0.2.59",
     "@chainflip/sdk": "^1.8.3",
     "@gardenfi/core": "2.1.11",
-    "@gardenfi/garden-book": "^0.1.88",
+    "@gardenfi/garden-book": "^0.1.90",
     "@gardenfi/orderbook": "2.1.7",
     "@gardenfi/react-hooks": "2.1.12",
     "@gardenfi/utils": "2.1.3",

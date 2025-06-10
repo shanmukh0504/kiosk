@@ -7,6 +7,7 @@ import { Modal } from "../components/modal/Modal";
 import { Notification } from "../common/Notification";
 import { ViewPortListener } from "../common/ViewPortListener";
 import { assetInfoStore } from "../store/assetInfoStore";
+import { network } from "../constants/constants";
 
 type LayoutProps = {
   children: ReactNode;
@@ -31,14 +32,8 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
           <Navbar />
           {children}
         </div>
-        <Notification
-          id="corn-launch"
-          title="We now support Corn! 🌽"
-          description="Swap in and out of Corn in as little as 30 seconds."
-          image="https://garden-finance.imgix.net/blog_banner/corn_blog.png"
-          link="https://garden.finance/blog/bitcoin-to-corn-in-30-seconds"
-        />
-        <Footer className={"mt-auto"} />
+        <Notification />
+        <Footer className={"mt-auto"} network={network} />
       </div>
     </div>
   );

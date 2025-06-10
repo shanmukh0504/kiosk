@@ -1,9 +1,11 @@
 import { CloseIcon, Typography } from "@gardenfi/garden-book";
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { LOCAL_STORAGE_KEYS } from "../constants/constants";
+import axios from "axios";
+import { API } from "../constants/api";
 
-type NotificationProps = {
+export type NotificationProps = {
   id: string;
   title: string;
   description: string;
@@ -11,36 +13,53 @@ type NotificationProps = {
   link: string;
 };
 
-export const Notification: FC<NotificationProps> = ({
-  id,
-  title,
-  description,
-  image,
-  link,
-}) => {
+export const Notification = () => {
   const [visible, setVisible] = useState(false);
+  const [notification, setNotification] = useState<NotificationProps | null>(
+    null
+  );
 
   useEffect(() => {
+    const fetchNotification = async () => {
+      try {
+        const response = await axios.get(API().data.notification().toString());
+        if (response.data) {
+          setNotification(response.data.result);
+        }
+      } catch (error) {
+        console.log("Error getting notification", error);
+      }
+    };
+    fetchNotification();
+  }, []);
+
+  useEffect(() => {
+    if (!notification) {
+      setVisible(false);
+      return;
+    }
     const savedNotificationId = localStorage.getItem(
       LOCAL_STORAGE_KEYS.notification
     );
 
-    if (savedNotificationId !== id) setVisible(true);
-  }, [id]);
+    if (savedNotificationId !== notification?.id) setVisible(true);
+  }, [notification?.id]);
 
   const handleClose = () => {
-    localStorage.setItem(LOCAL_STORAGE_KEYS.notification, id);
+    if (notification) {
+      localStorage.setItem(LOCAL_STORAGE_KEYS.notification, notification?.id);
+    }
     setVisible(false);
   };
 
   return (
     <div
-      className={`fixed bottom-5 left-5 right-5 z-40 bg-white/50 p-4 backdrop-blur-[20px] transition-[border-radius,width,height,transform] duration-300 ease-cubic-in-out sm:bottom-10 sm:left-10 ${
+      className={`fixed bottom-10 left-2 right-2 z-40 bg-white/50 p-4 backdrop-blur-[20px] transition-[border-radius,width,height,transform] duration-300 ease-cubic-in-out sm:bottom-10 sm:left-10 ${
         visible
           ? "h-24 w-[344px] rounded-2xl sm:w-[460px]"
           : "h-12 w-12 cursor-pointer rounded-3xl hover:scale-105"
       }`}
-      onClick={() => !visible && setVisible(true)}
+      onClick={() => notification && !visible && setVisible(true)}
     >
       {/* TODO: Replace with bell icon once added to garden-book */}
       <div
@@ -65,40 +84,45 @@ export const Notification: FC<NotificationProps> = ({
           />
         </svg>
       </div>
-      <div
-        className={`flex justify-between gap-3 ${
-          visible
-            ? // On open, fade in the content once the notification has expanded
-              "h-full w-full opacity-100 transition-opacity delay-300 duration-300"
-            : // On close, fade out the content, then the height and width
-              "pointer-events-none h-0 w-0 opacity-0 [transition:opacity_150ms,width_150ms_150ms,height_150ms_150ms]"
-        }`}
-      >
-        <Link to={link} target="_blank">
-          <img src={image} className="h-16 w-[113px] rounded-lg object-cover" />
-        </Link>
-        <div className={`flex gap-1`}>
-          <Link
-            to={link}
-            target="_blank"
-            className="flex w-fit max-w-[306px] flex-col gap-1 leading-4"
-          >
-            <Typography size="h4" weight="bold">
-              {title}
-            </Typography>
-            <Typography
-              className="whitespace-wrap mb-1 inline-block overflow-hidden text-ellipsis text-mid-grey"
-              size="h5"
-              weight="medium"
-            >
-              {description}
-            </Typography>
+      {notification && (
+        <div
+          className={`flex justify-between gap-3 ${
+            visible
+              ? // On open, fade in the content once the notification has expanded
+                "h-full w-full opacity-100 transition-opacity delay-300 duration-300"
+              : // On close, fade out the content, then the height and width
+                "pointer-events-none h-0 w-0 opacity-0 [transition:opacity_150ms,width_150ms_150ms,height_150ms_150ms]"
+          }`}
+        >
+          <Link to={notification.link} target="_blank">
+            <img
+              src={notification.image}
+              className="h-16 w-[113px] rounded-lg object-cover"
+            />
           </Link>
-          <div className="flex h-5 w-[22px] items-center justify-center">
-            <CloseIcon className="cursor-pointer" onClick={handleClose} />
+          <div className={`flex gap-1`}>
+            <Link
+              to={notification.link}
+              target="_blank"
+              className="flex w-fit max-w-[306px] flex-col gap-1 leading-4"
+            >
+              <Typography size="h4" weight="bold">
+                {notification.title}
+              </Typography>
+              <Typography
+                className="whitespace-wrap mb-1 inline-block overflow-hidden text-ellipsis text-mid-grey"
+                size="h5"
+                weight="medium"
+              >
+                {notification.description}
+              </Typography>
+            </Link>
+            <div className="flex h-5 w-[22px] items-center justify-center">
+              <CloseIcon className="cursor-pointer" onClick={handleClose} />
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
