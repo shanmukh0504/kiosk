@@ -123,7 +123,7 @@ export const TransactionRow: FC<TransactionProps> = ({
     // }
   };
 
-  if (!sendAsset || !receiveAsset) return;
+  if (!sendAsset || !receiveAsset) return null;
 
   return (
     <div>
