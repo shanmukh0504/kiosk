@@ -17,6 +17,7 @@ type TransactionProps = {
   order: MatchedOrder;
   status?: OrderStatus;
   isLast: boolean;
+  isFirst: boolean;
   onClick?: () => void;
 };
 
@@ -60,6 +61,7 @@ export const TransactionRow: FC<TransactionProps> = ({
   status,
   isLast,
   onClick,
+  isFirst,
 }) => {
   const { create_order, source_swap, destination_swap } = order;
   const { allAssets } = assetInfoStore();
@@ -121,33 +123,36 @@ export const TransactionRow: FC<TransactionProps> = ({
     // }
   };
 
-  if (!sendAsset || !receiveAsset) return null;
+  if (!sendAsset || !receiveAsset) return;
 
   return (
-    <div
-      className={`flex flex-col gap-1 p-4 ${isLast ? "rounded-b-2xl" : ""} ${
-        statusLabel !== StatusLabel.Expired
-          ? "cursor-pointer hover:bg-white/50"
-          : ""
-      }`}
-      onClick={handleTransactionClick}
-    >
-      <div className={`flex flex-col gap-1`}>
-        {sendAmount && receiveAmount && (
-          <SwapInfo
-            sendAsset={sendAsset}
-            receiveAsset={receiveAsset}
-            sendAmount={sendAmount}
-            receiveAmount={receiveAmount}
-          />
-        )}
-        <div className="flex justify-between">
-          <Typography size="h5" weight="medium">
-            {statusLabel}
-          </Typography>
-          <Typography size="h5" weight="medium">
-            {dayDifference}
-          </Typography>
+    <div>
+      {!isFirst && <div className="h-px w-full bg-white/50"></div>}
+      <div
+        className={`flex flex-col gap-1 p-4 ${isLast ? "rounded-b-2xl" : ""} ${
+          statusLabel !== StatusLabel.Expired
+            ? "cursor-pointer hover:bg-white/50"
+            : ""
+        }`}
+        onClick={handleTransactionClick}
+      >
+        <div className={`flex flex-col gap-1`}>
+          {sendAmount && receiveAmount && (
+            <SwapInfo
+              sendAsset={sendAsset}
+              receiveAsset={receiveAsset}
+              sendAmount={sendAmount}
+              receiveAmount={receiveAmount}
+            />
+          )}
+          <div className="flex justify-between">
+            <Typography size="h5" weight="medium">
+              {statusLabel}
+            </Typography>
+            <Typography size="h5" weight="medium">
+              {dayDifference}
+            </Typography>
+          </div>
         </div>
       </div>
     </div>

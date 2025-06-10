@@ -236,7 +236,6 @@ export const useOrderStatus = () => {
 
   useEffect(() => {
     if (!order) return;
-    console.log(order.status);
     if (pendingOrders.length) {
       //check in pending orders and update status
       const orderFromPending = pendingOrders.find(

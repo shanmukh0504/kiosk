@@ -10,7 +10,8 @@ type TransactionHistoryStoreState = {
     orderBook: IOrderbook,
     connectedWallets: {
       [key in BlockchainType]: string;
-    }
+    },
+    append?: boolean
   ) => Promise<void>;
   loadMore: (
     orderBook: IOrderbook,
@@ -31,10 +32,11 @@ const transactionHistoryStore = create<TransactionHistoryStoreState>(
       orderBook: IOrderbook,
       connectedWallets: {
         [key in BlockchainType]: string;
-      }
+      },
+      append = false
     ) => {
-      set({ isLoading: true });
-      const transactions: MatchedOrder[] = [];
+      if (!append) set({ isLoading: true });
+      const newTransactions: MatchedOrder[] = [];
       let totalItems = 0;
 
       for (const [, address] of Object.entries(connectedWallets)) {
@@ -47,15 +49,31 @@ const transactionHistoryStore = create<TransactionHistoryStoreState>(
           continue;
         }
         totalItems += txns.val.total_items;
-        transactions.push(...txns.val.data);
+        newTransactions.push(...txns.val.data);
       }
 
-      //sort by time, newest first
-      transactions.sort(
+      newTransactions.sort(
         (a, b) =>
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
-      set({ transactions, isLoading: false, totalItems });
+
+      set((state) => ({
+        transactions: append
+          ? [
+              ...state.transactions,
+              ...newTransactions.filter(
+                (t) =>
+                  !state.transactions.some(
+                    (existing) =>
+                      existing.create_order.create_id ===
+                      t.create_order.create_id
+                  )
+              ),
+            ]
+          : newTransactions,
+        isLoading: false,
+        totalItems,
+      }));
     },
 
     loadMore: async (
@@ -65,7 +83,7 @@ const transactionHistoryStore = create<TransactionHistoryStoreState>(
       }
     ) => {
       set((state) => ({ perPage: state.perPage + 4 }));
-      get().fetchTransactions(orderBook, connectedWallets);
+      await get().fetchTransactions(orderBook, connectedWallets, true);
     },
   })
 );
