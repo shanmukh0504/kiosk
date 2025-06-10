@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.3]
+
+### Fixed
+
+- Optimized transaction loading to display new results without full rerender, and improved swap progress UI for refunded transactions.
+
 ## [1.0.2]
 
 ### Added

@@ -65,7 +65,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({
           </div>
 
           <div
-            className={`overflow-hidden transition-all duration-300 ease-in-out ${
+            className={`transition-all duration-300 ease-in-out ${
               dropdown ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
             }`}
           >
@@ -94,7 +94,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({
                         />
                       )}
                     {step.status === "completed" && (
-                      <span className="relative z-20 flex h-2 w-2 -translate-x-[3.5px] items-center justify-center rounded-full border border-dark-grey bg-white">
+                      <span className="relative z-20 flex h-2 w-2 flex-shrink-0 -translate-x-[3.5px] items-center justify-center rounded-full border border-dark-grey bg-white">
                         <RadioCheckedIcon className="absolute h-2 w-2" />
                       </span>
                     )}
@@ -105,7 +105,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({
                       <div className="h-2 w-2 -translate-x-[3.5px] rounded-full border-[1px] border-dark-grey" />
                     )}
                     {step.status === "cancel" && (
-                      <span className="border-error-red relative z-20 flex h-2 w-2 -translate-x-[3.5px] items-center justify-center rounded-full border bg-white">
+                      <span className="relative z-20 flex h-2 w-2 flex-shrink-0 -translate-x-[3.5px] items-center justify-center rounded-full border border-error-red bg-white">
                         <CancelIcon className="absolute h-2 w-2" />
                       </span>
                     )}
