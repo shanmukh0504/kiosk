@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { stakeStore, StakeType } from "../../store/stakeStore";
 import { StakeOverview } from "./StakeOverview";
 import { ToastContainer } from "../toast/Toast";
@@ -10,6 +10,7 @@ import { StakeRewards } from "./StakeRewards";
 
 export const Stake: FC = () => {
   const { stakePosData, stakeType } = stakeStore();
+  const [showDetails, setShowDetails] = useState(false);
 
   return (
     <div className="mb-8 mt-10 flex flex-col gap-6 sm:mb-16">
@@ -23,13 +24,16 @@ export const Stake: FC = () => {
         </div>
       </div>
       {stakePosData && stakePosData.length > 0 && (
-        <AnimatePresence>
-          <div className="z-0 flex flex-col gap-6">
+        <div className="z-0 flex flex-col">
+          <AnimatePresence>
             <StakeRewards />
-            <StakeOverview />
-            <StakePositions />
-          </div>
-        </AnimatePresence>
+            <StakeOverview
+              showDetails={showDetails}
+              setShowDetails={setShowDetails}
+            />
+            <StakePositions showDetails={showDetails} />
+          </AnimatePresence>
+        </div>
       )}
     </div>
   );

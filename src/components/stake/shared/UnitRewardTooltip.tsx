@@ -3,12 +3,12 @@ import { motion } from "framer-motion";
 import { STAKE_REWARD } from "../constants";
 import { Url } from "@gardenfi/utils";
 
-type TooltipProps = {
+type UnitRewardTooltipProps = {
   seed: number | null;
   cbBtc: number | null;
 };
 
-export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
+export const UnitRewardTooltip = ({ seed, cbBtc }: UnitRewardTooltipProps) => {
   const handleRedirect = (addressExplorer: Url, address: string) => {
     window.open(addressExplorer.endpoint("address").endpoint(address));
   };
@@ -23,10 +23,6 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
     >
       <div className="absolute mb-[15px] ml-4 mt-[-5px] h-[14px] w-[14px] rotate-45 rounded-sm bg-white sm:mb-0 sm:ml-[-5px] sm:mt-[15px]"></div>
       <div className="flex max-w-[257px] flex-col gap-2 rounded-2xl bg-white px-4 py-3 shadow-custom">
-        <Typography size="h5" weight="medium">
-          Total rewards represent the cumulative earnings so far, broken down by
-          token.
-        </Typography>
         <div className="flex flex-wrap items-center justify-between space-y-1">
           {cbBtc && cbBtc > 0 && (
             <div className="flex items-center gap-1">
@@ -36,7 +32,7 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
               <Typography
                 size="h4"
                 weight="medium"
-                className={`relative w-11 cursor-pointer before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
+                className={`relative cursor-pointer before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
                 onClick={() =>
                   handleRedirect(
                     STAKE_REWARD.CBBTC.EXPLORER,
@@ -61,7 +57,7 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
               <Typography
                 size="h4"
                 weight="medium"
-                className={`relative mr-2 w-9 cursor-pointer before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
+                className={`relative cursor-pointer before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
                 onClick={() =>
                   handleRedirect(
                     STAKE_REWARD.SEED.EXPLORER,

@@ -1,15 +1,22 @@
 import { KeyboardUpIcon, Typography } from "@gardenfi/garden-book";
 import { stakeStore } from "../../store/stakeStore";
 import { SEED_DECIMALS, TEN_THOUSAND } from "../../constants/stake";
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import { formatAmount } from "../../utils/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { TooltipWrapper } from "./shared/ToolTipWrapper";
 import { OverviewStats } from "./shared/OverviewStats";
 import { RewardsToolTip } from "./shared/RewardsToolTip";
 
-export const StakeOverview = () => {
-  const [showDetails, setShowDetails] = useState(false);
+type StakeOverviewProps = {
+  showDetails: boolean;
+  setShowDetails: (showDetails: boolean) => void;
+};
+
+export const StakeOverview = ({
+  showDetails,
+  setShowDetails,
+}: StakeOverviewProps) => {
   const statRef = useRef<HTMLDivElement>(null);
   const { totalStakedAmount, totalVotes, stakeRewards } = stakeStore();
 
@@ -23,9 +30,9 @@ export const StakeOverview = () => {
   return (
     <motion.div
       animate={{
-        scale: ["80%", "100%"],
-        margin: ["-10%", "0%"],
         opacity: ["0%", "100%"],
+        height: ["0%", "100%"],
+        marginTop: ["0%", "24px"],
         transition: {
           duration: 0.6,
           ease: "easeInOut",
@@ -36,17 +43,25 @@ export const StakeOverview = () => {
           },
         },
       }}
+      exit={{
+        marginTop: ["24px", "0%"],
+        opacity: ["100%", "0%"],
+        height: ["100%", "0%"],
+        transition: {
+          duration: 0.3,
+        },
+      }}
       style={{ transformOrigin: "top" }}
     >
       <div className="mx-auto flex w-[328px] flex-col gap-[20px] rounded-[15px] bg-white/50 p-6 backdrop-blur-[20] sm:w-[424px] md:w-[740px]">
         <Typography size="h5" weight="bold">
-          Staking overview
+          Staking positions
         </Typography>
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <div className="flex w-full flex-col gap-[32.67px] sm:w-[384px] sm:flex-row md:w-[600px] md:gap-[20px]">
             <div className="flex gap-4 sm:gap-8 md:gap-5">
               <OverviewStats
-                title={"Staked SEED"}
+                title={"Total SEED"}
                 value={formattedAmount}
                 size="sm"
                 className="w-[90px] sm:w-fit md:w-[90px]"
