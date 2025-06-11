@@ -52,14 +52,14 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
     <>
       <div className="flex justify-between">
         <div className="flex flex-wrap gap-3">
-          {address && <Address address={address} logo={ecosystems.evm.icon} />}
+          {address && <Address address={address} logo={ecosystems.EVM.icon} />}
           {btcAddress && (
-            <Address address={btcAddress} logo={ecosystems.bitcoin.icon} />
+            <Address address={btcAddress} logo={ecosystems.Bitcoin.icon} />
           )}
           {starknetAddress && (
             <Address
               address={starknetAddress}
-              logo={ecosystems.starknet.icon}
+              logo={ecosystems.Starknet.icon}
             />
           )}
           {solanaAddress && (

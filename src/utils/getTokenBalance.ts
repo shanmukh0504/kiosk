@@ -152,8 +152,20 @@ export const getTokenBalance = async (address: string, asset: Asset) => {
   };
 
   if (isBitcoin(asset.chain) || !isEVM(asset.chain)) return 0;
-  const _chain = evmToViemChainMap[asset.chain];
+  let _chain = evmToViemChainMap[asset.chain];
   if (!_chain) return 0;
+
+  if (_chain.id === 1) {
+    const updatedChain = {
+      ..._chain,
+      rpcUrls: {
+        default: {
+          http: ["https://eth-mainnet.public.blastapi.io"],
+        },
+      },
+    };
+    _chain = updatedChain;
+  }
 
   const data = encodeFunctionData({
     abi: [balanceOfABI],

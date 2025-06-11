@@ -1,22 +1,27 @@
 import { Button, CheckBox, Typography } from "@gardenfi/garden-book";
-import { EcosystemKeys, ecosystems } from "./constants";
-import { useState, FC, useMemo } from "react";
+import { useState, FC } from "react";
+import { ecosystems } from "./constants";
 import { Connector } from "wagmi";
+import { Connector as StarknetConnector } from "@starknet-react/core";
 import {
   IInjectedBitcoinProvider,
   useBitcoinWallet,
 } from "@gardenfi/wallet-connectors";
-import { handleEVMConnect } from "./handleConnect";
+import { handleEVMConnect, handleStarknetConnect } from "./handleConnect";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { Wallet as SolanaWallet } from "@solana/wallet-adapter-react";
 import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
+import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
+import { BlockchainType } from "@gardenfi/orderbook";
 
-type Checked = Record<EcosystemKeys, boolean>;
+type Checked = Record<BlockchainType, boolean>;
+
 type MultiWalletConnectionProps = {
   connectors: {
-    evm?: Connector;
-    btc?: IInjectedBitcoinProvider;
-    sol?: SolanaWallet;
+    [BlockchainType.EVM]?: Connector;
+    [BlockchainType.Bitcoin]?: IInjectedBitcoinProvider;
+    [BlockchainType.Starknet]?: StarknetConnector;
+    [BlockchainType.Solana]?: SolanaWallet;
   };
   handleClose: () => void;
 };
@@ -25,76 +30,88 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   connectors,
   handleClose,
 }) => {
+  const [checked, setChecked] = useState(
+    Object.keys(ecosystems).reduce((acc, [key]) => {
+      acc[key as BlockchainType] = false;
+      return acc;
+    }, {} as Checked)
+  );
   const [loading, setLoading] = useState(false);
 
   const { connect } = useBitcoinWallet();
   const { connectAsync } = useEVMWallet();
   const { solanaConnect } = useSolanaWallet();
+  const { starknetConnectAsync, starknetDisconnect, starknetSwitchChain } =
+    useStarknetWallet();
 
-  const supportedEcosystems = useMemo(() => {
-    const connectorMap = {
-      evm: connectors.evm,
-      bitcoin: connectors.btc,
-      solana: connectors.sol,
-    };
-
-    return Object.entries(ecosystems).reduce(
-      (acc, [key, ecosystem]) => {
-        const k = key as EcosystemKeys;
-        if (connectorMap[k as keyof typeof connectorMap]) {
-          acc[k] = { ...ecosystem };
-        }
-        return acc;
-      },
-      {} as Record<EcosystemKeys, (typeof ecosystems)[EcosystemKeys]>
-    );
-  }, [connectors]);
-
-  const [checked, setChecked] = useState(
-    Object.keys(supportedEcosystems).reduce((acc, key) => {
-      acc[key as EcosystemKeys] = false;
-      return acc;
-    }, {} as Checked)
+  const availableEcosystems = Object.entries(ecosystems).filter(
+    ([, value]) =>
+      (value.name === BlockchainType.EVM && connectors.EVM) ||
+      (value.name === BlockchainType.Bitcoin && connectors.Bitcoin) ||
+      (value.name === BlockchainType.Starknet && connectors.Starknet) ||
+      (value.name === BlockchainType.Solana && connectors.Solana)
   );
 
-  const handleCheck = (ecosystem: string) => {
+  const handleCheck = (ecosystem: BlockchainType) => {
     setChecked((prev) => ({
       ...prev,
-      [ecosystem]: !prev[ecosystem as EcosystemKeys],
+      [ecosystem]: !prev[ecosystem],
     }));
   };
 
   const handleConnect = async () => {
     setLoading(true);
 
-    try {
-      if (checked.evm && connectors.evm) {
-        const res = await handleEVMConnect(connectors.evm, connectAsync);
+    if (checked[BlockchainType.EVM]) {
+      if (connectors.EVM) {
+        const res = await handleEVMConnect(connectors.EVM, connectAsync);
         if (res.error) {
           setLoading(false);
-          handleClose();
           return;
         }
       }
-
-      if (checked.bitcoin && connectors.btc) {
-        const bitcoinConnectRes = await connect(connectors.btc);
-        if (bitcoinConnectRes.error) {
-          console.error("Failed to connect Bitcoin wallet");
-        }
-      }
-
-      if (checked.solana && connectors.sol) {
-        solanaConnect(connectors.sol.adapter.name);
-      }
-
-      setLoading(false);
-      handleClose();
-    } catch (error) {
-      console.error("Error connecting wallets:", error);
-      setLoading(false);
-      handleClose();
     }
+
+    if (checked[BlockchainType.Bitcoin]) {
+      if (!connectors.Bitcoin) {
+        setLoading(false);
+        return;
+      }
+
+      const bitcoinConnectRes = await connect(connectors.Bitcoin);
+      if (bitcoinConnectRes.error) {
+        setLoading(false);
+        return;
+      }
+    }
+
+    if (checked[BlockchainType.Starknet]) {
+      if (!connectors.Starknet) {
+        setLoading(false);
+        return;
+      }
+      const starknetConnectRes = await handleStarknetConnect(
+        connectors.Starknet,
+        starknetConnectAsync,
+        starknetSwitchChain,
+        starknetDisconnect
+      );
+      if (starknetConnectRes.error) {
+        setLoading(false);
+        return;
+      }
+    }
+
+    if (checked[BlockchainType.Solana]) {
+      if (!connectors.Solana) {
+        setLoading(false);
+        return;
+      }
+      await solanaConnect(connectors.Solana.adapter.name);
+    }
+
+    setLoading(false);
+    handleClose();
   };
 
   const isAnyEcosystemSelected = Object.values(checked).some((value) => value);
@@ -102,23 +119,27 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   return (
     <div className="flex flex-col gap-5">
       <div className="flex w-fit items-center gap-2 rounded-full bg-white px-3 py-1">
-        {connectors.btc && (
-          <>
-            <img src={connectors.btc.icon} alt={"icon"} className="h-5 w-5" />
-            <Typography size="h3" weight="medium">
-              {connectors.btc.name}
-            </Typography>
-          </>
-        )}
-        {connectors.sol && (
+        {connectors[BlockchainType.Bitcoin] && (
           <>
             <img
-              src={connectors.sol.adapter.icon}
+              src={connectors[BlockchainType.Bitcoin].icon}
               alt={"icon"}
               className="h-5 w-5"
             />
             <Typography size="h3" weight="medium">
-              {connectors.sol.adapter.name}
+              {connectors[BlockchainType.Bitcoin].name}
+            </Typography>
+          </>
+        )}
+        {connectors[BlockchainType.Solana] && (
+          <>
+            <img
+              src={connectors[BlockchainType.Solana].adapter.icon}
+              alt={"icon"}
+              className="h-5 w-5"
+            />
+            <Typography size="h3" weight="medium">
+              {connectors[BlockchainType.Solana].adapter.name}
             </Typography>
           </>
         )}
@@ -127,12 +148,12 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
         <Typography size="h5" weight="bold" className="px-4">
           Select ecosystems
         </Typography>
-        {Object.entries(supportedEcosystems).map(([key, ecosystem], i) => (
+        {availableEcosystems.map(([key, ecosystem]) => (
           <div
-            key={i}
+            key={key}
             className="flex cursor-pointer items-center gap-4 rounded-xl px-4 py-4 hover:bg-off-white"
             onClick={() => {
-              handleCheck(key);
+              handleCheck(key as BlockchainType);
             }}
           >
             <img src={ecosystem.icon} alt={"icon"} className="h-8 w-8" />
@@ -142,7 +163,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
               </Typography>
             </div>
             <CheckBox
-              checked={checked[key as EcosystemKeys]}
+              checked={checked[key as BlockchainType]}
               className="cursor-pointer"
             />
           </div>

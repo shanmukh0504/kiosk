@@ -9,6 +9,7 @@ type SwapInfoProps = {
   receiveAsset: Asset;
   sendAmount: string | number;
   receiveAmount: string | number;
+  equalSplit?: boolean;
 };
 
 export const SwapInfo: FC<SwapInfoProps> = ({
@@ -16,18 +17,23 @@ export const SwapInfo: FC<SwapInfoProps> = ({
   receiveAsset,
   sendAmount,
   receiveAmount,
+  equalSplit = false,
 }) => {
-  const { chains } = assetInfoStore();
+  const { allChains } = assetInfoStore();
   const sendChain =
-    chains && !isBitcoin(sendAsset.chain) ? chains[sendAsset.chain] : undefined;
+    allChains && !isBitcoin(sendAsset.chain)
+      ? allChains[sendAsset.chain]
+      : undefined;
   const receiveChain =
-    chains && !isBitcoin(receiveAsset.chain)
-      ? chains[receiveAsset.chain]
+    allChains && !isBitcoin(receiveAsset.chain)
+      ? allChains[receiveAsset.chain]
       : undefined;
 
   return (
     <div className="flex items-center justify-between">
-      <div className="flex grow basis-0 items-center gap-2">
+      <div
+        className={`flex items-center justify-start gap-2 ${equalSplit ? "w-fit" : "w-full"}`}
+      >
         <Typography size="h3" weight="medium">
           {sendAmount}
         </Typography>
@@ -36,8 +42,10 @@ export const SwapInfo: FC<SwapInfoProps> = ({
           chainLogo={sendChain?.networkLogo}
         />
       </div>
-      <ArrowRightIcon />
-      <div className="flex grow basis-0 items-center justify-end gap-2">
+      <ArrowRightIcon className={equalSplit ? "" : "h-5 w-9"} />
+      <div
+        className={`flex items-center justify-end gap-2 ${equalSplit ? "w-fit" : "w-full"}`}
+      >
         <Typography size="h3" weight="medium">
           {receiveAmount}
         </Typography>

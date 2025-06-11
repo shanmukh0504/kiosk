@@ -60,3 +60,10 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+input:active,
+input:focus {
+  @apply border-none outline-none;
+  -moz-outline: none;
+  -webkit-outline: none;
+}

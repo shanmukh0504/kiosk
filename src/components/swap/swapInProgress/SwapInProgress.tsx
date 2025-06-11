@@ -1,6 +1,7 @@
 import {
   ArrowNorthEastIcon,
   CloseIcon,
+  DeleteIcon,
   Typography,
 } from "@gardenfi/garden-book";
 import { useCallback, useMemo } from "react";
@@ -17,10 +18,13 @@ import { useOrderStatus } from "../../../hooks/useOrderStatus";
 import { OrderStatus as OrderStatusEnum } from "@gardenfi/core";
 import { API } from "../../../constants/api";
 import orderInProgressStore from "../../../store/orderInProgressStore";
+import { BTC } from "../../../store/swapStore";
+import { deletedOrdersStore } from "../../../store/deletedOrdersStore";
 
 export const SwapInProgress = () => {
   const { order, setIsOpen } = orderInProgressStore();
-  const { assets } = assetInfoStore();
+  const { allAssets } = assetInfoStore();
+  const { addDeletedOrder } = deletedOrdersStore();
   const { orderProgress, viewableStatus } = useOrderStatus();
 
   const { depositAddress, inputAsset, outputAsset } = useMemo(() => {
@@ -29,13 +33,13 @@ export const SwapInProgress = () => {
         order && isBitcoin(order?.source_swap.chain)
           ? order.source_swap.swap_id
           : "",
-      inputAsset: order && getAssetFromSwap(order.source_swap, assets),
-      outputAsset: order && getAssetFromSwap(order.destination_swap, assets),
+      inputAsset: order && getAssetFromSwap(order.source_swap, allAssets),
+      outputAsset: order && getAssetFromSwap(order.destination_swap, allAssets),
       btcAddress: order
         ? order.create_order.additional_data.bitcoin_optional_recipient
         : "",
     };
-  }, [assets, order]);
+  }, [allAssets, order]);
 
   const goBack = useCallback(() => {
     setIsOpen(false);
@@ -46,13 +50,31 @@ export const SwapInProgress = () => {
     window.open(API().explorer(order.create_order.create_id));
   };
 
+  const handleDeleteOrder = useCallback(() => {
+    if (!order) return;
+    addDeletedOrder(order.create_order.create_id);
+    goBack();
+  }, [order, addDeletedOrder, goBack]);
+
+  const showDeleteButton = useMemo(() => {
+    return order?.status === OrderStatusEnum.Matched;
+  }, [order?.status]);
+
   return order ? (
     <div className="animate-fade-out flex flex-col gap-3 p-3">
       <div className="flex items-center justify-between p-1">
         <Typography size="h4" weight="bold">
           Swap progress
         </Typography>
-        <CloseIcon className="m-1 h-3 w-3 cursor-pointer" onClick={goBack} />
+        <div className="flex items-center justify-center gap-3">
+          {showDeleteButton && (
+            <DeleteIcon
+              className="m-1 cursor-pointer"
+              onClick={handleDeleteOrder}
+            />
+          )}
+          <CloseIcon className="m-1 h-3 w-3 cursor-pointer" onClick={goBack} />
+        </div>
       </div>
       <div
         className="flex cursor-pointer flex-col gap-2 rounded-2xl bg-white/50 p-4 hover:bg-white"
@@ -71,12 +93,16 @@ export const SwapInProgress = () => {
             sendAmount={formatAmount(
               order.source_swap.amount,
               inputAsset.decimals,
-              isBitcoin(inputAsset.chain) ? inputAsset.decimals : undefined
+              inputAsset.symbol.includes(BTC.symbol)
+                ? inputAsset.decimals
+                : undefined
             )}
             receiveAmount={formatAmount(
               order.destination_swap.amount,
               outputAsset.decimals,
-              isBitcoin(outputAsset.chain) ? outputAsset.decimals : undefined
+              outputAsset.symbol.includes(BTC.symbol)
+                ? outputAsset.decimals
+                : undefined
             )}
           />
         )}

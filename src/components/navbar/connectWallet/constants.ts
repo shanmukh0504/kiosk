@@ -31,10 +31,12 @@ export type EcosystemKeys = keyof typeof ecosystems;
 
 export const evmToBTCid: Record<string, string> = {
   "com.okex.wallet": "okx",
+  "app.phantom": "phantom",
 } as const;
 
 export const btcToEVMid: Record<string, string> = {
   okx: "com.okex.wallet",
+  phantom: "app.phantom",
 } as const;
 
 export const MAX_VISIBLE_WALLETS = 3;
@@ -161,6 +163,13 @@ export const GardenSupportedWallets: Record<
   keplr: createWallet("keplr", "Keplr", "wallets/keplr.svg", "tallLink:", {
     starknet: true,
   }),
+  xverse: createWallet(
+    "xverse",
+    "Xverse",
+    "wallets/xverse.svg",
+    "https://www.xverse.app/download",
+    { bitcoin: true }
+  ),
   solflare: createWallet(
     "solflare",
     "Solflare",

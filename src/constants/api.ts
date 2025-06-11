@@ -26,10 +26,17 @@ export const API = () => {
         new Url(REQUIRED_ENV_VARS.INFO_URL)
           .endpoint("blocknumbers")
           .endpoint(network),
+      notification: () =>
+        new Url(REQUIRED_ENV_VARS.INFO_URL).endpoint("notification"),
     },
     buildId: "/build-id.json",
     orderbook: new Url(REQUIRED_ENV_VARS.ORDERBOOK_URL),
-    quote: new Url(REQUIRED_ENV_VARS.QUOTE_URL),
+    quote: {
+      quote: new Url(REQUIRED_ENV_VARS.QUOTE_URL),
+      fiatValues: new Url(REQUIRED_ENV_VARS.QUOTE_URL).endpoint(
+        "supported-assets"
+      ),
+    },
     stake: {
       stakePosition: (userId: string) =>
         new Url("stakes", REQUIRED_ENV_VARS.STAKING_URL).addSearchParams({

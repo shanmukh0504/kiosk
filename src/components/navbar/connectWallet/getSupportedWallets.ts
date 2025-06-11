@@ -62,28 +62,40 @@ export const getAvailableWallets = (
 
   Object.entries(GardenSupportedWallets).forEach(([key, value]) => {
     if (!value.isBitcoinSupported) return;
+    const btcWallet = btcWallets?.[key] ?? btcWallets?.[evmToBTCid[key]];
     if (evmWallets && evmToBTCid[key]) {
-      const walletIndex = wallets.findIndex((w) => w.id === key);
-      if (walletIndex !== -1) {
-        wallets[walletIndex].wallet.btcWallet = btcWallets?.[evmToBTCid[key]];
-        wallets[walletIndex].isBitcoin = true;
-      } else {
-        wallets[walletIndex].isBitcoin = false;
+      if (evmWallets && evmToBTCid[key]) {
+        const walletIndex = wallets.findIndex((w) => w.id === key);
+        if (walletIndex !== -1) {
+          wallets[walletIndex].wallet.btcWallet = btcWallet;
+          wallets[walletIndex].isBitcoin = !!btcWallet;
+        } else if (btcWallet) {
+          wallets.push({
+            ...value,
+            wallet: {
+              btcWallet,
+            },
+            isAvailable: true,
+            isBitcoin: true,
+            isEVM: false,
+          });
+        }
       }
 
       return;
     }
 
-    const wallet = btcWallets?.[key] ?? btcWallets?.[evmToBTCid[key]];
-    wallets.push({
-      ...value,
-      wallet: {
-        btcWallet: wallet,
-      },
-      isAvailable: !!wallet,
-      isBitcoin: true,
-      isEVM: false,
-    });
+    if (btcWallet) {
+      wallets.push({
+        ...value,
+        wallet: {
+          btcWallet,
+        },
+        isAvailable: true,
+        isBitcoin: true,
+        isEVM: false,
+      });
+    }
   });
 
   if (starknetWallets) {

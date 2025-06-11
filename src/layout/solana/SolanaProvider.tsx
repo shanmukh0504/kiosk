@@ -1,5 +1,3 @@
-"use client";
-
 import { FC, ReactNode, useMemo } from "react";
 import {
   ConnectionProvider,
@@ -21,11 +19,10 @@ export const SolanaProvider: FC<SolanaProviderProps> = ({ children }) => {
       : WalletAdapterNetwork.Devnet;
 
   const endpoint = useMemo(() => clusterApiUrl(solanaNetwork), [solanaNetwork]);
-  const wallets = useMemo(() => [], [solanaNetwork]);
 
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect>
+      <WalletProvider wallets={[]} autoConnect>
         {children}
       </WalletProvider>
     </ConnectionProvider>

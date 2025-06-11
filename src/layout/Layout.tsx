@@ -7,6 +7,7 @@ import { Modal } from "../components/modal/Modal";
 import { Notification } from "../common/Notification";
 import { ViewPortListener } from "../common/ViewPortListener";
 import { assetInfoStore } from "../store/assetInfoStore";
+import { network } from "../constants/constants";
 
 type LayoutProps = {
   children: ReactNode;
@@ -31,14 +32,8 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
           <Navbar />
           {children}
         </div>
-        <Notification
-          id="act-2:bloom"
-          title="introducing act 2: bloom"
-          description="Explore faster swaps, new assets and chains, and all that's new around here!"
-          image="https://wbtc-garden.ghost.io/content/images/size/w1000/2025/04/act2-1.png"
-          link="https://garden.finance/blog/leveling-up-garden"
-        />
-        <Footer className={"mt-auto"} />
+        <Notification />
+        <Footer className={"mt-auto"} network={network} />
       </div>
     </div>
   );
