@@ -32,10 +32,8 @@ const transactionHistoryStore = create<TransactionHistoryStoreState>(
       orderBook: IOrderbook,
       connectedWallets: {
         [key in BlockchainType]: string;
-      },
-      append = false
+      }
     ) => {
-      if (!append) set({ isLoading: true });
       const newTransactions: MatchedOrder[] = [];
       let totalItems = 0;
 
@@ -57,23 +55,10 @@ const transactionHistoryStore = create<TransactionHistoryStoreState>(
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
 
-      set((state) => ({
-        transactions: append
-          ? [
-              ...state.transactions,
-              ...newTransactions.filter(
-                (t) =>
-                  !state.transactions.some(
-                    (existing) =>
-                      existing.create_order.create_id ===
-                      t.create_order.create_id
-                  )
-              ),
-            ]
-          : newTransactions,
-        isLoading: false,
+      set({
+        transactions: newTransactions,
         totalItems,
-      }));
+      });
     },
 
     loadMore: async (
@@ -83,7 +68,7 @@ const transactionHistoryStore = create<TransactionHistoryStoreState>(
       }
     ) => {
       set((state) => ({ perPage: state.perPage + 4 }));
-      await get().fetchTransactions(orderBook, connectedWallets, true);
+      await get().fetchTransactions(orderBook, connectedWallets);
     },
   })
 );
