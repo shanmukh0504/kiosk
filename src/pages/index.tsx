@@ -32,7 +32,6 @@ function App() {
                 info: import.meta.env.VITE_INFO_URL,
                 evmRelay: import.meta.env.VITE_RELAYER_URL,
                 starknetRelay: import.meta.env.VITE_STARKNET_URL,
-                environment: GardenEnvironment.TESTNET,
               }
             : (network as unknown as GardenEnvironment),
         wallets: {

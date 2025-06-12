@@ -323,7 +323,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                       starknetConnector.id === wallet.id &&
                       starknetStatus === "connected"
                     ),
-                    solana: !!(
+                    [BlockchainType.Solana]: !!(
                       wallet.isSolana &&
                       solanaConnected &&
                       ((wallet.id === "app.phantom" &&

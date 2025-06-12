@@ -78,7 +78,7 @@ const ConnectedWallets = () => {
         )}
         {solanaAddress && (
           <img
-            src={ecosystems.solana.icon}
+            src={ecosystems.Solana.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="Solana wallet"
           />

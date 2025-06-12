@@ -63,7 +63,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
             />
           )}
           {solanaAddress && (
-            <Address address={solanaAddress} logo={ecosystems.solana.icon} />
+            <Address address={solanaAddress} logo={ecosystems.Solana.icon} />
           )}
           {showConnectWallet && (
             <div

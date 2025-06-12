@@ -1,27 +1,28 @@
 import { Network } from "@gardenfi/utils";
 import { network } from "../../../constants/constants";
+import { BlockchainType } from "@gardenfi/orderbook";
 
-export enum Ecosystem {
-  BITCOIN = "bitcoin",
-  EVM = "evm",
-  STARKNET = "starknet",
-  SOLANA = "solana",
-}
+// export enum Ecosystem {
+//   BITCOIN = "bitcoin",
+//   EVM = "evm",
+//   STARKNET = "starknet",
+//   SOLANA = "solana",
+// }
 
 export const ecosystems = {
-  [Ecosystem.BITCOIN]: {
+  [BlockchainType.Bitcoin]: {
     name: "Bitcoin",
     icon: "https://garden-finance.imgix.net/token-images/bitcoin.svg",
   },
-  [Ecosystem.EVM]: {
+  [BlockchainType.EVM]: {
     name: "EVM",
     icon: "https://garden-finance.imgix.net/token-images/ethereum.svg",
   },
-  [Ecosystem.STARKNET]: {
+  [BlockchainType.Starknet]: {
     name: "Starknet",
     icon: "https://garden-finance.imgix.net/starknet-logo.svg",
   },
-  [Ecosystem.SOLANA]: {
+  [BlockchainType.Solana]: {
     name: "Solana",
     icon: "https://garden-finance.imgix.net/chain_images/solana.png",
   },
@@ -55,10 +56,10 @@ interface BaseWallet {
 
 // Wallet capabilities interface
 interface WalletCapabilities {
-  [Ecosystem.BITCOIN]?: boolean;
-  [Ecosystem.EVM]?: boolean;
-  [Ecosystem.STARKNET]?: boolean;
-  [Ecosystem.SOLANA]?: boolean;
+  [BlockchainType.Bitcoin]?: boolean;
+  [BlockchainType.EVM]?: boolean;
+  [BlockchainType.Starknet]?: boolean;
+  [BlockchainType.Solana]?: boolean;
 }
 
 type GardenSupportedWalletsType = BaseWallet & WalletCapabilities;
@@ -74,10 +75,10 @@ const createWallet = (
   name,
   logo: `https://garden-finance.imgix.net/${logoPath}`,
   installLink,
-  isBitcoinSupported: capabilities[Ecosystem.BITCOIN] ?? false,
-  isEVMSupported: capabilities[Ecosystem.EVM] ?? false,
-  isStarknetSupported: capabilities[Ecosystem.STARKNET] ?? false,
-  isSolanaSupported: capabilities[Ecosystem.SOLANA] ?? false,
+  isBitcoinSupported: capabilities[BlockchainType.Bitcoin] ?? false,
+  isEVMSupported: capabilities[BlockchainType.EVM] ?? false,
+  isStarknetSupported: capabilities[BlockchainType.Starknet] ?? false,
+  isSolanaSupported: capabilities[BlockchainType.Solana] ?? false,
 });
 
 export const GardenSupportedWallets: Record<
@@ -89,21 +90,21 @@ export const GardenSupportedWallets: Record<
     "Injected",
     "wallets/injected.svg",
     "https://metamask.io/download/",
-    { evm: true }
+    { EVM: true }
   ),
   metaMaskSDK: createWallet(
     "metaMaskSDK",
     "Metamask",
     "wallets/metamask.svg",
     "https://metamask.io/download/",
-    { evm: true, solana: true }
+    { EVM: true, Solana: true }
   ),
   "com.brave.wallet": createWallet(
     "com.brave.wallet",
     "Brave Wallet",
     "wallets/brave.svg",
     "https://brave.com/en-in/wallet/",
-    { evm: true }
+    { EVM: true }
   ),
   "app.phantom": createWallet(
     "app.phantom",
@@ -111,8 +112,8 @@ export const GardenSupportedWallets: Record<
     "wallets/phantom.svg",
     "https://chromewebstore.google.com/detail/phantom/bfnaelmomeimhlpmgjnjophhpkkoljpa?hl=en",
     {
-      evm: network === Network.MAINNET,
-      solana: true,
+      EVM: network === Network.MAINNET,
+      Solana: true,
     }
   ),
   "com.coinbase.wallet": createWallet(
@@ -120,7 +121,7 @@ export const GardenSupportedWallets: Record<
     "Coinbase Wallet",
     "wallets/coinbase.svg",
     "https://www.coinbase.com/wallet/downloads",
-    { evm: true }
+    { EVM: true }
   ),
   "com.okex.wallet": createWallet(
     "com.okex.wallet",
@@ -128,8 +129,8 @@ export const GardenSupportedWallets: Record<
     "wallets/okx.svg",
     "https://www.okx.com/download",
     {
-      bitcoin: network === Network.MAINNET,
-      evm: true,
+      Bitcoin: network === Network.MAINNET,
+      EVM: true,
     }
   ),
   unisat: createWallet(
@@ -137,51 +138,51 @@ export const GardenSupportedWallets: Record<
     "Unisat",
     "wallets/unisat.svg",
     "https://unisat.io/",
-    { bitcoin: true }
+    { Bitcoin: true }
   ),
   "io.rabby": createWallet(
     "io.rabby",
     "Rabby Wallet",
     "wallets/rabby.svg",
     "https://rabby.io/",
-    { evm: true }
+    { EVM: true }
   ),
   braavos: createWallet(
     "braavos",
     "Braavos",
     "wallet/braavos.svg",
     "https://braavos.app/",
-    { starknet: true }
+    { Starknet: true }
   ),
   argentX: createWallet(
     "argentX",
     "Argent X",
     "wallet/argent.svg",
     "https://www.argent.xyz/argent-x",
-    { starknet: true }
+    { Starknet: true }
   ),
   keplr: createWallet("keplr", "Keplr", "wallets/keplr.svg", "tallLink:", {
-    starknet: true,
+    Starknet: true,
   }),
   xverse: createWallet(
     "xverse",
     "Xverse",
     "wallets/xverse.svg",
     "https://www.xverse.app/download",
-    { bitcoin: true }
+    { Bitcoin: true }
   ),
   solflare: createWallet(
     "solflare",
     "Solflare",
     "wallets/Solflare.svg",
     "https://www.solflare.com/",
-    { solana: true }
+    { Solana: true }
   ),
   backpack: createWallet(
     "backpack",
     "Backpack",
     "wallets/Backpack.svg",
     "https://backpack.app/",
-    { solana: true }
+    { Solana: true }
   ),
 };
