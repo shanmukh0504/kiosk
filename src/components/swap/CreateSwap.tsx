@@ -1,7 +1,6 @@
 import { Button, ExchangeIcon } from "@gardenfi/garden-book";
 import { SwapInput } from "./SwapInput";
 import { getTimeEstimates, IOType } from "../../constants/constants";
-import { BTC } from "../../store/swapStore";
 import { useEffect, useMemo, useState } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { useSearchParams } from "react-router-dom";
@@ -20,6 +19,7 @@ export const CreateSwap = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [addParams, setAddParams] = useState(false);
+
   const { assets } = assetInfoStore();
 
   const {
@@ -137,7 +137,12 @@ export const CreateSwap = () => {
 
     setAsset(IOType.input, fromAsset);
     setAsset(IOType.output, toAsset);
-    if (!fromAsset && !toAsset) setAsset(IOType.input, BTC);
+    if (!fromAsset && !toAsset) {
+      const BTC = Object.values(assets).find(
+        (asset) => asset.name.toLowerCase() == "bitcoin"
+      );
+      BTC && !BTC.disabled ? setAsset(IOType.input, BTC) : null;
+    }
     setAddParams(true);
   }, [addParams, assets, inputAsset, outputAsset, searchParams, setAsset]);
 

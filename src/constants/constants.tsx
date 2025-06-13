@@ -22,6 +22,7 @@ export enum IOType {
 
 export const LOCAL_STORAGE_KEYS = {
   notification: "notificationId",
+  deletedOrders: "deleted_orders",
 };
 
 export const BREAKPOINTS = {
@@ -90,3 +91,8 @@ export const QUERY_PARAMS = {
   outputChain: "output-chain",
   outputAsset: "output-asset",
 };
+
+export const isStakeDisable = network === Network.TESTNET;
+export const routes = Object.entries(INTERNAL_ROUTES).filter(
+  ([key]) => key !== "stake" || !isStakeDisable
+);
