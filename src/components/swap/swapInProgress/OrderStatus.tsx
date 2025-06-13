@@ -5,7 +5,10 @@ import {
   Typography,
 } from "@gardenfi/garden-book";
 import { useState, FC } from "react";
-import { OrderProgress } from "../../../hooks/useOrderStatus";
+import {
+  OrderProgress,
+  SimplifiedOrderStatus,
+} from "../../../hooks/useOrderStatus";
 
 type OrderStatusProps = {
   orderProgress: OrderProgress | undefined;
@@ -139,9 +142,20 @@ export const OrderStatus: FC<OrderStatusProps> = ({
             }}
           >
             <div className="mt-2 flex items-center justify-between">
-              <Typography size="h3" weight="bold">
-                {currentStatus}
-              </Typography>
+              {currentStatus === SimplifiedOrderStatus.depositDetected ? (
+                <div className="flex gap-3">
+                  <Typography size="h3" weight="bold">
+                    {currentStatus}
+                  </Typography>
+                  <Typography size="h3" weight="medium">
+                    {confirmationString}
+                  </Typography>
+                </div>
+              ) : (
+                <Typography size="h3" weight="bold">
+                  {currentStatus}
+                </Typography>
+              )}
               {orderProgress && (
                 <Typography size="h5" weight="bold" className="my-auto">
                   {completedSteps} of {NoOfSteps}
