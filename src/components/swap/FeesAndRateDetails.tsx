@@ -178,7 +178,7 @@ export const FeesAndRateDetails = () => {
                 >
                   <GasStationIcon />
                   <Typography size="h5" weight="medium">
-                    {fees ? "$" + protocolFee : ""}
+                    {fees ? "$" + protocolFee || 0 : ""}
                   </Typography>
                 </motion.div>
               )}
@@ -204,7 +204,7 @@ export const FeesAndRateDetails = () => {
                 </Typography>
                 <div className="flex gap-5">
                   <Typography size="h4" weight="medium">
-                    {fees ? "$" + protocolFee : ""}
+                    {fees ? "$" + protocolFee || 0 : ""}
                   </Typography>
                 </div>
               </div>
