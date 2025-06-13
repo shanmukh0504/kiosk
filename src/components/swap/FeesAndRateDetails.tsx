@@ -178,7 +178,7 @@ export const FeesAndRateDetails = () => {
                 >
                   <GasStationIcon />
                   <Typography size="h5" weight="medium">
-                    {fees ? "$" + protocolFee : ""}
+                    {fees ? "$" + protocolFee || 0 : ""}
                   </Typography>
                 </motion.div>
               )}
