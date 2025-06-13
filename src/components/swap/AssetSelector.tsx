@@ -81,7 +81,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
 
   useEffect(() => {
     if (!assets || !strategies.val) return;
-    if (!comparisonToken) {
+    if (!comparisonToken || isAssetSelectorOpen.type === IOType.input) {
       setResults(Object.values(assets));
     } else {
       const supportedTokens = Object.values(assets).filter((asset) => {
@@ -130,6 +130,22 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             : IOType.input,
           isAssetSelectorOpen.type === IOType.input ? inputAsset : outputAsset
         );
+      }
+      // if input asset is selected, check if the output asset is supported
+      if (
+        isAssetSelectorOpen.type === IOType.input &&
+        outputAsset &&
+        strategies.val
+      ) {
+        const op = constructOrderPair(
+          asset.chain,
+          asset.atomicSwapAddress,
+          outputAsset.chain,
+          outputAsset.atomicSwapAddress
+        );
+        if (!strategies.val[op]) {
+          setAsset(IOType.output, undefined);
+        }
       }
     }
     CloseAssetSelector();
