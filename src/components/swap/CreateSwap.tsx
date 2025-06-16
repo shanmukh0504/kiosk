@@ -47,9 +47,8 @@ export const CreateSwap = () => {
   const { setOpenModal } = modalStore();
 
   const buttonLabel = useMemo(() => {
-    if (needsWalletConnection) {
+    if (needsWalletConnection)
       return `Connect ${capitalizeChain(needsWalletConnection)} Wallet`;
-    }
 
     return error.liquidityError
       ? "Insufficient liquidity"

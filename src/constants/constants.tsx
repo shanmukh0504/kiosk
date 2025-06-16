@@ -81,7 +81,6 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "starknet_sepolia",
   "hyperliquid",
   "starknet",
-  "solana",
   "solana_testnet",
   "unichain",
   "corn",

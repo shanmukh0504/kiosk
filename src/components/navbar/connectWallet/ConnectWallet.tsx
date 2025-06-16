@@ -114,7 +114,13 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       allWallets = allWallets.filter((wallet) => wallet.id !== "injected");
     }
     return allWallets;
-  }, [availableWallets, connectors, starknetConnectors, selectedEcosystem]);
+  }, [
+    availableWallets,
+    connectors,
+    starknetConnectors,
+    solanaWallets,
+    selectedEcosystem,
+  ]);
 
   const handleClose = useCallback(() => {
     setConnectingWallet(null);

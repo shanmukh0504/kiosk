@@ -5,7 +5,6 @@ import {
   isStarknet,
   isEVM,
   isSolana,
-  // isSolana,
 } from "@gardenfi/orderbook";
 import { evmToViemChainMap } from "@gardenfi/core";
 import { useEVMWallet } from "./useEVMWallet";
@@ -73,9 +72,6 @@ export const useBalances = (asset: Asset | undefined) => {
           solanaAnchorProvider.publicKey,
           asset
         );
-        // const bal = new BigNumber(balance)
-        //   .dividedBy(10 ** asset.decimals)
-        //   .toNumber();
         setBalance(asset, balance);
       }
     };

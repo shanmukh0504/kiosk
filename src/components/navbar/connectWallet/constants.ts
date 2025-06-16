@@ -2,13 +2,6 @@ import { Network } from "@gardenfi/utils";
 import { network } from "../../../constants/constants";
 import { BlockchainType } from "@gardenfi/orderbook";
 
-// export enum Ecosystem {
-//   BITCOIN = "bitcoin",
-//   EVM = "evm",
-//   STARKNET = "starknet",
-//   SOLANA = "solana",
-// }
-
 export const ecosystems = {
   [BlockchainType.Bitcoin]: {
     name: "Bitcoin",

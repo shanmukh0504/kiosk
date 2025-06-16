@@ -82,7 +82,7 @@ export const getSolanaTokenBalance = async (
     try {
       tokenMint = new PublicKey(asset.tokenAddress);
     } catch (err) {
-      console.error("Invalid token mint address:", asset.tokenAddress);
+      console.error("Invalid token mint address:", asset.tokenAddress, err);
       return 0;
     }
 

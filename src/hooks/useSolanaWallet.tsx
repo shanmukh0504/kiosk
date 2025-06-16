@@ -8,6 +8,11 @@ import { AnchorProvider } from "@coral-xyz/anchor";
 import { WalletName } from "@solana/wallet-adapter-base";
 
 export const useSolanaWallet = () => {
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [pendingConnect, setPendingConnect] = useState<(() => void) | null>(
+    null
+  );
+
   const {
     select,
     wallets,
@@ -16,28 +21,14 @@ export const useSolanaWallet = () => {
     connecting,
     connected,
   } = useWallet();
-
   const { connection } = useConnection();
   const anchorWallet = useAnchorWallet();
-
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [pendingConnect, setPendingConnect] = useState<(() => void) | null>(
-    null
-  );
 
   const provider = useMemo(() => {
     return anchorWallet
       ? new AnchorProvider(connection, anchorWallet, {})
       : null;
   }, [connection, anchorWallet]);
-
-  useEffect(() => {
-    if (connected && pendingConnect) {
-      pendingConnect();
-      setPendingConnect(null);
-      setIsConnecting(false);
-    }
-  }, [connected, pendingConnect]);
 
   const handleWalletClick = useCallback(
     async (walletName: WalletName) => {
@@ -49,7 +40,7 @@ export const useSolanaWallet = () => {
       await w?.adapter.connect();
       return true;
     },
-    [select, connected]
+    [wallets, select]
   );
 
   const solanaDisconnect = useCallback(async () => {
@@ -62,6 +53,14 @@ export const useSolanaWallet = () => {
     }
   }, [disconnect]);
 
+  useEffect(() => {
+    if (connected && pendingConnect) {
+      pendingConnect();
+      setPendingConnect(null);
+      setIsConnecting(false);
+    }
+  }, [connected, pendingConnect]);
+
   return {
     solanaWallet: anchorWallet,
     solanaConnect: handleWalletClick,
@@ -73,6 +72,5 @@ export const useSolanaWallet = () => {
     solanaAddress: provider?.publicKey.toBase58(),
     solanaAnchorProvider: provider,
     connection,
-    // solanaConnectionError: connectionError,
   };
 };

@@ -372,14 +372,7 @@ export const useSwap = () => {
     }
 
     return null;
-  }, [
-    inputAsset,
-    outputAsset,
-    evmAddress,
-    starknetAddress,
-    solanaAddress,
-    account,
-  ]);
+  }, [inputAsset, outputAsset, evmAddress, starknetAddress, solanaAddress]);
 
   const handleSwapClick = async () => {
     if (needsWalletConnection) {

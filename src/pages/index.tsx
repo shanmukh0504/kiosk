@@ -38,7 +38,7 @@ function App() {
         wallets: {
           evm: walletClient,
           starknet: starknetWallet,
-          solana: solanaAnchorProvider!,
+          solana: solanaAnchorProvider ?? undefined,
         },
       }}
     >

@@ -67,7 +67,14 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
         });
       });
     }
-  }, [garden, address, starknetAddress, fetchTransactions, isOpen]);
+  }, [
+    garden,
+    address,
+    starknetAddress,
+    fetchTransactions,
+    isOpen,
+    solanaAddress,
+  ]);
 
   return (
     <div className="flex flex-col gap-3">
