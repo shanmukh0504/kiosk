@@ -13,6 +13,7 @@ import {
   getQueryParams,
 } from "../../utils/utils";
 import { QUERY_PARAMS } from "../../constants/constants";
+import { ecosystems } from "../navbar/connectWallet/constants";
 import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
 
 export const CreateSwap = () => {
@@ -49,6 +50,9 @@ export const CreateSwap = () => {
   const decimals = inputAsset && Math.max(inputAsset.decimals, 8);
 
   const buttonLabel = useMemo(() => {
+    if (needsWalletConnection)
+      return `Connect ${capitalizeChain(needsWalletConnection)} Wallet`;
+
     return error.liquidityError
       ? "Insufficient liquidity"
       : error.insufficientBalanceError
@@ -102,20 +106,17 @@ export const CreateSwap = () => {
   }, [inputAsset, outputAsset]);
 
   const handleConnectWallet = () => {
-    if (needsWalletConnection === "starknet") {
-      setOpenModal(modalNames.connectWallet, {
-        Starknet: true,
-        Bitcoin: false,
-        EVM: false,
-      });
-    }
-    if (needsWalletConnection === "evm") {
-      setOpenModal(modalNames.connectWallet, {
-        EVM: true,
-        Starknet: false,
-        Bitcoin: false,
-      });
-    }
+    if (!needsWalletConnection) return;
+
+    const modalState = Object.values(ecosystems).reduce(
+      (acc, { name }) => {
+        acc[name] = name.toLowerCase() === needsWalletConnection;
+        return acc;
+      },
+      {} as Record<string, boolean>
+    );
+
+    setOpenModal(modalNames.connectWallet, modalState);
   };
 
   useEffect(() => {

@@ -8,12 +8,14 @@ import pendingOrdersStore from "../../store/pendingOrdersStore";
 import { OrderStatus } from "@gardenfi/core";
 import { useEffect } from "react";
 import { useGarden } from "@gardenfi/react-hooks";
+import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { deletedOrdersStore } from "../../store/deletedOrdersStore";
 
 const ConnectedWallets = () => {
   const { address } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { account: btcAddress } = useBitcoinWallet();
+  const { solanaAddress } = useSolanaWallet();
   const { pendingOrders } = useGarden();
   const { setOpenModal } = modalStore();
   const { isOrderDeleted, cleanupDeletedOrders, deletedOrders } =
@@ -33,7 +35,6 @@ const ConnectedWallets = () => {
         (entry) => entry.orderId === order.create_order.create_id
       )
   ).length;
-
   useEffect(() => {
     if (pendingOrders.length > 0) {
       cleanupDeletedOrders(pendingOrders);
@@ -73,6 +74,13 @@ const ConnectedWallets = () => {
             src={ecosystems.Starknet.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="Starknet wallet"
+          />
+        )}
+        {solanaAddress && (
+          <img
+            src={ecosystems.Solana.icon}
+            className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            alt="Solana wallet"
           />
         )}
         {pendingOrdersCount ? (
