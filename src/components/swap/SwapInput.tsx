@@ -37,6 +37,7 @@ export const SwapInput: FC<SwapInputProps> = ({
   timeEstimate,
   loading,
 }) => {
+  console.log(balance);
   const [isFocused, setIsFocused] = useState(false);
   const [animated, setAnimated] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -153,7 +154,7 @@ export const SwapInput: FC<SwapInputProps> = ({
               <Typography size="h5" weight="medium" className="!text-red-500">
                 {error}
               </Typography>
-            ) : balance !== undefined ? (
+            ) : balance !== undefined && !Number.isNaN(balance) ? (
               <div
                 className="flex cursor-pointer items-center gap-1"
                 onClick={handleBalanceClick}
