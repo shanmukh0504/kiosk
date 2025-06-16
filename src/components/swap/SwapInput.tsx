@@ -37,7 +37,6 @@ export const SwapInput: FC<SwapInputProps> = ({
   timeEstimate,
   loading,
 }) => {
-  console.log(balance);
   const [isFocused, setIsFocused] = useState(false);
   const [animated, setAnimated] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
