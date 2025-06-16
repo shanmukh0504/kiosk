@@ -8,6 +8,7 @@ import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
 import {
   capitalizeChain,
+  formatAmount,
   getAssetFromChainAndSymbol,
   getQueryParams,
 } from "../../utils/utils";
@@ -45,6 +46,8 @@ export const CreateSwap = () => {
     swapAssets,
   } = useSwap();
   const { setOpenModal } = modalStore();
+
+  const decimals = inputAsset && Math.max(inputAsset.decimals, 8);
 
   const buttonLabel = useMemo(() => {
     if (needsWalletConnection)
@@ -209,7 +212,7 @@ export const CreateSwap = () => {
             loading={loading.input}
             price={tokenPrices.input}
             error={error.inputError}
-            balance={inputTokenBalance}
+            balance={formatAmount(inputTokenBalance, 0, decimals)}
           />
           <div
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"

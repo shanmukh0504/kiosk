@@ -163,7 +163,7 @@ export const SwapInput: FC<SwapInputProps> = ({
               <Typography size="h5" weight="medium" className="!text-red-500">
                 {error}
               </Typography>
-            ) : balance !== undefined ? (
+            ) : balance !== undefined && !Number.isNaN(balance) ? (
               <div
                 className="flex cursor-pointer items-center gap-1"
                 onClick={handleBalanceClick}
