@@ -6,8 +6,12 @@ import axios from "axios";
 import { Quote, Strategies } from "@gardenfi/core";
 import { generateTokenKey } from "../utils/generateTokenKey";
 
+type AssetConfig = Asset & {
+  disabled?: boolean;
+};
+
 export type Networks = {
-  [chain in Chain]: ChainData & { assetConfig: Omit<Asset, "chain">[] };
+  [chain in Chain]: ChainData & { assetConfig: Omit<AssetConfig, "chain">[] };
 };
 
 export type ChainData = {
@@ -17,12 +21,15 @@ export type ChainData = {
   networkType: string;
   name: string;
   identifier: Chain;
+  disabled: boolean;
 };
 
-export type Assets = Record<string, Asset>;
+export type Assets = Record<string, AssetConfig>;
 export type Chains = Partial<Record<Chain, ChainData>>;
 
 type AssetInfoState = {
+  allChains: Chains | null;
+  allAssets: Assets | null;
   assets: Assets | null;
   chains: Chains | null;
   isLoading: boolean;
@@ -45,6 +52,8 @@ type AssetInfoState = {
 export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   assets: null,
   chains: null,
+  allAssets: null,
+  allChains: null,
   isAssetSelectorOpen: {
     isOpen: false,
     type: IOType.input,
@@ -81,31 +90,46 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       );
       const assetsData = res.data;
 
+      const allChains: Chains = {};
+      const allAssets: Assets = {};
       const assets: Assets = {};
       const chains: Chains = {};
 
       for (const chainInfo of Object.values(assetsData)) {
         if (!SUPPORTED_CHAINS.includes(chainInfo.identifier)) continue;
 
-        chains[chainInfo.identifier] = {
+        allChains[chainInfo.identifier] = {
           chainId: chainInfo.chainId,
           explorer: chainInfo.explorer,
           networkLogo: chainInfo.networkLogo,
           networkType: chainInfo.networkType,
           name: chainInfo.name,
           identifier: chainInfo.identifier,
+          disabled: chainInfo.disabled,
         };
 
+        let totalAssets = 0;
+
         for (const asset of chainInfo.assetConfig) {
-          assets[
-            generateTokenKey(chainInfo.identifier, asset.atomicSwapAddress)
-          ] = {
+          const tokenKey = generateTokenKey(
+            chainInfo.identifier,
+            asset.atomicSwapAddress
+          );
+          allAssets[tokenKey] = {
             ...asset,
             chain: chainInfo.identifier,
           };
+          if (!asset.disabled && !chainInfo.disabled) {
+            assets[tokenKey] = allAssets[tokenKey];
+            totalAssets++;
+          }
+        }
+
+        if (totalAssets > 0) {
+          chains[chainInfo.identifier] = allChains[chainInfo.identifier];
         }
       }
-      set({ assets, chains });
+      set({ allAssets, allChains, assets, chains });
     } catch (error) {
       console.error("Failed to fetch assets data", error);
       set({ error: "Failed to fetch assets data" });

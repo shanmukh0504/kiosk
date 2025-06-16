@@ -1,13 +1,16 @@
 import { Button, ExchangeIcon } from "@gardenfi/garden-book";
 import { SwapInput } from "./SwapInput";
 import { getTimeEstimates, IOType } from "../../constants/constants";
-import { BTC } from "../../store/swapStore";
 import { useEffect, useMemo, useState } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { useSearchParams } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
-import { getAssetFromChainAndSymbol, getQueryParams } from "../../utils/utils";
+import {
+  capitalizeChain,
+  getAssetFromChainAndSymbol,
+  getQueryParams,
+} from "../../utils/utils";
 import { QUERY_PARAMS } from "../../constants/constants";
 import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
 
@@ -16,6 +19,7 @@ export const CreateSwap = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [addParams, setAddParams] = useState(false);
+
   const { assets } = assetInfoStore();
 
   const {
@@ -44,10 +48,10 @@ export const CreateSwap = () => {
   const buttonLabel = useMemo(() => {
     return error.liquidityError
       ? "Insufficient liquidity"
-      : needsWalletConnection
-        ? `Connect ${needsWalletConnection === "starknet" ? "Starknet" : "EVM"} Wallet`
-        : error.insufficientBalanceError
-          ? "Insufficient balance"
+      : error.insufficientBalanceError
+        ? "Insufficient balance"
+        : needsWalletConnection
+          ? `Connect ${capitalizeChain(needsWalletConnection)} Wallet`
           : isApproving
             ? "Approving..."
             : isSwapping
@@ -61,18 +65,15 @@ export const CreateSwap = () => {
     error.insufficientBalanceError,
   ]);
 
-  const buttonVariant = useMemo(() => {
-    return needsWalletConnection
-      ? "primary"
-      : !!error.liquidityError ||
-          !!error.insufficientBalanceError ||
-          loadingDisabled
-        ? "disabled"
-        : isSwapping
-          ? "ternary"
-          : validSwap
-            ? "primary"
-            : "disabled";
+  const buttonDisabled = useMemo(() => {
+    return !!error.liquidityError ||
+      !!error.insufficientBalanceError ||
+      loadingDisabled ||
+      isSwapping
+      ? true
+      : needsWalletConnection || validSwap
+        ? false
+        : true;
   }, [
     isSwapping,
     validSwap,
@@ -81,6 +82,16 @@ export const CreateSwap = () => {
     needsWalletConnection,
     loadingDisabled,
   ]);
+
+  const buttonVariant = useMemo(() => {
+    return buttonDisabled
+      ? "disabled"
+      : isSwapping
+        ? "ternary"
+        : needsWalletConnection || validSwap
+          ? "primary"
+          : "disabled";
+  }, [buttonDisabled, isSwapping, validSwap, needsWalletConnection]);
 
   const timeEstimate = useMemo(() => {
     if (!inputAsset || !outputAsset) return "";
@@ -126,7 +137,12 @@ export const CreateSwap = () => {
 
     setAsset(IOType.input, fromAsset);
     setAsset(IOType.output, toAsset);
-    if (!fromAsset && !toAsset) setAsset(IOType.input, BTC);
+    if (!fromAsset && !toAsset) {
+      const BTC = Object.values(assets).find(
+        (asset) => asset.name.toLowerCase() == "bitcoin"
+      );
+      BTC && !BTC.disabled ? setAsset(IOType.input, BTC) : null;
+    }
     setAddParams(true);
   }, [addParams, assets, inputAsset, outputAsset, searchParams, setAsset]);
 
@@ -215,23 +231,11 @@ export const CreateSwap = () => {
         </div>
         <InputAddressAndFeeRateDetails />
         <Button
-          className={`mt-3 transition-colors duration-500 ${
-            !needsWalletConnection && buttonLabel !== "Swap"
-              ? "pointer-events-none"
-              : ""
-          }`}
+          className="mt-3 transition-colors duration-500"
           variant={buttonVariant}
           size="lg"
           onClick={
             needsWalletConnection ? handleConnectWallet : handleSwapClick
-          }
-          disabled={
-            loadingDisabled ||
-            isSwapping ||
-            (!needsWalletConnection &&
-              (!validSwap ||
-                !!error.liquidityError ||
-                !!error.insufficientBalanceError))
           }
         >
           {buttonLabel}
