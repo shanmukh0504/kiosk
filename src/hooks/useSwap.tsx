@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { swapStore } from "../store/swapStore";
 import { IOType, network } from "../constants/constants";
-import { Asset, Chain, isBitcoin } from "@gardenfi/orderbook";
+import { Asset, Chain, isBitcoin, isSolana } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
 import {
@@ -23,6 +23,7 @@ import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import BigNumber from "bignumber.js";
 import { formatAmount } from "../utils/utils";
+import { useSolanaWallet } from "./useSolanaWallet";
 // import { useWalletClient } from "wagmi";
 // import { Account } from "viem";
 // import { approve, checkAllowance } from "../utils/approve";
@@ -72,6 +73,7 @@ export const useSwap = () => {
     () => new BigNumber(inputAmount).gt(inputTokenBalance),
     [inputAmount, inputTokenBalance]
   );
+  const { solanaAddress } = useSolanaWallet();
 
   const isBitcoinSwap = useMemo(() => {
     return !!(
@@ -355,6 +357,10 @@ export const useSwap = () => {
         check: (chain: Chain) => isStarknet(chain),
         address: starknetAddress,
       },
+      solana: {
+        check: (chain: Chain) => isSolana(chain),
+        address: solanaAddress,
+      },
     };
 
     for (const [chainKey, { check, address }] of Object.entries(
@@ -366,7 +372,7 @@ export const useSwap = () => {
     }
 
     return null;
-  }, [inputAsset, outputAsset, evmAddress, starknetAddress]);
+  }, [inputAsset, outputAsset, evmAddress, starknetAddress, solanaAddress]);
 
   const handleSwapClick = async () => {
     if (needsWalletConnection) {
@@ -441,7 +447,6 @@ export const useSwap = () => {
         receiveAmount: outputAmountInDecimals,
         additionalData,
       });
-
       if (res.error) {
         if (
           res.error.includes(

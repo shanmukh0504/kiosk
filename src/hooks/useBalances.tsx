@@ -1,21 +1,30 @@
 import { useEffect, useMemo } from "react";
-import { Asset, isBitcoin, isStarknet, isEVM } from "@gardenfi/orderbook";
+import {
+  Asset,
+  isBitcoin,
+  isStarknet,
+  isEVM,
+  isSolana,
+} from "@gardenfi/orderbook";
 import { evmToViemChainMap } from "@gardenfi/core";
 import { useEVMWallet } from "./useEVMWallet";
 import {
   getTokenBalance,
   getStarknetTokenBalance,
+  getSolanaTokenBalance,
 } from "../utils/getTokenBalance";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import BigNumber from "bignumber.js";
 import { balanceStore } from "../store/balanceStore";
 import { useStarknetWallet } from "./useStarknetWallet";
+import { useSolanaWallet } from "./useSolanaWallet";
 
 export const useBalances = (asset: Asset | undefined) => {
   const { balances, setBalance, clearBalances } = balanceStore();
   const { address } = useEVMWallet();
   const { provider } = useBitcoinWallet();
   const { starknetAccount } = useStarknetWallet();
+  const { solanaAnchorProvider, connection } = useSolanaWallet();
 
   const tokenBalance = useMemo(
     () => balances[`${asset?.chain}_${asset?.tokenAddress.toLowerCase()}`],
@@ -54,6 +63,16 @@ export const useBalances = (asset: Asset | undefined) => {
         if (!chain) return;
         const balance = await getTokenBalance(address, asset);
         setBalance(asset, balance);
+      } else if (isSolana(asset.chain)) {
+        if (!solanaAnchorProvider) {
+          clearBalances();
+          return;
+        }
+        const balance = await getSolanaTokenBalance(
+          solanaAnchorProvider.publicKey,
+          asset
+        );
+        setBalance(asset, balance);
       }
     };
 
@@ -61,7 +80,16 @@ export const useBalances = (asset: Asset | undefined) => {
     const intervalId = setInterval(fetchBalance, 10000);
 
     return () => clearInterval(intervalId);
-  }, [address, clearBalances, asset, provider, setBalance, starknetAccount]);
+  }, [
+    address,
+    clearBalances,
+    asset,
+    provider,
+    setBalance,
+    starknetAccount,
+    solanaAnchorProvider,
+    connection.onAccountChange,
+  ]);
 
   return { balances, tokenBalance };
 };

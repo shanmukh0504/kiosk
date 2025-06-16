@@ -1,8 +1,9 @@
 import { Typography } from "@gardenfi/garden-book";
 import { FC } from "react";
 import { Loader } from "../../../common/Loader";
-import { EcosystemKeys, ecosystems } from "./constants";
+import { ecosystems } from "./constants";
 import { motion } from "framer-motion";
+import { BlockchainType } from "@gardenfi/orderbook";
 
 type WalletRowProps = {
   name: string;
@@ -14,7 +15,7 @@ type WalletRowProps = {
 };
 
 type IsConnected = {
-  [key in EcosystemKeys]: boolean;
+  [key in BlockchainType]: boolean;
 };
 
 export const WalletRow: FC<WalletRowProps> = ({
@@ -72,7 +73,7 @@ export const WalletRow: FC<WalletRowProps> = ({
                     isConnected && (
                       <img
                         key={ecosystem}
-                        src={ecosystems[ecosystem as EcosystemKeys].icon ?? ""}
+                        src={ecosystems[ecosystem as BlockchainType].icon ?? ""}
                         height={24}
                         width={24}
                       />
