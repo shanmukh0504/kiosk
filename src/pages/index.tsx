@@ -1,9 +1,10 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { Layout } from "../layout/Layout";
 import {
   Environment,
   INTERNAL_ROUTES,
   environment,
+  isStakeDisable,
   network,
 } from "../constants/constants";
 import { SwapPage } from "./swap";
@@ -47,9 +48,13 @@ function App() {
           {INTERNAL_ROUTES.swap.path.map((path) => (
             <Route key={path} path={path} element={<SwapPage />} />
           ))}
-          {INTERNAL_ROUTES.stake.path.map((path) => (
-            <Route key={path} path={path} element={<StakePage />} />
-          ))}
+          {isStakeDisable ? (
+            <Route path="/stake" element={<Navigate to="/" replace />} />
+          ) : (
+            INTERNAL_ROUTES.stake.path.map((path) => (
+              <Route key={path} path={path} element={<StakePage />} />
+            ))
+          )}
         </Routes>
       </Layout>
     </GardenProvider>

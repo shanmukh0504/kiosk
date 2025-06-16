@@ -1,5 +1,5 @@
 import { Button, GardenFullLogo, Typography } from "@gardenfi/garden-book";
-import { INTERNAL_ROUTES } from "../../constants/constants";
+import { routes } from "../../constants/constants";
 import { API } from "../../constants/api";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 // import { Address } from "./Address";
@@ -34,7 +34,7 @@ export const Navbar = () => {
           className="cursor-pointer"
         />
         <div className="hidden gap-12 sm:flex sm:items-center">
-          {Object.values(INTERNAL_ROUTES).map((route) => {
+          {routes.map(([, route]) => {
             const paths = route.path;
             const isActive = paths.some(isCurrentRoute);
             const primaryPath = paths[0];
