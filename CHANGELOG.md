@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.0.3]
+- Display up to 8 decimal places for balance and input amount values.
+
 ## [1.0.2]
 
 ### Added
