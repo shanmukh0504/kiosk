@@ -8,7 +8,12 @@ import {
 import { FC, useMemo, useRef, ChangeEvent, useState, useEffect } from "react";
 import { IOType } from "../../constants/constants";
 import { assetInfoStore } from "../../store/assetInfoStore";
-import { Asset, isBitcoin, isEvmNativeToken } from "@gardenfi/orderbook";
+import {
+  Asset,
+  isBitcoin,
+  isEvmNativeToken,
+  isSolana,
+} from "@gardenfi/orderbook";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { ErrorFormat } from "../../constants/errors";
 import NumberFlow from "@number-flow/react";
@@ -48,7 +53,12 @@ export const SwapInput: FC<SwapInputProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const network = useMemo(() => {
-    if (!chains || (asset && isBitcoin(asset.chain))) return;
+    if (
+      !chains ||
+      (asset && isBitcoin(asset.chain)) ||
+      (asset && isSolana(asset.chain))
+    )
+      return;
     if (!asset) return;
     return chains && chains[asset.chain];
   }, [asset, chains]);
