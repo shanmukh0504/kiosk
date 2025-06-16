@@ -46,6 +46,8 @@ export const CreateSwap = () => {
   } = useSwap();
   const { setOpenModal } = modalStore();
 
+  const decimals = inputAsset && Math.max(inputAsset.decimals, 8);
+
   const buttonLabel = useMemo(() => {
     return error.liquidityError
       ? "Insufficient liquidity"
@@ -209,7 +211,7 @@ export const CreateSwap = () => {
             loading={loading.input}
             price={tokenPrices.input}
             error={error.inputError}
-            balance={formatAmount(inputTokenBalance, 0, 8)}
+            balance={formatAmount(inputTokenBalance, 0, decimals)}
           />
           <div
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
