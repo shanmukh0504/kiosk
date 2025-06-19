@@ -299,7 +299,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         <div className="flex items-center justify-between p-1">
           <Typography size="h4" weight="bold">
             {`Select token to ${
-              isAssetSelectorOpen.type === IOType.input ? "send" : "recieve"
+              isAssetSelectorOpen.type === IOType.input ? "send" : "receive"
             }`}
           </Typography>
           <CloseIcon
