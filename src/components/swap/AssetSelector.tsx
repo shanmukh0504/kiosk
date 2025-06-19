@@ -331,7 +331,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                 {hoveredChain === c.name && (
                   <ChainsTooltip
                     chain={c.name}
-                    className={`${network === Network.TESTNET ? (i === 0 ? "translate-x-6" : orderedChains.length - visibleChainsCount === 0 && i === visibleChainsCount - 1 && !isMobile ? "-translate-x-4" : "") : ""}`}
+                    className={`${network === Network.TESTNET ? (i === 0 ? "translate-x-6" : orderedChains.length - visibleChainsCount === 0 && i === visibleChainsCount - 1 && !!isMobile ? "-translate-x-4" : "") : ""}`}
                   />
                 )}
               </button>
