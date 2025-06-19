@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { Chain } from "wagmi/chains";
 
@@ -15,7 +14,7 @@ type WorkingRPCResult = {
 
 export const testRPC = async (
   rpcUrl: string,
-  timeoutMs: number = 5000
+  timeoutMs: number = 1000
 ): Promise<RPCValidationResult> => {
   const startTime = Date.now();
 
@@ -54,11 +53,23 @@ export const testRPC = async (
   }
 };
 
-export const getChainlistRPCs = async (chainId: number): Promise<string[]> => {
+type ChainListRPC = {
+  [chainId: number]: string[];
+};
+
+export const getChainListRPCs = async (): Promise<ChainListRPC> => {
   try {
-    const { data } = await axios.get("https://chainlist.org/rpcs.json");
-    const entry = data.find((c: any) => c.chainId === chainId);
-    return entry?.rpc?.map((rpcObj: any) => rpcObj.url).filter(Boolean) || [];
+    const { data } = await axios.get<
+      {
+        chainId: number;
+        rpc: { url: string }[];
+      }[]
+    >("https://chainlist.org/rpcs.json");
+
+    return data.reduce((acc, curr) => {
+      acc[curr.chainId] = curr.rpc.map((rpc) => rpc.url);
+      return acc;
+    }, {} as ChainListRPC);
   } catch (error) {
     console.error("Failed to fetch RPCs:", error);
     return [];
@@ -100,30 +111,27 @@ export const getAllWorkingRPCs = async (
   maxRPCsPerChain: number = 5
 ): Promise<WorkingRPCResult> => {
   const result: WorkingRPCResult = {};
-  const maxConcurrentChains = 3;
+  const rpcs = await getChainListRPCs();
 
-  for (let i = 0; i < supportedChains.length; i += maxConcurrentChains) {
-    const chainBatch = supportedChains.slice(i, i + maxConcurrentChains);
+  const workingRPCsPromises = supportedChains.map(async (chain) => {
+    const reqRPCs = rpcs[chain.id];
+    let workingRPCs: string[];
 
-    const chainPromises = chainBatch.map(async (chain) => {
-      const chainId = chain.id;
+    if (!reqRPCs || reqRPCs.length === 0) {
+      workingRPCs = [chain.rpcUrls.default.http[0]];
+    } else {
+      workingRPCs = await getWorkingRPCs(reqRPCs, maxRPCsPerChain);
+    }
 
-      try {
-        const allRPCs = await getChainlistRPCs(chainId);
-        if (allRPCs.length === 0) return { chainId, workingRPCs: [] };
+    return { chainId: chain.id, workingRPCs };
+  });
 
-        const workingRPCs = await getWorkingRPCs(allRPCs, maxRPCsPerChain);
-        return { chainId, workingRPCs };
-      } catch {
-        return { chainId, workingRPCs: [] };
-      }
-    });
+  const workingRPCsResults = await Promise.all(workingRPCsPromises);
 
-    const batchResults = await Promise.all(chainPromises);
-    batchResults.forEach(({ chainId, workingRPCs }) => {
-      result[chainId] = workingRPCs;
-    });
+  for (const { chainId, workingRPCs } of workingRPCsResults) {
+    result[chainId] = workingRPCs;
   }
-  console.log("Working RPCs:", result);
+
+  console.log("result :", result);
   return result;
 };

@@ -67,6 +67,7 @@ export const useSwap = () => {
   const { address: evmAddress } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { setOpenModal } = modalStore();
+
   const allBalances = useMemo(
     () => ({
       ...balances,

@@ -207,6 +207,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       set({ fiatData: {} });
     }
   },
+
   fetchAndSetEvmBalances: async (address: string) => {
     const { assets } = get();
     if (!assets) return;
@@ -263,6 +264,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       console.error(`Failed to fetch Bitcoin balance`, error);
     }
   },
+
   SetStarknetBalance(balance: string) {
     const { assets } = get();
     if (!assets) return;
