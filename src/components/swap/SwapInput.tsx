@@ -218,7 +218,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                       isAnimating && "pointer-events-none"
                     )}
                     style={{ fontKerning: "none" }}
-                    type="tel"
+                    inputMode="decimal"
                     value={amount}
                     onChange={handleAmountChange}
                     onFocus={() => setIsFocused(true)}

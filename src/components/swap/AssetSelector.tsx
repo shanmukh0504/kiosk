@@ -15,6 +15,7 @@ import { IOType } from "../../constants/constants";
 import { constructOrderPair } from "@gardenfi/core";
 import { AssetChainLogos } from "../../common/AssetChainLogos";
 import { modalStore } from "../../store/modalStore";
+import { viewPortStore } from "../../store/viewPortStore";
 
 type props = {
   onClose: () => void;
@@ -25,6 +26,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const [input, setInput] = useState<string>("");
   const [results, setResults] = useState<Asset[]>();
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const { isMobile } = viewPortStore();
 
   const {
     isAssetSelectorOpen,
@@ -160,9 +163,10 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     if (isAssetSelectorOpen.isOpen) {
       setChain(undefined);
       setInput("");
+      if (isMobile) return;
       inputRef.current?.focus();
     }
-  }, [isAssetSelectorOpen]);
+  }, [isAssetSelectorOpen, isMobile]);
 
   return (
     <div className="transition-left left-auto top-60 z-40 flex flex-col gap-3 rounded-[20px] duration-700 ease-cubic-in-out sm:w-[480px]">
