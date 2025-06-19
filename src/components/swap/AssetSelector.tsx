@@ -294,7 +294,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           delay: showAllChains ? 0 : 0.25,
           ease: "easeOut",
         }}
-        className={`transition-left left-auto top-60 z-30 flex flex-col gap-3 rounded-[20px] duration-700 ${isMobile ? "" : "m-1"} `}
+        className={`transition-left left-auto top-60 z-30 flex flex-col gap-3 rounded-[20px] duration-700 sm:min-w-[468px] ${isMobile ? "" : "m-1"} `}
       >
         <div className="flex items-center justify-between p-1">
           <Typography size="h4" weight="bold">
@@ -367,7 +367,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           </div>
           <SearchIcon />
         </div>
-        <div className="flex h-full max-h-[316px] flex-col overflow-auto rounded-2xl bg-white">
+        <div className="flex h-[316px] flex-col overflow-auto rounded-2xl bg-white">
           <div className="px-4 pb-1.5 pt-3">
             <Typography size="h5" weight="bold">
               {chain ? "Assets on " + chain.name : "Assets"}
