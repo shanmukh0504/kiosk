@@ -8,19 +8,36 @@ import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
 import {
   capitalizeChain,
+  formatAmount,
   getAssetFromChainAndSymbol,
   getQueryParams,
 } from "../../utils/utils";
 import { QUERY_PARAMS } from "../../constants/constants";
 import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { useEVMWallet } from "../../hooks/useEVMWallet";
+import { useStarknetWallet } from "../../hooks/useStarknetWallet";
+import { useBalance } from "@starknet-react/core";
 
 export const CreateSwap = () => {
   const [loadingDisabled, setLoadingDisabled] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [addParams, setAddParams] = useState(false);
-
-  const { assets } = assetInfoStore();
+  const { account: btcAddress, provider } = useBitcoinWallet();
+  const { address } = useEVMWallet();
+  const { starknetAccount } = useStarknetWallet();
+  const { data: starknetBalance } = useBalance({
+    address: starknetAccount?.address as `0x${string}`,
+    watch: true,
+  });
+  const {
+    assets,
+    fetchAndSetBitcoinBalance,
+    fetchAndSetEvmBalances,
+    fetchAndSetFiatValues,
+    SetStarknetBalance,
+  } = assetInfoStore();
 
   const {
     outputAmount,
@@ -44,6 +61,8 @@ export const CreateSwap = () => {
     swapAssets,
   } = useSwap();
   const { setOpenModal } = modalStore();
+
+  const decimals = inputAsset && Math.max(inputAsset.decimals, 8);
 
   const buttonLabel = useMemo(() => {
     return error.liquidityError
@@ -114,6 +133,37 @@ export const CreateSwap = () => {
       });
     }
   };
+
+  useEffect(() => {
+    if (!assets || !address) return;
+
+    const updateBalances = async () => {
+      await fetchAndSetFiatValues();
+      await fetchAndSetEvmBalances(address);
+      if (btcAddress && provider) {
+        await fetchAndSetBitcoinBalance(provider);
+      }
+      if (starknetBalance && starknetAccount) {
+        SetStarknetBalance(starknetBalance.formatted);
+      }
+    };
+
+    updateBalances();
+    const interval = setInterval(updateBalances, 7000);
+
+    return () => clearInterval(interval);
+  }, [
+    assets,
+    address,
+    provider,
+    btcAddress,
+    fetchAndSetEvmBalances,
+    fetchAndSetBitcoinBalance,
+    starknetBalance,
+    starknetAccount,
+    SetStarknetBalance,
+    fetchAndSetFiatValues,
+  ]);
 
   useEffect(() => {
     if (!assets || addParams) return;
@@ -208,7 +258,9 @@ export const CreateSwap = () => {
             loading={loading.input}
             price={tokenPrices.input}
             error={error.inputError}
-            balance={inputTokenBalance}
+            balance={
+              inputTokenBalance && formatAmount(inputTokenBalance, 0, decimals)
+            }
           />
           <div
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
