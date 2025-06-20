@@ -70,8 +70,7 @@ export const getChainListRPCs = async (): Promise<ChainListRPC> => {
       acc[curr.chainId] = curr.rpc.map((rpc) => rpc.url);
       return acc;
     }, {} as ChainListRPC);
-  } catch (error) {
-    console.error("Failed to fetch RPCs:", error);
+  } catch {
     return [];
   }
 };
@@ -132,6 +131,5 @@ export const getAllWorkingRPCs = async (
     result[chainId] = workingRPCs;
   }
 
-  console.log("result :", result);
   return result;
 };

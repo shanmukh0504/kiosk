@@ -103,45 +103,6 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     [isAssetSelectorOpen.type, inputAsset, outputAsset]
   );
 
-  useEffect(() => {
-    if (!assets || !strategies.val) return;
-    if (!comparisonToken) {
-      setResults(Object.values(assets));
-    } else {
-      const supportedTokens = Object.values(assets).filter((asset) => {
-        const op =
-          isAssetSelectorOpen.type === IOType.input
-            ? constructOrderPair(
-                asset.chain,
-                asset.atomicSwapAddress,
-                comparisonToken.chain,
-                comparisonToken.atomicSwapAddress
-              )
-            : constructOrderPair(
-                comparisonToken.chain,
-                comparisonToken.atomicSwapAddress,
-                asset.chain,
-                asset.atomicSwapAddress
-              );
-        return strategies.val && strategies.val[op] !== undefined;
-      });
-      setResults([...supportedTokens, comparisonToken]);
-    }
-  }, [assets, comparisonToken, isAssetSelectorOpen.type, strategies.val]);
-
-  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-    if (!assets) return;
-    const inputValue = e.target.value.toLowerCase();
-    setInput(inputValue);
-    setResults(
-      Object.values(assets).filter(
-        (asset) =>
-          asset.name?.toLowerCase().includes(inputValue) ||
-          asset.symbol?.toLowerCase().includes(inputValue)
-      )
-    );
-  };
-
   const sortedResults = useMemo(() => {
     if (!results || orderedChains.length === 0) return [];
     return [...results]
@@ -159,6 +120,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         }
         return 0;
       })
+      .filter((asset) => !chain || asset.chain === chain.identifier)
       .map((asset) => {
         const network = !isBitcoin(asset.chain)
           ? chains?.[asset.chain]
@@ -186,26 +148,18 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           fiatBalance,
         };
       });
-  }, [results, orderedChains, chains, allBalances, fiatData]);
-
-  const filteredSortedResults = useMemo(
-    () =>
-      sortedResults?.filter(
-        (item) => !chain || item.asset.chain === chain.identifier
-      ),
-    [sortedResults, chain]
-  );
+  }, [results, orderedChains, chains, chain, allBalances, fiatData]);
 
   const isAnyWalletConnected = !!address || !!btcAddress || !!starknetAccount;
   const fiatBasedSortedResults = useMemo(() => {
-    if (!isAnyWalletConnected) return filteredSortedResults;
+    if (!isAnyWalletConnected) return sortedResults;
 
-    return [...filteredSortedResults].sort((a, b) => {
+    return [...sortedResults].sort((a, b) => {
       const aFiat = Number(a.fiatBalance) || 0;
       const bFiat = Number(b.fiatBalance) || 0;
       return bFiat - aFiat;
     });
-  }, [filteredSortedResults, isAnyWalletConnected]);
+  }, [sortedResults, isAnyWalletConnected]);
 
   const visibleChains = useMemo(() => {
     if (!sidebarSelectedChain)
@@ -249,9 +203,48 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
 
   const handleChainClick = (selectedChain: ChainData) => {
     setChain(selectedChain);
-    setSidebarSelectedChain(selectedChain); // Mark that this was from the sidebar
+    setSidebarSelectedChain(selectedChain);
     setShowAllChains(false);
   };
+
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!assets) return;
+    const inputValue = e.target.value.toLowerCase();
+    setInput(inputValue);
+    setResults(
+      Object.values(assets).filter(
+        (asset) =>
+          asset.name?.toLowerCase().includes(inputValue) ||
+          asset.symbol?.toLowerCase().includes(inputValue)
+      )
+    );
+  };
+
+  useEffect(() => {
+    if (!assets || !strategies.val) return;
+    if (!comparisonToken) {
+      setResults(Object.values(assets));
+    } else {
+      const supportedTokens = Object.values(assets).filter((asset) => {
+        const op =
+          isAssetSelectorOpen.type === IOType.input
+            ? constructOrderPair(
+                asset.chain,
+                asset.atomicSwapAddress,
+                comparisonToken.chain,
+                comparisonToken.atomicSwapAddress
+              )
+            : constructOrderPair(
+                comparisonToken.chain,
+                comparisonToken.atomicSwapAddress,
+                asset.chain,
+                asset.atomicSwapAddress
+              );
+        return strategies.val && strategies.val[op] !== undefined;
+      });
+      setResults([...supportedTokens, comparisonToken]);
+    }
+  }, [assets, comparisonToken, isAssetSelectorOpen.type, strategies.val]);
 
   useEffect(() => {
     if (isAssetSelectorOpen.isOpen) {
@@ -261,7 +254,6 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     }
   }, [isAssetSelectorOpen]);
 
-  // Update visible chains count on resize for mobile
   useEffect(() => {
     const updateVisibleChains = () => {
       if (isMobile) {

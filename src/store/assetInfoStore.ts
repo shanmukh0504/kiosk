@@ -19,6 +19,7 @@ import BigNumber from "bignumber.js";
 import { getBalanceMulticall } from "../utils/getBalanceMulticall";
 import { IInjectedBitcoinProvider } from "@gardenfi/wallet-connectors";
 import { getOrderPair } from "../utils/utils";
+import { getStarknetTokenBalance } from "../utils/getTokenBalance";
 
 export type Networks = {
   [chain in Chain]: ChainData & { assetConfig: Omit<AssetConfig, "chain">[] };
@@ -76,7 +77,7 @@ type AssetInfoState = {
   fetchAndSetBitcoinBalance: (
     provider: IInjectedBitcoinProvider
   ) => Promise<void>;
-  SetStarknetBalance: (balance: string) => void;
+  fetchAndSetStarknetBalance: (address: string) => Promise<void>;
   clearBalances: () => void;
 };
 
@@ -172,6 +173,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       set({ isLoading: false });
     }
   },
+
   fetchAndSetStrategies: async () => {
     try {
       const quote = new Quote(API().quote.quote.toString());
@@ -189,93 +191,113 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       });
     }
   },
+
   fetchAndSetFiatValues: async () => {
     try {
-      const res = await axios.get<FiatResponse>(
+      const { data } = await axios.get<FiatResponse>(
         API().quote.fiatValues.toString()
       );
-      const fiatData = res.data.result.reduce(
-        (acc, fiat) => {
-          acc[`${fiat.chain}_${fiat.htlc_address.toLowerCase()}`] =
-            fiat.token_price;
+
+      const fiatData = data.result.reduce(
+        (acc, { chain, htlc_address, token_price }) => {
+          acc[`${chain}_${htlc_address.toLowerCase()}`] = token_price;
           return acc;
         },
-        {} as Record<string, number | undefined>
+        {} as Record<string, number>
       );
+
       set({ fiatData });
     } catch {
-      set({ fiatData: {} });
+      /*empty*/
     }
   },
-
   fetchAndSetEvmBalances: async (address: string) => {
     const { assets } = get();
     if (!assets) return;
 
-    const tokenAddressesAccordingToChain = Object.values(assets).reduce(
+    const tokensByChain = Object.values(assets).reduce(
       (acc, asset) => {
-        acc[asset.chain] = [...(acc[asset.chain] || []), asset.tokenAddress];
+        if (!acc[asset.chain]) acc[asset.chain] = [];
+        acc[asset.chain].push(asset.tokenAddress);
         return acc;
       },
       {} as Record<Chain, string[]>
     );
 
-    const balancePromises = Object.entries(tokenAddressesAccordingToChain).map(
-      async ([chain, tokenAddresses]) => ({
-        [chain]: await getBalanceMulticall(
-          tokenAddresses,
-          address,
-          chain as EvmChain
-        ),
-      })
-    );
+    try {
+      const balanceResults = await Promise.all(
+        Object.entries(tokensByChain).map(async ([chain, tokenAddresses]) => {
+          const chainBalances = await getBalanceMulticall(
+            tokenAddresses,
+            address,
+            chain as EvmChain
+          );
 
-    const balances = await Promise.all(balancePromises);
-    const balancesObject = balances.reduce(
-      (acc, chainBalance) => {
-        Object.entries(chainBalance).forEach(([chain, balances]) => {
-          Object.entries(balances).forEach(([tokenAddress, balance]) => {
-            acc[getOrderPair(chain, tokenAddress)] = balance;
-          });
-        });
-        return acc;
-      },
-      {} as Record<string, BigNumber | undefined>
-    );
+          return Object.entries(chainBalances).reduce(
+            (acc, [tokenAddress, balance]) => {
+              acc[getOrderPair(chain, tokenAddress)] = balance;
+              return acc;
+            },
+            {} as Record<string, BigNumber | undefined>
+          );
+        })
+      );
+      const balances = balanceResults.reduce(
+        (acc, chainBalance) => ({
+          ...acc,
+          ...chainBalance,
+        }),
+        {}
+      );
 
-    set({ balances: balancesObject });
+      set({ balances });
+    } catch {
+      /*empty*/
+    }
   },
-
   fetchAndSetBitcoinBalance: async (provider: IInjectedBitcoinProvider) => {
     const { assets } = get();
     if (!assets || !provider) return;
+
     try {
       const balance = await provider.getBalance();
-      const formattedBalance = balance && new BigNumber(balance.val.total);
-      let btcBalance: Record<string, BigNumber | undefined> = {};
-      Object.values(assets).forEach((asset) => {
-        if (isBitcoin(asset.chain)) {
-          btcBalance[getOrderPair(asset.chain, asset.tokenAddress)] =
-            formattedBalance;
-        }
-      });
+      if (!balance?.val?.total) return;
+
+      const formattedBalance = new BigNumber(balance.val.total);
+      const btcBalance = Object.values(assets)
+        .filter((asset) => isBitcoin(asset.chain))
+        .reduce(
+          (acc, asset) => {
+            acc[getOrderPair(asset.chain, asset.tokenAddress)] =
+              formattedBalance;
+            return acc;
+          },
+          {} as Record<string, BigNumber | undefined>
+        );
+
       set({ btcBalance });
-    } catch (error) {
-      console.error(`Failed to fetch Bitcoin balance`, error);
+    } catch {
+      /*empty*/
     }
   },
-
-  SetStarknetBalance(balance: string) {
+  fetchAndSetStarknetBalance: async (address: string) => {
     const { assets } = get();
     if (!assets) return;
-    const formattedBalance = new BigNumber(balance.slice(0, 12));
-    let starknetBalance: Record<string, BigNumber | undefined> = {};
-    Object.values(assets).forEach((asset) => {
-      if (isStarknet(asset.chain)) {
-        starknetBalance[getOrderPair(asset.chain, asset.tokenAddress)] =
-          formattedBalance;
-      }
-    });
+
+    const starknetAsset = Object.values(assets).find((asset) =>
+      isStarknet(asset.chain)
+    );
+
+    if (!starknetAsset) return;
+
+    const starknetBalance: Record<string, BigNumber | undefined> = {};
+    const balance = await getStarknetTokenBalance(address, starknetAsset);
+
+    const orderPair = getOrderPair(
+      starknetAsset.chain,
+      starknetAsset.tokenAddress
+    );
+    starknetBalance[orderPair] = new BigNumber(balance);
     set({ starknetBalance });
   },
   clearBalances: () =>
