@@ -45,6 +45,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const { address } = useEVMWallet();
   const { account: btcAddress } = useBitcoinWallet();
   const { starknetAccount } = useStarknetWallet();
+  const { isMobile } = viewPortStore();
+
   const {
     isAssetSelectorOpen,
     CloseAssetSelector,
@@ -58,7 +60,6 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   } = assetInfoStore();
   const { modalName } = modalStore();
   const { setAsset, inputAsset, outputAsset } = swapStore();
-  const { isMobile } = viewPortStore();
 
   const getNumberOfTabs = () => {
     const innerWidth = window.innerWidth;
@@ -250,9 +251,10 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     if (isAssetSelectorOpen.isOpen) {
       setChain(undefined);
       setInput("");
+      if (isMobile) return;
       inputRef.current?.focus();
     }
-  }, [isAssetSelectorOpen]);
+  }, [isAssetSelectorOpen, isMobile]);
 
   useEffect(() => {
     const updateVisibleChains = () => {
@@ -323,7 +325,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                 {hoveredChain === c.name && (
                   <ChainsTooltip
                     chain={c.name}
-                    className={`${network === Network.TESTNET ? (i === 0 ? "translate-x-6" : orderedChains.length - visibleChainsCount === 0 && i === visibleChainsCount - 1 && !!isMobile ? "-translate-x-4" : "") : ""}`}
+                    className={`${network === Network.TESTNET ? (i === 0 ? "translate-x-7" : orderedChains.length - visibleChainsCount === 0 && i === visibleChainsCount - 1 && !!isMobile ? "-translate-x-4" : "") : ""}`}
                   />
                 )}
               </button>
