@@ -25,13 +25,14 @@ export const CreateSwap = () => {
   const [addParams, setAddParams] = useState(false);
   const { account: btcAddress, provider } = useBitcoinWallet();
   const { address } = useEVMWallet();
-  const { starknetAccount } = useStarknetWallet();
+  const { starknetAddress } = useStarknetWallet();
   const {
     assets,
     fetchAndSetBitcoinBalance,
     fetchAndSetEvmBalances,
     fetchAndSetFiatValues,
     fetchAndSetStarknetBalance,
+    clearBalances,
   } = assetInfoStore();
 
   const {
@@ -130,6 +131,23 @@ export const CreateSwap = () => {
   };
 
   useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+
+    if (
+      (!address && !btcAddress && !starknetAddress) ||
+      (!address && !btcAddress) ||
+      (!address && !starknetAddress) ||
+      (!btcAddress && !starknetAddress)
+    ) {
+      timeoutId = setTimeout(() => {
+        clearBalances();
+      }, 2000);
+    }
+
+    return () => clearTimeout(timeoutId);
+  }, [address, btcAddress, starknetAddress, clearBalances]);
+
+  useEffect(() => {
     if (!assets) return;
 
     const updateBalances = async () => {
@@ -140,8 +158,8 @@ export const CreateSwap = () => {
       if (btcAddress && provider) {
         await fetchAndSetBitcoinBalance(provider);
       }
-      if (starknetAccount) {
-        await fetchAndSetStarknetBalance(starknetAccount.address);
+      if (starknetAddress) {
+        await fetchAndSetStarknetBalance(starknetAddress);
       }
     };
 
@@ -158,20 +176,11 @@ export const CreateSwap = () => {
     btcAddress,
     fetchAndSetEvmBalances,
     fetchAndSetBitcoinBalance,
-    starknetAccount,
+    starknetAddress,
     fetchAndSetFiatValues,
     fetchAndSetStarknetBalance,
+    clearBalances,
   ]);
-
-  useEffect(() => {
-    if (!assets || !starknetAccount?.address) return;
-    const fetchStarknetBalance = async () => {
-      await fetchAndSetStarknetBalance(starknetAccount.address);
-    };
-    fetchStarknetBalance();
-    const interval = setInterval(fetchStarknetBalance, 7000);
-    return () => clearInterval(interval);
-  }, [assets, starknetAccount?.address, fetchAndSetStarknetBalance]);
 
   useEffect(() => {
     if (!assets || addParams) return;
