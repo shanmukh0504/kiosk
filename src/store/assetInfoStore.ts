@@ -55,8 +55,6 @@ type AssetInfoState = {
   chains: Chains | null;
   fiatData: Record<string, number | undefined>;
   balances: Record<string, BigNumber | undefined>;
-  btcBalance: Record<string, BigNumber | undefined>;
-  starknetBalance: Record<string, BigNumber | undefined>;
   isLoading: boolean;
   isAssetSelectorOpen: {
     isOpen: boolean;
@@ -88,8 +86,6 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   allChains: null,
   fiatData: {},
   balances: {},
-  btcBalance: {},
-  starknetBalance: {},
   isAssetSelectorOpen: {
     isOpen: false,
     type: IOType.input,
@@ -256,7 +252,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     }
   },
   fetchAndSetBitcoinBalance: async (provider: IInjectedBitcoinProvider) => {
-    const { assets } = get();
+    const { assets, balances } = get();
     if (!assets || !provider) return;
 
     try {
@@ -275,13 +271,13 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           {} as Record<string, BigNumber | undefined>
         );
 
-      set({ btcBalance });
+      set({ balances: { ...balances, ...btcBalance } });
     } catch {
       /*empty*/
     }
   },
   fetchAndSetStarknetBalance: async (address: string) => {
-    const { assets } = get();
+    const { assets, balances } = get();
     if (!assets) return;
 
     const starknetAsset = Object.values(assets).find((asset) =>
@@ -298,12 +294,10 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       starknetAsset.tokenAddress
     );
     starknetBalance[orderPair] = new BigNumber(balance);
-    set({ starknetBalance });
+    set({ balances: { ...balances, ...starknetBalance } });
   },
   clearBalances: () =>
     set({
       balances: {},
-      btcBalance: {},
-      starknetBalance: {},
     }),
 }));

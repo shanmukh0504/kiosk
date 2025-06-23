@@ -5,7 +5,7 @@ import {
   SearchIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { ChangeEvent, useMemo, useRef, useState } from "react";
 import { viewPortStore } from "../../store/viewPortStore";
 
@@ -70,80 +70,82 @@ export const AvailableChainsSidebar = ({
   };
 
   return (
-    <motion.div
-      {...(isMobile ? mobileAnimationConfig : animationConfig)}
-      className={`absolute left-0 top-0 z-50 w-full rounded-[16px] p-3 ${isMobile ? "pt-7" : ""}`}
-    >
-      <div className="transition-left left-auto top-60 z-40 m-1 flex w-full flex-col gap-3 pr-2 duration-700 ease-cubic-in-out">
-        <div className="flex items-center justify-between p-1">
-          <Typography size="h4" weight="bold">
-            Select chain
-          </Typography>
-          <ArrowLeftIcon onClick={hide} className="cursor-pointer" />
-        </div>
-        <div className="flex items-center justify-between rounded-2xl bg-white/50 px-4 py-[10px]">
-          <div className="flex items-center">
-            <Typography size="h4" weight="medium" className="">
-              <input
-                ref={inputRef}
-                className="bg-transparent outline-none placeholder:text-mid-grey focus:outline-none"
-                type="text"
-                value={input}
-                placeholder="Search chains"
-                onChange={handleSearch}
-              />
+    <AnimatePresence>
+      <motion.div
+        {...(isMobile ? mobileAnimationConfig : animationConfig)}
+        className={`absolute left-0 top-0 z-50 w-full rounded-[16px] p-3 ${isMobile ? "pt-7" : ""}`}
+      >
+        <div className="transition-left left-auto top-60 z-40 m-1 flex w-full flex-col gap-3 pr-2 duration-700 ease-cubic-in-out">
+          <div className="flex items-center justify-between p-1">
+            <Typography size="h4" weight="bold">
+              Select chain
             </Typography>
+            <ArrowLeftIcon onClick={hide} className="cursor-pointer" />
           </div>
-          <SearchIcon />
-        </div>
-        <div
-          className={`flex h-full max-h-[376px] flex-col overflow-auto rounded-2xl bg-white`}
-        >
-          <div className="px-4 pb-1.5 pt-3">
-            <Typography size="h5" weight="bold">
-              {isMobile ? "Chains" : ""}
-            </Typography>
-          </div>
-          <GradientScroll height={376} className="rounded-2xl">
-            <div className="flex w-full flex-col">
-              {filteredChains.length > 0 ? (
-                filteredChains.map((c) => (
-                  <div
-                    key={c.chainId}
-                    className="flex w-full cursor-pointer items-center justify-between hover:bg-off-white"
-                    onClick={() => onClick(c)}
-                  >
-                    <div className="flex w-full items-center gap-4 px-[14px] py-2">
-                      <img
-                        src={c.networkLogo}
-                        alt={c.name}
-                        className="h-5 w-5"
-                      />
-                      <Typography
-                        size={"h5"}
-                        breakpoints={{ sm: "h4" }}
-                        weight="medium"
-                      >
-                        {c.name}
-                      </Typography>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="flex min-h-[334px] w-full items-center justify-center">
-                  <Typography
-                    size="h4"
-                    weight="medium"
-                    className="text-center text-mid-grey"
-                  >
-                    No chains found.
-                  </Typography>
-                </div>
-              )}
+          <div className="flex items-center justify-between rounded-2xl bg-white/50 px-4 py-[10px]">
+            <div className="flex items-center">
+              <Typography size="h4" weight="medium" className="">
+                <input
+                  ref={inputRef}
+                  className="bg-transparent outline-none placeholder:text-mid-grey focus:outline-none"
+                  type="text"
+                  value={input}
+                  placeholder="Search chains"
+                  onChange={handleSearch}
+                />
+              </Typography>
             </div>
-          </GradientScroll>
+            <SearchIcon />
+          </div>
+          <div
+            className={`flex h-full max-h-[376px] flex-col overflow-auto rounded-2xl bg-white`}
+          >
+            <div className="px-4 pb-1.5 pt-3">
+              <Typography size="h5" weight="bold">
+                {isMobile ? "Chains" : ""}
+              </Typography>
+            </div>
+            <GradientScroll height={376} className="rounded-2xl">
+              <div className="flex w-full flex-col">
+                {filteredChains.length > 0 ? (
+                  filteredChains.map((c) => (
+                    <div
+                      key={c.chainId}
+                      className="flex w-full cursor-pointer items-center justify-between hover:bg-off-white"
+                      onClick={() => onClick(c)}
+                    >
+                      <div className="flex w-full items-center gap-4 px-[14px] py-2">
+                        <img
+                          src={c.networkLogo}
+                          alt={c.name}
+                          className="h-5 w-5"
+                        />
+                        <Typography
+                          size={"h5"}
+                          breakpoints={{ sm: "h4" }}
+                          weight="medium"
+                        >
+                          {c.name}
+                        </Typography>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex min-h-[334px] w-full items-center justify-center">
+                    <Typography
+                      size="h4"
+                      weight="medium"
+                      className="text-center text-mid-grey"
+                    >
+                      No chains found.
+                    </Typography>
+                  </div>
+                )}
+              </div>
+            </GradientScroll>
+          </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 };

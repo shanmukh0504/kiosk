@@ -54,32 +54,10 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     chains,
     strategies,
     balances,
-    btcBalance,
-    starknetBalance,
     fiatData,
   } = assetInfoStore();
   const { modalName } = modalStore();
   const { setAsset, inputAsset, outputAsset } = swapStore();
-
-  const getNumberOfTabs = () => {
-    const innerWidth = window.innerWidth;
-    const tabWidth = 52;
-    const padding = 32;
-    const gap = 8;
-
-    const n = Math.floor((innerWidth - padding - gap) / tabWidth);
-    console.log(n);
-    return n - 1;
-  };
-
-  const allBalances = useMemo(
-    () => ({
-      ...balances,
-      ...btcBalance,
-      ...starknetBalance,
-    }),
-    [balances, btcBalance, starknetBalance]
-  );
 
   const orderedChains = useMemo(() => {
     const order = ["bitcoin", "ethereum", "base", "arbitrum"];
@@ -127,7 +105,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           ? chains?.[asset.chain]
           : undefined;
         const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
-        const balance = allBalances?.[orderPair];
+        const balance = balances?.[orderPair];
         const fiatRate = fiatData?.[getAssetChainHTLCAddressPair(asset)] ?? 0;
         const formattedBalance =
           balance && asset && balance.toNumber() === 0
@@ -149,7 +127,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           fiatBalance,
         };
       });
-  }, [results, orderedChains, chains, chain, allBalances, fiatData]);
+  }, [results, orderedChains, chains, chain, balances, fiatData]);
 
   const isAnyWalletConnected = !!address || !!btcAddress || !!starknetAccount;
   const fiatBasedSortedResults = useMemo(() => {
@@ -248,29 +226,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   }, [assets, comparisonToken, isAssetSelectorOpen.type, strategies.val]);
 
   useEffect(() => {
-    if (isAssetSelectorOpen.isOpen) {
-      setChain(undefined);
-      setInput("");
-      if (isMobile) return;
-      inputRef.current?.focus();
-    }
-  }, [isAssetSelectorOpen, isMobile]);
-
-  useEffect(() => {
-    const updateVisibleChains = () => {
-      if (isMobile) {
-        setVisibleChainsCount(getNumberOfTabs());
-      } else {
-        setVisibleChainsCount(7);
-      }
-    };
-
-    updateVisibleChains();
-
-    if (isMobile) {
-      window.addEventListener("resize", updateVisibleChains);
-      return () => window.removeEventListener("resize", updateVisibleChains);
-    }
+    setVisibleChainsCount(isMobile ? 5 : 7);
   }, [isMobile]);
 
   return (
@@ -306,7 +262,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             {visibleChains.map((c, i) => (
               <button
                 key={i}
-                className={`relative flex h-12 w-12 items-center justify-center gap-2 overflow-visible rounded-xl outline-none duration-300 ease-in-out ${
+                className={`relative flex h-12 flex-1 items-center justify-center gap-2 overflow-visible rounded-xl outline-none duration-300 ease-in-out ${
                   !chain || c.chainId !== chain.chainId
                     ? "bg-white/50"
                     : "bg-white"

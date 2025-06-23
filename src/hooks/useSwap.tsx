@@ -55,8 +55,7 @@ export const useSwap = () => {
     setBtcAddress,
     setIsComparisonVisible,
   } = swapStore();
-  const { strategies, balances, btcBalance, starknetBalance } =
-    assetInfoStore();
+  const { strategies, balances } = assetInfoStore();
   const { setOrder, setIsOpen } = orderInProgressStore();
   const { updateOrder } = pendingOrdersStore();
   const { disconnect } = useEVMWallet();
@@ -68,21 +67,12 @@ export const useSwap = () => {
   const { starknetAddress } = useStarknetWallet();
   const { setOpenModal } = modalStore();
 
-  const allBalances = useMemo(
-    () => ({
-      ...balances,
-      ...btcBalance,
-      ...starknetBalance,
-    }),
-    [balances, btcBalance, starknetBalance]
-  );
-
   const inputBalance = useMemo(
     () =>
       inputAsset &&
-      allBalances &&
-      allBalances[getOrderPair(inputAsset.chain, inputAsset.tokenAddress)],
-    [inputAsset, allBalances]
+      balances &&
+      balances[getOrderPair(inputAsset.chain, inputAsset.tokenAddress)],
+    [inputAsset, balances]
   );
 
   const inputTokenBalance = useMemo(
