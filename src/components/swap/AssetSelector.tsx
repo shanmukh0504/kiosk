@@ -15,7 +15,7 @@ import { AssetChainLogos } from "../../common/AssetChainLogos";
 import { modalStore } from "../../store/modalStore";
 import { ChainsTooltip } from "./ChainsTooltip";
 import { AvailableChainsSidebar } from "./AvailableChainsSidebar";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   formatAmount,
   getAssetChainHTLCAddressPair,
@@ -237,119 +237,134 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         hide={hideSidebar}
         onClick={handleChainClick}
       />
-      <motion.div
-        animate={{ opacity: showAllChains ? 0 : 1 }}
-        transition={{
-          duration: showAllChains ? 0.32 : 0.45,
-          delay: showAllChains ? 0 : 0.25,
-          ease: "easeOut",
-        }}
-        className={`transition-left left-auto top-60 z-30 flex flex-col gap-3 rounded-[20px] duration-700 sm:min-w-[468px] ${isMobile ? "" : "m-1"} `}
-      >
-        <div className="flex items-center justify-between p-1">
-          <Typography size="h4" weight="bold">
-            {`Select token to ${
-              isAssetSelectorOpen.type === IOType.input ? "send" : "receive"
-            }`}
-          </Typography>
-          <CloseIcon
-            className="hidden cursor-pointer sm:visible sm:block"
-            onClick={onClose}
-          />
-        </div>
-        <div className="flex w-full flex-wrap gap-3">
-          <div className={`flex w-full ${isMobile ? "gap-2" : "gap-3"}`}>
-            {visibleChains.map((c, i) => (
-              <button
-                key={i}
-                className={`relative flex h-12 flex-1 items-center justify-center gap-2 overflow-visible rounded-xl outline-none duration-300 ease-in-out ${
-                  !chain || c.chainId !== chain.chainId
-                    ? "bg-white/50"
-                    : "bg-white"
-                }`}
-                onMouseEnter={() => setHoveredChain(c.name)}
-                onMouseLeave={() => setHoveredChain("")}
-                onClick={() =>
-                  c === chain ? setChain(undefined) : setChain(c)
-                }
-              >
-                <img
-                  src={c.networkLogo}
-                  alt={c.name}
-                  className="h-full max-h-5 w-full max-w-5"
-                />
-                {hoveredChain === c.name && (
-                  <ChainsTooltip
-                    chain={c.name}
-                    className={`${network === Network.TESTNET ? (i === 0 ? "translate-x-7" : orderedChains.length - visibleChainsCount === 0 && i === visibleChainsCount - 1 && !!isMobile ? "-translate-x-4" : "") : ""}`}
-                  />
-                )}
-              </button>
-            ))}
-            {orderedChains.length > visibleChainsCount && (
-              <button
-                className={`h-12 w-12 cursor-pointer rounded-xl bg-white/50 p-4 duration-300 ease-in-out`}
-                onClick={() => setShowAllChains(true)}
-              >
-                <Typography
-                  size="h4"
-                  weight="medium"
-                  className="!flex !cursor-pointer !items-center !text-mid-grey"
+      <AnimatePresence mode="wait">
+        <motion.div
+          key="mainAssetSelector"
+          initial={{ opacity: 1 }}
+          animate={{ opacity: showAllChains ? 0 : 1 }}
+          // exit={{ opacity: 1 }}
+          transition={{
+            duration: showAllChains ? 0.32 : 0.45,
+            delay: showAllChains ? 0 : 0.25,
+            ease: "easeOut",
+          }}
+          className={`left-auto top-60 z-30 flex flex-col gap-3 rounded-[20px] sm:min-w-[468px] ${isMobile ? "" : "m-1"}`}
+        >
+          <div className="flex items-center justify-between p-1">
+            <Typography size="h4" weight="bold">
+              {`Select token to ${
+                isAssetSelectorOpen.type === IOType.input ? "send" : "receive"
+              }`}
+            </Typography>
+            <CloseIcon
+              className="hidden cursor-pointer sm:visible sm:block"
+              onClick={onClose}
+            />
+          </div>
+          <div className="flex w-full flex-wrap gap-3">
+            <div className={`flex w-full ${isMobile ? "gap-2" : "gap-3"}`}>
+              {visibleChains.map((c, i) => (
+                <button
+                  key={i}
+                  className={`relative flex h-12 flex-1 items-center justify-center gap-2 overflow-visible rounded-xl outline-none duration-300 ease-in-out ${
+                    !chain || c.chainId !== chain.chainId
+                      ? "bg-white/50"
+                      : "bg-white"
+                  }`}
+                  onMouseEnter={() => setHoveredChain(c.name)}
+                  onMouseLeave={() => setHoveredChain("")}
+                  onClick={() =>
+                    c === chain ? setChain(undefined) : setChain(c)
+                  }
                 >
-                  +{orderedChains.length - visibleChainsCount}
-                </Typography>
-              </button>
-            )}
-          </div>
-        </div>
-        <div className="flex w-full items-center justify-between rounded-2xl bg-white/50 px-4 py-[10px]">
-          <div className="flex items-center">
-            <Typography size="h4" weight="medium">
-              <input
-                ref={inputRef}
-                className="w-full bg-transparent outline-none placeholder:text-mid-grey focus:outline-none"
-                type="text"
-                value={input}
-                placeholder="Search assets"
-                onChange={handleSearch}
-              />
-            </Typography>
-          </div>
-          <SearchIcon />
-        </div>
-        <div className="flex h-[316px] flex-col overflow-auto rounded-2xl bg-white">
-          <div className="px-4 pb-1.5 pt-3">
-            <Typography size="h5" weight="bold">
-              {chain ? "Assets on " + chain.name : "Assets"}
-            </Typography>
-          </div>
-          <GradientScroll height={288} onClose={!modalName.assetList}>
-            {fiatBasedSortedResults.length > 0 ? (
-              fiatBasedSortedResults?.map(
-                ({ asset, network, formattedBalance }) => (
-                  <div
-                    key={`${asset.chain}-${asset.atomicSwapAddress}`}
-                    className="flex w-full cursor-pointer items-center justify-between gap-2 px-4 py-1.5 hover:bg-off-white"
-                    onClick={() => handleClick(asset)}
+                  <img
+                    src={c.networkLogo}
+                    alt={c.name}
+                    className="h-full max-h-5 w-full max-w-5"
+                  />
+                  {hoveredChain === c.name && (
+                    <ChainsTooltip
+                      chain={c.name}
+                      className={`${network === Network.TESTNET ? (i === 0 ? "translate-x-7" : orderedChains.length - visibleChainsCount === 0 && i === visibleChainsCount - 1 && !!isMobile ? "-translate-x-4" : "") : ""}`}
+                    />
+                  )}
+                </button>
+              ))}
+              {orderedChains.length > visibleChainsCount && (
+                <button
+                  className={`h-12 w-12 cursor-pointer rounded-xl bg-white/50 p-4 duration-300 ease-in-out`}
+                  onClick={() => setShowAllChains(true)}
+                >
+                  <Typography
+                    size="h4"
+                    weight="medium"
+                    className="!flex !cursor-pointer !items-center !text-mid-grey"
                   >
-                    <div className="flex w-full items-center gap-2">
-                      <div className="w-10">
-                        <AssetChainLogos
-                          tokenLogo={asset.logo}
-                          chainLogo={network?.networkLogo}
-                        />
+                    +{orderedChains.length - visibleChainsCount}
+                  </Typography>
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="flex w-full items-center justify-between rounded-2xl bg-white/50 px-4 py-[10px]">
+            <div className="flex items-center">
+              <Typography size="h4" weight="medium">
+                <input
+                  ref={inputRef}
+                  className="w-full bg-transparent outline-none placeholder:text-mid-grey focus:outline-none"
+                  type="text"
+                  value={input}
+                  placeholder="Search assets"
+                  onChange={handleSearch}
+                />
+              </Typography>
+            </div>
+            <SearchIcon />
+          </div>
+          <div className="flex h-[316px] flex-col overflow-auto rounded-2xl bg-white">
+            <div className="px-4 pb-1.5 pt-3">
+              <Typography size="h5" weight="bold">
+                {chain ? "Assets on " + chain.name : "Assets"}
+              </Typography>
+            </div>
+            <GradientScroll height={272} onClose={!modalName.assetList}>
+              {fiatBasedSortedResults.length > 0 ? (
+                fiatBasedSortedResults?.map(
+                  ({ asset, network, formattedBalance }) => (
+                    <div
+                      key={`${asset.chain}-${asset.atomicSwapAddress}`}
+                      className="flex w-full cursor-pointer items-center justify-between gap-2 px-4 py-1.5 hover:bg-off-white"
+                      onClick={() => handleClick(asset)}
+                    >
+                      <div className="flex w-full items-center gap-2">
+                        <div className="w-10">
+                          <AssetChainLogos
+                            tokenLogo={asset.logo}
+                            chainLogo={network?.networkLogo}
+                          />
+                        </div>
+                        <Typography
+                          className="w-2/3"
+                          size={"h5"}
+                          breakpoints={{ sm: "h4" }}
+                          weight="medium"
+                        >
+                          {asset.name}
+                        </Typography>
                       </div>
-                      <Typography
-                        className="w-2/3"
-                        size={"h5"}
-                        breakpoints={{ sm: "h4" }}
-                        weight="medium"
-                      >
-                        {asset.name}
-                      </Typography>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      {formattedBalance && (
+                      <div className="flex items-center gap-1">
+                        {formattedBalance && (
+                          <Typography
+                            size={"h5"}
+                            breakpoints={{
+                              sm: "h4",
+                            }}
+                            weight="medium"
+                            className="!text-mid-grey"
+                          >
+                            {formatAmount(Number(formattedBalance), 0, 5)}
+                          </Typography>
+                        )}
                         <Typography
                           size={"h5"}
                           breakpoints={{
@@ -358,33 +373,23 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                           weight="medium"
                           className="!text-mid-grey"
                         >
-                          {formatAmount(Number(formattedBalance), 0, 5)}
+                          {asset.symbol}
                         </Typography>
-                      )}
-                      <Typography
-                        size={"h5"}
-                        breakpoints={{
-                          sm: "h4",
-                        }}
-                        weight="medium"
-                        className="!text-mid-grey"
-                      >
-                        {asset.symbol}
-                      </Typography>
+                      </div>
                     </div>
-                  </div>
+                  )
                 )
-              )
-            ) : (
-              <div className="flex min-h-[274px] w-full items-center justify-center">
-                <Typography size="h4" weight="medium">
-                  No assets found.
-                </Typography>
-              </div>
-            )}
-          </GradientScroll>
-        </div>
-      </motion.div>
+              ) : (
+                <div className="flex min-h-[274px] w-full items-center justify-center">
+                  <Typography size="h4" weight="medium">
+                    No assets found.
+                  </Typography>
+                </div>
+              )}
+            </GradientScroll>
+          </div>
+        </motion.div>
+      </AnimatePresence>
     </>
   );
 };
