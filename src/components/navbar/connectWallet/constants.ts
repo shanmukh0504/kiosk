@@ -131,7 +131,7 @@ export const GardenSupportedWallets: Record<
   },
   argentX: {
     id: "argentX",
-    name: "Argent X",
+    name: "Ready Wallet (formerly Argent)",
     logo: "https://garden-finance.imgix.net/wallet/argent.svg",
     installLink: "tallLink:",
     isStarknetSupported: true,
