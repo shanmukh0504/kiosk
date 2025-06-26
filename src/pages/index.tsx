@@ -13,11 +13,19 @@ import { GardenProvider } from "@gardenfi/react-hooks";
 import { useWalletClient } from "wagmi";
 import { useAccount } from "@starknet-react/core";
 import { Environment as GardenEnvironment } from "@gardenfi/utils";
+import { rpcStore } from "../store/rpcStore";
+import { useEffect } from "react";
 
 function App() {
   const { data: walletClient } = useWalletClient();
   const { account: starknetWallet } = useAccount();
+  const { fetchAndSetRPCs } = rpcStore();
 
+  useEffect(() => {
+    fetchAndSetRPCs();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
   return (
     <GardenProvider
       config={{
