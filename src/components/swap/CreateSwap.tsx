@@ -17,6 +17,7 @@ import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
+import { rpcStore } from "../../store/rpcStore";
 
 export const CreateSwap = () => {
   const [loadingDisabled, setLoadingDisabled] = useState(false);
@@ -34,6 +35,8 @@ export const CreateSwap = () => {
     fetchAndSetStarknetBalance,
     clearBalances,
   } = assetInfoStore();
+
+  const { workingRPCs } = rpcStore();
 
   const {
     outputAmount,
@@ -153,7 +156,7 @@ export const CreateSwap = () => {
     const updateBalances = async () => {
       await fetchAndSetFiatValues();
       if (address) {
-        await fetchAndSetEvmBalances(address);
+        await fetchAndSetEvmBalances(address, workingRPCs);
       }
       if (btcAddress && provider) {
         await fetchAndSetBitcoinBalance(provider);
@@ -180,6 +183,7 @@ export const CreateSwap = () => {
     fetchAndSetFiatValues,
     fetchAndSetStarknetBalance,
     clearBalances,
+    workingRPCs,
   ]);
 
   useEffect(() => {
@@ -208,7 +212,9 @@ export const CreateSwap = () => {
       const BTC = Object.values(assets).find(
         (asset) => asset.name.toLowerCase() == "bitcoin"
       );
-      BTC && !BTC.disabled ? setAsset(IOType.input, BTC) : null;
+      if (BTC && !BTC.disabled) {
+        setAsset(IOType.input, BTC);
+      }
     }
     setAddParams(true);
   }, [addParams, assets, inputAsset, outputAsset, searchParams, setAsset]);

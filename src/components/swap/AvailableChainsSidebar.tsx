@@ -82,12 +82,12 @@ export const AvailableChainsSidebar = ({
             </Typography>
             <ArrowLeftIcon onClick={hide} className="cursor-pointer" />
           </div>
-          <div className="flex items-center justify-between rounded-2xl bg-white/50 px-4 py-[10px]">
-            <div className="flex items-center">
-              <Typography size="h4" weight="medium" className="">
+          <div className="flex w-full items-center justify-between rounded-2xl bg-white/50 px-4 py-[10px]">
+            <div className="flex flex-grow items-center">
+              <Typography size="h4" weight="medium" className="gf-w-full">
                 <input
                   ref={inputRef}
-                  className="bg-transparent outline-none placeholder:text-mid-grey focus:outline-none"
+                  className="w-full bg-transparent outline-none placeholder:text-mid-grey focus:outline-none"
                   type="text"
                   value={input}
                   placeholder="Search chains"

@@ -5,6 +5,7 @@ import {
   Chain,
   EvmChain,
   isBitcoin,
+  isEVM,
   isStarknet,
 } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
@@ -20,6 +21,7 @@ import { getBalanceMulticall } from "../utils/getBalanceMulticall";
 import { IInjectedBitcoinProvider } from "@gardenfi/wallet-connectors";
 import { getOrderPair } from "../utils/utils";
 import { getStarknetTokenBalance } from "../utils/getTokenBalance";
+import { Hex } from "viem";
 
 export type Networks = {
   [chain in Chain]: ChainData & { assetConfig: Omit<AssetConfig, "chain">[] };
@@ -71,7 +73,11 @@ type AssetInfoState = {
   fetchAndSetAssetsAndChains: () => Promise<void>;
   fetchAndSetStrategies: () => Promise<void>;
   fetchAndSetFiatValues: () => Promise<void>;
-  fetchAndSetEvmBalances: (address: string) => Promise<void>;
+  fetchAndSetEvmBalances: (
+    address: string,
+    workingRpcs: Record<number, string[]>,
+    fetchOnlySeed?: boolean
+  ) => Promise<void>;
   fetchAndSetBitcoinBalance: (
     provider: IInjectedBitcoinProvider
   ) => Promise<void>;
@@ -207,12 +213,21 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       /*empty*/
     }
   },
-  fetchAndSetEvmBalances: async (address: string) => {
+  fetchAndSetEvmBalances: async (
+    address: string,
+    workingRpcs: Record<number, string[]>,
+    fetchOnlySeed: boolean = false
+  ) => {
     const { assets } = get();
     if (!assets) return;
 
     const tokensByChain = Object.values(assets).reduce(
       (acc, asset) => {
+        if (
+          !isEVM(asset.chain) ||
+          (fetchOnlySeed && !asset.symbol.includes("SEED"))
+        )
+          return acc;
         if (!acc[asset.chain]) acc[asset.chain] = [];
         acc[asset.chain].push(asset.tokenAddress);
         return acc;
@@ -221,12 +236,13 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     );
 
     try {
-      const balanceResults = await Promise.all(
+      const balanceResults = await Promise.allSettled(
         Object.entries(tokensByChain).map(async ([chain, tokenAddresses]) => {
           const chainBalances = await getBalanceMulticall(
-            tokenAddresses,
-            address,
-            chain as EvmChain
+            tokenAddresses as Hex[],
+            address as Hex,
+            chain as EvmChain,
+            workingRpcs
           );
 
           return Object.entries(chainBalances).reduce(
@@ -238,15 +254,13 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           );
         })
       );
-      const balances = balanceResults.reduce(
-        (acc, chainBalance) => ({
-          ...acc,
-          ...chainBalance,
-        }),
-        {}
-      );
+      const balances = balanceResults.reduce((acc, result) => {
+        return result.status === "fulfilled"
+          ? { ...acc, ...result.value }
+          : acc;
+      }, {});
 
-      set({ balances });
+      set({ balances: { ...get().balances, ...balances } });
     } catch {
       /*empty*/
     }

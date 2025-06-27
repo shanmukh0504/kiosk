@@ -1,65 +1,56 @@
 import { evmToViemChainMap } from "@gardenfi/core";
-import { EvmChain, isBitcoin } from "@gardenfi/orderbook";
+import { EvmChain } from "@gardenfi/orderbook";
 import BigNumber from "bignumber.js";
-import { createPublicClient, erc20Abi, http } from "viem";
-import { rpcStore } from "../store/rpcStore";
+import { createPublicClient, erc20Abi, Hex, http } from "viem";
+import { MULTICALL_CONTRACT_ADDRESSES } from "../constants/constants";
 
 export const getBalanceMulticall = async (
-  tokenAddresses: string[],
-  address: string,
-  chain: EvmChain
+  tokenAddresses: Hex[],
+  address: Hex,
+  chain: EvmChain,
+  workingRPCs: Record<number, string[]>
 ): Promise<Record<string, BigNumber | undefined>> => {
-  const { workingRPCs } = rpcStore.getState();
-
   const viemChain = evmToViemChainMap[chain];
   if (!viemChain || tokenAddresses.length === 0) return {};
 
-  const supportsMulticall = viemChain.id !== 5115;
+  const multicallAddress =
+    viemChain.contracts?.multicall3?.address ??
+    MULTICALL_CONTRACT_ADDRESSES[viemChain.id];
 
-  const initializeEmptyResult = () => {
-    return tokenAddresses.reduce(
-      (acc, tokenAddress) => {
-        acc[tokenAddress] = isBitcoin(chain) ? undefined : new BigNumber(0);
-        return acc;
-      },
-      {} as Record<string, BigNumber | undefined>
+  if (!multicallAddress) {
+    console.error(
+      "multicall contract address doesn't exist for the chain id ",
+      viemChain.id
     );
-  };
+    throw Error("multicall contract address doesn't exist.");
+  }
 
   const fetchBalances = async (
     client: ReturnType<typeof createPublicClient>
   ) => {
-    if (supportsMulticall) {
-      const calls = tokenAddresses
-        .filter((token) => token !== "primary")
-        .map((token) => ({
-          address: token as `0x${string}`,
-          abi: erc20Abi,
-          functionName: "balanceOf",
-          args: [address as `0x${string}`],
-        }));
+    const calls = tokenAddresses.map((token) => ({
+      address: token,
+      abi: erc20Abi,
+      functionName: "balanceOf",
+      args: [address],
+    }));
 
-      const result = await client.multicall({ contracts: calls });
-      return result.reduce(
-        (acc, call, index) => {
-          acc[tokenAddresses[index]] =
-            call.status === "success"
-              ? new BigNumber(call.result.toString())
-              : new BigNumber(0);
-          return acc;
-        },
-        {} as Record<string, BigNumber>
-      );
-    } else {
-      const token = tokenAddresses[0] as `0x${string}`;
-      const balance = await client.readContract({
-        address: token,
-        abi: erc20Abi,
-        functionName: "balanceOf",
-        args: [address as `0x${string}`],
-      });
-      return { [token]: new BigNumber(balance.toString()) };
-    }
+    const result = await client.multicall({
+      contracts: calls,
+      ...(multicallAddress && {
+        multicallAddress: multicallAddress as Hex,
+      }),
+    });
+    return result.reduce(
+      (acc, call, index) => {
+        acc[tokenAddresses[index]] =
+          call.status === "success"
+            ? new BigNumber(call.result.toString())
+            : new BigNumber(0);
+        return acc;
+      },
+      {} as Record<string, BigNumber>
+    );
   };
 
   try {
@@ -77,7 +68,6 @@ export const getBalanceMulticall = async (
 
   const fallbacks = workingRPCs[viemChain.id] || [];
   for (const rpcUrl of fallbacks) {
-    console.log(`Using fallback RPC: ${rpcUrl} for chain ${viemChain.id}`);
     try {
       const fallbackClient = createPublicClient({
         transport: http(rpcUrl),
@@ -88,5 +78,5 @@ export const getBalanceMulticall = async (
       // continue to next fallback
     }
   }
-  return initializeEmptyResult();
+  return {};
 };

@@ -307,8 +307,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             </div>
           </div>
           <div className="flex w-full items-center justify-between rounded-2xl bg-white/50 px-4 py-[10px]">
-            <div className="flex items-center">
-              <Typography size="h4" weight="medium">
+            <div className="flex flex-grow items-center">
+              <Typography size="h4" weight="medium" className="gf-w-full">
                 <input
                   ref={inputRef}
                   className="w-full bg-transparent outline-none placeholder:text-mid-grey focus:outline-none"
