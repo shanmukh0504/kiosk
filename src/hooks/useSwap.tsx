@@ -80,7 +80,7 @@ export const useSwap = () => {
       inputBalance &&
       inputAsset &&
       (!isStarknet(inputAsset.chain)
-        ? formatAmount(Number(inputBalance), inputAsset.decimals)
+        ? formatAmount(Number(inputBalance), inputAsset.decimals, 5)
         : Number(inputBalance)),
     [inputBalance, inputAsset]
   );
