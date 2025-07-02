@@ -7,9 +7,12 @@
   "frame": {
     "version": "1",
     "name": "Garden Finance",
-    "iconUrl": "https://garden-finance.imgix.net/token-images/seed.svg",
+    "iconUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/favicon-32x32.png",
     "homeUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io",
-    "imageUrl": "https://garden-finance.imgix.net/token-images/seed.svg",
-    "buttonTitle": "Bridge with Garden Finance"
+    "imageUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/metadata.png",
+    "buttonTitle": "Bridge with Garden Finance",
+    "splashImageUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/metadata.png",
+    "webhookUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/api/webhook",
+    "splashBackgroundColor": "#ffffff"
   }
 }
