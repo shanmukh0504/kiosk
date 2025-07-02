@@ -13,21 +13,25 @@ import { GardenProvider } from "@gardenfi/react-hooks";
 import { useWalletClient } from "wagmi";
 import { useAccount } from "@starknet-react/core";
 import { Environment as GardenEnvironment } from "@gardenfi/utils";
-// import { rpcStore } from "../store/rpcStore";
+import { rpcStore } from "../store/rpcStore";
 import { useEffect } from "react";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
 
 function App() {
   const { data: walletClient } = useWalletClient();
   const { account: starknetWallet } = useAccount();
-  // const { fetchAndSetRPCs } = rpcStore();
-  const { context, isFrameReady } = useMiniKit();
+  const { fetchAndSetRPCs } = rpcStore();
+  const { isFrameReady, setFrameReady } = useMiniKit();
+
   useEffect(() => {
-    if (isFrameReady && context) {
-      console.log("context", context);
-      // you can use: context.address, context.features, context.chainId, etc.
+    fetchAndSetRPCs();
+  }, []);
+
+  useEffect(() => {
+    if (!isFrameReady) {
+      setFrameReady();
     }
-  }, [context, isFrameReady]);
+  }, [isFrameReady, setFrameReady]);
 
   return (
     <GardenProvider

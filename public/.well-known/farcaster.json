@@ -1,0 +1,16 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjExMTMwNjYsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHg4NTg2RTc4MjMwNTlBODFjQTUwZWZmYzk3YmIyODczODA1MERkZUUwIn0",
+    "payload": "eyJkb21haW4iOiJoOHN3azhjY3NvZ2tvYzRzMDQ4MDhzZ28uMTYyLjU1LjgxLjE4NS5zc2xpcC5pbyJ9",
+    "signature": "MHhlZjNlOWUxNTJjMGE3ZTczZmY0MDYxZDIyOWU5YWM2NzFiYTQ3NTg4ZTVkY2E0ZmVjNTBhM2Y3ZWQ2YjVhNWNmNmVmOGZjZmJhNTk4OWU1ZDVlZWMwOGYyOTU2ZGE3YzhhNjM5YzVlZWNiMDM5NWM5YjExNTUyZGVmN2Y4YTVkMzFj"
+  },
+  "frame": {
+    "version": "1",
+    "name": "Garden Finance",
+    "iconUrl": "/favicon-32x32.png",
+    "homeUrl": "https://app.garden.finance/",
+    "imageUrl": "/metadata.png",
+    "buttonTitle": "Bridge with Garden Finance",
+    "splashImageUrl": "/metadata.png"
+  }
+}
