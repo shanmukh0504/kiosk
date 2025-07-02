@@ -8,7 +8,7 @@ import BigNumber from "bignumber.js";
 import { FC, useState, ChangeEvent, useEffect, useMemo, useRef } from "react";
 import { Asset, isBitcoin, isStarknet } from "@gardenfi/orderbook";
 import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
-import { swapStore } from "../../store/swapStore";
+import { BTC, swapStore } from "../../store/swapStore";
 import { IOType, network } from "../../constants/constants";
 import { constructOrderPair } from "@gardenfi/core";
 import { AssetChainLogos } from "../../common/AssetChainLogos";
@@ -280,7 +280,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                   <img
                     src={c.networkLogo}
                     alt={c.name}
-                    className="h-full max-h-5 w-full max-w-5"
+                    className="h-full max-h-5 w-full max-w-5 rounded-full"
                   />
                   {hoveredChain === c.name && (
                     <ChainsTooltip
@@ -362,7 +362,11 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                             weight="medium"
                             className="!text-mid-grey"
                           >
-                            {formatAmount(Number(formattedBalance), 0, 5)}
+                            {formatAmount(
+                              Number(formattedBalance),
+                              0,
+                              Math.min(asset.decimals, BTC.decimals)
+                            )}
                           </Typography>
                         )}
                         <Typography

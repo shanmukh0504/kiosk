@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { swapStore } from "../store/swapStore";
+import { BTC, swapStore } from "../store/swapStore";
 import { IOType, network } from "../constants/constants";
 import { Asset, Chain, isBitcoin } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
@@ -80,7 +80,11 @@ export const useSwap = () => {
       inputBalance &&
       inputAsset &&
       (!isStarknet(inputAsset.chain)
-        ? formatAmount(Number(inputBalance), inputAsset.decimals, 5)
+        ? formatAmount(
+            Number(inputBalance),
+            inputAsset.decimals,
+            Math.min(inputAsset.decimals, BTC.decimals)
+          )
         : Number(inputBalance)),
     [inputBalance, inputAsset]
   );
