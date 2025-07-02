@@ -36,8 +36,10 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
     disconnect();
     btcDisconnect();
     starknetDisconnect();
-    clearBalances();
     onClose();
+    setTimeout(() => {
+      clearBalances();
+    }, 2000);
   };
 
   const handleBTCWalletClick = () => {

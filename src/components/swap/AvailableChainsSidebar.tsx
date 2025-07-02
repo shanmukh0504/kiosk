@@ -118,7 +118,7 @@ export const AvailableChainsSidebar = ({
                         <img
                           src={c.networkLogo}
                           alt={c.name}
-                          className="h-5 w-5"
+                          className="h-5 w-5 rounded-full"
                         />
                         <Typography
                           size={"h5"}
