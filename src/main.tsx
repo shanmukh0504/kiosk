@@ -16,25 +16,31 @@ import {
   connectors as starknetConnectors,
   starknetProviders,
 } from "./layout/starknet/config.ts";
+import { MiniKitContextProvider } from "./layout/MiniAppContextProvider.tsx";
 
 const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
     <BrowserRouter>
-      <WagmiProvider config={config}>
-        <QueryClientProvider client={queryClient}>
-          <BTCWalletProvider network={network as Network} store={localStorage}>
-            <StarknetConfig
-              chains={starknetChains}
-              provider={starknetProviders}
-              connectors={starknetConnectors}
-              autoConnect
+      <MiniKitContextProvider>
+        <WagmiProvider config={config}>
+          <QueryClientProvider client={queryClient}>
+            <BTCWalletProvider
+              network={network as Network}
+              store={localStorage}
             >
-              <App />
-            </StarknetConfig>
-          </BTCWalletProvider>
-        </QueryClientProvider>
-      </WagmiProvider>
+              <StarknetConfig
+                chains={starknetChains}
+                provider={starknetProviders}
+                connectors={starknetConnectors}
+                autoConnect
+              >
+                <App />
+              </StarknetConfig>
+            </BTCWalletProvider>
+          </QueryClientProvider>
+        </WagmiProvider>
+      </MiniKitContextProvider>
     </BrowserRouter>
   </StrictMode>
 );
