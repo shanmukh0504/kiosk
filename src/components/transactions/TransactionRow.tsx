@@ -1,7 +1,7 @@
 import { FC, useMemo } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { SwapInfo } from "../../common/SwapInfo";
-import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
+import { MatchedOrder } from "@gardenfi/orderbook";
 import {
   formatAmount,
   getAssetFromSwap,
@@ -12,7 +12,6 @@ import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
 import orderInProgressStore from "../../store/orderInProgressStore";
 import { BTC } from "../../store/swapStore";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 
 type TransactionProps = {
   order: MatchedOrder;
@@ -66,7 +65,6 @@ export const TransactionRow: FC<TransactionProps> = ({
   const { allAssets } = assetInfoStore();
   const { setOrder, setIsOpen } = orderInProgressStore();
   const { setCloseModal } = modalStore();
-  const { provider } = useBitcoinWallet();
   // const { evmInitiate } = useGarden();
 
   const sendAsset = useMemo(
@@ -121,27 +119,6 @@ export const TransactionRow: FC<TransactionProps> = ({
     //     console.error("failed to initiate swap ❌", res.error);
     //   }
     // }
-    
-    if (provider && isBitcoin(order.source_swap.chain)) {
-      const bitcoinRes = await provider.sendBitcoin(
-        order.source_swap.swap_id,
-        Number(order.source_swap.amount)
-      );
-      if (bitcoinRes.error) {
-        console.error("failed to send bitcoin ❌", bitcoinRes.error);
-      }
-      const updatedOrder = {
-        ...order,
-        source_swap: {
-          ...order.source_swap,
-          initiate_tx_hash: bitcoinRes.val ?? "",
-        },
-        status: bitcoinRes.val
-          ? OrderStatus.InitiateDetected
-          : OrderStatus.Matched,
-      };
-      setOrder(updatedOrder);
-    }
   };
 
   if (!sendAsset || !receiveAsset) return null;
