@@ -17,7 +17,7 @@ export const SwapPage = () => {
   return (
     <div className="h-full w-full">
       <Swap />
-      <div className="flex h-full items-center justify-center">
+      <div className="flex h-full flex-col items-center justify-center">
         <p className="text-gray-500">
           {isFrameReady ? "Frame is ready" : "Loading..."}
           {context && (
@@ -43,6 +43,13 @@ export const SwapPage = () => {
               ? "Running inside Coinbase Wallet Mini App"
               : "Running in plain browser"
             : "Loading..."}
+        </p>
+        <p>
+          {context && (
+            <pre className="mt-2 w-full overflow-x-auto rounded bg-gray-100 p-2 text-xs">
+              {JSON.stringify(context, null, 2)}
+            </pre>
+          )}
         </p>
       </div>
     </div>
