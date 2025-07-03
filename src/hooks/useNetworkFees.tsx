@@ -8,7 +8,7 @@ export const useNetworkFees = (
   network: BitcoinNetwork,
   outputAsset?: Asset
 ) => {
-  const [networkFeesValue, setNetworkFeesValue] = useState<string>("Free");
+  const [networkFeesValue, setNetworkFeesValue] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -17,10 +17,10 @@ export const useNetworkFees = (
       setIsLoading(true);
       try {
         const fees = await calculateNetworkFees(network, outputAsset);
-        setNetworkFeesValue(`$${formatAmount(fees, 0, 2)}`);
+        setNetworkFeesValue(formatAmount(fees, 0, 2));
       } catch (error) {
         console.error(error);
-        setNetworkFeesValue("Free");
+        setNetworkFeesValue(0);
       } finally {
         setIsLoading(false);
       }

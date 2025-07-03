@@ -57,7 +57,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     fiatData,
   } = assetInfoStore();
   const { modalName } = modalStore();
-  const { setAsset, inputAsset, outputAsset } = swapStore();
+  const { setAsset, inputAsset, outputAsset, clearSwapInputState } =
+    swapStore();
 
   const orderedChains = useMemo(() => {
     const order = ["bitcoin", "ethereum", "base", "arbitrum"];
@@ -83,61 +84,67 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   );
 
   const sortedResults = useMemo(() => {
-    if (!results || orderedChains.length === 0) return [];
-    return [...results]
-      .sort((a, b) => {
-        const chainA = chains?.[a.chain];
-        const chainB = chains?.[b.chain];
-        if (chainA && chainB) {
-          const indexA = orderedChains.findIndex(
-            (c) => c.identifier === chainA.identifier
-          );
-          const indexB = orderedChains.findIndex(
-            (c) => c.identifier === chainB.identifier
-          );
-          return indexA - indexB;
-        }
-        return 0;
-      })
-      .filter((asset) => !chain || asset.chain === chain.identifier)
-      .map((asset) => {
-        const network = !isBitcoin(asset.chain)
-          ? chains?.[asset.chain]
-          : undefined;
-        const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
-        const balance = balances?.[orderPair];
-        const fiatRate = fiatData?.[getAssetChainHTLCAddressPair(asset)] ?? 0;
-        const formattedBalance =
-          balance && asset && balance.toNumber() === 0
-            ? ""
-            : balance && !isStarknet(asset.chain)
-              ? new BigNumber(balance)
-                  .dividedBy(10 ** asset.decimals)
-                  .toNumber()
-              : balance?.toNumber();
+    if (!results && orderedChains.length === 0) return [];
+    return (
+      results &&
+      [...results]
+        .sort((a, b) => {
+          const chainA = chains?.[a.chain];
+          const chainB = chains?.[b.chain];
+          if (chainA && chainB) {
+            const indexA = orderedChains.findIndex(
+              (c) => c.identifier === chainA.identifier
+            );
+            const indexB = orderedChains.findIndex(
+              (c) => c.identifier === chainB.identifier
+            );
+            return indexA - indexB;
+          }
+          return 0;
+        })
+        .filter((asset) => !chain || asset.chain === chain.identifier)
+        .map((asset) => {
+          const network = !isBitcoin(asset.chain)
+            ? chains?.[asset.chain]
+            : undefined;
+          const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
+          const balance = balances?.[orderPair];
+          const fiatRate = fiatData?.[getAssetChainHTLCAddressPair(asset)] ?? 0;
+          const formattedBalance =
+            balance && asset && balance.toNumber() === 0
+              ? ""
+              : balance && !isStarknet(asset.chain)
+                ? new BigNumber(balance)
+                    .dividedBy(10 ** asset.decimals)
+                    .toNumber()
+                : balance?.toNumber();
 
-        const fiatBalance =
-          formattedBalance &&
-          (Number(formattedBalance) * Number(fiatRate)).toFixed(5);
+          const fiatBalance =
+            formattedBalance &&
+            (Number(formattedBalance) * Number(fiatRate)).toFixed(5);
 
-        return {
-          asset,
-          network,
-          formattedBalance,
-          fiatBalance,
-        };
-      });
+          return {
+            asset,
+            network,
+            formattedBalance,
+            fiatBalance,
+          };
+        })
+    );
   }, [results, orderedChains, chains, chain, balances, fiatData]);
 
   const isAnyWalletConnected = !!address || !!btcAddress || !!starknetAccount;
   const fiatBasedSortedResults = useMemo(() => {
     if (!isAnyWalletConnected) return sortedResults;
 
-    return [...sortedResults].sort((a, b) => {
-      const aFiat = Number(a.fiatBalance) || 0;
-      const bFiat = Number(b.fiatBalance) || 0;
-      return bFiat - aFiat;
-    });
+    return (
+      sortedResults &&
+      [...sortedResults].sort((a, b) => {
+        const aFiat = Number(a.fiatBalance) || 0;
+        const bFiat = Number(b.fiatBalance) || 0;
+        return bFiat - aFiat;
+      })
+    );
   }, [sortedResults, isAnyWalletConnected]);
 
   const visibleChains = useMemo(() => {
@@ -168,6 +175,23 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             : IOType.input,
           isAssetSelectorOpen.type === IOType.input ? inputAsset : outputAsset
         );
+      }
+      // if input asset is selected, check if the output asset is supported
+      if (
+        isAssetSelectorOpen.type === IOType.input &&
+        outputAsset &&
+        strategies.val
+      ) {
+        const op = constructOrderPair(
+          asset.chain,
+          asset.atomicSwapAddress,
+          outputAsset.chain,
+          outputAsset.atomicSwapAddress
+        );
+        if (!strategies.val[op]) {
+          setAsset(IOType.output, undefined);
+          clearSwapInputState();
+        }
       }
     }
     CloseAssetSelector();
@@ -201,7 +225,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
 
   useEffect(() => {
     if (!assets || !strategies.val) return;
-    if (!comparisonToken) {
+    if (!comparisonToken || isAssetSelectorOpen.type === IOType.input) {
       setResults(Object.values(assets));
     } else {
       const supportedTokens = Object.values(assets).filter((asset) => {
@@ -328,7 +352,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
               </Typography>
             </div>
             <GradientScroll height={272} onClose={!modalName.assetList}>
-              {fiatBasedSortedResults.length > 0 ? (
+              {fiatBasedSortedResults && fiatBasedSortedResults.length > 0 ? (
                 fiatBasedSortedResults?.map(
                   ({ asset, network, formattedBalance }) => (
                     <div

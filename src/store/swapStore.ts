@@ -25,6 +25,7 @@ type SwapState = {
   outputAsset?: Asset;
   inputAmount: string;
   outputAmount: string;
+  rate: number;
   btcAddress: string;
   isSwapping: boolean;
   isApproving: boolean;
@@ -41,6 +42,7 @@ type SwapState = {
   setStrategy: (strategy: string) => void;
   setAsset: (ioType: IOType, asset: Asset | undefined) => void;
   setAmount: (ioType: IOType, amount: string) => void;
+  setRate: (rate: number) => void;
   setBtcAddress: (btcAddress: string) => void;
   swapAssets: () => void;
   setError: (error: SwapErrors) => void;
@@ -50,6 +52,7 @@ type SwapState = {
   setIsValidBitcoinAddress: (isValidBitcoinAddress: boolean) => void;
   clearSwapState: () => void;
   clear: () => void;
+  clearSwapInputState: () => void;
 };
 
 export const BTC = {
@@ -66,6 +69,7 @@ export const swapStore = create<SwapState>((set) => ({
   inputAsset: BTC,
   inputAmount: "",
   outputAmount: "",
+  rate: 0,
   btcAddress: "",
   isApproving: false,
   swapInProgress: {
@@ -101,6 +105,12 @@ export const swapStore = create<SwapState>((set) => ({
     set((state) => ({
       ...state,
       [ioType === IOType.input ? "inputAmount" : "outputAmount"]: amount,
+    }));
+  },
+  setRate: (rate) => {
+    set((state) => ({
+      ...state,
+      rate,
     }));
   },
   setBtcAddress: (btcAddress) => {
@@ -167,6 +177,7 @@ export const swapStore = create<SwapState>((set) => ({
     set({
       inputAmount: "",
       outputAmount: "",
+      rate: 0,
       btcAddress: "",
       outputAsset: undefined,
       inputAsset: BTC,
@@ -196,6 +207,7 @@ export const swapStore = create<SwapState>((set) => ({
       inputAmount: "",
       outputAmount: "",
       btcAddress: "",
+      rate: 0,
       outputAsset: undefined,
       inputAsset: BTC,
       isSwapping: false,
@@ -219,4 +231,27 @@ export const swapStore = create<SwapState>((set) => ({
       isValidBitcoinAddress: false,
     });
   },
+  clearSwapInputState: () => {
+    set({
+      inputAmount: "",
+      outputAmount: "",
+      rate: 0,
+      tokenPrices: {
+        input: "0",
+        output: "0",
+      },
+      error: {
+        inputError: Errors.none,
+        outputError: Errors.none,
+        liquidityError: Errors.none,
+        insufficientBalanceError: Errors.none,
+      },
+      // isFetchingQuote: {
+      //   input: false,
+      //   output: false,
+      // },
+      // isEditBTCAddress: false,
+      // isValidBitcoinAddress: false,
+    });
+  }
 }));
