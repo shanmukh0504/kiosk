@@ -153,7 +153,7 @@ export const StakeDetails: FC<props> = ({ key, stakePos }) => {
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
         >
-          {hovered && (
+          {hovered && !!seedReward && !!stakeReward && (
             <TooltipWrapper offsetX={10} offsetY={9} targetRef={targetRef}>
               <UnitRewardTooltip seed={seedReward} cbBtc={stakeReward} />
             </TooltipWrapper>

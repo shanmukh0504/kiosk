@@ -2,6 +2,7 @@ import { AssetChainLogos, Typography } from "@gardenfi/garden-book";
 import { motion } from "framer-motion";
 import { STAKE_REWARD } from "../constants";
 import { Url } from "@gardenfi/utils";
+import { useEffect } from "react";
 
 type UnitRewardTooltipProps = {
   seed: number | null;
@@ -12,6 +13,11 @@ export const UnitRewardTooltip = ({ seed, cbBtc }: UnitRewardTooltipProps) => {
   const handleRedirect = (addressExplorer: Url, address: string) => {
     window.open(addressExplorer.endpoint("address").endpoint(address));
   };
+
+  useEffect(() => {
+    console.log("cbbtc", cbBtc);
+    console.log("seed", seed);
+  }, []);
 
   return (
     <motion.div
@@ -24,7 +30,7 @@ export const UnitRewardTooltip = ({ seed, cbBtc }: UnitRewardTooltipProps) => {
       <div className="absolute mb-[15px] ml-4 mt-[-5px] h-[14px] w-[14px] rotate-45 rounded-sm bg-white sm:mb-0 sm:ml-[-5px] sm:mt-[15px]"></div>
       <div className="flex max-w-[257px] flex-col gap-2 rounded-2xl bg-white px-4 py-3 shadow-custom">
         <div className="flex flex-wrap items-center justify-between space-y-1">
-          {cbBtc && cbBtc > 0 && (
+          {(cbBtc ?? 0) > 0 && (
             <div className="flex items-center gap-1">
               <Typography size="h4" weight="medium" className="w-[87px]">
                 {cbBtc}
@@ -49,7 +55,7 @@ export const UnitRewardTooltip = ({ seed, cbBtc }: UnitRewardTooltipProps) => {
               />
             </div>
           )}
-          {seed && seed > 0 && (
+          {(seed ?? 0) > 0 && (
             <div className="flex items-center gap-1">
               <Typography size="h4" weight="medium" className="w-[87px]">
                 {seed}

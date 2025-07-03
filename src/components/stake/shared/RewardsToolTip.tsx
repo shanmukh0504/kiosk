@@ -2,7 +2,6 @@ import { AssetChainLogos, Typography } from "@gardenfi/garden-book";
 import { motion } from "framer-motion";
 import { STAKE_REWARD } from "../constants";
 import { Url } from "@gardenfi/utils";
-import { useEffect } from "react";
 
 type TooltipProps = {
   seed: number | null;
@@ -10,10 +9,6 @@ type TooltipProps = {
 };
 
 export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
-  useEffect(() => {
-    console.log("cbbtc", cbBtc);
-    console.log("seed", seed);
-  });
   const handleRedirect = (addressExplorer: Url, address: string) => {
     window.open(addressExplorer.endpoint("address").endpoint(address));
   };

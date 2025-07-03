@@ -178,7 +178,6 @@ export const stakeStore = create<StakeStoreState>((set) => ({
               stake.status !== StakePositionStatus.unStaked
             ) {
               acc.totalVotes += stake.votes;
-              console.log("nft", stake.isGardenerPass);
               if (stake.isGardenerPass) {
                 acc.totalGardenerPasses += 1;
               }
@@ -232,7 +231,6 @@ export const stakeStore = create<StakeStoreState>((set) => ({
           2
         )
       ).toString();
-      console.log("stats", response.data.data.globalApy);
 
       set({
         stakingStats: {
@@ -316,7 +314,6 @@ export const stakeStore = create<StakeStoreState>((set) => ({
       const response = await axios.get<{ data: EpochResponse[] }>(
         API().rewards.epoch.toString()
       );
-      console.log("epoch data", response.data.data);
       set({ epochData: response.data.data });
     } catch (error) {
       console.error("Error fetching current epoch :", error);
