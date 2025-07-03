@@ -247,6 +247,7 @@ export const stakeStore = create<StakeStoreState>((set) => ({
     }
   },
   fetchAndSetStakeApy: async (address: string) => {
+    console.log("fetching stake apy", address);
     try {
       const response = await axios.get<{
         data: {
