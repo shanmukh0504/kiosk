@@ -138,17 +138,26 @@ export const FeesAndRateDetails = () => {
                 </Typography>
               </motion.div>
             </AnimatePresence>
-            {(maxTimeSaved > 0 ||
-              maxCostSaved > 0 ||
-              receiveAddress ||
-              refundAddress) && (
-              <KeyboardDownIcon
-                className={`h-4 w-4 cursor-pointer px-1 transition-transform duration-300 ${
-                  isDetailsExpanded ? "rotate-180" : ""
-                }`}
-                onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}
-              />
-            )}
+            <AnimatePresence>
+              {(maxTimeSaved > 0 ||
+                maxCostSaved > 0 ||
+                receiveAddress ||
+                refundAddress) && (
+                <motion.div
+                  initial={{ width: 0, scale: 0, opacity: 0 }}
+                  animate={{ width: "auto", scale: 1, opacity: 1 }}
+                  exit={{ width: 0, scale: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                >
+                  <KeyboardDownIcon
+                    className={`h-4 w-4 cursor-pointer px-1 transition-transform duration-300 ${
+                      isDetailsExpanded ? "rotate-180" : ""
+                    }`}
+                    onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
         <AnimatePresence>
