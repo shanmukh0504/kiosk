@@ -9,6 +9,8 @@
 ### Fixed
 
 - Display up to 8 decimal places for balance and input amount values.
+- Token balances are now displayed in the asset selector modal, arranged in decreasing order of their USD value.
+- Added sidebar and bottom sheet animations for chain filtering.
 
 ## [1.0.2]
 

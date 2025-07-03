@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { swapStore } from "../store/swapStore";
+import { BTC, swapStore } from "../store/swapStore";
 import { IOType, network } from "../constants/constants";
 import { Asset, Chain, isBitcoin, isSolana } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
@@ -14,7 +14,6 @@ import { useStarknetWallet } from "./useStarknetWallet";
 import { useEVMWallet } from "./useEVMWallet";
 import { modalNames, modalStore } from "../store/modalStore";
 import { isStarknet, isEVM } from "@gardenfi/orderbook";
-import { useBalances } from "./useBalances";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { Environment } from "@gardenfi/utils";
 import { Errors } from "../constants/errors";
@@ -22,8 +21,8 @@ import { ConnectingWalletStore } from "../store/connectWalletStore";
 import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import BigNumber from "bignumber.js";
-import { formatAmount } from "../utils/utils";
 import { useSolanaWallet } from "./useSolanaWallet";
+import { formatAmount, getOrderPair } from "../utils/utils";
 // import { useWalletClient } from "wagmi";
 // import { Account } from "viem";
 // import { approve, checkAllowance } from "../utils/approve";
@@ -57,8 +56,7 @@ export const useSwap = () => {
     setBtcAddress,
     setIsComparisonVisible,
   } = swapStore();
-  const { tokenBalance: inputTokenBalance } = useBalances(inputAsset);
-  const { strategies } = assetInfoStore();
+  const { strategies, balances } = assetInfoStore();
   const { setOrder, setIsOpen } = orderInProgressStore();
   const { updateOrder } = pendingOrdersStore();
   const { disconnect } = useEVMWallet();
@@ -69,11 +67,34 @@ export const useSwap = () => {
   const { address: evmAddress } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { setOpenModal } = modalStore();
-  const isInsufficientBalance = useMemo(
-    () => new BigNumber(inputAmount).gt(inputTokenBalance),
-    [inputAmount, inputTokenBalance]
+
+  const inputBalance = useMemo(
+    () =>
+      inputAsset &&
+      balances &&
+      balances[getOrderPair(inputAsset.chain, inputAsset.tokenAddress)],
+    [inputAsset, balances]
   );
   const { solanaAddress } = useSolanaWallet();
+
+  const inputTokenBalance = useMemo(
+    () =>
+      inputBalance &&
+      inputAsset &&
+      (!isStarknet(inputAsset.chain)
+        ? formatAmount(
+            Number(inputBalance),
+            inputAsset.decimals,
+            Math.min(inputAsset.decimals, BTC.decimals)
+          )
+        : Number(inputBalance)),
+    [inputBalance, inputAsset]
+  );
+
+  const isInsufficientBalance = useMemo(() => {
+    if (!inputTokenBalance || !inputAmount) return false;
+    return new BigNumber(inputAmount).gt(inputTokenBalance);
+  }, [inputAmount, inputTokenBalance]);
 
   const isBitcoinSwap = useMemo(() => {
     return !!(

@@ -14,11 +14,19 @@ import { useWalletClient } from "wagmi";
 import { useAccount } from "@starknet-react/core";
 import { Environment as GardenEnvironment } from "@gardenfi/utils";
 import { useSolanaWallet } from "../hooks/useSolanaWallet";
+import { rpcStore } from "../store/rpcStore";
+import { useEffect } from "react";
 
 function App() {
   const { data: walletClient } = useWalletClient();
   const { account: starknetWallet } = useAccount();
   const { solanaAnchorProvider } = useSolanaWallet();
+  const { fetchAndSetRPCs } = rpcStore();
+
+  useEffect(() => {
+    fetchAndSetRPCs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <GardenProvider
