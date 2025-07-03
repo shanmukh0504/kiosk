@@ -246,12 +246,6 @@ export const swapStore = create<SwapState>((set) => ({
         liquidityError: Errors.none,
         insufficientBalanceError: Errors.none,
       },
-      // isFetchingQuote: {
-      //   input: false,
-      //   output: false,
-      // },
-      // isEditBTCAddress: false,
-      // isValidBitcoinAddress: false,
     });
-  }
+  },
 }));
