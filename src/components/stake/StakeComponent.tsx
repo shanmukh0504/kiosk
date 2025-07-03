@@ -9,7 +9,7 @@ import { useBalances } from "../../hooks/useBalances";
 import { useEffect, useId, useMemo } from "react";
 import { Tooltip } from "../../common/Tooltip";
 import { MIN_STAKE_AMOUNT } from "../../constants/stake";
-import { GardenPassVotes } from "./constants";
+import { GardenPassVotes, SEED_FOR_MINTING_NFT } from "./constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { fadeAnimation } from "../../animations/animations";
 
@@ -37,8 +37,10 @@ export const StakeComponent = () => {
       isConnected &&
       Number(inputAmount) > 0 &&
       Number(inputAmount) <= Number(tokenBalance) &&
-      Number(inputAmount) % MIN_STAKE_AMOUNT === 0,
-    [isConnected, inputAmount, tokenBalance]
+      (stakeType === StakeType.CUSTOM
+        ? Number(inputAmount) % MIN_STAKE_AMOUNT === 0
+        : Number(inputAmount) % SEED_FOR_MINTING_NFT === 0),
+    [isConnected, inputAmount, tokenBalance, stakeType]
   );
 
   const handleStakeClick = () => {

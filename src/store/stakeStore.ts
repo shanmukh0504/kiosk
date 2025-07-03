@@ -182,7 +182,6 @@ export const stakeStore = create<StakeStoreState>((set) => ({
               if (stake.isGardenerPass) {
                 acc.totalGardenerPasses += 1;
               }
-              acc.totalGardenerPasses;
               acc.totalStakedAmount += formatAmount(
                 stake.amount,
                 SEED_DECIMALS

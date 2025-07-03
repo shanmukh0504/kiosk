@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef } from "react";
+import React, { useMemo, useState, useRef, useEffect } from "react";
 import { MinusIcon, PlusIcon, Typography } from "@gardenfi/garden-book";
 import { stakeStore, StakeType } from "../../store/stakeStore";
 import { MIN_STAKE_AMOUNT } from "../../constants/stake";
@@ -6,14 +6,12 @@ import NumberFlow, { continuous } from "@number-flow/react";
 import { AnimatePresence, motion } from "framer-motion";
 import clsx from "clsx/lite";
 import { fadeAnimation } from "../../animations/animations";
-
-const GARDEN_PASS_COST = 21000;
-const ROUNDING_MULTIPLE = 2100;
+import { SEED_FOR_MINTING_NFT } from "./constants";
 
 export const StakeInput = ({ balance }: { balance: number }) => {
-  const { stakeType } = stakeStore();
+  const { stakeType, inputAmount, setInputAmount } = stakeStore();
   const [passCount, setPassCount] = useState(1);
-  const [passSeed, setPassSeed] = useState(GARDEN_PASS_COST);
+  const [passSeed, setPassSeed] = useState(SEED_FOR_MINTING_NFT);
   const [customSeed, setCustomSeed] = useState(0);
   const [customInputAmount, setCustomInputAmount] = useState("0");
   const [animated] = useState(true);
@@ -31,20 +29,22 @@ export const StakeInput = ({ balance }: { balance: number }) => {
     if (!balance || balance === 0 || balance < MIN_STAKE_AMOUNT) return;
 
     if (stakeType === StakeType.GARDEN_PASS) {
-      const maxPasses = Math.floor(balance / GARDEN_PASS_COST);
+      const maxPasses = Math.floor(balance / SEED_FOR_MINTING_NFT);
       setPassCount(maxPasses);
-      const newPassSeed = maxPasses * GARDEN_PASS_COST;
+      const newPassSeed = maxPasses * SEED_FOR_MINTING_NFT;
       setPassSeed(newPassSeed);
+      setInputAmount(newPassSeed.toString());
     } else {
       setCustomSeed(stakeableBalance);
       setCustomInputAmount(stakeableBalance.toString());
+      setInputAmount(stakeableBalance.toString());
     }
   };
 
   const roundToNearestMultiple = (value: number) => {
-    const rounded = Math.round(value / ROUNDING_MULTIPLE) * ROUNDING_MULTIPLE;
+    const rounded = Math.round(value / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT;
     if (balance && rounded > balance) {
-      return Math.floor(balance / ROUNDING_MULTIPLE) * ROUNDING_MULTIPLE;
+      return Math.floor(balance / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT;
     }
     return rounded;
   };
@@ -68,7 +68,9 @@ export const StakeInput = ({ balance }: { balance: number }) => {
     }
 
     setCustomInputAmount(input);
-    setCustomSeed(Number(input) || 0);
+    const numValue = Number(input) || 0;
+    setCustomSeed(numValue);
+    setInputAmount(input);
   };
 
   const handleInputBlur = () => {
@@ -82,6 +84,7 @@ export const StakeInput = ({ balance }: { balance: number }) => {
         const roundedValue = roundToNearestMultiple(currentValue);
         setCustomInputAmount(roundedValue.toString());
         setCustomSeed(roundedValue);
+        setInputAmount(roundedValue.toString());
       }, 500);
     }
     setIsFocused(false);
@@ -92,8 +95,9 @@ export const StakeInput = ({ balance }: { balance: number }) => {
       if (passCount > 1) {
         const newPassCount = passCount - 1;
         setPassCount(newPassCount);
-        const newPassSeed = newPassCount * GARDEN_PASS_COST;
+        const newPassSeed = newPassCount * SEED_FOR_MINTING_NFT;
         setPassSeed(newPassSeed);
+        setInputAmount(newPassSeed.toString());
       }
     } else {
       const currentAmount = Number(customInputAmount) || 0;
@@ -101,11 +105,13 @@ export const StakeInput = ({ balance }: { balance: number }) => {
         const newAmount = Math.max(currentAmount - MIN_STAKE_AMOUNT, 0);
         setCustomSeed(newAmount);
         setCustomInputAmount(newAmount.toString());
+        setInputAmount(newAmount.toString());
       } else {
         const newAmount =
           Math.floor(currentAmount / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT;
         setCustomSeed(newAmount);
         setCustomInputAmount(newAmount.toString());
+        setInputAmount(newAmount.toString());
       }
     }
   };
@@ -114,23 +120,33 @@ export const StakeInput = ({ balance }: { balance: number }) => {
     if (stakeType === StakeType.GARDEN_PASS) {
       const newPassCount = passCount + 1;
       setPassCount(newPassCount);
-      const newPassSeed = newPassCount * GARDEN_PASS_COST;
+      const newPassSeed = newPassCount * SEED_FOR_MINTING_NFT;
       setPassSeed(newPassSeed);
+      setInputAmount(newPassSeed.toString());
     } else {
       const currentAmount = Number(customInputAmount) || 0;
       if (currentAmount % MIN_STAKE_AMOUNT === 0) {
         const newAmount = currentAmount + MIN_STAKE_AMOUNT;
         setCustomSeed(newAmount);
         setCustomInputAmount(newAmount.toString());
+        setInputAmount(newAmount.toString());
       } else {
         const newAmount =
           Math.floor(currentAmount / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT +
           MIN_STAKE_AMOUNT;
         setCustomSeed(newAmount);
         setCustomInputAmount(newAmount.toString());
+        setInputAmount(newAmount.toString());
       }
     }
   };
+
+  useEffect(() => {
+    if (Number(inputAmount) === 0) {
+      setCustomInputAmount("0");
+      setCustomSeed(0);
+    }
+  }, [inputAmount, setCustomInputAmount, setCustomSeed]);
 
   return (
     <div className="flex flex-col gap-3 rounded-xl bg-white p-4">
