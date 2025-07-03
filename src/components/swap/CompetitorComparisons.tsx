@@ -155,7 +155,7 @@ export const CompetitorComparisons: FC<CompetitorComparisonsProps> = ({
                       size="h5"
                       weight="medium"
                     >
-                      {`${Number(feeDiff) >= 0 ? "+" : "-"}$${Math.abs(Number(feeDiff))}`}
+                      {`${Number(feeDiff) >= 0 ? "-" : "+"}$${Math.abs(Number(feeDiff))}`}
                     </Typography>
                   )}
                   <Typography
