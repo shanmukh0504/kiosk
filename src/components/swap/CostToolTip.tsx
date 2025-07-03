@@ -4,14 +4,12 @@ import { motion } from "framer-motion";
 import { useSwap } from "../../hooks/useSwap";
 
 type TooltipProps = {
-  solverFee: number;
   networkFee: number;
   protocolFee: number;
   rate: number;
 };
 
 export const CostToolTip = ({
-  solverFee,
   networkFee,
   protocolFee,
   rate,
@@ -30,7 +28,7 @@ export const CostToolTip = ({
         <div className="flex justify-between py-1.5">
           <div className="flex items-center gap-1">
             <Typography size="h5" weight="medium" className="!text-mid-grey">
-              1{inputAsset?.symbol}
+              1 {inputAsset?.symbol}
             </Typography>
             <SwapHorizontalIcon className="h-3 w-3" />
           </div>
@@ -50,14 +48,6 @@ export const CostToolTip = ({
         </div>
         <div className="flex justify-between py-1.5">
           <Typography size="h5" weight="medium" className="!text-mid-grey">
-            Solver fee
-          </Typography>
-          <Typography size="h5" weight="medium">
-            ${solverFee}
-          </Typography>
-        </div>
-        <div className="flex justify-between py-1.5">
-          <Typography size="h5" weight="medium" className="!text-mid-grey">
             Network fee
           </Typography>
           <Typography size="h5" weight="medium">
@@ -66,7 +56,7 @@ export const CostToolTip = ({
         </div>
         <div className="flex justify-between py-1.5">
           <Typography size="h5" weight="medium" className="!text-mid-grey">
-            Min received
+            Min. received
           </Typography>
           <Typography size="h5" weight="medium">
             {outputAmount} {outputAsset?.symbol}

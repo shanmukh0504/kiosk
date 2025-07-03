@@ -100,12 +100,12 @@ export const AvailableChainsSidebar = ({
           <div
             className={`flex h-full max-h-[376px] flex-col overflow-auto rounded-2xl bg-white`}
           >
-            <div className="px-4 pb-1.5 pt-3">
+            <div className="px-4 pb-1.5 pt-1">
               <Typography size="h5" weight="bold">
                 {isMobile ? "Chains" : ""}
               </Typography>
             </div>
-            <GradientScroll height={376} className="rounded-2xl">
+            <GradientScroll height={360} className="rounded-2xl pb-2">
               <div className="flex w-full flex-col">
                 {filteredChains.length > 0 ? (
                   filteredChains.map((c) => (

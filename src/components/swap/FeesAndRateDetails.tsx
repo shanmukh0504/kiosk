@@ -41,7 +41,6 @@ export const FeesAndRateDetails = () => {
   );
 
   const protocolFee = useMemo(() => getProtocolFee(fees), [fees]);
-  const solverFee = formatAmount(fees - protocolFee, 0, 2);
   const totalCost = fees + networkFeesValue;
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
@@ -115,7 +114,6 @@ export const FeesAndRateDetails = () => {
                   {isHovered && inputAsset && outputAsset && (
                     <TooltipWrapper targetRef={targetRef}>
                       <CostToolTip
-                        solverFee={solverFee}
                         networkFee={networkFeesValue}
                         protocolFee={protocolFee}
                         rate={formattedRate}
