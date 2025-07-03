@@ -58,8 +58,16 @@ export const API = () => {
           .endpoint(userId),
     },
     rewards: {
-      reward: (userId: string) =>
-        new Url(REQUIRED_ENV_VARS.REWARD).endpoint("rewards").endpoint(userId),
+      reward: (userId: string) => {
+        console.log("reward in url", userId);
+        const url = new Url(REQUIRED_ENV_VARS.REWARD)
+          .endpoint("rewards")
+          .endpoint(userId);
+        console.log(url);
+        return new Url(REQUIRED_ENV_VARS.REWARD)
+          .endpoint("rewards")
+          .endpoint(userId);
+      },
       epoch: new Url(REQUIRED_ENV_VARS.REWARD)
         .endpoint("rewards")
         .endpoint("epochs"),

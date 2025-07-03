@@ -52,7 +52,8 @@ type EpochEarnings = {
 
 type StakeStoreState = {
   asset: Asset;
-  inputAmount: string;
+  inputCustomSeed: number;
+  inputPassSeed: number;
   error: string | null;
   totalStakedAmount: number;
   totalVotes: number;
@@ -75,7 +76,8 @@ type StakeStoreState = {
     totalSeedReward: number;
     accumulatedRewardUSD: number;
   } | null;
-  setInputAmount: (value: string) => void;
+  setInputCustomSeed: (value: number) => void;
+  setInputPassSeed: (value: number) => void;
   setStakeType: (type: StakeType) => void;
   fetchStakePosData: (address: string) => Promise<void>;
   fetchAndSetStakingStats: () => Promise<void>;
@@ -147,7 +149,8 @@ type StakingPositionApiResponse = {
 
 export const stakeStore = create<StakeStoreState>((set) => ({
   asset: SEED,
-  inputAmount: "",
+  inputCustomSeed: 0,
+  inputPassSeed: 21000,
   error: null,
   stakePosData: null,
   totalStakedAmount: 0,
@@ -162,7 +165,8 @@ export const stakeStore = create<StakeStoreState>((set) => ({
   loading: {
     stakeRewards: false,
   },
-  setInputAmount: (value: string) => set({ inputAmount: value }),
+  setInputCustomSeed: (value: number) => set({ inputCustomSeed: value }),
+  setInputPassSeed: (value: number) => set({ inputPassSeed: value }),
   setStakeType: (type: StakeType) => set({ stakeType: type }),
   fetchStakePosData: async (address: string) => {
     try {
@@ -178,7 +182,6 @@ export const stakeStore = create<StakeStoreState>((set) => ({
               stake.status !== StakePositionStatus.unStaked
             ) {
               acc.totalVotes += stake.votes;
-              console.log("nft", stake.isGardenerPass);
               if (stake.isGardenerPass) {
                 acc.totalGardenerPasses += 1;
               }
@@ -232,7 +235,6 @@ export const stakeStore = create<StakeStoreState>((set) => ({
           2
         )
       ).toString();
-      console.log("stats", response.data.data.globalApy);
 
       set({
         stakingStats: {
@@ -263,6 +265,7 @@ export const stakeStore = create<StakeStoreState>((set) => ({
     }
   },
   fetchAndSetRewards: async (address: string) => {
+    console.log("fetching rewards", address);
     try {
       set({ loading: { stakeRewards: true } });
       const resp = await axios.get<StakingReward>(
@@ -317,7 +320,6 @@ export const stakeStore = create<StakeStoreState>((set) => ({
       const response = await axios.get<{ data: EpochResponse[] }>(
         API().rewards.epoch.toString()
       );
-      console.log("epoch data", response.data.data);
       set({ epochData: response.data.data });
     } catch (error) {
       console.error("Error fetching current epoch :", error);

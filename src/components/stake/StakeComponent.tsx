@@ -18,7 +18,8 @@ export const StakeComponent = () => {
   const { setOpenModal } = modalStore();
   const {
     asset,
-    inputAmount,
+    inputCustomSeed,
+    inputPassSeed,
     fetchAndSetStakingStats,
     fetchAndSetStakeApy,
     fetchStakePosData,
@@ -34,13 +35,14 @@ export const StakeComponent = () => {
 
   const isStakeable = useMemo(
     () =>
-      isConnected &&
-      Number(inputAmount) > 0 &&
-      Number(inputAmount) <= Number(tokenBalance) &&
-      (stakeType === StakeType.CUSTOM
-        ? Number(inputAmount) % MIN_STAKE_AMOUNT === 0
-        : Number(inputAmount) % SEED_FOR_MINTING_NFT === 0),
-    [isConnected, inputAmount, tokenBalance, stakeType]
+      isConnected && stakeType === StakeType.CUSTOM
+        ? Number(inputCustomSeed) > 0 &&
+          Number(inputCustomSeed) <= Number(tokenBalance) &&
+          Number(inputCustomSeed) % MIN_STAKE_AMOUNT === 0
+        : Number(inputPassSeed) > 0 &&
+          Number(inputPassSeed) <= Number(tokenBalance) &&
+          Number(inputPassSeed) % SEED_FOR_MINTING_NFT === 0,
+    [isConnected, inputCustomSeed, inputPassSeed, tokenBalance, stakeType]
   );
 
   const handleStakeClick = () => {
@@ -48,7 +50,10 @@ export const StakeComponent = () => {
     setOpenModal(modalNames.manageStake, {
       stake: {
         isStake: true,
-        amount: inputAmount,
+        amount:
+          stakeType === StakeType.CUSTOM
+            ? inputCustomSeed.toString()
+            : inputPassSeed.toString(),
       },
     });
   };
@@ -70,7 +75,6 @@ export const StakeComponent = () => {
 
       try {
         isFetching = true;
-        // TODO: Back to address
         await fetchAndSetStakeApy(address);
         await fetchStakePosData(address);
         await fetchAndSetRewards(address);
