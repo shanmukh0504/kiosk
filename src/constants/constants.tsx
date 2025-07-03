@@ -1,6 +1,9 @@
+import { hyperliquid } from "@gardenfi/core";
 import { Asset, Chain, isBitcoin, isEVM } from "@gardenfi/orderbook";
 import { BitcoinNetwork } from "@gardenfi/react-hooks";
 import { Network } from "@gardenfi/utils";
+import { citreaTestnet } from "viem/chains";
+import { botanix } from "../layout/wagmi/config";
 
 export const INTERNAL_ROUTES: Record<string, { name: string; path: string[] }> =
   {
@@ -84,7 +87,14 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "solana_testnet",
   "unichain",
   "corn",
+  "botanix",
 ] as const;
+
+export const MULTICALL_CONTRACT_ADDRESSES: Record<number, string> = {
+  [hyperliquid.id]: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  [citreaTestnet.id]: "0x8470Ee1FCD47e7F9B90486bB5D142430e5C1f409",
+  [botanix.id]: "0xeaE7721d779276eb0f5837e2fE260118724a2Ba4",
+};
 
 export const QUERY_PARAMS = {
   inputChain: "input-chain",

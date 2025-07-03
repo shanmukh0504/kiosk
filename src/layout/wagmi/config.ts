@@ -42,6 +42,27 @@ export const hyperliquidTestnet: Chain = {
   },
 };
 
+export const botanix: Chain = {
+  id: 3637,
+  name: "Botanix Mainnet",
+  nativeCurrency: {
+    name: "Botanix",
+    symbol: "BTC",
+    decimals: 18,
+  },
+  blockExplorers: {
+    default: {
+      name: "Botanix Explorer",
+      url: "https://botanixscan.io/",
+    },
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.botanixlabs.com/"],
+    },
+  },
+};
+
 export const SupportedChains = [
   mainnet,
   arbitrum,
@@ -60,6 +81,7 @@ export const SupportedChains = [
   hyperliquidTestnet,
   hyperliquid,
   corn,
+  botanix,
 ] as const;
 
 export const config = createConfig({
@@ -83,5 +105,6 @@ export const config = createConfig({
     [hyperliquidTestnet.id]: http(),
     [hyperliquid.id]: http(),
     [corn.id]: http(),
+    [botanix.id]: http(),
   },
 });

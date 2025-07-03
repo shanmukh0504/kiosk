@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
 import { INTERNAL_ROUTES, QUERY_PARAMS, THEMES } from "../constants/constants";
 import { Assets } from "../store/assetInfoStore";
-import { Swap } from "@gardenfi/orderbook";
+import { Asset, Swap } from "@gardenfi/orderbook";
 
 export const isProduction = () => {
   return import.meta.env.VITE_ENVIRONMENT === "production";
@@ -123,6 +123,14 @@ export const getAssetFromChainAndSymbol = (
   });
   return assetKey ? assets[assetKey] : undefined;
 };
+
+export const getOrderPair = (
+  chain: string | null,
+  tokenAddress: string | null
+) => (chain && tokenAddress ? `${chain}_${tokenAddress.toLowerCase()}` : "");
+
+export const getAssetChainHTLCAddressPair = (asset: Asset) =>
+  `${asset.chain}_${asset.atomicSwapAddress.toLowerCase()}`;
 
 export const getProtocolFee = (fees: number) => {
   const protocolBips = 7;
