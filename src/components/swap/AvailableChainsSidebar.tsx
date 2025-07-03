@@ -98,15 +98,13 @@ export const AvailableChainsSidebar = ({
             <SearchIcon />
           </div>
           <div
-            className={`flex h-full max-h-[376px] flex-col overflow-auto rounded-2xl bg-white`}
+            className={`flex h-full max-h-[388px] flex-col overflow-auto rounded-2xl bg-white`}
           >
-            <div className="px-4 pb-1.5 pt-3">
-              <Typography size="h5" weight="bold">
-                {isMobile ? "Chains" : ""}
-              </Typography>
-            </div>
-            <GradientScroll height={376} className="rounded-2xl">
-              <div className="flex w-full flex-col">
+            <GradientScroll
+              height={isMobile ? 384 : 376}
+              className="rounded-2xl"
+            >
+              <div className="flex w-full flex-col pb-1 pt-2">
                 {filteredChains.length > 0 ? (
                   filteredChains.map((c) => (
                     <div

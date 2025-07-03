@@ -36,6 +36,7 @@ export const useSwap = () => {
     isSwapping,
     isApproving,
     strategy,
+    rate,
     error,
     btcAddress,
     tokenPrices,
@@ -44,6 +45,7 @@ export const useSwap = () => {
     setStrategy,
     setIsSwapping,
     setAmount,
+    setRate,
     setError,
     swapAssets,
     setAsset,
@@ -230,6 +232,10 @@ export const useSwap = () => {
           const quoteAmountInDecimals = new BigNumber(Number(quoteAmount)).div(
             Math.pow(10, assetToChange.decimals)
           );
+
+          const rate = Number(quoteAmountInDecimals) / Number(amount);
+          setRate(rate);
+
           setAmount(
             isExactOut ? IOType.input : IOType.output,
             Number(
@@ -265,6 +271,7 @@ export const useSwap = () => {
       getQuote,
       setIsFetchingQuote,
       setStrategy,
+      setRate,
       setAmount,
       setTokenPrices,
       setError,
@@ -647,6 +654,7 @@ export const useSwap = () => {
     outputAsset,
     tokenPrices,
     strategy,
+    rate,
     error,
     isEditBTCAddress,
     loading: isFetchingQuote,

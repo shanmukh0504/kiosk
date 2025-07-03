@@ -57,7 +57,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     fiatData,
   } = assetInfoStore();
   const { modalName } = modalStore();
-  const { setAsset, inputAsset, outputAsset } = swapStore();
+  const { setAsset, inputAsset, outputAsset, clearSwapInputState } =
+    swapStore();
 
   const orderedChains = useMemo(() => {
     const order = ["bitcoin", "ethereum", "base", "arbitrum"];
@@ -134,11 +135,14 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const fiatBasedSortedResults = useMemo(() => {
     if (!isAnyWalletConnected) return sortedResults;
 
-    return [...sortedResults].sort((a, b) => {
-      const aFiat = Number(a.fiatBalance) || 0;
-      const bFiat = Number(b.fiatBalance) || 0;
-      return bFiat - aFiat;
-    });
+    return (
+      sortedResults &&
+      [...sortedResults].sort((a, b) => {
+        const aFiat = Number(a.fiatBalance) || 0;
+        const bFiat = Number(b.fiatBalance) || 0;
+        return bFiat - aFiat;
+      })
+    );
   }, [sortedResults, isAnyWalletConnected]);
 
   const visibleChains = useMemo(() => {
@@ -169,6 +173,23 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             : IOType.input,
           isAssetSelectorOpen.type === IOType.input ? inputAsset : outputAsset
         );
+      }
+      // if input asset is selected, check if the output asset is supported
+      if (
+        isAssetSelectorOpen.type === IOType.input &&
+        outputAsset &&
+        strategies.val
+      ) {
+        const op = constructOrderPair(
+          asset.chain,
+          asset.atomicSwapAddress,
+          outputAsset.chain,
+          outputAsset.atomicSwapAddress
+        );
+        if (!strategies.val[op]) {
+          setAsset(IOType.output, undefined);
+          clearSwapInputState();
+        }
       }
     }
     CloseAssetSelector();
@@ -202,7 +223,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
 
   useEffect(() => {
     if (!assets || !strategies.val) return;
-    if (!comparisonToken) {
+    if (!comparisonToken || isAssetSelectorOpen.type === IOType.input) {
       setResults(Object.values(assets));
     } else {
       const supportedTokens = Object.values(assets).filter((asset) => {
@@ -329,7 +350,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
               </Typography>
             </div>
             <GradientScroll height={272} onClose={!modalName.assetList}>
-              {fiatBasedSortedResults.length > 0 ? (
+              {fiatBasedSortedResults && fiatBasedSortedResults.length > 0 ? (
                 fiatBasedSortedResults?.map(
                   ({ asset, network, formattedBalance }) => (
                     <div
