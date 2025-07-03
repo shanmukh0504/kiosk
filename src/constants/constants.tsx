@@ -87,6 +87,7 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "solana_testnet",
   "unichain",
   "corn",
+  "solana",
   "botanix",
 ] as const;
 

@@ -84,51 +84,54 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   );
 
   const sortedResults = useMemo(() => {
-    if (!results || orderedChains.length === 0) return [];
-    return [...results]
-      .sort((a, b) => {
-        const chainA = chains?.[a.chain];
-        const chainB = chains?.[b.chain];
-        if (chainA && chainB) {
-          const indexA = orderedChains.findIndex(
-            (c) => c.identifier === chainA.identifier
-          );
-          const indexB = orderedChains.findIndex(
-            (c) => c.identifier === chainB.identifier
-          );
-          return indexA - indexB;
-        }
-        return 0;
-      })
-      .filter((asset) => !chain || asset.chain === chain.identifier)
-      .map((asset) => {
-        const network =
-          !isBitcoin(asset.chain) && !isSolana(asset.chain)
-            ? chains?.[asset.chain]
-            : undefined;
-        const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
-        const balance = balances?.[orderPair];
-        const fiatRate = fiatData?.[getAssetChainHTLCAddressPair(asset)] ?? 0;
-        const formattedBalance =
-          balance && asset && balance.toNumber() === 0
-            ? ""
-            : balance && !isStarknet(asset.chain)
-              ? new BigNumber(balance)
-                  .dividedBy(10 ** asset.decimals)
-                  .toNumber()
-              : balance?.toNumber();
+    if (!results && orderedChains.length === 0) return [];
+    return (
+      results &&
+      [...results]
+        .sort((a, b) => {
+          const chainA = chains?.[a.chain];
+          const chainB = chains?.[b.chain];
+          if (chainA && chainB) {
+            const indexA = orderedChains.findIndex(
+              (c) => c.identifier === chainA.identifier
+            );
+            const indexB = orderedChains.findIndex(
+              (c) => c.identifier === chainB.identifier
+            );
+            return indexA - indexB;
+          }
+          return 0;
+        })
+        .filter((asset) => !chain || asset.chain === chain.identifier)
+        .map((asset) => {
+          const network =
+            !isBitcoin(asset.chain) && !isSolana(asset.chain)
+              ? chains?.[asset.chain]
+              : undefined;
+          const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
+          const balance = balances?.[orderPair];
+          const fiatRate = fiatData?.[getAssetChainHTLCAddressPair(asset)] ?? 0;
+          const formattedBalance =
+            balance && asset && balance.toNumber() === 0
+              ? ""
+              : balance && !isStarknet(asset.chain)
+                ? new BigNumber(balance)
+                    .dividedBy(10 ** asset.decimals)
+                    .toNumber()
+                : balance?.toNumber();
 
-        const fiatBalance =
-          formattedBalance &&
-          (Number(formattedBalance) * Number(fiatRate)).toFixed(5);
+          const fiatBalance =
+            formattedBalance &&
+            (Number(formattedBalance) * Number(fiatRate)).toFixed(5);
 
-        return {
-          asset,
-          network,
-          formattedBalance,
-          fiatBalance,
-        };
-      });
+          return {
+            asset,
+            network,
+            formattedBalance,
+            fiatBalance,
+          };
+        })
+    );
   }, [results, orderedChains, chains, chain, balances, fiatData]);
 
   const isAnyWalletConnected = !!address || !!btcAddress || !!starknetAccount;
