@@ -70,7 +70,7 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
         />
         <StakeStats
           title={"APY"}
-          value={`${stakingStats?.apy || 0} %`}
+          value={`${stakingStats?.globalApy || 0} %`}
           isPink
           size="md"
         />

@@ -27,7 +27,7 @@ const SEED: Asset = {
 };
 
 type StakingStats = {
-  apy: number;
+  globalApy: string;
   averageLockTime: string;
   totalVotes: number;
   seedLockedPercentage: string;
@@ -56,6 +56,7 @@ type StakeStoreState = {
   error: string | null;
   totalStakedAmount: number;
   totalVotes: number;
+  totalGardenerPasses: number;
   stakePosData: StakingPosition[] | null;
   stakeApys: Record<string, number>;
   stakingStats: StakingStats | null;
@@ -132,12 +133,16 @@ export type StakingPosition = {
   status: StakePositionStatus;
   filler: string;
   stakedAt: string;
+  multiplier: number;
   lastStakedAtBlock: number;
   isPerma: boolean;
+  isGardenerPass: boolean;
 };
 
 type StakingPositionApiResponse = {
-  data: StakingPosition[];
+  data: {
+    [address: string]: StakingPosition[];
+  };
 };
 
 export const stakeStore = create<StakeStoreState>((set) => ({
@@ -147,6 +152,7 @@ export const stakeStore = create<StakeStoreState>((set) => ({
   stakePosData: null,
   totalStakedAmount: 0,
   totalVotes: 0,
+  totalGardenerPasses: 0,
   stakingStats: null,
   stakeApys: {},
   stakeRewards: null,
@@ -164,7 +170,7 @@ export const stakeStore = create<StakeStoreState>((set) => ({
         API().stake.stakePosition(address.toLowerCase()).toString()
       );
       if (response.status === 200 && response.data) {
-        const stakes = response.data.data;
+        const stakes = response.data.data[address.toLowerCase()] ?? [];
         const stats = stakes.reduce(
           (acc, stake) => {
             if (
@@ -172,6 +178,11 @@ export const stakeStore = create<StakeStoreState>((set) => ({
               stake.status !== StakePositionStatus.unStaked
             ) {
               acc.totalVotes += stake.votes;
+              console.log("nft", stake.isGardenerPass);
+              if (stake.isGardenerPass) {
+                acc.totalGardenerPasses += 1;
+              }
+              acc.totalGardenerPasses;
               acc.totalStakedAmount += formatAmount(
                 stake.amount,
                 SEED_DECIMALS
@@ -184,6 +195,7 @@ export const stakeStore = create<StakeStoreState>((set) => ({
           {
             totalVotes: 0,
             totalStakedAmount: 0,
+            totalGardenerPasses: 0,
           }
         );
 
@@ -191,6 +203,7 @@ export const stakeStore = create<StakeStoreState>((set) => ({
           stakePosData: stakes,
           totalVotes: stats.totalVotes,
           totalStakedAmount: stats.totalStakedAmount,
+          totalGardenerPasses: stats.totalGardenerPasses,
         });
       }
     } catch (error) {
@@ -202,7 +215,7 @@ export const stakeStore = create<StakeStoreState>((set) => ({
     try {
       const response = await axios.get<{
         data: {
-          apy: number;
+          globalApy: number;
           ast: string;
           totalVotes: number;
           totalStaked: string;
@@ -220,12 +233,11 @@ export const stakeStore = create<StakeStoreState>((set) => ({
           2
         )
       ).toString();
+      console.log("stats", response.data.data.globalApy);
 
       set({
         stakingStats: {
-          apy: response.data.data.apy
-            ? Number(response.data.data.apy.toFixed(2))
-            : 0,
+          globalApy: Number(response.data.data.globalApy).toFixed(2),
           averageLockTime: avgLockTime.toString(),
           totalVotes: response.data.data.totalVotes,
           seedLockedPercentage: seedLockedPercentage,
@@ -239,15 +251,13 @@ export const stakeStore = create<StakeStoreState>((set) => ({
     try {
       const response = await axios.get<{
         data: {
-          data: {
-            stakeApys: {
-              [stakeId: string]: number;
-            };
-            userApy: number;
+          stakeApys: {
+            [stakeId: string]: number;
           };
+          userApy: number;
         };
       }>(API().stake.stakeApy(address.toLowerCase()).toString());
-      set({ stakeApys: response.data.data.data.stakeApys });
+      set({ stakeApys: response.data.data.stakeApys });
     } catch (error) {
       console.error(error);
     }
@@ -304,10 +314,11 @@ export const stakeStore = create<StakeStoreState>((set) => ({
   },
   fetchAndSetEpoch: async () => {
     try {
-      const response = await axios.get<EpochResponse[]>(
+      const response = await axios.get<{ data: EpochResponse[] }>(
         API().rewards.epoch.toString()
       );
-      set({ epochData: response.data });
+      console.log("epoch data", response.data.data);
+      set({ epochData: response.data.data });
     } catch (error) {
       console.error("Error fetching current epoch :", error);
     }
