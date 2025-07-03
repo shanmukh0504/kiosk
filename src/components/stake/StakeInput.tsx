@@ -9,11 +9,15 @@ import { fadeAnimation } from "../../animations/animations";
 import { SEED_FOR_MINTING_NFT } from "./constants";
 
 export const StakeInput = ({ balance }: { balance: number }) => {
-  const { stakeType, inputAmount, setInputAmount } = stakeStore();
+  const {
+    stakeType,
+    inputCustomSeed,
+    inputPassSeed,
+    setInputCustomSeed,
+    setInputPassSeed,
+  } = stakeStore();
   const [passCount, setPassCount] = useState(1);
   const [passSeed, setPassSeed] = useState(SEED_FOR_MINTING_NFT);
-  const [customSeed, setCustomSeed] = useState(0);
-  const [customInputAmount, setCustomInputAmount] = useState("0");
   const [animated] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -32,12 +36,9 @@ export const StakeInput = ({ balance }: { balance: number }) => {
       const maxPasses = Math.floor(balance / SEED_FOR_MINTING_NFT);
       setPassCount(maxPasses);
       const newPassSeed = maxPasses * SEED_FOR_MINTING_NFT;
-      setPassSeed(newPassSeed);
-      setInputAmount(newPassSeed.toString());
+      setInputPassSeed(newPassSeed);
     } else {
-      setCustomSeed(stakeableBalance);
-      setCustomInputAmount(stakeableBalance.toString());
-      setInputAmount(stakeableBalance.toString());
+      setInputCustomSeed(stakeableBalance);
     }
   };
 
@@ -67,10 +68,12 @@ export const StakeInput = ({ balance }: { balance: number }) => {
       return;
     }
 
-    setCustomInputAmount(input);
-    const numValue = Number(input) || 0;
-    setCustomSeed(numValue);
-    setInputAmount(input);
+    const numValue = Number(input);
+    if (stakeType === StakeType.CUSTOM) {
+      setInputCustomSeed(numValue);
+    } else {
+      setInputPassSeed(numValue);
+    }
   };
 
   const handleInputBlur = () => {
@@ -80,11 +83,13 @@ export const StakeInput = ({ balance }: { balance: number }) => {
       }
 
       timeoutRef.current = setTimeout(() => {
-        const currentValue = Number(customInputAmount) || 0;
+        const currentValue = Number(inputCustomSeed) || 0;
         const roundedValue = roundToNearestMultiple(currentValue);
-        setCustomInputAmount(roundedValue.toString());
-        setCustomSeed(roundedValue);
-        setInputAmount(roundedValue.toString());
+        if (stakeType === StakeType.CUSTOM) {
+          setInputCustomSeed(roundedValue);
+        } else {
+          setInputPassSeed(roundedValue);
+        }
       }, 500);
     }
     setIsFocused(false);
@@ -97,21 +102,17 @@ export const StakeInput = ({ balance }: { balance: number }) => {
         setPassCount(newPassCount);
         const newPassSeed = newPassCount * SEED_FOR_MINTING_NFT;
         setPassSeed(newPassSeed);
-        setInputAmount(newPassSeed.toString());
+        setInputPassSeed(newPassSeed);
       }
     } else {
-      const currentAmount = Number(customInputAmount) || 0;
+      const currentAmount = Number(inputCustomSeed) || 0;
       if (currentAmount % MIN_STAKE_AMOUNT === 0) {
         const newAmount = Math.max(currentAmount - MIN_STAKE_AMOUNT, 0);
-        setCustomSeed(newAmount);
-        setCustomInputAmount(newAmount.toString());
-        setInputAmount(newAmount.toString());
+        setInputCustomSeed(newAmount);
       } else {
         const newAmount =
           Math.floor(currentAmount / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT;
-        setCustomSeed(newAmount);
-        setCustomInputAmount(newAmount.toString());
-        setInputAmount(newAmount.toString());
+        setInputCustomSeed(newAmount);
       }
     }
   };
@@ -122,31 +123,38 @@ export const StakeInput = ({ balance }: { balance: number }) => {
       setPassCount(newPassCount);
       const newPassSeed = newPassCount * SEED_FOR_MINTING_NFT;
       setPassSeed(newPassSeed);
-      setInputAmount(newPassSeed.toString());
+      setInputPassSeed(newPassSeed);
     } else {
-      const currentAmount = Number(customInputAmount) || 0;
+      const currentAmount = Number(inputCustomSeed) || 0;
       if (currentAmount % MIN_STAKE_AMOUNT === 0) {
         const newAmount = currentAmount + MIN_STAKE_AMOUNT;
-        setCustomSeed(newAmount);
-        setCustomInputAmount(newAmount.toString());
-        setInputAmount(newAmount.toString());
+        setInputCustomSeed(newAmount);
       } else {
         const newAmount =
           Math.floor(currentAmount / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT +
           MIN_STAKE_AMOUNT;
-        setCustomSeed(newAmount);
-        setCustomInputAmount(newAmount.toString());
-        setInputAmount(newAmount.toString());
+        setInputCustomSeed(newAmount);
       }
     }
   };
 
   useEffect(() => {
-    if (Number(inputAmount) === 0) {
-      setCustomInputAmount("0");
-      setCustomSeed(0);
+    if (stakeType === StakeType.CUSTOM) {
+      if (Number(inputCustomSeed) === 0) {
+        setInputCustomSeed(0);
+      }
+    } else {
+      if (Number(inputPassSeed) === 0) {
+        setInputPassSeed(0);
+      }
     }
-  }, [inputAmount, setCustomInputAmount, setCustomSeed]);
+  }, [
+    inputCustomSeed,
+    inputPassSeed,
+    setInputCustomSeed,
+    setInputPassSeed,
+    stakeType,
+  ]);
 
   return (
     <div className="flex flex-col gap-3 rounded-xl bg-white p-4">
@@ -220,7 +228,6 @@ export const StakeInput = ({ balance }: { balance: number }) => {
                         if (isAnimating) return;
                         e.preventDefault();
                         setIsFocused(true);
-                        if (customInputAmount === "0") setCustomInputAmount("");
                         setTimeout(() => {
                           inputRef.current?.focus();
                         }, 0);
@@ -235,14 +242,14 @@ export const StakeInput = ({ balance }: { balance: number }) => {
                           )}
                           style={{ fontKerning: "none" }}
                           type="tel"
-                          value={customInputAmount}
+                          value={inputCustomSeed}
                           onChange={handleInputChange}
                           onFocus={() => setIsFocused(true)}
                           onBlur={handleInputBlur}
                         />
                       ) : (
                         <NumberFlow
-                          value={customSeed}
+                          value={inputCustomSeed}
                           locales="en-US"
                           style={{ fontKerning: "none", width: "100%" }}
                           format={{

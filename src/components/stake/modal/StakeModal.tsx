@@ -18,7 +18,7 @@ type StakeModalProps = {
 export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
   const [selectedDuration, setSelectedDuration] = useState<DURATION>(6);
 
-  const { setInputAmount, stakingStats } = stakeStore();
+  const { setInputCustomSeed, setInputPassSeed, stakingStats } = stakeStore();
   const { modalData } = modalStore();
   const { isMobile } = viewPortStore();
 
@@ -42,7 +42,8 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
 
   const handleClose = () => {
     setSelectedDuration(6);
-    setInputAmount("0");
+    setInputCustomSeed(0);
+    setInputPassSeed(21000);
     onClose();
   };
 
