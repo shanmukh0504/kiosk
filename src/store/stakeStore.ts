@@ -262,6 +262,7 @@ export const stakeStore = create<StakeStoreState>((set) => ({
     }
   },
   fetchAndSetRewards: async (address: string) => {
+    console.log("fetching rewards", address);
     try {
       set({ loading: { stakeRewards: true } });
       const resp = await axios.get<StakingReward>(
