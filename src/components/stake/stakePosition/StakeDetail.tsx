@@ -163,8 +163,10 @@ export const StakeDetails: FC<props> = ({ key, stakePos }) => {
           </Typography>
         </span>
       </td>
-      <td className="pl-2 pr-8 pt-3 text-left sm:px-2 sm:pr-0">
-        {stakeEndDateString}
+      <td className="pl-2 pr-8 pt-3 text-left sm:px-2 sm:pr-0 sm:pt-0">
+        <Typography size="h4" weight="medium">
+          {stakeEndDateString}
+        </Typography>
       </td>
       <td className="mx-1 w-4 cursor-pointer p-1">
         <svg

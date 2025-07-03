@@ -18,7 +18,8 @@ export const StakeOverview = ({
   setShowDetails,
 }: StakeOverviewProps) => {
   const statRef = useRef<HTMLDivElement>(null);
-  const { totalStakedAmount, totalVotes, stakeRewards } = stakeStore();
+  const { totalStakedAmount, totalVotes, stakeRewards, totalGardenerPasses } =
+    stakeStore();
 
   const formattedAmount =
     totalStakedAmount === undefined
@@ -68,7 +69,7 @@ export const StakeOverview = ({
               />
               <OverviewStats
                 title={"Garden pass"}
-                value={`0`}
+                value={totalGardenerPasses}
                 size="sm"
                 className="w-[90px] sm:w-fit md:w-[80px] xl:w-[90px]"
               />
@@ -95,7 +96,7 @@ export const StakeOverview = ({
                         cbBtc={formatAmount(
                           Number(
                             stakeRewards?.rewardResponse
-                              .cumulative_rewards_cbbtc
+                              .cumulative_rewards_cbbtc ?? 0
                           ),
                           8
                         )}

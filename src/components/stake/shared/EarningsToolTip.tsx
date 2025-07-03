@@ -1,6 +1,6 @@
 import { Typography } from "@gardenfi/garden-book";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bar, BarChart, XAxis, ResponsiveContainer, BarProps } from "recharts";
 import {
   ChartContainer,
@@ -26,6 +26,11 @@ export const EarningsToolTip = ({
   earningRate,
   earningsData,
 }: TooltipProps) => {
+  useEffect(() => {
+    console.log("earnings", earnings);
+    console.log("earningrate", earningRate);
+    console.log("earningData", earningsData);
+  }, []);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   return (
     <motion.div

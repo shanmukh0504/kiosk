@@ -138,7 +138,7 @@ export const StakeComponent = () => {
                   </div>
                 </div>
               }
-              value={`${stakingStats?.apy || 0} %`}
+              value={`${stakingStats?.globalApy || 0} %`}
               size="sm"
             />
             <AnimatePresence mode="wait">
