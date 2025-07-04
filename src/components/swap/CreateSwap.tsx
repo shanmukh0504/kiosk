@@ -18,6 +18,7 @@ import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { rpcStore } from "../../store/rpcStore";
+import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 
 export const CreateSwap = () => {
   const [loadingDisabled, setLoadingDisabled] = useState(false);
@@ -27,12 +28,14 @@ export const CreateSwap = () => {
   const { account: btcAddress, provider } = useBitcoinWallet();
   const { address } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
+  const { solanaAnchorProvider } = useSolanaWallet();
   const {
     assets,
     fetchAndSetBitcoinBalance,
     fetchAndSetEvmBalances,
     fetchAndSetFiatValues,
     fetchAndSetStarknetBalance,
+    fetchAndSetSolanaBalance,
     clearBalances,
   } = assetInfoStore();
 
@@ -145,6 +148,9 @@ export const CreateSwap = () => {
       if (starknetAddress) {
         await fetchAndSetStarknetBalance(starknetAddress);
       }
+      if (solanaAnchorProvider) {
+        await fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey);
+      }
     };
 
     updateBalances();
@@ -161,8 +167,10 @@ export const CreateSwap = () => {
     fetchAndSetEvmBalances,
     fetchAndSetBitcoinBalance,
     starknetAddress,
+    solanaAnchorProvider,
     fetchAndSetFiatValues,
     fetchAndSetStarknetBalance,
+    fetchAndSetSolanaBalance,
     clearBalances,
     workingRPCs,
   ]);

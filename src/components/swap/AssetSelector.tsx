@@ -114,7 +114,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           const formattedBalance =
             balance && asset && balance.toNumber() === 0
               ? ""
-              : balance && !isStarknet(asset.chain)
+              : balance && !isStarknet(asset.chain) && !isSolana(asset.chain)
                 ? new BigNumber(balance)
                     .dividedBy(10 ** asset.decimals)
                     .toNumber()
