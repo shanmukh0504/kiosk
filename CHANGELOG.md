@@ -6,7 +6,6 @@
 
 - Token balances are now displayed in the asset selector modal, arranged in decreasing order of their USD value.
 - Added sidebar and bottom sheet animations for chain filtering.
-- Added check for CHANGELOG updates in github action
 
 ## [1.0.2]
 
