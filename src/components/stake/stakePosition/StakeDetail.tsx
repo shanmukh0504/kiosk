@@ -32,7 +32,8 @@ export const StakeDetails: FC<props> = ({ key, stakePos }) => {
   // const isExpired = stakePos.status === StakePositionStatus.expired;
 
   const stakeReward = formatAmount(
-    stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedCBBTCRewards || 0,
+    stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedCBBTCRewardsUSD ||
+      0,
     8,
     8
   );
@@ -45,7 +46,7 @@ export const StakeDetails: FC<props> = ({ key, stakePos }) => {
       : stakeAmount.toString();
 
   const seedReward = formatAmount(
-    stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedSeedRewards ??
+    stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedSeedRewardsUSD ??
       "0",
     SEED_DECIMALS,
     5
@@ -153,7 +154,7 @@ export const StakeDetails: FC<props> = ({ key, stakePos }) => {
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
         >
-          {hovered && !!seedReward && !!stakeReward && (
+          {hovered && (!!seedReward || !!stakeReward) && (
             <TooltipWrapper offsetX={10} offsetY={9} targetRef={targetRef}>
               <UnitRewardTooltip seed={seedReward} cbBtc={stakeReward} />
             </TooltipWrapper>

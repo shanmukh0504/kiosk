@@ -28,7 +28,7 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
           token.
         </Typography>
         <div className="flex flex-wrap items-center justify-between space-y-1">
-          {(cbBtc ?? 0) > 0 && (
+          {!!cbBtc && (
             <div className="flex items-center gap-1">
               <Typography size="h4" weight="medium" className="w-[87px]">
                 {cbBtc}
@@ -53,7 +53,7 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
               />
             </div>
           )}
-          {(seed ?? 0) > 0 && (
+          {!!seed && (
             <div className="flex items-center gap-1">
               <Typography size="h4" weight="medium" className="w-[87px]">
                 {seed}

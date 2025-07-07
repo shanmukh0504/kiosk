@@ -10,7 +10,6 @@ import {
 } from "../components/stake/constants";
 import { formatAmount } from "../utils/utils";
 import { CIRCULATING_SEED_SUPPLY } from "../constants/stake";
-import { StakeRewards } from "../components/stake/StakeRewards";
 
 export enum StakeType {
   GARDEN_PASS = "garden-pass",

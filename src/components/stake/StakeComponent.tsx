@@ -75,9 +75,9 @@ export const StakeComponent = () => {
 
       try {
         isFetching = true;
-        await fetchAndSetStakeApy(address);
-        await fetchStakePosData(address);
-        await fetchAndSetRewards(address);
+        await fetchAndSetStakeApy("0xDda173bd23b07007394611D789EF789a9Aae5CF5");
+        await fetchStakePosData("0xDda173bd23b07007394611D789EF789a9Aae5CF5");
+        await fetchAndSetRewards("0xDda173bd23b07007394611D789EF789a9Aae5CF5");
       } finally {
         isFetching = false;
       }
