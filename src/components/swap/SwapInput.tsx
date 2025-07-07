@@ -12,7 +12,7 @@ import {
   Asset,
   isBitcoin,
   isEvmNativeToken,
-  isSolana,
+  isSolanaNativeToken,
 } from "@gardenfi/orderbook";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { ErrorFormat } from "../../constants/errors";
@@ -56,7 +56,7 @@ export const SwapInput: FC<SwapInputProps> = ({
     if (
       !chains ||
       (asset && isBitcoin(asset.chain)) ||
-      (asset && isSolana(asset.chain))
+      (asset && isSolanaNativeToken(asset.chain, asset.tokenAddress))
     )
       return;
     if (!asset) return;
@@ -112,7 +112,8 @@ export const SwapInput: FC<SwapInputProps> = ({
     if (type === IOType.input && balance && asset) {
       if (
         !isBitcoin(asset?.chain) &&
-        !isEvmNativeToken(asset?.chain, asset.tokenAddress)
+        !isEvmNativeToken(asset?.chain, asset.tokenAddress) &&
+        !isSolanaNativeToken(asset?.chain, asset.tokenAddress)
       ) {
         const balanceStr = balance.toString();
         onChange(balanceStr);

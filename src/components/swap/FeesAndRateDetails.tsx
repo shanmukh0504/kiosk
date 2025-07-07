@@ -4,7 +4,7 @@ import { BTC, swapStore } from "../../store/swapStore";
 import { CompetitorComparisons } from "./CompetitorComparisons";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { isBitcoin } from "@gardenfi/orderbook";
+import { isBitcoin, isSolana } from "@gardenfi/orderbook";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatAmount, getProtocolFee } from "../../utils/utils";
 import { getBitcoinNetwork } from "../../constants/constants";
@@ -16,6 +16,7 @@ import {
 import { TooltipWrapper } from "../../common/ToolTipWrapper";
 import { CostToolTip } from "./CostToolTip";
 import { SwapSavingsAndAddresses } from "./SwapSavingsAndAddresses";
+import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 
 export const FeesAndRateDetails = () => {
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
@@ -32,6 +33,7 @@ export const FeesAndRateDetails = () => {
     swapStore();
   const network = getBitcoinNetwork();
   const { account: btcAddress } = useBitcoinWallet();
+  const { solanaAddress } = useSolanaWallet();
   const { address } = useEVMWallet();
   const { networkFeesValue } = useNetworkFees(network, outputAsset);
 
@@ -50,13 +52,27 @@ export const FeesAndRateDetails = () => {
   );
 
   const refundAddress = useMemo(
-    () => (inputAsset && isBitcoin(inputAsset.chain) ? btcAddress : address),
-    [inputAsset, btcAddress, address]
+    () =>
+      inputAsset
+        ? isBitcoin(inputAsset.chain)
+          ? btcAddress
+          : isSolana(inputAsset.chain)
+            ? solanaAddress
+            : address
+        : undefined,
+    [inputAsset, btcAddress, solanaAddress, address]
   );
 
   const receiveAddress = useMemo(
-    () => (outputAsset && isBitcoin(outputAsset.chain) ? btcAddress : address),
-    [outputAsset, btcAddress, address]
+    () =>
+      outputAsset
+        ? isBitcoin(outputAsset.chain)
+          ? btcAddress
+          : isSolana(outputAsset.chain)
+            ? solanaAddress
+            : address
+        : undefined,
+    [outputAsset, btcAddress, solanaAddress, address]
   );
 
   const handleShowComparison = (type: "time" | "fees") => {

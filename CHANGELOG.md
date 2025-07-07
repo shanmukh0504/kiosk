@@ -12,6 +12,7 @@
 - Token balances are now displayed in the asset selector modal, arranged in decreasing order of their USD value.
 - Added sidebar and bottom sheet animations for chain filtering.
 - Added check for CHANGELOG updates in github actions
+- Fixed BTC wallet connections in phantom, added disable assets for unsupported chains by phantom in mainnet.
 
 ## [1.0.2]
 

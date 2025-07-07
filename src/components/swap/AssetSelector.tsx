@@ -6,10 +6,21 @@ import {
 } from "@gardenfi/garden-book";
 import BigNumber from "bignumber.js";
 import { FC, useState, ChangeEvent, useEffect, useMemo, useRef } from "react";
-import { Asset, isBitcoin, isStarknet, isSolana } from "@gardenfi/orderbook";
+import {
+  Asset,
+  isBitcoin,
+  isStarknet,
+  isSolana,
+  isSolanaNativeToken,
+  isEvmNativeToken,
+} from "@gardenfi/orderbook";
 import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { BTC, swapStore } from "../../store/swapStore";
-import { IOType, network } from "../../constants/constants";
+import {
+  IOType,
+  network,
+  PHANTOM_SUPPORTED_CHAINS,
+} from "../../constants/constants";
 import { constructOrderPair } from "@gardenfi/core";
 import { AssetChainLogos } from "../../common/AssetChainLogos";
 import { modalStore } from "../../store/modalStore";
@@ -48,6 +59,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const { starknetAccount } = useStarknetWallet();
   const { solanaAddress } = useSolanaWallet();
   const { isMobile } = viewPortStore();
+  const { connector } = useEVMWallet();
 
   const {
     isAssetSelectorOpen,
@@ -62,22 +74,44 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const { setAsset, inputAsset, outputAsset, clearSwapInputState } =
     swapStore();
 
+  const phantomEvmConnected = !!(connector && connector.id === "app.phantom");
+
   const orderedChains = useMemo(() => {
     const order = ["bitcoin", "ethereum", "base", "arbitrum"];
-    return chains
-      ? Object.values(chains).sort((a, b) => {
-          const indexA = order.findIndex((name) =>
-            a.name.toLowerCase().includes(name)
-          );
-          const indexB = order.findIndex((name) =>
-            b.name.toLowerCase().includes(name)
-          );
-          if (indexA === -1) return 1;
-          if (indexB === -1) return -1;
-          return indexA - indexB;
-        })
-      : [];
-  }, [chains]);
+
+    if (!chains) return [];
+
+    // Sort chains based on the predefined order
+    const sortedChains = Object.values(chains).sort((a, b) => {
+      const indexA = order.findIndex((name) =>
+        a.name.toLowerCase().includes(name)
+      );
+      const indexB = order.findIndex((name) =>
+        b.name.toLowerCase().includes(name)
+      );
+      if (indexA === -1) return 1;
+      if (indexB === -1) return -1;
+      return indexA - indexB;
+    });
+
+    if (phantomEvmConnected) {
+      return sortedChains.sort((a, b) => {
+        const isChainASupported = PHANTOM_SUPPORTED_CHAINS.includes(
+          a.identifier
+        );
+        const isChainBSupported = PHANTOM_SUPPORTED_CHAINS.includes(
+          b.identifier
+        );
+
+        if (isChainASupported !== isChainBSupported) {
+          return isChainASupported ? -1 : 1;
+        }
+        return 0;
+      });
+    }
+
+    return sortedChains;
+  }, [chains, phantomEvmConnected]);
 
   const comparisonToken = useMemo(
     () =>
@@ -107,7 +141,9 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         .filter((asset) => !chain || asset.chain === chain.identifier)
         .map((asset) => {
           const network =
-            !isBitcoin(asset.chain) && !isSolana(asset.chain)
+            !isBitcoin(asset.chain) &&
+            !isEvmNativeToken(asset.chain, asset.tokenAddress) &&
+            !isSolanaNativeToken(asset.chain, asset.tokenAddress)
               ? chains?.[asset.chain]
               : undefined;
           const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
@@ -209,8 +245,15 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const hideSidebar = () => setShowAllChains(false);
 
   const handleChainClick = (selectedChain: ChainData) => {
+    const isChainSupportedByPhantom = PHANTOM_SUPPORTED_CHAINS.includes(
+      selectedChain.identifier
+    );
+    if (phantomEvmConnected && !isChainSupportedByPhantom) {
+      setSidebarSelectedChain(selectedChain);
+      setShowAllChains(false);
+      return;
+    }
     setChain(selectedChain);
-    setSidebarSelectedChain(selectedChain);
     setShowAllChains(false);
   };
 
@@ -291,33 +334,44 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           </div>
           <div className="flex w-full flex-wrap gap-3">
             <div className={`flex w-full ${isMobile ? "gap-2" : "gap-3"}`}>
-              {visibleChains.map((c, i) => (
-                <button
-                  key={i}
-                  className={`relative flex h-12 flex-1 items-center justify-center gap-2 overflow-visible rounded-xl outline-none duration-300 ease-in-out ${
-                    !chain || c.chainId !== chain.chainId
-                      ? "bg-white/50"
-                      : "bg-white"
-                  }`}
-                  onMouseEnter={() => setHoveredChain(c.name)}
-                  onMouseLeave={() => setHoveredChain("")}
-                  onClick={() =>
-                    c === chain ? setChain(undefined) : setChain(c)
-                  }
-                >
-                  <img
-                    src={c.networkLogo}
-                    alt={c.name}
-                    className="h-full max-h-5 w-full max-w-5 rounded-full"
-                  />
-                  {hoveredChain === c.name && (
-                    <ChainsTooltip
-                      chain={c.name}
-                      className={`${network === Network.TESTNET ? (i === 0 ? "translate-x-7" : orderedChains.length - visibleChainsCount === 0 && i === visibleChainsCount - 1 && !!isMobile ? "-translate-x-4" : "") : ""}`}
+              {visibleChains.map((c, i) => {
+                const isChainSupportedByPhantom =
+                  PHANTOM_SUPPORTED_CHAINS.includes(c.identifier);
+                const isDisabled =
+                  phantomEvmConnected && !isChainSupportedByPhantom;
+
+                return (
+                  <button
+                    key={i}
+                    className={`relative flex h-12 flex-1 items-center justify-center gap-2 overflow-visible rounded-xl outline-none duration-300 ease-in-out ${
+                      !chain || c.chainId !== chain.chainId
+                        ? isDisabled
+                          ? "!cursor-not-allowed bg-white/20"
+                          : "bg-white/50"
+                        : "bg-white"
+                    }`}
+                    onMouseEnter={() => setHoveredChain(c.name)}
+                    onMouseLeave={() => setHoveredChain("")}
+                    onClick={() => {
+                      if (!isDisabled && c === chain) setChain(undefined);
+                      else setChain(c);
+                    }}
+                    disabled={isDisabled}
+                  >
+                    <img
+                      src={c.networkLogo}
+                      alt={c.name}
+                      className={`h-full max-h-5 w-full max-w-5 rounded-full ${isDisabled ? "opacity-50" : ""}`}
                     />
-                  )}
-                </button>
-              ))}
+                    {hoveredChain === c.name && (
+                      <ChainsTooltip
+                        chain={c.name}
+                        className={`${network === Network.TESTNET ? (i === 0 ? "translate-x-7" : orderedChains.length - visibleChainsCount === 0 && i === visibleChainsCount - 1 && !!isMobile ? "-translate-x-4" : "") : ""}`}
+                      />
+                    )}
+                  </button>
+                );
+              })}
               {orderedChains.length > visibleChainsCount && (
                 <button
                   className={`h-12 w-12 cursor-pointer rounded-xl bg-white/50 p-4 duration-300 ease-in-out`}
@@ -358,58 +412,69 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             <GradientScroll height={272} onClose={!modalName.assetList}>
               {fiatBasedSortedResults && fiatBasedSortedResults.length > 0 ? (
                 fiatBasedSortedResults?.map(
-                  ({ asset, network, formattedBalance }) => (
-                    <div
-                      key={`${asset.chain}-${asset.atomicSwapAddress}`}
-                      className="flex w-full cursor-pointer items-center justify-between gap-2 px-4 py-1.5 hover:bg-off-white"
-                      onClick={() => handleClick(asset)}
-                    >
-                      <div className="flex w-full items-center gap-2">
-                        <div className="w-10">
-                          <AssetChainLogos
-                            tokenLogo={asset.logo}
-                            chainLogo={network?.networkLogo}
-                          />
+                  ({ asset, network, formattedBalance }) => {
+                    const isChainSupportedByPhantom =
+                      PHANTOM_SUPPORTED_CHAINS.includes(asset.chain);
+                    const isDisabled =
+                      phantomEvmConnected && !isChainSupportedByPhantom;
+
+                    return (
+                      <div
+                        key={`${asset.chain}-${asset.atomicSwapAddress}`}
+                        className="flex w-full cursor-pointer items-center justify-between gap-2 px-4 py-1.5 hover:bg-off-white"
+                        onClick={() => {
+                          if (!isDisabled) handleClick(asset);
+                        }}
+                      >
+                        <div className="flex w-full items-center gap-2">
+                          <div
+                            className={`w-10 ${isDisabled ? "opacity-50" : ""}`}
+                          >
+                            <AssetChainLogos
+                              tokenLogo={asset.logo}
+                              chainLogo={network?.networkLogo}
+                            />
+                          </div>
+                          <Typography
+                            className={`w-2/3 ${isDisabled ? "opacity-50" : ""}`}
+                            size={"h5"}
+                            breakpoints={{ sm: "h4" }}
+                            weight="medium"
+                          >
+                            {asset.name}
+                          </Typography>
                         </div>
-                        <Typography
-                          className="w-2/3"
-                          size={"h5"}
-                          breakpoints={{ sm: "h4" }}
-                          weight="medium"
-                        >
-                          {asset.name}
-                        </Typography>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        {formattedBalance && (
+                        <div className="flex items-center gap-1">
+                          {formattedBalance && (
+                            <Typography
+                              size={"h5"}
+                              breakpoints={{
+                                sm: "h4",
+                              }}
+                              weight="medium"
+                              className={`!text-mid-grey ${isDisabled ? "opacity-50" : ""}`}
+                            >
+                              {formatAmount(
+                                Number(formattedBalance),
+                                0,
+                                Math.min(asset.decimals, BTC.decimals)
+                              )}
+                            </Typography>
+                          )}
                           <Typography
                             size={"h5"}
                             breakpoints={{
                               sm: "h4",
                             }}
                             weight="medium"
-                            className="!text-mid-grey"
+                            className={`!text-mid-grey ${isDisabled ? "opacity-50" : ""}`}
                           >
-                            {formatAmount(
-                              Number(formattedBalance),
-                              0,
-                              Math.min(asset.decimals, BTC.decimals)
-                            )}
+                            {asset.symbol}
                           </Typography>
-                        )}
-                        <Typography
-                          size={"h5"}
-                          breakpoints={{
-                            sm: "h4",
-                          }}
-                          weight="medium"
-                          className="!text-mid-grey"
-                        >
-                          {asset.symbol}
-                        </Typography>
+                        </div>
                       </div>
-                    </div>
-                  )
+                    );
+                  }
                 )
               ) : (
                 <div className="flex min-h-[274px] w-full items-center justify-center">

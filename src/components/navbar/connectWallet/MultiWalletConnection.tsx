@@ -51,6 +51,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
       (value.name === BlockchainType.Starknet && connectors.Starknet) ||
       (value.name === BlockchainType.Solana && connectors.Solana)
   );
+  // console.log("Available ecosystems:", availableEcosystems, connectors);
 
   const handleCheck = (ecosystem: BlockchainType) => {
     setChecked((prev) => ({
@@ -119,30 +120,20 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   return (
     <div className="flex flex-col gap-5">
       <div className="flex w-fit items-center gap-2 rounded-full bg-white px-3 py-1">
-        {connectors[BlockchainType.Bitcoin] && (
-          <>
-            <img
-              src={connectors[BlockchainType.Bitcoin].icon}
-              alt={"icon"}
-              className="h-5 w-5"
-            />
-            <Typography size="h3" weight="medium">
-              {connectors[BlockchainType.Bitcoin].name}
-            </Typography>
-          </>
-        )}
-        {connectors[BlockchainType.Solana] && (
-          <>
-            <img
-              src={connectors[BlockchainType.Solana].adapter.icon}
-              alt={"icon"}
-              className="h-5 w-5"
-            />
-            <Typography size="h3" weight="medium">
-              {connectors[BlockchainType.Solana].adapter.name}
-            </Typography>
-          </>
-        )}
+        <img
+          src={
+            connectors[BlockchainType.Bitcoin]?.icon ??
+            connectors[BlockchainType.Solana]?.adapter.icon ??
+            ""
+          }
+          alt="icon"
+          className="h-5 w-5"
+        />
+        <Typography size="h3" weight="medium">
+          {connectors[BlockchainType.Bitcoin]?.name ??
+            connectors[BlockchainType.Solana]?.adapter.name ??
+            ""}
+        </Typography>
       </div>
       <div className="flex flex-col gap-1 rounded-2xl bg-white/50 p-4">
         <Typography size="h5" weight="bold" className="px-4">
