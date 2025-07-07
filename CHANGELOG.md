@@ -17,6 +17,7 @@
 - Fixed Awaiting Deposit Transaction
 - Fixed phantom Logo
 - Fixed asset chain logo order in asset selector and availableChainSidebars
+- Fixed solana initiate when clicked pending orders
 
 ## [1.0.2]
 
