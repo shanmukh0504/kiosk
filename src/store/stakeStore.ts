@@ -10,6 +10,7 @@ import {
 } from "../components/stake/constants";
 import { formatAmount } from "../utils/utils";
 import { CIRCULATING_SEED_SUPPLY } from "../constants/stake";
+import { StakeRewards } from "../components/stake/StakeRewards";
 
 export enum StakeType {
   GARDEN_PASS = "garden-pass",
@@ -268,11 +269,11 @@ export const stakeStore = create<StakeStoreState>((set) => ({
     console.log("fetching rewards", address);
     try {
       set({ loading: { stakeRewards: true } });
-      const resp = await axios.get<StakingReward>(
-        API().rewards.reward(address).toString()
-      );
+      const resp = await axios.get<{
+        data: StakingReward;
+      }>(API().stake.reward(address).toString());
 
-      const epochResp = resp.data.epochs;
+      const epochResp = resp.data.data.epochs;
       const epochEarnings = epochResp.map((epoch) => ({
         epoch: epoch.epoch,
         rewards_value_usd: epoch.rewards_value_usd,
@@ -295,9 +296,9 @@ export const stakeStore = create<StakeStoreState>((set) => ({
 
       set({
         stakeRewards: {
-          rewardResponse: resp.data,
+          rewardResponse: resp.data.data,
           stakewiseRewards,
-          totalcbBtcReward: resp.data.cumulative_rewards_cbbtc,
+          totalcbBtcReward: resp.data.data.cumulative_rewards_cbbtc,
           totalSeedReward: Object.values(stakewiseRewards).reduce(
             (total, reward) =>
               total + parseFloat(reward.accumulatedSeedRewards),
@@ -318,7 +319,7 @@ export const stakeStore = create<StakeStoreState>((set) => ({
   fetchAndSetEpoch: async () => {
     try {
       const response = await axios.get<{ data: EpochResponse[] }>(
-        API().rewards.epoch.toString()
+        API().stake.epoch.toString()
       );
       set({ epochData: response.data.data });
     } catch (error) {

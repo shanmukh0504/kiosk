@@ -5,7 +5,6 @@ const REQUIRED_ENV_VARS = {
   INFO_URL: import.meta.env.VITE_INFO_URL,
   ORDERBOOK_URL: import.meta.env.VITE_ORDERBOOK_URL,
   QUOTE_URL: import.meta.env.VITE_QUOTE_URL,
-  REWARD: import.meta.env.VITE_REWARD_URL,
   EXPLORER: import.meta.env.VITE_EXPLORER_URL,
 } as const;
 
@@ -55,20 +54,13 @@ export const API = () => {
       accumulatedReward: (userId: string) =>
         new Url(REQUIRED_ENV_VARS.STAKING_URL)
           .endpoint("rewards")
+          .endpoint("accumulated")
           .endpoint(userId),
-    },
-    rewards: {
-      reward: (userId: string) => {
-        console.log("reward in url", userId);
-        const url = new Url(REQUIRED_ENV_VARS.REWARD)
+      reward: (userId: string) =>
+        new Url(REQUIRED_ENV_VARS.STAKING_URL)
           .endpoint("rewards")
-          .endpoint(userId);
-        console.log(url);
-        return new Url(REQUIRED_ENV_VARS.REWARD)
-          .endpoint("rewards")
-          .endpoint(userId);
-      },
-      epoch: new Url(REQUIRED_ENV_VARS.REWARD)
+          .endpoint(userId),
+      epoch: new Url(REQUIRED_ENV_VARS.STAKING_URL)
         .endpoint("rewards")
         .endpoint("epochs"),
     },
