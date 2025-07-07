@@ -8,7 +8,12 @@ import {
 import { FC, useMemo, useRef, ChangeEvent, useState, useEffect } from "react";
 import { IOType } from "../../constants/constants";
 import { assetInfoStore } from "../../store/assetInfoStore";
-import { Asset, isBitcoin, isEvmNativeToken } from "@gardenfi/orderbook";
+import {
+  Asset,
+  isBitcoin,
+  isEvmNativeToken,
+  isSolanaNativeToken,
+} from "@gardenfi/orderbook";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { ErrorFormat } from "../../constants/errors";
 import NumberFlow from "@number-flow/react";
@@ -48,7 +53,12 @@ export const SwapInput: FC<SwapInputProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const network = useMemo(() => {
-    if (!chains || (asset && isBitcoin(asset.chain))) return;
+    if (
+      !chains ||
+      (asset && isBitcoin(asset.chain)) ||
+      (asset && isSolanaNativeToken(asset.chain, asset.tokenAddress))
+    )
+      return;
     if (!asset) return;
     return chains && chains[asset.chain];
   }, [asset, chains]);
@@ -102,7 +112,8 @@ export const SwapInput: FC<SwapInputProps> = ({
     if (type === IOType.input && balance && asset) {
       if (
         !isBitcoin(asset?.chain) &&
-        !isEvmNativeToken(asset?.chain, asset.tokenAddress)
+        !isEvmNativeToken(asset?.chain, asset.tokenAddress) &&
+        !isSolanaNativeToken(asset?.chain, asset.tokenAddress)
       ) {
         const balanceStr = balance.toString();
         onChange(balanceStr);
@@ -153,7 +164,7 @@ export const SwapInput: FC<SwapInputProps> = ({
               <Typography size="h5" weight="medium" className="!text-red-500">
                 {error}
               </Typography>
-            ) : balance !== undefined ? (
+            ) : balance !== undefined && !Number.isNaN(balance) ? (
               <div
                 className="flex cursor-pointer items-center gap-1"
                 onClick={handleBalanceClick}

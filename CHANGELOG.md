@@ -4,9 +4,20 @@
 
 ### Added
 
+- Added support for Solana.
+- Added new loading animation for pending orders in navbar capsule
+
+### Fixed
+
+- Display up to 8 decimal places for balance and input amount values.
 - Token balances are now displayed in the asset selector modal, arranged in decreasing order of their USD value.
 - Added sidebar and bottom sheet animations for chain filtering.
 - Added check for CHANGELOG updates in github actions
+- Fixed BTC wallet connections in phantom, added disable assets for unsupported chains by phantom in mainnet.
+- Fixed Awaiting Deposit Transaction
+- Fixed phantom Logo
+- Fixed asset chain logo order in asset selector and availableChainSidebars
+- Fixed solana initiate when clicked pending orders
 
 ## [1.0.2]
 

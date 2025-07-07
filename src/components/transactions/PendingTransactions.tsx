@@ -3,7 +3,7 @@ import pendingOrdersStore from "../../store/pendingOrdersStore";
 import { TransactionRow } from "./TransactionRow";
 import { useGarden } from "@gardenfi/react-hooks";
 import { OrderStatus, OrderWithStatus } from "@gardenfi/core";
-import { isBitcoin, isEVM } from "@gardenfi/orderbook";
+import { isBitcoin, isEVM, isSolana } from "@gardenfi/orderbook";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 
 export const PendingTransactions = () => {
@@ -31,6 +31,17 @@ export const PendingTransactions = () => {
         console.error("failed to send bitcoin ❌", bitcoinRes.error);
       }
       txHash = bitcoinRes.val;
+    } else if (isSolana(order.source_swap.chain)) {
+      if (!garden.solanaHTLC) {
+        console.error("Solana HTLC not available");
+        return;
+      }
+      const tx = await garden.solanaHTLC.initiate(order);
+      if (!tx.ok) {
+        console.error(tx.error);
+        return;
+      }
+      txHash = tx.val;
     }
     console.log(txHash);
 

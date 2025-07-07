@@ -84,8 +84,10 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "starknet_sepolia",
   "hyperliquid",
   "starknet",
+  "solana_testnet",
   "unichain",
   "corn",
+  "solana",
   "botanix",
 ] as const;
 
@@ -106,3 +108,10 @@ export const isStakeDisable = network === Network.TESTNET;
 export const routes = Object.entries(INTERNAL_ROUTES).filter(
   ([key]) => key !== "stake" || !isStakeDisable
 );
+
+export const PHANTOM_SUPPORTED_CHAINS: Chain[] = [
+  "solana",
+  "ethereum",
+  "base",
+  "bitcoin",
+];

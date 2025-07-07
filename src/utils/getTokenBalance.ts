@@ -6,7 +6,7 @@ import {
   isEvmNativeToken,
   isStarknet,
 } from "@gardenfi/orderbook";
-import { with0x } from "@gardenfi/utils";
+import { Network, with0x } from "@gardenfi/utils";
 import BigNumber from "bignumber.js";
 import {
   createPublicClient,
@@ -18,6 +18,7 @@ import { formatAmount } from "./utils";
 import { RpcProvider, Contract } from "starknet";
 import { STARKNET_CONFIG } from "@gardenfi/core";
 import { network } from "../constants/constants";
+import { Connection, PublicKey } from "@solana/web3.js";
 
 const erc20ABI = [
   {
@@ -56,6 +57,50 @@ const erc20ABI = [
   },
 ];
 
+export const getSolanaTokenBalance = async (
+  address: PublicKey,
+  asset: Asset
+): Promise<number> => {
+  try {
+    const endpoint =
+      network === Network.TESTNET
+        ? "https://api.devnet.solana.com"
+        : "https://solana-rpc.publicnode.com";
+
+    const connection = new Connection(endpoint);
+
+    const publicKey =
+      typeof address === "string" ? new PublicKey(address) : address;
+
+    if (asset.tokenAddress === "primary") {
+      // Native SOL balance
+      const balance = await connection.getBalance(publicKey);
+      return formatAmount(balance, asset.decimals, 8);
+    }
+
+    let tokenMint: PublicKey;
+    try {
+      tokenMint = new PublicKey(asset.tokenAddress);
+    } catch (err) {
+      console.error("Invalid token mint address:", asset.tokenAddress, err);
+      return 0;
+    }
+
+    const tokenAccounts = await connection.getTokenAccountsByOwner(publicKey, {
+      mint: tokenMint,
+    });
+
+    if (tokenAccounts.value.length === 0) return 0;
+    const balance = await connection.getTokenAccountBalance(
+      tokenAccounts.value[0].pubkey
+    );
+    return formatAmount(balance.value.amount, balance.value.decimals, 8);
+  } catch (error) {
+    console.error("Error fetching Solana token balance:", error);
+    return 0;
+  }
+};
+
 export const getStarknetTokenBalance = async (
   address: string,
   asset: Asset
@@ -64,7 +109,7 @@ export const getStarknetTokenBalance = async (
 
   try {
     const provider = new RpcProvider({
-      nodeUrl: STARKNET_CONFIG[network].nodeUrl,
+      nodeUrl: STARKNET_CONFIG[network as keyof typeof STARKNET_CONFIG].nodeUrl,
     });
 
     const erc20Contract = new Contract(erc20ABI, asset.tokenAddress, provider);

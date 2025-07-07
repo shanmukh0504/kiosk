@@ -9,6 +9,7 @@ import { ecosystems } from "../../navbar/connectWallet/constants";
 import { Address } from "./Address";
 import { swapStore } from "../../../store/swapStore";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
+import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
 import { assetInfoStore } from "../../../store/assetInfoStore";
 
 type AddressMenuProps = {
@@ -19,6 +20,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const { address, disconnect } = useEVMWallet();
   const { starknetAddress, starknetDisconnect } = useStarknetWallet();
   const { account: btcAddress, disconnect: btcDisconnect } = useBitcoinWallet();
+  const { solanaAddress, solanaDisconnect } = useSolanaWallet();
   const { setOpenModal } = modalStore();
   const { clear } = swapStore();
   const { clearBalances } = assetInfoStore();
@@ -28,14 +30,16 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const logoutTooltipId = useId();
 
   const showConnectWallet = useMemo(() => {
-    return !(address && btcAddress && starknetAddress);
-  }, [address, btcAddress, starknetAddress]);
+    return !(address && btcAddress && starknetAddress && solanaAddress);
+  }, [address, btcAddress, starknetAddress, solanaAddress]);
 
   const handleDisconnectClick = () => {
     clear();
     disconnect();
     btcDisconnect();
     starknetDisconnect();
+    solanaDisconnect();
+    clearBalances();
     onClose();
     setTimeout(() => {
       clearBalances();
@@ -60,6 +64,9 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
               address={starknetAddress}
               logo={ecosystems.Starknet.icon}
             />
+          )}
+          {solanaAddress && (
+            <Address address={solanaAddress} logo={ecosystems.Solana.icon} />
           )}
           {showConnectWallet && (
             <div
