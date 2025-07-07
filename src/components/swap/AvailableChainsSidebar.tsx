@@ -59,10 +59,10 @@ export const AvailableChainsSidebar = ({
   };
 
   const filteredChains = useMemo(() => {
-    if (!input) return chains;
-    return chains.filter((c) =>
-      c.name.toLowerCase().includes(input.toLowerCase())
-    );
+    if (!input) return chains.sort((a, b) => a.name.localeCompare(b.name));
+    return chains
+      .filter((c) => c.name.toLowerCase().includes(input.toLowerCase()))
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [chains, input]);
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {

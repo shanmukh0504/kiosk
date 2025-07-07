@@ -77,7 +77,16 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const phantomEvmConnected = !!(connector && connector.id === "app.phantom");
 
   const orderedChains = useMemo(() => {
-    const order = ["bitcoin", "ethereum", "base", "arbitrum"];
+    // TODO: remove hyperevm once we have a proper types (hyperliquid is not in the types)
+    const order: string[] = [
+      "bitcoin",
+      "ethereum",
+      "solana",
+      "base",
+      "arbitrum",
+      "starknet",
+      "hyperevm",
+    ];
 
     if (!chains) return [];
 

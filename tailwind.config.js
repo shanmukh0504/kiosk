@@ -2,6 +2,7 @@
 import { createThemes } from "tw-colors";
 
 const cubicInOut = "cubic-bezier(0.66, 0.00, 0.34, 1.00)";
+const customCubic = "cubic-bezier(.85,.52,.12,.58)";
 
 export default {
   content: ["./index.html", "./src/**/*.{jsx,tsx,js,ts}"],
@@ -34,9 +35,14 @@ export default {
           "0%": { transform: "translateX(-100%) skewX(30deg)", opacity: 1 },
           "100%": { left: "100%", transform: "skewX(30deg)", opacity: 1 },
         },
+        "navbar-shine": {
+          "0%": { transform: "translateX(-100%) skewX(135deg)", opacity: 1 },
+          "100%": { left: "100%", transform: "skewX(135deg)", opacity: 1 },
+        },
       },
       animation: {
         shine: `shine 1s ${cubicInOut}`,
+        "navbar-shine": `navbar-shine 2s ${customCubic} infinite`,
       },
       boxShadow: {
         custom: "0px 0px 16px #554B6A14",

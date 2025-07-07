@@ -5,6 +5,7 @@
 ### Added
 
 - Added support for Solana.
+- Added new loading animation for pending orders in navbar capsule
 
 ### Fixed
 
@@ -13,6 +14,9 @@
 - Added sidebar and bottom sheet animations for chain filtering.
 - Added check for CHANGELOG updates in github actions
 - Fixed BTC wallet connections in phantom, added disable assets for unsupported chains by phantom in mainnet.
+- Fixed Awaiting Deposit Transaction
+- Fixed phantom Logo
+- Fixed asset chain logo order in asset selector and availableChainSidebars
 
 ## [1.0.2]
 

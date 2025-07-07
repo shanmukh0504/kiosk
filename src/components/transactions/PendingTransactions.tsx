@@ -33,6 +33,7 @@ export const PendingTransactions = () => {
       txHash = bitcoinRes.val;
     }
     console.log(txHash);
+    if (!txHash) return;
 
     const updatedOrder = {
       ...order,
