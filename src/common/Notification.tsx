@@ -100,7 +100,7 @@ export const Notification = () => {
               className="h-16 w-[113px] rounded-lg object-cover"
             />
           </Link>
-          <div className={`flex gap-1`}>
+          <div className={`flex grow gap-1`}>
             <Link
               to={notification.link}
               target="_blank"
@@ -117,9 +117,9 @@ export const Notification = () => {
                 {notification.description}
               </Typography>
             </Link>
-            <div className="flex h-5 w-[22px] items-center justify-center">
-              <CloseIcon className="cursor-pointer" onClick={handleClose} />
-            </div>
+          </div>
+          <div className="flex h-5 w-[22px] items-center justify-center">
+            <CloseIcon className="cursor-pointer" onClick={handleClose} />
           </div>
         </div>
       )}
