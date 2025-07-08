@@ -1,35 +1,55 @@
+import { Button, Typography } from "@gardenfi/garden-book";
+import { FC, useRef, useState, useEffect } from "react";
 import {
-  // Button,
-  InfinityIcon,
-  Typography,
-} from "@gardenfi/garden-book";
-import { FC, useRef, useState } from "react";
-import {
-  // StakePositionStatus,
+  StakePositionStatus,
   stakeStore,
   StakingPosition,
 } from "../../../store/stakeStore";
-import { formatAmount } from "../../../utils/utils";
-import { ETH_BLOCKS_PER_DAY, SEED_DECIMALS, TEN_THOUSAND } from "../constants";
+import { formatAmount, scrollToTop } from "../../../utils/utils";
+import {
+  ETH_BLOCKS_PER_DAY,
+  SEED_DECIMALS,
+  STAKING_CHAIN,
+  STAKING_CONFIG,
+  TEN_THOUSAND,
+} from "../constants";
 import { getMultiplier } from "../../../utils/stakingUtils";
-// import { UnstakeAndRestake } from "./UnstakeAndRestake";
 import { TooltipWrapper } from "../shared/ToolTipWrapper";
 import { UnitRewardTooltip } from "../shared/UnitRewardTooltip";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { modalNames, modalStore } from "../../../store/modalStore";
+import { menuStore } from "../../../store/menuStore";
+import { useEVMWallet } from "../../../hooks/useEVMWallet";
+import { useSwitchChain, useWriteContract } from "wagmi";
+import { Hex } from "viem";
+import { stakeABI } from "../abi/stake";
+import { Toast } from "../../toast/Toast";
+import { waitForTransactionReceipt } from "wagmi/actions";
+import { config } from "../../../layout/wagmi/config";
 
 type props = {
-  key: number;
+  index: number;
   stakePos: StakingPosition;
 };
 
-export const StakeDetails: FC<props> = ({ key, stakePos }) => {
+export const StakeDetails: FC<props> = ({ index, stakePos }) => {
   const { stakeRewards } = stakeStore();
+  const { setOpenModal } = modalStore();
+  const { openMenuId, setOpenMenu, closeMenu } = menuStore();
+  const { chainId, address } = useEVMWallet();
+  const { switchChainAsync } = useSwitchChain();
+  const { writeContractAsync } = useWriteContract();
+
   const [hovered, setHovered] = useState(false);
   const targetRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const clickedMenuTrigger = useRef(false);
+
   const isPermaStake = stakePos.isPerma;
-  // const isExtendable =
-  //   !isPermaStake && stakePos.status === StakePositionStatus.staked;
-  // const isExpired = stakePos.status === StakePositionStatus.expired;
+  const menuId = `stake-menu-${stakePos.id}`;
+  const isMenuOpen = openMenuId === menuId;
+  const hasExpired = stakePos.status === StakePositionStatus.expired;
+  const isUnstakeable = stakePos.status === StakePositionStatus.expired;
 
   const stakeReward = formatAmount(
     stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedCBBTCRewardsUSD ||
@@ -37,20 +57,17 @@ export const StakeDetails: FC<props> = ({ key, stakePos }) => {
     8,
     8
   );
-
-  // const stakeApy = Number((stakeApys?.[stakePos.id] || 0).toFixed(2));
   const stakeAmount = formatAmount(stakePos.amount, SEED_DECIMALS, 0);
-  const formattedAmount =
-    stakeAmount >= TEN_THOUSAND
-      ? stakeAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-      : stakeAmount.toString();
-
   const seedReward = formatAmount(
     stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedSeedRewardsUSD ??
       "0",
     SEED_DECIMALS,
     5
   );
+  const formattedAmount =
+    stakeAmount >= TEN_THOUSAND
+      ? stakeAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      : stakeAmount.toString();
 
   const daysPassedSinceStake = Math.floor(
     (new Date().getTime() - new Date(stakePos.stakedAt).getTime()) /
@@ -72,22 +89,81 @@ export const StakeDetails: FC<props> = ({ key, stakePos }) => {
   );
 
   const multiplier = getMultiplier(stakePos);
-  const currentDate = new Date();
-  const hasExpired = currentDate > stakeEndDate;
   const reward = formatAmount(
     stakeRewards?.stakewiseRewards[stakePos.id]?.accumulatedRewardsUSD || 0,
     0,
     2
   );
 
-  // const handleExtend = () => {
-  //   setOpenModal(modalNames.manageStake, {
-  //     extend: {
-  //       isExtend: true,
-  //       stakingPosition: stakePos,
-  //     },
-  //   });
-  // };
+  const handleRestake = () => {
+    setOpenModal(modalNames.manageStake, {
+      restake: {
+        isRestake: true,
+        stakingPosition: stakePos,
+      },
+    });
+  };
+
+  const handleUnstake = async () => {
+    if (!isUnstakeable || !chainId || !address) return;
+    try {
+      if (chainId !== STAKING_CHAIN) {
+        await switchChainAsync({ chainId: STAKING_CHAIN });
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+
+      const stakingConfig = STAKING_CONFIG[STAKING_CHAIN];
+
+      const tx = await writeContractAsync({
+        address: stakingConfig.STAKING_CONTRACT_ADDRESS as Hex,
+        abi: stakeABI,
+        functionName: "refund",
+        args: [stakePos.id as Hex],
+      });
+      await waitForTransactionReceipt(config, {
+        hash: tx,
+      });
+      Toast.success("Unstaked successfully");
+      scrollToTop();
+    } catch (error) {
+      console.error("Error during unstake:", error);
+    }
+  };
+
+  const handleExtend = () => {
+    setOpenModal(modalNames.manageStake, {
+      extend: {
+        isExtend: true,
+        stakingPosition: stakePos,
+      },
+    });
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (clickedMenuTrigger.current) {
+        clickedMenuTrigger.current = false;
+        return;
+      }
+      const target = event.target as Node;
+      const menuTrigger = document.querySelector('[data-menu-trigger="true"]');
+      if (menuTrigger && menuTrigger.contains(target)) {
+        return;
+      }
+      if (isMenuOpen && menuRef.current && !menuRef.current.contains(target)) {
+        closeMenu();
+      }
+      if (hovered && targetRef.current && !targetRef.current.contains(target)) {
+        setHovered(false);
+      }
+    };
+    if (isMenuOpen || hovered) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen, hovered, closeMenu]);
 
   return (
     <motion.tr
@@ -97,7 +173,7 @@ export const StakeDetails: FC<props> = ({ key, stakePos }) => {
         y: 0,
         height: "auto",
         marginTop: 24,
-        transition: { duration: 0.3, delay: 0.1 * key },
+        transition: { duration: 0.3, delay: 0.1 * index },
       }}
       exit={{
         opacity: 0,
@@ -114,15 +190,15 @@ export const StakeDetails: FC<props> = ({ key, stakePos }) => {
       </td>
       <td className="px-4 py-3 text-left sm:px-2">
         {hasExpired ? (
-          "Expired"
+          <Typography size="h4" weight="medium">
+            Expired
+          </Typography>
         ) : (
           <div className="flex items-center">
             {isPermaStake ? (
               <>
-                {/* TODO: Change Infinity Icon */}
-                <InfinityIcon className="h-3.5" />
                 <Typography size="h4" weight="medium">
-                  months
+                  ∞ months
                 </Typography>
               </>
             ) : (
@@ -164,25 +240,102 @@ export const StakeDetails: FC<props> = ({ key, stakePos }) => {
           </Typography>
         </span>
       </td>
-      <td className="pl-2 pr-8 pt-3 text-left sm:px-2 sm:pr-0 sm:pt-0">
-        <Typography size="h4" weight="medium">
-          {stakeEndDateString}
-        </Typography>
-      </td>
-      <td className="mx-1 w-4 cursor-pointer p-1">
-        <svg
-          width="4"
-          height="14"
-          viewBox="0 0 4 14"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+      <td className="pr-8 pt-3 text-left sm:pr-0 sm:pt-0">
+        <div
+          className={`flex w-full max-w-24 items-center overflow-hidden rounded-xl ${hasExpired ? "justify-center" : "justify-start"}`}
         >
-          <path
-            d="M2 13.0588C1.65625 13.0588 1.36201 12.9363 1.11729 12.6915C0.872431 12.4468 0.75 12.1525 0.75 11.8088C0.75 11.465 0.872431 11.1707 1.11729 10.9259C1.36201 10.6811 1.65625 10.5588 2 10.5588C2.34375 10.5588 2.63799 10.6811 2.88271 10.9259C3.12757 11.1707 3.25 11.465 3.25 11.8088C3.25 12.1525 3.12757 12.4468 2.88271 12.6915C2.63799 12.9363 2.34375 13.0588 2 13.0588ZM2 8.25107C1.65625 8.25107 1.36201 8.12864 1.11729 7.88378C0.872431 7.63905 0.75 7.34482 0.75 7.00107C0.75 6.65732 0.872431 6.36308 1.11729 6.11836C1.36201 5.8735 1.65625 5.75107 2 5.75107C2.34375 5.75107 2.63799 5.8735 2.88271 6.11836C3.12757 6.36308 3.25 6.65732 3.25 7.00107C3.25 7.34482 3.12757 7.63905 2.88271 7.88378C2.63799 8.12864 2.34375 8.25107 2 8.25107ZM2 3.44336C1.65625 3.44336 1.36201 3.321 1.11729 3.07628C0.872431 2.83142 0.75 2.53711 0.75 2.19336C0.75 1.84961 0.872431 1.55537 1.11729 1.31065C1.36201 1.06579 1.65625 0.943359 2 0.943359C2.34375 0.943359 2.63799 1.06579 2.88271 1.31065C3.12757 1.55537 3.25 1.84961 3.25 2.19336C3.25 2.53711 3.12757 2.83142 2.88271 3.07628C2.63799 3.321 2.34375 3.44336 2 3.44336Z"
-            fill="#554B6A"
-          />
-        </svg>
+          {hasExpired ? (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleRestake}
+              className="w-fit border border-green-500 !px-5"
+            >
+              Restake
+            </Button>
+          ) : (
+            <Typography size="h4" weight="medium">
+              {stakeEndDateString}
+            </Typography>
+          )}
+        </div>
       </td>
+      {!isPermaStake && (
+        <td
+          className="mx-1 w-4 cursor-pointer p-1"
+          data-menu-trigger="true"
+          onClick={(e) => {
+            e.stopPropagation();
+            clickedMenuTrigger.current = true;
+            if (isMenuOpen) {
+              closeMenu();
+            } else {
+              setOpenMenu(menuId);
+            }
+          }}
+        >
+          <div className="relative">
+            <motion.svg
+              animate={{
+                scale: isMenuOpen ? [1, 1.3, 1] : 1,
+              }}
+              transition={{
+                duration: 0.3,
+              }}
+              width="4"
+              height="14"
+              viewBox="0 0 4 14"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M2 13.0588C1.65625 13.0588 1.36201 12.9363 1.11729 12.6915C0.872431 12.4468 0.75 12.1525 0.75 11.8088C0.75 11.465 0.872431 11.1707 1.11729 10.9259C1.36201 10.6811 1.65625 10.5588 2 10.5588C2.34375 10.5588 2.63799 10.6811 2.88271 10.9259C3.12757 11.1707 3.25 11.465 3.25 11.8088C3.25 12.1525 3.12757 12.4468 2.88271 12.6915C2.63799 12.9363 2.34375 13.0588 2 13.0588ZM2 8.25107C1.65625 8.25107 1.36201 8.12864 1.11729 7.88378C0.872431 7.63905 0.75 7.34482 0.75 7.00107C0.75 6.65732 0.872431 6.36308 1.11729 6.11836C1.36201 5.8735 1.65625 5.75107 2 5.75107C2.34375 5.75107 2.63799 5.8735 2.88271 6.11836C3.12757 6.36308 3.25 6.65732 3.25 7.00107C3.25 7.34482 3.12757 7.63905 2.88271 7.88378C2.63799 8.12864 2.34375 8.25107 2 8.25107ZM2 3.44336C1.65625 3.44336 1.36201 3.321 1.11729 3.07628C0.872431 2.83142 0.75 2.53711 0.75 2.19336C0.75 1.84961 0.872431 1.55537 1.11729 1.31065C1.36201 1.06579 1.65625 0.943359 2 0.943359C2.34375 0.943359 2.63799 1.06579 2.88271 1.31065C3.12757 1.55537 3.25 1.84961 3.25 2.19336C3.25 2.53711 3.12757 2.83142 2.88271 3.07628C2.63799 3.321 2.34375 3.44336 2 3.44336Z"
+                fill="#554B6A"
+              />
+            </motion.svg>
+            <AnimatePresence mode="wait">
+              {isMenuOpen && (
+                <motion.div
+                  ref={menuRef}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute -left-24 top-4 z-50 h-full w-full"
+                >
+                  {hasExpired && !isPermaStake ? (
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleUnstake();
+                        closeMenu();
+                      }}
+                      className="!bg-white !text-dark-grey"
+                    >
+                      Unstake
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleExtend();
+                        closeMenu();
+                      }}
+                      className="!bg-white !text-dark-grey"
+                    >
+                      Extend
+                    </Button>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </td>
+      )}
     </motion.tr>
     // <div className="flex flex-col gap-5 py-5">
     //   <div className="flex cursor-pointer items-center justify-between">

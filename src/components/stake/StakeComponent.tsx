@@ -75,6 +75,7 @@ export const StakeComponent = () => {
 
       try {
         isFetching = true;
+        // TODO: remove this once we have a proper way to fetch stake apy
         await fetchAndSetStakeApy("0xDda173bd23b07007394611D789EF789a9Aae5CF5");
         await fetchStakePosData("0xDda173bd23b07007394611D789EF789a9Aae5CF5");
         await fetchAndSetRewards("0xDda173bd23b07007394611D789EF789a9Aae5CF5");

@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { modalStore } from "../../../store/modalStore";
 import { CloseIcon, Typography } from "@gardenfi/garden-book";
 import { viewPortStore } from "../../../store/viewPortStore";
@@ -39,6 +39,24 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
             SEED_DECIMALS
           )
         : 0;
+
+  const getDurationFromVotes = (votes: number | undefined): DURATION => {
+    if (!votes) return 6;
+    for (const [key, value] of Object.entries(DURATION_MAP)) {
+      if (value.votes === votes) {
+        return Number(key) as DURATION;
+      }
+    }
+    return 6;
+  };
+
+  useEffect(() => {
+    setSelectedDuration(
+      getDurationFromVotes(
+        modalData.manageStake?.extend?.stakingPosition?.votes
+      )
+    );
+  }, [modalData.manageStake?.extend?.stakingPosition.votes]);
 
   const handleClose = () => {
     setSelectedDuration(6);

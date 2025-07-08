@@ -42,7 +42,7 @@ export const StakePositions = ({ showDetails }: StakePositionsProps) => {
           style={{ transformOrigin: "top" }}
         >
           <div className="mx-auto flex w-[328px] flex-col rounded-2xl bg-white/50 p-6 pt-5 sm:w-[424px] md:w-[740px]">
-            <div className="no-scrollbar overflow-x-auto">
+            <div className="no-scrollbar">
               <table className="w-full table-fixed">
                 <thead className="border-b border-white">
                   <tr>
@@ -71,7 +71,7 @@ export const StakePositions = ({ showDetails }: StakePositionsProps) => {
                         Rewards
                       </Typography>
                     </th>
-                    <th className="w-28 pb-4 pl-2 pr-8 text-left sm:px-2 sm:pr-0">
+                    <th className="w-28 pb-4 pr-8 text-left sm:pr-0">
                       <Typography size="h5" weight="medium">
                         End date
                       </Typography>
@@ -85,7 +85,11 @@ export const StakePositions = ({ showDetails }: StakePositionsProps) => {
                     stakePosData?.map(
                       (item, index) =>
                         item.status !== StakePositionStatus.unStaked && (
-                          <StakeDetails key={index} stakePos={item} />
+                          <StakeDetails
+                            key={index}
+                            index={index}
+                            stakePos={item}
+                          />
                         )
                     )
                   ) : (
