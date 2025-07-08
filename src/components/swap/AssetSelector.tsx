@@ -314,6 +314,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         chains={orderedChains}
         hide={hideSidebar}
         onClick={handleChainClick}
+        isPhantomEvmConnected={phantomEvmConnected}
       />
       <AnimatePresence mode="wait">
         <motion.div
@@ -342,10 +343,9 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           <div className="flex w-full flex-wrap gap-3">
             <div className={`flex w-full ${isMobile ? "gap-2" : "gap-3"}`}>
               {visibleChains.map((c, i) => {
-                const isChainSupportedByPhantom =
-                  PHANTOM_SUPPORTED_CHAINS.includes(c.identifier);
                 const isDisabled =
-                  phantomEvmConnected && !isChainSupportedByPhantom;
+                  phantomEvmConnected &&
+                  !PHANTOM_SUPPORTED_CHAINS.includes(c.identifier);
 
                 return (
                   <button
