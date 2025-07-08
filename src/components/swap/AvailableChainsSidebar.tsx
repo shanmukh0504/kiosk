@@ -8,14 +8,13 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import { ChangeEvent, useMemo, useRef, useState } from "react";
 import { viewPortStore } from "../../store/viewPortStore";
-import { PHANTOM_SUPPORTED_CHAINS } from "../../constants/constants";
 
 type SidebarProps = {
   show: boolean;
   chains: ChainData[];
   hide: () => void;
   onClick: (chain: ChainData) => void;
-  isPhantomEvmConnected?: boolean;
+  disabledChains?: string[];
 };
 
 export const AvailableChainsSidebar = ({
@@ -23,7 +22,7 @@ export const AvailableChainsSidebar = ({
   chains,
   hide,
   onClick,
-  isPhantomEvmConnected = false,
+  disabledChains = [],
 }: SidebarProps) => {
   const [input, setInput] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -63,25 +62,25 @@ export const AvailableChainsSidebar = ({
 
   const filteredChains = useMemo(() => {
     let filtered = chains;
+
+    // Filter by search input
     if (input) {
-      filtered = chains.filter((c) =>
+      filtered = filtered.filter((c) =>
         c.name.toLowerCase().includes(input.toLowerCase())
       );
     }
-    if (isPhantomEvmConnected) {
-      return filtered.sort((a, b) => {
-        const aSupported = PHANTOM_SUPPORTED_CHAINS.includes(a.identifier);
-        const bSupported = PHANTOM_SUPPORTED_CHAINS.includes(b.identifier);
 
-        if (aSupported && !bSupported) return -1;
-        if (!aSupported && bSupported) return 1;
-        // Both supported or both unsupported: sort alphabetically
-        return a.name.localeCompare(b.name);
-      });
-    }
-    // Default: just alphabetical
-    return filtered.sort((a, b) => a.name.localeCompare(b.name));
-  }, [chains, input, isPhantomEvmConnected]);
+    // Sort: enabled chains first (alphabetically), then disabled chains (alphabetically)
+    return filtered.sort((a, b) => {
+      const aDisabled = disabledChains.includes(a.identifier);
+      const bDisabled = disabledChains.includes(b.identifier);
+
+      if (!aDisabled && bDisabled) return -1;
+      if (aDisabled && !bDisabled) return 1;
+      // Both enabled or both disabled: sort alphabetically
+      return a.name.localeCompare(b.name);
+    });
+  }, [chains, input, disabledChains]);
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
@@ -125,9 +124,7 @@ export const AvailableChainsSidebar = ({
               <div className="flex w-full flex-col pb-1 pt-2">
                 {filteredChains.length > 0 ? (
                   filteredChains.map((c) => {
-                    const isDisabled =
-                      isPhantomEvmConnected &&
-                      !PHANTOM_SUPPORTED_CHAINS.includes(c.identifier);
+                    const isDisabled = disabledChains.includes(c.identifier);
 
                     return (
                       <div

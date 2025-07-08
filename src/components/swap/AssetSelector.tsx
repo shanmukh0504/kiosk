@@ -74,6 +74,15 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     swapStore();
 
   const phantomEvmConnected = !!(connector && connector.id === "app.phantom");
+  const disabledChains = useMemo(() => {
+    if (!chains) return [];
+    if (phantomEvmConnected) {
+      return Object.values(chains)
+        .filter((c) => !PHANTOM_SUPPORTED_CHAINS.includes(c.identifier))
+        .map((c) => c.identifier);
+    }
+    return [];
+  }, [chains, phantomEvmConnected]);
 
   const orderedChains = useMemo(() => {
     // TODO: remove hyperevm once we have a proper types (hyperliquid is not in the types)
@@ -89,8 +98,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
 
     if (!chains) return [];
 
-    // Sort chains based on the predefined order
-    const sortedChains = Object.values(chains).sort((a, b) => {
+    const sortedChainsByOrder = Object.values(chains).sort((a, b) => {
       const indexA = order.findIndex((name) =>
         a.name.toLowerCase().includes(name)
       );
@@ -102,24 +110,16 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
       return indexA - indexB;
     });
 
-    if (phantomEvmConnected) {
-      return sortedChains.sort((a, b) => {
-        const isChainASupported = PHANTOM_SUPPORTED_CHAINS.includes(
-          a.identifier
-        );
-        const isChainBSupported = PHANTOM_SUPPORTED_CHAINS.includes(
-          b.identifier
-        );
-
-        if (isChainASupported !== isChainBSupported) {
-          return isChainASupported ? -1 : 1;
-        }
-        return 0;
-      });
-    }
-
+    const sortedChains =
+      disabledChains.length > 0
+        ? [...sortedChainsByOrder].sort((a, b) => {
+            const aSupported = disabledChains.includes(a.identifier);
+            const bSupported = disabledChains.includes(b.identifier);
+            return aSupported === bSupported ? 0 : aSupported ? 1 : -1;
+          })
+        : sortedChainsByOrder;
     return sortedChains;
-  }, [chains, phantomEvmConnected]);
+  }, [chains, disabledChains]);
 
   const comparisonToken = useMemo(
     () =>
@@ -131,7 +131,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     if (!results && orderedChains.length === 0) return [];
     return (
       results &&
-      [...results]
+      results
         .sort((a, b) => {
           const chainA = chains?.[a.chain];
           const chainB = chains?.[b.chain];
@@ -183,12 +183,11 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     !!address || !!btcAddress || !!starknetAccount || !!solanaAddress;
   const fiatBasedSortedResults = useMemo(() => {
     if (!isAnyWalletConnected) return sortedResults;
-
     return (
       sortedResults &&
       [...sortedResults].sort((a, b) => {
-        const aFiat = Number(a.fiatBalance) || 0;
-        const bFiat = Number(b.fiatBalance) || 0;
+        const aFiat = Number(a.fiatBalance);
+        const bFiat = Number(b.fiatBalance);
         return bFiat - aFiat;
       })
     );
@@ -311,10 +310,10 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     <>
       <AvailableChainsSidebar
         show={showAllChains}
-        chains={orderedChains}
+        chains={[...orderedChains]}
         hide={hideSidebar}
         onClick={handleChainClick}
-        isPhantomEvmConnected={phantomEvmConnected}
+        disabledChains={disabledChains}
       />
       <AnimatePresence mode="wait">
         <motion.div
@@ -343,9 +342,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           <div className="flex w-full flex-wrap gap-3">
             <div className={`flex w-full ${isMobile ? "gap-2" : "gap-3"}`}>
               {visibleChains.map((c, i) => {
-                const isDisabled =
-                  phantomEvmConnected &&
-                  !PHANTOM_SUPPORTED_CHAINS.includes(c.identifier);
+                const isDisabled = disabledChains.includes(c.identifier);
 
                 return (
                   <button
@@ -420,10 +417,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
               {fiatBasedSortedResults && fiatBasedSortedResults.length > 0 ? (
                 fiatBasedSortedResults?.map(
                   ({ asset, network, formattedBalance }) => {
-                    const isChainSupportedByPhantom =
-                      PHANTOM_SUPPORTED_CHAINS.includes(asset.chain);
-                    const isDisabled =
-                      phantomEvmConnected && !isChainSupportedByPhantom;
+                    const isDisabled = disabledChains.includes(asset.chain);
 
                     return (
                       <div
