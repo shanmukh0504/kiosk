@@ -81,7 +81,8 @@ type AssetInfoState = {
   fetchAndSetEvmBalances: (
     address: string,
     workingRpcs: Record<number, string[]>,
-    fetchOnlySeed?: boolean
+    fetchOnlySeed?: boolean,
+    inputAsset?: Asset
   ) => Promise<void>;
   fetchAndSetBitcoinBalance: (
     provider: IInjectedBitcoinProvider
@@ -222,24 +223,29 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   fetchAndSetEvmBalances: async (
     address: string,
     workingRpcs: Record<number, string[]>,
-    fetchOnlySeed: boolean = false
+    fetchOnlySeed: boolean = false,
+    inputAsset?: Asset
   ) => {
     const { assets } = get();
     if (!assets) return;
 
-    const tokensByChain = Object.values(assets).reduce(
-      (acc, asset) => {
-        if (
-          !isEVM(asset.chain) ||
-          (fetchOnlySeed && !asset.symbol.includes("SEED"))
-        )
+    let tokensByChain: Partial<Record<Chain, string[]>> = {};
+    if (inputAsset) tokensByChain[inputAsset.chain] = [inputAsset.tokenAddress];
+    else {
+      tokensByChain = Object.values(assets).reduce(
+        (acc, asset) => {
+          if (
+            !isEVM(asset.chain) ||
+            (fetchOnlySeed && !asset.symbol.includes("SEED"))
+          )
+            return acc;
+          if (!acc[asset.chain]) acc[asset.chain] = [];
+          acc[asset.chain].push(asset.tokenAddress);
           return acc;
-        if (!acc[asset.chain]) acc[asset.chain] = [];
-        acc[asset.chain].push(asset.tokenAddress);
-        return acc;
-      },
-      {} as Record<Chain, string[]>
-    );
+        },
+        {} as Record<Chain, string[]>
+      );
+    }
 
     try {
       const balanceResults = await Promise.allSettled(

@@ -20,6 +20,7 @@
 - Fixed solana initiate when clicked pending orders
 - Fixed show network logo for asset selector
 - Fixed Notification bubble Wrap
+- Fixed gray out of unsupported chains by phantom wallet in Chains sidebar.
 
 ## [1.0.2]
 

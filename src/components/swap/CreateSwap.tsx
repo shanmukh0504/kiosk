@@ -19,6 +19,7 @@ import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { rpcStore } from "../../store/rpcStore";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
+import { isEVM, isBitcoin, isStarknet, isSolana } from "@gardenfi/orderbook";
 
 export const CreateSwap = () => {
   const [loadingDisabled, setLoadingDisabled] = useState(false);
@@ -30,6 +31,7 @@ export const CreateSwap = () => {
   const { starknetAddress } = useStarknetWallet();
   const { solanaAnchorProvider } = useSolanaWallet();
   const {
+    isAssetSelectorOpen,
     assets,
     fetchAndSetBitcoinBalance,
     fetchAndSetEvmBalances,
@@ -137,24 +139,37 @@ export const CreateSwap = () => {
   useEffect(() => {
     if (!assets) return;
 
-    const updateBalances = async () => {
+    const fetchAllBalances = async () => {
       await fetchAndSetFiatValues();
-      if (address) {
-        await fetchAndSetEvmBalances(address, workingRPCs);
-      }
-      if (btcAddress && provider) {
-        await fetchAndSetBitcoinBalance(provider);
-      }
-      if (starknetAddress) {
-        await fetchAndSetStarknetBalance(starknetAddress);
-      }
-      if (solanaAnchorProvider) {
+      if (address) await fetchAndSetEvmBalances(address, workingRPCs);
+      if (btcAddress && provider) await fetchAndSetBitcoinBalance(provider);
+      if (starknetAddress) await fetchAndSetStarknetBalance(starknetAddress);
+      if (solanaAnchorProvider)
         await fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey);
-      }
     };
 
-    updateBalances();
-    const interval = setInterval(updateBalances, 7000);
+    const fetchInputAssetBalance = async () => {
+      await fetchAndSetFiatValues();
+      if (!inputAsset) return;
+      if (isEVM(inputAsset.chain) && address)
+        await fetchAndSetEvmBalances(address, workingRPCs, false, inputAsset);
+      if (isBitcoin(inputAsset.chain) && provider)
+        await fetchAndSetBitcoinBalance(provider);
+      if (isStarknet(inputAsset.chain) && starknetAddress)
+        await fetchAndSetStarknetBalance(starknetAddress);
+      if (isSolana(inputAsset.chain) && solanaAnchorProvider)
+        await fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey);
+    };
+
+    let interval: ReturnType<typeof setInterval>;
+
+    if (isAssetSelectorOpen.isOpen) {
+      fetchAllBalances();
+      interval = setInterval(fetchAllBalances, 7000);
+    } else {
+      fetchInputAssetBalance();
+      interval = setInterval(fetchInputAssetBalance, 7000);
+    }
 
     return () => {
       clearInterval(interval);
@@ -173,6 +188,8 @@ export const CreateSwap = () => {
     fetchAndSetSolanaBalance,
     clearBalances,
     workingRPCs,
+    isAssetSelectorOpen.isOpen,
+    inputAsset,
   ]);
 
   useEffect(() => {
