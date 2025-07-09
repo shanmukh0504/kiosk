@@ -24,6 +24,7 @@
 - Fixed Modal dropdown overflow for stake duration.
 - Fixed Network Fee for Bitcoin.
 - Fixed Total cost in Fee tooltip.
+- Fixed the Price impact logic in fee tooltip.
 
 ## [1.0.2]
 
