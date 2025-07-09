@@ -35,7 +35,7 @@ export const FeesAndRateDetails = () => {
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
   const { address } = useEVMWallet();
-  const { networkFeesValue } = useNetworkFees(network, outputAsset);
+  const { networkFeesValue } = useNetworkFees(network, inputAsset);
 
   const fees = useMemo(
     () => Number(tokenPrices.input) - Number(tokenPrices.output),

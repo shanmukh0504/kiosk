@@ -21,6 +21,7 @@
 - Fixed show network logo for asset selector
 - Fixed Notification bubble Wrap
 - Fixed Modal dropdown overflow for stake duration.
+- Fixed Network Fee for Bitcoin.
 
 ## [1.0.2]
 

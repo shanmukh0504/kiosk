@@ -51,7 +51,9 @@ export const CostToolTip = ({
             Network fee
           </Typography>
           <Typography size="h5" weight="medium">
-            {outputAsset && !isBitcoin(outputAsset.chain) ? "Free" : "$"+networkFee}
+            {inputAsset && !isBitcoin(inputAsset.chain)
+              ? "Free"
+              : "$" + networkFee}
           </Typography>
         </div>
         <div className="flex justify-between py-1.5">
