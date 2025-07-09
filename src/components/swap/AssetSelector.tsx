@@ -18,7 +18,7 @@ import { BTC, swapStore } from "../../store/swapStore";
 import {
   IOType,
   network,
-  PHANTOM_SUPPORTED_CHAINS,
+  WALLET_SUPPORTED_CHAINS,
 } from "../../constants/constants";
 import { constructOrderPair } from "@gardenfi/core";
 import { AssetChainLogos } from "../../common/AssetChainLogos";
@@ -73,16 +73,16 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const { setAsset, inputAsset, outputAsset, clearSwapInputState } =
     swapStore();
 
-  const phantomEvmConnected = !!(connector && connector.id === "app.phantom");
   const disabledChains = useMemo(() => {
     if (!chains) return [];
-    if (phantomEvmConnected) {
+    if (connector && WALLET_SUPPORTED_CHAINS[connector.id]) {
+      const supported = WALLET_SUPPORTED_CHAINS[connector.id];
       return Object.values(chains)
-        .filter((c) => !PHANTOM_SUPPORTED_CHAINS.includes(c.identifier))
+        .filter((c) => !supported.includes(c.identifier))
         .map((c) => c.identifier);
     }
     return [];
-  }, [chains, phantomEvmConnected]);
+  }, [chains, connector]);
 
   const orderedChains = useMemo(() => {
     // TODO: remove hyperevm once we have a proper types (hyperliquid is not in the types)
@@ -251,10 +251,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const hideSidebar = () => setShowAllChains(false);
 
   const handleChainClick = (selectedChain: ChainData) => {
-    const isChainSupportedByPhantom = PHANTOM_SUPPORTED_CHAINS.includes(
-      selectedChain.identifier
-    );
-    if (phantomEvmConnected && !isChainSupportedByPhantom) {
+    const isChainDisabled = disabledChains.includes(selectedChain.identifier);
+    if (isChainDisabled) {
       setSidebarSelectedChain(selectedChain);
       setShowAllChains(false);
       return;

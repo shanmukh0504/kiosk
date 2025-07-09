@@ -104,14 +104,14 @@ export const Stake: FC = () => {
     if (!address) return;
 
     const updateBalances = async () => {
-      await fetchAndSetEvmBalances(address, workingRPCs, true);
+      await fetchAndSetEvmBalances(address, workingRPCs, asset);
     };
 
     updateBalances();
     const interval = setInterval(updateBalances, 7000);
 
     return () => clearInterval(interval);
-  }, [address, fetchAndSetEvmBalances, workingRPCs]);
+  }, [address, asset, fetchAndSetEvmBalances, workingRPCs]);
 
   return (
     <div className="mb-8 mt-10 flex flex-col gap-6 sm:mb-16">

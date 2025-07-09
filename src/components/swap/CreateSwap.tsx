@@ -152,7 +152,7 @@ export const CreateSwap = () => {
       await fetchAndSetFiatValues();
       if (!inputAsset) return;
       if (isEVM(inputAsset.chain) && address)
-        await fetchAndSetEvmBalances(address, workingRPCs, false, inputAsset);
+        await fetchAndSetEvmBalances(address, workingRPCs, inputAsset);
       if (isBitcoin(inputAsset.chain) && provider)
         await fetchAndSetBitcoinBalance(provider);
       if (isStarknet(inputAsset.chain) && starknetAddress)
