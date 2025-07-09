@@ -6,6 +6,7 @@
 
 - Added support for Solana.
 - Added new loading animation for pending orders in navbar capsule
+- Added dynamic price impact in the fee tooltip.
 
 ### Fixed
 
@@ -23,6 +24,7 @@
 - Fixed Modal dropdown overflow for stake duration.
 - Fixed Network Fee for Bitcoin.
 - Fixed Total cost in Fee tooltip.
+
 ## [1.0.2]
 
 ### Added
