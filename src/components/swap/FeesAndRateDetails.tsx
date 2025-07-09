@@ -43,7 +43,7 @@ export const FeesAndRateDetails = () => {
   );
 
   const protocolFee = useMemo(() => getProtocolFee(fees), [fees]);
-  const totalCost = fees + networkFeesValue;
+  const totalCost = protocolFee + networkFeesValue;
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
   const formattedRate = useMemo(
