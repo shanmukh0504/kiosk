@@ -25,6 +25,7 @@
 - Fixed Network Fee for Bitcoin.
 - Fixed Total cost in Fee tooltip.
 - Fixed the Price impact logic in fee tooltip.
+- Added Faucet external link footer
 
 ## [1.0.2]
 
