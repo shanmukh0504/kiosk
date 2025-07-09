@@ -20,6 +20,7 @@
 - Fixed solana initiate when clicked pending orders
 - Fixed show network logo for asset selector
 - Fixed Notification bubble Wrap
+- Fixed Modal dropdown overflow for stake duration.
 
 ## [1.0.2]
 
