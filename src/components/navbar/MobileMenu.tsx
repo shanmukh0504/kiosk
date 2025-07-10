@@ -5,7 +5,7 @@ import {
   Typography,
 } from "@gardenfi/garden-book";
 import { useState } from "react";
-import { INTERNAL_ROUTES } from "../../constants/constants";
+import { routes } from "../../constants/constants";
 import { isCurrentRoute } from "../../utils/utils";
 
 export const MobileMenu = () => {
@@ -30,7 +30,7 @@ export const MobileMenu = () => {
             <CloseIcon onClick={handleSidebar} />
           </div>
           <div className={`flex w-full flex-col text-right`}>
-            {Object.values(INTERNAL_ROUTES).map((route) => {
+            {routes.map(([, route]) => {
               const paths = route.path;
               const isActive = paths.some(isCurrentRoute);
               const primaryPath = paths[0];

@@ -9,6 +9,7 @@ import { CompletedTransactions } from "./CompletedTransactions";
 import { BlockchainType } from "@gardenfi/orderbook";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { starknetAddressToXOnly, toXOnly } from "../../utils/utils";
+import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { viewPortStore } from "../../store/viewPortStore";
 
 type TransactionsProps = {
@@ -27,11 +28,13 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
     Bitcoin: "",
     EVM: "",
     Starknet: "",
+    Solana: "",
   });
 
   const { garden } = useGarden();
   const { address } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
+  const { solanaAddress } = useSolanaWallet();
   const { fetchTransactions, totalItems, transactions, loadMore } =
     transactionHistoryStore();
 
@@ -56,15 +59,24 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
           Bitcoin: toXOnly(publicKey),
           EVM: address ?? "",
           Starknet: starknetAddressToXOnly(starknetAddress ?? ""),
+          Solana: solanaAddress ?? "",
         });
         fetchTransactions(garden.orderbook, {
           Bitcoin: toXOnly(publicKey),
           EVM: address ?? "",
           Starknet: starknetAddressToXOnly(starknetAddress ?? ""),
+          Solana: solanaAddress ?? "",
         });
       });
     }
-  }, [garden, address, starknetAddress, fetchTransactions, isOpen]);
+  }, [
+    garden,
+    address,
+    starknetAddress,
+    fetchTransactions,
+    isOpen,
+    solanaAddress,
+  ]);
 
   return (
     <div className="flex flex-col gap-3">

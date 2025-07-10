@@ -1,5 +1,5 @@
 import { Button, GardenFullLogo, Typography } from "@gardenfi/garden-book";
-import { INTERNAL_ROUTES } from "../../constants/constants";
+import { routes } from "../../constants/constants";
 import { API } from "../../constants/api";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 // import { Address } from "./Address";
@@ -9,11 +9,13 @@ import { modalNames, modalStore } from "../../store/modalStore";
 import ConnectedWallets from "./ConnectedWallets";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 
 export const Navbar = () => {
   const { isConnected, address } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { account: btcAddress } = useBitcoinWallet();
+  const { solanaAddress } = useSolanaWallet();
   const { setOpenModal } = modalStore();
 
   const handleHomeLogoClick = () => window.open(API().home, "_blank");
@@ -32,7 +34,7 @@ export const Navbar = () => {
           className="cursor-pointer"
         />
         <div className="hidden gap-12 sm:flex sm:items-center">
-          {Object.values(INTERNAL_ROUTES).map((route) => {
+          {routes.map(([, route]) => {
             const paths = route.path;
             const isActive = paths.some(isCurrentRoute);
             const primaryPath = paths[0];
@@ -46,7 +48,7 @@ export const Navbar = () => {
           })}
         </div>
       </div>
-      {address || starknetAddress || btcAddress ? (
+      {address || starknetAddress || btcAddress || solanaAddress ? (
         <ConnectedWallets />
       ) : (
         <Button

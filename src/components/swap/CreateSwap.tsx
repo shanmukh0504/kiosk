@@ -8,10 +8,12 @@ import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
 import {
   capitalizeChain,
+  formatAmount,
   getAssetFromChainAndSymbol,
   getQueryParams,
 } from "../../utils/utils";
 import { QUERY_PARAMS } from "../../constants/constants";
+import { ecosystems } from "../navbar/connectWallet/constants";
 import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
 
 export const CreateSwap = () => {
@@ -45,7 +47,12 @@ export const CreateSwap = () => {
   } = useSwap();
   const { setOpenModal } = modalStore();
 
+  const decimals = inputAsset && Math.max(inputAsset.decimals, 8);
+
   const buttonLabel = useMemo(() => {
+    if (needsWalletConnection)
+      return `Connect ${capitalizeChain(needsWalletConnection)} Wallet`;
+
     return error.liquidityError
       ? "Insufficient liquidity"
       : error.insufficientBalanceError
@@ -99,20 +106,17 @@ export const CreateSwap = () => {
   }, [inputAsset, outputAsset]);
 
   const handleConnectWallet = () => {
-    if (needsWalletConnection === "starknet") {
-      setOpenModal(modalNames.connectWallet, {
-        Starknet: true,
-        Bitcoin: false,
-        EVM: false,
-      });
-    }
-    if (needsWalletConnection === "evm") {
-      setOpenModal(modalNames.connectWallet, {
-        EVM: true,
-        Starknet: false,
-        Bitcoin: false,
-      });
-    }
+    if (!needsWalletConnection) return;
+
+    const modalState = Object.values(ecosystems).reduce(
+      (acc, { name }) => {
+        acc[name] = name.toLowerCase() === needsWalletConnection;
+        return acc;
+      },
+      {} as Record<string, boolean>
+    );
+
+    setOpenModal(modalNames.connectWallet, modalState);
   };
 
   useEffect(() => {
@@ -141,7 +145,7 @@ export const CreateSwap = () => {
       const BTC = Object.values(assets).find(
         (asset) => asset.name.toLowerCase() == "bitcoin"
       );
-      BTC && !BTC.disabled ? setAsset(IOType.input, BTC) : null;
+      if (BTC && !BTC.disabled) setAsset(IOType.input, BTC);
     }
     setAddParams(true);
   }, [addParams, assets, inputAsset, outputAsset, searchParams, setAsset]);
@@ -208,7 +212,7 @@ export const CreateSwap = () => {
             loading={loading.input}
             price={tokenPrices.input}
             error={error.inputError}
-            balance={inputTokenBalance}
+            balance={formatAmount(inputTokenBalance, 0, decimals)}
           />
           <div
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"

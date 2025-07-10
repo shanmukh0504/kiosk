@@ -81,6 +81,7 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "starknet_sepolia",
   "hyperliquid",
   "starknet",
+  "solana_testnet",
   "unichain",
   "corn",
 ] as const;
@@ -91,3 +92,8 @@ export const QUERY_PARAMS = {
   outputChain: "output-chain",
   outputAsset: "output-asset",
 };
+
+export const isStakeDisable = network === Network.TESTNET;
+export const routes = Object.entries(INTERNAL_ROUTES).filter(
+  ([key]) => key !== "stake" || !isStakeDisable
+);

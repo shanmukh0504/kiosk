@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@gardenfi/garden-book";
 import { FC, useState, ChangeEvent, useEffect, useMemo, useRef } from "react";
-import { Asset, isBitcoin } from "@gardenfi/orderbook";
+import { Asset, isBitcoin, isSolana } from "@gardenfi/orderbook";
 import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { swapStore } from "../../store/swapStore";
 import { IOType } from "../../constants/constants";
@@ -205,9 +205,10 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         </div>
         <GradientScroll height={288} onClose={!modalName.assetList}>
           {sortedResults?.map((asset) => {
-            const network = !isBitcoin(asset.chain)
-              ? chains?.[asset.chain]
-              : undefined;
+            const network =
+              !isBitcoin(asset.chain) && !isSolana(asset.chain)
+                ? chains?.[asset.chain]
+                : undefined;
             return (
               (!chain || asset.chain === chain.identifier) && (
                 <div
