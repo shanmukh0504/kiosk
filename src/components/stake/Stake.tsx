@@ -3,7 +3,6 @@ import { FC, useEffect, useId, useMemo } from "react";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { stakeStore } from "../../store/stakeStore";
-import { useBalances } from "../../hooks/useBalances";
 import { MIN_STAKE_AMOUNT } from "../../constants/stake";
 import { StakeInput } from "./StakeInput";
 import { StakeStats } from "./shared/StakeStats";
@@ -13,6 +12,9 @@ import { StakePositions } from "./stakePosition/StakePositions";
 import { AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Tooltip } from "../../common/Tooltip";
+import { assetInfoStore } from "../../store/assetInfoStore";
+import { formatAmount, getOrderPair } from "../../utils/utils";
+import { rpcStore } from "../../store/rpcStore";
 
 export const Stake: FC = () => {
   const { isConnected, address } = useEVMWallet();
@@ -28,8 +30,20 @@ export const Stake: FC = () => {
     stakePosData,
     fetchAndSetRewards,
   } = stakeStore();
-  const { tokenBalance } = useBalances(asset);
+  const { balances, fetchAndSetEvmBalances } = assetInfoStore();
+  const { workingRPCs } = rpcStore();
   const tooltipId = useId();
+
+  const balance =
+    balances &&
+    asset &&
+    balances[getOrderPair(asset.chain, asset.tokenAddress)];
+  const tokenBalance = useMemo(() => {
+    if (balance && asset) {
+      return formatAmount(Number(balance), asset.decimals);
+    }
+    return 0;
+  }, [balance, asset]);
 
   const isStakeable = useMemo(
     () =>
@@ -85,6 +99,19 @@ export const Stake: FC = () => {
     clearStakePosData,
     fetchAndSetRewards,
   ]);
+
+  useEffect(() => {
+    if (!address) return;
+
+    const updateBalances = async () => {
+      await fetchAndSetEvmBalances(address, workingRPCs, true);
+    };
+
+    updateBalances();
+    const interval = setInterval(updateBalances, 7000);
+
+    return () => clearInterval(interval);
+  }, [address, fetchAndSetEvmBalances, workingRPCs]);
 
   return (
     <div className="mb-8 mt-10 flex flex-col gap-6 sm:mb-16">

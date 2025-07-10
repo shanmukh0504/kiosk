@@ -3,7 +3,7 @@ import {
   useAnchorWallet,
   useConnection,
 } from "@solana/wallet-adapter-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import { WalletName } from "@solana/wallet-adapter-base";
 
@@ -20,27 +20,40 @@ export const useSolanaWallet = () => {
     disconnect,
     connecting,
     connected,
+    connect,
   } = useWallet();
   const { connection } = useConnection();
   const anchorWallet = useAnchorWallet();
-
-  const provider = useMemo(() => {
-    return anchorWallet
-      ? new AnchorProvider(connection, anchorWallet, {})
-      : null;
-  }, [connection, anchorWallet]);
+  const [provider, setProvider] = useState<AnchorProvider | null>(null);
+  const [solanaAddress, setSolanaAddress] = useState<string | undefined>(
+    undefined
+  );
+  useEffect(() => {
+    if (anchorWallet) {
+      const newProvider = new AnchorProvider(connection, anchorWallet, {});
+      setProvider(newProvider);
+      setSolanaAddress(anchorWallet.publicKey?.toBase58());
+    } else {
+      setProvider(null);
+      setSolanaAddress(undefined);
+    }
+  }, [connection, anchorWallet, select]);
 
   const handleWalletClick = useCallback(
     async (walletName: WalletName) => {
       setIsConnecting(true);
-      const w = wallets.find(
-        (w) => w.adapter.name.toLowerCase() === walletName.toLowerCase()
-      );
-      select(walletName);
-      await w?.adapter.connect();
-      return true;
+      try {
+        select(walletName);
+        await connect();
+        setIsConnecting(false);
+        return true;
+      } catch (error) {
+        console.error("Failed to connect Solana wallet:", error);
+        setIsConnecting(false);
+        return false;
+      }
     },
-    [wallets, select]
+    [select, connect]
   );
 
   const solanaDisconnect = useCallback(async () => {
@@ -69,7 +82,7 @@ export const useSolanaWallet = () => {
     solanaDisconnect,
     solanaConnecting: isConnecting || connecting,
     solanaConnected: connected,
-    solanaAddress: provider?.publicKey.toBase58(),
+    solanaAddress: solanaAddress,
     solanaAnchorProvider: provider,
     connection,
   };

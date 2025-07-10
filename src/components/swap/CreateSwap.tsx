@@ -8,21 +8,38 @@ import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
 import {
   capitalizeChain,
-  formatAmount,
   getAssetFromChainAndSymbol,
   getQueryParams,
 } from "../../utils/utils";
 import { QUERY_PARAMS } from "../../constants/constants";
 import { ecosystems } from "../navbar/connectWallet/constants";
 import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { useEVMWallet } from "../../hooks/useEVMWallet";
+import { useStarknetWallet } from "../../hooks/useStarknetWallet";
+import { rpcStore } from "../../store/rpcStore";
+import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 
 export const CreateSwap = () => {
   const [loadingDisabled, setLoadingDisabled] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [addParams, setAddParams] = useState(false);
+  const { account: btcAddress, provider } = useBitcoinWallet();
+  const { address } = useEVMWallet();
+  const { starknetAddress } = useStarknetWallet();
+  const { solanaAnchorProvider } = useSolanaWallet();
+  const {
+    assets,
+    fetchAndSetBitcoinBalance,
+    fetchAndSetEvmBalances,
+    fetchAndSetFiatValues,
+    fetchAndSetStarknetBalance,
+    fetchAndSetSolanaBalance,
+    clearBalances,
+  } = assetInfoStore();
 
-  const { assets } = assetInfoStore();
+  const { workingRPCs } = rpcStore();
 
   const {
     outputAmount,
@@ -46,8 +63,6 @@ export const CreateSwap = () => {
     swapAssets,
   } = useSwap();
   const { setOpenModal } = modalStore();
-
-  const decimals = inputAsset && Math.max(inputAsset.decimals, 8);
 
   const buttonLabel = useMemo(() => {
     if (needsWalletConnection)
@@ -120,6 +135,47 @@ export const CreateSwap = () => {
   };
 
   useEffect(() => {
+    if (!assets) return;
+
+    const updateBalances = async () => {
+      await fetchAndSetFiatValues();
+      if (address) {
+        await fetchAndSetEvmBalances(address, workingRPCs);
+      }
+      if (btcAddress && provider) {
+        await fetchAndSetBitcoinBalance(provider);
+      }
+      if (starknetAddress) {
+        await fetchAndSetStarknetBalance(starknetAddress);
+      }
+      if (solanaAnchorProvider) {
+        await fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey);
+      }
+    };
+
+    updateBalances();
+    const interval = setInterval(updateBalances, 7000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [
+    assets,
+    address,
+    provider,
+    btcAddress,
+    fetchAndSetEvmBalances,
+    fetchAndSetBitcoinBalance,
+    starknetAddress,
+    solanaAnchorProvider,
+    fetchAndSetFiatValues,
+    fetchAndSetStarknetBalance,
+    fetchAndSetSolanaBalance,
+    clearBalances,
+    workingRPCs,
+  ]);
+
+  useEffect(() => {
     if (!assets || addParams) return;
     const {
       inputChain = "",
@@ -145,7 +201,9 @@ export const CreateSwap = () => {
       const BTC = Object.values(assets).find(
         (asset) => asset.name.toLowerCase() == "bitcoin"
       );
-      if (BTC && !BTC.disabled) setAsset(IOType.input, BTC);
+      if (BTC && !BTC.disabled) {
+        setAsset(IOType.input, BTC);
+      }
     }
     setAddParams(true);
   }, [addParams, assets, inputAsset, outputAsset, searchParams, setAsset]);
@@ -212,7 +270,7 @@ export const CreateSwap = () => {
             loading={loading.input}
             price={tokenPrices.input}
             error={error.inputError}
-            balance={formatAmount(inputTokenBalance, 0, decimals)}
+            balance={inputTokenBalance}
           />
           <div
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"

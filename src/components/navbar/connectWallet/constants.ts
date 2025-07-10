@@ -102,10 +102,11 @@ export const GardenSupportedWallets: Record<
   "app.phantom": createWallet(
     "app.phantom",
     "Phantom",
-    "wallets/phantom.svg",
+    "wallets/phantomDark.svg",
     "https://chromewebstore.google.com/detail/phantom/bfnaelmomeimhlpmgjnjophhpkkoljpa?hl=en",
     {
       EVM: network === Network.MAINNET,
+      Bitcoin: true,
       Solana: true,
     }
   ),
@@ -156,6 +157,7 @@ export const GardenSupportedWallets: Record<
   ),
   keplr: createWallet("keplr", "Keplr", "wallets/keplr.svg", "tallLink:", {
     Starknet: true,
+    Bitcoin: network === Network.MAINNET,
   }),
   xverse: createWallet(
     "xverse",

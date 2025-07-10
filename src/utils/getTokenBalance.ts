@@ -65,7 +65,7 @@ export const getSolanaTokenBalance = async (
     const endpoint =
       network === Network.TESTNET
         ? "https://api.devnet.solana.com"
-        : "https://api.mainnet-beta.solana.com";
+        : "https://solana-rpc.publicnode.com";
 
     const connection = new Connection(endpoint);
 

@@ -7,10 +7,10 @@ import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { modalNames, modalStore } from "../../../store/modalStore";
 import { ecosystems } from "../../navbar/connectWallet/constants";
 import { Address } from "./Address";
-import { balanceStore } from "../../../store/balanceStore";
 import { swapStore } from "../../../store/swapStore";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
+import { assetInfoStore } from "../../../store/assetInfoStore";
 
 type AddressMenuProps = {
   onClose: () => void;
@@ -23,7 +23,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const { solanaAddress, solanaDisconnect } = useSolanaWallet();
   const { setOpenModal } = modalStore();
   const { clear } = swapStore();
-  const { clearBalances } = balanceStore();
+  const { clearBalances } = assetInfoStore();
   const addTooltipId = useId();
   const languageTooltipId = useId();
   const referralTooltipId = useId();
@@ -36,11 +36,14 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const handleDisconnectClick = () => {
     clear();
     disconnect();
-    onClose();
     btcDisconnect();
     starknetDisconnect();
     solanaDisconnect();
     clearBalances();
+    onClose();
+    setTimeout(() => {
+      clearBalances();
+    }, 2000);
   };
 
   const handleBTCWalletClick = () => {
