@@ -49,7 +49,7 @@ export const FeesAndRateDetails = () => {
     if (!tokenPrices) return 0;
     const input = Number(tokenPrices.input);
     const output = Number(tokenPrices.output);
-    return (1 - (output - protocolFee) / input) * 100;
+    return (1 - (output + protocolFee) / input) * 100;
   }, [tokenPrices, protocolFee]);
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);

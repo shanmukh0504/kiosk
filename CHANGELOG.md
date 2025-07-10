@@ -24,6 +24,8 @@
 - Fixed Modal dropdown overflow for stake duration.
 - Fixed Network Fee for Bitcoin.
 - Fixed Total cost in Fee tooltip.
+- Fixed the Price impact logic in fee tooltip.
+- Added Faucet external link footer
 - Fixed gray out of unsupported chains by phantom wallet in Chains sidebar.
 
 ## [1.0.2]
