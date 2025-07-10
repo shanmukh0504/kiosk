@@ -10,14 +10,12 @@ import { BlockchainType } from "@gardenfi/orderbook";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { starknetAddressToXOnly, toXOnly } from "../../utils/utils";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
-import { viewPortStore } from "../../store/viewPortStore";
 
 type TransactionsProps = {
   isOpen: boolean;
 };
 
 export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
-  const { isMobile } = viewPortStore();
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [activeTab, setActiveTab] = useState<"pending" | "completed">(
     "pending"
@@ -95,7 +93,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
         </Chip>
       </div>
       <div
-        className={`scrollbar-hide flex flex-col gap-5 ${isMobile ? `max-h-[50vh]` : `max-h-[77vh]`} overflow-y-auto rounded-2xl pb-6`}
+        className={`scrollbar-hide flex max-h-[50vh] flex-col gap-5 overflow-y-auto rounded-2xl pb-6 sm:max-h-[77vh]`}
       >
         <div className="flex flex-col rounded-2xl bg-white/50">
           <Typography size="h5" weight="bold" className="p-4">
