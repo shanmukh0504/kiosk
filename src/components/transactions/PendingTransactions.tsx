@@ -70,6 +70,7 @@ export const PendingTransactions = () => {
               order={order}
               status={order.status}
               isLast={index === pendingOrders.length - 1}
+              isFirst={index === 0}
               onClick={() => handlePendingTransactionsClick(order)}
             />
             {index !== pendingOrders.length - 1 ? (

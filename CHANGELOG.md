@@ -1,12 +1,23 @@
 # Changelog
 
+## [1.0.4]
+
+### Added
+- Added dynamic price impact in the fee tooltip.
+
+### Fixed
+- Fixed Network Fee for Bitcoin.
+- Fixed Total cost in Fee tooltip.
+- Fixed the Price impact logic in fee tooltip.
+- Added Faucet external link footer
+- Optimized transaction loading to display new results without full rerender, and improved swap progress UI for refunded transactions.
+
 ## [1.0.3]
 
 ### Added
 
 - Added support for Solana.
 - Added new loading animation for pending orders in navbar capsule
-- Added dynamic price impact in the fee tooltip.
 
 ### Fixed
 
@@ -22,10 +33,6 @@
 - Fixed show network logo for asset selector
 - Fixed Notification bubble Wrap
 - Fixed Modal dropdown overflow for stake duration.
-- Fixed Network Fee for Bitcoin.
-- Fixed Total cost in Fee tooltip.
-- Fixed the Price impact logic in fee tooltip.
-- Added Faucet external link footer
 
 ## [1.0.2]
 
