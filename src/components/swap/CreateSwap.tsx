@@ -141,11 +141,13 @@ export const CreateSwap = () => {
 
     const fetchAllBalances = async () => {
       await fetchAndSetFiatValues();
-      if (address) await fetchAndSetEvmBalances(address, workingRPCs);
-      if (btcAddress && provider) await fetchAndSetBitcoinBalance(provider);
-      if (starknetAddress) await fetchAndSetStarknetBalance(starknetAddress);
-      if (solanaAnchorProvider)
-        await fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey);
+      await Promise.all([
+        address && fetchAndSetEvmBalances(address, workingRPCs),
+        btcAddress && provider && fetchAndSetBitcoinBalance(provider),
+        starknetAddress && fetchAndSetStarknetBalance(starknetAddress),
+        solanaAnchorProvider &&
+          fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey),
+      ]);
     };
 
     const fetchInputAssetBalance = async () => {
