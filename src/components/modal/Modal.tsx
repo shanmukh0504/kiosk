@@ -57,7 +57,7 @@ export const Modal = () => {
         open={modalName.assetList}
         onClose={() => setCloseModal(modalNames.assetList)}
       >
-        <AssetSelector onClose={() => setCloseModal(modalNames.assetList)} open={modalName.assetList} />
+        <AssetSelector onClose={() => setCloseModal(modalNames.assetList)} />
       </ResponsiveModal>
 
       <ResponsiveModal open={modalName.manageStake}>

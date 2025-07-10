@@ -40,10 +40,9 @@ import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 
 type props = {
   onClose: () => void;
-  open?: boolean;
 };
 
-export const AssetSelector: FC<props> = ({ onClose, open }) => {
+export const AssetSelector: FC<props> = ({ onClose }) => {
   const [chain, setChain] = useState<ChainData>();
   const [input, setInput] = useState<string>("");
   const [results, setResults] = useState<Asset[]>();
@@ -60,7 +59,7 @@ export const AssetSelector: FC<props> = ({ onClose, open }) => {
   const { solanaAddress } = useSolanaWallet();
   const { isMobile } = viewPortStore();
   const { connector } = useEVMWallet();
-  console.log(open);
+  
   const {
     isAssetSelectorOpen,
     CloseAssetSelector,
@@ -308,8 +307,9 @@ export const AssetSelector: FC<props> = ({ onClose, open }) => {
   useEffect(() => {
     if (!modalName.assetList) {
       setShowAllChains(false);
+      CloseAssetSelector();
     }
-  }, [modalName.assetList]);
+  }, [CloseAssetSelector, modalName.assetList]);
 
   return (
     <>
