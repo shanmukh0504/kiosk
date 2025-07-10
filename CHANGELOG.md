@@ -6,6 +6,7 @@
 
 - Added support for Solana.
 - Added new loading animation for pending orders in navbar capsule
+- Added dynamic price impact in the fee tooltip.
 
 ### Fixed
 
@@ -20,6 +21,9 @@
 - Fixed solana initiate when clicked pending orders
 - Fixed show network logo for asset selector
 - Fixed Notification bubble Wrap
+- Fixed Modal dropdown overflow for stake duration.
+- Fixed Network Fee for Bitcoin.
+- Fixed Total cost in Fee tooltip.
 - Fixed gray out of unsupported chains by phantom wallet in Chains sidebar.
 
 ## [1.0.2]

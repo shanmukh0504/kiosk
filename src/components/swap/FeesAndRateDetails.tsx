@@ -35,7 +35,7 @@ export const FeesAndRateDetails = () => {
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
   const { address } = useEVMWallet();
-  const { networkFeesValue } = useNetworkFees(network, outputAsset);
+  const { networkFeesValue } = useNetworkFees(network, inputAsset);
 
   const fees = useMemo(
     () => Number(tokenPrices.input) - Number(tokenPrices.output),
@@ -43,7 +43,14 @@ export const FeesAndRateDetails = () => {
   );
 
   const protocolFee = useMemo(() => getProtocolFee(fees), [fees]);
-  const totalCost = fees + networkFeesValue;
+  const totalCost = protocolFee + networkFeesValue;
+
+  const priceImpact = useMemo(() => {
+    if (!tokenPrices) return 0;
+    const input = Number(tokenPrices.input);
+    const output = Number(tokenPrices.output);
+    return (1 - (output - protocolFee) / input) * 100;
+  }, [tokenPrices, protocolFee]);
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
   const formattedRate = useMemo(
@@ -133,6 +140,7 @@ export const FeesAndRateDetails = () => {
                         networkFee={networkFeesValue}
                         protocolFee={protocolFee}
                         rate={formattedRate}
+                        priceImpact={priceImpact}
                       />
                     </TooltipWrapper>
                   )}

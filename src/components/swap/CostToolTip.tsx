@@ -2,17 +2,20 @@ import { SwapHorizontalIcon, Typography } from "@gardenfi/garden-book";
 import { isBitcoin } from "@gardenfi/orderbook";
 import { motion } from "framer-motion";
 import { useSwap } from "../../hooks/useSwap";
+import { formatAmount } from "../../utils/utils";
 
 type TooltipProps = {
   networkFee: number;
   protocolFee: number;
   rate: number;
+  priceImpact: number;
 };
 
 export const CostToolTip = ({
   networkFee,
   protocolFee,
   rate,
+  priceImpact,
 }: TooltipProps) => {
   const { inputAsset, outputAsset, outputAmount } = useSwap();
   return (
@@ -43,7 +46,7 @@ export const CostToolTip = ({
             Protocol fee
           </Typography>
           <Typography size="h5" weight="medium">
-            ${protocolFee}
+            ${formatAmount(protocolFee, 0, 2)}
           </Typography>
         </div>
         <div className="flex justify-between py-1.5">
@@ -51,7 +54,17 @@ export const CostToolTip = ({
             Network fee
           </Typography>
           <Typography size="h5" weight="medium">
-            {outputAsset && !isBitcoin(outputAsset.chain) ? "Free" : "$"+networkFee}
+            {inputAsset && !isBitcoin(inputAsset.chain)
+              ? "Free"
+              : "$" + networkFee}
+          </Typography>
+        </div>
+        <div className="flex justify-between py-1.5">
+          <Typography size="h5" weight="medium" className="!text-mid-grey">
+            Price impact
+          </Typography>
+          <Typography size="h5" weight="medium">
+            -{formatAmount(priceImpact, 0, 2)}%
           </Typography>
         </div>
         <div className="flex justify-between py-1.5">

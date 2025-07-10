@@ -136,5 +136,5 @@ export const getProtocolFee = (fees: number) => {
   const protocolBips = 7;
   const totalBips = 30;
   const protocolFee = fees * (protocolBips / totalBips);
-  return formatAmount(protocolFee, 0, 2);
+  return protocolFee;
 };
