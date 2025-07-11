@@ -11,6 +11,7 @@
 - Fixed the Price impact logic in fee tooltip.
 - Added Faucet external link footer
 - Optimized transaction loading to display new results without full rerender, and improved swap progress UI for refunded transactions.
+- updated the fee breakdown UI
 
 ## [1.0.3]
 
