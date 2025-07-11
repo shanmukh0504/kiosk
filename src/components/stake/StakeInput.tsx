@@ -168,7 +168,7 @@ export const StakeInput = ({ balance }: { balance: number }) => {
           className="cursor-pointer"
           onClick={handleBalanceClick}
         >
-          {balance && balance.toFixed(3)} available
+          {balance ? balance.toFixed(3) : 0} available
         </Typography>
       </div>
       <div className="flex items-center justify-between">
@@ -177,7 +177,7 @@ export const StakeInput = ({ balance }: { balance: number }) => {
             <AnimatePresence mode="wait">
               {stakeType === StakeType.GARDEN_PASS ? (
                 <motion.div key="garden-pass" {...fadeAnimation}>
-                  <div className="relative flex w-[240px]">
+                  <div className="relative flex w-[200px] md:w-[240px]">
                     <NumberFlow
                       value={passCount}
                       locales="en-US"
@@ -215,7 +215,7 @@ export const StakeInput = ({ balance }: { balance: number }) => {
                 <motion.div
                   key="custom"
                   {...fadeAnimation}
-                  className="w-[240px]"
+                  className="w-[200px] md:w-[240px]"
                 >
                   <div className="relative flex w-full items-center">
                     <div

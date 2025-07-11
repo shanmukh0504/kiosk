@@ -8,7 +8,11 @@ import { FC, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useToastStore } from "../../store/toastStore";
 
-export const ToastContainer: FC = () => {
+type ToastContainerProps = {
+  className?: string;
+};
+
+export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
   const { isVisible, content, link, type, hideToast } = useToastStore();
 
   useEffect(() => {
@@ -19,7 +23,7 @@ export const ToastContainer: FC = () => {
   }, [isVisible, hideToast]);
 
   return (
-    <div className="min-h-10 lg:-translate-y-[48px]">
+    <div className={`min-h-10 lg:-translate-y-[48px] ${className}`}>
       {isVisible && (
         <div
           className={`shine relative flex items-center justify-between overflow-hidden rounded-2xl bg-white/25 px-4 py-2 backdrop-blur-[20px]`}

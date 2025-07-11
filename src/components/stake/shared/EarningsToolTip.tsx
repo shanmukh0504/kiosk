@@ -35,7 +35,7 @@ export const EarningsToolTip = ({
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="relative mx-auto flex"
     >
-      <div className="absolute mb-[15px] ml-4 mt-[-5px] h-[14px] w-[14px] rotate-45 rounded-sm bg-white sm:mb-0 sm:ml-[-5px] sm:mt-[15px]"></div>
+      <div className="absolute right-0 mb-[15px] ml-4 mr-[64px] mt-[-5px] h-[14px] w-[14px] rotate-45 rounded-sm bg-white sm:right-auto sm:mb-0 sm:ml-[-5px] sm:mr-0 sm:mt-[15px]"></div>
       <div className="flex max-w-[240px] flex-col gap-2 rounded-2xl bg-white shadow-custom">
         <Typography size="h5" weight="medium" className="px-3 pt-3">
           This earning is from the previous epoch that has already passed.
@@ -110,6 +110,7 @@ export const EarningsToolTip = ({
                     dataKey="earnings"
                     fill="#F3F4F6"
                     barSize={16}
+                    isAnimationActive={false}
                     shape={(props: BarProps) => {
                       const { x, y, width, height, index } = props;
                       const isLatest =

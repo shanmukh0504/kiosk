@@ -194,3 +194,42 @@ export const springTransition = {
   damping: 25,
   mass: 1,
 };
+
+export const stakePositionAnimation = {
+  initial: {
+    opacity: 0,
+    height: 0,
+    scale: 0.9,
+    y: -10,
+  },
+  animate: {
+    opacity: 1,
+    height: "auto",
+    scale: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: "easeInOut",
+      opacity: {
+        duration: 0.2,
+        delay: 0.2,
+        ease: "easeInOut",
+      },
+    },
+  },
+  exit: {
+    opacity: 0,
+    height: 0,
+    scale: 0.9,
+    y: -10,
+    transition: {
+      duration: 0.4,
+      ease: "easeInOut",
+      height: {
+        duration: 0.4,
+        delay: 0.2,
+        ease: "easeInOut",
+      },
+    },
+  },
+};

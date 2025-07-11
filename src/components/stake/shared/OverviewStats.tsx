@@ -79,7 +79,7 @@ export const OverviewStats: FC<props> = ({
       >
         {Number(value) < 0 ? value?.toString().slice(1) : value}
         {showStat &&
-          (Number(value) > 0 ? (
+          (Number(String(value).replace(/[^0-9.-]+/g, "")) > 0 ? (
             <ArrowUpwardIcon className="h-3 w-3 !fill-light-green" />
           ) : (
             <ArrowDownwardIcon className="h-3 w-3 !fill-red-500" />

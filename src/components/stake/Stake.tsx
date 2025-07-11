@@ -15,7 +15,7 @@ export const Stake: FC = () => {
   return (
     <div className="mb-8 mt-10 flex flex-col gap-6 sm:mb-16">
       <div className="mx-auto mt-10 flex flex-col gap-6">
-        <ToastContainer />
+        <ToastContainer className="lg:translate-y-0" />
         <div className="flex h-full w-full items-center">
           <AnimatePresence mode="wait">
             {stakeType === StakeType.GARDEN_PASS && <GardenPass />}
@@ -23,9 +23,9 @@ export const Stake: FC = () => {
           <StakeComponent />
         </div>
       </div>
-      {stakePosData && stakePosData.length > 0 && (
-        <div className="z-0 flex flex-col">
-          <AnimatePresence>
+      <AnimatePresence mode="wait">
+        {stakePosData && stakePosData.length > 0 && (
+          <div className="z-0 flex flex-col">
             <StakeRewards key="stake-rewards" />
             <StakeOverview
               key="stake-overview"
@@ -33,9 +33,9 @@ export const Stake: FC = () => {
               setShowDetails={setShowDetails}
             />
             <StakePositions key="stake-positions" showDetails={showDetails} />
-          </AnimatePresence>
-        </div>
-      )}
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

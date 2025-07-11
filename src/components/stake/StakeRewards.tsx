@@ -92,28 +92,35 @@ export const StakeRewards = () => {
 
   const earningsData = useMemo(() => {
     if (!epochEarnings || !epochData) return [];
-    return epochEarnings
-      .slice(0, 8)
-      .reverse()
-      .map((epoch, index) => {
-        const epochNumber = epochData.length - 7 + index;
-        return {
+    const result = [];
+    const maxEpochs = 8;
+    const latestEpochNumber = epochData.length;
+
+    for (let i = 0; i < maxEpochs; i++) {
+      const epochNumber = latestEpochNumber - maxEpochs + 1 + i;
+      const epochIndex = epochEarnings.length - maxEpochs + i;
+      if (epochIndex >= 0 && epochIndex < epochEarnings.length) {
+        result.push({
           epoch: epochNumber,
-          earnings: Number(epoch.rewards_value_usd),
-        };
-      });
+          earnings: Number(epochEarnings[epochIndex].rewards_value_usd),
+        });
+      } else {
+        result.push({
+          epoch: epochNumber,
+          earnings: 0,
+        });
+      }
+    }
+    return result;
   }, [epochEarnings, epochData]);
 
   const earningRate = useMemo(() => {
-    if (!epochEarnings || epochEarnings.length < 2) return 0;
-
-    const latestEpoch = Number(epochEarnings[0].rewards_value_usd);
-    const previousEpoch = Number(epochEarnings[1].rewards_value_usd);
-
-    if (previousEpoch === 0) return 0;
-
-    return ((latestEpoch - previousEpoch) / previousEpoch) * 100;
-  }, [epochEarnings]);
+    if (!earningsData || earningsData.length < 2) return 0;
+    const latest = earningsData[earningsData.length - 1].earnings;
+    const previous = earningsData[earningsData.length - 2].earnings;
+    if (previous === 0) return latest === 0 ? 0 : 100;
+    return ((latest - previous) / previous) * 100;
+  }, [earningsData]);
 
   return (
     <motion.div
@@ -133,13 +140,13 @@ export const StakeRewards = () => {
       }}
       style={{ transformOrigin: "top" }}
     >
-      <div className="mx-auto flex w-[328px] flex-col gap-[20px] rounded-[15px] bg-white p-6 sm:w-[424px] md:w-[740px]">
+      <div className="mx-auto flex w-[328px] flex-col gap-[20px] rounded-[15px] bg-white p-6 sm:w-[460px] md:w-[740px]">
         <Typography size="h5" weight="bold">
           Rewards
         </Typography>
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <div className="flex w-full flex-col gap-[32.67px] sm:w-[384px] sm:flex-row md:w-[600px] md:gap-[20px]">
-            <div className="flex gap-4 sm:gap-8 md:gap-5">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-8 md:gap-5">
               {epochData && (
                 <OverviewStats
                   title={"Current Epoch"}
@@ -183,7 +190,7 @@ export const StakeRewards = () => {
               />
             </div>
           </div>
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+          <div className="flex w-full flex-col items-center justify-between gap-4 sm:w-fit md:flex-row">
             <Button
               variant={
                 isClaimLoading || availableReward === 0 ? "disabled" : "primary"

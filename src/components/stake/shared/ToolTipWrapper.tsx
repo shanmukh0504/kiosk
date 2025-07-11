@@ -1,6 +1,7 @@
 import React, { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Portal } from "../../Portal";
+import { viewPortStore } from "../../../store/viewPortStore";
 
 // Accept targetRef as a prop
 interface TooltipWrapperProps {
@@ -23,6 +24,8 @@ export const TooltipWrapper: FC<TooltipWrapperProps> = ({
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(true);
 
+  const { isMobile } = viewPortStore();
+
   useEffect(() => {
     if (!targetRef?.current || !tooltipRef.current) return;
 
@@ -31,8 +34,8 @@ export const TooltipWrapper: FC<TooltipWrapperProps> = ({
       if (!rect) return;
 
       setPosition({
-        top: rect.top - offsetY,
-        left: rect.right + offsetX,
+        top: isMobile ? rect.top - offsetY * -1.5 : rect.top - offsetY,
+        left: isMobile ? rect.left - offsetX * 16 : rect.right + offsetX,
       });
     };
 
@@ -79,7 +82,7 @@ export const TooltipWrapper: FC<TooltipWrapperProps> = ({
             zIndex: 9999,
             pointerEvents: "auto",
           }}
-          className="before:absolute before:-left-7 before:top-2 before:h-12 before:w-8 before:cursor-pointer"
+          className="before:absolute before:-top-10 before:right-14 before:h-12 before:w-8 before:cursor-pointer before:sm:-left-7 before:sm:top-2"
         >
           {children}
         </motion.div>
