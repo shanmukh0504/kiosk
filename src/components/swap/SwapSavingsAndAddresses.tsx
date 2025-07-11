@@ -1,4 +1,4 @@
-import { Typography } from "@gardenfi/garden-book";
+import { InfoIcon, Typography } from "@gardenfi/garden-book";
 import { AnimatePresence, motion } from "framer-motion";
 import { formatAmount } from "../../utils/utils";
 import {
@@ -7,13 +7,19 @@ import {
 } from "../../animations/animations";
 import { formatTime } from "../../utils/timeAndFeeComparison/utils";
 import { AddressDetails } from "./AddressDetails";
+import { useSwap } from "../../hooks/useSwap";
+import { TooltipWrapper } from "../../common/ToolTipWrapper";
+import { CostToolTip } from "./CostToolTip";
+import { useMemo, useRef, useState } from "react";
+import { swapStore } from "../../store/swapStore";
 
 type SwapSavingsProps = {
   timeSaved: number;
   costSaved: number;
   refundAddress: string | undefined;
   receiveAddress: string | undefined;
-  isSwapProgress?: boolean;
+  protocolFee: number;
+  networkFeesValue: number;
   showComparison: (type: "time" | "fees") => void;
 };
 
@@ -22,14 +28,87 @@ export const SwapSavingsAndAddresses = ({
   costSaved,
   refundAddress,
   receiveAddress,
-  showComparison
+  protocolFee,
+  networkFeesValue,
+  showComparison,
 }: SwapSavingsProps) => {
+  const { outputAsset, outputAmount } = useSwap();
+  const [isHovered, setIsHovered] = useState(false);
+  const targetRef = useRef<HTMLDivElement>(null);
+
+  const { tokenPrices, inputAsset } = swapStore();
+
+  const priceImpact = useMemo(() => {
+    if (!tokenPrices) return 0;
+    const input = Number(tokenPrices.input);
+    const output = Number(tokenPrices.output);
+    return (1 - (output + protocolFee) / input) * 100;
+  }, [tokenPrices, protocolFee]);
+
+  const fees = useMemo(
+    () => protocolFee + networkFeesValue,
+    [protocolFee, networkFeesValue]
+  );
+
   return (
     <motion.div className="flex flex-col" {...expandWithDelayAnimation}>
+      <div className="h-full">
+        <div className="flex items-center justify-between px-4 pt-1">
+          <div className="flex items-center gap-1">
+            <Typography size="h5" weight="medium" className="!text-mid-grey">
+              Fees
+            </Typography>
+            <span
+              ref={targetRef}
+              className="inline-block cursor-pointer"
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+            >
+              <InfoIcon className="h-3 w-3 !fill-mid-grey" />
+              {isHovered && inputAsset && outputAsset && (
+                <TooltipWrapper targetRef={targetRef}>
+                  <CostToolTip
+                    networkFee={networkFeesValue}
+                    protocolFee={protocolFee}
+                  />
+                </TooltipWrapper>
+              )}
+            </span>
+          </div>
+          <div className="flex gap-5 py-1">
+            <Typography size="h4" weight="medium">
+              ${formatAmount(fees, 0, 2)}
+            </Typography>
+          </div>
+        </div>
+        <div className="flex items-center justify-between px-4">
+          <Typography size="h5" weight="medium" className="!text-mid-grey">
+            Price impact
+          </Typography>
+          <div className="flex gap-5 py-1">
+            <Typography size="h4" weight="medium">
+              -{formatAmount(priceImpact, 0, 2)}%
+            </Typography>
+          </div>
+        </div>
+        <div className="flex items-center justify-between px-4">
+          <Typography size="h5" weight="medium" className="!text-mid-grey">
+            Min. received
+          </Typography>
+          <div className="flex gap-5 py-1">
+            <Typography size="h4" weight="medium">
+              {outputAmount} {outputAsset?.symbol}
+            </Typography>
+          </div>
+        </div>
+      </div>
       <AnimatePresence mode="wait">
         {(timeSaved > 0 || costSaved > 0) && (
           <motion.div {...expandAnimation}>
-            <div className="z-10 mx-4 my-1 h-px" {...expandAnimation}></div>
+            <div
+              className="z-10 mx-4 my-1 h-px bg-white"
+              {...expandAnimation}
+            ></div>
             {timeSaved > 0 && (
               <motion.div
                 key="time-saved"
@@ -100,9 +179,7 @@ export const SwapSavingsAndAddresses = ({
       </AnimatePresence>
       {(receiveAddress || refundAddress) && (
         <>
-          <div
-            className={`mx-4 my-1 h-px ${timeSaved > 0 || costSaved > 0 ? `bg-white` : ``}`}
-          ></div>
+          <div className={`mx-4 my-1 h-px bg-white`}></div>
           <div className="flex flex-col items-stretch justify-center">
             {receiveAddress && <AddressDetails address={receiveAddress} />}
             {refundAddress && (
