@@ -53,7 +53,7 @@ export const SwapSavingsAndAddresses = ({
   return (
     <motion.div className="flex flex-col" {...expandWithDelayAnimation}>
       <div className="h-full">
-        <div className="flex items-center justify-between px-4 pt-3">
+        <div className="flex items-center justify-between px-4 pt-1">
           <div className="flex items-center gap-1">
             <Typography size="h5" weight="medium" className="!text-mid-grey">
               Fees
