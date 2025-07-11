@@ -92,7 +92,9 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
           <Typography size="h4">Completed</Typography>
         </Chip>
       </div>
-      <div className="scrollbar-hide flex flex-col gap-5 overflow-y-auto rounded-2xl pb-6">
+      <div
+        className={`scrollbar-hide flex max-h-[50vh] flex-col gap-5 overflow-y-auto rounded-2xl pb-6 sm:h-full sm:max-h-[calc(100vh-180px)]`}
+      >
         <div className="flex flex-col rounded-2xl bg-white/50">
           <Typography size="h5" weight="bold" className="p-4">
             Transactions
