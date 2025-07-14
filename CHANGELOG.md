@@ -11,7 +11,8 @@
 - Fixed the Price impact logic in fee tooltip.
 - Added Faucet external link footer
 - Optimized transaction loading to display new results without full rerender, and improved swap progress UI for refunded transactions.
-- - Fixed gray out of unsupported chains by wallets in Chains sidebar.
+- updated the fee breakdown UI
+- Fixed gray out of unsupported chains by wallets in Chains sidebar.
 
 ## [1.0.3]
 
