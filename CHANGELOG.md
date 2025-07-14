@@ -12,7 +12,7 @@
 - Added Faucet external link footer
 - Optimized transaction loading to display new results without full rerender, and improved swap progress UI for refunded transactions.
 - updated the fee breakdown UI
-
+- update Argent wallets's name to Ready wallet
 ## [1.0.3]
 
 ### Added
