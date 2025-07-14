@@ -14,7 +14,6 @@ type SidebarProps = {
   chains: ChainData[];
   hide: () => void;
   onClick: (chain: ChainData) => void;
-  disabledChains?: string[];
 };
 
 export const AvailableChainsSidebar = ({
@@ -22,7 +21,6 @@ export const AvailableChainsSidebar = ({
   chains,
   hide,
   onClick,
-  disabledChains = [],
 }: SidebarProps) => {
   const [input, setInput] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -61,26 +59,11 @@ export const AvailableChainsSidebar = ({
   };
 
   const filteredChains = useMemo(() => {
-    let filtered = chains;
-
-    // Filter by search input
-    if (input) {
-      filtered = filtered.filter((c) =>
-        c.name.toLowerCase().includes(input.toLowerCase())
-      );
-    }
-
-    // Sort: enabled chains first (alphabetically), then disabled chains (alphabetically)
-    return filtered.sort((a, b) => {
-      const aDisabled = disabledChains.includes(a.identifier);
-      const bDisabled = disabledChains.includes(b.identifier);
-
-      if (!aDisabled && bDisabled) return -1;
-      if (aDisabled && !bDisabled) return 1;
-      // Both enabled or both disabled: sort alphabetically
-      return a.name.localeCompare(b.name);
-    });
-  }, [chains, input, disabledChains]);
+    if (!input) return chains.sort((a, b) => a.name.localeCompare(b.name));
+    return chains
+      .filter((c) => c.name.toLowerCase().includes(input.toLowerCase()))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [chains, input]);
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
@@ -124,25 +107,22 @@ export const AvailableChainsSidebar = ({
               <div className="flex w-full flex-col pb-1 pt-2">
                 {filteredChains.length > 0 ? (
                   filteredChains.map((c) => {
-                    const isDisabled = disabledChains.includes(c.identifier);
-
                     return (
                       <div
                         key={c.chainId}
                         className="flex w-full cursor-pointer items-center justify-between hover:bg-off-white"
-                        onClick={() => (isDisabled ? undefined : onClick(c))}
+                        onClick={() => onClick(c)}
                       >
                         <div className="flex w-full items-center gap-4 px-[14px] py-2">
                           <img
                             src={c.networkLogo}
                             alt={c.name}
-                            className={`h-5 w-5 rounded-full ${isDisabled ? "opacity-50" : ""}`}
+                            className={`h-5 w-5 rounded-full`}
                           />
                           <Typography
                             size={"h5"}
                             breakpoints={{ sm: "h4" }}
                             weight="medium"
-                            className={`${isDisabled ? "opacity-50" : ""}`}
                           >
                             {c.name}
                           </Typography>

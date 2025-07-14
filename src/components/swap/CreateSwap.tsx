@@ -1,6 +1,10 @@
 import { Button, ExchangeIcon } from "@gardenfi/garden-book";
 import { SwapInput } from "./SwapInput";
-import { getTimeEstimates, IOType } from "../../constants/constants";
+import {
+  getTimeEstimates,
+  IOType,
+  WALLET_SUPPORTED_CHAINS,
+} from "../../constants/constants";
 import { useEffect, useMemo, useState } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { useSearchParams } from "react-router-dom";
@@ -65,6 +69,13 @@ export const CreateSwap = () => {
     swapAssets,
   } = useSwap();
   const { setOpenModal } = modalStore();
+  const { connector } = useEVMWallet();
+
+  const isChainSupported = useMemo(() => {
+    if (!connector || !inputAsset) return false;
+    if (!WALLET_SUPPORTED_CHAINS[connector.id]) return true;
+    return WALLET_SUPPORTED_CHAINS[connector.id].includes(inputAsset.chain);
+  }, [connector, inputAsset]);
 
   const buttonLabel = useMemo(() => {
     if (needsWalletConnection)
@@ -72,16 +83,19 @@ export const CreateSwap = () => {
 
     return error.liquidityError
       ? "Insufficient liquidity"
-      : error.insufficientBalanceError
-        ? "Insufficient balance"
-        : needsWalletConnection
-          ? `Connect ${capitalizeChain(needsWalletConnection)} Wallet`
-          : isApproving
-            ? "Approving..."
-            : isSwapping
-              ? "Signing"
-              : "Swap";
+      : !isChainSupported
+        ? "Wallet does not support the chain"
+        : error.insufficientBalanceError
+          ? "Insufficient balance"
+          : needsWalletConnection
+            ? `Connect ${capitalizeChain(needsWalletConnection)} Wallet`
+            : isApproving
+              ? "Approving..."
+              : isSwapping
+                ? "Signing"
+                : "Swap";
   }, [
+    isChainSupported,
     error.liquidityError,
     isApproving,
     isSwapping,
@@ -93,12 +107,14 @@ export const CreateSwap = () => {
     return !!error.liquidityError ||
       !!error.insufficientBalanceError ||
       loadingDisabled ||
-      isSwapping
+      isSwapping ||
+      !isChainSupported
       ? true
       : needsWalletConnection || validSwap
         ? false
         : true;
   }, [
+    isChainSupported,
     isSwapping,
     validSwap,
     error.liquidityError,
