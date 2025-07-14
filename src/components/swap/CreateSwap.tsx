@@ -157,7 +157,7 @@ export const CreateSwap = () => {
 
     const fetchAllBalances = async () => {
       await fetchAndSetFiatValues();
-      await Promise.all([
+      await Promise.allSettled([
         address && fetchAndSetEvmBalances(address, workingRPCs),
         btcAddress && provider && fetchAndSetBitcoinBalance(provider),
         starknetAddress && fetchAndSetStarknetBalance(starknetAddress),
