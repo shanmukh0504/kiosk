@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.6]
+
+### Fixed
+
+- Disable swap button and update its label when wallet doesn't support the chain
+
 ## [1.0.5]
 
 ### Fixed
@@ -21,7 +27,6 @@
 - Added Faucet external link footer
 - Optimized transaction loading to display new results without full rerender, and improved swap progress UI for refunded transactions.
 - updated the fee breakdown UI
-- Disable swap button and update its label when wallet doesn't support the chain
 
 ## [1.0.3]
 
