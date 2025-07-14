@@ -29,29 +29,27 @@ export const getBalanceMulticall = async (
   const fetchBalances = async (
     client: ReturnType<typeof createPublicClient>
   ) => {
-    const calls = tokenAddresses.map((token) => {
-      if (isEvmNativeToken(chain, token)) {
-        return {
-          address: multicallAddress as Hex,
-          abi: multicall3Abi,
-          functionName: "getEthBalance" as const,
-          args: [address],
-        };
-      } else {
-        return {
-          address: token,
-          abi: erc20Abi,
-          functionName: "balanceOf" as const,
-          args: [address],
-        };
-      }
-    });
+    const calls = tokenAddresses.map((token) =>
+      isEvmNativeToken(chain, token)
+        ? {
+            address: multicallAddress as Hex,
+            abi: multicall3Abi,
+            functionName: "getEthBalance" as const,
+            args: [address],
+          }
+        : {
+            address: token,
+            abi: erc20Abi,
+            functionName: "balanceOf" as const,
+            args: [address],
+          }
+    );
 
     const result = await client.multicall({
       contracts: calls,
       multicallAddress: multicallAddress as Hex,
     });
-    
+
     return result.reduce(
       (acc, call, index) => {
         acc[tokenAddresses[index]] =

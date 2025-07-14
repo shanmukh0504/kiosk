@@ -1,11 +1,20 @@
 # Changelog
 
+## [1.0.5]
+
+### Fixed
+
+- Fixed the max spendable balance for Bitcoin and Solana.
+- update Argent wallets's name to Ready wallet
+
 ## [1.0.4]
 
 ### Added
+
 - Added dynamic price impact in the fee tooltip.
 
 ### Fixed
+
 - Fixed Network Fee for Bitcoin.
 - Fixed Total cost in Fee tooltip.
 - Fixed the Price impact logic in fee tooltip.

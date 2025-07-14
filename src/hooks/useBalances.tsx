@@ -1,0 +1,91 @@
+import { useEffect, useMemo } from "react";
+import { assetInfoStore } from "../store/assetInfoStore";
+import { swapStore } from "../store/swapStore";
+import {
+  isBitcoin,
+  isEvmNativeToken,
+  isSolanaNativeToken,
+} from "@gardenfi/orderbook";
+import { getOrderPair } from "../utils/utils";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { BitcoinNetwork, BitcoinProvider } from "@catalogfi/wallets";
+import { network } from "../constants/constants";
+import { getSpendableBalance } from "../utils/getmaxBtc";
+
+export const useNativeMaxBalances = () => {
+  const { balances } = assetInfoStore();
+  const { inputAsset } = swapStore();
+  const { account: btcAddress } = useBitcoinWallet();
+
+  const balance =
+    inputAsset &&
+    balances[getOrderPair(inputAsset.chain, inputAsset.tokenAddress)];
+
+  const maxSpendableNativeBalances: Record<string, number> = useMemo(
+    () => ({}),
+    []
+  );
+
+  useEffect(() => {
+    if (!inputAsset || !balance) return;
+    // console.log("balance :", balance);
+
+    //EVM gas
+    if (isEvmNativeToken(inputAsset.chain, inputAsset.tokenAddress)) {
+      // TODO: fetch gas and subtract from balance
+    }
+
+    // BTC gas
+    if (isBitcoin(inputAsset.chain) && btcAddress) {
+      // TODO: fetch gas and subtract from balance
+      const calculateInitialSpendableBalance = async () => {
+        const provider = new BitcoinProvider(
+          network === "mainnet"
+            ? BitcoinNetwork.Mainnet
+            : BitcoinNetwork.Testnet
+        );
+        try {
+          const balanceInSats = Math.floor(Number(balance) * 100000000);
+          const utxos = await provider.getUTXOs(btcAddress, balanceInSats);
+          const feeRate = await provider.getFeeRates();
+
+          const spendable = await getSpendableBalance(
+            btcAddress,
+            balanceInSats,
+            utxos.length,
+            feeRate.minimumFee
+          );
+          if (!spendable.ok) {
+            console.error(
+              "Error calculating initial spendable balance:",
+              spendable.error
+            );
+            return;
+          }
+
+          maxSpendableNativeBalances[
+            getOrderPair(inputAsset.chain, inputAsset.tokenAddress)
+          ] = spendable.val / 100000000;
+        } catch (error) {
+          console.error("Error calculating initial spendable balance:", error);
+          maxSpendableNativeBalances[
+            getOrderPair(inputAsset.chain, inputAsset.tokenAddress)
+          ] = Number(balance);
+        }
+      };
+
+      calculateInitialSpendableBalance();
+    }
+
+    // SOL gas
+    if (isSolanaNativeToken(inputAsset.chain, inputAsset.tokenAddress)) {
+      //
+      const gas = 0.00180608;
+      maxSpendableNativeBalances[
+        getOrderPair(inputAsset.chain, inputAsset.tokenAddress)
+      ] = Number((Number(balance) - gas).toFixed(8));
+    }
+  }, [inputAsset, balance, btcAddress, maxSpendableNativeBalances]);
+
+  return maxSpendableNativeBalances;
+};
