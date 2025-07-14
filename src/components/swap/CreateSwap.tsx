@@ -12,15 +12,34 @@ import {
   getQueryParams,
 } from "../../utils/utils";
 import { QUERY_PARAMS } from "../../constants/constants";
+import { ecosystems } from "../navbar/connectWallet/constants";
 import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { useEVMWallet } from "../../hooks/useEVMWallet";
+import { useStarknetWallet } from "../../hooks/useStarknetWallet";
+import { rpcStore } from "../../store/rpcStore";
+import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 
 export const CreateSwap = () => {
   const [loadingDisabled, setLoadingDisabled] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [addParams, setAddParams] = useState(false);
+  const { account: btcAddress, provider } = useBitcoinWallet();
+  const { address } = useEVMWallet();
+  const { starknetAddress } = useStarknetWallet();
+  const { solanaAnchorProvider } = useSolanaWallet();
+  const {
+    assets,
+    fetchAndSetBitcoinBalance,
+    fetchAndSetEvmBalances,
+    fetchAndSetFiatValues,
+    fetchAndSetStarknetBalance,
+    fetchAndSetSolanaBalance,
+    clearBalances,
+  } = assetInfoStore();
 
-  const { assets } = assetInfoStore();
+  const { workingRPCs } = rpcStore();
 
   const {
     outputAmount,
@@ -46,6 +65,9 @@ export const CreateSwap = () => {
   const { setOpenModal } = modalStore();
 
   const buttonLabel = useMemo(() => {
+    if (needsWalletConnection)
+      return `Connect ${capitalizeChain(needsWalletConnection)} Wallet`;
+
     return error.liquidityError
       ? "Insufficient liquidity"
       : error.insufficientBalanceError
@@ -99,21 +121,59 @@ export const CreateSwap = () => {
   }, [inputAsset, outputAsset]);
 
   const handleConnectWallet = () => {
-    if (needsWalletConnection === "starknet") {
-      setOpenModal(modalNames.connectWallet, {
-        Starknet: true,
-        Bitcoin: false,
-        EVM: false,
-      });
-    }
-    if (needsWalletConnection === "evm") {
-      setOpenModal(modalNames.connectWallet, {
-        EVM: true,
-        Starknet: false,
-        Bitcoin: false,
-      });
-    }
+    if (!needsWalletConnection) return;
+
+    const modalState = Object.values(ecosystems).reduce(
+      (acc, { name }) => {
+        acc[name] = name.toLowerCase() === needsWalletConnection;
+        return acc;
+      },
+      {} as Record<string, boolean>
+    );
+
+    setOpenModal(modalNames.connectWallet, modalState);
   };
+
+  useEffect(() => {
+    if (!assets) return;
+
+    const updateBalances = async () => {
+      await fetchAndSetFiatValues();
+      if (address) {
+        await fetchAndSetEvmBalances(address, workingRPCs);
+      }
+      if (btcAddress && provider) {
+        await fetchAndSetBitcoinBalance(provider);
+      }
+      if (starknetAddress) {
+        await fetchAndSetStarknetBalance(starknetAddress);
+      }
+      if (solanaAnchorProvider) {
+        await fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey);
+      }
+    };
+
+    updateBalances();
+    const interval = setInterval(updateBalances, 7000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [
+    assets,
+    address,
+    provider,
+    btcAddress,
+    fetchAndSetEvmBalances,
+    fetchAndSetBitcoinBalance,
+    starknetAddress,
+    solanaAnchorProvider,
+    fetchAndSetFiatValues,
+    fetchAndSetStarknetBalance,
+    fetchAndSetSolanaBalance,
+    clearBalances,
+    workingRPCs,
+  ]);
 
   useEffect(() => {
     if (!assets || addParams) return;
@@ -141,7 +201,9 @@ export const CreateSwap = () => {
       const BTC = Object.values(assets).find(
         (asset) => asset.name.toLowerCase() == "bitcoin"
       );
-      BTC && !BTC.disabled ? setAsset(IOType.input, BTC) : null;
+      if (BTC && !BTC.disabled) {
+        setAsset(IOType.input, BTC);
+      }
     }
     setAddParams(true);
   }, [addParams, assets, inputAsset, outputAsset, searchParams, setAsset]);

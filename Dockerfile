@@ -2,6 +2,23 @@
 FROM node:22-alpine AS builder
 WORKDIR /app
 
+# Install build dependencies for native modules
+RUN apk add --no-cache \
+    make \
+    g++ \
+    python3 \
+    py3-pip \
+    libusb-dev \
+    libudev-zero-dev \
+    linux-headers \
+    pkgconfig \
+    git
+
+# Set environment variables for native builds
+ENV PYTHON=/usr/bin/python3
+ENV MAKE=/usr/bin/make
+ENV CC=gcc
+ENV CXX=g++
 
 ARG VITE_AUTH_URL
 ARG VITE_ENVIRONMENT
@@ -27,12 +44,17 @@ ENV VITE_STAKING_URL=$VITE_STAKING_URL
 ENV VITE_STARKNET_URL=$VITE_STARKNET_URL
 ENV VITE_EXPLORER_URL=$VITE_EXPLORER_URL
 
-
 RUN corepack enable && corepack prepare yarn@4.5.1 --activate
-RUN echo "nodeLinker: node-modules" > .yarnrc.yml
+RUN echo "nodeLinker: node-modules" > .yarnrc.yml && \
+    echo "enableGlobalCache: false" >> .yarnrc.yml && \
+    echo "preferInteractive: false" >> .yarnrc.yml
 
 COPY package.json yarn.lock ./
-RUN yarn install
+
+# Install dependencies with fallback strategy
+RUN yarn install --ignore-optional --frozen-lockfile || \
+    yarn install --frozen-lockfile || \
+    yarn install --no-lockfile
 
 COPY . .
 ENV PATH="/app/node_modules/.bin:${PATH}"

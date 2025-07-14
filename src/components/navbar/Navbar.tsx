@@ -9,11 +9,13 @@ import { modalNames, modalStore } from "../../store/modalStore";
 import ConnectedWallets from "./ConnectedWallets";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 
 export const Navbar = () => {
   const { isConnected, address } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { account: btcAddress } = useBitcoinWallet();
+  const { solanaAddress } = useSolanaWallet();
   const { setOpenModal } = modalStore();
 
   const handleHomeLogoClick = () => window.open(API().home, "_blank");
@@ -46,7 +48,7 @@ export const Navbar = () => {
           })}
         </div>
       </div>
-      {address || starknetAddress || btcAddress ? (
+      {address || starknetAddress || btcAddress || solanaAddress ? (
         <ConnectedWallets />
       ) : (
         <Button

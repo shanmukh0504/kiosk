@@ -50,6 +50,9 @@ body {
   .shine:before {
     @apply absolute left-0 top-0 h-full w-[168px] animate-shine bg-gradient-to-r from-transparent via-white/50 via-50% to-transparent opacity-0 content-[''];
   }
+  .navbar-shine:before {
+    @apply animate-navbar-shine absolute left-0 top-0 h-full w-[84px] bg-gradient-to-l from-transparent via-white/75 via-25% to-transparent opacity-0 content-[''];
+  }
 }
 
 .scrollbar-hide::-webkit-scrollbar {
