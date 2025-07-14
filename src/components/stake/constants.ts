@@ -25,11 +25,11 @@ export const ETH_BLOCKS_PER_DAY = 7200;
 export const STAKING_CONFIG = {
   // arbitrum sepolia
   421614: {
-    SEED_ADDRESS: "0x13DCec0762EcC5E666c207ab44Dc768e5e33070F",
-    STAKING_CONTRACT_ADDRESS: "0xe985A9B5DEe7A85A969dC08698FeFE42077226Af",
+    SEED_ADDRESS: "0x432B43764548c3E47eA65aAdeB91D75C84DBcC2c",
+    STAKING_CONTRACT_ADDRESS: "0x43909E5677bC72d0423224d994C2dAFE1342FB2D",
     GARDEN_FILLER_ADDRESS: "0x661bA32eb5f86CaB358DDbB7F264b10c5825e2dd",
     STAKING_CHAIN: 421614,
-    FLOWER_CONTRACT_ADDRESS: "0xAC53e9C70932D5dC6A9c50Ae7E1418D4890B6Bf0",
+    FLOWER_CONTRACT_ADDRESS: "0x696659513c11029f72AB9F3FE31BEe858958B342",
     SEED_DECIMALS: 18,
     CHAIN: Chains.arbitrum_sepolia,
   },
@@ -67,10 +67,10 @@ export const REWARD_CONFIG = {
     },
   },
   SEED: {
-    //ethereum sepolia
+    //arbitrum sepolia
     421614: {
-      REWARD_TOKEN_ADDRESS: "0x5eedb3f5bbA7Da86b0bBa2c6450C52E27e105eeD",
-      EXPLORER: new Url("https://sepolia.etherscan.io"),
+      REWARD_TOKEN_ADDRESS: "0x86f65121804D2Cdbef79F9f072D4e0c2eEbABC08",
+      EXPLORER: new Url("https://sepolia.arbiscal.io"),
       TOKEN_LOGO: "https://garden-finance.imgix.net/token-images/seed.svg",
       CHAIN_LOGO: "https://garden-finance.imgix.net/chain_images/sepolia.svg",
     },
