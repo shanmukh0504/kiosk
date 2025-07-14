@@ -219,6 +219,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       /*empty*/
     }
   },
+
   fetchAndSetEvmBalances: async (
     address: string,
     workingRpcs: Record<number, string[]>,
@@ -271,6 +272,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       /*empty*/
     }
   },
+
   fetchAndSetBitcoinBalance: async (provider: IInjectedBitcoinProvider) => {
     const { assets, balances } = get();
     if (!assets || !provider) return;
@@ -296,6 +298,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       /*empty*/
     }
   },
+
   fetchAndSetStarknetBalance: async (address: string) => {
     const { assets, balances } = get();
     if (!assets) return;
@@ -316,6 +319,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     starknetBalance[orderPair] = new BigNumber(balance);
     set({ balances: { ...balances, ...starknetBalance } });
   },
+
   fetchAndSetSolanaBalance: async (address: PublicKey) => {
     const { assets, balances } = get();
     if (!assets) return;
@@ -332,6 +336,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     solanaBalance[orderPair] = new BigNumber(balance);
     set({ balances: { ...balances, ...solanaBalance } });
   },
+
   clearBalances: () =>
     set({
       balances: {},
