@@ -152,6 +152,7 @@ export const CreateSwap = () => {
     setOpenModal(modalNames.connectWallet, modalState);
   };
 
+  // Fetch balances in interval
   useEffect(() => {
     if (!assets) return;
 
