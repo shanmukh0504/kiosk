@@ -5,6 +5,7 @@
 ### Fixed
 
 - Fixed the max spendable balance for Bitcoin and Solana.
+- update Argent wallets's name to Ready wallet
 
 ## [1.0.4]
 
