@@ -109,9 +109,7 @@ export const routes = Object.entries(INTERNAL_ROUTES).filter(
   ([key]) => key !== "stake" || !isStakeDisable
 );
 
-export const PHANTOM_SUPPORTED_CHAINS: Chain[] = [
-  "solana",
-  "ethereum",
-  "base",
-  "bitcoin",
-];
+//if the wallet is not listed here, then it supports all chains
+export const WALLET_SUPPORTED_CHAINS: Record<string, Chain[]> = {
+  "app.phantom": ["solana", "ethereum", "base", "bitcoin"],
+};
