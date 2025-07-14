@@ -67,7 +67,7 @@ export const EarningsToolTip = ({
             <Typography size="h5" weight="medium">
               <ResponsiveContainer width="100%" height="105%">
                 <BarChart
-                  data={earningsData ?? []}
+                  data={[...(earningsData ?? [])].reverse()}
                   barGap={20}
                   onMouseMove={(state: {
                     isTooltipActive?: boolean;

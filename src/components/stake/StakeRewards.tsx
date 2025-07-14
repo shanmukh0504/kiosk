@@ -92,32 +92,27 @@ export const StakeRewards = () => {
 
   const earningsData = useMemo(() => {
     if (!epochEarnings || !epochData) return [];
-    const result = [];
     const maxEpochs = 8;
-    const latestEpochNumber = epochData.length;
+    const latestCompletedEpoch = epochData.length - 1;
+    // Build the list of epochs to show, then reverse it so latest is last
+    const epochsToShow = Array.from(
+      { length: maxEpochs },
+      (_, i) => latestCompletedEpoch - maxEpochs + 1 + i
+    ).reverse();
 
-    for (let i = 0; i < maxEpochs; i++) {
-      const epochNumber = latestEpochNumber - maxEpochs + 1 + i;
-      const epochIndex = epochEarnings.length - maxEpochs + i;
-      if (epochIndex >= 0 && epochIndex < epochEarnings.length) {
-        result.push({
-          epoch: epochNumber,
-          earnings: Number(epochEarnings[epochIndex].rewards_value_usd),
-        });
-      } else {
-        result.push({
-          epoch: epochNumber,
-          earnings: 0,
-        });
-      }
-    }
-    return result;
+    // Map by index: earnings[0] → epochsToShow[0], etc.
+    return epochsToShow.map((epochNumber, i) => ({
+      epoch: epochNumber,
+      earnings: epochEarnings[i]
+        ? Number(epochEarnings[i].rewards_value_usd)
+        : 0,
+    }));
   }, [epochEarnings, epochData]);
 
   const earningRate = useMemo(() => {
     if (!earningsData || earningsData.length < 2) return 0;
-    const latest = earningsData[earningsData.length - 1].earnings;
-    const previous = earningsData[earningsData.length - 2].earnings;
+    const latest = earningsData[0].earnings;
+    const previous = earningsData[1].earnings;
     if (previous === 0) return latest === 0 ? 0 : 100;
     return ((latest - previous) / previous) * 100;
   }, [earningsData]);
@@ -165,7 +160,7 @@ export const StakeRewards = () => {
                   toolTip={
                     <TooltipWrapper targetRef={statRef}>
                       <EarningsToolTip
-                        earnings={earningsData?.at(-1)?.earnings ?? 0}
+                        earnings={earningsData?.at(0)?.earnings ?? 0}
                         earningRate={earningRate}
                         earningsData={earningsData?.slice(0, 8) ?? []}
                       />

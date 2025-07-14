@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { STAKE_REWARD } from "../constants";
 import { Url } from "@gardenfi/utils";
 import { useEffect } from "react";
+import { formatAmount } from "../../../utils/utils";
 
 type UnitRewardTooltipProps = {
   seed: number | null;
@@ -15,8 +16,8 @@ export const UnitRewardTooltip = ({ seed, cbBtc }: UnitRewardTooltipProps) => {
   };
 
   useEffect(() => {
-    console.log("cbbtc", cbBtc);
-    console.log("seed", seed);
+    console.log("cbbtc", formatAmount(cbBtc ?? 0, 0, 2).toFixed(8));
+    console.log("seed", formatAmount(seed ?? 0, 0, 2).toFixed(8));
   }, []);
 
   return (
@@ -33,7 +34,7 @@ export const UnitRewardTooltip = ({ seed, cbBtc }: UnitRewardTooltipProps) => {
           {(cbBtc ?? 0) > 0 && (
             <div className="flex items-center gap-1">
               <Typography size="h4" weight="medium" className="w-[87px]">
-                {cbBtc}
+                {formatAmount(cbBtc ?? 0, 0, 8).toFixed(8)}
               </Typography>
               <Typography
                 size="h4"
@@ -58,7 +59,7 @@ export const UnitRewardTooltip = ({ seed, cbBtc }: UnitRewardTooltipProps) => {
           {(seed ?? 0) > 0 && (
             <div className="flex items-center gap-1">
               <Typography size="h4" weight="medium" className="w-[87px]">
-                {seed}
+                {formatAmount(seed ?? 0, 0, 8)}
               </Typography>
               <Typography
                 size="h4"
