@@ -12,7 +12,7 @@
 - Added Faucet external link footer
 - Optimized transaction loading to display new results without full rerender, and improved swap progress UI for refunded transactions.
 - updated the fee breakdown UI
-- Fixed gray out of unsupported chains by wallets in Chains sidebar.
+- Disable swap button and update its label when wallet doesn't support the chain
 
 ## [1.0.3]
 
