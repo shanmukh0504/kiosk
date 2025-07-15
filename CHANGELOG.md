@@ -6,6 +6,7 @@
 
 - Disable swap button and update its label when wallet doesn't support the chain
 - Fixed button label when wallet is not connected.
+- Fixed Price impact sign based on it's values
 
 ## [1.0.5]
 
