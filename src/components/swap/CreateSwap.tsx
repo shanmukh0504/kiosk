@@ -83,7 +83,7 @@ export const CreateSwap = () => {
 
     return error.liquidityError
       ? "Insufficient liquidity"
-      : !isChainSupported
+      : connector && !isChainSupported
         ? "Wallet does not support the chain"
         : error.insufficientBalanceError
           ? "Insufficient balance"
@@ -95,6 +95,7 @@ export const CreateSwap = () => {
                 ? "Signing"
                 : "Swap";
   }, [
+    connector,
     isChainSupported,
     error.liquidityError,
     isApproving,
