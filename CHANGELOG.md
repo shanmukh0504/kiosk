@@ -5,6 +5,7 @@
 ### Fixed
 
 - Disable swap button and update its label when wallet doesn't support the chain
+- Fixed button label when wallet is not connected.
 
 ## [1.0.5]
 
@@ -12,7 +13,6 @@
 
 - Fixed the max spendable balance for Bitcoin and Solana.
 - update Argent wallets's name to Ready wallet.
-- Fixed button label when wallet is not connected.
 
 ## [1.0.4]
 
