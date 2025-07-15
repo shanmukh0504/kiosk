@@ -15,23 +15,23 @@ import { useAccount } from "@starknet-react/core";
 import { Environment as GardenEnvironment } from "@gardenfi/utils";
 import { rpcStore } from "../store/rpcStore";
 import { useEffect } from "react";
-import { useMiniKit } from "@coinbase/onchainkit/minikit";
+// import { useMiniKit } from "@coinbase/onchainkit/minikit";
 
 function App() {
   const { data: walletClient } = useWalletClient();
   const { account: starknetWallet } = useAccount();
   const { fetchAndSetRPCs } = rpcStore();
-  const { isFrameReady, setFrameReady } = useMiniKit();
+  // const { isFrameReady, setFrameReady } = useMiniKit();
 
   useEffect(() => {
     fetchAndSetRPCs();
   }, []);
 
-  useEffect(() => {
-    if (!isFrameReady) {
-      setFrameReady();
-    }
-  }, [isFrameReady, setFrameReady]);
+  // useEffect(() => {
+  //   if (!isFrameReady) {
+  //     setFrameReady();
+  //   }
+  // }, [isFrameReady, setFrameReady]);
 
   return (
     <GardenProvider

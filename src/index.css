@@ -1,3 +1,6 @@
+/* Import Mini App specific styles */
+@import "./styles/miniApp.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

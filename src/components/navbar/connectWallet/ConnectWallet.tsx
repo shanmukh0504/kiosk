@@ -15,6 +15,7 @@ import {
 } from "@gardenfi/wallet-connectors";
 import { WalletRow } from "./WalletRow";
 import { MultiWalletConnection } from "./MultiWalletConnection";
+import { MiniAppWalletConnect } from "./MiniAppWalletConnect";
 import { handleEVMConnect, handleStarknetConnect } from "./handleConnect";
 import { modalNames, modalStore } from "../../../store/modalStore";
 import { ecosystems, evmToBTCid } from "./constants";
@@ -23,6 +24,7 @@ import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { ConnectingWalletStore } from "../../../store/connectWalletStore";
 import { BlockchainType } from "@gardenfi/orderbook";
 import { Connector as StarknetConnector } from "@starknet-react/core";
+import { useMiniApp } from "../../../layout/MiniAppContextProvider";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -37,6 +39,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   }>();
   const [selectedEcosystem, setSelectedEcosystem] =
     useState<BlockchainType | null>(null);
+
+  const { isInMiniApp } = useMiniApp();
 
   const { connectors, connectAsync, connector } = useEVMWallet();
   const {
@@ -62,8 +66,16 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       setSelectedEcosystem(BlockchainType.EVM);
     } else if (showOnlyBTCWallets) {
       setSelectedEcosystem(BlockchainType.Bitcoin);
+    } else if (isInMiniApp) {
+      // In Mini App environment, default to EVM for Coinbase Wallet
+      setSelectedEcosystem(BlockchainType.EVM);
     }
-  }, [showOnlyStarknetWallets, showOnlyEVMWallets, showOnlyBTCWallets]);
+  }, [
+    showOnlyStarknetWallets,
+    showOnlyEVMWallets,
+    showOnlyBTCWallets,
+    isInMiniApp,
+  ]);
 
   const allAvailableWallets = useMemo(() => {
     let allWallets;
@@ -188,6 +200,11 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       setConnectingWallet(null);
     }
   };
+
+  // If in Mini App environment, show the specialized Mini App component
+  if (isInMiniApp) {
+    return <MiniAppWalletConnect onClose={onClose} />;
+  }
 
   return (
     <div className="flex max-h-[600px] flex-col gap-[20px] p-3">

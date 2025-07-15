@@ -16,13 +16,13 @@ import {
   connectors as starknetConnectors,
   starknetProviders,
 } from "./layout/starknet/config.ts";
-import { MiniKitContextProvider } from "./layout/MiniAppContextProvider.tsx";
+import { MiniAppProvider } from "./layout/MiniAppContextProvider.tsx";
 
 const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
     <BrowserRouter>
-      <MiniKitContextProvider>
+      <MiniAppProvider>
         <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
             <BTCWalletProvider
@@ -40,7 +40,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             </BTCWalletProvider>
           </QueryClientProvider>
         </WagmiProvider>
-      </MiniKitContextProvider>
+      </MiniAppProvider>
     </BrowserRouter>
   </StrictMode>
 );

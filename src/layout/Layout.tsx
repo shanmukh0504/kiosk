@@ -8,13 +8,15 @@ import { Notification } from "../common/Notification";
 import { ViewPortListener } from "../common/ViewPortListener";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { network } from "../constants/constants";
+import { MiniAppProvider, useMiniApp } from "./MiniAppContextProvider";
 
 type LayoutProps = {
   children: ReactNode;
 };
 
-export const Layout: FC<LayoutProps> = ({ children }) => {
+const LayoutContent: FC<LayoutProps> = ({ children }) => {
   const { fetchAndSetAssetsAndChains } = assetInfoStore();
+  const { isInMiniApp } = useMiniApp();
   const theme = getCurrentTheme();
 
   useEffect(() => {
@@ -22,7 +24,9 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
   }, [fetchAndSetAssetsAndChains]);
 
   return (
-    <div className={`${theme} relative overflow-hidden bg-opacity-50`}>
+    <div
+      className={`${theme} relative overflow-hidden bg-opacity-50 ${isInMiniApp ? "mini-app-container" : ""}`}
+    >
       <div className="absolute inset-0 z-[-30] bg-primary"></div>
       <Orb />
       <ViewPortListener />
@@ -36,5 +40,13 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
         <Footer className={"mt-auto"} network={network} />
       </div>
     </div>
+  );
+};
+
+export const Layout: FC<LayoutProps> = ({ children }) => {
+  return (
+    <MiniAppProvider>
+      <LayoutContent>{children}</LayoutContent>
+    </MiniAppProvider>
   );
 };

@@ -19,7 +19,7 @@ import {
   corn,
 } from "wagmi/chains";
 
-import { injected, metaMask } from "wagmi/connectors";
+import { injected, metaMask, coinbaseWallet } from "wagmi/connectors";
 
 export const hyperliquidTestnet: Chain = {
   id: 998,
@@ -86,7 +86,14 @@ export const SupportedChains = [
 
 export const config = createConfig({
   chains: SupportedChains,
-  connectors: [injected(), metaMask()],
+  connectors: [
+    injected(),
+    metaMask(),
+    coinbaseWallet({
+      appName: "Garden Finance",
+      appLogoUrl: "https://garden-finance.imgix.net/token-images/seed.svg",
+    }),
+  ],
   transports: {
     [mainnet.id]: http(),
     [arbitrum.id]: http(),

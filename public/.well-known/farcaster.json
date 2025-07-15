@@ -8,11 +8,23 @@
     "version": "1",
     "name": "Garden Finance",
     "iconUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/favicon-32x32.png",
-    "homeUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io",
-    "imageUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/metadata.png",
-    "buttonTitle": "Bridge with Garden Finance",
     "splashImageUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/metadata.png",
+    "splashBackgroundColor": "#ffffff",
+    "homeUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io",
     "webhookUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/api/webhook",
-    "splashBackgroundColor": "#ffffff"
+    "subtitle": "Bridge with Garden Finance",
+    "description": "Bridge with Garden Finance",
+    "screenshotUrls": [
+      "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/metadata.png",
+      "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/metadata.png",
+      "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/metadata.png"
+    ],
+    "primaryCategory": "social",
+    "tags": ["garden finance", "mini app", "coinbase wallet"],
+    "heroImageUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/metadata.png",
+    "tagline": "Bridge with Garden Finance",
+    "ogTitle": "Garden Finance",
+    "ogDescription": "Bridge with Garden Finance",
+    "ogImageUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/metadata.png"
   }
 }

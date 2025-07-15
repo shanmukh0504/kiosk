@@ -12,7 +12,7 @@ import { Asset, isBitcoin, isEvmNativeToken } from "@gardenfi/orderbook";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { ErrorFormat } from "../../constants/errors";
 import NumberFlow from "@number-flow/react";
-import clsx from "clsx/lite";
+import clsx from "clsx";
 
 type SwapInputProps = {
   type: IOType;

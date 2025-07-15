@@ -6,6 +6,7 @@ import { Connector } from "wagmi";
 import { GetConnectorsReturnType } from "wagmi/actions";
 import { evmToBTCid, GardenSupportedWallets } from "./constants";
 import { Connector as StarknetConnector } from "@starknet-react/core";
+import { sdk } from "../../../utils/coinbaseMiniAppSDK";
 
 export type Wallet = {
   id: string;
@@ -128,7 +129,16 @@ export const getAvailableWallets = (
     });
   }
 
+  // Sort wallets with priority for Mini App environment
+  const isInMiniApp = sdk.isInMiniApp();
+
   return wallets.sort((a, b) => {
+    // In Mini App environment, prioritize Coinbase Wallet
+    if (isInMiniApp) {
+      if (a.id === "com.coinbase.wallet") return -1;
+      if (b.id === "com.coinbase.wallet") return 1;
+    }
+
     if (a.id === "injected") return 1;
     if (b.id === "injected") return -1;
     if (a.isAvailable && !b.isAvailable) return -1;
