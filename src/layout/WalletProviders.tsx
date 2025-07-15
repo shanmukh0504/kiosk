@@ -11,6 +11,7 @@ import {
   connectors as starknetConnectors,
 } from "./starknet/config";
 import { config } from "./wagmi/config";
+import { MiniAppProvider } from "./MiniAppContextProvider.tsx";
 
 interface WalletProviderProps {
   children: ReactNode;
@@ -18,6 +19,8 @@ interface WalletProviderProps {
 
 export const WalletProviders: FC<WalletProviderProps> = ({ children }) => {
   return (
+    <MiniAppProvider>
+
     <WagmiProvider config={config}>
       <BTCWalletProvider network={network as Network} store={localStorage}>
         <StarknetConfig
@@ -30,5 +33,7 @@ export const WalletProviders: FC<WalletProviderProps> = ({ children }) => {
         </StarknetConfig>
       </BTCWalletProvider>
     </WagmiProvider>
+    </MiniAppProvider>
+
   );
 };
