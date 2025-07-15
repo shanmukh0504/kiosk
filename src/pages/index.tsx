@@ -13,6 +13,7 @@ import { GardenProvider } from "@gardenfi/react-hooks";
 import { useWalletClient } from "wagmi";
 import { useAccount } from "@starknet-react/core";
 import { Environment as GardenEnvironment } from "@gardenfi/utils";
+import { useSolanaWallet } from "../hooks/useSolanaWallet";
 import { rpcStore } from "../store/rpcStore";
 import { useEffect } from "react";
 // import { useMiniKit } from "@coinbase/onchainkit/minikit";
@@ -20,6 +21,7 @@ import { useEffect } from "react";
 function App() {
   const { data: walletClient } = useWalletClient();
   const { account: starknetWallet } = useAccount();
+  const { solanaAnchorProvider } = useSolanaWallet();
   const { fetchAndSetRPCs } = rpcStore();
   // const { isFrameReady, setFrameReady } = useMiniKit();
 
@@ -32,6 +34,9 @@ function App() {
   //     setFrameReady();
   //   }
   // }, [isFrameReady, setFrameReady]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   return (
     <GardenProvider
@@ -46,11 +51,13 @@ function App() {
                 info: import.meta.env.VITE_INFO_URL,
                 evmRelay: import.meta.env.VITE_RELAYER_URL,
                 starknetRelay: import.meta.env.VITE_STARKNET_URL,
+                solanaRelay: import.meta.env.VITE_SOLANA_URL,
               }
             : (network as unknown as GardenEnvironment),
         wallets: {
           evm: walletClient,
           starknet: starknetWallet,
+          solana: solanaAnchorProvider ?? undefined,
         },
       }}
     >

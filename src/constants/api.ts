@@ -22,7 +22,7 @@ export const API = () => {
         new Url(REQUIRED_ENV_VARS.INFO_URL)
           .endpoint("assets")
           .endpoint(network),
-      blockNumbers: (network: "mainnet" | "testnet") =>
+      blockNumbers: (network: "mainnet" | "testnet" | "localnet") =>
         new Url(REQUIRED_ENV_VARS.INFO_URL)
           .endpoint("blocknumbers")
           .endpoint(network),

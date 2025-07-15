@@ -15,7 +15,7 @@ export enum SimplifiedOrderStatus {
   redeeming = "Redeeming ",
   redeemed = "Redeemed ",
   swapCompleted = "Swap completed",
-  Refunded = "Refunded",
+  Refunded = "Refund completed",
   AwaitingRefund = "Awaiting refund",
 }
 
@@ -28,7 +28,7 @@ export const STATUS_MAPPING: Record<string, SimplifiedOrderStatus> = {
 
 type Status = {
   title: string;
-  status: "completed" | "inProgress" | "pending";
+  status: "completed" | "inProgress" | "pending" | "cancel";
 };
 
 export type OrderProgress = {
@@ -46,7 +46,7 @@ export const useOrderStatus = () => {
 
   const confirmationsString = useMemo(() => {
     return order && order.status === OrderStatus.InitiateDetected
-      ? " (" + "0" + "/" + "1" + ")"
+      ? "0" + "/" + "1"
       : "";
   }, [order]);
 
@@ -94,7 +94,7 @@ export const useOrderStatus = () => {
             status: "completed",
           },
           2: {
-            title: SimplifiedOrderStatus.depositDetected + confirmationsString,
+            title: SimplifiedOrderStatus.depositDetected,
             status: "inProgress",
           },
           3: {
@@ -145,11 +145,8 @@ export const useOrderStatus = () => {
             status: "pending",
           },
         };
-      case OrderStatus.RedeemDetected:
-      case OrderStatus.Redeemed:
-      case OrderStatus.CounterPartyRedeemDetected:
-      case OrderStatus.CounterPartyRedeemed:
-      case OrderStatus.Completed:
+      case OrderStatus.CounterPartyRefundDetected:
+      case OrderStatus.CounterPartyRefunded:
         return {
           1: {
             title: SimplifiedOrderStatus.orderCreated,
@@ -160,18 +157,82 @@ export const useOrderStatus = () => {
             status: "completed",
           },
           3: {
-            title: SimplifiedOrderStatus.redeemed + outputAsset?.symbol,
-            status: "completed",
+            title: SimplifiedOrderStatus.AwaitingRefund,
+            status: "inProgress",
           },
           4: {
-            title: SimplifiedOrderStatus.swapCompleted,
+            title: SimplifiedOrderStatus.Refunded,
+            status: "pending",
+          },
+        };
+      case OrderStatus.RefundDetected:
+      case OrderStatus.Refunded:
+        return {
+          1: {
+            title: SimplifiedOrderStatus.orderCreated,
+            status: "completed",
+          },
+          2: {
+            title: SimplifiedOrderStatus.depositConfirmed,
+            status: "completed",
+          },
+          3: {
+            title: SimplifiedOrderStatus.redeeming + outputAsset?.symbol,
+            status: "cancel",
+          },
+          4: {
+            title: SimplifiedOrderStatus.Refunded,
             status: "completed",
           },
         };
+      case OrderStatus.RedeemDetected:
+      case OrderStatus.Redeemed:
+      case OrderStatus.CounterPartyRedeemDetected:
+      case OrderStatus.CounterPartyRedeemed:
+      case OrderStatus.Completed:
+        if (!order.source_swap.refund_tx_hash) {
+          return {
+            1: {
+              title: SimplifiedOrderStatus.orderCreated,
+              status: "completed",
+            },
+            2: {
+              title: SimplifiedOrderStatus.depositConfirmed,
+              status: "completed",
+            },
+            3: {
+              title: SimplifiedOrderStatus.redeemed + outputAsset?.symbol,
+              status: "completed",
+            },
+            4: {
+              title: SimplifiedOrderStatus.swapCompleted,
+              status: "completed",
+            },
+          };
+        } else {
+          return {
+            1: {
+              title: SimplifiedOrderStatus.orderCreated,
+              status: "completed",
+            },
+            2: {
+              title: SimplifiedOrderStatus.depositConfirmed,
+              status: "completed",
+            },
+            3: {
+              title: SimplifiedOrderStatus.redeeming + outputAsset?.symbol,
+              status: "cancel",
+            },
+            4: {
+              title: SimplifiedOrderStatus.Refunded,
+              status: "completed",
+            },
+          };
+        }
       default:
         return undefined;
     }
-  }, [confirmationsString, outputAsset?.symbol, order?.status]);
+  }, [order, outputAsset?.symbol]);
 
   useEffect(() => {
     if (!order) return;
@@ -216,5 +277,6 @@ export const useOrderStatus = () => {
   return {
     orderProgress,
     viewableStatus,
+    confirmationsString,
   };
 };

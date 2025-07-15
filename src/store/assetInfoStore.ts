@@ -6,12 +6,14 @@ import {
   EvmChain,
   isBitcoin,
   isEVM,
+  isSolana,
   isStarknet,
 } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
 import { Quote, Strategies } from "@gardenfi/core";
 import { generateTokenKey } from "../utils/generateTokenKey";
+import { PublicKey } from "@solana/web3.js";
 
 type AssetConfig = Asset & {
   disabled?: boolean;
@@ -20,7 +22,10 @@ import BigNumber from "bignumber.js";
 import { getBalanceMulticall } from "../utils/getBalanceMulticall";
 import { IInjectedBitcoinProvider } from "@gardenfi/wallet-connectors";
 import { getOrderPair } from "../utils/utils";
-import { getStarknetTokenBalance } from "../utils/getTokenBalance";
+import {
+  getSolanaTokenBalance,
+  getStarknetTokenBalance,
+} from "../utils/getTokenBalance";
 import { Hex } from "viem";
 
 export type Networks = {
@@ -82,6 +87,7 @@ type AssetInfoState = {
     provider: IInjectedBitcoinProvider
   ) => Promise<void>;
   fetchAndSetStarknetBalance: (address: string) => Promise<void>;
+  fetchAndSetSolanaBalance: (address: PublicKey) => Promise<void>;
   clearBalances: () => void;
 };
 
@@ -309,6 +315,22 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     );
     starknetBalance[orderPair] = new BigNumber(balance);
     set({ balances: { ...balances, ...starknetBalance } });
+  },
+  fetchAndSetSolanaBalance: async (address: PublicKey) => {
+    const { assets, balances } = get();
+    if (!assets) return;
+
+    const solanaAsset = Object.values(assets).find((asset) =>
+      isSolana(asset.chain)
+    );
+
+    if (!solanaAsset) return;
+    const solanaBalance: Record<string, BigNumber | undefined> = {};
+
+    const balance = await getSolanaTokenBalance(address, solanaAsset);
+    const orderPair = getOrderPair(solanaAsset.chain, solanaAsset.tokenAddress);
+    solanaBalance[orderPair] = new BigNumber(balance);
+    set({ balances: { ...balances, ...solanaBalance } });
   },
   clearBalances: () =>
     set({

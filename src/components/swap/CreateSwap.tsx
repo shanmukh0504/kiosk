@@ -8,16 +8,17 @@ import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
 import {
   capitalizeChain,
-  formatAmount,
   getAssetFromChainAndSymbol,
   getQueryParams,
 } from "../../utils/utils";
 import { QUERY_PARAMS } from "../../constants/constants";
+import { ecosystems } from "../navbar/connectWallet/constants";
 import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { rpcStore } from "../../store/rpcStore";
+import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 
 export const CreateSwap = () => {
   const [loadingDisabled, setLoadingDisabled] = useState(false);
@@ -27,12 +28,14 @@ export const CreateSwap = () => {
   const { account: btcAddress, provider } = useBitcoinWallet();
   const { address } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
+  const { solanaAnchorProvider } = useSolanaWallet();
   const {
     assets,
     fetchAndSetBitcoinBalance,
     fetchAndSetEvmBalances,
     fetchAndSetFiatValues,
     fetchAndSetStarknetBalance,
+    fetchAndSetSolanaBalance,
     clearBalances,
   } = assetInfoStore();
 
@@ -61,9 +64,10 @@ export const CreateSwap = () => {
   } = useSwap();
   const { setOpenModal } = modalStore();
 
-  const decimals = inputAsset && Math.max(inputAsset.decimals, 8);
-
   const buttonLabel = useMemo(() => {
+    if (needsWalletConnection)
+      return `Connect ${capitalizeChain(needsWalletConnection)} Wallet`;
+
     return error.liquidityError
       ? "Insufficient liquidity"
       : error.insufficientBalanceError
@@ -117,38 +121,18 @@ export const CreateSwap = () => {
   }, [inputAsset, outputAsset]);
 
   const handleConnectWallet = () => {
-    if (needsWalletConnection === "starknet") {
-      setOpenModal(modalNames.connectWallet, {
-        Starknet: true,
-        Bitcoin: false,
-        EVM: false,
-      });
-    }
-    if (needsWalletConnection === "evm") {
-      setOpenModal(modalNames.connectWallet, {
-        EVM: true,
-        Starknet: false,
-        Bitcoin: false,
-      });
-    }
+    if (!needsWalletConnection) return;
+
+    const modalState = Object.values(ecosystems).reduce(
+      (acc, { name }) => {
+        acc[name] = name.toLowerCase() === needsWalletConnection;
+        return acc;
+      },
+      {} as Record<string, boolean>
+    );
+
+    setOpenModal(modalNames.connectWallet, modalState);
   };
-
-  useEffect(() => {
-    let timeoutId: ReturnType<typeof setTimeout>;
-
-    if (
-      (!address && !btcAddress && !starknetAddress) ||
-      (!address && !btcAddress) ||
-      (!address && !starknetAddress) ||
-      (!btcAddress && !starknetAddress)
-    ) {
-      timeoutId = setTimeout(() => {
-        clearBalances();
-      }, 2000);
-    }
-
-    return () => clearTimeout(timeoutId);
-  }, [address, btcAddress, starknetAddress, clearBalances]);
 
   useEffect(() => {
     if (!assets) return;
@@ -163,6 +147,9 @@ export const CreateSwap = () => {
       }
       if (starknetAddress) {
         await fetchAndSetStarknetBalance(starknetAddress);
+      }
+      if (solanaAnchorProvider) {
+        await fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey);
       }
     };
 
@@ -180,8 +167,10 @@ export const CreateSwap = () => {
     fetchAndSetEvmBalances,
     fetchAndSetBitcoinBalance,
     starknetAddress,
+    solanaAnchorProvider,
     fetchAndSetFiatValues,
     fetchAndSetStarknetBalance,
+    fetchAndSetSolanaBalance,
     clearBalances,
     workingRPCs,
   ]);
@@ -281,9 +270,7 @@ export const CreateSwap = () => {
             loading={loading.input}
             price={tokenPrices.input}
             error={error.inputError}
-            balance={
-              inputTokenBalance && formatAmount(inputTokenBalance, 0, decimals)
-            }
+            balance={inputTokenBalance}
           />
           <div
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
