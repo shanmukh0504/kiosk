@@ -182,6 +182,7 @@ export const CreateSwap = () => {
       inputAssetSymbol = "",
       outputChain = "",
       outputAssetSymbol = "",
+      inputAmount: urlInputAmount = "",
     } = getQueryParams(searchParams);
 
     const fromAsset = getAssetFromChainAndSymbol(
@@ -205,8 +206,22 @@ export const CreateSwap = () => {
         setAsset(IOType.input, BTC);
       }
     }
+
+    if (urlInputAmount && urlInputAmount !== inputAmount) {
+      handleInputAmountChange(urlInputAmount);
+    }
+
     setAddParams(true);
-  }, [addParams, assets, inputAsset, outputAsset, searchParams, setAsset]);
+  }, [
+    addParams,
+    assets,
+    inputAsset,
+    outputAsset,
+    searchParams,
+    setAsset,
+    inputAmount,
+    handleInputAmountChange,
+  ]);
 
   useEffect(() => {
     if (!addParams || (!inputAsset && !outputAsset)) return;
@@ -216,6 +231,7 @@ export const CreateSwap = () => {
       prev.delete(QUERY_PARAMS.inputAsset);
       prev.delete(QUERY_PARAMS.outputChain);
       prev.delete(QUERY_PARAMS.outputAsset);
+      prev.delete(QUERY_PARAMS.inputAmount);
 
       if (inputAsset) {
         prev.set(QUERY_PARAMS.inputChain, inputAsset.chain);
@@ -225,10 +241,13 @@ export const CreateSwap = () => {
         prev.set(QUERY_PARAMS.outputChain, outputAsset.chain);
         prev.set(QUERY_PARAMS.outputAsset, outputAsset.symbol);
       }
+      if (inputAmount) {
+        prev.set(QUERY_PARAMS.inputAmount, inputAmount);
+      }
 
       return prev;
     });
-  }, [addParams, inputAsset, outputAsset, setSearchParams]);
+  }, [addParams, inputAsset, outputAsset, inputAmount, setSearchParams]);
 
   // Disable button when loading
   useEffect(() => {
