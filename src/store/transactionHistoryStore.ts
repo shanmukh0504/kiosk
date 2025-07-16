@@ -42,7 +42,7 @@ const transactionHistoryStore = create<TransactionHistoryStoreState>(
         const txns = await orderBook.getMatchedOrders(address, "fulfilled", {
           per_page: get().perPage,
         });
-        if (txns.error) {
+        if (!txns.ok) {
           console.error(txns.error);
           continue;
         }
