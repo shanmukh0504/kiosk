@@ -106,28 +106,30 @@ export const AvailableChainsSidebar = ({
             >
               <div className="flex w-full flex-col pb-1 pt-2">
                 {filteredChains.length > 0 ? (
-                  filteredChains.map((c) => (
-                    <div
-                      key={c.chainId}
-                      className="flex w-full cursor-pointer items-center justify-between hover:bg-off-white"
-                      onClick={() => onClick(c)}
-                    >
-                      <div className="flex w-full items-center gap-4 px-[14px] py-2">
-                        <img
-                          src={c.networkLogo}
-                          alt={c.name}
-                          className="h-5 w-5 rounded-full"
-                        />
-                        <Typography
-                          size={"h5"}
-                          breakpoints={{ sm: "h4" }}
-                          weight="medium"
-                        >
-                          {c.name}
-                        </Typography>
+                  filteredChains.map((c) => {
+                    return (
+                      <div
+                        key={c.chainId}
+                        className="flex w-full cursor-pointer items-center justify-between hover:bg-off-white"
+                        onClick={() => onClick(c)}
+                      >
+                        <div className="flex w-full items-center gap-4 px-[14px] py-2">
+                          <img
+                            src={c.networkLogo}
+                            alt={c.name}
+                            className={`h-5 w-5 rounded-full`}
+                          />
+                          <Typography
+                            size={"h5"}
+                            breakpoints={{ sm: "h4" }}
+                            weight="medium"
+                          >
+                            {c.name}
+                          </Typography>
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 ) : (
                   <div className="flex min-h-[334px] w-full items-center justify-center">
                     <Typography

@@ -87,7 +87,8 @@ export const SwapSavingsAndAddresses = ({
           </Typography>
           <div className="flex gap-5 py-1">
             <Typography size="h4" weight="medium">
-              -{formatAmount(priceImpact, 0, 2)}%
+              {priceImpact > 0 && "-"}
+              {formatAmount(priceImpact, 0, 2)}%
             </Typography>
           </div>
         </div>

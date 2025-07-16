@@ -1,11 +1,19 @@
 # Changelog
 
+## [1.0.6]
+
+### Fixed
+
+- Disable swap button and update its label when wallet doesn't support the chain
+- Fixed button label when wallet is not connected.
+- Fixed Price impact sign based on it's values
+
 ## [1.0.5]
 
 ### Fixed
 
 - Fixed the max spendable balance for Bitcoin and Solana.
-- update Argent wallets's name to Ready wallet
+- update Argent wallets's name to Ready wallet.
 
 ## [1.0.4]
 

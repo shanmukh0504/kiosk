@@ -45,7 +45,7 @@ export const useNativeMaxBalances = () => {
             : BitcoinNetwork.Testnet
         );
         try {
-          const balanceInSats = Math.floor(Number(balance) * 100000000);
+          const balanceInSats = Number(balance);
           const utxos = await provider.getUTXOs(btcAddress, balanceInSats);
           const feeRate = await provider.getFeeRates();
 
@@ -65,12 +65,12 @@ export const useNativeMaxBalances = () => {
 
           maxSpendableNativeBalances[
             getOrderPair(inputAsset.chain, inputAsset.tokenAddress)
-          ] = spendable.val / 100000000;
+          ] = spendable.val;
         } catch (error) {
           console.error("Error calculating initial spendable balance:", error);
           maxSpendableNativeBalances[
             getOrderPair(inputAsset.chain, inputAsset.tokenAddress)
-          ] = Number(balance);
+          ] = Math.max(0, Number(balance));
         }
       };
 
@@ -83,7 +83,7 @@ export const useNativeMaxBalances = () => {
       const gas = 0.00180608;
       maxSpendableNativeBalances[
         getOrderPair(inputAsset.chain, inputAsset.tokenAddress)
-      ] = Number((Number(balance) - gas).toFixed(8));
+      ] = Math.max(0, Number((Number(balance) - gas).toFixed(8)));
     }
   }, [inputAsset, balance, btcAddress, maxSpendableNativeBalances]);
 
