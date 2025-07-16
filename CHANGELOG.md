@@ -6,6 +6,7 @@
 
 - Disable swap button and update its label when phantom wallet doesn't support the chain
 - Fixed Price impact sign based on it's values.
+- Remove catalogfi package dependencies.
 
 ## [1.0.5]
 
