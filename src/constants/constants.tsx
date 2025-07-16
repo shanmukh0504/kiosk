@@ -102,6 +102,7 @@ export const QUERY_PARAMS = {
   inputAsset: "input-asset",
   outputChain: "output-chain",
   outputAsset: "output-asset",
+  inputAmount: "value",
 };
 
 export const isStakeDisable = network === Network.TESTNET;

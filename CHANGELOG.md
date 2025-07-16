@@ -20,6 +20,7 @@
 ### Added
 
 - Added dynamic price impact in the fee tooltip.
+- Added inputAmount in the url to preload a pair of assets and rate.
 
 ### Fixed
 

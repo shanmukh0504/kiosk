@@ -36,6 +36,7 @@ export const getQueryParams = (urlParams: URLSearchParams) => {
     inputAssetSymbol: urlParams.get(QUERY_PARAMS.inputAsset),
     outputChain: urlParams.get(QUERY_PARAMS.outputChain),
     outputAssetSymbol: urlParams.get(QUERY_PARAMS.outputAsset),
+    inputAmount: urlParams.get(QUERY_PARAMS.inputAmount),
   };
 };
 
