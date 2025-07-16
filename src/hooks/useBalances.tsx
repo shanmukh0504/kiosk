@@ -80,7 +80,7 @@ export const useNativeMaxBalances = () => {
     // SOL gas
     if (isSolanaNativeToken(inputAsset.chain, inputAsset.tokenAddress)) {
       //
-      const gas = 0.00180608;
+      const gas = 0.00380608;
       maxSpendableNativeBalances[
         getOrderPair(inputAsset.chain, inputAsset.tokenAddress)
       ] = Math.max(0, Number((Number(balance) - gas).toFixed(8)));
