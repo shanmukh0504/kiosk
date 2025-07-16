@@ -6,7 +6,8 @@
 
 - Disable swap button and update its label when wallet doesn't support the chain
 - Fixed button label when wallet is not connected.
-- Fixed Price impact sign based on it's values
+- Fixed Price impact sign based on it's values.
+- Updated the conditions for unsupported chains by wallet in button variants.
 
 ## [1.0.5]
 
@@ -20,6 +21,7 @@
 ### Added
 
 - Added dynamic price impact in the fee tooltip.
+- Added inputAmount in the url to preload a pair of assets and rate.
 
 ### Fixed
 

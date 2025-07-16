@@ -1,4 +1,4 @@
-import { BitcoinProvider, BitcoinNetwork } from "@catalogfi/wallets";
+import { BitcoinProvider, BitcoinNetwork } from "@gardenfi/core";
 import { BTC } from "../store/swapStore";
 import axios from "axios";
 import { API } from "../constants/api";

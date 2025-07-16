@@ -261,7 +261,7 @@ export const useOrderStatus = () => {
           order.create_order.create_id,
           true
         );
-        if (orderFromOrderbook.error) return;
+        if (!orderFromOrderbook.ok) return;
         const o = orderFromOrderbook.val;
         const status = ParseOrderStatus(
           o,

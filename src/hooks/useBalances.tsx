@@ -8,7 +8,7 @@ import {
 } from "@gardenfi/orderbook";
 import { getOrderPair } from "../utils/utils";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { BitcoinNetwork, BitcoinProvider } from "@catalogfi/wallets";
+import { BitcoinNetwork, BitcoinProvider } from "@gardenfi/core";
 import { network } from "../constants/constants";
 import { getSpendableBalance } from "../utils/getmaxBtc";
 

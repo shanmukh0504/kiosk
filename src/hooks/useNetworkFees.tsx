@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BitcoinNetwork } from "@catalogfi/wallets";
+import { BitcoinNetwork } from "@gardenfi/core";
 import { calculateNetworkFees } from "../utils/getNetworkFees";
 import { formatAmount } from "../utils/utils";
 import { Asset } from "@gardenfi/orderbook";
