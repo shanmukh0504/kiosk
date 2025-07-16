@@ -4,10 +4,8 @@
 
 ### Fixed
 
-- Disable swap button and update its label when wallet doesn't support the chain
-- Fixed button label when wallet is not connected.
+- Disable swap button and update its label when phantom wallet doesn't support the chain
 - Fixed Price impact sign based on it's values.
-- Updated the conditions for unsupported chains by wallet in button variants.
 
 ## [1.0.5]
 
