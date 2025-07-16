@@ -72,9 +72,12 @@ export const CreateSwap = () => {
   const { connector } = useEVMWallet();
 
   const isChainSupported = useMemo(() => {
-    if (!connector || !inputAsset) return false;
+    if (!connector) return false;
     if (!WALLET_SUPPORTED_CHAINS[connector.id]) return true;
-    return WALLET_SUPPORTED_CHAINS[connector.id].includes(inputAsset.chain);
+    return (
+      inputAsset &&
+      WALLET_SUPPORTED_CHAINS[connector.id].includes(inputAsset.chain)
+    );
   }, [connector, inputAsset]);
 
   const buttonLabel = useMemo(() => {
