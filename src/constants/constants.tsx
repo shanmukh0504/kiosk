@@ -1,5 +1,12 @@
 import { hyperliquid } from "@gardenfi/core";
-import { Asset, Chain, isBitcoin, isEVM } from "@gardenfi/orderbook";
+import {
+  Asset,
+  Chain,
+  isBitcoin,
+  isEVM,
+  isSolana,
+  isStarknet,
+} from "@gardenfi/orderbook";
 import { BitcoinNetwork } from "@gardenfi/react-hooks";
 import { Network } from "@gardenfi/utils";
 import { citreaTestnet } from "viem/chains";
@@ -38,12 +45,17 @@ export const BREAKPOINTS = {
 };
 
 export const getTimeEstimates = (inputAsset: Asset) => {
-  if (isEVM(inputAsset.chain)) {
+  if (
+    isEVM(inputAsset.chain) ||
+    isSolana(inputAsset.chain) ||
+    isStarknet(inputAsset.chain)
+  ) {
     return "~30s";
   }
   if (isBitcoin(inputAsset.chain)) {
     return "~10m";
   }
+
   return "";
 };
 
@@ -102,6 +114,7 @@ export const QUERY_PARAMS = {
   inputAsset: "input-asset",
   outputChain: "output-chain",
   outputAsset: "output-asset",
+  inputAmount: "value",
 };
 
 export const isStakeDisable = network === Network.TESTNET;
@@ -109,9 +122,7 @@ export const routes = Object.entries(INTERNAL_ROUTES).filter(
   ([key]) => key !== "stake" || !isStakeDisable
 );
 
-export const PHANTOM_SUPPORTED_CHAINS: Chain[] = [
-  "solana",
-  "ethereum",
-  "base",
-  "bitcoin",
-];
+//if the wallet is not listed here, then it supports all chains
+export const WALLET_SUPPORTED_CHAINS: Record<string, Chain[]> = {
+  "app.phantom": ["solana", "ethereum", "base", "bitcoin"],
+};

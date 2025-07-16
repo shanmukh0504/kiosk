@@ -15,11 +15,7 @@ import {
 } from "@gardenfi/orderbook";
 import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { BTC, swapStore } from "../../store/swapStore";
-import {
-  IOType,
-  network,
-  PHANTOM_SUPPORTED_CHAINS,
-} from "../../constants/constants";
+import { IOType, network } from "../../constants/constants";
 import { constructOrderPair } from "@gardenfi/core";
 import { AssetChainLogos } from "../../common/AssetChainLogos";
 import { modalStore } from "../../store/modalStore";
@@ -58,7 +54,6 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const { starknetAccount } = useStarknetWallet();
   const { solanaAddress } = useSolanaWallet();
   const { isMobile } = viewPortStore();
-  const { connector } = useEVMWallet();
 
   const {
     isAssetSelectorOpen,
@@ -72,8 +67,6 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const { modalName } = modalStore();
   const { setAsset, inputAsset, outputAsset, clearSwapInputState } =
     swapStore();
-
-  const phantomEvmConnected = !!(connector && connector.id === "app.phantom");
 
   const orderedChains = useMemo(() => {
     // TODO: remove hyperevm once we have a proper types (hyperliquid is not in the types)
@@ -89,8 +82,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
 
     if (!chains) return [];
 
-    // Sort chains based on the predefined order
-    const sortedChains = Object.values(chains).sort((a, b) => {
+    const sortedChainsByOrder = Object.values(chains).sort((a, b) => {
       const indexA = order.findIndex((name) =>
         a.name.toLowerCase().includes(name)
       );
@@ -101,25 +93,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
       if (indexB === -1) return -1;
       return indexA - indexB;
     });
-
-    if (phantomEvmConnected) {
-      return sortedChains.sort((a, b) => {
-        const isChainASupported = PHANTOM_SUPPORTED_CHAINS.includes(
-          a.identifier
-        );
-        const isChainBSupported = PHANTOM_SUPPORTED_CHAINS.includes(
-          b.identifier
-        );
-
-        if (isChainASupported !== isChainBSupported) {
-          return isChainASupported ? -1 : 1;
-        }
-        return 0;
-      });
-    }
-
-    return sortedChains;
-  }, [chains, phantomEvmConnected]);
+    return sortedChainsByOrder;
+  }, [chains]);
 
   const comparisonToken = useMemo(
     () =>
@@ -131,7 +106,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     if (!results && orderedChains.length === 0) return [];
     return (
       results &&
-      [...results]
+      results
         .sort((a, b) => {
           const chainA = chains?.[a.chain];
           const chainB = chains?.[b.chain];
@@ -183,12 +158,11 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     !!address || !!btcAddress || !!starknetAccount || !!solanaAddress;
   const fiatBasedSortedResults = useMemo(() => {
     if (!isAnyWalletConnected) return sortedResults;
-
     return (
       sortedResults &&
       [...sortedResults].sort((a, b) => {
-        const aFiat = Number(a.fiatBalance) || 0;
-        const bFiat = Number(b.fiatBalance) || 0;
+        const aFiat = Number(a.fiatBalance);
+        const bFiat = Number(b.fiatBalance);
         return bFiat - aFiat;
       })
     );
@@ -252,15 +226,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const hideSidebar = () => setShowAllChains(false);
 
   const handleChainClick = (selectedChain: ChainData) => {
-    const isChainSupportedByPhantom = PHANTOM_SUPPORTED_CHAINS.includes(
-      selectedChain.identifier
-    );
-    if (phantomEvmConnected && !isChainSupportedByPhantom) {
-      setSidebarSelectedChain(selectedChain);
-      setShowAllChains(false);
-      return;
-    }
     setChain(selectedChain);
+    setSidebarSelectedChain(selectedChain);
     setShowAllChains(false);
   };
 
@@ -307,11 +274,18 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     setVisibleChainsCount(isMobile ? 5 : 7);
   }, [isMobile]);
 
+  useEffect(() => {
+    if (!modalName.assetList) {
+      setShowAllChains(false);
+      CloseAssetSelector();
+    }
+  }, [CloseAssetSelector, modalName.assetList]);
+
   return (
     <>
       <AvailableChainsSidebar
         show={showAllChains}
-        chains={orderedChains}
+        chains={[...orderedChains]}
         hide={hideSidebar}
         onClick={handleChainClick}
       />
@@ -342,33 +316,24 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           <div className="flex w-full flex-wrap gap-3">
             <div className={`flex w-full ${isMobile ? "gap-2" : "gap-3"}`}>
               {visibleChains.map((c, i) => {
-                const isChainSupportedByPhantom =
-                  PHANTOM_SUPPORTED_CHAINS.includes(c.identifier);
-                const isDisabled =
-                  phantomEvmConnected && !isChainSupportedByPhantom;
-
                 return (
                   <button
                     key={i}
                     className={`relative flex h-12 flex-1 items-center justify-center gap-2 overflow-visible rounded-xl outline-none duration-300 ease-in-out ${
                       !chain || c.chainId !== chain.chainId
-                        ? isDisabled
-                          ? "!cursor-not-allowed bg-white/20"
-                          : "bg-white/50"
+                        ? "bg-white/50"
                         : "bg-white"
                     }`}
                     onMouseEnter={() => setHoveredChain(c.name)}
                     onMouseLeave={() => setHoveredChain("")}
-                    onClick={() => {
-                      if (!isDisabled && c === chain) setChain(undefined);
-                      else setChain(c);
-                    }}
-                    disabled={isDisabled}
+                    onClick={() =>
+                      c === chain ? setChain(undefined) : setChain(c)
+                    }
                   >
                     <img
                       src={c.networkLogo}
                       alt={c.name}
-                      className={`h-full max-h-5 w-full max-w-5 rounded-full ${isDisabled ? "opacity-50" : ""}`}
+                      className={`h-full max-h-5 w-full max-w-5 rounded-full`}
                     />
                     {hoveredChain === c.name && (
                       <ChainsTooltip
@@ -420,30 +385,21 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
               {fiatBasedSortedResults && fiatBasedSortedResults.length > 0 ? (
                 fiatBasedSortedResults?.map(
                   ({ asset, network, formattedBalance }) => {
-                    const isChainSupportedByPhantom =
-                      PHANTOM_SUPPORTED_CHAINS.includes(asset.chain);
-                    const isDisabled =
-                      phantomEvmConnected && !isChainSupportedByPhantom;
-
                     return (
                       <div
                         key={`${asset.chain}-${asset.atomicSwapAddress}`}
                         className="flex w-full cursor-pointer items-center justify-between gap-2 px-4 py-1.5 hover:bg-off-white"
-                        onClick={() => {
-                          if (!isDisabled) handleClick(asset);
-                        }}
+                        onClick={() => handleClick(asset)}
                       >
                         <div className="flex w-full items-center gap-2">
-                          <div
-                            className={`w-10 ${isDisabled ? "opacity-50" : ""}`}
-                          >
+                          <div className={`w-10`}>
                             <AssetChainLogos
                               tokenLogo={asset.logo}
                               chainLogo={network?.networkLogo}
                             />
                           </div>
                           <Typography
-                            className={`w-2/3 ${isDisabled ? "opacity-50" : ""}`}
+                            className={`w-2/3`}
                             size={"h5"}
                             breakpoints={{ sm: "h4" }}
                             weight="medium"
@@ -459,7 +415,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                                 sm: "h4",
                               }}
                               weight="medium"
-                              className={`!text-mid-grey ${isDisabled ? "opacity-50" : ""}`}
+                              className={`!text-mid-grey`}
                             >
                               {formatAmount(
                                 Number(formattedBalance),
@@ -474,7 +430,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                               sm: "h4",
                             }}
                             weight="medium"
-                            className={`!text-mid-grey ${isDisabled ? "opacity-50" : ""}`}
+                            className={`!text-mid-grey`}
                           >
                             {asset.symbol}
                           </Typography>

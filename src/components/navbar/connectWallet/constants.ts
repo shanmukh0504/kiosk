@@ -150,7 +150,7 @@ export const GardenSupportedWallets: Record<
   ),
   argentX: createWallet(
     "argentX",
-    "Argent X",
+    "Ready Wallet (formerly Argent)",
     "wallet/argent.svg",
     "https://www.argent.xyz/argent-x",
     { Starknet: true }

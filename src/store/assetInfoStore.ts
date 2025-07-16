@@ -81,7 +81,7 @@ type AssetInfoState = {
   fetchAndSetEvmBalances: (
     address: string,
     workingRpcs: Record<number, string[]>,
-    fetchOnlySeed?: boolean
+    fetchOnlyAsset?: Asset
   ) => Promise<void>;
   fetchAndSetBitcoinBalance: (
     provider: IInjectedBitcoinProvider
@@ -187,7 +187,8 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       const quote = new Quote(API().quote.quote.toString());
       set({ strategies: { ...get().strategies, isLoading: true } });
       const res = await quote.getStrategies();
-      if (res.error) return;
+      if (!res.ok) return;
+
       set({ strategies: { val: res.val, isLoading: false, error: null } });
     } catch {
       set({
@@ -219,27 +220,29 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       /*empty*/
     }
   },
+
   fetchAndSetEvmBalances: async (
     address: string,
     workingRpcs: Record<number, string[]>,
-    fetchOnlySeed: boolean = false
+    fetchOnlyAsset?: Asset
   ) => {
     const { assets } = get();
     if (!assets) return;
 
-    const tokensByChain = Object.values(assets).reduce(
-      (acc, asset) => {
-        if (
-          !isEVM(asset.chain) ||
-          (fetchOnlySeed && !asset.symbol.includes("SEED"))
-        )
+    let tokensByChain: Partial<Record<Chain, string[]>> = {};
+    if (fetchOnlyAsset)
+      tokensByChain[fetchOnlyAsset.chain] = [fetchOnlyAsset.tokenAddress];
+    else {
+      tokensByChain = Object.values(assets).reduce(
+        (acc, asset) => {
+          if (!isEVM(asset.chain)) return acc;
+          if (!acc[asset.chain]) acc[asset.chain] = [];
+          acc[asset.chain].push(asset.tokenAddress);
           return acc;
-        if (!acc[asset.chain]) acc[asset.chain] = [];
-        acc[asset.chain].push(asset.tokenAddress);
-        return acc;
-      },
-      {} as Record<Chain, string[]>
-    );
+        },
+        {} as Record<Chain, string[]>
+      );
+    }
 
     try {
       const balanceResults = await Promise.allSettled(
@@ -271,6 +274,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       /*empty*/
     }
   },
+
   fetchAndSetBitcoinBalance: async (provider: IInjectedBitcoinProvider) => {
     const { assets, balances } = get();
     if (!assets || !provider) return;
@@ -296,6 +300,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       /*empty*/
     }
   },
+
   fetchAndSetStarknetBalance: async (address: string) => {
     const { assets, balances } = get();
     if (!assets) return;
@@ -316,6 +321,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     starknetBalance[orderPair] = new BigNumber(balance);
     set({ balances: { ...balances, ...starknetBalance } });
   },
+
   fetchAndSetSolanaBalance: async (address: PublicKey) => {
     const { assets, balances } = get();
     if (!assets) return;
@@ -332,6 +338,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     solanaBalance[orderPair] = new BigNumber(balance);
     set({ balances: { ...balances, ...solanaBalance } });
   },
+
   clearBalances: () =>
     set({
       balances: {},

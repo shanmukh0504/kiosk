@@ -1,11 +1,29 @@
 # Changelog
 
+## [1.0.6]
+
+### Fixed
+
+- Disable swap button and update its label when phantom wallet doesn't support the chain
+- Fixed Price impact sign based on it's values.
+- Remove catalogfi package dependencies.
+
+## [1.0.5]
+
+### Fixed
+
+- Fixed the max spendable balance for Bitcoin and Solana.
+- update Argent wallets's name to Ready wallet.
+
 ## [1.0.4]
 
 ### Added
+
 - Added dynamic price impact in the fee tooltip.
+- Added inputAmount in the url to preload a pair of assets and rate.
 
 ### Fixed
+
 - Fixed Network Fee for Bitcoin.
 - Fixed Total cost in Fee tooltip.
 - Fixed the Price impact logic in fee tooltip.

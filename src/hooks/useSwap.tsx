@@ -23,9 +23,7 @@ import pendingOrdersStore from "../store/pendingOrdersStore";
 import BigNumber from "bignumber.js";
 import { useSolanaWallet } from "./useSolanaWallet";
 import { formatAmount, getOrderPair } from "../utils/utils";
-// import { useWalletClient } from "wagmi";
-// import { Account } from "viem";
-// import { approve, checkAllowance } from "../utils/approve";
+import { useNativeMaxBalances } from "./useBalances";
 
 export const useSwap = () => {
   const {
@@ -69,15 +67,18 @@ export const useSwap = () => {
   const { address: evmAddress } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { setOpenModal } = modalStore();
-
-  const inputBalance = useMemo(
-    () =>
-      inputAsset &&
-      balances &&
-      balances[getOrderPair(inputAsset.chain, inputAsset.tokenAddress)],
-    [inputAsset, balances]
-  );
   const { solanaAddress } = useSolanaWallet();
+  const maxSpendableNativeBalances = useNativeMaxBalances();
+
+  const inputBalance = useMemo(() => {
+    if (!inputAsset || !balances) return;
+    if (isBitcoin(inputAsset.chain) || isSolana(inputAsset.chain))
+      return maxSpendableNativeBalances[
+        getOrderPair(inputAsset.chain, inputAsset.tokenAddress)
+      ];
+
+    return balances[getOrderPair(inputAsset.chain, inputAsset.tokenAddress)];
+  }, [inputAsset, balances, maxSpendableNativeBalances]);
 
   const inputTokenBalance = useMemo(
     () =>
@@ -202,7 +203,7 @@ export const useSwap = () => {
               },
             },
           });
-          if (!quote || quote.error) {
+          if (!quote || !quote.ok) {
             if (quote?.error?.includes("AbortError")) {
               setError({ liquidityError: Errors.none });
               setIsFetchingQuote({ input: false, output: false });
@@ -475,7 +476,7 @@ export const useSwap = () => {
         receiveAmount: outputAmountInDecimals,
         additionalData,
       });
-      if (res.error) {
+      if (!res.ok) {
         if (
           res.error.includes(
             "Cannot read properties of undefined (reading 'toLowerCase')"
