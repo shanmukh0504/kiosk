@@ -46,14 +46,14 @@ export const useNativeMaxBalances = () => {
         );
         try {
           const balanceInSats = Number(balance);
-          const utxos = await provider.getUTXOs(btcAddress, balanceInSats);
           const feeRate = await provider.getFeeRates();
+          const utxos = await provider.getUTXOs(btcAddress, balanceInSats);
 
           const spendable = await getSpendableBalance(
             btcAddress,
             balanceInSats,
             utxos.length,
-            feeRate.minimumFee
+            feeRate.fastestFee
           );
           if (!spendable.ok) {
             console.error(
