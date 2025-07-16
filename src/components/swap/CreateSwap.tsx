@@ -72,7 +72,7 @@ export const CreateSwap = () => {
   const { connector } = useEVMWallet();
 
   const isChainSupported = useMemo(() => {
-    if (!connector || !inputAsset) return false;
+    if (!connector || !inputAsset) return true;
     if (!WALLET_SUPPORTED_CHAINS[connector.id]) return true;
     return WALLET_SUPPORTED_CHAINS[connector.id].includes(inputAsset.chain);
   }, [connector, inputAsset]);
@@ -83,7 +83,7 @@ export const CreateSwap = () => {
 
     return error.liquidityError
       ? "Insufficient liquidity"
-      : connector && !isChainSupported
+      : !isChainSupported
         ? "Wallet does not support the chain"
         : error.insufficientBalanceError
           ? "Insufficient balance"
