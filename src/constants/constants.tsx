@@ -16,6 +16,7 @@ export const INTERNAL_ROUTES: Record<string, { name: string; path: string[] }> =
   {
     swap: { name: "Swap", path: ["/", "/swap"] },
     stake: { name: "Stake", path: ["/stake"] },
+    faucet: { name: "Faucet", path: ["https://testnetbtc.com"] },
     // quests: { name: "Quests", path: "/quests" },
   } as const;
 
@@ -118,9 +119,12 @@ export const QUERY_PARAMS = {
 };
 
 export const isStakeDisable = network === Network.TESTNET;
-export const routes = Object.entries(INTERNAL_ROUTES).filter(
-  ([key]) => key !== "stake" || !isStakeDisable
-);
+export const isFaucetEnabled = network === Network.TESTNET;
+export const routes = Object.entries(INTERNAL_ROUTES).filter(([key]) => {
+  if (key === "stake" && isStakeDisable) return false;
+  if (key === "faucet" && !isFaucetEnabled) return false;
+  return true;
+});
 
 //if the wallet is not listed here, then it supports all chains
 export const WALLET_SUPPORTED_CHAINS: Record<string, Chain[]> = {
