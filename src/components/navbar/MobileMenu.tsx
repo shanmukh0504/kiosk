@@ -34,13 +34,10 @@ export const MobileMenu = () => {
               const paths = route.path;
               const isActive = paths.some(isCurrentRoute);
               const primaryPath = paths[0];
-              const isExternalLink = primaryPath.startsWith('http');
               return (
                 <a
                   key={primaryPath}
                   href={primaryPath}
-                  target={isExternalLink ? "_blank" : undefined}
-                  rel={isExternalLink ? "noopener noreferrer" : undefined}
                   className="px-6 py-[14px] hover:bg-white"
                 >
                   <Typography size="h2" weight={isActive ? "bold" : "medium"}>
