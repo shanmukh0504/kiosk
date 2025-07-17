@@ -57,7 +57,7 @@ export default defineConfig({
       buildEnd() {
         generateBuildIdFile();
       },
-      configureServer(server) {
+      configureServer(server: { middlewares: { use: (arg0: (req: any, res: any, next: any) => void) => void; }; }) {
         generateBuildIdFile();
         // Have to write a custom middleware to serve the build Id file,
         // because vite dev server doesn't serve files from public directory as soon as they are generated.
