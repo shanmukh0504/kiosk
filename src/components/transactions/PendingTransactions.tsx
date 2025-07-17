@@ -29,6 +29,7 @@ export const PendingTransactions = () => {
       );
       if (bitcoinRes.error) {
         console.error("failed to send bitcoin ❌", bitcoinRes.error);
+        return;
       }
       txHash = bitcoinRes.val;
     } else if (isSolana(order.source_swap.chain)) {
@@ -44,6 +45,7 @@ export const PendingTransactions = () => {
       txHash = tx.val;
     }
     console.log(txHash);
+    if (!txHash) return;
 
     const updatedOrder = {
       ...order,

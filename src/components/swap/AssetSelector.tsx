@@ -161,8 +161,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     return (
       sortedResults &&
       [...sortedResults].sort((a, b) => {
-        const aFiat = Number(a.fiatBalance);
-        const bFiat = Number(b.fiatBalance);
+        const aFiat = a.fiatBalance ? Number(a.fiatBalance) : 0;
+        const bFiat = b.fiatBalance ? Number(b.fiatBalance) : 0;
         return bFiat - aFiat;
       })
     );
