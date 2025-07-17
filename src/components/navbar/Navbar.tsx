@@ -4,10 +4,9 @@ import {
   GardenFullLogo,
   Typography,
 } from "@gardenfi/garden-book";
-import { isFaucetEnabled, routes } from "../../constants/constants";
+import { isTestnet, routes } from "../../constants/constants";
 import { API } from "../../constants/api";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
-// import { Address } from "./Address";
 import { isCurrentRoute } from "../../utils/utils";
 import { MobileMenu } from "./MobileMenu";
 import { modalNames, modalStore } from "../../store/modalStore";
@@ -56,7 +55,7 @@ export const Navbar = () => {
         </div>
       </div>
       <div className="flex items-center gap-3">
-        {!isMobile && isFaucetEnabled && (
+        {!isMobile && isTestnet && (
           <div className="flex items-center gap-2 rounded-3xl bg-white/25 px-4 py-3">
             <CodeBlockIcon />
             <Typography size="h3" weight="medium">

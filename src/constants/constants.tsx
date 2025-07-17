@@ -14,6 +14,7 @@ import { botanix } from "../layout/wagmi/config";
 
 export const network: Network = import.meta.env.VITE_NETWORK;
 export const environment: Environment = import.meta.env.VITE_ENVIRONMENT;
+export const isTestnet = network === Network.TESTNET;
 
 export const INTERNAL_ROUTES: Record<
   string,
@@ -23,7 +24,7 @@ export const INTERNAL_ROUTES: Record<
   stake: {
     name: "Stake",
     path: ["/stake"],
-    enabled: network === Network.TESTNET,
+    enabled: network !== Network.TESTNET,
   },
   faucet: {
     name: "Faucet",
