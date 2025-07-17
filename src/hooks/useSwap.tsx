@@ -203,7 +203,7 @@ export const useSwap = () => {
               },
             },
           });
-          if (!quote || quote.error) {
+          if (!quote || !quote.ok) {
             if (quote?.error?.includes("AbortError")) {
               setError({ liquidityError: Errors.none });
               setIsFetchingQuote({ input: false, output: false });
@@ -476,7 +476,7 @@ export const useSwap = () => {
         receiveAmount: outputAmountInDecimals,
         additionalData,
       });
-      if (res.error) {
+      if (!res.ok) {
         if (
           res.error.includes(
             "Cannot read properties of undefined (reading 'toLowerCase')"

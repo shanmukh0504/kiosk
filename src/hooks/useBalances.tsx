@@ -8,7 +8,7 @@ import {
 } from "@gardenfi/orderbook";
 import { getOrderPair } from "../utils/utils";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { BitcoinNetwork, BitcoinProvider } from "@catalogfi/wallets";
+import { BitcoinNetwork, BitcoinProvider } from "@gardenfi/core";
 import { network } from "../constants/constants";
 import { getSpendableBalance } from "../utils/getmaxBtc";
 
@@ -46,14 +46,14 @@ export const useNativeMaxBalances = () => {
         );
         try {
           const balanceInSats = Number(balance);
-          const utxos = await provider.getUTXOs(btcAddress, balanceInSats);
           const feeRate = await provider.getFeeRates();
+          const utxos = await provider.getUTXOs(btcAddress, balanceInSats);
 
           const spendable = await getSpendableBalance(
             btcAddress,
             balanceInSats,
             utxos.length,
-            feeRate.minimumFee
+            feeRate.fastestFee
           );
           if (!spendable.ok) {
             console.error(
@@ -80,7 +80,7 @@ export const useNativeMaxBalances = () => {
     // SOL gas
     if (isSolanaNativeToken(inputAsset.chain, inputAsset.tokenAddress)) {
       //
-      const gas = 0.00180608;
+      const gas = 0.00380608;
       maxSpendableNativeBalances[
         getOrderPair(inputAsset.chain, inputAsset.tokenAddress)
       ] = Math.max(0, Number((Number(balance) - gas).toFixed(8)));

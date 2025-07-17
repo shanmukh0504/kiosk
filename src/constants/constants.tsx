@@ -1,5 +1,12 @@
 import { hyperliquid } from "@gardenfi/core";
-import { Asset, Chain, isBitcoin, isEVM } from "@gardenfi/orderbook";
+import {
+  Asset,
+  Chain,
+  isBitcoin,
+  isEVM,
+  isSolana,
+  isStarknet,
+} from "@gardenfi/orderbook";
 import { BitcoinNetwork } from "@gardenfi/react-hooks";
 import { Network } from "@gardenfi/utils";
 import { citreaTestnet } from "viem/chains";
@@ -38,12 +45,17 @@ export const BREAKPOINTS = {
 };
 
 export const getTimeEstimates = (inputAsset: Asset) => {
-  if (isEVM(inputAsset.chain)) {
+  if (
+    isEVM(inputAsset.chain) ||
+    isSolana(inputAsset.chain) ||
+    isStarknet(inputAsset.chain)
+  ) {
     return "~30s";
   }
   if (isBitcoin(inputAsset.chain)) {
     return "~10m";
   }
+
   return "";
 };
 
@@ -102,6 +114,7 @@ export const QUERY_PARAMS = {
   inputAsset: "input-asset",
   outputChain: "output-chain",
   outputAsset: "output-asset",
+  inputAmount: "value",
 };
 
 export const isStakeDisable = network === Network.TESTNET;

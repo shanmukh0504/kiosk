@@ -1,12 +1,22 @@
 # Changelog
 
+## [1.0.7]
+
+### Fixed
+
+- Transaction broadcast issue for Bitcoin through phantom wallet.
+- Use only confirmed balance for Bitcoin instead of total balance.
+- Status label in swap in progress component for bitcoin non-initiated transactions.
+- Fixed asset sorting to handle undefined balance cases properly.
+
 ## [1.0.6]
 
 ### Fixed
 
 - Disable swap button and update its label when wallet doesn't support the chain
 - Fixed button label when wallet is not connected.
-- Fixed Price impact sign based on it's values
+- Fixed Price impact sign based on it's values.
+- Updated the conditions for unsupported chains by wallet in button variants.
 
 ## [1.0.5]
 
@@ -20,6 +30,7 @@
 ### Added
 
 - Added dynamic price impact in the fee tooltip.
+- Added inputAmount in the url to preload a pair of assets and rate.
 
 ### Fixed
 
