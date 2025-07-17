@@ -283,7 +283,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       const balance = await provider.getBalance();
       if (!balance?.val?.total) return;
 
-      const formattedBalance = new BigNumber(balance.val.total);
+      const formattedBalance = new BigNumber(balance.val.confirmed);
       const btcBalance = Object.values(assets)
         .filter((asset) => isBitcoin(asset.chain))
         .reduce(
