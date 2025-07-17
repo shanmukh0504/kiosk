@@ -2,6 +2,10 @@
 
 ## [1.0.7]
 
+### Added
+
+- Added support for solana spl tokens
+
 ### Fixed
 
 - Transaction broadcast issue for Bitcoin through phantom wallet.
