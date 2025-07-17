@@ -17,7 +17,7 @@
     "@gardenfi/orderbook": "2.3.1-beta.1",
     "@gardenfi/react-hooks": "2.3.1-beta.1",
     "@gardenfi/utils": "2.3.0",
-    "@gardenfi/wallet-connectors": "2.2.1",
+    "@gardenfi/wallet-connectors": "2.2.1-beta.1",
     "@number-flow/react": "^0.5.9",
     "@solana/wallet-adapter-base": "^0.9.26",
     "@solana/wallet-adapter-react": "^0.15.38",
