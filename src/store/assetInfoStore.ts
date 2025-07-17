@@ -325,18 +325,25 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   fetchAndSetSolanaBalance: async (address: PublicKey) => {
     const { assets, balances } = get();
     if (!assets) return;
-
-    const solanaAsset = Object.values(assets).find((asset) =>
+    const solanaAssets = Object.values(assets).filter((asset) =>
       isSolana(asset.chain)
     );
 
-    if (!solanaAsset) return;
-    const solanaBalance: Record<string, BigNumber | undefined> = {};
+    if (solanaAssets.length === 0) return;
 
-    const balance = await getSolanaTokenBalance(address, solanaAsset);
-    const orderPair = getOrderPair(solanaAsset.chain, solanaAsset.tokenAddress);
-    solanaBalance[orderPair] = new BigNumber(balance);
-    set({ balances: { ...balances, ...solanaBalance } });
+    const solanaBalances: Record<string, BigNumber | undefined> = {};
+
+    for (const asset of solanaAssets) {
+      try {
+        const balance = await getSolanaTokenBalance(address, asset);
+        const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
+        solanaBalances[orderPair] = new BigNumber(balance);
+      } catch (err) {
+        continue;
+      }
+    }
+
+    set({ balances: { ...balances, ...solanaBalances } });
   },
 
   clearBalances: () =>
