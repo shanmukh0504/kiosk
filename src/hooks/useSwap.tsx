@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { BTC, swapStore } from "../store/swapStore";
 import { IOType, network } from "../constants/constants";
-import { Asset, Chain, isBitcoin, isSolana } from "@gardenfi/orderbook";
+import {
+  Asset,
+  Chain,
+  isBitcoin,
+  isSolana,
+  isSolanaNativeToken,
+} from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
 import {
@@ -72,7 +78,10 @@ export const useSwap = () => {
 
   const inputBalance = useMemo(() => {
     if (!inputAsset || !balances) return;
-    if (isBitcoin(inputAsset.chain) || isSolana(inputAsset.chain))
+    if (
+      isBitcoin(inputAsset.chain) ||
+      isSolanaNativeToken(inputAsset.chain, inputAsset.tokenAddress)
+    )
       return maxSpendableNativeBalances[
         getOrderPair(inputAsset.chain, inputAsset.tokenAddress)
       ];
@@ -80,19 +89,19 @@ export const useSwap = () => {
     return balances[getOrderPair(inputAsset.chain, inputAsset.tokenAddress)];
   }, [inputAsset, balances, maxSpendableNativeBalances]);
 
-  const inputTokenBalance = useMemo(
-    () =>
-      inputBalance &&
-      inputAsset &&
-      (!isStarknet(inputAsset.chain) && !isSolana(inputAsset.chain)
-        ? formatAmount(
-            Number(inputBalance),
-            inputAsset.decimals,
-            Math.min(inputAsset.decimals, BTC.decimals)
-          )
-        : Number(inputBalance)),
-    [inputBalance, inputAsset]
-  );
+  const inputTokenBalance = useMemo(() => {
+    if (!inputBalance || !inputAsset) return undefined;
+
+    if (!isStarknet(inputAsset.chain) && !isSolana(inputAsset.chain)) {
+      return formatAmount(
+        Number(inputBalance),
+        inputAsset.decimals,
+        Math.min(inputAsset.decimals, BTC.decimals)
+      );
+    }
+
+    return Number(inputBalance);
+  }, [inputBalance, inputAsset]);
 
   const isInsufficientBalance = useMemo(() => {
     if (!inputTokenBalance || !inputAmount) return false;
