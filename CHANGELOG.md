@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.7]
+
+### Fixed
+
+- Transaction broadcast issue for Bitcoin through phantom wallet.
+- Use only confirmed balance for Bitcoin instead of total balance.
+- Status label in swap in progress component for bitcoin non-initiated transactions.
+
 ## [1.0.6]
 
 ### Fixed
