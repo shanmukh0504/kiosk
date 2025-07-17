@@ -13,7 +13,7 @@
     "@chainflip/sdk": "^1.8.3",
     "@coral-xyz/anchor": "^0.31.1",
     "@gardenfi/core": "2.3.1",
-    "@gardenfi/garden-book": "0.1.98",
+    "@gardenfi/garden-book": "0.1.99",
     "@gardenfi/orderbook": "2.3.0",
     "@gardenfi/react-hooks": "2.3.1",
     "@gardenfi/utils": "2.3.0",
