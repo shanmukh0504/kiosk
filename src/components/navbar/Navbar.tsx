@@ -1,8 +1,12 @@
-import { Button, GardenFullLogo, Typography } from "@gardenfi/garden-book";
-import { routes } from "../../constants/constants";
+import {
+  Button,
+  CodeBlockIcon,
+  GardenFullLogo,
+  Typography,
+} from "@gardenfi/garden-book";
+import { isTestnet, routes } from "../../constants/constants";
 import { API } from "../../constants/api";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
-// import { Address } from "./Address";
 import { isCurrentRoute } from "../../utils/utils";
 import { MobileMenu } from "./MobileMenu";
 import { modalNames, modalStore } from "../../store/modalStore";
@@ -10,6 +14,7 @@ import ConnectedWallets from "./ConnectedWallets";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
+import { viewPortStore } from "../../store/viewPortStore";
 
 export const Navbar = () => {
   const { isConnected, address } = useEVMWallet();
@@ -17,6 +22,7 @@ export const Navbar = () => {
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
   const { setOpenModal } = modalStore();
+  const { isMobile } = viewPortStore();
 
   const handleHomeLogoClick = () => window.open(API().home, "_blank");
   const handleConnectClick = () => {
@@ -39,7 +45,11 @@ export const Navbar = () => {
             const isActive = paths.some(isCurrentRoute);
             const primaryPath = paths[0];
             return (
-              <a key={primaryPath} href={primaryPath}>
+              <a
+                key={primaryPath}
+                href={primaryPath}
+                target={route.isExternal ? "_blank" : undefined}
+              >
                 <Typography size="h2" weight={isActive ? "bold" : "medium"}>
                   {route.name}
                 </Typography>
@@ -48,20 +58,29 @@ export const Navbar = () => {
           })}
         </div>
       </div>
-      {address || starknetAddress || btcAddress || solanaAddress ? (
-        <ConnectedWallets />
-      ) : (
-        <Button
-          variant="primary"
-          onClick={handleConnectClick}
-          className="ml-auto min-w-28"
-          size="sm"
-          breakpoints={{ md: "md" }}
-        >
-          Connect
-        </Button>
-      )}
-      <MobileMenu />
+      <div className="flex items-center gap-3">
+        {!isMobile && isTestnet && (
+          <div className="flex items-center gap-2 rounded-3xl bg-white/25 px-4 py-3">
+            <CodeBlockIcon />
+            <Typography size="h3" weight="medium">
+              Testnet
+            </Typography>
+          </div>
+        )}
+        {address || starknetAddress || btcAddress || solanaAddress ? (
+          <ConnectedWallets />
+        ) : (
+          <Button
+            variant="primary"
+            onClick={handleConnectClick}
+            className="!h-12 min-w-28 !rounded-3xl"
+            size="lg"
+          >
+            Connect
+          </Button>
+        )}
+        <MobileMenu />
+      </div>
     </div>
   );
 };

@@ -2,6 +2,10 @@
 
 ## [1.0.7]
 
+### Added
+
+- Added faucet link that redirects to testnet BTC faucet and Testnet badge in testnet environment.
+
 ### Fixed
 
 - Transaction broadcast issue for Bitcoin through phantom wallet.

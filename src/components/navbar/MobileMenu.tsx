@@ -38,6 +38,7 @@ export const MobileMenu = () => {
                 <a
                   key={primaryPath}
                   href={primaryPath}
+                  target={route.isExternal ? "_blank" : undefined}
                   className="px-6 py-[14px] hover:bg-white"
                 >
                   <Typography size="h2" weight={isActive ? "bold" : "medium"}>
