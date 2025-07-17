@@ -12,13 +12,26 @@ import { Network } from "@gardenfi/utils";
 import { citreaTestnet } from "viem/chains";
 import { botanix } from "../layout/wagmi/config";
 
-export const INTERNAL_ROUTES: Record<string, { name: string; path: string[] }> =
-  {
-    swap: { name: "Swap", path: ["/", "/swap"] },
-    stake: { name: "Stake", path: ["/stake"] },
-    faucet: { name: "Faucet", path: ["https://testnetbtc.com"] },
-    // quests: { name: "Quests", path: "/quests" },
-  } as const;
+export const network: Network = import.meta.env.VITE_NETWORK;
+export const environment: Environment = import.meta.env.VITE_ENVIRONMENT;
+
+export const INTERNAL_ROUTES: Record<
+  string,
+  { name: string; path: string[]; enabled: boolean }
+> = {
+  swap: { name: "Swap", path: ["/", "/swap"], enabled: true },
+  stake: {
+    name: "Stake",
+    path: ["/stake"],
+    enabled: network === Network.TESTNET,
+  },
+  faucet: {
+    name: "Faucet",
+    path: ["https://testnetbtc.com"],
+    enabled: network === Network.TESTNET,
+  },
+  // quests: { name: "Quests", path: "/quests" },
+} as const;
 
 export const THEMES = {
   swap: "swap",
@@ -77,9 +90,6 @@ export enum Environment {
   Production = "production",
 }
 
-export const network: Network = import.meta.env.VITE_NETWORK;
-export const environment: Environment = import.meta.env.VITE_ENVIRONMENT;
-
 export const SUPPORTED_CHAINS: Chain[] = [
   "arbitrum",
   "base",
@@ -118,12 +128,8 @@ export const QUERY_PARAMS = {
   inputAmount: "value",
 };
 
-export const isStakeDisable = network === Network.TESTNET;
-export const isFaucetEnabled = network === Network.TESTNET;
 export const routes = Object.entries(INTERNAL_ROUTES).filter(([key]) => {
-  if (key === "stake" && isStakeDisable) return false;
-  if (key === "faucet" && !isFaucetEnabled) return false;
-  return true;
+  return INTERNAL_ROUTES[key].enabled;
 });
 
 //if the wallet is not listed here, then it supports all chains
