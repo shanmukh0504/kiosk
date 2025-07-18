@@ -276,7 +276,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   },
 
   fetchAndSetBitcoinBalance: async (provider: IInjectedBitcoinProvider) => {
-    const { assets, balances } = get();
+    const { assets } = get();
     if (!assets || !provider) return;
 
     try {
@@ -295,14 +295,14 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           {} as Record<string, BigNumber | undefined>
         );
 
-      set({ balances: { ...balances, ...btcBalance } });
+      set({ balances: { ...get().balances, ...btcBalance } });
     } catch {
       /*empty*/
     }
   },
 
   fetchAndSetStarknetBalance: async (address: string) => {
-    const { assets, balances } = get();
+    const { assets } = get();
     if (!assets) return;
 
     const starknetAsset = Object.values(assets).find((asset) =>
@@ -319,11 +319,11 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       starknetAsset.tokenAddress
     );
     starknetBalance[orderPair] = new BigNumber(balance);
-    set({ balances: { ...balances, ...starknetBalance } });
+    set({ balances: { ...get().balances, ...starknetBalance } });
   },
 
   fetchAndSetSolanaBalance: async (address: PublicKey) => {
-    const { assets, balances } = get();
+    const { assets } = get();
     if (!assets) return;
     const solanaAssets = Object.values(assets).filter((asset) =>
       isSolana(asset.chain)
@@ -343,7 +343,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       }
     }
 
-    set({ balances: { ...balances, ...solanaBalances } });
+    set({ balances: { ...get().balances, ...solanaBalances } });
   },
 
   clearBalances: () =>
