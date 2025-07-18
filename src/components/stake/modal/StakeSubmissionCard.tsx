@@ -57,71 +57,102 @@ export const StakeSubmissionCard: FC<StakeSubmissionCardProps> = ({
     const stakingConfig = STAKING_CONFIG[STAKING_CHAIN];
     if (!stakingConfig) return;
 
+    const maxRetries = 5;
+    let retryCount = 0;
+
+    const executeStake = async (): Promise<string> => {
+      try {
+        if (chainId !== STAKING_CHAIN) {
+          await switchChainAsync({ chainId: STAKING_CHAIN });
+        }
+        const allowance = await refetch();
+        const _amount =
+          BigInt(amount) * BigInt(10 ** stakingConfig.SEED_DECIMALS);
+        const units = BigInt(amount) / BigInt(MIN_STAKE_AMOUNT);
+
+        if (allowance.data === undefined) {
+          throw new Error("Failed to fetch allowance");
+        }
+        if (allowance.data === 0n || allowance.data < _amount) {
+          const res = await writeContractAsync({
+            abi: erc20Abi,
+            functionName: "approve",
+            address: stakingConfig.SEED_ADDRESS as Hex,
+            args: [
+              shouldMintNFT
+                ? (stakingConfig.FLOWER_CONTRACT_ADDRESS as Hex)
+                : (stakingConfig.STAKING_CONTRACT_ADDRESS as Hex),
+              maxUint256,
+            ],
+          });
+          await waitForTransactionReceipt(config, {
+            hash: res,
+          });
+        }
+        //approve successful, go ahead with stake
+
+        let hash;
+        if (shouldMintNFT) {
+          const mintRes = await writeContractAsync({
+            abi: flowerABI,
+            functionName: "mint",
+            address: stakingConfig.FLOWER_CONTRACT_ADDRESS as Hex,
+            args: [stakingConfig.GARDEN_FILLER_ADDRESS as Hex],
+          });
+
+          hash = mintRes;
+        } else {
+          const lockDuration =
+            selectedDuration === "INFINITE"
+              ? maxUint256
+              : BigInt(
+                  DURATION_MAP[selectedDuration].lockDuration *
+                    ETH_BLOCKS_PER_DAY
+                );
+
+          const stakeRes = await writeContractAsync({
+            abi: stakeABI,
+            functionName: "vote",
+            address: stakingConfig.STAKING_CONTRACT_ADDRESS as Hex,
+            args: [
+              stakingConfig.GARDEN_FILLER_ADDRESS as Hex,
+              units,
+              lockDuration,
+            ],
+          });
+          hash = stakeRes;
+        }
+        await waitForTransactionReceipt(config, {
+          hash,
+        });
+        return hash;
+      } catch (error) {
+        const isRpcError =
+          error instanceof Error &&
+          (error.message.toLowerCase().includes("rpc") ||
+            error.message.toLowerCase().includes("network") ||
+            error.message.toLowerCase().includes("timeout") ||
+            error.message.toLowerCase().includes("connection") ||
+            error.message.toLowerCase().includes("rate limit") ||
+            error.message.toLowerCase().includes("fetch"));
+
+        if (isRpcError && retryCount < maxRetries) {
+          retryCount++;
+          const delay = Math.pow(2, retryCount) * 1000;
+          console.log(
+            `RPC error occurred, retrying in ${delay}ms (attempt ${retryCount}/${maxRetries})`
+          );
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          return executeStake();
+        }
+        throw error;
+      }
+    };
+
     try {
       setLoading(true);
-      if (chainId !== STAKING_CHAIN) {
-        await switchChainAsync({ chainId: STAKING_CHAIN });
-      }
-      const allowance = await refetch();
-      const _amount =
-        BigInt(amount) * BigInt(10 ** stakingConfig.SEED_DECIMALS);
-      const units = BigInt(amount) / BigInt(MIN_STAKE_AMOUNT);
+      const hash = await executeStake();
 
-      if (allowance.data === undefined) {
-        setLoading(false);
-        return;
-      }
-      if (allowance.data === 0n || allowance.data < _amount) {
-        const res = await writeContractAsync({
-          abi: erc20Abi,
-          functionName: "approve",
-          address: stakingConfig.SEED_ADDRESS as Hex,
-          args: [
-            shouldMintNFT
-              ? (stakingConfig.FLOWER_CONTRACT_ADDRESS as Hex)
-              : (stakingConfig.STAKING_CONTRACT_ADDRESS as Hex),
-            maxUint256,
-          ],
-        });
-        await waitForTransactionReceipt(config, {
-          hash: res,
-        });
-      }
-      //approve successful, go ahead with stake
-
-      let hash;
-      if (shouldMintNFT) {
-        const mintRes = await writeContractAsync({
-          abi: flowerABI,
-          functionName: "mint",
-          address: stakingConfig.FLOWER_CONTRACT_ADDRESS as Hex,
-          args: [stakingConfig.GARDEN_FILLER_ADDRESS as Hex],
-        });
-
-        hash = mintRes;
-      } else {
-        const lockDuration =
-          selectedDuration === "INFINITE"
-            ? maxUint256
-            : BigInt(
-                DURATION_MAP[selectedDuration].lockDuration * ETH_BLOCKS_PER_DAY
-              );
-
-        const stakeRes = await writeContractAsync({
-          abi: stakeABI,
-          functionName: "vote",
-          address: stakingConfig.STAKING_CONTRACT_ADDRESS as Hex,
-          args: [
-            stakingConfig.GARDEN_FILLER_ADDRESS as Hex,
-            units,
-            lockDuration,
-          ],
-        });
-        hash = stakeRes;
-      }
-      await waitForTransactionReceipt(config, {
-        hash,
-      });
       //✅ stake success
       console.log("Stake tx hash : ", hash);
       Toast.success(
@@ -130,6 +161,13 @@ export const StakeSubmissionCard: FC<StakeSubmissionCardProps> = ({
       onClose();
     } catch (e) {
       console.error("error :", e);
+      if (retryCount >= maxRetries) {
+        Toast.error(
+          "Staking failed after 5 retry attempts. Please try again later."
+        );
+      } else {
+        Toast.error("Staking failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
