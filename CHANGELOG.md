@@ -5,6 +5,7 @@
 ### Added
 
 - Added support for solana spl tokens
+- Added faucet link that redirects to testnet BTC faucet and Testnet badge in testnet environment.
 
 ### Fixed
 
