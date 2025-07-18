@@ -27,81 +27,88 @@ const generateBuildIdFile = () => {
 const buildId = getRecentGitCommitHash();
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [
-    react(),
-    wasm(),
-    metadataPlugin(),
-    nodePolyfills({
-      globals: {
-        process: true,
-        Buffer: true,
-        global: true,
-      },
-    }),
-    topLevelAwait(),
-    viteStaticCopy({
-      targets: [
-        {
-          src: path.resolve(
-            path.dirname(new URL(import.meta.url).pathname),
-            "build-id.json"
-          ),
-          dest: "public",
+export default defineConfig(({ mode }) => {
+  console.log(`Running in ${mode} mode`);
+  return {
+    plugins: [
+      react(),
+      wasm(),
+      metadataPlugin(),
+      nodePolyfills({
+        globals: {
+          process: true,
+          Buffer: true,
+          global: true,
         },
-      ],
-    }),
-
-    {
-      name: "generate-build-id",
-      buildEnd() {
-        generateBuildIdFile();
-      },
-      configureServer(server) {
-        generateBuildIdFile();
-        // Have to write a custom middleware to serve the build Id file,
-        // because vite dev server doesn't serve files from public directory as soon as they are generated.
-        server.middlewares.use((req, res, next) => {
-          if (req.url === "/build-id.json") {
-            const buildIdPath = path.resolve(
+      }),
+      topLevelAwait(),
+      viteStaticCopy({
+        targets: [
+          {
+            src: path.resolve(
               path.dirname(new URL(import.meta.url).pathname),
-              "public/build-id.json"
-            );
-            fs.readFile(buildIdPath, (err, data) => {
-              if (err) {
-                res.statusCode = 404;
-                res.end("Build ID not found");
-              } else {
-                res.setHeader("Content-Type", "application/json");
-                res.end(data);
-              }
-            });
-          } else {
-            next();
-          }
-        });
+              "build-id.json"
+            ),
+            dest: "public",
+          },
+        ],
+      }),
+
+      {
+        name: "generate-build-id",
+        buildEnd() {
+          generateBuildIdFile();
+        },
+        configureServer(server: {
+          middlewares: {
+            use: (arg0: (req: any, res: any, next: any) => void) => void;
+          };
+        }) {
+          generateBuildIdFile();
+          // Have to write a custom middleware to serve the build Id file,
+          // because vite dev server doesn't serve files from public directory as soon as they are generated.
+          server.middlewares.use((req, res, next) => {
+            if (req.url === "/build-id.json") {
+              const buildIdPath = path.resolve(
+                path.dirname(new URL(import.meta.url).pathname),
+                "public/build-id.json"
+              );
+              fs.readFile(buildIdPath, (err, data) => {
+                if (err) {
+                  res.statusCode = 404;
+                  res.end("Build ID not found");
+                } else {
+                  res.setHeader("Content-Type", "application/json");
+                  res.end(data);
+                }
+              });
+            } else {
+              next();
+            }
+          });
+        },
       },
-    },
-  ],
-  build: {
-    target: "esnext",
-    sourcemap: false,
-    minify: "terser",
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          "react-vendor": ["react", "react-dom"],
-          "ui-vendor": ["@gardenfi/garden-book", "framer-motion"],
-          "wallet-vendor": ["@gardenfi/wallet-connectors", "wagmi", "viem"],
+    ],
+    build: {
+      target: "esnext",
+      sourcemap: false,
+      minify: "terser",
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            "react-vendor": ["react", "react-dom"],
+            "ui-vendor": ["@gardenfi/garden-book", "framer-motion"],
+            "wallet-vendor": ["@gardenfi/wallet-connectors", "wagmi", "viem"],
+          },
         },
       },
     },
-  },
-  preview: {
-    allowedHosts: true,
-  },
-  define: {
-    "process.env.BUILD_ID": JSON.stringify(buildId),
-    "process.version": JSON.stringify("v18.16.1"),
-  },
+    preview: {
+      allowedHosts: true,
+    },
+    define: {
+      "process.env.BUILD_ID": JSON.stringify(buildId),
+      "process.version": JSON.stringify("v18.16.1"),
+    },
+  };
 });
