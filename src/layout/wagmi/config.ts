@@ -84,9 +84,34 @@ export const SupportedChains = [
   botanix,
 ] as const;
 
+export const leapConnector = injected({
+  target() { 
+    return { 
+      id: 'leap',
+      name: 'Leap Wallet', 
+      provider: typeof window !== 'undefined' ? (window as any).leap?.ethereum : undefined, 
+    } 
+  }, 
+})
+
+export const KeplrConnector = injected({
+  target() { 
+    return { 
+      id: 'keplr', 
+      name: 'Keplr', 
+      provider: typeof window !== 'undefined' ? (window as any).keplr?.ethereum : undefined, 
+    } 
+  }, 
+})
+
 export const config = createConfig({
   chains: SupportedChains,
-  connectors: [injected(), metaMask()],
+  connectors: [
+    injected(), 
+    metaMask(), 
+    leapConnector,
+    KeplrConnector,
+  ],
   transports: {
     [mainnet.id]: http(),
     [arbitrum.id]: http(),

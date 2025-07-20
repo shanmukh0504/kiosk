@@ -34,20 +34,32 @@ export const getAvailableWallets = (
 ): Wallet[] => {
   const wallets: Wallet[] = [];
 
+  const manualEVMChecks: Record<string, { check: () => boolean; connectorId: string }> = {
+    "com.coinbase.wallet": {
+      check: () => typeof window !== "undefined" && !!window.ethereum && window.ethereum.isCoinbaseWallet,
+      connectorId: "injected"
+    },
+    "keplr": {
+      check: () => typeof window !== "undefined" && !!window.keplr && typeof window.keplr === 'object' && 'ethereum' in window.keplr,
+      connectorId: "keplr"
+    }
+  };
+  
   if (evmWallets) {
     Object.entries(GardenSupportedWallets).forEach(([key, value]) => {
       if (!value.isEVMSupported) return;
       if (key === "app.phantom") return;
       let wallet = evmWallets.find((w) => w.id === key);
       let isAvailable = !!wallet;
-      const isInjected =
-        typeof window !== "undefined" &&
-        !!window.ethereum &&
-        window.ethereum.isCoinbaseWallet;
-      if (key === "com.coinbase.wallet" && !isAvailable) {
-        isAvailable = isInjected;
-        wallet = evmWallets.find((w) => w.id === "injected");
+
+      const config = manualEVMChecks[key];
+      if (config && !isAvailable) {
+        isAvailable = config.check();
+        if (isAvailable) {
+          wallet = evmWallets.find((w) => w.id === config.connectorId) || wallet;
+        }
       }
+      
       wallets.push({
         ...value,
         wallet: {
@@ -63,34 +75,17 @@ export const getAvailableWallets = (
   Object.entries(GardenSupportedWallets).forEach(([key, value]) => {
     if (!value.isBitcoinSupported) return;
     const btcWallet = btcWallets?.[key] ?? btcWallets?.[evmToBTCid[key]];
-    if (evmWallets && evmToBTCid[key]) {
-      if (evmWallets && evmToBTCid[key]) {
-        const walletIndex = wallets.findIndex((w) => w.id === key);
-        if (walletIndex !== -1) {
-          wallets[walletIndex].wallet.btcWallet = btcWallet;
-          wallets[walletIndex].isBitcoin = !!btcWallet;
-        } else if (btcWallet) {
-          wallets.push({
-            ...value,
-            wallet: {
-              btcWallet,
-            },
-            isAvailable: true,
-            isBitcoin: true,
-            isEVM: false,
-          });
-        }
-      }
-
-      return;
-    }
-
-    if (btcWallet) {
+    if (!btcWallet) return;
+    
+    const existingWalletIndex = wallets.findIndex((w) => w.id === key);
+    
+    if (existingWalletIndex !== -1) {
+      wallets[existingWalletIndex].wallet.btcWallet = btcWallet;
+      wallets[existingWalletIndex].isBitcoin = true;
+    } else {
       wallets.push({
         ...value,
-        wallet: {
-          btcWallet,
-        },
+        wallet: { btcWallet },
         isAvailable: true,
         isBitcoin: true,
         isEVM: false,
@@ -102,16 +97,11 @@ export const getAvailableWallets = (
     Object.entries(GardenSupportedWallets).forEach(([key, value]) => {
       if (!value.isStarknetSupported) return;
       const wallet = starknetWallets.find((w) => w.id === key);
-      let isAvailable = false;
-      if (typeof window !== "undefined") {
-        if (key === "argentX" && window.starknet_argentX) {
-          isAvailable = true;
-        } else if (key === "braavos" && window.starknet_braavos) {
-          isAvailable = true;
-        } else if (key === "keplr" && window.starknet_keplr) {
-          isAvailable = true;
-        }
-      }
+      const isAvailable = !!(typeof window !== "undefined" && (
+        (key === "argentX" && window.starknet_argentX) ||
+        (key === "braavos" && window.starknet_braavos) ||
+        (key === "keplr" && window.starknet_keplr)
+      ));
 
       const existingWalletIndex = wallets.findIndex((w) => w.id === key);
       if (existingWalletIndex !== -1) {
@@ -121,9 +111,7 @@ export const getAvailableWallets = (
       } else {
         wallets.push({
           ...value,
-          wallet: {
-            starknetWallet: wallet,
-          },
+          wallet: { starknetWallet: wallet },
           isAvailable,
           isBitcoin: false,
           isEVM: false,
@@ -140,17 +128,11 @@ export const getAvailableWallets = (
       const wallet = solanaWallets.find(
         (w) => w.adapter.name.toLowerCase() === normalizedKey.toLowerCase()
       );
-      let isAvailable = false;
-
-      if (typeof window !== "undefined") {
-        if (key === "app.phantom" && window.phantom) {
-          isAvailable = true;
-        } else if (key === "solflare" && window.solflare) {
-          isAvailable = true;
-        } else if (key === "backpack" && window.backpack) {
-          isAvailable = true;
-        }
-      }
+      const isAvailable = !!(typeof window !== "undefined" && (
+        (key === "app.phantom" && window.phantom) ||
+        (key === "solflare" && window.solflare) ||
+        (key === "backpack" && window.backpack)
+      ));
 
       const existingWalletIndex = wallets.findIndex((w) => w.id === key);
       if (existingWalletIndex !== -1) {
