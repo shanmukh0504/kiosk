@@ -4,7 +4,7 @@
 
 ### Fixed
 
-- Fixed posting refunds for orders after expiry
+- Fixed posting refundSacp for an order regardless any state
 
 ## [1.0.7]
 
