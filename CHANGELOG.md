@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.8]
+
+### Fixed
+
+- Fixed posting refundSacp for an order regardless any state
+
 ## [1.0.7]
 
 ### Added
