@@ -95,7 +95,6 @@ export const CreateSwap = () => {
                 ? "Signing"
                 : "Swap";
   }, [
-    connector,
     isChainSupported,
     error.liquidityError,
     isApproving,
