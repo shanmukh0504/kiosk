@@ -45,7 +45,7 @@ export const WalletRow: FC<WalletRowProps> = ({
         }`}
       >
         <div className="flex items-center gap-4">
-          <img src={logo} alt={"icon"} className="h-6 w-6 rounded-full" />
+          <img src={logo} alt={"icon"} className="h-6 w-6 " />
           <div className="flex items-center justify-between">
             <Typography
               size="h3"

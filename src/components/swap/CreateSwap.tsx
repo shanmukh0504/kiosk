@@ -110,11 +110,13 @@ export const CreateSwap = () => {
       loadingDisabled ||
       isSwapping
       ? true
-      : needsWalletConnection || validSwap
+      : needsWalletConnection
         ? false
         : !isChainSupported
           ? true
-          : true;
+          : validSwap
+            ? false
+            : true;
   }, [
     isChainSupported,
     isSwapping,
