@@ -4,7 +4,8 @@
 
 ### Added
 
-- Added support for solana spl tokens
+- Added support for solana spl tokens.
+- Added EVM support for Keplr and Leap wallet.
 
 ## [1.0.7]
 
