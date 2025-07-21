@@ -243,7 +243,7 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
       </td>
       <td className="pr-8 pt-3 text-left sm:pr-0 sm:pt-0">
         <div
-          className={`flex w-full max-w-24 items-center overflow-hidden ${hasExpired ? "justify-center" : "justify-start"}`}
+          className={`flex w-full max-w-24 items-center overflow-hidden ${hasExpired ? "justify-center rounded-lg" : "justify-start"}`}
         >
           {hasExpired ? (
             <Button
