@@ -167,21 +167,22 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
 
   return (
     <motion.tr
-      initial={{ opacity: 0, y: 10, height: 0, marginTop: 0 }}
+      initial={{ opacity: 0, y: -30 }}
       animate={{
         opacity: 1,
         y: 0,
-        height: "auto",
-        marginTop: 24,
-        transition: { duration: 0.3, delay: 0.1 * index },
+        transition: {
+          duration: 0.2,
+          delay: 0.1 * index,
+          opacity: { delay: 0.1 * index },
+        },
       }}
       exit={{
         opacity: 0,
         y: -10,
-        height: 0,
-        marginTop: 0,
-        transition: { duration: 0.3 },
+        transition: { duration: 0.1 },
       }}
+      className="origin-top"
     >
       <td className="py-3 pr-2 text-left">
         <Typography size="h4" weight="medium">
@@ -242,7 +243,7 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
       </td>
       <td className="pr-8 pt-3 text-left sm:pr-0 sm:pt-0">
         <div
-          className={`flex w-full max-w-24 items-center overflow-hidden rounded-xl ${hasExpired ? "justify-center" : "justify-start"}`}
+          className={`flex w-full max-w-24 items-center overflow-hidden ${hasExpired ? "justify-center" : "justify-start"}`}
         >
           {hasExpired ? (
             <Button

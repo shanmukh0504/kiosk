@@ -142,14 +142,12 @@ export const StakeRewards = () => {
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <div className="flex w-full flex-col gap-[32.67px] sm:w-[384px] sm:flex-row md:w-[600px] md:gap-[20px]">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-8 md:gap-5">
-              {epochData && (
-                <OverviewStats
-                  title={"Current Epoch"}
-                  value={epochData?.length ?? 0}
-                  size="sm"
-                  className="w-[120px] sm:w-fit md:w-[90px]"
-                />
-              )}
+              <OverviewStats
+                title={"Current Epoch"}
+                value={epochData?.length ?? 0}
+                size="sm"
+                className="w-[120px] sm:w-fit md:w-[90px]"
+              />
               <AnimatePresence>
                 <OverviewStats
                   title={"Earnings"}

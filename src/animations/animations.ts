@@ -158,6 +158,54 @@ export const gardenPassContainerVariants: Variants = {
   },
 };
 
+export const gardenPassSmallContainerVariants: Variants = {
+  initial: {
+    y: "20%",
+    scale: 0.65,
+    height: 0,
+    marginBottom: 0,
+    opacity: 0,
+  },
+  animate: {
+    y: 0,
+    height: "auto",
+    marginBottom: "12px",
+    opacity: 1,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 30,
+      mass: 1,
+      opacity: {
+        delay: 0.1,
+      },
+    },
+  },
+  exit: {
+    y: "20%",
+    height: 0,
+    marginBottom: 0,
+    opacity: 0,
+    scale: 0.9,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 30,
+      mass: 1,
+      y: {
+        delay: 0.1,
+      },
+      height: {
+        delay: 0.1,
+      },
+      scale: {
+        delay: 0.1,
+      },
+    },
+  },
+};
+
 export const gardenPassContentVariants: Variants = {
   initial: {
     opacity: 0,
@@ -195,20 +243,18 @@ export const springTransition = {
   mass: 1,
 };
 
-export const stakePositionAnimation = {
+export const stakePositionAnimation = (length: number) => ({
   initial: {
     opacity: 0,
     height: 0,
-    scale: 0.9,
     y: -10,
   },
   animate: {
     opacity: 1,
     height: "auto",
-    scale: 1,
     y: 0,
     transition: {
-      duration: 0.4,
+      duration: 0.02 * length,
       ease: "easeInOut",
       opacity: {
         duration: 0.2,
@@ -220,16 +266,15 @@ export const stakePositionAnimation = {
   exit: {
     opacity: 0,
     height: 0,
-    scale: 0.9,
     y: -10,
     transition: {
-      duration: 0.4,
+      duration: 0.5,
       ease: "easeInOut",
       height: {
-        duration: 0.4,
+        duration: 0.5,
         delay: 0.2,
         ease: "easeInOut",
       },
     },
   },
-};
+});
