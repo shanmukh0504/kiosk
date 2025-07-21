@@ -156,7 +156,7 @@ export const GardenSupportedWallets: Record<
     { Starknet: true }
   ),
   keplr: createWallet("keplr", "Keplr", "wallets/keplr.svg", "tallLink:", {
-    EVM: network === Network.MAINNET,
+    EVM: true,
     Starknet: true,
     Bitcoin: network === Network.MAINNET,
   }),

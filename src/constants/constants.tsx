@@ -137,4 +137,5 @@ export const routes = Object.entries(INTERNAL_ROUTES).filter(([key]) => {
 export const WALLET_SUPPORTED_CHAINS: Record<string, Chain[]> = {
   "app.phantom": ["solana", "ethereum", "base", "bitcoin"],
   "leap": ["ethereum", "base", "bitcoin", "arbitrum" , "solana", "bera", "hyperliquid", "unichain", "citrea_testnet"],
+  "keplr": ["ethereum", "base", "bitcoin", "arbitrum" ,"starknet", "bera","unichain", "citrea_testnet","ethereum_sepolia","starknet_sepolia"],
 };
