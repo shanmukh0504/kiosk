@@ -27,8 +27,10 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
       <ViewPortListener />
       <div className="relative z-10 bg-white bg-opacity-50">
         <Modal />
-        <Navbar />
-        {children}
+        <div className="mx-auto max-w-screen-2xl">
+          <Navbar />
+          {children}
+        </div>
         <Notification />
         <Footer className={"mt-auto"} />
       </div>

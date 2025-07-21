@@ -254,7 +254,7 @@ export const stakePositionAnimation = (length: number) => ({
     height: "auto",
     y: 0,
     transition: {
-      duration: 0.02 * length,
+      duration: Math.max(0.5, 0.02 * length),
       ease: "easeInOut",
       opacity: {
         duration: 0.2,
