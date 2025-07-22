@@ -5,6 +5,7 @@
 ### Added
 
 - Added support for solana spl tokens
+- Updated fee structure UI
 
 ## [1.0.7]
 
