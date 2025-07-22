@@ -10,7 +10,6 @@ import { useEffect } from "react";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { deletedOrdersStore } from "../../store/deletedOrdersStore";
-import { isOrderExpired } from "@gardenfi/core";
 
 const ConnectedWallets = () => {
   const { address } = useEVMWallet();
@@ -40,21 +39,13 @@ const ConnectedWallets = () => {
     if (pendingOrders.length > 0) {
       cleanupDeletedOrders(pendingOrders);
       const filteredOrders = pendingOrders.filter(
-        (orders) =>
-          !isOrderDeleted(orders.create_order.create_id) &&
-          !isOrderExpired(orders)
+        (orders) => !isOrderDeleted(orders.create_order.create_id)
       );
       setPendingOrders(filteredOrders);
     } else {
       setPendingOrders([]);
     }
-  }, [
-    cleanupDeletedOrders,
-    isOrderDeleted,
-    pendingOrders,
-    isOrderExpired,
-    setPendingOrders,
-  ]);
+  }, [cleanupDeletedOrders, isOrderDeleted, pendingOrders, setPendingOrders]);
 
   return (
     <>
