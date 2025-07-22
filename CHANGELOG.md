@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.9]
+
+### Fixed
+
+- Fetch and set max spendable balance for Bitcoin and Solana at the time of fetching balances.
+
 ## [1.0.8]
 
 ### Fixed

@@ -161,7 +161,9 @@ export const CreateSwap = () => {
       await fetchAndSetFiatValues();
       await Promise.allSettled([
         address && fetchAndSetEvmBalances(address, workingRPCs),
-        btcAddress && provider && fetchAndSetBitcoinBalance(provider),
+        btcAddress &&
+          provider &&
+          fetchAndSetBitcoinBalance(provider, btcAddress),
         starknetAddress && fetchAndSetStarknetBalance(starknetAddress),
         solanaAnchorProvider &&
           fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey),
@@ -173,8 +175,8 @@ export const CreateSwap = () => {
       if (!inputAsset) return;
       if (isEVM(inputAsset.chain) && address)
         await fetchAndSetEvmBalances(address, workingRPCs, inputAsset);
-      if (isBitcoin(inputAsset.chain) && provider)
-        await fetchAndSetBitcoinBalance(provider);
+      if (isBitcoin(inputAsset.chain) && provider && btcAddress)
+        await fetchAndSetBitcoinBalance(provider, btcAddress);
       if (isStarknet(inputAsset.chain) && starknetAddress)
         await fetchAndSetStarknetBalance(starknetAddress);
       if (isSolana(inputAsset.chain) && solanaAnchorProvider)
