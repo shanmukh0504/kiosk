@@ -34,7 +34,11 @@ export const SwapSavingsAndAddresses = ({
   const targetRef = useRef<HTMLDivElement>(null);
   const network = getBitcoinNetwork();
   const { networkFeesValue, isLoading } = useNetworkFees(network, inputAsset);
-
+  console.log(
+    networkFeesValue,
+    networkFeesValue > 0,
+    Number(networkFeesValue) <= 0
+  );
   return (
     <motion.div className="flex flex-col" {...expandWithDelayAnimation}>
       <div className="h-full">
@@ -49,7 +53,8 @@ export const SwapSavingsAndAddresses = ({
               <div className="h-4 w-10 animate-pulse rounded bg-gray-100"></div>
             ) : (
               <Typography size="h5" weight="medium">
-                {inputAsset && !isBitcoin(inputAsset.chain)
+                {(inputAsset && !isBitcoin(inputAsset.chain)) ||
+                Number(networkFeesValue) <= 0
                   ? "Free"
                   : "$" + networkFeesValue}
               </Typography>
