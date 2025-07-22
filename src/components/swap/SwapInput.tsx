@@ -18,6 +18,7 @@ import { modalNames, modalStore } from "../../store/modalStore";
 import { ErrorFormat } from "../../constants/errors";
 import NumberFlow from "@number-flow/react";
 import clsx from "clsx/lite";
+import { formatAmount } from "../../utils/utils";
 
 type SwapInputProps = {
   type: IOType;
@@ -29,6 +30,7 @@ type SwapInputProps = {
   error?: ErrorFormat;
   balance?: number;
   timeEstimate?: string;
+  priceImpact?: number;
 };
 
 export const SwapInput: FC<SwapInputProps> = ({
@@ -40,7 +42,8 @@ export const SwapInput: FC<SwapInputProps> = ({
   error,
   balance,
   timeEstimate,
-  loading,
+  loading,  
+  priceImpact,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [animated, setAnimated] = useState(true);
@@ -103,11 +106,7 @@ export const SwapInput: FC<SwapInputProps> = ({
       onChange(input);
     }
   };
-
-  useEffect(() => {
-    setAnimated(true);
-  }, [asset, isFocused]);
-
+  
   const handleBalanceClick = () => {
     if (type === IOType.input && balance && asset) {
       if (
@@ -120,11 +119,15 @@ export const SwapInput: FC<SwapInputProps> = ({
       }
     }
   };
-
+  
   const handleOpenAssetSelector = () => {
     setOpenAssetSelector(type);
     setOpenModal(modalNames.assetList);
   };
+
+  useEffect(() => {
+    setAnimated(true);
+  }, [asset, isFocused]);
 
   // Show loading opacity when loading
   useEffect(() => {
@@ -153,11 +156,15 @@ export const SwapInput: FC<SwapInputProps> = ({
             >
               {label}
             </Typography>
-            {amount && Number(price) !== 0 && (
+            <div className="flex gap-2">
+              {amount && Number(price) !== 0 && (
               <Typography size="h5" weight="medium">
                 <span className="text-mid-grey">~${price}</span>
               </Typography>
             )}
+            {type === IOType.output && price && priceImpact && <Typography size="h5" weight="medium" className="!text-mid-grey">{priceImpact > 0 ? "-" : "+"}
+              {formatAmount(priceImpact, 0, 2)}%</Typography>}
+            </div>
           </div>
           {type === IOType.input &&
             (error ? (

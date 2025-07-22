@@ -13,6 +13,7 @@ import { modalNames, modalStore } from "../../store/modalStore";
 import {
   capitalizeChain,
   getAssetFromChainAndSymbol,
+  getProtocolFee,
   getQueryParams,
 } from "../../utils/utils";
 import { QUERY_PARAMS } from "../../constants/constants";
@@ -139,6 +140,18 @@ export const CreateSwap = () => {
     if (!inputAsset || !outputAsset) return "";
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
+
+  const fees = useMemo(
+    () => Number(tokenPrices.input) - Number(tokenPrices.output),
+    [tokenPrices]
+  );
+  const protocolFee = useMemo(() => getProtocolFee(fees), [fees]);
+  const priceImpact = useMemo(() => {
+    if (!protocolFee) return ;
+    const input = Number(tokenPrices.input);
+    const output = Number(tokenPrices.output);
+    return (1 - (output + protocolFee) / input) * 100;
+  }, [tokenPrices, protocolFee]);
 
   const handleConnectWallet = () => {
     if (!needsWalletConnection) return;
@@ -346,6 +359,7 @@ export const CreateSwap = () => {
             error={error.outputError}
             price={tokenPrices.output}
             timeEstimate={timeEstimate}
+            priceImpact={priceImpact}
           />
         </div>
         <InputAddressAndFeeRateDetails />
