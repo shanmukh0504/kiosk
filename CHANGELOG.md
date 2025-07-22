@@ -4,7 +4,8 @@
 
 ### Added
 
-- Added support for solana spl tokens
+- Added support for solana spl tokens in staging
+- Added support for solana spl tokens in testnet
 
 ## [1.0.7]
 
