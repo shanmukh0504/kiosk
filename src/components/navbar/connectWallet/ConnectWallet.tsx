@@ -145,12 +145,13 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         (connector.isBitcoin && connector.isStarknet) ||
         (connector.isEVM && connector.isSolana) ||
         (connector.isBitcoin && connector.isSolana) ||
-        (connector.isStarknet && connector.isSolana)
+        (connector.isStarknet && connector.isSolana) ||
+        (connector.isStarknet && connector.isEVM)
       ) {
         if (
           (!connector.wallet?.evmWallet && !connector.wallet?.btcWallet) ||
           (!connector.wallet?.btcWallet && !connector.wallet?.starknetWallet) ||
-          !connector.wallet?.btcWallet
+          (!connector.wallet?.evmWallet && !connector.wallet?.starknetWallet)
         )
           return;
 
