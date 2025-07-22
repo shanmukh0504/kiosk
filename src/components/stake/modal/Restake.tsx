@@ -13,10 +13,10 @@ import {
 import { useWriteContract } from "wagmi";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { useSwitchChain } from "wagmi";
-import { Hex } from "viem";
+import { Address, Hex } from "viem";
 import { maxUint256 } from "viem";
 import { stakeABI } from "../abi/stake";
-import { waitForTransactionReceipt } from "wagmi/actions";
+import { simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../../../layout/wagmi/config";
 import { Toast } from "../../toast/Toast";
 import { Button } from "@gardenfi/garden-book";
@@ -58,12 +58,16 @@ export const Restake: FC<RestakeProps> = ({
               DURATION_MAP[selectedDuration].lockDuration * ETH_BLOCKS_PER_DAY
             );
 
-      const tx = await writeContractAsync({
-        address: stakingConfig.STAKING_CONTRACT_ADDRESS as Hex,
+      const { request } = await simulateContract(config, {
         abi: stakeABI,
+        address: stakingConfig.STAKING_CONTRACT_ADDRESS as Hex,
         functionName: "renew",
         args: [stakePos.id as Hex, lockDuration],
+        account: address as Address,
+        chainId: STAKING_CHAIN,
       });
+
+      const tx = await writeContractAsync(request);
 
       await waitForTransactionReceipt(config, {
         hash: tx,

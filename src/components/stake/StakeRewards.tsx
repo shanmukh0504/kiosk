@@ -4,10 +4,10 @@ import { distributerABI } from "./abi/distributerClaim";
 import { useReadContract, useSwitchChain, useWriteContract } from "wagmi";
 import { useState, useMemo, useRef } from "react";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { Hex } from "viem";
+import { Address, Hex } from "viem";
 import { formatAmount } from "../../utils/utils";
 import { REWARD_CHAIN, STAKE_REWARD } from "./constants";
-import { waitForTransactionReceipt } from "wagmi/actions";
+import { simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../../layout/wagmi/config";
 import { Toast } from "../toast/Toast";
 import { AnimatePresence, motion } from "framer-motion";
@@ -66,7 +66,7 @@ export const StakeRewards = () => {
         await new Promise((resolve) => setTimeout(resolve, 2000));
       }
 
-      const tx = await writeContractAsync({
+      const { request } = await simulateContract(config, {
         abi: distributerABI,
         functionName: "claim",
         address: rewardConfig.DISTRIBUTER_CONTRACT as Hex,
@@ -77,7 +77,10 @@ export const StakeRewards = () => {
           ("0x" + stakeRewards.rewardResponse.latest_claim_signature) as Hex,
         ],
         chainId: REWARD_CHAIN,
+        account: address as Address,
       });
+
+      const tx = await writeContractAsync(request);
       await waitForTransactionReceipt(config, {
         hash: tx,
       });
