@@ -86,7 +86,7 @@ export const FeesAndRateDetails = () => {
         isFees={showComparison.isFees}
         onComparisonUpdate={handleComparisonUpdate}
       />
-      <div className="flex flex-col rounded-2xl bg-white/50 pb-4 transition-all duration-200">
+      <div className="flex flex-col rounded-2xl bg-white/50 pb-3 transition-all duration-200">
         <div className="flex w-full items-center justify-between rounded-2xl px-4 pt-4">
           <div className="relative flex w-full items-center justify-start gap-1">
             <Typography size="h5" weight="medium" className="!text-mid-grey">
