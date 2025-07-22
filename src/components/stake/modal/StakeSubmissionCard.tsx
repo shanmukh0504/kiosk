@@ -9,8 +9,8 @@ import {
 import { Button } from "@gardenfi/garden-book";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { useReadContract, useSwitchChain, useWriteContract } from "wagmi";
-import { erc20Abi, Hex, maxUint256 } from "viem";
-import { waitForTransactionReceipt } from "wagmi/actions";
+import { Address, erc20Abi, Hex, maxUint256 } from "viem";
+import { simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../../../layout/wagmi/config";
 import { stakeABI } from "../abi/stake";
 import { MIN_STAKE_AMOUNT } from "../../../constants/stake";
@@ -72,7 +72,7 @@ export const StakeSubmissionCard: FC<StakeSubmissionCardProps> = ({
         return;
       }
       if (allowance.data === 0n || allowance.data < _amount) {
-        const res = await writeContractAsync({
+        const { request } = await simulateContract(config, {
           abi: erc20Abi,
           functionName: "approve",
           address: stakingConfig.SEED_ADDRESS as Hex,
@@ -82,7 +82,11 @@ export const StakeSubmissionCard: FC<StakeSubmissionCardProps> = ({
               : (stakingConfig.STAKING_CONTRACT_ADDRESS as Hex),
             maxUint256,
           ],
+          account: address as Address,
+          chainId: STAKING_CHAIN,
         });
+
+        const res = await writeContractAsync(request);
         await waitForTransactionReceipt(config, {
           hash: res,
         });

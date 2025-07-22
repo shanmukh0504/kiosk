@@ -21,10 +21,10 @@ import { modalNames, modalStore } from "../../../store/modalStore";
 import { menuStore } from "../../../store/menuStore";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { useSwitchChain, useWriteContract } from "wagmi";
-import { Hex } from "viem";
+import { Address, Hex } from "viem";
 import { stakeABI } from "../abi/stake";
 import { Toast } from "../../toast/Toast";
-import { waitForTransactionReceipt } from "wagmi/actions";
+import { simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../../../layout/wagmi/config";
 
 type props = {
@@ -114,12 +114,16 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
 
       const stakingConfig = STAKING_CONFIG[STAKING_CHAIN];
 
-      const tx = await writeContractAsync({
-        address: stakingConfig.STAKING_CONTRACT_ADDRESS as Hex,
+      const { request } = await simulateContract(config, {
         abi: stakeABI,
+        address: stakingConfig.STAKING_CONTRACT_ADDRESS as Hex,
         functionName: "refund",
         args: [stakePos.id as Hex],
+        account: address as Address,
+        chainId: STAKING_CHAIN,
       });
+
+      const tx = await writeContractAsync(request);
       await waitForTransactionReceipt(config, {
         hash: tx,
       });
