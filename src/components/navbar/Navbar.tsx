@@ -45,7 +45,11 @@ export const Navbar = () => {
             const isActive = paths.some(isCurrentRoute);
             const primaryPath = paths[0];
             return (
-              <a key={primaryPath} href={primaryPath}>
+              <a
+                key={primaryPath}
+                href={primaryPath}
+                target={route.isExternal ? "_blank" : undefined}
+              >
                 <Typography size="h2" weight={isActive ? "bold" : "medium"}>
                   {route.name}
                 </Typography>

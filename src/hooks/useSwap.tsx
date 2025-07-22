@@ -87,7 +87,7 @@ export const useSwap = () => {
       ];
 
     return balances[getOrderPair(inputAsset.chain, inputAsset.tokenAddress)];
-  }, [inputAsset, balances, maxSpendableNativeBalances]);
+  }, [inputAsset, balances]);
 
   const inputTokenBalance = useMemo(() => {
     if (!inputBalance || !inputAsset) return undefined;
