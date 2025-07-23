@@ -42,6 +42,10 @@ export const getAvailableWallets = (
     "keplr": {
       check: () => typeof window !== "undefined" && !!window.keplr && typeof window.keplr === 'object' && 'ethereum' in window.keplr,
       connectorId: "keplr"
+    },
+    "leap": {
+      check: () => typeof window !== "undefined" && !!window.leap && typeof window.leap === 'object' && 'ethereum' in window.leap,
+      connectorId: "leap"
     }
   };
   
@@ -53,7 +57,7 @@ export const getAvailableWallets = (
       let isAvailable = !!wallet;
 
       const config = manualEVMChecks[key];
-      if (config && !isAvailable) {
+      if (config) {
         isAvailable = config.check();
         if (isAvailable) {
           wallet = evmWallets.find((w) => w.id === config.connectorId) || wallet;
