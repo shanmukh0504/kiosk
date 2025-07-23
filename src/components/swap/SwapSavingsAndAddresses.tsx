@@ -49,8 +49,7 @@ export const SwapSavingsAndAddresses = ({
               <div className="h-4 w-8 animate-pulse rounded bg-gray-200"></div>
             ) : (
               <Typography size="h5" weight="medium">
-                {(inputAsset && !isBitcoin(inputAsset.chain)) ||
-                Number(networkFeesValue) <= 0
+                {(inputAsset && !isBitcoin(inputAsset.chain)) 
                   ? "Free"
                   : "$" + networkFeesValue}
               </Typography>
