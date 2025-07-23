@@ -4,8 +4,11 @@
 
 ### Added
 
-- Added support for solana spl tokens
-- Updated fee structure UI
+- Added new fee structure UI
+
+### Fixed
+
+- Fixed posting refundSacp for an order regardless any state
 
 ## [1.0.7]
 

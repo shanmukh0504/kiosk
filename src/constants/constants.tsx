@@ -18,18 +18,25 @@ export const isTestnet = network === Network.TESTNET;
 
 export const INTERNAL_ROUTES: Record<
   string,
-  { name: string; path: string[]; enabled: boolean }
+  { name: string; path: string[]; enabled: boolean; isExternal?: boolean }
 > = {
-  swap: { name: "Swap", path: ["/", "/swap"], enabled: true },
+  swap: {
+    name: "Swap",
+    path: ["/", "/swap"],
+    enabled: true,
+    isExternal: false,
+  },
   stake: {
     name: "Stake",
     path: ["/stake"],
     enabled: network !== Network.TESTNET,
+    isExternal: false,
   },
   faucet: {
     name: "Faucet",
     path: ["https://testnetbtc.com"],
     enabled: network === Network.TESTNET,
+    isExternal: true,
   },
   // quests: { name: "Quests", path: "/quests" },
 } as const;
