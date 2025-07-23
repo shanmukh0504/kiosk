@@ -1,4 +1,4 @@
-import { InfoIcon, Typography } from "@gardenfi/garden-book";
+import { Typography } from "@gardenfi/garden-book";
 import { AnimatePresence, motion } from "framer-motion";
 import { formatAmount } from "../../utils/utils";
 import {
@@ -7,12 +7,12 @@ import {
 } from "../../animations/animations";
 import { formatTime } from "../../utils/timeAndFeeComparison/utils";
 import { AddressDetails } from "./AddressDetails";
-import { useSwap } from "../../hooks/useSwap";
-import { TooltipWrapper } from "../../common/ToolTipWrapper";
-import { useRef, useState } from "react";
-import { isBitcoin } from "@gardenfi/orderbook";
+// import { TooltipWrapper } from "../../common/ToolTipWrapper";
+// import { useRef, useState } from "react";
+// import { isBitcoin } from "@gardenfi/orderbook";
 import { getBitcoinNetwork } from "../../constants/constants";
 import { useNetworkFees } from "../../hooks/useNetworkFees";
+import { swapStore } from "../../store/swapStore";
 
 type SwapSavingsProps = {
   timeSaved: number;
@@ -29,11 +29,15 @@ export const SwapSavingsAndAddresses = ({
   receiveAddress,
   showComparison,
 }: SwapSavingsProps) => {
-  const { outputAsset, outputAmount, inputAsset } = useSwap();
-  const [isHovered, setIsHovered] = useState(false);
-  const targetRef = useRef<HTMLDivElement>(null);
+  const { outputAsset, outputAmount, inputAsset } = swapStore();
+  // const [isHovered, setIsHovered] = useState(false);
+  // const targetRef = useRef<HTMLDivElement>(null);
   const network = getBitcoinNetwork();
-  const { networkFeesValue, isLoading } = useNetworkFees(network, inputAsset);
+  const { networkFeesValue, isLoading } = useNetworkFees(
+    network,
+    inputAsset,
+    outputAsset
+  );
 
   return (
     <motion.div className="flex flex-col" {...expandWithDelayAnimation}>
@@ -49,9 +53,7 @@ export const SwapSavingsAndAddresses = ({
               <div className="h-4 w-8 animate-pulse rounded bg-gray-200"></div>
             ) : (
               <Typography size="h5" weight="medium">
-                {(inputAsset && !isBitcoin(inputAsset.chain)) 
-                  ? "Free"
-                  : "$" + networkFeesValue}
+                {networkFeesValue === 0 ? "Free" : "$" + networkFeesValue}
               </Typography>
             )}
           </div>
@@ -61,7 +63,7 @@ export const SwapSavingsAndAddresses = ({
             <Typography size="h5" weight="medium" className="!text-mid-grey">
               Minimum received
             </Typography>
-            <span
+            {/* <span
               ref={targetRef}
               className="inline-block cursor-pointer"
               onMouseEnter={() => setIsHovered(true)}
@@ -84,7 +86,7 @@ export const SwapSavingsAndAddresses = ({
                   </div>
                 </TooltipWrapper>
               )}
-            </span>
+            </span> */}
           </div>
           <div className="flex gap-5 py-1">
             <Typography size="h5" weight="medium">

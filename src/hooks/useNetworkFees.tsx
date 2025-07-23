@@ -1,23 +1,45 @@
 import { useEffect, useState } from "react";
-import { BitcoinNetwork } from "@gardenfi/core";
-import { calculateNetworkFees } from "../utils/getNetworkFees";
+import { BitcoinNetwork, constructOrderPair } from "@gardenfi/core";
+import { calculateBitcoinNetworkFees } from "../utils/getNetworkFees";
 import { formatAmount } from "../utils/utils";
-import { Asset } from "@gardenfi/orderbook";
+import { Asset, isBitcoin } from "@gardenfi/orderbook";
+import { assetInfoStore } from "../store/assetInfoStore";
 
 export const useNetworkFees = (
   network: BitcoinNetwork,
+  inputAsset?: Asset,
   outputAsset?: Asset
 ) => {
   const [networkFeesValue, setNetworkFeesValue] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
 
+  const { strategies } = assetInfoStore();
+
   useEffect(() => {
-    let intervalId: number | null = null;
+    if (!inputAsset || !outputAsset || !strategies.val) return;
+
     const fetchNetworkFees = async () => {
       setIsLoading(true);
       try {
-        const fees = await calculateNetworkFees(network, outputAsset);
-        setNetworkFeesValue(formatAmount(fees, 0, 2));
+        if (isBitcoin(inputAsset.chain) || isBitcoin(outputAsset.chain)) {
+          const fees = await calculateBitcoinNetworkFees(
+            network,
+            isBitcoin(inputAsset.chain) ? inputAsset : outputAsset
+          );
+          setNetworkFeesValue(formatAmount(fees, 0, 2));
+        } else if (strategies.val) {
+          const strategy =
+            strategies.val[
+              constructOrderPair(
+                inputAsset.chain,
+                inputAsset.atomicSwapAddress,
+                outputAsset.chain,
+                outputAsset.atomicSwapAddress
+              )
+            ];
+          if (strategy)
+            setNetworkFeesValue(formatAmount(strategy.fixed_fee, 0));
+        }
       } catch (error) {
         console.error(error);
         setNetworkFeesValue(0);
@@ -27,12 +49,13 @@ export const useNetworkFees = (
     };
     fetchNetworkFees();
 
-    intervalId = window.setInterval(fetchNetworkFees, 15000);
+    const intervalId = setInterval(fetchNetworkFees, 15000);
 
     return () => {
-      if (intervalId) window.clearInterval(intervalId);
+      clearInterval(intervalId);
     };
-  }, [network, outputAsset]);
+  }, [network, inputAsset, outputAsset, strategies.val]);
+
   return {
     networkFeesValue,
     isLoading,
