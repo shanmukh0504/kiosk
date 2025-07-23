@@ -95,8 +95,8 @@ export const useSwap = () => {
   );
 
   const isInsufficientBalance = useMemo(() => {
-    if (!inputTokenBalance || !inputAmount) return false;
-    return new BigNumber(inputAmount).gt(inputTokenBalance);
+    if (!inputAmount || inputTokenBalance == null) return false;
+    return BigNumber(inputAmount).gt(inputTokenBalance);
   }, [inputAmount, inputTokenBalance]);
 
   const isBitcoinSwap = useMemo(() => {
