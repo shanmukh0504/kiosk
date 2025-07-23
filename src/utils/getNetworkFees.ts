@@ -21,17 +21,18 @@ const getBTCPrice = async (): Promise<number> => {
   return btcEntry?.token_price || 0;
 };
 
-export const calculateNetworkFees = async (
+export const calculateBitcoinNetworkFees = async (
   network: BitcoinNetwork,
-  outputAsset?: Asset
+  asset?: Asset
 ): Promise<number> => {
+  if (asset && !isBitcoin(asset.chain)) return 0;
+
   const btcPrice = await getBTCPrice();
   const provider = new BitcoinProvider(network);
 
-  if (outputAsset && !isBitcoin(outputAsset.chain)) return 0;
   const feeRate = await provider.getFeeRates();
 
-  const fees = Math.ceil(feeRate.hourFee * 142); // in sats
+  const fees = Math.ceil(feeRate.fastestFee * 142); // in sats
   const feesInBTC = fees / 10 ** BTC.decimals;
 
   return feesInBTC * btcPrice;

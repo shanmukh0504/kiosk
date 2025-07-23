@@ -72,10 +72,10 @@ export const CreateSwap = () => {
   const { connector } = useEVMWallet();
 
   const isChainSupported = useMemo(() => {
-    if (!connector || !inputAsset) return true;
+    if (!connector || !inputAsset || !outputAsset) return true;
     if (!WALLET_SUPPORTED_CHAINS[connector.id]) return true;
     return WALLET_SUPPORTED_CHAINS[connector.id].includes(inputAsset.chain);
-  }, [connector, inputAsset]);
+  }, [connector, inputAsset, outputAsset]);
 
   const buttonLabel = useMemo(() => {
     if (needsWalletConnection)
@@ -105,15 +105,13 @@ export const CreateSwap = () => {
   ]);
 
   const buttonDisabled = useMemo(() => {
-    return !!error.liquidityError ||
-      !!error.insufficientBalanceError ||
-      loadingDisabled ||
-      isSwapping ||
-      !isChainSupported
+    return !!error.liquidityError || loadingDisabled
       ? true
       : needsWalletConnection || validSwap
         ? false
-        : true;
+        : !isChainSupported || isSwapping
+          ? true
+          : true;
   }, [
     isChainSupported,
     isSwapping,
@@ -138,6 +136,7 @@ export const CreateSwap = () => {
     if (!inputAsset || !outputAsset) return "";
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
+
 
   const handleConnectWallet = () => {
     if (!needsWalletConnection) return;

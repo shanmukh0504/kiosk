@@ -1,4 +1,4 @@
-import { InfoIcon, Typography } from "@gardenfi/garden-book";
+import { Typography } from "@gardenfi/garden-book";
 import { AnimatePresence, motion } from "framer-motion";
 import { formatAmount } from "../../utils/utils";
 import {
@@ -7,10 +7,11 @@ import {
 } from "../../animations/animations";
 import { formatTime } from "../../utils/timeAndFeeComparison/utils";
 import { AddressDetails } from "./AddressDetails";
-import { useSwap } from "../../hooks/useSwap";
-import { TooltipWrapper } from "../../common/ToolTipWrapper";
-import { CostToolTip } from "./CostToolTip";
-import { useMemo, useRef, useState } from "react";
+// import { TooltipWrapper } from "../../common/ToolTipWrapper";
+// import { useRef, useState } from "react";
+// import { isBitcoin } from "@gardenfi/orderbook";
+import { getBitcoinNetwork } from "../../constants/constants";
+import { useNetworkFees } from "../../hooks/useNetworkFees";
 import { swapStore } from "../../store/swapStore";
 
 type SwapSavingsProps = {
@@ -18,8 +19,6 @@ type SwapSavingsProps = {
   costSaved: number;
   refundAddress: string | undefined;
   receiveAddress: string | undefined;
-  protocolFee: number;
-  networkFeesValue: number;
   showComparison: (type: "time" | "fees") => void;
 };
 
@@ -28,26 +27,16 @@ export const SwapSavingsAndAddresses = ({
   costSaved,
   refundAddress,
   receiveAddress,
-  protocolFee,
-  networkFeesValue,
   showComparison,
 }: SwapSavingsProps) => {
-  const { outputAsset, outputAmount } = useSwap();
-  const [isHovered, setIsHovered] = useState(false);
-  const targetRef = useRef<HTMLDivElement>(null);
-
-  const { tokenPrices, inputAsset } = swapStore();
-
-  const priceImpact = useMemo(() => {
-    if (!tokenPrices) return 0;
-    const input = Number(tokenPrices.input);
-    const output = Number(tokenPrices.output);
-    return (1 - (output + protocolFee) / input) * 100;
-  }, [tokenPrices, protocolFee]);
-
-  const fees = useMemo(
-    () => protocolFee + networkFeesValue,
-    [protocolFee, networkFeesValue]
+  const { outputAsset, outputAmount, inputAsset } = swapStore();
+  // const [isHovered, setIsHovered] = useState(false);
+  // const targetRef = useRef<HTMLDivElement>(null);
+  const network = getBitcoinNetwork();
+  const { networkFeesValue, isLoading } = useNetworkFees(
+    network,
+    inputAsset,
+    outputAsset
   );
 
   return (
@@ -56,9 +45,25 @@ export const SwapSavingsAndAddresses = ({
         <div className="flex items-center justify-between px-4 pt-1">
           <div className="flex items-center gap-1">
             <Typography size="h5" weight="medium" className="!text-mid-grey">
-              Fees
+              Network fee
             </Typography>
-            <span
+          </div>
+          <div className="flex gap-5 py-1">
+            {isLoading ? (
+              <div className="h-4 w-8 animate-pulse rounded bg-gray-200"></div>
+            ) : (
+              <Typography size="h5" weight="medium">
+                {networkFeesValue === 0 ? "Free" : "$" + networkFeesValue}
+              </Typography>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center justify-between px-4">
+          <div className="flex items-center gap-1">
+            <Typography size="h5" weight="medium" className="!text-mid-grey">
+              Minimum received
+            </Typography>
+            {/* <span
               ref={targetRef}
               className="inline-block cursor-pointer"
               onMouseEnter={() => setIsHovered(true)}
@@ -67,49 +72,43 @@ export const SwapSavingsAndAddresses = ({
               <InfoIcon className="h-3 w-3 !fill-mid-grey" />
               {isHovered && inputAsset && outputAsset && (
                 <TooltipWrapper targetRef={targetRef}>
-                  <CostToolTip
-                    networkFee={networkFeesValue}
-                    protocolFee={protocolFee}
-                  />
+                  <div className="flex min-w-32 justify-between">
+                    <Typography
+                      size="h5"
+                      weight="medium"
+                      className="!text-mid-grey"
+                    >
+                      Slippage
+                    </Typography>
+                    <Typography size="h5" weight="medium">
+                      0.50%
+                    </Typography>
+                  </div>
                 </TooltipWrapper>
               )}
-            </span>
+            </span> */}
           </div>
           <div className="flex gap-5 py-1">
-            <Typography size="h4" weight="medium">
-              ${formatAmount(fees, 0, 2)}
-            </Typography>
-          </div>
-        </div>
-        <div className="flex items-center justify-between px-4">
-          <Typography size="h5" weight="medium" className="!text-mid-grey">
-            Price impact
-          </Typography>
-          <div className="flex gap-5 py-1">
-            <Typography size="h4" weight="medium">
-              {priceImpact > 0 && "-"}
-              {formatAmount(priceImpact, 0, 2)}%
-            </Typography>
-          </div>
-        </div>
-        <div className="flex items-center justify-between px-4">
-          <Typography size="h5" weight="medium" className="!text-mid-grey">
-            Min. received
-          </Typography>
-          <div className="flex gap-5 py-1">
-            <Typography size="h4" weight="medium">
+            <Typography size="h5" weight="medium">
               {outputAmount} {outputAsset?.symbol}
             </Typography>
           </div>
         </div>
+        {(receiveAddress || refundAddress) && (
+          <>
+            <div className="flex flex-col items-stretch justify-center">
+              {receiveAddress && <AddressDetails address={receiveAddress} />}
+              {refundAddress && (
+                <AddressDetails address={refundAddress} isRefund />
+              )}
+            </div>
+          </>
+        )}
       </div>
       <AnimatePresence mode="wait">
         {(timeSaved > 0 || costSaved > 0) && (
           <motion.div {...expandAnimation}>
-            <div
-              className="z-10 mx-4 my-1 h-px bg-white"
-              {...expandAnimation}
-            ></div>
+            <div className="z-10 mt-1" {...expandAnimation}></div>
             {timeSaved > 0 && (
               <motion.div
                 key="time-saved"
@@ -130,7 +129,7 @@ export const SwapSavingsAndAddresses = ({
                   >
                     Time saved
                   </Typography>
-                  <div className="flex gap-5 py-1">
+                  <div className="flex gap-5 pb-1">
                     <Typography
                       size="h4"
                       weight="medium"
@@ -163,7 +162,7 @@ export const SwapSavingsAndAddresses = ({
                   >
                     Cost saved
                   </Typography>
-                  <div className="flex gap-5 py-1">
+                  <div className="flex gap-5 pt-1">
                     <Typography
                       size="h4"
                       weight="medium"
@@ -178,17 +177,6 @@ export const SwapSavingsAndAddresses = ({
           </motion.div>
         )}
       </AnimatePresence>
-      {(receiveAddress || refundAddress) && (
-        <>
-          <div className={`mx-4 my-1 h-px bg-white`}></div>
-          <div className="flex flex-col items-stretch justify-center">
-            {receiveAddress && <AddressDetails address={receiveAddress} />}
-            {refundAddress && (
-              <AddressDetails address={refundAddress} isRefund />
-            )}
-          </div>
-        </>
-      )}
     </motion.div>
   );
 };

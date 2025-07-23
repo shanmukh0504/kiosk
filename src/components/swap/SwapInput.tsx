@@ -18,6 +18,8 @@ import { modalNames, modalStore } from "../../store/modalStore";
 import { ErrorFormat } from "../../constants/errors";
 import NumberFlow from "@number-flow/react";
 import clsx from "clsx/lite";
+import { formatAmount } from "../../utils/utils";
+import { swapStore } from "../../store/swapStore";
 
 type SwapInputProps = {
   type: IOType;
@@ -49,6 +51,12 @@ export const SwapInput: FC<SwapInputProps> = ({
 
   const { setOpenAssetSelector, chains } = assetInfoStore();
   const { setOpenModal } = modalStore();
+  const { rate } = swapStore();
+
+  const priceImpact = useMemo(() => {
+    if (!rate || rate === 0 || rate === 1) return 0;
+    return (1 - rate) * 100;
+  }, [rate]);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -104,10 +112,6 @@ export const SwapInput: FC<SwapInputProps> = ({
     }
   };
 
-  useEffect(() => {
-    setAnimated(true);
-  }, [asset, isFocused]);
-
   const handleBalanceClick = () => {
     if (type === IOType.input && balance && asset) {
       if (
@@ -125,6 +129,10 @@ export const SwapInput: FC<SwapInputProps> = ({
     setOpenAssetSelector(type);
     setOpenModal(modalNames.assetList);
   };
+
+  useEffect(() => {
+    setAnimated(true);
+  }, [asset, isFocused]);
 
   // Show loading opacity when loading
   useEffect(() => {
@@ -153,11 +161,25 @@ export const SwapInput: FC<SwapInputProps> = ({
             >
               {label}
             </Typography>
-            {amount && Number(price) !== 0 && (
-              <Typography size="h5" weight="medium">
-                <span className="text-mid-grey">~${price}</span>
-              </Typography>
-            )}
+            <div className="flex gap-2">
+              {amount && Number(price) !== 0 && (
+                <Typography size="h5" weight="medium">
+                  <span className="text-mid-grey">~${price}</span>
+                </Typography>
+              )}
+              {type === IOType.output &&
+                Number(price) !== 0 &&
+                priceImpact > 0 && (
+                  <Typography
+                    size="h5"
+                    weight="medium"
+                    className="!text-mid-grey"
+                  >
+                    {"-"}
+                    {formatAmount(priceImpact, 0, 2)}%
+                  </Typography>
+                )}
+            </div>
           </div>
           {type === IOType.input &&
             (error ? (

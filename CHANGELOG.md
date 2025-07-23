@@ -2,6 +2,10 @@
 
 ## [1.0.8]
 
+### Added
+
+- Added new fee structure UI
+
 ### Fixed
 
 - Fixed posting refundSacp for an order regardless any state
