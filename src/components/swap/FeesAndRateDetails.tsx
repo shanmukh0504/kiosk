@@ -10,6 +10,7 @@ import { delayedFadeAnimation } from "../../animations/animations";
 import { SwapSavingsAndAddresses } from "./SwapSavingsAndAddresses";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { TooltipWrapper } from "../../common/ToolTipWrapper";
+import { formatAmount } from "../../utils/utils";
 
 export const FeesAndRateDetails = () => {
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
@@ -29,7 +30,7 @@ export const FeesAndRateDetails = () => {
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
   const formattedRate = useMemo(
-    () => Number(rate.toFixed(isBitcoinChains ? 7 : 10)),
+    () => formatAmount(rate, 0, isBitcoinChains ? 7 : 10),
     [isBitcoinChains, rate]
   );
 
