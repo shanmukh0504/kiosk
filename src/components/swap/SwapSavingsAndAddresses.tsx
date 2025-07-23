@@ -46,7 +46,7 @@ export const SwapSavingsAndAddresses = ({
           </div>
           <div className="flex gap-5 py-1">
             {isLoading ? (
-              <div className="h-4 w-10 animate-pulse rounded bg-gray-100"></div>
+              <div className="h-4 w-8 animate-pulse rounded bg-gray-200"></div>
             ) : (
               <Typography size="h5" weight="medium">
                 {(inputAsset && !isBitcoin(inputAsset.chain)) ||
