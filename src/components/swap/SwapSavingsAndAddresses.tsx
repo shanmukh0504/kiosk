@@ -59,7 +59,7 @@ export const SwapSavingsAndAddresses = ({
         <div className="flex items-center justify-between px-4">
           <div className="flex items-center gap-1">
             <Typography size="h5" weight="medium" className="!text-mid-grey">
-              Minimum recieved
+              Minimum received
             </Typography>
             <span
               ref={targetRef}
