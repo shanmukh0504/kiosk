@@ -253,14 +253,12 @@ export const useSwap = () => {
             : quoteAmountInDecimals;
           const inputTokenPrice = inputAmount
             .multipliedBy(quote.val.input_token_price)
-            .toFixed(2);
           const outputTokenPrice = outputAmount
             .multipliedBy(quote.val.output_token_price)
-            .toFixed(2);
 
           setTokenPrices({
-            input: inputTokenPrice,
-            output: outputTokenPrice,
+            input: inputTokenPrice.toString(),
+            output: outputTokenPrice.toString(),
           });
           setError({
             liquidityError: Errors.none,

@@ -4,6 +4,7 @@ import { calculateBitcoinNetworkFees } from "../utils/getNetworkFees";
 import { formatAmount } from "../utils/utils";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { assetInfoStore } from "../store/assetInfoStore";
+import { swapStore } from "../store/swapStore";
 
 export const useNetworkFees = (
   network: BitcoinNetwork,
@@ -14,6 +15,7 @@ export const useNetworkFees = (
   const [isLoading, setIsLoading] = useState(false);
 
   const { strategies } = assetInfoStore();
+  const { rate, setRate } = swapStore();
 
   useEffect(() => {
     if (!inputAsset || !outputAsset || !strategies.val) return;
@@ -37,8 +39,10 @@ export const useNetworkFees = (
                 outputAsset.atomicSwapAddress
               )
             ];
-          if (strategy)
+          if (strategy) {
             setNetworkFeesValue(formatAmount(strategy.fixed_fee, 0));
+            setRate(rate + strategy.fixed_fee);
+          }
         }
       } catch (error) {
         console.error(error);

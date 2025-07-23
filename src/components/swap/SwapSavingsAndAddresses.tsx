@@ -10,8 +10,6 @@ import { AddressDetails } from "./AddressDetails";
 // import { TooltipWrapper } from "../../common/ToolTipWrapper";
 // import { useRef, useState } from "react";
 // import { isBitcoin } from "@gardenfi/orderbook";
-import { getBitcoinNetwork } from "../../constants/constants";
-import { useNetworkFees } from "../../hooks/useNetworkFees";
 import { swapStore } from "../../store/swapStore";
 
 type SwapSavingsProps = {
@@ -20,6 +18,8 @@ type SwapSavingsProps = {
   refundAddress: string | undefined;
   receiveAddress: string | undefined;
   showComparison: (type: "time" | "fees") => void;
+  networkFeesValue: number;
+  isLoading: boolean;
 };
 
 export const SwapSavingsAndAddresses = ({
@@ -28,16 +28,10 @@ export const SwapSavingsAndAddresses = ({
   refundAddress,
   receiveAddress,
   showComparison,
+  networkFeesValue,
+  isLoading,
 }: SwapSavingsProps) => {
-  const { outputAsset, outputAmount, inputAsset } = swapStore();
-  // const [isHovered, setIsHovered] = useState(false);
-  // const targetRef = useRef<HTMLDivElement>(null);
-  const network = getBitcoinNetwork();
-  const { networkFeesValue, isLoading } = useNetworkFees(
-    network,
-    inputAsset,
-    outputAsset
-  );
+  const { outputAsset, outputAmount } = swapStore();
 
   return (
     <motion.div className="flex flex-col" {...expandWithDelayAnimation}>
