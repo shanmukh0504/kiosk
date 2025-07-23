@@ -26,7 +26,6 @@ type SwapState = {
   inputAmount: string;
   outputAmount: string;
   rate: number;
-  priceImpact: number;
   btcAddress: string;
   isSwapping: boolean;
   isApproving: boolean;
@@ -44,7 +43,6 @@ type SwapState = {
   setAsset: (ioType: IOType, asset: Asset | undefined) => void;
   setAmount: (ioType: IOType, amount: string) => void;
   setRate: (rate: number) => void;
-  setPriceImpact: (priceImpact: number) => void;
   setBtcAddress: (btcAddress: string) => void;
   swapAssets: () => void;
   setError: (error: SwapErrors) => void;
@@ -72,7 +70,6 @@ export const swapStore = create<SwapState>((set) => ({
   inputAmount: "",
   outputAmount: "",
   rate: 0,
-  priceImpact: 0,
   btcAddress: "",
   isApproving: false,
   swapInProgress: {
@@ -114,12 +111,6 @@ export const swapStore = create<SwapState>((set) => ({
     set((state) => ({
       ...state,
       rate,
-    }));
-  },
-  setPriceImpact: (priceImpact) => {
-    set((state) => ({
-      ...state,
-      priceImpact,
     }));
   },
   setBtcAddress: (btcAddress) => {
@@ -187,7 +178,6 @@ export const swapStore = create<SwapState>((set) => ({
       inputAmount: "",
       outputAmount: "",
       rate: 0,
-      priceImpact: 0,
       btcAddress: "",
       outputAsset: undefined,
       inputAsset: BTC,
@@ -218,7 +208,6 @@ export const swapStore = create<SwapState>((set) => ({
       outputAmount: "",
       btcAddress: "",
       rate: 0,
-      priceImpact: 0,
       outputAsset: undefined,
       inputAsset: BTC,
       isSwapping: false,
@@ -247,7 +236,6 @@ export const swapStore = create<SwapState>((set) => ({
       inputAmount: "",
       outputAmount: "",
       rate: 0,
-      priceImpact: 0,
       tokenPrices: {
         input: "0",
         output: "0",

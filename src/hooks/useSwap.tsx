@@ -44,7 +44,6 @@ export const useSwap = () => {
     setIsSwapping,
     setAmount,
     setRate,
-    setPriceImpact,
     setError,
     swapAssets,
     setAsset,
@@ -237,7 +236,6 @@ export const useSwap = () => {
 
           const rate = Number(quoteAmountInDecimals) / Number(amount);
           setRate(rate);
-          setPriceImpact((1 - rate) * 100);
 
           setAmount(
             isExactOut ? IOType.input : IOType.output,
@@ -275,7 +273,6 @@ export const useSwap = () => {
       setIsFetchingQuote,
       setStrategy,
       setRate,
-      setPriceImpact,
       setAmount,
       setTokenPrices,
       setError,

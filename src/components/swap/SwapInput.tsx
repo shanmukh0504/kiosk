@@ -51,7 +51,12 @@ export const SwapInput: FC<SwapInputProps> = ({
 
   const { setOpenAssetSelector, chains } = assetInfoStore();
   const { setOpenModal } = modalStore();
-  const { priceImpact } = swapStore();
+  const { rate } = swapStore();
+
+  const priceImpact = useMemo(() => {
+    if (!rate || rate === 0 || rate === 1) return 0;
+    return (1 - rate) * 100;
+  }, [rate]);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -162,16 +167,18 @@ export const SwapInput: FC<SwapInputProps> = ({
                   <span className="text-mid-grey">~${price}</span>
                 </Typography>
               )}
-              {type === IOType.output && price && priceImpact > 0 && (
-                <Typography
-                  size="h5"
-                  weight="medium"
-                  className="!text-mid-grey"
-                >
-                  {priceImpact > 0 ? "-" : ""}
-                  {formatAmount(priceImpact, 0, 2)}%
-                </Typography>
-              )}
+              {type === IOType.output &&
+                Number(price) !== 0 &&
+                priceImpact > 0 && (
+                  <Typography
+                    size="h5"
+                    weight="medium"
+                    className="!text-mid-grey"
+                  >
+                    {"-"}
+                    {formatAmount(priceImpact, 0, 2)}%
+                  </Typography>
+                )}
             </div>
           </div>
           {type === IOType.input &&
