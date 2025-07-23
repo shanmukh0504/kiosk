@@ -276,7 +276,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   },
 
   fetchAndSetBitcoinBalance: async (provider: IInjectedBitcoinProvider) => {
-    const { assets } = get();
+    const { assets, balances } = get();
     if (!assets || !provider) return;
 
     try {
@@ -295,14 +295,14 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           {} as Record<string, BigNumber | undefined>
         );
 
-      set({ balances: { ...get().balances, ...btcBalance } });
+      set({ balances: { ...balances, ...btcBalance } });
     } catch {
       /*empty*/
     }
   },
 
   fetchAndSetStarknetBalance: async (address: string) => {
-    const { assets } = get();
+    const { assets, balances } = get();
     if (!assets) return;
 
     const starknetAsset = Object.values(assets).find((asset) =>
@@ -319,31 +319,24 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       starknetAsset.tokenAddress
     );
     starknetBalance[orderPair] = new BigNumber(balance);
-    set({ balances: { ...get().balances, ...starknetBalance } });
+    set({ balances: { ...balances, ...starknetBalance } });
   },
 
   fetchAndSetSolanaBalance: async (address: PublicKey) => {
-    const { assets } = get();
+    const { assets, balances } = get();
     if (!assets) return;
-    const solanaAssets = Object.values(assets).filter((asset) =>
+
+    const solanaAsset = Object.values(assets).find((asset) =>
       isSolana(asset.chain)
     );
 
-    if (solanaAssets.length === 0) return;
+    if (!solanaAsset) return;
+    const solanaBalance: Record<string, BigNumber | undefined> = {};
 
-    const solanaBalances: Record<string, BigNumber | undefined> = {};
-
-    for (const asset of solanaAssets) {
-      try {
-        const balance = await getSolanaTokenBalance(address, asset);
-        const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
-        solanaBalances[orderPair] = new BigNumber(balance);
-      } catch (err) {
-        continue;
-      }
-    }
-
-    set({ balances: { ...get().balances, ...solanaBalances } });
+    const balance = await getSolanaTokenBalance(address, solanaAsset);
+    const orderPair = getOrderPair(solanaAsset.chain, solanaAsset.tokenAddress);
+    solanaBalance[orderPair] = new BigNumber(balance);
+    set({ balances: { ...balances, ...solanaBalance } });
   },
 
   clearBalances: () =>
