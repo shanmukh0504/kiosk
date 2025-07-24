@@ -208,7 +208,9 @@ export const FeesAndRateDetails = () => {
                       weight="medium"
                       className="!text-nowrap"
                     >
-                      {networkFees === 0 ? "Free" : "$" + networkFees}
+                      {networkFees === 0
+                        ? "Free"
+                        : "$" + formatAmount(0.3365, 0, 2)}
                     </Typography>
                   </div>
                 </motion.div>
@@ -239,7 +241,7 @@ export const FeesAndRateDetails = () => {
               refundAddress={refundAddress}
               receiveAddress={receiveAddress}
               showComparison={handleShowComparison}
-              networkFeesValue={networkFees}
+              networkFeesValue={formatAmount(networkFees, 0, 2)}
               isLoading={isNetworkFeesLoading}
             />
           )}
