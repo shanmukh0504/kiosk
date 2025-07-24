@@ -16,8 +16,6 @@ import { SwapSavingsAndAddresses } from "./SwapSavingsAndAddresses";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { TooltipWrapper } from "../../common/ToolTipWrapper";
 import { formatAmount } from "../../utils/utils";
-import { getBitcoinNetwork } from "../../constants/constants";
-import { useNetworkFees } from "../../hooks/useNetworkFees";
 
 const RateDisplay = ({
   inputAsset,
