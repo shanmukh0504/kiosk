@@ -210,7 +210,7 @@ export const FeesAndRateDetails = () => {
                     >
                       {networkFees === 0
                         ? "Free"
-                        : "$" + formatAmount(0.3365, 0, 2)}
+                        : "$" + formatAmount(networkFees, 0, 2)}
                     </Typography>
                   </div>
                 </motion.div>
