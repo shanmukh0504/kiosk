@@ -37,9 +37,8 @@ export const useNetworkFees = (
                 outputAsset.atomicSwapAddress
               )
             ];
-          if (strategy) {
+          if (strategy)
             setNetworkFeesValue(formatAmount(strategy.fixed_fee, 0));
-          }
         }
       } catch (error) {
         console.error(error);
