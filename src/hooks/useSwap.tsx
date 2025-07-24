@@ -75,8 +75,6 @@ export const useSwap = () => {
   const bitcoinNetwork = getBitcoinNetwork();
   useNetworkFees(bitcoinNetwork, inputAsset, outputAsset);
 
-  console.log("networkFees", networkFees);
-
   const inputBalance = useMemo(() => {
     if (!inputAsset || !balances) return;
     if (isBitcoin(inputAsset.chain) || isSolana(inputAsset.chain))
