@@ -15,7 +15,6 @@ export const useNetworkFees = (
   const [isLoading, setIsLoading] = useState(false);
 
   const { strategies } = assetInfoStore();
-  const { rate, setRate } = swapStore();
 
   useEffect(() => {
     if (!inputAsset || !outputAsset || !strategies.val) return;
@@ -41,7 +40,6 @@ export const useNetworkFees = (
             ];
           if (strategy) {
             setNetworkFeesValue(formatAmount(strategy.fixed_fee, 0));
-            setRate(rate + strategy.fixed_fee);
           }
         }
       } catch (error) {

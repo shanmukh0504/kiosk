@@ -234,7 +234,19 @@ export const useSwap = () => {
             Math.pow(10, assetToChange.decimals)
           );
 
-          const rate = Number(quoteAmountInDecimals) / Number(amount);
+          const strategyKey = constructOrderPair(
+            fromAsset.chain,
+            fromAsset.atomicSwapAddress,
+            toAsset.chain,
+            toAsset.atomicSwapAddress
+          );
+          const strategy = strategies.val?.[strategyKey];
+          let outputAmountWithFee =
+            strategy && !isBitcoin(fromAsset.chain) && !isBitcoin(toAsset.chain)
+              ? quoteAmountInDecimals + strategy.fixed_fee
+              : quoteAmountInDecimals;
+          console.log(outputAmountWithFee,strategy.fixed_fee);
+          const rate = Number(outputAmountWithFee) / Number(amount);
           setRate(rate);
 
           setAmount(
@@ -251,10 +263,12 @@ export const useSwap = () => {
           const outputAmount = isExactOut
             ? new BigNumber(amount)
             : quoteAmountInDecimals;
-          const inputTokenPrice = inputAmount
-            .multipliedBy(quote.val.input_token_price)
-          const outputTokenPrice = outputAmount
-            .multipliedBy(quote.val.output_token_price)
+          const inputTokenPrice = inputAmount.multipliedBy(
+            quote.val.input_token_price
+          );
+          const outputTokenPrice = outputAmount.multipliedBy(
+            quote.val.output_token_price
+          );
 
           setTokenPrices({
             input: inputTokenPrice.toString(),
