@@ -24,6 +24,7 @@ import BigNumber from "bignumber.js";
 import { useSolanaWallet } from "./useSolanaWallet";
 import { formatAmount, getOrderPair } from "../utils/utils";
 import { useNativeMaxBalances } from "./useBalances";
+import { useNetworkFees } from "./useNetworkFees";
 
 export const useSwap = () => {
   const {
@@ -40,6 +41,7 @@ export const useSwap = () => {
     tokenPrices,
     isFetchingQuote,
     isEditBTCAddress,
+    networkFees,
     setStrategy,
     setIsSwapping,
     setAmount,
@@ -69,6 +71,8 @@ export const useSwap = () => {
   const { setOpenModal } = modalStore();
   const { solanaAddress } = useSolanaWallet();
   const maxSpendableNativeBalances = useNativeMaxBalances();
+
+  useNetworkFees();
 
   const inputBalance = useMemo(() => {
     if (!inputAsset || !balances) return;
@@ -233,8 +237,12 @@ export const useSwap = () => {
           const quoteAmountInDecimals = new BigNumber(Number(quoteAmount)).div(
             Math.pow(10, assetToChange.decimals)
           );
-
-          const rate = Number(quoteAmountInDecimals) / Number(amount);
+          // Add network fee to output amount before calculating rate
+          let outputAmountWithFee = Number(quoteAmountInDecimals);
+          if (!isBitcoin(fromAsset.chain) && !isBitcoin(toAsset.chain)) {
+            outputAmountWithFee = Number(quoteAmountInDecimals) + networkFees;
+          }
+          const rate = outputAmountWithFee / Number(amount);
           setRate(rate);
 
           setAmount(
@@ -251,16 +259,16 @@ export const useSwap = () => {
           const outputAmount = isExactOut
             ? new BigNumber(amount)
             : quoteAmountInDecimals;
-          const inputTokenPrice = inputAmount
-            .multipliedBy(quote.val.input_token_price)
-            .toFixed(2);
-          const outputTokenPrice = outputAmount
-            .multipliedBy(quote.val.output_token_price)
-            .toFixed(2);
+          const inputTokenPrice = inputAmount.multipliedBy(
+            quote.val.input_token_price
+          );
+          const outputTokenPrice = outputAmount.multipliedBy(
+            quote.val.output_token_price
+          );
 
           setTokenPrices({
-            input: inputTokenPrice,
-            output: outputTokenPrice,
+            input: inputTokenPrice.toString(),
+            output: outputTokenPrice.toString(),
           });
           setError({
             liquidityError: Errors.none,
@@ -277,6 +285,7 @@ export const useSwap = () => {
       setTokenPrices,
       setError,
       isSwapping,
+      networkFees,
     ]
   );
 
