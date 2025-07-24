@@ -246,7 +246,7 @@ export const useSwap = () => {
               ? Number(quoteAmountInDecimals) + strategy.fixed_fee
               : Number(quoteAmountInDecimals);
           console.log(outputAmountWithFee, strategy && strategy.fixed_fee);
-          const rate = Number(outputAmountWithFee) / Number(amount);
+          const rate = outputAmountWithFee / Number(amount);
           setRate(rate);
 
           setAmount(
