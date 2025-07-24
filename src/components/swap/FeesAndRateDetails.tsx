@@ -73,7 +73,7 @@ export const FeesAndRateDetails = () => {
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
   const formattedRate = useMemo(
-    () => formatAmount(rate, 0, isBitcoinChains ? 7 : rate > 1 ? 3 : 10),
+    () => formatAmount(rate, 0, isBitcoinChains ? 7 : 3),
     [isBitcoinChains, rate]
   );
 
