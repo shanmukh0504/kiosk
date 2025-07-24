@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { BTC, swapStore } from "../store/swapStore";
-import { IOType, network } from "../constants/constants";
+import { getBitcoinNetwork, IOType, network } from "../constants/constants";
 import { Asset, Chain, isBitcoin, isSolana } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
@@ -24,6 +24,7 @@ import BigNumber from "bignumber.js";
 import { useSolanaWallet } from "./useSolanaWallet";
 import { formatAmount, getOrderPair } from "../utils/utils";
 import { useNativeMaxBalances } from "./useBalances";
+import { useNetworkFees } from "./useNetworkFees";
 
 export const useSwap = () => {
   const {
@@ -69,6 +70,13 @@ export const useSwap = () => {
   const { setOpenModal } = modalStore();
   const { solanaAddress } = useSolanaWallet();
   const maxSpendableNativeBalances = useNativeMaxBalances();
+
+  const bitcoinNetwork = getBitcoinNetwork();
+  const { networkFeesValue } = useNetworkFees(
+    bitcoinNetwork,
+    inputAsset,
+    outputAsset
+  );
 
   const inputBalance = useMemo(() => {
     if (!inputAsset || !balances) return;
@@ -233,20 +241,16 @@ export const useSwap = () => {
           const quoteAmountInDecimals = new BigNumber(Number(quoteAmount)).div(
             Math.pow(10, assetToChange.decimals)
           );
-          const strategy =
-            strategies.val &&
-            strategies.val[
-              constructOrderPair(
-                fromAsset.chain,
-                fromAsset.atomicSwapAddress,
-                toAsset.chain,
-                toAsset.atomicSwapAddress
-              )
-            ];
-          let outputAmountWithFee =
-            strategy && !isBitcoin(fromAsset.chain) && !isBitcoin(toAsset.chain)
-              ? Number(quoteAmountInDecimals) + Number(strategy.fixed_fee)
-              : Number(quoteAmountInDecimals);
+          // Add network fee to output amount before calculating rate
+          let outputAmountWithFee = Number(quoteAmountInDecimals);
+          if (
+            !isBitcoin(fromAsset.chain) &&
+            !isBitcoin(toAsset.chain) &&
+            networkFeesValue > 0
+          ) {
+            outputAmountWithFee =
+              Number(quoteAmountInDecimals) + networkFeesValue;
+          }
           const rate = outputAmountWithFee / Number(amount);
           setRate(rate);
 
@@ -286,11 +290,11 @@ export const useSwap = () => {
       setIsFetchingQuote,
       setStrategy,
       setRate,
-      strategies,
       setAmount,
       setTokenPrices,
       setError,
       isSwapping,
+      networkFeesValue,
     ]
   );
 
