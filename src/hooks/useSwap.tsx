@@ -291,6 +291,7 @@ export const useSwap = () => {
       setIsFetchingQuote,
       setStrategy,
       setRate,
+      strategies,
       setAmount,
       setTokenPrices,
       setError,
