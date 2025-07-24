@@ -203,15 +203,19 @@ export const FeesAndRateDetails = () => {
                 >
                   <div className="flex min-w-fit items-center gap-1">
                     <GasStationIcon className="h-3 w-3" />
-                    <Typography
-                      size="h5"
-                      weight="medium"
-                      className="!text-nowrap"
-                    >
-                      {networkFees === 0
-                        ? "Free"
-                        : "$" + formatAmount(networkFees, 0, 2)}
-                    </Typography>
+                    {isNetworkFeesLoading ? (
+                      <div className="h-4 w-6 animate-pulse rounded bg-gray-200"></div>
+                    ) : (
+                      <Typography
+                        size="h5"
+                        weight="medium"
+                        className="!text-nowrap"
+                      >
+                        {networkFees === 0
+                          ? "Free"
+                          : "$" + formatAmount(networkFees, 0, 2)}
+                      </Typography>
+                    )}
                   </div>
                 </motion.div>
               )}

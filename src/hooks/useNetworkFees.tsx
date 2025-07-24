@@ -1,18 +1,18 @@
 import { useEffect } from "react";
-import { BitcoinNetwork, constructOrderPair } from "@gardenfi/core";
+import { constructOrderPair } from "@gardenfi/core";
 import { calculateBitcoinNetworkFees } from "../utils/getNetworkFees";
 import { formatAmount } from "../utils/utils";
-import { Asset, isBitcoin } from "@gardenfi/orderbook";
+import { isBitcoin } from "@gardenfi/orderbook";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { swapStore } from "../store/swapStore";
+import { getBitcoinNetwork } from "../constants/constants";
 
-export const useNetworkFees = (
-  network: BitcoinNetwork,
-  inputAsset?: Asset,
-  outputAsset?: Asset
-) => {
+export const useNetworkFees = () => {
   const { strategies } = assetInfoStore();
-  const { setNetworkFees, setIsNetworkFeesLoading } = swapStore();
+  const { setNetworkFees, setIsNetworkFeesLoading, inputAsset, outputAsset } =
+    swapStore();
+
+  const network = getBitcoinNetwork();
 
   useEffect(() => {
     if (!inputAsset || !outputAsset || !strategies.val) return;
@@ -36,10 +36,8 @@ export const useNetworkFees = (
             network,
             isBitcoin(inputAsset.chain) ? inputAsset : outputAsset
           );
-          console.log("1", formatAmount(fees + strategy.fixed_fee, 0));
           setNetworkFees(formatAmount(fees + strategy.fixed_fee, 0));
         } else {
-          console.log("2", formatAmount(strategy.fixed_fee, 0));
           setNetworkFees(formatAmount(strategy.fixed_fee, 0));
         }
       } catch (error) {

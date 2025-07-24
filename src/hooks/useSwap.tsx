@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { BTC, swapStore } from "../store/swapStore";
-import { getBitcoinNetwork, IOType, network } from "../constants/constants";
+import { IOType, network } from "../constants/constants";
 import { Asset, Chain, isBitcoin, isSolana } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
@@ -72,8 +72,7 @@ export const useSwap = () => {
   const { solanaAddress } = useSolanaWallet();
   const maxSpendableNativeBalances = useNativeMaxBalances();
 
-  const bitcoinNetwork = getBitcoinNetwork();
-  useNetworkFees(bitcoinNetwork, inputAsset, outputAsset);
+  useNetworkFees();
 
   const inputBalance = useMemo(() => {
     if (!inputAsset || !balances) return;
