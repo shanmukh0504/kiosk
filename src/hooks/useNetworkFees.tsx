@@ -4,7 +4,6 @@ import { calculateBitcoinNetworkFees } from "../utils/getNetworkFees";
 import { formatAmount } from "../utils/utils";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { assetInfoStore } from "../store/assetInfoStore";
-import { swapStore } from "../store/swapStore";
 
 export const useNetworkFees = (
   network: BitcoinNetwork,
