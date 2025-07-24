@@ -247,11 +247,6 @@ export const useSwap = () => {
             strategy && !isBitcoin(fromAsset.chain) && !isBitcoin(toAsset.chain)
               ? Number(quoteAmountInDecimals) + Number(strategy.fixed_fee)
               : Number(quoteAmountInDecimals);
-          console.log(
-            outputAmountWithFee,
-            strategy,
-            strategy && strategy.fixed_fee
-          );
           const rate = outputAmountWithFee / Number(amount);
           setRate(rate);
 
