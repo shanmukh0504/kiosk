@@ -9,7 +9,7 @@ import { BTC, swapStore } from "../../store/swapStore";
 import { CompetitorComparisons } from "./CompetitorComparisons";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { isBitcoin, isSolana } from "@gardenfi/orderbook";
+import { Asset, isBitcoin, isSolana } from "@gardenfi/orderbook";
 import { motion, AnimatePresence } from "framer-motion";
 import { delayedFadeAnimation } from "../../animations/animations";
 import { SwapSavingsAndAddresses } from "./SwapSavingsAndAddresses";
@@ -25,8 +25,8 @@ const RateDisplay = ({
   formattedRate,
   className = "",
 }: {
-  inputAsset?: any;
-  outputAsset?: any;
+  inputAsset?: Asset;
+  outputAsset?: Asset;
   formattedRate: number;
   className?: string;
 }) => (

@@ -19,26 +19,27 @@ export const useNetworkFees = (
     if (!inputAsset || !outputAsset || !strategies.val) return;
 
     const fetchNetworkFees = async () => {
+      if (!strategies.val) return;
+
       setIsLoading(true);
       try {
+        const strategy =
+          strategies.val[
+            constructOrderPair(
+              inputAsset.chain,
+              inputAsset.atomicSwapAddress,
+              outputAsset.chain,
+              outputAsset.atomicSwapAddress
+            )
+          ];
         if (isBitcoin(inputAsset.chain) || isBitcoin(outputAsset.chain)) {
           const fees = await calculateBitcoinNetworkFees(
             network,
             isBitcoin(inputAsset.chain) ? inputAsset : outputAsset
           );
-          setNetworkFeesValue(formatAmount(fees, 0, 2));
-        } else if (strategies.val) {
-          const strategy =
-            strategies.val[
-              constructOrderPair(
-                inputAsset.chain,
-                inputAsset.atomicSwapAddress,
-                outputAsset.chain,
-                outputAsset.atomicSwapAddress
-              )
-            ];
-          if (strategy)
-            setNetworkFeesValue(formatAmount(strategy.fixed_fee, 0));
+          setNetworkFeesValue(formatAmount(fees + strategy.fixed_fee, 0));
+        } else {
+          setNetworkFeesValue(formatAmount(strategy.fixed_fee, 0));
         }
       } catch (error) {
         console.error(error);
