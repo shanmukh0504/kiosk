@@ -41,6 +41,7 @@ export const useSwap = () => {
     tokenPrices,
     isFetchingQuote,
     isEditBTCAddress,
+    networkFees,
     setStrategy,
     setIsSwapping,
     setAmount,
@@ -72,11 +73,9 @@ export const useSwap = () => {
   const maxSpendableNativeBalances = useNativeMaxBalances();
 
   const bitcoinNetwork = getBitcoinNetwork();
-  const { networkFeesValue } = useNetworkFees(
-    bitcoinNetwork,
-    inputAsset,
-    outputAsset
-  );
+  useNetworkFees(bitcoinNetwork, inputAsset, outputAsset);
+
+  console.log("networkFees", networkFees);
 
   const inputBalance = useMemo(() => {
     if (!inputAsset || !balances) return;
@@ -244,8 +243,7 @@ export const useSwap = () => {
           // Add network fee to output amount before calculating rate
           let outputAmountWithFee = Number(quoteAmountInDecimals);
           if (!isBitcoin(fromAsset.chain) && !isBitcoin(toAsset.chain)) {
-            outputAmountWithFee =
-              Number(quoteAmountInDecimals) + networkFeesValue;
+            outputAmountWithFee = Number(quoteAmountInDecimals) + networkFees;
           }
           const rate = outputAmountWithFee / Number(amount);
           setRate(rate);
@@ -290,7 +288,7 @@ export const useSwap = () => {
       setTokenPrices,
       setError,
       isSwapping,
-      networkFeesValue,
+      networkFees,
     ]
   );
 

@@ -59,17 +59,17 @@ export const FeesAndRateDetails = () => {
   const [isHovered, setIsHovered] = useState(false);
   const targetRef = useRef<HTMLDivElement>(null);
 
-  const { inputAsset, outputAsset, rate, setIsComparisonVisible } = swapStore();
+  const {
+    inputAsset,
+    outputAsset,
+    rate,
+    networkFees,
+    isNetworkFeesLoading,
+    setIsComparisonVisible,
+  } = swapStore();
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
   const { address } = useEVMWallet();
-
-  const network = getBitcoinNetwork();
-  const { networkFeesValue, isLoading } = useNetworkFees(
-    network,
-    inputAsset,
-    outputAsset
-  );
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
   const formattedRate = useMemo(
@@ -210,7 +210,7 @@ export const FeesAndRateDetails = () => {
                       weight="medium"
                       className="!text-nowrap"
                     >
-                      {networkFeesValue === 0 ? "Free" : "$" + networkFeesValue}
+                      {networkFees === 0 ? "Free" : "$" + networkFees}
                     </Typography>
                   </div>
                 </motion.div>
@@ -241,8 +241,8 @@ export const FeesAndRateDetails = () => {
               refundAddress={refundAddress}
               receiveAddress={receiveAddress}
               showComparison={handleShowComparison}
-              networkFeesValue={networkFeesValue}
-              isLoading={isLoading}
+              networkFeesValue={networkFees}
+              isLoading={isNetworkFeesLoading}
             />
           )}
         </AnimatePresence>

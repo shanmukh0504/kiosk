@@ -1,19 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { BitcoinNetwork, constructOrderPair } from "@gardenfi/core";
 import { calculateBitcoinNetworkFees } from "../utils/getNetworkFees";
 import { formatAmount } from "../utils/utils";
 import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { assetInfoStore } from "../store/assetInfoStore";
+import { swapStore } from "../store/swapStore";
 
 export const useNetworkFees = (
   network: BitcoinNetwork,
   inputAsset?: Asset,
   outputAsset?: Asset
 ) => {
-  const [networkFeesValue, setNetworkFeesValue] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState(false);
-
   const { strategies } = assetInfoStore();
+  const { setNetworkFees, setIsNetworkFeesLoading } = swapStore();
 
   useEffect(() => {
     if (!inputAsset || !outputAsset || !strategies.val) return;
@@ -21,7 +20,7 @@ export const useNetworkFees = (
     const fetchNetworkFees = async () => {
       if (!strategies.val) return;
 
-      setIsLoading(true);
+      setIsNetworkFeesLoading(true);
       try {
         const strategy =
           strategies.val[
@@ -37,15 +36,17 @@ export const useNetworkFees = (
             network,
             isBitcoin(inputAsset.chain) ? inputAsset : outputAsset
           );
-          setNetworkFeesValue(formatAmount(fees + strategy.fixed_fee, 0));
+          console.log("1", formatAmount(fees + strategy.fixed_fee, 0));
+          setNetworkFees(formatAmount(fees + strategy.fixed_fee, 0));
         } else {
-          setNetworkFeesValue(formatAmount(strategy.fixed_fee, 0));
+          console.log("2", formatAmount(strategy.fixed_fee, 0));
+          setNetworkFees(formatAmount(strategy.fixed_fee, 0));
         }
       } catch (error) {
         console.error(error);
-        setNetworkFeesValue(0);
+        setNetworkFees(0);
       } finally {
-        setIsLoading(false);
+        setIsNetworkFeesLoading(false);
       }
     };
     fetchNetworkFees();
@@ -56,9 +57,4 @@ export const useNetworkFees = (
       clearInterval(intervalId);
     };
   }, [network, inputAsset, outputAsset, strategies.val]);
-
-  return {
-    networkFeesValue,
-    isLoading,
-  };
 };
