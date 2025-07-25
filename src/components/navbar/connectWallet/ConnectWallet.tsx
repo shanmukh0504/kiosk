@@ -15,7 +15,6 @@ import {
 } from "@gardenfi/wallet-connectors";
 import { WalletRow } from "./WalletRow";
 import { MultiWalletConnection } from "./MultiWalletConnection";
-import { MiniAppWalletConnect } from "./MiniAppWalletConnect";
 import { handleEVMConnect, handleStarknetConnect } from "./handleConnect";
 import { modalNames, modalStore } from "../../../store/modalStore";
 import { ecosystems, evmToBTCid } from "./constants";
@@ -26,7 +25,6 @@ import { BlockchainType } from "@gardenfi/orderbook";
 import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
 import { Wallet as SolanaWallet } from "@solana/wallet-adapter-react";
 import { Connector as StarknetConnector } from "@starknet-react/core";
-import { useMiniApp } from "../../../layout/MiniAppContextProvider";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -41,8 +39,6 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   }>();
   const [selectedEcosystem, setSelectedEcosystem] =
     useState<BlockchainType | null>(null);
-
-  const { isInMiniApp } = useMiniApp();
 
   const { connectors, connectAsync, connector } = useEVMWallet();
   const {
@@ -84,7 +80,6 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     showOnlyStarknetWallets,
     showOnlyEVMWallets,
     showOnlyBTCWallets,
-    isInMiniApp,
     showOnlySolanaWallets,
   ]);
 
@@ -245,11 +240,6 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       setConnectingWallet(null);
     }
   };
-
-  // If in Mini App environment, show the specialized Mini App component
-  if (isInMiniApp) {
-    return <MiniAppWalletConnect onClose={onClose} />;
-  }
 
   return (
     <div className="flex max-h-[600px] flex-col gap-[20px] p-3">

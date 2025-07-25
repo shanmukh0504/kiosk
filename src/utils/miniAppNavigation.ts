@@ -57,13 +57,13 @@ export function getMiniAppConfig() {
   return null;
 }
 
-/**
- * Share data with the parent Coinbase Wallet app
- */
-export function shareWithParentApp(data: Record<string, unknown>): void {
-  if (typeof window === "undefined") return;
-  // No Mini App sharing logic
-}
+// /**
+//  * Share data with the parent Coinbase Wallet app
+//  */
+// export function shareWithParentApp(data: Record<string, unknown>): void {
+//   if (typeof window === "undefined") return;
+//   // No Mini App sharing logic
+// }
 
 /**
  * Close the Mini App and return to Coinbase Wallet

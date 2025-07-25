@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { sdk } from "../utils/coinbaseMiniAppSDK";
 
 interface MiniAppContextType {
   isInCoinbaseWallet: boolean;

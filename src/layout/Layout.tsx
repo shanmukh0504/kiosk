@@ -8,7 +8,7 @@ import { Notification } from "../common/Notification";
 import { ViewPortListener } from "../common/ViewPortListener";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { network } from "../constants/constants";
-import { MiniAppProvider, useMiniApp } from "./MiniAppContextProvider";
+import { MiniAppProvider } from "./MiniAppContextProvider";
 
 type LayoutProps = {
   children: ReactNode;
@@ -16,7 +16,6 @@ type LayoutProps = {
 
 const LayoutContent: FC<LayoutProps> = ({ children }) => {
   const { fetchAndSetAssetsAndChains } = assetInfoStore();
-  const { isInMiniApp } = useMiniApp();
   const theme = getCurrentTheme();
 
   useEffect(() => {
@@ -24,9 +23,7 @@ const LayoutContent: FC<LayoutProps> = ({ children }) => {
   }, [fetchAndSetAssetsAndChains]);
 
   return (
-    <div
-      className={`${theme} relative overflow-hidden bg-opacity-50 ${isInMiniApp ? "mini-app-container" : ""}`}
-    >
+    <div className={`${theme} relative overflow-hidden bg-opacity-50`}>
       <div className="absolute inset-0 z-[-30] bg-primary"></div>
       <Orb />
       <ViewPortListener />

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Typography, CloseIcon } from "@gardenfi/garden-book";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
-import { useMiniApp } from "../../../layout/MiniAppContextProvider";
 import { getAvailableWallets } from "./getSupportedWallets";
 import { handleEVMConnect } from "./handleConnect";
 import { ConnectingWalletStore } from "../../../store/connectWalletStore";
@@ -15,10 +14,8 @@ export const MiniAppWalletConnect: React.FC<MiniAppWalletConnectProps> = ({
 }) => {
   const { connectors, connectAsync } = useEVMWallet();
   const { setConnectingWallet } = ConnectingWalletStore();
-  const { isInMiniApp } = useMiniApp();
   const [isConnecting, setIsConnecting] = useState(false);
 
-  // Get available wallets and prioritize Coinbase Wallet
   const availableWallets = getAvailableWallets(undefined, connectors);
   const coinbaseWallet = availableWallets.find(
     (wallet) => wallet.id === "com.coinbase.wallet"
@@ -43,10 +40,6 @@ export const MiniAppWalletConnect: React.FC<MiniAppWalletConnectProps> = ({
       setConnectingWallet(null);
     }
   };
-
-  if (!isInMiniApp) {
-    return null; // Don't render in non-Mini App environments
-  }
 
   return (
     <div className="flex max-h-[400px] flex-col gap-[20px] p-3">
