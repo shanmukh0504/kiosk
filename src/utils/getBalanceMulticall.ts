@@ -4,6 +4,7 @@ import BigNumber from "bignumber.js";
 import { createPublicClient, erc20Abi, Hex, http } from "viem";
 import { MULTICALL_CONTRACT_ADDRESSES } from "../constants/constants";
 import { multicall3Abi } from "../common/abi/multicall3";
+import * as Sentry from "@sentry/react";
 
 export const getBalanceMulticall = async (
   tokenAddresses: Hex[],
@@ -19,6 +20,10 @@ export const getBalanceMulticall = async (
     MULTICALL_CONTRACT_ADDRESSES[viemChain.id];
 
   if (!multicallAddress) {
+    Sentry.captureException(
+      "multicall contract address doesn't exist for the chain id " +
+        viemChain.id
+    );
     console.error(
       "multicall contract address doesn't exist for the chain id ",
       viemChain.id

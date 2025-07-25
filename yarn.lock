@@ -3007,6 +3007,77 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sentry-internal/browser-utils@npm:9.41.0":
+  version: 9.41.0
+  resolution: "@sentry-internal/browser-utils@npm:9.41.0"
+  dependencies:
+    "@sentry/core": "npm:9.41.0"
+  checksum: 10c0/0e94406dfeb69e719baf578daf8d4353aecd9358d7d11954d400553d37d965bdb620b4198a621423d2a1a872fc591a98f651c049d41e174998c0c556e0382c76
+  languageName: node
+  linkType: hard
+
+"@sentry-internal/feedback@npm:9.41.0":
+  version: 9.41.0
+  resolution: "@sentry-internal/feedback@npm:9.41.0"
+  dependencies:
+    "@sentry/core": "npm:9.41.0"
+  checksum: 10c0/e4541de80b57cc6db27908cd9da47236b02246b15b0d33759abd76e3d6da1fdd9cfd2df65bd665480a486660e9b63420ce51f56753bf6885cc7e1e6ad8b7ebae
+  languageName: node
+  linkType: hard
+
+"@sentry-internal/replay-canvas@npm:9.41.0":
+  version: 9.41.0
+  resolution: "@sentry-internal/replay-canvas@npm:9.41.0"
+  dependencies:
+    "@sentry-internal/replay": "npm:9.41.0"
+    "@sentry/core": "npm:9.41.0"
+  checksum: 10c0/2e157845f05e8c5dfd1878f408beadd3fd268bafca83f5f7750a3e7ff4b813ae9eb99a1072cfffc2023626e7e377b94ce018a8eac0a216c0670405fb4f467a90
+  languageName: node
+  linkType: hard
+
+"@sentry-internal/replay@npm:9.41.0":
+  version: 9.41.0
+  resolution: "@sentry-internal/replay@npm:9.41.0"
+  dependencies:
+    "@sentry-internal/browser-utils": "npm:9.41.0"
+    "@sentry/core": "npm:9.41.0"
+  checksum: 10c0/9348413c78860b101b0468eff81f09119265ac4d533a6ee1685f519f7049c1694f069a39465c27b269e12502ae6c124a0acc4356893380ae3afe50782d7c5b74
+  languageName: node
+  linkType: hard
+
+"@sentry/browser@npm:9.41.0":
+  version: 9.41.0
+  resolution: "@sentry/browser@npm:9.41.0"
+  dependencies:
+    "@sentry-internal/browser-utils": "npm:9.41.0"
+    "@sentry-internal/feedback": "npm:9.41.0"
+    "@sentry-internal/replay": "npm:9.41.0"
+    "@sentry-internal/replay-canvas": "npm:9.41.0"
+    "@sentry/core": "npm:9.41.0"
+  checksum: 10c0/4c1af86e2e0fe3a5359796fc68bb35e06e9ab136118541c02e01d34655ed4083b53a6e809cc595cb3429d66d9682b4db6ae7a3e0eef47ab80958e69c52fb234a
+  languageName: node
+  linkType: hard
+
+"@sentry/core@npm:9.41.0":
+  version: 9.41.0
+  resolution: "@sentry/core@npm:9.41.0"
+  checksum: 10c0/0fe373d5a660177349f615032161ac1f735b952e9aa9e64a0efc001d3fb5fa6b9c83713eea4b7b4afecd968b90adab03bdc19bb30600af213c0e5d1bf23d8ec2
+  languageName: node
+  linkType: hard
+
+"@sentry/react@npm:^9.41.0":
+  version: 9.41.0
+  resolution: "@sentry/react@npm:9.41.0"
+  dependencies:
+    "@sentry/browser": "npm:9.41.0"
+    "@sentry/core": "npm:9.41.0"
+    hoist-non-react-statics: "npm:^3.3.2"
+  peerDependencies:
+    react: ^16.14.0 || 17.x || 18.x || 19.x
+  checksum: 10c0/cd9957dea3b0fa587ddf81d3e27374876f8b9feeba4c4ea9f34683ce0abaec46968f570f3330e235508566552e0de848383f4016645ed65938b57dd7bd1f1e51
+  languageName: node
+  linkType: hard
+
 "@simplewebauthn/browser@npm:^13.1.0":
   version: 13.1.2
   resolution: "@simplewebauthn/browser@npm:13.1.2"
@@ -10074,6 +10145,7 @@ __metadata:
     "@gardenfi/utils": "npm:2.3.0"
     "@gardenfi/wallet-connectors": "npm:2.2.1-beta.7"
     "@number-flow/react": "npm:^0.5.9"
+    "@sentry/react": "npm:^9.41.0"
     "@solana/wallet-adapter-base": "npm:^0.9.26"
     "@solana/wallet-adapter-react": "npm:^0.15.38"
     "@solana/wallet-adapter-wallets": "npm:^0.19.37"
@@ -10435,6 +10507,15 @@ __metadata:
     minimalistic-assert: "npm:^1.0.0"
     minimalistic-crypto-utils: "npm:^1.0.1"
   checksum: 10c0/f3d9ba31b40257a573f162176ac5930109816036c59a09f901eb2ffd7e5e705c6832bedfff507957125f2086a0ab8f853c0df225642a88bf1fcaea945f20600d
+  languageName: node
+  linkType: hard
+
+"hoist-non-react-statics@npm:^3.3.2":
+  version: 3.3.2
+  resolution: "hoist-non-react-statics@npm:3.3.2"
+  dependencies:
+    react-is: "npm:^16.7.0"
+  checksum: 10c0/fe0889169e845d738b59b64badf5e55fa3cf20454f9203d1eb088df322d49d4318df774828e789898dcb280e8a5521bb59b3203385662ca5e9218a6ca5820e74
   languageName: node
   linkType: hard
 
@@ -13426,7 +13507,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-is@npm:^16.13.1":
+"react-is@npm:^16.13.1, react-is@npm:^16.7.0":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: 10c0/33977da7a5f1a287936a0c85639fec6ca74f4f15ef1e59a6bc20338fc73dc69555381e211f7a3529b8150a1f71e4225525b41b60b52965bda53ce7d47377ada1

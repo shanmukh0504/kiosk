@@ -14,6 +14,7 @@ import axios from "axios";
 import { Quote, Strategies } from "@gardenfi/core";
 import { generateTokenKey } from "../utils/generateTokenKey";
 import { PublicKey } from "@solana/web3.js";
+import * as Sentry from "@sentry/react";
 
 type AssetConfig = Asset & {
   disabled?: boolean;
@@ -175,6 +176,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       }
       set({ allAssets, allChains, assets, chains });
     } catch (error) {
+      Sentry.captureException(error);
       console.error("Failed to fetch assets data", error);
       set({ error: "Failed to fetch assets data" });
     } finally {

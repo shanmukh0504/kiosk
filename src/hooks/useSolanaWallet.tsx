@@ -6,6 +6,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import { WalletName } from "@solana/wallet-adapter-base";
+import * as Sentry from "@sentry/react";
 
 export const useSolanaWallet = () => {
   const [isConnecting, setIsConnecting] = useState(false);
@@ -48,6 +49,7 @@ export const useSolanaWallet = () => {
         setIsConnecting(false);
         return true;
       } catch (error) {
+        Sentry.captureException(error);
         console.error("Failed to connect Solana wallet:", error);
         setIsConnecting(false);
         return false;
@@ -61,6 +63,7 @@ export const useSolanaWallet = () => {
       await disconnect();
       return true;
     } catch (error) {
+      Sentry.captureException(error);
       console.error("Failed to disconnect Solana wallet:", error);
       return false;
     }

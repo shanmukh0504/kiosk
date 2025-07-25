@@ -6,6 +6,7 @@ import { isBitcoin } from "@gardenfi/orderbook";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { swapStore } from "../store/swapStore";
 import { getBitcoinNetwork } from "../constants/constants";
+import * as Sentry from "@sentry/react";
 
 export const useNetworkFees = () => {
   const { strategies } = assetInfoStore();
@@ -41,6 +42,7 @@ export const useNetworkFees = () => {
           setNetworkFees(formatAmount(strategy.fixed_fee, 0));
         }
       } catch (error) {
+        Sentry.captureException(error);
         console.error(error);
         setNetworkFees(0);
       } finally {

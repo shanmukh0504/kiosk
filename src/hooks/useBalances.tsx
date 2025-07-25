@@ -11,6 +11,7 @@ import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { BitcoinNetwork, BitcoinProvider } from "@gardenfi/core";
 import { network } from "../constants/constants";
 import { getSpendableBalance } from "../utils/getmaxBtc";
+import * as Sentry from "@sentry/react";
 
 export const useNativeMaxBalances = () => {
   const { balances } = assetInfoStore();
@@ -56,6 +57,7 @@ export const useNativeMaxBalances = () => {
             feeRate.fastestFee
           );
           if (!spendable.ok) {
+            Sentry.captureException(spendable.error);
             console.error(
               "Error calculating initial spendable balance:",
               spendable.error
@@ -67,6 +69,7 @@ export const useNativeMaxBalances = () => {
             getOrderPair(inputAsset.chain, inputAsset.tokenAddress)
           ] = spendable.val;
         } catch (error) {
+          Sentry.captureException(error);
           console.error("Error calculating initial spendable balance:", error);
           maxSpendableNativeBalances[
             getOrderPair(inputAsset.chain, inputAsset.tokenAddress)

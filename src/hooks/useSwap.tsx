@@ -25,6 +25,7 @@ import { useSolanaWallet } from "./useSolanaWallet";
 import { formatAmount, getOrderPair } from "../utils/utils";
 import { useNativeMaxBalances } from "./useBalances";
 import { useNetworkFees } from "./useNetworkFees";
+import * as Sentry from "@sentry/react";
 
 export const useSwap = () => {
   const {
@@ -498,6 +499,7 @@ export const useSwap = () => {
           //order failed due to price fluctuation, refresh quote here
           fetchQuote(inputAmount, inputAsset, outputAsset, false);
         } else {
+          Sentry.captureException(res.error);
           console.error("failed to create order ❌", res.error);
         }
         setIsSwapping(false);
@@ -546,8 +548,9 @@ export const useSwap = () => {
       setIsOpen(true);
       clearSwapState();
     } catch (error) {
-      console.log("failed to create order ❌", error);
+      Sentry.captureException(error);
       setIsSwapping(false);
+      throw error;
     }
   };
 
