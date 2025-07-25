@@ -36,7 +36,7 @@ export const getAvailableWallets = (
 
   const manualEVMChecks: Record<string, { check: () => boolean; connectorId: string }> = {
     "com.coinbase.wallet": {
-      check: () => typeof window !== "undefined" && !!window.coinbaseWalletExtension && !!(window.coinbaseWalletExtension?.isCoinbaseBrowser || window.coinbaseWalletExtension?.isCoinbaseWallet),
+      check: () => typeof window !== "undefined" && !!window.ethereum && !!(window.ethereum?.isCoinbaseWallet),
       connectorId: "com.coinbase.wallet"
     },
     "keplr": {
@@ -58,9 +58,11 @@ export const getAvailableWallets = (
 
       const config = manualEVMChecks[key];
       if (config) {
-        isAvailable = config.check();
-        if (isAvailable) {
-          wallet = evmWallets.find((w) => w.id === config.connectorId) || wallet;
+        if (!isAvailable) {
+          isAvailable = config.check();
+          if (isAvailable) {
+            wallet = evmWallets.find((w) => w.id === config.connectorId) || wallet;
+          }
         }
       }
       
