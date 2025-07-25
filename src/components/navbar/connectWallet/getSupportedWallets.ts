@@ -36,8 +36,8 @@ export const getAvailableWallets = (
 
   const manualEVMChecks: Record<string, { check: () => boolean; connectorId: string }> = {
     "com.coinbase.wallet": {
-      check: () => typeof window !== "undefined" && !!window.ethereum && window.ethereum.isCoinbaseWallet,
-      connectorId: "injected"
+      check: () => typeof window !== "undefined" && !!window.coinbaseWalletExtension && !!(window.coinbaseWalletExtension?.isCoinbaseBrowser || window.coinbaseWalletExtension?.isCoinbaseWallet),
+      connectorId: "com.coinbase.wallet"
     },
     "keplr": {
       check: () => typeof window !== "undefined" && !!window.keplr && typeof window.keplr === 'object' && 'ethereum' in window.keplr,
