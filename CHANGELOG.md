@@ -1,11 +1,21 @@
 # Changelog
 
+## [1.0.9]
+
+### Fixed
+
+- Fetch and set max spendable balance for Bitcoin and Solana at the time of fetching balances.
+
 ## [1.0.8]
 
 ### Added
 
-- Added support for solana spl tokens.
-- Added EVM support for Keplr and Leap wallet.
+- Added new fee structure UI
+
+### Fixed
+
+- Fixed posting refundSacp for an order regardless any state.
+- Fixed rate display heading when dropdown is collapsed and removed price impact calculation
 
 ## [1.0.7]
 

@@ -3,7 +3,7 @@ import pendingOrdersStore from "../../store/pendingOrdersStore";
 import { TransactionRow } from "./TransactionRow";
 import { useGarden } from "@gardenfi/react-hooks";
 import { OrderStatus, OrderWithStatus } from "@gardenfi/core";
-import { isBitcoin, isEVM, isSolana, isStarknet } from "@gardenfi/orderbook";
+import { isBitcoin, isEVM, isSolana } from "@gardenfi/orderbook";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 
 export const PendingTransactions = () => {
@@ -38,17 +38,6 @@ export const PendingTransactions = () => {
         return;
       }
       const tx = await garden.solanaHTLC.initiate(order);
-      if (!tx.ok) {
-        console.error(tx.error);
-        return;
-      }
-      txHash = tx.val;
-    } else if (isStarknet(order.source_swap.chain)) {
-      if (!garden.starknetHTLC) {
-        console.error("Starknet HTLC not available");
-        return;
-      }
-      const tx = await garden.starknetHTLC.initiate(order);
       if (!tx.ok) {
         console.error(tx.error);
         return;
