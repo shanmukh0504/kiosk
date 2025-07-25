@@ -74,8 +74,21 @@ export const CreateSwap = () => {
   const isChainSupported = useMemo(() => {
     if (!connector || !inputAsset || !outputAsset) return true;
     if (!WALLET_SUPPORTED_CHAINS[connector.id]) return true;
+    if (
+      isBitcoin(inputAsset.chain) ||
+      isStarknet(inputAsset.chain) ||
+      isSolana(inputAsset.chain)
+    )
+      return true;
     return WALLET_SUPPORTED_CHAINS[connector.id].includes(inputAsset.chain);
-  }, [connector, inputAsset, outputAsset]);
+  }, [
+    connector,
+    inputAsset,
+    outputAsset,
+    provider,
+    starknetAddress,
+    solanaAnchorProvider,
+  ]);
 
   const buttonLabel = useMemo(() => {
     if (needsWalletConnection)
