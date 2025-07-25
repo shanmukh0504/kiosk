@@ -8,9 +8,14 @@
 
 ## [1.0.8]
 
+### Added
+
+- Added new fee structure UI
+
 ### Fixed
 
-- Fixed posting refundSacp for an order regardless any state
+- Fixed posting refundSacp for an order regardless any state.
+- Fixed rate display heading when dropdown is collapsed and removed price impact calculation
 
 ## [1.0.7]
 

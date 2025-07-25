@@ -61,7 +61,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
             {isRefund ? "Refund" : "Receive"} address
           </Typography>
           <div className="flex items-center gap-2">
-            <Typography size="h4" weight="medium">
+            <Typography size="h5" weight="medium">
               {getTrimmedAddress(address)}
             </Typography>
             <div className="flex gap-1">
