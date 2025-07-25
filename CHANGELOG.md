@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.10]
+
+### Added
+
+- Added EVM wallet support for leap and keplr.
+
 ## [1.0.9]
 
 ### Fixed
