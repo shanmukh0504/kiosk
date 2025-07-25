@@ -160,7 +160,7 @@ export const GardenSupportedWallets: Record<
     Starknet: true,
     Bitcoin: network === Network.MAINNET,
   }),
-  leap: createWallet("leap", "Leap Wallet", "wallets/Leap.svg", "https://www.leapwallet.io/", {
+  leap: createWallet("leap", "Leap Wallet", "wallets/LeapLight.svg", "https://www.leapwallet.io/", {
     EVM: network === Network.MAINNET,
   }),
   xverse: createWallet(
