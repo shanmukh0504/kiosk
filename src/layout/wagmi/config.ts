@@ -21,6 +21,17 @@ import {
 
 import { injected, metaMask } from "wagmi/connectors";
 
+declare global {
+  interface Window {
+    leap?: {
+      ethereum?: any;
+    };
+    keplr?: {
+      ethereum?: any;
+    };
+  }
+}
+
 export const hyperliquidTestnet: Chain = {
   id: 998,
   name: "Hyperliquid EVM Testnet",
@@ -84,9 +95,31 @@ export const SupportedChains = [
   botanix,
 ] as const;
 
+export const leapConnector = injected({
+  target() {
+    return {
+      id: "leap",
+      name: "Leap Wallet",
+      provider:
+        typeof window !== "undefined" ? window.leap?.ethereum : undefined,
+    };
+  },
+});
+
+export const KeplrConnector = injected({
+  target() {
+    return {
+      id: "keplr",
+      name: "Keplr",
+      provider:
+        typeof window !== "undefined" ? window.keplr?.ethereum : undefined,
+    };
+  },
+});
+
 export const config = createConfig({
   chains: SupportedChains,
-  connectors: [injected(), metaMask()],
+  connectors: [injected(), metaMask(), leapConnector, KeplrConnector],
   transports: {
     [mainnet.id]: http(),
     [arbitrum.id]: http(),

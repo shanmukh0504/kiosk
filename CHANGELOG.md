@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.10]
+
+### Added
+
+- Added EVM wallet support for leap and keplr.
+
+## [1.0.9]
+
+### Fixed
+
+- Fetch and set max spendable balance for Bitcoin and Solana at the time of fetching balances.
+
 ## [1.0.8]
 
 ### Added

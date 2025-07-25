@@ -23,7 +23,6 @@ import pendingOrdersStore from "../store/pendingOrdersStore";
 import BigNumber from "bignumber.js";
 import { useSolanaWallet } from "./useSolanaWallet";
 import { formatAmount, getOrderPair } from "../utils/utils";
-import { useNativeMaxBalances } from "./useBalances";
 import { useNetworkFees } from "./useNetworkFees";
 
 export const useSwap = () => {
@@ -70,19 +69,13 @@ export const useSwap = () => {
   const { starknetAddress } = useStarknetWallet();
   const { setOpenModal } = modalStore();
   const { solanaAddress } = useSolanaWallet();
-  const maxSpendableNativeBalances = useNativeMaxBalances();
 
   useNetworkFees();
 
   const inputBalance = useMemo(() => {
     if (!inputAsset || !balances) return;
-    if (isBitcoin(inputAsset.chain) || isSolana(inputAsset.chain))
-      return maxSpendableNativeBalances[
-        getOrderPair(inputAsset.chain, inputAsset.tokenAddress)
-      ];
-
     return balances[getOrderPair(inputAsset.chain, inputAsset.tokenAddress)];
-  }, [inputAsset, balances, maxSpendableNativeBalances]);
+  }, [inputAsset, balances]);
 
   const inputTokenBalance = useMemo(
     () =>

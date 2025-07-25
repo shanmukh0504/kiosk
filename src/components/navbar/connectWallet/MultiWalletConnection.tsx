@@ -124,6 +124,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
           src={
             connectors[BlockchainType.Bitcoin]?.icon ??
             connectors[BlockchainType.Solana]?.adapter.icon ??
+            connectors[BlockchainType.Starknet]?.icon.toString() ??
             ""
           }
           alt="icon"
@@ -132,6 +133,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
         <Typography size="h3" weight="medium">
           {connectors[BlockchainType.Bitcoin]?.name ??
             connectors[BlockchainType.Solana]?.adapter.name ??
+            connectors[BlockchainType.Starknet]?.name ??
             ""}
         </Typography>
       </div>
