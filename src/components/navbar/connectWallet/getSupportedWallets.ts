@@ -61,6 +61,7 @@ export const getAvailableWallets = (
         if (!isAvailable) {
           if (config.check()) {
             wallet = evmWallets.find((w) => w.id === config.connectorId) || wallet;
+            isAvailable = true;
           }
         }
       }
