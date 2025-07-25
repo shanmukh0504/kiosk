@@ -81,14 +81,7 @@ export const CreateSwap = () => {
     )
       return true;
     return WALLET_SUPPORTED_CHAINS[connector.id].includes(inputAsset.chain);
-  }, [
-    connector,
-    inputAsset,
-    outputAsset,
-    provider,
-    starknetAddress,
-    solanaAnchorProvider,
-  ]);
+  }, [connector, inputAsset, outputAsset]);
 
   const buttonLabel = useMemo(() => {
     if (needsWalletConnection)
@@ -131,7 +124,6 @@ export const CreateSwap = () => {
     isSwapping,
     validSwap,
     error.liquidityError,
-    error.insufficientBalanceError,
     needsWalletConnection,
     loadingDisabled,
   ]);
@@ -150,7 +142,6 @@ export const CreateSwap = () => {
     if (!inputAsset || !outputAsset) return "";
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
-
 
   const handleConnectWallet = () => {
     if (!needsWalletConnection) return;

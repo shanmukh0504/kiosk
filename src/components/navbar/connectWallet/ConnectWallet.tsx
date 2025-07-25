@@ -140,20 +140,26 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     }
     setConnectingWallet(connector.id);
     try {
-      if (
-        (connector.isBitcoin && connector.isEVM) ||
-        (connector.isBitcoin && connector.isStarknet) ||
-        (connector.isEVM && connector.isSolana) ||
-        (connector.isBitcoin && connector.isSolana) ||
-        (connector.isStarknet && connector.isSolana) ||
-        (connector.isStarknet && connector.isEVM)
-      ) {
-        if (
-          (!connector.wallet?.evmWallet && !connector.wallet?.btcWallet) ||
-          (!connector.wallet?.btcWallet && !connector.wallet?.starknetWallet) ||
-          (!connector.wallet?.evmWallet && !connector.wallet?.starknetWallet)
-        )
-          return;
+      // Check if this is a multi-chain wallet
+      const isMultiChain = [
+        connector.isBitcoin && connector.isEVM,
+        connector.isBitcoin && connector.isStarknet,
+        connector.isEVM && connector.isSolana,
+        connector.isBitcoin && connector.isSolana,
+        connector.isStarknet && connector.isSolana,
+        connector.isStarknet && connector.isEVM,
+      ].some(Boolean);
+
+      if (isMultiChain) {
+        // Validate that we have at least two wallet types available
+        const walletTypes = [
+          connector.wallet?.evmWallet,
+          connector.wallet?.btcWallet,
+          connector.wallet?.starknetWallet,
+          connector.wallet?.solanaWallet,
+        ].filter(Boolean);
+
+        if (walletTypes.length < 2) return;
 
         setMultiWalletConnector({
           [BlockchainType.EVM]: connector.wallet.evmWallet,
