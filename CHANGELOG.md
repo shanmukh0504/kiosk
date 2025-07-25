@@ -6,6 +6,10 @@
 
 - Added EVM wallet support for leap and keplr.
 
+### Fixed
+
+- Checks for Coinbase wallet based on the updated window object.
+
 ## [1.0.9]
 
 ### Fixed
