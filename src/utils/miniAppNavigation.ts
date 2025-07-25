@@ -26,25 +26,7 @@ interface MiniAppSDK {
 export function navigateInMiniApp(options: MiniAppNavigationOptions): void {
   if (typeof window === "undefined") return;
 
-  const { url, title, data } = options;
-
-  if (sdk.isInMiniApp()) {
-    try {
-      const coinbaseSDK = sdk.getSDK();
-      if (coinbaseSDK) {
-        // Type assertion for Mini App specific methods
-        const miniAppSDK = coinbaseSDK as MiniAppSDK;
-        if (miniAppSDK?.navigate) {
-          miniAppSDK.navigate(url, { title, data });
-          return;
-        }
-      }
-    } catch {
-      console.warn(
-        "Mini App navigation not available, falling back to standard navigation"
-      );
-    }
-  }
+  const { url } = options;
 
   // Fallback to standard navigation
   if (url) {
@@ -80,23 +62,7 @@ export function getMiniAppConfig() {
  */
 export function shareWithParentApp(data: Record<string, unknown>): void {
   if (typeof window === "undefined") return;
-
-  if (sdk.isInMiniApp()) {
-    try {
-      // Try to use Mini App sharing if available
-      const coinbaseSDK = sdk.getSDK();
-      if (coinbaseSDK) {
-        // Type assertion for Mini App specific methods
-        const miniAppSDK = coinbaseSDK as MiniAppSDK;
-        if (miniAppSDK?.share) {
-          miniAppSDK.share(data);
-          return;
-        }
-      }
-    } catch {
-      console.warn("Mini App sharing not available");
-    }
-  }
+  // No Mini App sharing logic
 }
 
 /**
@@ -104,24 +70,6 @@ export function shareWithParentApp(data: Record<string, unknown>): void {
  */
 export function closeMiniApp(): void {
   if (typeof window === "undefined") return;
-
-  if (sdk.isInMiniApp()) {
-    try {
-      // Try to use Mini App close if available
-      const coinbaseSDK = sdk.getSDK();
-      if (coinbaseSDK) {
-        // Type assertion for Mini App specific methods
-        const miniAppSDK = coinbaseSDK as MiniAppSDK;
-        if (miniAppSDK?.close) {
-          miniAppSDK.close();
-          return;
-        }
-      }
-    } catch {
-      console.warn("Mini App close not available");
-    }
-  }
-
   // Fallback: try to go back in history
   if (window.history.length > 1) {
     window.history.back();

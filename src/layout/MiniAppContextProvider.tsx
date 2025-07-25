@@ -2,7 +2,6 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { sdk } from "../utils/coinbaseMiniAppSDK";
 
 interface MiniAppContextType {
-  isInMiniApp: boolean;
   isInCoinbaseWallet: boolean;
   supportsMiniAppFeatures: boolean;
 }
@@ -24,9 +23,6 @@ interface MiniAppProviderProps {
 export const MiniAppProvider: React.FC<MiniAppProviderProps> = ({
   children,
 }) => {
-  const [isInMiniApp, setIsInMiniApp] = useState<boolean>(() =>
-    sdk.isInMiniApp()
-  );
   const [isInCoinbaseWallet, setIsInCoinbaseWallet] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     return (
@@ -38,7 +34,6 @@ export const MiniAppProvider: React.FC<MiniAppProviderProps> = ({
 
   useEffect(() => {
     const updateEnvironment = () => {
-      setIsInMiniApp(sdk.isInMiniApp());
       setIsInCoinbaseWallet(
         typeof window.ethereum !== "undefined" &&
           (window.ethereum as { isCoinbaseWallet?: boolean })
@@ -60,9 +55,8 @@ export const MiniAppProvider: React.FC<MiniAppProviderProps> = ({
   }, []);
 
   const value: MiniAppContextType = {
-    isInMiniApp,
     isInCoinbaseWallet,
-    supportsMiniAppFeatures: isInMiniApp && isInCoinbaseWallet,
+    supportsMiniAppFeatures: isInCoinbaseWallet,
   };
 
   return (

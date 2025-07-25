@@ -21,31 +21,6 @@ class CoinbaseMiniAppSDK {
   }
 
   /**
-   * Check if the app is running in a Coinbase Wallet Mini App environment
-   * This is the method required by Coinbase validation
-   */
-  isInMiniApp(): boolean {
-    if (typeof window === "undefined") return false;
-
-    // Check if we're in a Coinbase Wallet environment
-    const hasCoinbaseWallet =
-      typeof window.ethereum !== "undefined" &&
-      (window.ethereum as { isCoinbaseWallet?: boolean })?.isCoinbaseWallet ===
-        true;
-
-    if (!hasCoinbaseWallet) return false;
-
-    // Check user agent for Mini App indicators
-    const userAgent = window.navigator.userAgent || "";
-    const isInMiniApp =
-      userAgent.includes("MiniApp") ||
-      userAgent.includes("WebView") ||
-      userAgent.includes("CBWalletWebView");
-
-    return isInMiniApp;
-  }
-
-  /**
    * Get the underlying Coinbase Wallet SDK instance
    */
   getSDK(): CoinbaseWalletSDK | null {
