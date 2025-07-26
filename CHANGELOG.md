@@ -6,6 +6,10 @@
 
 - Added EVM wallet support for leap and keplr.
 
+### Fixed
+
+- Instant refund SACP for bitcoin transactions (package updates).
+
 ## [1.0.9]
 
 ### Fixed
