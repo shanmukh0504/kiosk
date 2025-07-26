@@ -6,6 +6,10 @@
 
 - Added EVM wallet support for leap and keplr.
 
+### Fixed
+
+- Bitcoin redeems
+
 ## [1.0.9]
 
 ### Fixed
