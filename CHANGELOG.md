@@ -8,7 +8,7 @@
 
 ### Fixed
 
-- Instant refund SACP for bitcoin transactions (package updates).
+- Bitcoin redeems
 
 ## [1.0.9]
 
