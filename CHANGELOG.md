@@ -5,6 +5,7 @@
 ### Added
 
 - Added EVM wallet support for leap and keplr.
+- Animation Change in swap component dropdown and network fee handling.
 
 ## [1.0.9]
 
