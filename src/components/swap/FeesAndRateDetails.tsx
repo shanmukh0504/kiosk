@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import {
   GasStationIcon,
   InfoIcon,
@@ -55,6 +55,9 @@ export const FeesAndRateDetails = () => {
   const [maxTimeSaved, setMaxTimeSaved] = useState<number>(0);
   const [maxCostSaved, setMaxCostSaved] = useState<number>(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [storedNetworkFees, setStoredNetworkFees] = useState<number | null>(
+    null
+  );
   const targetRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -68,6 +71,10 @@ export const FeesAndRateDetails = () => {
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
   const { address } = useEVMWallet();
+
+  const displayNetworkFees = useMemo(() => {
+    return storedNetworkFees !== null ? storedNetworkFees : 0.49;
+  }, [storedNetworkFees]);
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
   const formattedRate = useMemo(
@@ -119,6 +126,12 @@ export const FeesAndRateDetails = () => {
       isFees: false,
     });
   };
+
+  useEffect(() => {
+    if (!isNetworkFeesLoading && networkFees !== undefined) {
+      setStoredNetworkFees(networkFees);
+    }
+  }, [networkFees, isNetworkFeesLoading]);
 
   return (
     <>
@@ -203,19 +216,15 @@ export const FeesAndRateDetails = () => {
                 >
                   <div className="flex min-w-fit items-center gap-1">
                     <GasStationIcon className="h-3 w-3" />
-                    {isNetworkFeesLoading ? (
-                      <div className="h-4 w-6 animate-pulse rounded bg-gray-200"></div>
-                    ) : (
-                      <Typography
-                        size="h5"
-                        weight="medium"
-                        className="!text-nowrap"
-                      >
-                        {networkFees === 0
-                          ? "Free"
-                          : "$" + formatAmount(networkFees, 0, 2)}
-                      </Typography>
-                    )}
+                    <Typography
+                      size="h5"
+                      weight="medium"
+                      className="!text-nowrap"
+                    >
+                      {displayNetworkFees === 0
+                        ? "Free"
+                        : "$" + formatAmount(displayNetworkFees, 0, 2)}
+                    </Typography>
                   </div>
                 </motion.div>
               )}
@@ -226,7 +235,7 @@ export const FeesAndRateDetails = () => {
             initial={{ width: 0, scale: 0, opacity: 0 }}
             animate={{ width: "auto", scale: 1, opacity: 1 }}
             exit={{ width: 0, scale: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
             className="pl-1"
           >
             <KeyboardDownIcon
@@ -245,8 +254,7 @@ export const FeesAndRateDetails = () => {
               refundAddress={refundAddress}
               receiveAddress={receiveAddress}
               showComparison={handleShowComparison}
-              networkFeesValue={formatAmount(networkFees, 0, 2)}
-              isLoading={isNetworkFeesLoading}
+              networkFeesValue={formatAmount(displayNetworkFees, 0, 2)}
             />
           )}
         </AnimatePresence>
