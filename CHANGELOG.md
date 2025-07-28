@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.11]
+
+### Added
+
+- Added BNB Smart Chain support in testnet
+
 ## [1.0.10]
 
 ### Added
