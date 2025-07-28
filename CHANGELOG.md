@@ -4,7 +4,7 @@
 
 ### Added
 
-- Added BNB Smart Chain support in testnet
+- Added BNB Smart Chain support
 
 ## [1.0.10]
 
