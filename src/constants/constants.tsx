@@ -120,6 +120,7 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "corn",
   "solana",
   "botanix",
+  "bnb",
   "bnb_testnet",
 ] as const;
 
