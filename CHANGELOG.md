@@ -4,7 +4,15 @@
 
 ### Added
 
-- Added BNB Smart Chain support
+- Added BNB Smart Chain support.
+
+### Fixed
+
+- Checks for Coinbase wallet based on the updated window object.
+- Use vite modes for dev and build commands.
+- Added rel attribute to external links in navbar.
+- Tweak animation for fee details dropdown in swap component.
+- Made network fee value to 0.49$ when fee is not loaded.
 
 ## [1.0.10]
 
