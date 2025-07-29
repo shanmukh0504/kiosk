@@ -19,7 +19,6 @@ type SwapSavingsProps = {
   receiveAddress: string | undefined;
   showComparison: (type: "time" | "fees") => void;
   networkFeesValue: number;
-  isLoading: boolean;
 };
 
 export const SwapSavingsAndAddresses = ({
@@ -29,7 +28,6 @@ export const SwapSavingsAndAddresses = ({
   receiveAddress,
   showComparison,
   networkFeesValue,
-  isLoading,
 }: SwapSavingsProps) => {
   const { outputAsset, outputAmount } = swapStore();
 
@@ -43,13 +41,9 @@ export const SwapSavingsAndAddresses = ({
             </Typography>
           </div>
           <div className="flex gap-5 py-1">
-            {isLoading ? (
-              <div className="h-4 w-8 animate-pulse rounded bg-gray-200"></div>
-            ) : (
-              <Typography size="h5" weight="medium">
-                {networkFeesValue === 0 ? "Free" : "$" + networkFeesValue}
-              </Typography>
-            )}
+            <Typography size="h5" weight="medium">
+              {networkFeesValue === 0 ? "Free" : "$" + networkFeesValue}
+            </Typography>
           </div>
         </div>
         <div className="flex items-center justify-between px-4">
@@ -102,7 +96,7 @@ export const SwapSavingsAndAddresses = ({
       <AnimatePresence mode="wait">
         {(timeSaved > 0 || costSaved > 0) && (
           <motion.div {...expandAnimation}>
-            <div className="z-10 mt-1" {...expandAnimation}></div>
+            <div className="z-10" {...expandAnimation}></div>
             {timeSaved > 0 && (
               <motion.div
                 key="time-saved"
@@ -123,7 +117,7 @@ export const SwapSavingsAndAddresses = ({
                   >
                     Time saved
                   </Typography>
-                  <div className="flex gap-5 pb-1">
+                  <div className="flex gap-5">
                     <Typography
                       size="h4"
                       weight="medium"
