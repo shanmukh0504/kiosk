@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef } from "react";
 import {
   GasStationIcon,
   InfoIcon,
@@ -55,9 +55,6 @@ export const FeesAndRateDetails = () => {
   const [maxTimeSaved, setMaxTimeSaved] = useState<number>(0);
   const [maxCostSaved, setMaxCostSaved] = useState<number>(0);
   const [isHovered, setIsHovered] = useState(false);
-  const [storedNetworkFees, setStoredNetworkFees] = useState<number | null>(
-    null
-  );
   const targetRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -72,9 +69,11 @@ export const FeesAndRateDetails = () => {
   const { solanaAddress } = useSolanaWallet();
   const { address } = useEVMWallet();
 
-  const displayNetworkFees = useMemo(() => {
-    return storedNetworkFees !== null ? storedNetworkFees : 0.49;
-  }, [storedNetworkFees]);
+  const fallbackNetworkFees = useMemo(() => {
+    return !isNetworkFeesLoading && networkFees !== undefined
+      ? networkFees
+      : 0.49;
+  }, [networkFees, isNetworkFeesLoading]);
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
   const formattedRate = useMemo(
@@ -126,12 +125,6 @@ export const FeesAndRateDetails = () => {
       isFees: false,
     });
   };
-
-  useEffect(() => {
-    if (!isNetworkFeesLoading && networkFees !== undefined) {
-      setStoredNetworkFees(networkFees);
-    }
-  }, [networkFees, isNetworkFeesLoading]);
 
   return (
     <>
@@ -221,9 +214,9 @@ export const FeesAndRateDetails = () => {
                       weight="medium"
                       className="!text-nowrap"
                     >
-                      {displayNetworkFees === 0
+                      {fallbackNetworkFees === 0
                         ? "Free"
-                        : "$" + formatAmount(displayNetworkFees, 0, 2)}
+                        : "$" + formatAmount(fallbackNetworkFees, 0, 2)}
                     </Typography>
                   </div>
                 </motion.div>
@@ -254,7 +247,7 @@ export const FeesAndRateDetails = () => {
               refundAddress={refundAddress}
               receiveAddress={receiveAddress}
               showComparison={handleShowComparison}
-              networkFeesValue={formatAmount(displayNetworkFees, 0, 2)}
+              networkFeesValue={formatAmount(fallbackNetworkFees, 0, 2)}
             />
           )}
         </AnimatePresence>
