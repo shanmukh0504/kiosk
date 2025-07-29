@@ -1,7 +1,5 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { viteStaticCopy } from "vite-plugin-static-copy";
-import path from "path";
 import wasm from "vite-plugin-wasm";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import topLevelAwait from "vite-plugin-top-level-await";
@@ -23,17 +21,6 @@ export default defineConfig(({ mode }) => {
         },
       }),
       topLevelAwait(),
-      viteStaticCopy({
-        targets: [
-          {
-            src: path.resolve(
-              path.dirname(new URL(import.meta.url).pathname),
-              "build-id.json"
-            ),
-            dest: "public",
-          },
-        ],
-      }),
     ],
     build: {
       target: "esnext",
