@@ -2,9 +2,9 @@ import { BottomSheet, Typography } from "@gardenfi/garden-book";
 import { useState } from "react";
 import { externalRoutes, routes } from "../../constants/constants";
 import { isCurrentRoute } from "../../utils/utils";
-import { Link } from "react-router-dom";
 import { useNotificationStore } from "../../store/notificationStore";
-import { motion } from "framer-motion";
+import { HamburgerIcon } from "../../common/HamburgerIcon";
+import { MenuNotification } from "../../common/MenuNotification";
 
 export const MobileMenu = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -24,67 +24,7 @@ export const MobileMenu = () => {
         className={`z-[999] flex min-h-8 min-w-8 cursor-pointer items-center justify-center rounded-full transition-all duration-500 sm:hidden ${isSidebarOpen ? "bg-white" : "bg-white/50"}`}
         onClick={handleSidebar}
       >
-        <div className="flex h-8 w-8 cursor-pointer flex-col justify-center gap-[3px] rounded-full p-2 backdrop-blur-md">
-          <motion.span
-            animate={
-              isSidebarOpen
-                ? {
-                    y: 4.5,
-                    rotate: 45,
-                  }
-                : {
-                    y: 0,
-                    rotate: 0,
-                  }
-            }
-            transition={{
-              duration: 0.3,
-              ease: "easeInOut",
-              y: { delay: isSidebarOpen ? 0.1 : 0.2 },
-              rotate: { delay: isSidebarOpen ? 0.2 : 0.1 },
-            }}
-            className="block h-[1.5px] min-h-[1.5px] w-full origin-center overflow-hidden rounded-full bg-dark-grey"
-          />
-          <motion.span
-            animate={
-              isSidebarOpen
-                ? {
-                    width: 0,
-                    x: 8,
-                  }
-                : {
-                    width: "100%",
-                    x: 0,
-                  }
-            }
-            transition={{
-              duration: 0.2,
-              ease: "easeInOut",
-              delay: isSidebarOpen ? 0 : 0.4,
-            }}
-            className="block h-[1.5px] min-h-[1.5px] origin-center overflow-hidden rounded-full bg-dark-grey"
-          />
-          <motion.span
-            animate={
-              isSidebarOpen
-                ? {
-                    y: -4.5,
-                    rotate: -45,
-                  }
-                : {
-                    y: 0,
-                    rotate: 0,
-                  }
-            }
-            transition={{
-              duration: 0.3,
-              ease: "easeInOut",
-              y: { delay: isSidebarOpen ? 0.1 : 0.2 },
-              rotate: { delay: isSidebarOpen ? 0.2 : 0.1 },
-            }}
-            className="block h-[1.5px] min-h-[1.5px] w-full origin-center overflow-hidden rounded-full bg-dark-grey"
-          />
-        </div>
+        <HamburgerIcon isSidebarOpen={isSidebarOpen} />
       </div>
 
       <BottomSheet open={isSidebarOpen} onOpenChange={handleOpenChange}>
@@ -155,34 +95,7 @@ export const MobileMenu = () => {
           </div>
         </div>
 
-        {notification && (
-          <div className="flex gap-2 rounded-2xl bg-white/50 p-2">
-            <Link to={notification.link} target="_blank" rel="noreferrer">
-              <img
-                src={notification.image}
-                className="h-16 w-16 rounded-lg object-cover"
-              />
-            </Link>
-            <div className={`flex grow gap-1`}>
-              <Link
-                to={notification.link}
-                target="_blank"
-                rel="noreferrer"
-                className="flex w-fit flex-col gap-1 leading-4"
-              >
-                <Typography size="h5" weight="bold">
-                  {notification.title}
-                </Typography>
-                <Typography
-                  className="whitespace-wrap mb-1 inline-block overflow-hidden text-ellipsis text-[10px] text-mid-grey"
-                  weight="medium"
-                >
-                  {notification.description}
-                </Typography>
-              </Link>
-            </div>
-          </div>
-        )}
+        {notification && <MenuNotification notification={notification} />}
       </BottomSheet>
     </>
   );
