@@ -15,6 +15,7 @@ import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { viewPortStore } from "../../store/viewPortStore";
+import { Link } from "react-router-dom";
 
 export const Navbar = () => {
   const { isConnected, address } = useEVMWallet();
@@ -45,15 +46,15 @@ export const Navbar = () => {
             const isActive = paths.some(isCurrentRoute);
             const primaryPath = paths[0];
             return (
-              <a
+              <Link
                 key={primaryPath}
-                href={primaryPath}
+                to={primaryPath}
                 target={route.isExternal ? "_blank" : undefined}
               >
                 <Typography size="h2" weight={isActive ? "bold" : "medium"}>
                   {route.name}
                 </Typography>
-              </a>
+              </Link>
             );
           })}
         </div>

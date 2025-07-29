@@ -8,6 +8,7 @@ import { Notification } from "../common/Notification";
 import { ViewPortListener } from "../common/ViewPortListener";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { network } from "../constants/constants";
+import { viewPortStore } from "../store/viewPortStore";
 
 type LayoutProps = {
   children: ReactNode;
@@ -15,6 +16,7 @@ type LayoutProps = {
 
 export const Layout: FC<LayoutProps> = ({ children }) => {
   const { fetchAndSetAssetsAndChains } = assetInfoStore();
+  const { isMobile } = viewPortStore();
   const theme = getCurrentTheme();
 
   useEffect(() => {
@@ -32,7 +34,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
           <Navbar />
           {children}
         </div>
-        <Notification />
+        {!isMobile && <Notification />}
         <Footer className={"mt-auto"} network={network} />
       </div>
     </div>
