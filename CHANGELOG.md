@@ -4,6 +4,7 @@
 
 ### Added
 
+- Added BNB Smart Chain support.
 - Enabled pre-image management to be handled at server level.
 
 ### Fixed
