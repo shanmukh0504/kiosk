@@ -3,7 +3,7 @@
 ## [1.0.11]
 
 ### Fixed
-
+- Optimize Dockerfile for better caching
 - Checks for Coinbase wallet based on the updated window object.
 - Use vite modes for dev and build commands.
 - Added rel attribute to external links in navbar.
