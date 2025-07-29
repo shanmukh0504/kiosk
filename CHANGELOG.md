@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.11]
+
+### Fixed
+
+- Checks for Coinbase wallet based on the updated window object.
+- Use vite modes for dev and build commands.
+- Added rel attribute to external links in navbar.
+
 ## [1.0.10]
 
 ### Added
