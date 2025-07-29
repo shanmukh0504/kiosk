@@ -7,6 +7,7 @@ import {
   isBitcoin,
   isEVM,
   isSolana,
+  isSolanaNativeToken,
   isStarknet,
 } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
@@ -287,7 +288,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
 
     address: string
   ) => {
-    const { assets } = get();
+    const { assets, balances } = get();
     if (!assets || !provider) return;
 
     try {
@@ -322,14 +323,14 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           {} as Record<string, BigNumber | undefined>
         );
 
-      set({ balances: { ...get().balances, ...btcBalance } });
+      set({ balances: { ...balances, ...btcBalance } });
     } catch {
       /*empty*/
     }
   },
 
   fetchAndSetStarknetBalance: async (address: string) => {
-    const { assets } = get();
+    const { assets, balances } = get();
     if (!assets) return;
 
     const starknetAsset = Object.values(assets).find((asset) =>
@@ -346,31 +347,32 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       starknetAsset.tokenAddress
     );
     starknetBalance[orderPair] = new BigNumber(balance);
-    set({ balances: { ...get().balances, ...starknetBalance } });
+    set({ balances: { ...balances, ...starknetBalance } });
   },
 
   fetchAndSetSolanaBalance: async (address: PublicKey) => {
-    const { assets } = get();
+    const { assets, balances } = get();
     if (!assets) return;
+
     const solanaAssets = Object.values(assets).filter((asset) =>
       isSolana(asset.chain)
     );
 
-    if (solanaAssets.length === 0) return;
-
-    const solanaBalances: Record<string, BigNumber | undefined> = {};
+    if (!solanaAssets.length) return;
+    const solanaBalance: Record<string, BigNumber | undefined> = {};
 
     for (const asset of solanaAssets) {
-      try {
-        const balance = await getSolanaTokenBalance(address, asset);
-        const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
-        solanaBalances[orderPair] = new BigNumber(balance);
-      } catch (err) {
-        continue;
-      }
-    }
+      const balance = await getSolanaTokenBalance(address, asset);
+      const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
 
-    set({ balances: { ...get().balances, ...solanaBalances } });
+      if (isSolanaNativeToken(asset.chain, asset.tokenAddress)) {
+        const gas = 0.00380608;
+        solanaBalance[orderPair] = new BigNumber(
+          Math.max(0, Number((Number(balance) - gas).toFixed(8)))
+        );
+      } else solanaBalance[orderPair] = new BigNumber(balance);
+    }
+    set({ balances: { ...balances, ...solanaBalance } });
   },
 
   clearBalances: () =>

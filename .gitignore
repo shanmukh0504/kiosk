@@ -24,9 +24,11 @@ dist-ssr
 #.yarn
 .yarn/**/*
 .env
+.env.*
 
 build-id.json
 
 # ignore Typescript build info files
 *.tsbuildinfo
+
 .env.*

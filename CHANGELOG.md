@@ -1,10 +1,20 @@
 # Changelog
 
+## [1.0.11]
+
+### Fixed
+
+- Checks for Coinbase wallet based on the updated window object.
+- Use vite modes for dev and build commands.
+- Added rel attribute to external links in navbar.
+- Tweak animation for fee details dropdown in swap component.
+- Made network fee value to 0.49$ when fee is not loaded.
+
 ## [1.0.10]
 
 ### Added
 
-- Added support for solana spl tokens in testnet.
+- Added EVM wallet support for leap and keplr.
 
 ## [1.0.9]
 
@@ -14,9 +24,14 @@
 
 ## [1.0.8]
 
+### Added
+
+- Added new fee structure UI
+
 ### Fixed
 
-- Fixed posting refundSacp for an order regardless any state
+- Fixed posting refundSacp for an order regardless any state.
+- Fixed rate display heading when dropdown is collapsed and removed price impact calculation
 
 ## [1.0.7]
 
