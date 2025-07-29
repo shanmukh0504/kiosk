@@ -69,6 +69,12 @@ export const FeesAndRateDetails = () => {
   const { solanaAddress } = useSolanaWallet();
   const { address } = useEVMWallet();
 
+  const fallbackNetworkFees = useMemo(() => {
+    return !isNetworkFeesLoading && networkFees !== undefined
+      ? networkFees
+      : 0.49;
+  }, [networkFees, isNetworkFeesLoading]);
+
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
   const formattedRate = useMemo(
     () => formatAmount(rate, 0, isBitcoinChains ? 7 : 3),
@@ -203,19 +209,15 @@ export const FeesAndRateDetails = () => {
                 >
                   <div className="flex min-w-fit items-center gap-1">
                     <GasStationIcon className="h-3 w-3" />
-                    {isNetworkFeesLoading ? (
-                      <div className="h-4 w-6 animate-pulse rounded bg-gray-200"></div>
-                    ) : (
-                      <Typography
-                        size="h5"
-                        weight="medium"
-                        className="!text-nowrap"
-                      >
-                        {networkFees === 0
-                          ? "Free"
-                          : "$" + formatAmount(networkFees, 0, 2)}
-                      </Typography>
-                    )}
+                    <Typography
+                      size="h5"
+                      weight="medium"
+                      className="!text-nowrap"
+                    >
+                      {fallbackNetworkFees === 0
+                        ? "Free"
+                        : "$" + formatAmount(fallbackNetworkFees, 0, 2)}
+                    </Typography>
                   </div>
                 </motion.div>
               )}
@@ -226,7 +228,7 @@ export const FeesAndRateDetails = () => {
             initial={{ width: 0, scale: 0, opacity: 0 }}
             animate={{ width: "auto", scale: 1, opacity: 1 }}
             exit={{ width: 0, scale: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
             className="pl-1"
           >
             <KeyboardDownIcon
@@ -245,8 +247,7 @@ export const FeesAndRateDetails = () => {
               refundAddress={refundAddress}
               receiveAddress={receiveAddress}
               showComparison={handleShowComparison}
-              networkFeesValue={formatAmount(networkFees, 0, 2)}
-              isLoading={isNetworkFeesLoading}
+              networkFeesValue={formatAmount(fallbackNetworkFees, 0, 2)}
             />
           )}
         </AnimatePresence>
