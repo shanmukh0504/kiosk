@@ -9,6 +9,7 @@ import { ViewPortListener } from "../common/ViewPortListener";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { network } from "../constants/constants";
 import { viewPortStore } from "../store/viewPortStore";
+import { useNotificationStore } from "../store/notificationStore";
 
 type LayoutProps = {
   children: ReactNode;
@@ -18,10 +19,12 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
   const { fetchAndSetAssetsAndChains } = assetInfoStore();
   const { isMobile } = viewPortStore();
   const theme = getCurrentTheme();
+  const { fetchNotification } = useNotificationStore();
 
   useEffect(() => {
     fetchAndSetAssetsAndChains();
-  }, [fetchAndSetAssetsAndChains]);
+    fetchNotification();
+  }, [fetchAndSetAssetsAndChains, fetchNotification]);
 
   return (
     <div className={`${theme} relative overflow-hidden bg-opacity-50`}>

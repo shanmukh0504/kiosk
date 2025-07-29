@@ -1,18 +1,14 @@
 import { BottomSheet, Typography } from "@gardenfi/garden-book";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { externalRoutes, routes } from "../../constants/constants";
 import { isCurrentRoute } from "../../utils/utils";
 import { Link } from "react-router-dom";
-import { NotificationProps } from "../../common/Notification";
-import axios from "axios";
-import { API } from "../../constants/api";
+import { useNotificationStore } from "../../store/notificationStore";
 import { motion } from "framer-motion";
 
 export const MobileMenu = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const [notification, setNotification] = useState<NotificationProps | null>(
-    null
-  );
+  const { notification } = useNotificationStore();
 
   const handleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
@@ -21,20 +17,6 @@ export const MobileMenu = () => {
   const handleOpenChange = (open: boolean) => {
     setSidebarOpen(open);
   };
-
-  useEffect(() => {
-    const fetchNotification = async () => {
-      try {
-        const response = await axios.get(API().data.notification().toString());
-        if (response.data) {
-          setNotification(response.data.result);
-        }
-      } catch (error) {
-        console.log("Error getting notification", error);
-      }
-    };
-    fetchNotification();
-  }, []);
 
   return (
     <>
