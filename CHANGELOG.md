@@ -1,10 +1,17 @@
 # Changelog
 
+## [1.0.11]
+
+### Fixed
+
+- Checks for Coinbase wallet based on the updated window object.
+
 ## [1.0.10]
 
 ### Added
 
 - Added EVM wallet support for leap and keplr.
+
 
 ## [1.0.9]
 
