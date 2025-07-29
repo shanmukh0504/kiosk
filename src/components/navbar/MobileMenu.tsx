@@ -145,6 +145,7 @@ export const MobileMenu = () => {
             })}
           </div>
           <div className={`flex w-full gap-6`}>
+            {/* TODO: import social media Icons and links */}
             <svg
               width="24"
               height="24"
