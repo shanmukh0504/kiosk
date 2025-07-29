@@ -57,7 +57,6 @@ export const MobileMenu = () => {
                   href={route.path}
                   target={route.isExternal ? "_blank" : undefined}
                   rel={route.isExternal ? "noreferrer" : undefined}
-                  onClick={() => handleSidebar()}
                 >
                   <Typography size="h3" weight="medium">
                     {route.name}
