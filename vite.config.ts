@@ -8,6 +8,7 @@ import wasm from "vite-plugin-wasm";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import topLevelAwait from "vite-plugin-top-level-await";
 import { metadataPlugin } from "./vite-metadata-plugin";
+import process from "process";
 
 const getRecentGitCommitHash = () => {
   try {
@@ -106,8 +107,12 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          "vendor": ["react", "react-dom", "react-router-dom"],
-          "libs": ["@gardenfi/garden-book", "framer-motion", "@gardenfi/wallet-connectors"],
+          vendor: ["react", "react-dom", "react-router-dom"],
+          libs: [
+            "@gardenfi/garden-book",
+            "framer-motion",
+            "@gardenfi/wallet-connectors",
+          ],
         },
       },
     },
