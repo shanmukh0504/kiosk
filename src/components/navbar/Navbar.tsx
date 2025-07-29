@@ -15,7 +15,6 @@ import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { viewPortStore } from "../../store/viewPortStore";
-import { Link } from "react-router-dom";
 
 export const Navbar = () => {
   const { isConnected, address } = useEVMWallet();
