@@ -86,9 +86,20 @@ export const TooltipWrapper: FC<TooltipWrapperProps> = ({
             zIndex: 9999,
             pointerEvents: "auto",
           }}
-          className="before:absolute before:-top-4 before:left-2 before:h-12 before:w-8 before:cursor-pointer before:sm:-left-7 before:sm:top-2"
+          className="mt-[3px] before:absolute before:-top-4 before:left-2 before:h-12 before:w-8 before:cursor-pointer before:sm:-left-7 before:sm:top-2"
         >
-          {children}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: -10 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="relative mx-auto flex"
+          >
+            <div className="absolute mb-[15px] ml-4 mt-[-5px] h-[12px] w-[12px] rotate-45 rounded-sm bg-white sm:mb-0 sm:ml-[-4px] sm:mt-[14px]"></div>
+            <div className="flex flex-col rounded-2xl bg-white px-4 py-3 shadow-custom">
+              {children}
+            </div>
+          </motion.div>
         </motion.div>
       </AnimatePresence>
     </Portal>

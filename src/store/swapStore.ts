@@ -26,12 +26,14 @@ type SwapState = {
   inputAmount: string;
   outputAmount: string;
   rate: number;
+  networkFees: number;
   btcAddress: string;
   isSwapping: boolean;
   isApproving: boolean;
   strategy: string;
   tokenPrices: TokenPrices;
   error: SwapErrors;
+  isNetworkFeesLoading: boolean;
   isFetchingQuote: FetchingQuote;
   isEditBTCAddress: boolean;
   isComparisonVisible: boolean;
@@ -43,6 +45,8 @@ type SwapState = {
   setAsset: (ioType: IOType, asset: Asset | undefined) => void;
   setAmount: (ioType: IOType, amount: string) => void;
   setRate: (rate: number) => void;
+  setNetworkFees: (networkFees: number) => void;
+  setIsNetworkFeesLoading: (isNetworkFeesLoading: boolean) => void;
   setBtcAddress: (btcAddress: string) => void;
   swapAssets: () => void;
   setError: (error: SwapErrors) => void;
@@ -70,8 +74,10 @@ export const swapStore = create<SwapState>((set) => ({
   inputAmount: "",
   outputAmount: "",
   rate: 0,
+  networkFees: 0,
   btcAddress: "",
   isApproving: false,
+  isNetworkFeesLoading: false,
   swapInProgress: {
     isOpen: false,
     order: null,
@@ -112,6 +118,15 @@ export const swapStore = create<SwapState>((set) => ({
       ...state,
       rate,
     }));
+  },
+  setNetworkFees: (networkFees) => {
+    set((state) => ({
+      ...state,
+      networkFees,
+    }));
+  },
+  setIsNetworkFeesLoading: (isNetworkFeesLoading) => {
+    set({ isNetworkFeesLoading });
   },
   setBtcAddress: (btcAddress) => {
     set((state) => ({

@@ -7,11 +7,17 @@ import {
   isBitcoin,
   isEVM,
   isSolana,
+  isSolanaNativeToken,
   isStarknet,
 } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
-import { Quote, Strategies } from "@gardenfi/core";
+import {
+  BitcoinNetwork,
+  BitcoinProvider,
+  Quote,
+  Strategies,
+} from "@gardenfi/core";
 import { generateTokenKey } from "../utils/generateTokenKey";
 import { PublicKey } from "@solana/web3.js";
 
@@ -27,6 +33,7 @@ import {
   getStarknetTokenBalance,
 } from "../utils/getTokenBalance";
 import { Hex } from "viem";
+import { getSpendableBalance } from "../utils/getmaxBtc";
 
 export type Networks = {
   [chain in Chain]: ChainData & { assetConfig: Omit<AssetConfig, "chain">[] };
@@ -84,7 +91,8 @@ type AssetInfoState = {
     fetchOnlyAsset?: Asset
   ) => Promise<void>;
   fetchAndSetBitcoinBalance: (
-    provider: IInjectedBitcoinProvider
+    provider: IInjectedBitcoinProvider,
+    address: string
   ) => Promise<void>;
   fetchAndSetStarknetBalance: (address: string) => Promise<void>;
   fetchAndSetSolanaBalance: (address: PublicKey) => Promise<void>;
@@ -275,7 +283,11 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     }
   },
 
-  fetchAndSetBitcoinBalance: async (provider: IInjectedBitcoinProvider) => {
+  fetchAndSetBitcoinBalance: async (
+    provider: IInjectedBitcoinProvider,
+
+    address: string
+  ) => {
     const { assets, balances } = get();
     if (!assets || !provider) return;
 
@@ -284,12 +296,28 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       if (!balance?.val?.total) return;
 
       const formattedBalance = new BigNumber(balance.val.confirmed);
+
+      const _provider = new BitcoinProvider(
+        network === "mainnet" ? BitcoinNetwork.Mainnet : BitcoinNetwork.Testnet
+      );
+
+      const feeRate = await _provider.getFeeRates();
+      const utxos = await _provider.getUTXOs(address, Number(formattedBalance));
+      const spendable = await getSpendableBalance(
+        address,
+        Number(formattedBalance),
+        utxos.length,
+        feeRate.fastestFee
+      );
+      const maxSpendableBalance = spendable.ok ? spendable.val : 0;
+
       const btcBalance = Object.values(assets)
         .filter((asset) => isBitcoin(asset.chain))
         .reduce(
           (acc, asset) => {
-            acc[getOrderPair(asset.chain, asset.tokenAddress)] =
-              formattedBalance;
+            acc[getOrderPair(asset.chain, asset.tokenAddress)] = new BigNumber(
+              maxSpendableBalance
+            );
             return acc;
           },
           {} as Record<string, BigNumber | undefined>
@@ -335,7 +363,14 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
 
     const balance = await getSolanaTokenBalance(address, solanaAsset);
     const orderPair = getOrderPair(solanaAsset.chain, solanaAsset.tokenAddress);
-    solanaBalance[orderPair] = new BigNumber(balance);
+
+    if (isSolanaNativeToken(solanaAsset.chain, solanaAsset.tokenAddress)) {
+      const gas = 0.00380608;
+      solanaBalance[orderPair] = new BigNumber(
+        Math.max(0, Number((Number(balance) - gas).toFixed(8)))
+      );
+    } else solanaBalance[orderPair] = new BigNumber(balance);
+
     set({ balances: { ...balances, ...solanaBalance } });
   },
 

@@ -1,5 +1,35 @@
 # Changelog
 
+## [1.0.11]
+
+### Fixed
+
+- Checks for Coinbase wallet based on the updated window object.
+
+## [1.0.10]
+
+### Added
+
+- Added EVM wallet support for leap and keplr.
+
+
+## [1.0.9]
+
+### Fixed
+
+- Fetch and set max spendable balance for Bitcoin and Solana at the time of fetching balances.
+
+## [1.0.8]
+
+### Added
+
+- Added new fee structure UI
+
+### Fixed
+
+- Fixed posting refundSacp for an order regardless any state.
+- Fixed rate display heading when dropdown is collapsed and removed price impact calculation
+
 ## [1.0.7]
 
 ### Added
