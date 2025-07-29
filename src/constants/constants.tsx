@@ -120,6 +120,8 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "corn",
   "solana",
   "botanix",
+  "bnbchain",
+  "bnbchain_testnet",
 ] as const;
 
 export const MULTICALL_CONTRACT_ADDRESSES: Record<number, string> = {
@@ -143,6 +145,27 @@ export const routes = Object.entries(INTERNAL_ROUTES).filter(([key]) => {
 //if the wallet is not listed here, then it supports all chains
 export const WALLET_SUPPORTED_CHAINS: Record<string, Chain[]> = {
   "app.phantom": ["solana", "ethereum", "base", "bitcoin"],
-  "leap": ["ethereum", "base", "bitcoin", "arbitrum" , "solana", "bera", "hyperliquid", "unichain", "citrea_testnet"],
-  "keplr": ["ethereum", "base", "bitcoin", "arbitrum" ,"starknet", "bera","unichain", "citrea_testnet","ethereum_sepolia","starknet_sepolia"],
+  leap: [
+    "ethereum",
+    "base",
+    "bitcoin",
+    "arbitrum",
+    "solana",
+    "bera",
+    "hyperliquid",
+    "unichain",
+    "citrea_testnet",
+  ],
+  keplr: [
+    "ethereum",
+    "base",
+    "bitcoin",
+    "arbitrum",
+    "starknet",
+    "bera",
+    "unichain",
+    "citrea_testnet",
+    "ethereum_sepolia",
+    "starknet_sepolia",
+  ],
 };
