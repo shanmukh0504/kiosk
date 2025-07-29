@@ -46,15 +46,16 @@ export const Navbar = () => {
             const isActive = paths.some(isCurrentRoute);
             const primaryPath = paths[0];
             return (
-              <Link
+              <a
                 key={primaryPath}
-                to={primaryPath}
+                href={primaryPath}
                 target={route.isExternal ? "_blank" : undefined}
+                rel={route.isExternal ? "noreferrer" : undefined}
               >
                 <Typography size="h2" weight={isActive ? "bold" : "medium"}>
                   {route.name}
                 </Typography>
-              </Link>
+              </a>
             );
           })}
         </div>
