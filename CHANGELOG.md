@@ -5,13 +5,14 @@
 ### Fixed
 
 - Checks for Coinbase wallet based on the updated window object.
+- Use vite modes for dev and build commands.
+- Added rel attribute to external links in navbar.
 
 ## [1.0.10]
 
 ### Added
 
 - Added EVM wallet support for leap and keplr.
-
 
 ## [1.0.9]
 
