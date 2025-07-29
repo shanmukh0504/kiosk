@@ -24,6 +24,7 @@ dist-ssr
 #.yarn
 .yarn/**/*
 .env
+.env.*
 
 build-id.json
 
