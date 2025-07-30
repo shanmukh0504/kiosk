@@ -6,6 +6,10 @@
 
 - Added support for solana spl tokens.
 
+### Fixed
+
+- Fetch balance on mount.
+
 ## [1.0.11]
 
 ### Added
