@@ -17,6 +17,7 @@ export enum SimplifiedOrderStatus {
   swapCompleted = "Swap completed",
   Refunded = "Refund completed",
   AwaitingRefund = "Awaiting refund",
+  Expired = "Expired",
 }
 
 export const STATUS_MAPPING: Record<string, SimplifiedOrderStatus> = {
@@ -32,7 +33,7 @@ type Status = {
 };
 
 export type OrderProgress = {
-  readonly [key in 1 | 2 | 3 | 4]: Status;
+  readonly [key in 1 | 2 | 3 | 4]?: Status;
 };
 
 export const useOrderStatus = () => {
@@ -233,6 +234,17 @@ export const useOrderStatus = () => {
             },
           };
         }
+      case OrderStatus.Expired:
+        return {
+          1: {
+            title: SimplifiedOrderStatus.orderCreated,
+            status: "completed",
+          },
+          2: {
+            title: SimplifiedOrderStatus.Expired,
+            status: "cancel",
+          },
+        };
       default:
         return undefined;
     }
