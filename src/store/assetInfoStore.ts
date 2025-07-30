@@ -354,23 +354,24 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     const { assets, balances } = get();
     if (!assets) return;
 
-    const solanaAsset = Object.values(assets).find((asset) =>
+    const solanaAssets = Object.values(assets).filter((asset) =>
       isSolana(asset.chain)
     );
 
-    if (!solanaAsset) return;
+    if (!solanaAssets.length) return;
     const solanaBalance: Record<string, BigNumber | undefined> = {};
 
-    const balance = await getSolanaTokenBalance(address, solanaAsset);
-    const orderPair = getOrderPair(solanaAsset.chain, solanaAsset.tokenAddress);
+    for (const asset of solanaAssets) {
+      const balance = await getSolanaTokenBalance(address, asset);
+      const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
 
-    if (isSolanaNativeToken(solanaAsset.chain, solanaAsset.tokenAddress)) {
-      const gas = 0.00380608;
-      solanaBalance[orderPair] = new BigNumber(
-        Math.max(0, Number((Number(balance) - gas).toFixed(8)))
-      );
-    } else solanaBalance[orderPair] = new BigNumber(balance);
-
+      if (isSolanaNativeToken(asset.chain, asset.tokenAddress)) {
+        const gas = 0.00380608;
+        solanaBalance[orderPair] = new BigNumber(
+          Math.max(0, Number((Number(balance) - gas).toFixed(8)))
+        );
+      } else solanaBalance[orderPair] = new BigNumber(balance);
+    }
     set({ balances: { ...balances, ...solanaBalance } });
   },
 

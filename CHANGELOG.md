@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.12]
+
+### Added
+
+- Added support for solana spl tokens.
+
 ## [1.0.11]
 
 ### Added
