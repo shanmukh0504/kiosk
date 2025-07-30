@@ -74,6 +74,12 @@ export const CreateSwap = () => {
   const isChainSupported = useMemo(() => {
     if (!connector || !inputAsset || !outputAsset) return true;
     if (!WALLET_SUPPORTED_CHAINS[connector.id]) return true;
+    if (
+      isBitcoin(inputAsset.chain) ||
+      isStarknet(inputAsset.chain) ||
+      isSolana(inputAsset.chain)
+    )
+      return true;
     return WALLET_SUPPORTED_CHAINS[connector.id].includes(inputAsset.chain);
   }, [connector, inputAsset, outputAsset]);
 
@@ -95,7 +101,6 @@ export const CreateSwap = () => {
                 ? "Signing"
                 : "Swap";
   }, [
-    connector,
     isChainSupported,
     error.liquidityError,
     isApproving,
@@ -107,17 +112,18 @@ export const CreateSwap = () => {
   const buttonDisabled = useMemo(() => {
     return !!error.liquidityError || loadingDisabled
       ? true
-      : needsWalletConnection || validSwap
+      : needsWalletConnection
         ? false
         : !isChainSupported || isSwapping
           ? true
-          : true;
+          : validSwap
+            ? false
+            : true;
   }, [
     isChainSupported,
     isSwapping,
     validSwap,
     error.liquidityError,
-    error.insufficientBalanceError,
     needsWalletConnection,
     loadingDisabled,
   ]);
@@ -136,7 +142,6 @@ export const CreateSwap = () => {
     if (!inputAsset || !outputAsset) return "";
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
-
 
   const handleConnectWallet = () => {
     if (!needsWalletConnection) return;
@@ -160,7 +165,9 @@ export const CreateSwap = () => {
       await fetchAndSetFiatValues();
       await Promise.allSettled([
         address && fetchAndSetEvmBalances(address, workingRPCs),
-        btcAddress && provider && fetchAndSetBitcoinBalance(provider),
+        btcAddress &&
+          provider &&
+          fetchAndSetBitcoinBalance(provider, btcAddress),
         starknetAddress && fetchAndSetStarknetBalance(starknetAddress),
         solanaAnchorProvider &&
           fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey),
@@ -172,8 +179,8 @@ export const CreateSwap = () => {
       if (!inputAsset) return;
       if (isEVM(inputAsset.chain) && address)
         await fetchAndSetEvmBalances(address, workingRPCs, inputAsset);
-      if (isBitcoin(inputAsset.chain) && provider)
-        await fetchAndSetBitcoinBalance(provider);
+      if (isBitcoin(inputAsset.chain) && provider && btcAddress)
+        await fetchAndSetBitcoinBalance(provider, btcAddress);
       if (isStarknet(inputAsset.chain) && starknetAddress)
         await fetchAndSetStarknetBalance(starknetAddress);
       if (isSolana(inputAsset.chain) && solanaAnchorProvider)

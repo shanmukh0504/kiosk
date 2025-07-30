@@ -49,6 +49,7 @@ export const Navbar = () => {
                 key={primaryPath}
                 href={primaryPath}
                 target={route.isExternal ? "_blank" : undefined}
+                rel={route.isExternal ? "noreferrer" : undefined}
               >
                 <Typography size="h2" weight={isActive ? "bold" : "medium"}>
                   {route.name}
