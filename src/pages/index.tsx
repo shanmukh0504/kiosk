@@ -49,7 +49,7 @@ function App() {
           solana: solanaAnchorProvider ?? undefined,
         },
       }}
-      handleSecretManagement={true}
+      handleSecretManagement={false}
     >
       <Layout>
         <Routes>

@@ -39,22 +39,26 @@ export const useOrderStatus = () => {
   const { orderBook } = useGarden();
   const { blockNumbers } = blockNumberStore();
   const { assets } = assetInfoStore();
-  const { order, setOrder } = orderInProgressStore();
+  const { order: orderInProgress, setOrder } = orderInProgressStore();
   const { pendingOrders } = pendingOrdersStore();
 
-  const outputAsset = order && getAssetFromSwap(order.destination_swap, assets);
+  const outputAsset =
+    orderInProgress &&
+    getAssetFromSwap(orderInProgress.destination_swap, assets);
 
   const confirmationsString = useMemo(() => {
-    return order && order.status === OrderStatus.InitiateDetected
+    return orderInProgress &&
+      orderInProgress.status === OrderStatus.InitiateDetected
       ? "0" + "/" + "1"
       : "";
-  }, [order]);
+  }, [orderInProgress]);
 
   const viewableStatus =
-    (order?.status && STATUS_MAPPING[order?.status]) || null;
+    (orderInProgress?.status && STATUS_MAPPING[orderInProgress?.status]) ||
+    null;
 
   const orderProgress: OrderProgress | undefined = useMemo(() => {
-    switch (order?.status) {
+    switch (orderInProgress?.status) {
       case OrderStatus.Created:
         return {
           1: { title: SimplifiedOrderStatus.orderCreated, status: "completed" },
@@ -190,7 +194,7 @@ export const useOrderStatus = () => {
       case OrderStatus.CounterPartyRedeemDetected:
       case OrderStatus.CounterPartyRedeemed:
       case OrderStatus.Completed:
-        if (!order.source_swap.refund_tx_hash) {
+        if (!orderInProgress.source_swap.refund_tx_hash) {
           return {
             1: {
               title: SimplifiedOrderStatus.orderCreated,
@@ -232,47 +236,57 @@ export const useOrderStatus = () => {
       default:
         return undefined;
     }
-  }, [order, outputAsset?.symbol]);
+  }, [orderInProgress, outputAsset?.symbol]);
 
   useEffect(() => {
-    if (!order) return;
-    if (pendingOrders.length) {
-      //check in pending orders and update status
-      const orderFromPending = pendingOrders.find(
-        (o) => order.create_order.create_id === o.create_order.create_id
-      );
-      if (orderFromPending) setOrder(orderFromPending);
-    } else {
-      //fetch from orderbook and set status
-      if (
-        [
-          OrderStatus.RedeemDetected,
-          OrderStatus.Redeemed,
-          OrderStatus.CounterPartyRedeemDetected,
-          OrderStatus.CounterPartyRedeemed,
-          OrderStatus.Completed,
-        ].includes(order.status)
-      )
-        return;
+    if (!orderInProgress) return;
 
-      const fetchOrder = async () => {
-        if (!orderBook || !blockNumbers) return;
-        const orderFromOrderbook = await orderBook.getOrder(
-          order.create_order.create_id,
-          true
-        );
-        if (!orderFromOrderbook.ok) return;
-        const o = orderFromOrderbook.val;
-        const status = ParseOrderStatus(
-          o,
-          blockNumbers[o.source_swap.chain],
-          blockNumbers[o.destination_swap.chain]
-        );
-        setOrder({ ...o, status });
-      };
-      fetchOrder();
+    // Check if order is in pending orders
+    if (pendingOrders.length) {
+      const orderFromPending = pendingOrders.find(
+        (o) =>
+          orderInProgress.create_order.create_id === o.create_order.create_id
+      );
+      if (orderFromPending) {
+        setOrder(orderFromPending);
+        return;
+      }
     }
-  }, [pendingOrders, order, setOrder, orderBook, blockNumbers]);
+
+    // Skip fetching for completed orders
+    const completedStatuses = [
+      OrderStatus.RedeemDetected,
+      OrderStatus.Redeemed,
+      OrderStatus.CounterPartyRedeemDetected,
+      OrderStatus.CounterPartyRedeemed,
+      OrderStatus.Completed,
+    ];
+
+    if (completedStatuses.includes(orderInProgress.status)) return;
+
+    // Fetch order from orderbook
+    const fetchOrder = async () => {
+      if (!orderBook || !blockNumbers) return;
+
+      const orderFromOrderbook = await orderBook.getOrder(
+        orderInProgress.create_order.create_id,
+        true
+      );
+
+      if (!orderFromOrderbook.ok) return;
+
+      const o = orderFromOrderbook.val;
+      const status = ParseOrderStatus(
+        o,
+        blockNumbers[o.source_swap.chain],
+        blockNumbers[o.destination_swap.chain]
+      );
+
+      setOrder({ ...o, status });
+    };
+
+    fetchOrder();
+  }, [pendingOrders, orderInProgress, setOrder, orderBook, blockNumbers]);
 
   return {
     orderProgress,
