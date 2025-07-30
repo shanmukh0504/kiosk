@@ -27,10 +27,6 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    console.log(starknetWallet);
-  }, [starknetWallet]);
-
   return (
     <GardenProvider
       config={{
