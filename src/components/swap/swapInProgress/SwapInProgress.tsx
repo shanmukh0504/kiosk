@@ -25,7 +25,8 @@ export const SwapInProgress = () => {
   const { order, setIsOpen } = orderInProgressStore();
   const { allAssets } = assetInfoStore();
   const { addDeletedOrder } = deletedOrdersStore();
-  const { orderProgress, viewableStatus, confirmationsString  } = useOrderStatus();
+  const { orderProgress, viewableStatus, confirmationsString } =
+    useOrderStatus();
 
   const { depositAddress, inputAsset, outputAsset } = useMemo(() => {
     return {
