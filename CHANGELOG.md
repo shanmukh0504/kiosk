@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.0]
+
+### Added
+
+- Brand refresh
+
 ## [1.0.12]
 
 ### Added
