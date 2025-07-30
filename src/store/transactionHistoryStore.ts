@@ -1,6 +1,6 @@
 import { BlockchainType, IOrderbook, MatchedOrder } from "@gardenfi/orderbook";
 import { create } from "zustand";
-import * as Sentry from "@sentry/react";
+import logger from "../utils/logger";
 
 type TransactionHistoryStoreState = {
   transactions: MatchedOrder[];
@@ -44,8 +44,7 @@ const transactionHistoryStore = create<TransactionHistoryStoreState>(
           per_page: get().perPage,
         });
         if (!txns.ok) {
-          Sentry.captureException(txns.error);
-          console.error(txns.error);
+          logger.error("failed to fetch transactions ❌", txns.error);
           continue;
         }
         totalItems += txns.val.total_items;

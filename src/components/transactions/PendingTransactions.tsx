@@ -5,7 +5,7 @@ import { useGarden } from "@gardenfi/react-hooks";
 import { OrderStatus, OrderWithStatus } from "@gardenfi/core";
 import { isBitcoin, isEVM, isSolana } from "@gardenfi/orderbook";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import * as Sentry from "@sentry/react";
+import logger from "../../utils/logger";
 
 export const PendingTransactions = () => {
   const { pendingOrders, updateOrder } = pendingOrdersStore();
@@ -19,8 +19,7 @@ export const PendingTransactions = () => {
     if (isEVM(order.source_swap.chain)) {
       const tx = await garden.evmHTLC.initiate(order);
       if (!tx.ok) {
-        Sentry.captureException(tx.error);
-        console.error(tx.error);
+        logger.error("failed to send evm ❌", tx.error);
         return;
       }
       txHash = tx.val;
@@ -30,26 +29,23 @@ export const PendingTransactions = () => {
         Number(order.source_swap.amount)
       );
       if (bitcoinRes.error) {
-        Sentry.captureException(bitcoinRes.error);
-        console.error("failed to send bitcoin ❌", bitcoinRes.error);
+        logger.error("failed to send bitcoin ❌", bitcoinRes.error);
         return;
       }
       txHash = bitcoinRes.val;
     } else if (isSolana(order.source_swap.chain)) {
       if (!garden.solanaHTLC) {
-        Sentry.captureException("Solana HTLC not available");
-        console.error("Solana HTLC not available");
+        logger.error("Solana HTLC not available");
         return;
       }
       const tx = await garden.solanaHTLC.initiate(order);
       if (!tx.ok) {
-        Sentry.captureException(tx.error);
-        console.error(tx.error);
+        logger.error("failed to send solana ❌", tx.error);
         return;
       }
       txHash = tx.val;
     }
-    console.log(txHash);
+    logger.log("txHash : ", txHash);
     if (!txHash) return;
 
     const updatedOrder = {

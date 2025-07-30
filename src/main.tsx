@@ -32,7 +32,6 @@ Sentry.init({
   ],
 
   beforeSend(event) {
-    console.log("Sentry event being sent:", event);
     return event;
   },
   beforeBreadcrumb(breadcrumb) {

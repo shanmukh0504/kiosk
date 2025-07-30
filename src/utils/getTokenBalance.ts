@@ -19,7 +19,7 @@ import { RpcProvider, Contract } from "starknet";
 import { STARKNET_CONFIG } from "@gardenfi/core";
 import { network } from "../constants/constants";
 import { Connection, PublicKey } from "@solana/web3.js";
-import * as Sentry from "@sentry/react";
+import logger from "./logger";
 
 const erc20ABI = [
   {
@@ -83,8 +83,10 @@ export const getSolanaTokenBalance = async (
     try {
       tokenMint = new PublicKey(asset.tokenAddress);
     } catch (err) {
-      Sentry.captureException(err);
-      console.error("Invalid token mint address:", asset.tokenAddress, err);
+      logger.error("Invalid token mint address", {
+        address: asset.tokenAddress,
+        error: err,
+      });
       return 0;
     }
 
@@ -98,8 +100,7 @@ export const getSolanaTokenBalance = async (
     );
     return formatAmount(balance.value.amount, balance.value.decimals, 8);
   } catch (error) {
-    Sentry.captureException(error);
-    console.error("Error fetching Solana token balance:", error);
+    logger.error("Error fetching Solana token balance:", error);
     return 0;
   }
 };
@@ -137,8 +138,7 @@ export const getStarknetTokenBalance = async (
     );
     return balanceInDecimals;
   } catch (error) {
-    Sentry.captureException(error);
-    console.error("Error fetching Starknet balance:", error);
+    logger.error("Error fetching Starknet balance:", error);
     return 0;
   }
 };
@@ -202,8 +202,7 @@ export const getTokenBalance = async (address: string, asset: Asset) => {
 
     return balanceInDecimals;
   } catch (e) {
-    Sentry.captureException(e);
-    console.log(e);
+    logger.error("Error fetching token balance:", e);
     return 0;
   }
 };
@@ -232,7 +231,7 @@ export const getNativeBalance = async (address: string, asset: Asset) => {
 
     return balanceInDecimals;
   } catch (error) {
-    Sentry.captureException(error);
+    logger.error("Error fetching native balance:", error);
     return 0;
   }
 };

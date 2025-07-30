@@ -20,7 +20,6 @@ import {
 } from "@gardenfi/core";
 import { generateTokenKey } from "../utils/generateTokenKey";
 import { PublicKey } from "@solana/web3.js";
-import * as Sentry from "@sentry/react";
 
 type AssetConfig = Asset & {
   disabled?: boolean;
@@ -35,6 +34,7 @@ import {
 } from "../utils/getTokenBalance";
 import { Hex } from "viem";
 import { getSpendableBalance } from "../utils/getmaxBtc";
+import logger from "../utils/logger";
 
 export type Networks = {
   [chain in Chain]: ChainData & { assetConfig: Omit<AssetConfig, "chain">[] };
@@ -184,8 +184,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       }
       set({ allAssets, allChains, assets, chains });
     } catch (error) {
-      Sentry.captureException(error);
-      console.error("Failed to fetch assets data", error);
+      logger.error("failed to fetch assets data ❌", error);
       set({ error: "Failed to fetch assets data" });
     } finally {
       set({ isLoading: false });
