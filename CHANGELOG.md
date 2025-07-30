@@ -8,8 +8,14 @@
 
 ## [1.0.11]
 
+### Added
+
+- Added BNB Smart Chain support.
+- Enabled pre-image management to be handled at server level.
+
 ### Fixed
 
+- Optimize Dockerfile for better caching
 - Checks for Coinbase wallet based on the updated window object.
 - Use vite modes for dev and build commands.
 - Added rel attribute to external links in navbar.
@@ -21,6 +27,10 @@
 ### Added
 
 - Added EVM wallet support for leap and keplr.
+
+### Fixed
+
+- Bitcoin redeems
 
 ## [1.0.9]
 
