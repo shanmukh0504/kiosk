@@ -14,31 +14,27 @@ import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useSolanaWallet } from "./hooks/useSolanaWallet";
 
 Sentry.init({
-  dsn: "https://268c0221607054b61682cf7c13d315de@telemetry.garden.finance/3",
-  tunnel: "https://telemetry.garden.finance/tunnel",
-  // For example, automatic IP address collection on events
-  sendDefaultPii: true,
+  dsn: "https://2199f797da19907c4a034e1018be6837@telemetry.garden.finance/5",
   integrations: [
     Sentry.browserTracingIntegration(),
     Sentry.replayIntegration(),
   ],
-  // Tracing
-  tracesSampleRate: 1.0, //  Capture 100% of the transactions
-  tracePropagationTargets: [
-    "localhost",
-    "http://10.67.22.114:5173/",
-    /^https:\/\/yourserver\.io\/api/,
-  ],
+  // Performance Monitoring
+  tracesSampleRate: 1.0,
   // Session Replay
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
-  // Add error handling for when Sentry is blocked
+  // Track Garden Finance API endpoints
+  tracePropagationTargets: [
+    "localhost",
+    /^https:\/\/testnet\.api\.hashira\.io/,
+    /^https:\/\/.*\.garden\.finance/,
+  ],
+
   beforeSend(event) {
-    // Log to console if Sentry is blocked for debugging
     console.log("Sentry event being sent:", event);
     return event;
   },
-  // Handle Sentry initialization errors
   beforeBreadcrumb(breadcrumb) {
     return breadcrumb;
   },

@@ -20,6 +20,7 @@
     "@gardenfi/wallet-connectors": "2.2.1-beta.7",
     "@number-flow/react": "^0.5.9",
     "@sentry/react": "^9.41.0",
+    "@sentry/vite-plugin": "^4.0.2",
     "@solana/wallet-adapter-base": "^0.9.26",
     "@solana/wallet-adapter-react": "^0.15.38",
     "@solana/wallet-adapter-wallets": "^0.19.37",
