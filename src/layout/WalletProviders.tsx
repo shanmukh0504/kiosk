@@ -11,6 +11,7 @@ import {
   connectors as starknetConnectors,
 } from "./starknet/config";
 import { config } from "./wagmi/config";
+import { STARKNET_CONFIG } from "@gardenfi/core";
 
 interface WalletProviderProps {
   children: ReactNode;
@@ -21,6 +22,7 @@ export const WalletProviders: FC<WalletProviderProps> = ({ children }) => {
     <WagmiProvider config={config}>
       <BTCWalletProvider network={network as Network} store={localStorage}>
         <StarknetConfig
+          defaultChainId={BigInt(STARKNET_CONFIG[network].chainId)}
           chains={starknetChains}
           provider={starknetProviders}
           connectors={starknetConnectors}
