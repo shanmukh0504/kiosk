@@ -53,7 +53,7 @@ export default {
   plugins: [
     createThemes({
       swap: {
-        primary: "#7BDCBA",
+        primary: "#E4EBF2",
         "primary-lighter": "#DEF6EE",
       },
       quests: {
