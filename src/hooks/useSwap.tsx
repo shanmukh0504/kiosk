@@ -69,7 +69,6 @@ export const useSwap = () => {
   const { starknetAddress } = useStarknetWallet();
   const { setOpenModal } = modalStore();
   const { solanaAddress } = useSolanaWallet();
-
   useNetworkFees();
 
   const inputBalance = useMemo(() => {
