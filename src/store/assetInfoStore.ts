@@ -87,7 +87,7 @@ type AssetInfoState = {
   fetchAndSetFiatValues: () => Promise<void>;
   fetchAndSetEvmBalances: (
     address: string,
-    workingRpcs: Record<number, string[]>,
+    getWorkingRPCsForChain: (chainId: number) => Promise<string[]>,
     fetchOnlyAsset?: Asset
   ) => Promise<void>;
   fetchAndSetBitcoinBalance: (
@@ -231,7 +231,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
 
   fetchAndSetEvmBalances: async (
     address: string,
-    workingRpcs: Record<number, string[]>,
+    getWorkingRPCsForChain: (chainId: number) => Promise<string[]>,
     fetchOnlyAsset?: Asset
   ) => {
     const { assets } = get();
@@ -259,7 +259,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
             tokenAddresses as Hex[],
             address as Hex,
             chain as EvmChain,
-            workingRpcs
+            getWorkingRPCsForChain
           );
 
           return Object.entries(chainBalances).reduce(

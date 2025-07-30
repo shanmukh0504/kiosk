@@ -9,7 +9,7 @@ export const getBalanceMulticall = async (
   tokenAddresses: Hex[],
   address: Hex,
   chain: EvmChain,
-  workingRPCs: Record<number, string[]>
+  getWorkingRPCsForChain: (chainId: number) => Promise<string[]>
 ): Promise<Record<string, BigNumber | undefined>> => {
   const viemChain = evmToViemChainMap[chain];
   if (!viemChain || tokenAddresses.length === 0) return {};
@@ -75,7 +75,7 @@ export const getBalanceMulticall = async (
     // fallback to working RPCs
   }
 
-  const fallbacks = workingRPCs[viemChain.id] || [];
+  const fallbacks = await getWorkingRPCsForChain(viemChain.id);
   for (const rpcUrl of fallbacks) {
     try {
       const fallbackClient = createPublicClient({

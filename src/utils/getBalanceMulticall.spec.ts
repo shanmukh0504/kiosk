@@ -3,14 +3,17 @@ import { getBalanceMulticall } from "./getBalanceMulticall";
 import { Chains } from "@gardenfi/orderbook";
 import { base } from "viem/chains";
 
-const mockWorkingRpcs = {
-  [base.id]: [
-    "https://base-mainnet.public.blastapi.io",
-    "https://base.public.blockpi.network/v1/rpc/public",
-    "https://mainnet.base.org",
-    "https://base.gateway.tenderly.co",
-    "https://developer-access-mainnet.base.org",
-  ],
+const mockGetWorkingRPCsForChain = async (chainId: number) => {
+  const mockWorkingRpcs: Record<number, string[]> = {
+    [base.id]: [
+      "https://base-mainnet.public.blastapi.io",
+      "https://base.public.blockpi.network/v1/rpc/public",
+      "https://mainnet.base.org",
+      "https://base.gateway.tenderly.co",
+      "https://developer-access-mainnet.base.org",
+    ],
+  };
+  return mockWorkingRpcs[chainId] || [];
 };
 
 describe("getBalanceMulticall", () => {
@@ -24,7 +27,7 @@ describe("getBalanceMulticall", () => {
       ],
       "0xd53D4f100AaBA314bF033f99f86a312BfbdDF113",
       Chains.base,
-      mockWorkingRpcs
+      mockGetWorkingRPCsForChain
     );
 
     expect(balance).toHaveProperty(
@@ -46,7 +49,7 @@ describe("getBalanceMulticall", () => {
       [],
       "0xd53D4f100AaBA314bF033f99f86a312BfbdDF113",
       Chains.base,
-      mockWorkingRpcs
+      mockGetWorkingRPCsForChain
     );
 
     expect(balance).toEqual({});

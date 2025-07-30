@@ -105,31 +105,21 @@ export const getWorkingRPCs = async (
   return workingRPCs;
 };
 
-export const getAllWorkingRPCs = async (
+export const getAllRPCs = async (
   supportedChains: Chain[],
-  maxRPCsPerChain: number = 5
+  maxRPCsPerChain: number = 20
 ): Promise<WorkingRPCResult> => {
   const result: WorkingRPCResult = {};
   const rpcs = await getChainListRPCs();
 
-  const workingRPCsPromises = supportedChains.map(async (chain) => {
+  supportedChains.map((chain) => {
     const reqRPCs = rpcs[chain.id];
-    let workingRPCs: string[];
-
+    
     if (!reqRPCs || reqRPCs.length === 0) {
-      workingRPCs = [chain.rpcUrls.default.http[0]];
+      result[chain.id] = [chain.rpcUrls.default.http[0]];
     } else {
-      workingRPCs = await getWorkingRPCs(reqRPCs, maxRPCsPerChain);
+      result[chain.id] = reqRPCs.slice(0, maxRPCsPerChain);
     }
-
-    return { chainId: chain.id, workingRPCs };
   });
-
-  const workingRPCsResults = await Promise.all(workingRPCsPromises);
-
-  for (const { chainId, workingRPCs } of workingRPCsResults) {
-    result[chainId] = workingRPCs;
-  }
-
   return result;
 };

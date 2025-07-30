@@ -9,6 +9,8 @@
 ### Fixed
 
 - Fetch balance on mount.
+- Progress steps for refunded orders.
+- reduced fallback rpc calls for balance fetching.
 
 ## [1.0.11]
 
