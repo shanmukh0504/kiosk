@@ -5,7 +5,7 @@ import {
   IOType,
   WALLET_SUPPORTED_CHAINS,
 } from "../../constants/constants";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { useSearchParams } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
@@ -42,7 +42,6 @@ export const CreateSwap = () => {
     fetchAndSetFiatValues,
     fetchAndSetStarknetBalance,
     fetchAndSetSolanaBalance,
-    clearBalances,
   } = assetInfoStore();
 
   const { workingRPCs } = rpcStore();
@@ -143,6 +142,55 @@ export const CreateSwap = () => {
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
 
+  const fetchAllBalances = useCallback(async () => {
+    await fetchAndSetFiatValues();
+    await Promise.allSettled([
+      address && fetchAndSetEvmBalances(address, workingRPCs),
+      btcAddress && provider && fetchAndSetBitcoinBalance(provider, btcAddress),
+      starknetAddress && fetchAndSetStarknetBalance(starknetAddress),
+      solanaAnchorProvider &&
+        fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey),
+    ]);
+  }, [
+    address,
+    provider,
+    btcAddress,
+    fetchAndSetEvmBalances,
+    fetchAndSetBitcoinBalance,
+    starknetAddress,
+    solanaAnchorProvider,
+    fetchAndSetFiatValues,
+    fetchAndSetStarknetBalance,
+    fetchAndSetSolanaBalance,
+    workingRPCs,
+  ]);
+
+  const fetchInputAssetBalance = useCallback(async () => {
+    await fetchAndSetFiatValues();
+    if (!inputAsset) return;
+    if (isEVM(inputAsset.chain) && address)
+      await fetchAndSetEvmBalances(address, workingRPCs, inputAsset);
+    if (isBitcoin(inputAsset.chain) && provider && btcAddress)
+      await fetchAndSetBitcoinBalance(provider, btcAddress);
+    if (isStarknet(inputAsset.chain) && starknetAddress)
+      await fetchAndSetStarknetBalance(starknetAddress);
+    if (isSolana(inputAsset.chain) && solanaAnchorProvider)
+      await fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey);
+  }, [
+    inputAsset,
+    address,
+    provider,
+    btcAddress,
+    fetchAndSetEvmBalances,
+    fetchAndSetBitcoinBalance,
+    starknetAddress,
+    solanaAnchorProvider,
+    fetchAndSetFiatValues,
+    fetchAndSetStarknetBalance,
+    fetchAndSetSolanaBalance,
+    workingRPCs,
+  ]);
+
   const handleConnectWallet = () => {
     if (!needsWalletConnection) return;
 
@@ -157,65 +205,30 @@ export const CreateSwap = () => {
     setOpenModal(modalNames.connectWallet, modalState);
   };
 
-  // Fetch balances in interval
+  useEffect(() => {
+    if (!assets) return;
+    fetchAllBalances();
+  }, [assets, fetchAllBalances]);
+
   useEffect(() => {
     if (!assets) return;
 
-    const fetchAllBalances = async () => {
-      await fetchAndSetFiatValues();
-      await Promise.allSettled([
-        address && fetchAndSetEvmBalances(address, workingRPCs),
-        btcAddress &&
-          provider &&
-          fetchAndSetBitcoinBalance(provider, btcAddress),
-        starknetAddress && fetchAndSetStarknetBalance(starknetAddress),
-        solanaAnchorProvider &&
-          fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey),
-      ]);
-    };
-
-    const fetchInputAssetBalance = async () => {
-      await fetchAndSetFiatValues();
-      if (!inputAsset) return;
-      if (isEVM(inputAsset.chain) && address)
-        await fetchAndSetEvmBalances(address, workingRPCs, inputAsset);
-      if (isBitcoin(inputAsset.chain) && provider && btcAddress)
-        await fetchAndSetBitcoinBalance(provider, btcAddress);
-      if (isStarknet(inputAsset.chain) && starknetAddress)
-        await fetchAndSetStarknetBalance(starknetAddress);
-      if (isSolana(inputAsset.chain) && solanaAnchorProvider)
-        await fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey);
-    };
-
-    let interval: ReturnType<typeof setInterval>;
-
-    if (isAssetSelectorOpen.isOpen) {
-      fetchAllBalances();
-      interval = setInterval(fetchAllBalances, 7000);
-    } else {
-      fetchInputAssetBalance();
-      interval = setInterval(fetchInputAssetBalance, 7000);
-    }
+    const interval = setInterval(() => {
+      if (isAssetSelectorOpen.isOpen) {
+        fetchAllBalances();
+      } else {
+        fetchInputAssetBalance();
+      }
+    }, 7000);
 
     return () => {
       clearInterval(interval);
     };
   }, [
     assets,
-    address,
-    provider,
-    btcAddress,
-    fetchAndSetEvmBalances,
-    fetchAndSetBitcoinBalance,
-    starknetAddress,
-    solanaAnchorProvider,
-    fetchAndSetFiatValues,
-    fetchAndSetStarknetBalance,
-    fetchAndSetSolanaBalance,
-    clearBalances,
-    workingRPCs,
     isAssetSelectorOpen.isOpen,
-    inputAsset,
+    fetchAllBalances,
+    fetchInputAssetBalance,
   ]);
 
   useEffect(() => {
