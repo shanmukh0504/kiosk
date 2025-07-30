@@ -6,6 +6,7 @@ import { assetInfoStore } from "../store/assetInfoStore";
 import { getAssetFromSwap } from "../utils/utils";
 import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
+import { Toast } from "../components/toast/Toast";
 
 export enum SimplifiedOrderStatus {
   orderCreated = "Order created",
@@ -38,7 +39,7 @@ export type OrderProgress = {
 
 export const useOrderStatus = () => {
   const { orderBook } = useGarden();
-  const { blockNumbers } = blockNumberStore();
+  const { fetchAndSetBlockNumbers } = blockNumberStore();
   const { assets } = assetInfoStore();
   const { order: orderInProgress, setOrder } = orderInProgressStore();
   const { pendingOrders } = pendingOrdersStore();
@@ -278,7 +279,9 @@ export const useOrderStatus = () => {
 
     // Fetch order from orderbook
     const fetchOrder = async () => {
-      if (!orderBook || !blockNumbers) return;
+      if (!orderBook) return;
+      const blockNumbers = await fetchAndSetBlockNumbers();
+      if (!blockNumbers) return;
 
       const orderFromOrderbook = await orderBook.getOrder(
         orderInProgress.create_order.create_id,
@@ -295,10 +298,27 @@ export const useOrderStatus = () => {
       );
 
       setOrder({ ...o, status });
+
+      if (completedStatuses.includes(status)) {
+        const inputAsset = getAssetFromSwap(o.source_swap, assets);
+        const outputAsset = getAssetFromSwap(o.destination_swap, assets);
+        if (!inputAsset || !outputAsset) return;
+
+        Toast.success(
+          `Swap success ${inputAsset.symbol} to ${outputAsset.symbol}`
+        );
+      }
     };
 
     fetchOrder();
-  }, [pendingOrders, orderInProgress, setOrder, orderBook, blockNumbers]);
+  }, [
+    pendingOrders,
+    orderInProgress,
+    setOrder,
+    orderBook,
+    fetchAndSetBlockNumbers,
+    assets,
+  ]);
 
   return {
     orderProgress,
