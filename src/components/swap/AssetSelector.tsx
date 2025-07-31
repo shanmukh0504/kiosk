@@ -12,6 +12,7 @@ import {
   isStarknet,
   isSolana,
   isSolanaNativeToken,
+  isEvmNativeToken,
 } from "@gardenfi/orderbook";
 import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { BTC, swapStore } from "../../store/swapStore";
@@ -125,7 +126,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         .map((asset) => {
           const network =
             !isBitcoin(asset.chain) &&
-            !isSolanaNativeToken(asset.chain, asset.tokenAddress)
+            !isSolanaNativeToken(asset.chain, asset.tokenAddress) &&
+            !isEvmNativeToken(asset.chain, asset.tokenAddress)
               ? chains?.[asset.chain]
               : undefined;
           const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
