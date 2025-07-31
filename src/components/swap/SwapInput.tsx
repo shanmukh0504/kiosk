@@ -8,7 +8,12 @@ import {
 import { FC, useMemo, useRef, ChangeEvent, useState, useEffect } from "react";
 import { IOType } from "../../constants/constants";
 import { assetInfoStore } from "../../store/assetInfoStore";
-import { Asset, isBitcoin, isSolanaNativeToken } from "@gardenfi/orderbook";
+import {
+  Asset,
+  isBitcoin,
+  isEvmNativeToken,
+  isSolanaNativeToken,
+} from "@gardenfi/orderbook";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { ErrorFormat } from "../../constants/errors";
 import NumberFlow from "@number-flow/react";
@@ -58,7 +63,8 @@ export const SwapInput: FC<SwapInputProps> = ({
     if (
       !chains ||
       (asset && isBitcoin(asset.chain)) ||
-      (asset && isSolanaNativeToken(asset.chain, asset.tokenAddress))
+      (asset && isSolanaNativeToken(asset.chain, asset.tokenAddress)) ||
+      (asset && isEvmNativeToken(asset.chain, asset.tokenAddress))
     )
       return;
     if (!asset) return;
