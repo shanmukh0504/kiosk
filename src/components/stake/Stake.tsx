@@ -15,7 +15,6 @@ import { Tooltip } from "../../common/Tooltip";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { formatAmount, getOrderPair } from "../../utils/utils";
 import { rpcStore } from "../../store/rpcStore";
-import { usePublicClient } from "wagmi";
 
 export const Stake: FC = () => {
   const { isConnected, address } = useEVMWallet();
@@ -32,7 +31,6 @@ export const Stake: FC = () => {
     fetchAndSetRewards,
   } = stakeStore();
   const { balances, fetchAndSetEvmBalances } = assetInfoStore();
-  const publicClient = usePublicClient();
   const { workingRPCs } = rpcStore();
   const tooltipId = useId();
 
@@ -106,14 +104,14 @@ export const Stake: FC = () => {
     if (!address) return;
 
     const updateBalances = async () => {
-      await fetchAndSetEvmBalances(address, workingRPCs, publicClient!, asset);
+      await fetchAndSetEvmBalances(address, workingRPCs, asset);
     };
 
     updateBalances();
     const interval = setInterval(updateBalances, 7000);
 
     return () => clearInterval(interval);
-  }, [address, asset, fetchAndSetEvmBalances, workingRPCs, publicClient]);
+  }, [address, asset, fetchAndSetEvmBalances, workingRPCs]);
 
   return (
     <div className="mb-8 mt-10 flex flex-col gap-6 sm:mb-16">

@@ -24,7 +24,6 @@ import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { rpcStore } from "../../store/rpcStore";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { isEVM, isBitcoin, isStarknet, isSolana } from "@gardenfi/orderbook";
-import { usePublicClient } from "wagmi";
 
 export const CreateSwap = () => {
   const [loadingDisabled, setLoadingDisabled] = useState(false);
@@ -71,7 +70,6 @@ export const CreateSwap = () => {
   } = useSwap();
   const { setOpenModal } = modalStore();
   const { connector } = useEVMWallet();
-  const publicClient = usePublicClient();
 
   const isChainSupported = useMemo(() => {
     if (!connector || !inputAsset || !outputAsset) return true;
@@ -218,7 +216,6 @@ export const CreateSwap = () => {
     workingRPCs,
     isAssetSelectorOpen.isOpen,
     inputAsset,
-    publicClient,
   ]);
 
   useEffect(() => {
