@@ -8,12 +8,7 @@ import {
 import { FC, useMemo, useRef, ChangeEvent, useState, useEffect } from "react";
 import { IOType } from "../../constants/constants";
 import { assetInfoStore } from "../../store/assetInfoStore";
-import {
-  Asset,
-  isBitcoin,
-  isEvmNativeToken,
-  isSolanaNativeToken,
-} from "@gardenfi/orderbook";
+import { Asset, isBitcoin, isSolanaNativeToken } from "@gardenfi/orderbook";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { ErrorFormat } from "../../constants/errors";
 import NumberFlow from "@number-flow/react";
@@ -112,9 +107,9 @@ export const SwapInput: FC<SwapInputProps> = ({
   };
 
   const handleBalanceClick = () => {
-    if (type === IOType.input && balance && asset) {      
-        const balanceStr = balance.toString();
-        onChange(balanceStr);
+    if (type === IOType.input && balance && asset) {
+      const balanceStr = balance.toString();
+      onChange(balanceStr);
     }
   };
 
@@ -157,7 +152,9 @@ export const SwapInput: FC<SwapInputProps> = ({
             <div className="flex gap-2">
               {amount && Number(price) !== 0 && (
                 <Typography size="h5" weight="medium">
-                  <span className="text-mid-grey">~${formatAmount(price,0,3)}</span>
+                  <span className="text-mid-grey">
+                    ~${formatAmount(price, 0, 3)}
+                  </span>
                 </Typography>
               )}
               {/* {type === IOType.output && Number(price) !== 0 && (
