@@ -166,7 +166,7 @@ export const CreateSwap = () => {
     const fetchAllBalances = async () => {
       await fetchAndSetFiatValues();
       await Promise.allSettled([
-        address && fetchAndSetEvmBalances(address, workingRPCs, publicClient!),
+        address && fetchAndSetEvmBalances(address, workingRPCs),
         btcAddress &&
           provider &&
           fetchAndSetBitcoinBalance(provider, btcAddress),
@@ -180,7 +180,7 @@ export const CreateSwap = () => {
       await fetchAndSetFiatValues();
       if (!inputAsset) return;
       if (isEVM(inputAsset.chain) && address)
-        await fetchAndSetEvmBalances(address, workingRPCs, publicClient!, inputAsset);
+        await fetchAndSetEvmBalances(address, workingRPCs, inputAsset);
       if (isBitcoin(inputAsset.chain) && provider && btcAddress)
         await fetchAndSetBitcoinBalance(provider, btcAddress);
       if (isStarknet(inputAsset.chain) && starknetAddress)
