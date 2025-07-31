@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.12]
+## [1.0.13]
 
 ### Added
 
@@ -9,6 +9,11 @@
 ### Fixed
 
 - Fetch balance on mount.
+
+## [1.0.12]
+
+- Update starknet packages to latest versions.
+- Fix add network to wallet in rabby wallet.
 
 ## [1.0.11]
 
