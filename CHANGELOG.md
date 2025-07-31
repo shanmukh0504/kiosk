@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.12]
+
+- Update starknet packages to latest versions.
+
 ## [1.0.11]
 
 ### Added
