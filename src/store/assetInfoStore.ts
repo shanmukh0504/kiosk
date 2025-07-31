@@ -268,6 +268,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
 
             if (
               balance &&
+              balance.gt(0) &&
               isEvmNativeToken(chain as EvmChain, asset.tokenAddress)
             ) {
               const fee = await getLegacyGasEstimate(
@@ -278,7 +279,6 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
 
               if (fee) {
                 const feeBN = new BigNumber(fee.gasCost);
-
                 balance = BigNumber.max(balance.minus(feeBN), 0);
               }
             }

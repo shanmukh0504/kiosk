@@ -63,7 +63,7 @@ export const getLegacyGasEstimate = async (
     const gasPrice = await publicClient.getGasPrice();
 
     // Total fee in wei
-    const bufferedGasLimit = gasLimit + (gasLimit * 50n) / 100n;
+    const bufferedGasLimit = gasLimit + (gasLimit * 40n) / 100n;
     const bufferedGasPrice = gasPrice + (gasPrice * 50n) / 100n;
     const gasCost = bufferedGasLimit * bufferedGasPrice;
 

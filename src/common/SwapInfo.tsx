@@ -1,5 +1,10 @@
 import { ArrowRightIcon, Typography } from "@gardenfi/garden-book";
-import { Asset, isBitcoin, isSolana } from "@gardenfi/orderbook";
+import {
+  Asset,
+  isBitcoin,
+  isEvmNativeToken,
+  isSolana,
+} from "@gardenfi/orderbook";
 import { FC } from "react";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { AssetChainLogos } from "./AssetChainLogos";
@@ -21,11 +26,17 @@ export const SwapInfo: FC<SwapInfoProps> = ({
 }) => {
   const { allChains } = assetInfoStore();
   const sendChain =
-    allChains && !isBitcoin(sendAsset.chain) && !isSolana(sendAsset.chain)
+    allChains &&
+    !isBitcoin(sendAsset.chain) &&
+    !isSolana(sendAsset.chain) &&
+    !isEvmNativeToken(sendAsset.chain, sendAsset.tokenAddress)
       ? allChains[sendAsset.chain]
       : undefined;
   const receiveChain =
-    allChains && !isBitcoin(receiveAsset.chain) && !isSolana(receiveAsset.chain)
+    allChains &&
+    !isBitcoin(receiveAsset.chain) &&
+    !isSolana(receiveAsset.chain) &&
+    !isEvmNativeToken(receiveAsset.chain, receiveAsset.tokenAddress)
       ? allChains[receiveAsset.chain]
       : undefined;
 
