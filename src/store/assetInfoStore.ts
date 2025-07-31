@@ -6,6 +6,7 @@ import {
   EvmChain,
   isBitcoin,
   isEVM,
+  isEvmNativeToken,
   isSolana,
   isSolanaNativeToken,
   isStarknet,
@@ -32,8 +33,9 @@ import {
   getSolanaTokenBalance,
   getStarknetTokenBalance,
 } from "../utils/getTokenBalance";
-import { Hex } from "viem";
+import { Hex, PublicClient } from "viem";
 import { getSpendableBalance } from "../utils/getmaxBtc";
+import { estimateNativeTokenFee } from "../utils/getNativeTokenFee";
 
 export type Networks = {
   [chain in Chain]: ChainData & { assetConfig: Omit<AssetConfig, "chain">[] };
@@ -88,6 +90,7 @@ type AssetInfoState = {
   fetchAndSetEvmBalances: (
     address: string,
     workingRpcs: Record<number, string[]>,
+    publicClient: PublicClient,
     fetchOnlyAsset?: Asset
   ) => Promise<void>;
   fetchAndSetBitcoinBalance: (
@@ -232,24 +235,19 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   fetchAndSetEvmBalances: async (
     address: string,
     workingRpcs: Record<number, string[]>,
+    publicClient: PublicClient,
     fetchOnlyAsset?: Asset
   ) => {
-    const { assets } = get();
+    const { assets, balances } = get();
     if (!assets) return;
 
     let tokensByChain: Partial<Record<Chain, string[]>> = {};
-    if (fetchOnlyAsset)
-      tokensByChain[fetchOnlyAsset.chain] = [fetchOnlyAsset.tokenAddress];
-    else {
-      tokensByChain = Object.values(assets).reduce(
-        (acc, asset) => {
-          if (!isEVM(asset.chain)) return acc;
-          if (!acc[asset.chain]) acc[asset.chain] = [];
-          acc[asset.chain].push(asset.tokenAddress);
-          return acc;
-        },
-        {} as Record<Chain, string[]>
-      );
+    const targetAssets = fetchOnlyAsset ? [fetchOnlyAsset] : Object.values(assets);
+
+    for (const asset of targetAssets) {
+      if (!isEVM(asset.chain)) continue;
+      if (!tokensByChain[asset.chain]) tokensByChain[asset.chain] = [];
+      tokensByChain[asset.chain]!.push(asset.tokenAddress);
     }
 
     try {
@@ -262,24 +260,50 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
             workingRpcs
           );
 
-          return Object.entries(chainBalances).reduce(
-            (acc, [tokenAddress, balance]) => {
-              acc[getOrderPair(chain, tokenAddress)] = balance;
-              return acc;
-            },
-            {} as Record<string, BigNumber | undefined>
-          );
+          const updatedBalances: Record<string, BigNumber | undefined> = {};
+
+          for (const tokenAddress of tokenAddresses!) {
+            const orderKey = getOrderPair(chain, tokenAddress);
+            let balance = chainBalances[tokenAddress];
+          
+            const matchingAsset = targetAssets.find(
+              (a) => a.tokenAddress === tokenAddress && a.chain === chain
+            );
+          
+            if (
+              balance &&
+              matchingAsset &&
+              isEvmNativeToken(matchingAsset.chain, matchingAsset.tokenAddress)
+            ) {
+              const fee = await estimateNativeTokenFee(
+                publicClient,
+                address as `0x${string}`,
+                balance.toString(),
+                matchingAsset.atomicSwapAddress as `0x${string}`
+              );
+          
+              if (fee) {
+                const feeBN = new BigNumber(fee);
+                balance = BigNumber.max(balance.minus(feeBN), 0);
+              }
+            }
+          
+            updatedBalances[orderKey] = balance;
+          }
+          
+          return updatedBalances;
         })
       );
-      const balances = balanceResults.reduce((acc, result) => {
+
+      const finalBalances = balanceResults.reduce((acc, result) => {
         return result.status === "fulfilled"
           ? { ...acc, ...result.value }
           : acc;
       }, {});
 
-      set({ balances: { ...get().balances, ...balances } });
-    } catch {
-      /*empty*/
+      set({ balances: { ...balances, ...finalBalances } });
+    } catch (err) {
+      console.error("Failed to fetch balances", err);
     }
   },
 

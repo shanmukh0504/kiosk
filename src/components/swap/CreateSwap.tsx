@@ -24,6 +24,7 @@ import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { rpcStore } from "../../store/rpcStore";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { isEVM, isBitcoin, isStarknet, isSolana } from "@gardenfi/orderbook";
+import { usePublicClient } from "wagmi";
 
 export const CreateSwap = () => {
   const [loadingDisabled, setLoadingDisabled] = useState(false);
@@ -70,6 +71,7 @@ export const CreateSwap = () => {
   } = useSwap();
   const { setOpenModal } = modalStore();
   const { connector } = useEVMWallet();
+  const publicClient = usePublicClient();
 
   const isChainSupported = useMemo(() => {
     if (!connector || !inputAsset || !outputAsset) return true;
@@ -164,7 +166,7 @@ export const CreateSwap = () => {
     const fetchAllBalances = async () => {
       await fetchAndSetFiatValues();
       await Promise.allSettled([
-        address && fetchAndSetEvmBalances(address, workingRPCs),
+        address && fetchAndSetEvmBalances(address, workingRPCs, publicClient!),
         btcAddress &&
           provider &&
           fetchAndSetBitcoinBalance(provider, btcAddress),
@@ -178,7 +180,7 @@ export const CreateSwap = () => {
       await fetchAndSetFiatValues();
       if (!inputAsset) return;
       if (isEVM(inputAsset.chain) && address)
-        await fetchAndSetEvmBalances(address, workingRPCs, inputAsset);
+        await fetchAndSetEvmBalances(address, workingRPCs, publicClient!, inputAsset);
       if (isBitcoin(inputAsset.chain) && provider && btcAddress)
         await fetchAndSetBitcoinBalance(provider, btcAddress);
       if (isStarknet(inputAsset.chain) && starknetAddress)
@@ -216,6 +218,7 @@ export const CreateSwap = () => {
     workingRPCs,
     isAssetSelectorOpen.isOpen,
     inputAsset,
+    publicClient,
   ]);
 
   useEffect(() => {

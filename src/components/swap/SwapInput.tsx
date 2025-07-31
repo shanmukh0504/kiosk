@@ -112,15 +112,9 @@ export const SwapInput: FC<SwapInputProps> = ({
   };
 
   const handleBalanceClick = () => {
-    if (type === IOType.input && balance && asset) {
-      if (
-        // !isBitcoin(asset?.chain) &&
-        !isEvmNativeToken(asset?.chain, asset.tokenAddress)
-        // !isSolanaNativeToken(asset?.chain, asset.tokenAddress)
-      ) {
+    if (type === IOType.input && balance && asset) {      
         const balanceStr = balance.toString();
         onChange(balanceStr);
-      }
     }
   };
 
