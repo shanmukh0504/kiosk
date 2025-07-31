@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.13]
+
+### Fixed
+
+- Max spendable balance for Evm chains.
+
 ## [1.0.12]
 
 - Update starknet packages to latest versions.
