@@ -151,7 +151,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
           >
             <img src={ecosystem.icon} alt={"icon"} className="h-8 w-8" />
             <div className="mr-auto flex justify-between">
-              <Typography size="h2" weight="medium">
+              <Typography size="h2" weight="regular">
                 {ecosystem.name}
               </Typography>
             </div>
