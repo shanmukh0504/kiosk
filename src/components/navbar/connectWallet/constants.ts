@@ -53,6 +53,7 @@ interface WalletCapabilities {
   [BlockchainType.EVM]?: boolean;
   [BlockchainType.Starknet]?: boolean;
   [BlockchainType.Solana]?: boolean;
+  [BlockchainType.Sui]?: boolean;
 }
 
 type GardenSupportedWalletsType = BaseWallet & WalletCapabilities;
@@ -108,6 +109,7 @@ export const GardenSupportedWallets: Record<
       EVM: network === Network.MAINNET,
       Bitcoin: true,
       Solana: true,
+      Sui: true
     }
   ),
   "com.coinbase.wallet": createWallet(

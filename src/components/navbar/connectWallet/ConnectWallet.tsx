@@ -24,7 +24,9 @@ import { ConnectingWalletStore } from "../../../store/connectWalletStore";
 import { BlockchainType } from "@gardenfi/orderbook";
 import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
 import { Wallet as SolanaWallet } from "@solana/wallet-adapter-react";
+import { Wallet as SuiWallet } from "@mysten/wallet-standard";
 import { Connector as StarknetConnector } from "@starknet-react/core";
+import { useSuiWallet } from "../../../hooks/useSuiWallet";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -36,6 +38,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     [BlockchainType.Bitcoin]?: IInjectedBitcoinProvider;
     [BlockchainType.Starknet]?: StarknetConnector | undefined;
     [BlockchainType.Solana]?: SolanaWallet | undefined;
+    [BlockchainType.Sui]?: SuiWallet | undefined;
   }>();
   const [selectedEcosystem, setSelectedEcosystem] =
     useState<BlockchainType | null>(null);
@@ -58,11 +61,13 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     solanaDisconnect,
     solanaSelectedWallet,
   } = useSolanaWallet();
+  const { suiConnected, suiSelectedWallet, suiWallets } = useSuiWallet();
   const { modalData, setOpenModal } = modalStore();
   const showOnlyBTCWallets = !!modalData.connectWallet?.Bitcoin;
   const showOnlyStarknetWallets = !!modalData.connectWallet?.Starknet;
   const showOnlyEVMWallets = !!modalData.connectWallet?.EVM;
   const showOnlySolanaWallets = !!modalData.connectWallet?.Solana;
+  const showOnlySuiWallets = !!modalData.connectWallet?.Sui;
 
   useEffect(() => {
     const selected = showOnlyStarknetWallets
@@ -73,7 +78,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           ? BlockchainType.Bitcoin
           : showOnlySolanaWallets
             ? BlockchainType.Solana
-            : null;
+            : showOnlySuiWallets
+              ? BlockchainType.Sui
+              : null;
 
     if (selected) setSelectedEcosystem(selected);
   }, [
@@ -81,6 +88,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     showOnlyEVMWallets,
     showOnlyBTCWallets,
     showOnlySolanaWallets,
+    showOnlySuiWallets,
   ]);
 
   const allAvailableWallets = useMemo(() => {
@@ -88,7 +96,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       availableWallets,
       connectors,
       starknetConnectors,
-      solanaWallets
+      solanaWallets,
+      suiWallets
     );
 
     switch (selectedEcosystem) {
@@ -103,6 +112,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         break;
       case BlockchainType.Solana:
         allWallets = allWallets.filter((wallet) => wallet.isSolana);
+        break;
+      case BlockchainType.Sui:
+        allWallets = allWallets.filter((wallet) => wallet.isSui);
         break;
     }
 
@@ -120,6 +132,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     starknetConnectors,
     solanaWallets,
     selectedEcosystem,
+    suiWallets,
   ]);
 
   const handleClose = useCallback(() => {
@@ -148,6 +161,10 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         connector.isBitcoin && connector.isSolana,
         connector.isStarknet && connector.isSolana,
         connector.isStarknet && connector.isEVM,
+        connector.isSui && connector.isEVM,
+        connector.isSui && connector.isSolana,
+        connector.isSui && connector.isStarknet,
+        connector.isSui && connector.isBitcoin,
       ].some(Boolean);
 
       if (isMultiChain) {
@@ -157,6 +174,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           connector.wallet?.btcWallet,
           connector.wallet?.starknetWallet,
           connector.wallet?.solanaWallet,
+          connector.wallet?.suiWallet,
         ].filter(Boolean);
 
         if (walletTypes.length < 2) return;
@@ -166,16 +184,18 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           [BlockchainType.Bitcoin]: connector.wallet.btcWallet,
           [BlockchainType.Starknet]: connector.wallet.starknetWallet,
           [BlockchainType.Solana]: connector.wallet.solanaWallet,
+          [BlockchainType.Sui]: connector.wallet.suiWallet,
         });
         return;
       }
 
-      if (connector.isSolana && connector.isEVM) {
+      if (connector.isSolana && connector.isEVM && connector.isSui) {
         if (!connector.wallet?.evmWallet || !connector.wallet?.solanaWallet)
           return;
         setMultiWalletConnector({
           EVM: connector.wallet.evmWallet,
           Solana: connector.wallet.solanaWallet,
+          Sui: connector.wallet.suiWallet,
         });
         return;
       }
@@ -239,6 +259,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           connector.wallet.solanaWallet.adapter.name
         );
         if (!success) throw new Error("Solana connection failed");
+      } else if (connector.isSui) {
+        if (!connector.wallet?.suiWallet) return;
       }
     } catch (error) {
       console.error("Error connecting wallet:", error);
@@ -348,6 +370,12 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                         (wallet.id !== "app.phantom" &&
                           solanaSelectedWallet?.adapter.name.toLowerCase() ===
                             wallet.id.toLowerCase()))
+                    ),
+                    [BlockchainType.Sui]: !!(
+                      wallet.isSui &&
+                      suiConnected &&
+                      suiSelectedWallet?.id?.toLowerCase() ===
+                        wallet.id.toLowerCase()
                     ),
                   }}
                   isAvailable={wallet.isAvailable}

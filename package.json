@@ -23,6 +23,8 @@
     "@gardenfi/react-hooks": "2.4.2",
     "@gardenfi/utils": "2.4.2",
     "@gardenfi/wallet-connectors": "2.3.1",
+    "@mysten/dapp-kit": "^0.17.2",
+    "@mysten/wallet-standard": "^0.16.9",
     "@number-flow/react": "^0.5.9",
     "@solana/wallet-adapter-base": "^0.9.26",
     "@solana/wallet-adapter-react": "^0.15.38",
