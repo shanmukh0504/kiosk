@@ -56,7 +56,11 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
           <CloseIcon className="cursor-pointer" onClick={handleClose} />
         )}
       </div>
-      <Typography size="h3" weight="medium" className="max-w-[460px]">
+      <Typography
+        size="h3"
+        weight="regular"
+        className="max-w-[460px] !leading-5"
+      >
         For every 2,100 SEED you will receive 1 vote. Every vote will earn fees.
         You will receive a multiplier for your votes based on the duration of
         the stake.
@@ -77,7 +81,7 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
       </div>
 
       <div className="mb-5 flex flex-col gap-3 rounded-2xl bg-white bg-opacity-25 p-4 sm:mb-0">
-        <Typography size="h5" weight="medium">
+        <Typography size="h5" weight="regular">
           Stake duration
         </Typography>
         <div className="flex flex-col items-center justify-between gap-2 sm:flex-row">

@@ -122,7 +122,7 @@ export const Stake: FC = () => {
             <Typography size="h5" weight="medium">
               Stake to earn Bitcoin
             </Typography>
-            <Typography size="h4" weight="regular">
+            <Typography size="h4" weight="regular" className="!leading-5">
               <Link
                 to="https://docs.garden.finance/home/fundamentals/introduction/stakers"
                 className="font-medium text-rose"

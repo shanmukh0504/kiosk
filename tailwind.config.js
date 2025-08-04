@@ -60,7 +60,7 @@ export default {
         primary: "#D8BEFF",
       },
       stake: {
-        primary: "#FFCD82",
+        primary: "#E4EBF2",
       },
     }),
   ],

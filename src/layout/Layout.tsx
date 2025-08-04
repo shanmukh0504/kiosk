@@ -6,7 +6,7 @@ import { Modal } from "../components/modal/Modal";
 import { Notification } from "../common/Notification";
 import { ViewPortListener } from "../common/ViewPortListener";
 import { assetInfoStore } from "../store/assetInfoStore";
-import { network } from "../constants/constants";
+import { network, THEMES } from "../constants/constants";
 
 type LayoutProps = {
   children: ReactNode;
@@ -28,7 +28,9 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
           className="fixed inset-0 top-[50%] z-[-10] h-[50%] w-full"
           style={{
             background:
-              "linear-gradient(180deg, rgba(188, 237, 220, 0.00) 0%, #BCEDDC 100%)",
+              theme === THEMES.swap
+                ? "linear-gradient(180deg, rgba(188, 237, 220, 0.00) 0%, #BCEDDC 100%)"
+                : "linear-gradient(180deg, rgba(255, 189, 205, 0) 0%, #FFBDCD 100%)",
           }}
         />
         <Modal />
