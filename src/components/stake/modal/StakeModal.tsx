@@ -49,7 +49,7 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
   return (
     <div className="transition-left left-auto top-60 z-40 flex flex-col gap-4 rounded-[20px] p-3 duration-700 ease-cubic-in-out">
       <div className="flex justify-between">
-        <Typography size="h4" weight="bold">
+        <Typography size="h4" weight="medium">
           Set duration
         </Typography>
         {!isMobile && (
@@ -77,7 +77,7 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
       </div>
 
       <div className="mb-5 flex flex-col gap-3 rounded-2xl bg-white bg-opacity-25 p-4 sm:mb-0">
-        <Typography size="h5" weight="bold">
+        <Typography size="h5" weight="medium">
           Stake duration
         </Typography>
         <div className="flex flex-col items-center justify-between gap-2 sm:flex-row">

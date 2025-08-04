@@ -77,7 +77,7 @@ export const AvailableChainsSidebar = ({
       >
         <div className="transition-left left-auto top-60 z-40 m-1 flex w-full flex-col gap-3 pr-2 duration-700 ease-cubic-in-out">
           <div className="flex items-center justify-between p-1">
-            <Typography size="h4" weight="bold">
+            <Typography size="h4" weight="medium">
               Select chain
             </Typography>
             <ArrowLeftIcon onClick={hide} className="cursor-pointer" />
@@ -122,7 +122,7 @@ export const AvailableChainsSidebar = ({
                           <Typography
                             size={"h5"}
                             breakpoints={{ sm: "h4" }}
-                            weight="medium"
+                            weight="regular"
                           >
                             {c.name}
                           </Typography>

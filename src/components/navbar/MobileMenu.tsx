@@ -42,7 +42,10 @@ export const MobileMenu = () => {
                   rel={route.isExternal ? "noreferrer" : undefined}
                   className="px-6 py-[14px] hover:bg-white"
                 >
-                  <Typography size="h2" weight={isActive ? "bold" : "medium"}>
+                  <Typography
+                    size="h2"
+                    weight={isActive ? "medium" : "regular"}
+                  >
                     {route.name}
                   </Typography>
                 </a>

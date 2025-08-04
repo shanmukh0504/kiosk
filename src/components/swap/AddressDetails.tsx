@@ -55,13 +55,13 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
           <Typography
             data-tooltip-id={isRefund ? tooltipId : ""}
             size="h5"
-            weight="medium"
+            weight="regular"
             className="!text-mid-grey"
           >
             {isRefund ? "Refund" : "Receive"} address
           </Typography>
           <div className="flex items-center gap-2">
-            <Typography size="h5" weight="medium">
+            <Typography size="h5" weight="regular">
               {getTrimmedAddress(address)}
             </Typography>
             <div className="flex gap-1">
@@ -83,7 +83,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
           </div>
         </div>
       )}
-      <Typography size="h5" weight="medium">
+      <Typography size="h5" weight="regular">
         {isRefund && (
           <Tooltip
             id={tooltipId}

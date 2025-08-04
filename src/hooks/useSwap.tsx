@@ -378,6 +378,15 @@ export const useSwap = () => {
   const needsWalletConnection = useMemo<null | string>(() => {
     if (!inputAsset || !outputAsset) return null;
 
+    if (
+      !inputAmount ||
+      inputAmount === "0" ||
+      !outputAmount ||
+      outputAmount === "0"
+    ) {
+      return null;
+    }
+
     const chainRequirements = {
       evm: {
         check: (chain: Chain) => isEVM(chain),
@@ -402,7 +411,15 @@ export const useSwap = () => {
     }
 
     return null;
-  }, [inputAsset, outputAsset, evmAddress, starknetAddress, solanaAddress]);
+  }, [
+    inputAsset,
+    outputAsset,
+    inputAmount,
+    outputAmount,
+    evmAddress,
+    starknetAddress,
+    solanaAddress,
+  ]);
 
   const handleSwapClick = async () => {
     if (needsWalletConnection) {

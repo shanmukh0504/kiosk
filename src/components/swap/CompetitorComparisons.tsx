@@ -80,7 +80,7 @@ export const CompetitorComparisons: FC<CompetitorComparisonsProps> = ({
       className="absolute left-0 top-0 z-30 flex h-full w-full flex-col gap-3 rounded-[20px] bg-primary-lighter p-3"
     >
       <div className="flex items-center justify-between p-1">
-        <Typography size="h4" weight="bold">
+        <Typography size="h4" weight="medium">
           {isTime ? "Time saved" : isFees ? "Cost saved" : "Saved"}
         </Typography>
         <ArrowLeftIcon className="cursor-pointer" onClick={hide} />
@@ -117,13 +117,17 @@ export const CompetitorComparisons: FC<CompetitorComparisonsProps> = ({
           return (
             <div key={key} className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Typography size="h5" weight="medium" className="mr-2 w-[20px]">
+                <Typography
+                  size="h5"
+                  weight="regular"
+                  className="mr-2 w-[20px]"
+                >
                   #{index + 1}
                 </Typography>
                 <div className="flex h-4 w-4 items-center justify-center">
                   {source && source.icon}
                 </div>
-                <Typography size="h5" weight="medium">
+                <Typography size="h5" weight="regular">
                   {source?.name || key}
                 </Typography>
               </div>
@@ -133,7 +137,7 @@ export const CompetitorComparisons: FC<CompetitorComparisonsProps> = ({
                     <Typography
                       className="!text-rose"
                       size="h5"
-                      weight="medium"
+                      weight="regular"
                     >
                       {formatTimeDiff(time, gardenSwapTime)}
                     </Typography>
@@ -141,7 +145,7 @@ export const CompetitorComparisons: FC<CompetitorComparisonsProps> = ({
                   <Typography
                     className="!flex !w-16 !justify-end"
                     size="h5"
-                    weight="medium"
+                    weight="regular"
                   >
                     {formatTime(time)}
                   </Typography>
@@ -153,7 +157,7 @@ export const CompetitorComparisons: FC<CompetitorComparisonsProps> = ({
                     <Typography
                       className="!text-rose"
                       size="h5"
-                      weight="medium"
+                      weight="regular"
                     >
                       {`${Number(feeDiff) >= 0 ? "-" : "+"}$${Math.abs(Number(feeDiff))}`}
                     </Typography>
@@ -161,7 +165,7 @@ export const CompetitorComparisons: FC<CompetitorComparisonsProps> = ({
                   <Typography
                     className="!flex !w-12 !justify-end"
                     size="h5"
-                    weight="medium"
+                    weight="regular"
                   >
                     {`$${formatAmount(fee, 0, 2)}`}
                   </Typography>

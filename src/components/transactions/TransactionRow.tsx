@@ -146,10 +146,10 @@ export const TransactionRow: FC<TransactionProps> = ({
             />
           )}
           <div className="flex justify-between">
-            <Typography size="h5" weight="medium">
+            <Typography size="h5" weight="regular">
               {statusLabel}
             </Typography>
-            <Typography size="h5" weight="medium">
+            <Typography size="h5" weight="regular">
               {dayDifference}
             </Typography>
           </div>

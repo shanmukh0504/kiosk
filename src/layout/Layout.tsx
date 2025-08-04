@@ -21,7 +21,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
   }, [fetchAndSetAssetsAndChains]);
 
   return (
-    <div className={`${theme} overflow-hidden`}>
+    <div className={`${theme} overflow-hidden text-dark-grey`}>
       <ViewPortListener />
       <div className="relative z-10 bg-primary">
         <div

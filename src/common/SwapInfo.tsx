@@ -38,7 +38,7 @@ export const SwapInfo: FC<SwapInfoProps> = ({
       <div
         className={`flex items-center justify-start gap-2 ${equalSplit ? "w-fit" : "w-full"}`}
       >
-        <Typography size="h3" weight="medium">
+        <Typography size="h3" weight="regular">
           {sendAmount}
         </Typography>
         <AssetChainLogos
@@ -50,7 +50,7 @@ export const SwapInfo: FC<SwapInfoProps> = ({
       <div
         className={`flex items-center justify-end gap-2 ${equalSplit ? "w-fit" : "w-full"}`}
       >
-        <Typography size="h3" weight="medium">
+        <Typography size="h3" weight="regular">
           {receiveAmount}
         </Typography>
         <AssetChainLogos

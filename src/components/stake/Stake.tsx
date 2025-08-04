@@ -119,13 +119,13 @@ export const Stake: FC = () => {
         <ToastContainer />
         <div className="flex w-full flex-col gap-8 rounded-2xl bg-white bg-opacity-50 p-3">
           <div className="flex flex-col gap-2 p-1">
-            <Typography size="h5" weight="bold">
+            <Typography size="h5" weight="medium">
               Stake to earn Bitcoin
             </Typography>
-            <Typography size="h4" weight="medium">
+            <Typography size="h4" weight="regular">
               <Link
                 to="https://docs.garden.finance/home/fundamentals/introduction/stakers"
-                className="font-bold text-rose"
+                className="font-medium text-rose"
               >
                 Stake
               </Link>{" "}

@@ -251,7 +251,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   return (
     <div className="flex max-h-[600px] flex-col gap-[20px] p-3">
       <div className="flex items-center justify-between">
-        <Typography size="h4" weight="bold">
+        <Typography size="h4" weight="medium">
           Connect a Wallet
         </Typography>
         <div className="flex gap-4">
@@ -285,7 +285,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                 );
               }}
             >
-              <Typography size="h3" weight="medium">
+              <Typography size="h3" weight="regular">
                 {ecosystem.name}
               </Typography>
               <RadioCheckedIcon
@@ -361,13 +361,13 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       )}
 
       <div className="mb-2">
-        <Typography size="h4" weight="medium">
+        <Typography size="h4" weight="regular">
           By connecting a wallet, you agree to Garden&apos;s{" "}
           <a
             href="https://garden.finance/terms.pdf"
             target="_blank"
             rel="noreferrer"
-            className="font-bold"
+            className="font-medium"
           >
             Terms of Service{" "}
           </a>
@@ -376,7 +376,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
             href="https://garden.finance/GardenFinancePrivacyPolicy.pdf"
             target="_blank"
             rel="noreferrer"
-            className="font-bold"
+            className="font-medium"
           >
             Privacy Policy
           </a>

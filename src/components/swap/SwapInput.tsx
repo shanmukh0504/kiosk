@@ -155,14 +155,14 @@ export const SwapInput: FC<SwapInputProps> = ({
           <div className="flex gap-3">
             <Typography
               size="h5"
-              weight="bold"
+              weight="medium"
               onClick={() => inputRef.current!.focus()}
             >
               {label}
             </Typography>
             <div className="flex gap-2">
               {amount && Number(price) !== 0 && (
-                <Typography size="h5" weight="medium">
+                <Typography size="h5" weight="regular">
                   <span className="text-mid-grey">
                     ~${formatAmount(price, 0, 3)}
                   </span>
@@ -171,7 +171,7 @@ export const SwapInput: FC<SwapInputProps> = ({
               {/* {type === IOType.output && Number(price) !== 0 && (
                 <Typography
                   size="h5"
-                  weight="medium"
+                  weight="regular"
                   className="!text-mid-grey"
                 >
                   {formatAmount(priceImpact, 0, 3)}%
@@ -181,7 +181,7 @@ export const SwapInput: FC<SwapInputProps> = ({
           </div>
           {type === IOType.input &&
             (error ? (
-              <Typography size="h5" weight="medium" className="!text-red-500">
+              <Typography size="h5" weight="regular" className="!text-red-500">
                 {error}
               </Typography>
             ) : balance !== undefined && !Number.isNaN(balance) ? (
@@ -190,7 +190,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                 onClick={handleBalanceClick}
               >
                 <WalletIcon className="h-2.5 w-2.5" />
-                <Typography size="h5" weight="medium">
+                <Typography size="h5" weight="regular">
                   {balance}
                 </Typography>
               </div>
@@ -199,7 +199,7 @@ export const SwapInput: FC<SwapInputProps> = ({
             ))}
           {type === IOType.output &&
             (error ? (
-              <Typography size="h5" weight="medium" className="!text-red-500">
+              <Typography size="h5" weight="regular" className="!text-red-500">
                 {error}
               </Typography>
             ) : (
@@ -208,7 +208,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                   <TimerIcon className="h-4" />
                   <Typography
                     size="h5"
-                    weight="medium"
+                    weight="regular"
                     className="!leading-none"
                   >
                     {timeEstimate}
@@ -223,7 +223,7 @@ export const SwapInput: FC<SwapInputProps> = ({
             breakpoints={{
               sm: "h2",
             }}
-            weight="bold"
+            weight="medium"
           >
             <div className="relative w-[150px] max-w-[150px] md:w-[200px] md:max-w-[200px]">
               <div
@@ -299,7 +299,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                 breakpoints={{
                   sm: "h2",
                 }}
-                weight="medium"
+                weight="regular"
               >
                 Select token
               </Typography>
