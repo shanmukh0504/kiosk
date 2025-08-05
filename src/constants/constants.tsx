@@ -202,3 +202,8 @@ export const WALLET_SUPPORTED_CHAINS: Record<string, Chain[]> = {
     "starknet_sepolia",
   ],
 };
+
+export const SOCIAL_LINKS = {
+  discord: "https://discord.com/invite/dZwSjh9922",
+  x: "https://x.com/garden_finance",
+};

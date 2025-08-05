@@ -5,11 +5,16 @@ import {
   XSolidIcon,
 } from "@gardenfi/garden-book";
 import { useState } from "react";
-import { externalRoutes, routes } from "../../constants/constants";
+import {
+  externalRoutes,
+  routes,
+  SOCIAL_LINKS,
+} from "../../constants/constants";
 import { isCurrentRoute } from "../../utils/utils";
 import { useNotificationStore } from "../../store/notificationStore";
 import { HamburgerIcon } from "../../common/HamburgerIcon";
 import { MenuNotification } from "../../common/MenuNotification";
+import { Link } from "react-router-dom";
 
 export const MobileMenu = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -72,8 +77,12 @@ export const MobileMenu = () => {
           </div>
           <div className={`flex w-full gap-6`}>
             {/* TODO: import social media Icons and links */}
-            <DiscordIcon />
-            <XSolidIcon />
+            <Link to={SOCIAL_LINKS.discord} target="_blank">
+              <DiscordIcon />
+            </Link>
+            <Link to={SOCIAL_LINKS.x} target="_blank">
+              <XSolidIcon />
+            </Link>
           </div>
         </div>
 
