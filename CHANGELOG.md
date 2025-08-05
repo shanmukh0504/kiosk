@@ -9,6 +9,7 @@
 ### Fixed
 
 - Fixed sidebar menu and notification in mobile view.
+- Asset chain logos display for evm native tokens.
 
 ## [1.0.13]
 
