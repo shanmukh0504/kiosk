@@ -1061,24 +1061,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/core@npm:2.4.0-beta.2":
-  version: 2.4.0-beta.2
-  resolution: "@gardenfi/core@npm:2.4.0-beta.2"
+"@gardenfi/core@npm:2.4.2-beta.1":
+  version: 2.4.2-beta.1
+  resolution: "@gardenfi/core@npm:2.4.2-beta.1"
   dependencies:
     "@coral-xyz/anchor": "npm:^0.30.1"
-    "@gardenfi/orderbook": "npm:2.4.0-beta.1"
-    "@gardenfi/utils": "npm:2.4.0"
+    "@gardenfi/orderbook": "npm:2.4.2-beta.1"
+    "@gardenfi/utils": "npm:2.4.2"
     "@solana/spl-token": "npm:^0.4.13"
     bignumber.js: "npm:^9.1.2"
     bip32: "npm:^4.0.0"
     bip39: "npm:^3.1.0"
     bitcoinjs-lib: "npm:^6.1.5"
     ecpair: "npm:^2.1.0"
-    starknet: "npm:6.23.1"
+    starknet: "npm:7.6.4"
     tiny-secp256k1: "npm:^2.2.3"
     varuint-bitcoin: "npm:^1.1.2"
     yup: "npm:^1.4.0"
-  checksum: 10c0/90fe3b624f2f7cdc401d1a04c6574e3e4ea1859efde03a187b79461ec0a950cd2971b1ff88ff66a1f17da71b2e8befc9cde096c81774580a46a2d7e2834ed1ee
+  checksum: 10c0/0aaaebf1cbbf3e51e069e687bd7ddb9a7ad266dbec05101e8bdf583664149e0e18a8db7c2692e2ea1f46528ff8650d167df6cfa4cd3338dc4236e3a7a9547a9a
   languageName: node
   linkType: hard
 
@@ -1101,70 +1101,57 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/orderbook@npm:2.4.0-beta.1":
-  version: 2.4.0-beta.1
-  resolution: "@gardenfi/orderbook@npm:2.4.0-beta.1"
+"@gardenfi/orderbook@npm:2.4.2-beta.1":
+  version: 2.4.2-beta.1
+  resolution: "@gardenfi/orderbook@npm:2.4.2-beta.1"
   dependencies:
     "@coral-xyz/anchor": "npm:^0.30.1"
-    "@gardenfi/utils": "npm:2.4.0"
+    "@gardenfi/utils": "npm:2.4.2"
     bufferutil: "npm:^4.0.8"
     siwe: "npm:^2.1.4"
     utf-8-validate: "npm:^6.0.3"
     ws: "npm:^8.14.2"
-  checksum: 10c0/507c3fe0e363962182e07394a5f765f876744ddc55ec98df437fc461ce67f4181b2a6e6ba165e141157c0a739f60f974ba147fd85eb610edd4a30fcd541694c8
+  checksum: 10c0/b0e576096e5ec5f28c1df2f71dd974052b34bb4d156729367ae97c99c8b2e7cf44f532f4215428442e35e83c557b74cf6254046b3837663f287552557f77bc02
   languageName: node
   linkType: hard
 
-"@gardenfi/react-hooks@npm:2.4.0-beta.2":
-  version: 2.4.0-beta.2
-  resolution: "@gardenfi/react-hooks@npm:2.4.0-beta.2"
+"@gardenfi/react-hooks@npm:2.4.2-beta.1":
+  version: 2.4.2-beta.1
+  resolution: "@gardenfi/react-hooks@npm:2.4.2-beta.1"
   dependencies:
-    "@gardenfi/core": "npm:2.4.0-beta.2"
-    "@gardenfi/orderbook": "npm:2.4.0-beta.1"
-    "@gardenfi/utils": "npm:2.4.0"
+    "@gardenfi/core": "npm:2.4.2-beta.1"
+    "@gardenfi/orderbook": "npm:2.4.2-beta.1"
+    "@gardenfi/utils": "npm:2.4.2"
     react: "npm:^18.3.1"
-    starknet: "npm:6.23.1"
-  checksum: 10c0/afc7981d5b53c944cadedc8aa165a7100e27ab623a793f12c9573630fce1ed9a0f801a7ecb3005803ead15f53452c923eb555b1f39af748caf9131bdafe50ffe
+    starknet: "npm:7.6.4"
+  checksum: 10c0/c2aec72b35e22b2841aea96e284318703ae882faa49258ed7e8f4e13e90332df577841847c8305a5503b54650bc1a12865a123ae738ae4835c6c679b02d1c522
   languageName: node
   linkType: hard
 
-"@gardenfi/utils@npm:2.3.0":
-  version: 2.3.0
-  resolution: "@gardenfi/utils@npm:2.3.0"
+"@gardenfi/utils@npm:2.4.2":
+  version: 2.4.2
+  resolution: "@gardenfi/utils@npm:2.4.2"
   dependencies:
     "@peculiar/webcrypto": "npm:^1.5.0"
     "@simplewebauthn/browser": "npm:^13.1.0"
     fetch-cookie: "npm:^3.1.0"
     jwt-decode: "npm:^4.0.0"
     tough-cookie: "npm:^5.1.2"
-  checksum: 10c0/c6ee7ec135f7d6e3576ec8b0c5b09eb56ae348a1c9a083613090e03366ca465367ed9b657798113aa07ab74197a5e03b9ff109efb1aa3856cbda4b1a43695185
+  checksum: 10c0/0e6a1dffe18517a4f41a8baaed1b1fee9c7312ca1b801d21c5f0b7fb9c502880a8e27553d7b2026451aa79074e14817e59954a01e2808dfaef59d7bb7359b0b4
   languageName: node
   linkType: hard
 
-"@gardenfi/utils@npm:2.4.0":
-  version: 2.4.0
-  resolution: "@gardenfi/utils@npm:2.4.0"
+"@gardenfi/wallet-connectors@npm:2.3.2-beta.2":
+  version: 2.3.2-beta.2
+  resolution: "@gardenfi/wallet-connectors@npm:2.3.2-beta.2"
   dependencies:
-    "@peculiar/webcrypto": "npm:^1.5.0"
-    "@simplewebauthn/browser": "npm:^13.1.0"
-    fetch-cookie: "npm:^3.1.0"
-    jwt-decode: "npm:^4.0.0"
-    tough-cookie: "npm:^5.1.2"
-  checksum: 10c0/9f99c4f01d3eb83b9ad65dbe6861dbfb3ec9b0e3e1dffd487be93a61fa02102325210d919736de0a10f1d6fb429d9c68cb3b30ede24f0709ad66271cc7887664
-  languageName: node
-  linkType: hard
-
-"@gardenfi/wallet-connectors@npm:2.3.0-beta.2":
-  version: 2.3.0-beta.2
-  resolution: "@gardenfi/wallet-connectors@npm:2.3.0-beta.2"
-  dependencies:
-    "@gardenfi/core": "npm:2.4.0-beta.2"
-    "@gardenfi/utils": "npm:2.4.0"
+    "@gardenfi/core": "npm:2.4.2-beta.1"
+    "@gardenfi/utils": "npm:2.4.2"
     axios: "npm:^1.7.9"
     bitcoinjs-lib: "npm:^6.1.7"
     react: "npm:^18.3.1"
     tiny-secp256k1: "npm:^2.2.3"
-  checksum: 10c0/f706610de24ee8de5b42ebc9f1e32951d867a6c36baaf7a1ba653228376041ab0ad5cbf6158c35864f5048b1c39d42ab73ee0fb879f69d5d02d47b42c9ff159c
+  checksum: 10c0/87a708fea57ccb4d5a57248e5ff5fb2f8f1d6333674147212c459c43fa4cbceec9df69ff08a43508cbf2d5d386b23b7114d501d351e5aeebc16997fd25bc7d49
   languageName: node
   linkType: hard
 
@@ -4704,26 +4691,33 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@starknet-io/types-js@npm:^0.7.10, @starknet-io/types-js@npm:^0.7.7, starknet-types-07@npm:@starknet-io/types-js@^0.7.10":
+"@starknet-io/starknet-types-07@npm:@starknet-io/types-js@~0.7.10, @starknet-io/types-js@npm:^0.7.10, @starknet-io/types-js@npm:^0.7.7, starknet-types-07@npm:@starknet-io/types-js@^0.7.10":
   version: 0.7.10
   resolution: "@starknet-io/types-js@npm:0.7.10"
   checksum: 10c0/ca114d740198be3738dddd2e452bd9e51fe68c482925d3f6455e3b2c73f330bd5440e7ab1b3a6899022c24362367413fe8b8b2ecfde9fe28eed2dcaccd3b1362
   languageName: node
   linkType: hard
 
-"@starknet-react/chains@npm:^3.1.3":
-  version: 3.1.3
-  resolution: "@starknet-react/chains@npm:3.1.3"
-  checksum: 10c0/4c9d28ec4ddefb542aab2ce5586d6bb756f043798df3cf7b66ca07bd9bf3b0d97d695bb6c4cfd7cb97c3dce817c025322a00923ff6f5731c8d588ddc65994306
+"@starknet-io/starknet-types-08@npm:@starknet-io/types-js@~0.8.4":
+  version: 0.8.4
+  resolution: "@starknet-io/types-js@npm:0.8.4"
+  checksum: 10c0/afdd9deec1a881de85aea576dfc6b8827557a3257330c31abed91b3f33b96806da1f7bfb53f14cbf8250e530e6f21e93a8d2a283b2d84685e712fcc92d822d5d
   languageName: node
   linkType: hard
 
-"@starknet-react/core@npm:^3.7.2":
-  version: 3.7.4
-  resolution: "@starknet-react/core@npm:3.7.4"
+"@starknet-react/chains@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "@starknet-react/chains@npm:4.0.3"
+  checksum: 10c0/caf433b3d2f37fb239d2c6a4364ac3c8b385783c34ccc940f640af3ae6bcabfdd2e1ad8b00f1600c1aeb7c5192f3280e4d8759be8a756cfbcfc488f64c7ffe1c
+  languageName: node
+  linkType: hard
+
+"@starknet-react/core@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "@starknet-react/core@npm:4.0.3"
   dependencies:
-    "@starknet-io/types-js": "npm:^0.7.7"
-    "@starknet-react/chains": "npm:^3.1.3"
+    "@starknet-io/types-js": "npm:^0.7.10"
+    "@starknet-react/chains": "npm:^4.0.3"
     "@tanstack/react-query": "npm:^5.25.0"
     abi-wan-kanabi: "npm:^2.2.4"
     eventemitter3: "npm:^5.0.1"
@@ -4732,8 +4726,8 @@ __metadata:
   peerDependencies:
     get-starknet-core: ^4.0.0
     react: ^18.0
-    starknet: ^6.11.0
-  checksum: 10c0/02e9f955a5b631d77823ace999dd8e3aefe4ae4c236c1cf02925629e10444aa1723e0f547c9e133a0880a3420f445569f954833d127528c323113831c90455d6
+    starknet: ^7.6.4
+  checksum: 10c0/6b22f34af0fe4263acabba1a7c4244a4c7d09a0d1d3894b4cdd7a84630896b9c7db272e1b4214ac239a5d578459d4ce8aabb3779a8a7fa8fc63453e1e3844bb8
   languageName: node
   linkType: hard
 
@@ -6875,7 +6869,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"abi-wan-kanabi@npm:^2.2.3, abi-wan-kanabi@npm:^2.2.4":
+"abi-wan-kanabi@npm:2.2.4, abi-wan-kanabi@npm:^2.2.3, abi-wan-kanabi@npm:^2.2.4":
   version: 2.2.4
   resolution: "abi-wan-kanabi@npm:2.2.4"
   dependencies:
@@ -10425,12 +10419,12 @@ __metadata:
     "@chainflip/sdk": "npm:^1.8.3"
     "@coral-xyz/anchor": "npm:^0.31.1"
     "@eslint/js": "npm:^9.13.0"
-    "@gardenfi/core": "npm:2.4.0-beta.2"
+    "@gardenfi/core": "npm:2.4.2-beta.1"
     "@gardenfi/garden-book": "npm:0.1.100"
-    "@gardenfi/orderbook": "npm:2.4.0-beta.1"
-    "@gardenfi/react-hooks": "npm:2.4.0-beta.2"
-    "@gardenfi/utils": "npm:2.3.0"
-    "@gardenfi/wallet-connectors": "npm:2.3.0-beta.2"
+    "@gardenfi/orderbook": "npm:2.4.2-beta.1"
+    "@gardenfi/react-hooks": "npm:2.4.2-beta.1"
+    "@gardenfi/utils": "npm:2.4.2"
+    "@gardenfi/wallet-connectors": "npm:2.3.2-beta.2"
     "@number-flow/react": "npm:^0.5.9"
     "@sentry/react": "npm:^9.41.0"
     "@sentry/vite-plugin": "npm:^4.0.2"
@@ -10438,7 +10432,7 @@ __metadata:
     "@solana/wallet-adapter-react": "npm:^0.15.38"
     "@solana/wallet-adapter-wallets": "npm:^0.19.37"
     "@solana/web3.js": "npm:^1.98.2"
-    "@starknet-react/core": "npm:^3.7.2"
+    "@starknet-react/core": "npm:^4.0.3"
     "@tanstack/react-query": "npm:^5.51.23"
     "@trpc/server": "npm:^10.45.2"
     "@types/lodash.debounce": "npm:^4"
@@ -10469,7 +10463,7 @@ __metadata:
     react-responsive: "npm:^10.0.0"
     react-router-dom: "npm:^6.26.0"
     react-tooltip: "npm:^5.28.0"
-    starknet: "npm:6.23.1"
+    starknet: "npm:7.6.4"
     starknetkit: "npm:^2.10.4"
     tailwind: "npm:^4.0.0"
     tailwindcss: "npm:^3.4.9"
@@ -15036,22 +15030,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"starknet@npm:6.23.1":
-  version: 6.23.1
-  resolution: "starknet@npm:6.23.1"
+"starknet@npm:7.6.4":
+  version: 7.6.4
+  resolution: "starknet@npm:7.6.4"
   dependencies:
     "@noble/curves": "npm:1.7.0"
     "@noble/hashes": "npm:1.6.0"
     "@scure/base": "npm:1.2.1"
     "@scure/starknet": "npm:1.1.0"
-    abi-wan-kanabi: "npm:^2.2.3"
-    fetch-cookie: "npm:~3.0.0"
-    isomorphic-fetch: "npm:~3.0.0"
+    "@starknet-io/starknet-types-07": "npm:@starknet-io/types-js@~0.7.10"
+    "@starknet-io/starknet-types-08": "npm:@starknet-io/types-js@~0.8.4"
+    abi-wan-kanabi: "npm:2.2.4"
     lossless-json: "npm:^4.0.1"
     pako: "npm:^2.0.4"
-    starknet-types-07: "npm:@starknet-io/types-js@^0.7.10"
     ts-mixer: "npm:^6.0.3"
-  checksum: 10c0/2d904e5448ca466ff2fbf9aa7993df6bf3ad45d4aaef906bb381c5e7a7d562ffeff615b3345ddabb7cf1cfc750e93ff006ac3d5073a52eefdee33fb9a4746d9a
+  checksum: 10c0/7a7d584ca9be587af6f13daa60aacb893475bf1244b89f0ae3f4de231fb9b3be598f75c142a33068b30e41af39894ba7364b24fb56b41d1fcbb6588ac5c01d2e
   languageName: node
   linkType: hard
 
