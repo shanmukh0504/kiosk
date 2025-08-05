@@ -6,14 +6,7 @@ import {
 } from "@gardenfi/garden-book";
 import BigNumber from "bignumber.js";
 import { FC, useState, ChangeEvent, useEffect, useMemo, useRef } from "react";
-import {
-  Asset,
-  isBitcoin,
-  isStarknet,
-  isSolana,
-  isSolanaNativeToken,
-  isEvmNativeToken,
-} from "@gardenfi/orderbook";
+import { Asset, isStarknet, isSolana } from "@gardenfi/orderbook";
 import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { BTC, swapStore } from "../../store/swapStore";
 import { IOType, network } from "../../constants/constants";
@@ -124,12 +117,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         })
         .filter((asset) => !chain || asset.chain === chain.identifier)
         .map((asset) => {
-          const network =
-            !isBitcoin(asset.chain) &&
-            !isSolanaNativeToken(asset.chain, asset.tokenAddress) &&
-            !isEvmNativeToken(asset.chain, asset.tokenAddress)
-              ? chains?.[asset.chain]
-              : undefined;
+          const network = chains?.[asset.chain];
           const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
           const balance = balances?.[orderPair];
           const fiatRate = fiatData?.[getAssetChainHTLCAddressPair(asset)] ?? 0;
