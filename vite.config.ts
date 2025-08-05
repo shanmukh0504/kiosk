@@ -1,3 +1,4 @@
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { execSync } from "child_process";
@@ -47,18 +48,6 @@ export default defineConfig({
       },
     }),
     topLevelAwait(),
-    viteStaticCopy({
-      targets: [
-        {
-          src: path.resolve(
-            path.dirname(new URL(import.meta.url).pathname),
-            "build-id.json"
-          ),
-          dest: "public",
-        },
-      ],
-    }),
-
     {
       name: "generate-build-id",
       buildEnd() {
@@ -89,6 +78,22 @@ export default defineConfig({
         });
       },
     },
+    viteStaticCopy({
+      targets: [
+        {
+          src: path.resolve(
+            path.dirname(new URL(import.meta.url).pathname),
+            "build-id.json"
+          ),
+          dest: "public",
+        },
+      ],
+    }),
+    sentryVitePlugin({
+      org: "garden",
+      project: "kiosk",
+      url: "https://telemetry.garden.finance/",
+    }),
   ],
   esbuild: {
     target: "esnext",
@@ -100,8 +105,8 @@ export default defineConfig({
   },
   build: {
     target: "esnext",
-    sourcemap: false,
-    minify: "esbuild",
+    sourcemap: true,
+    minify: "terser",
     reportCompressedSize: false,
     chunkSizeWarningLimit: 2000,
     rollupOptions: {

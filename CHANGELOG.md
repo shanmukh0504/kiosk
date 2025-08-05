@@ -4,6 +4,16 @@
 
 ### Added
 
+- Added Sentry for error tracking.
+
+### Fixed
+
+- Fixed sidebar menu and notification in mobile view.
+
+## [1.0.12]
+
+### Added
+
 - Added support for solana spl tokens.
 
 ### Fixed
