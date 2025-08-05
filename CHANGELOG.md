@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.13]
+
+### Added
+
+- Added Sentry for error tracking.
+
 ## [1.0.12]
 
 ### Added
