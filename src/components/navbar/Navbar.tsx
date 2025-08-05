@@ -74,8 +74,9 @@ export const Navbar = () => {
           <Button
             variant="primary"
             onClick={handleConnectClick}
-            className="!h-12 min-w-28 !rounded-3xl"
-            size="lg"
+            className="!rounded-3xl"
+            size="sm"
+            breakpoints={{ sm: "lg" }}
           >
             Connect
           </Button>
