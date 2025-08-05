@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.13]
+## [1.0.14]
 
 ### Added
 
@@ -10,7 +10,7 @@
 
 - Fixed sidebar menu and notification in mobile view.
 
-## [1.0.12]
+## [1.0.13]
 
 ### Added
 
