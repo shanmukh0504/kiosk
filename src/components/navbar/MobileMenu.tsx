@@ -11,14 +11,14 @@ import {
   SOCIAL_LINKS,
 } from "../../constants/constants";
 import { isCurrentRoute } from "../../utils/utils";
-import { useNotificationStore } from "../../store/notificationStore";
+import { notificationStore } from "../../store/notificationStore";
 import { HamburgerIcon } from "../../common/HamburgerIcon";
 import { MenuNotification } from "../../common/MenuNotification";
 import { Link } from "react-router-dom";
 
 export const MobileMenu = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const { notification } = useNotificationStore();
+  const { notification } = notificationStore();
 
   const handleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
