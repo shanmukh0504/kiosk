@@ -13,6 +13,7 @@ import {
   isBitcoin,
   isEvmNativeToken,
   isSolanaNativeToken,
+  isSui,
 } from "@gardenfi/orderbook";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { ErrorFormat } from "../../constants/errors";
@@ -64,7 +65,8 @@ export const SwapInput: FC<SwapInputProps> = ({
       !chains ||
       (asset && isBitcoin(asset.chain)) ||
       (asset && isSolanaNativeToken(asset.chain, asset.tokenAddress)) ||
-      (asset && isEvmNativeToken(asset.chain, asset.tokenAddress))
+      (asset && isEvmNativeToken(asset.chain, asset.tokenAddress)) ||
+      (asset && isSui(asset.chain))
     )
       return;
     if (!asset) return;

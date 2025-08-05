@@ -21,15 +21,12 @@ import { ecosystems, evmToBTCid } from "./constants";
 import { AnimatePresence } from "framer-motion";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { ConnectingWalletStore } from "../../../store/connectWalletStore";
-import { BlockchainType } from "../../../constants/constants";
 import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
 import { Wallet as SolanaWallet } from "@solana/wallet-adapter-react";
-import {
-  Wallet as SuiWallet,
-  WalletWithRequiredFeatures,
-} from "@mysten/wallet-standard";
+import { WalletWithRequiredFeatures as SuiWallet } from "@mysten/wallet-standard";
 import { Connector as StarknetConnector } from "@starknet-react/core";
 import { useSuiWallet } from "../../../hooks/useSuiWallet";
+import { BlockchainType } from "@gardenfi/orderbook";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -180,7 +177,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           connector.wallet?.solanaWallet,
           connector.wallet?.suiWallet,
         ].filter(Boolean);
-
+        console.log("connector.wallet.suiWallet", connector);
         if (walletTypes.length < 2) return;
 
         setMultiWalletConnector({
@@ -194,6 +191,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       }
 
       if (connector.isSolana && connector.isEVM && connector.isSui) {
+        console.log("connector.wallet.suiWallet", connector.wallet.suiWallet);
         if (!connector.wallet?.evmWallet || !connector.wallet?.solanaWallet)
           return;
         setMultiWalletConnector({
@@ -264,11 +262,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         );
         if (!success) throw new Error("Solana connection failed");
       } else if (connector.isSui) {
-        console.log("connector.wallet.suiWallet", connector.wallet);
+        console.log("connector.wallet.suiWallet", connector);
         if (!connector.wallet?.suiWallet) return;
-        await handleSuiConnect(
-          connector.wallet.suiWallet as WalletWithRequiredFeatures
-        );
+        await handleSuiConnect(connector.wallet.suiWallet);
         setConnectingWallet(null);
       }
     } catch (error) {
@@ -383,8 +379,22 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                     [BlockchainType.Sui]: !!(
                       wallet.isSui &&
                       suiConnected &&
-                      suiSelectedWallet?.id?.toLowerCase() ===
-                        wallet.id.toLowerCase()
+                      // For Phantom Sui wallet, match by name
+                      ((wallet.id === "app.phantom" &&
+                        suiSelectedWallet?.name === "Phantom") ||
+                        // For Slush, match by id "com.mystenlabs.suiwallet"
+                        (wallet.id === "slush" &&
+                          suiSelectedWallet?.id ===
+                            "com.mystenlabs.suiwallet") ||
+                        // For OKX, match by id "com.okex.wallet"
+                        (wallet.id === "okx" &&
+                          suiSelectedWallet?.id === "com.okex.wallet") ||
+                        // For all others, match by id (case-insensitive)
+                        (wallet.id !== "app.phantom" &&
+                          wallet.id !== "slush" &&
+                          wallet.id !== "okx" &&
+                          suiSelectedWallet?.id?.toLowerCase() ===
+                            wallet.id.toLowerCase()))
                     ),
                   }}
                   isAvailable={wallet.isAvailable}

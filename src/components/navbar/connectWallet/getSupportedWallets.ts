@@ -7,7 +7,7 @@ import { GetConnectorsReturnType } from "wagmi/actions";
 import { evmToBTCid, GardenSupportedWallets } from "./constants";
 import { Connector as StarknetConnector } from "@starknet-react/core";
 import { Wallet as SolanaWallet } from "@solana/wallet-adapter-react";
-import { Wallet as SuiWallet } from "@mysten/wallet-standard";
+import { WalletWithRequiredFeatures as SuiWallet } from "@mysten/wallet-standard";
 
 export type Wallet = {
   id: string;
@@ -197,25 +197,50 @@ export const getAvailableWallets = (
 
   if (suiWallets) {
     Object.entries(GardenSupportedWallets).forEach(([key, value]) => {
-      if (!value.isSuiSupported) return;
-
+      if (!value.isSuiSupported) {
+        return;
+      }
       let suiWalletId = key;
       if (key === "slush") {
         suiWalletId = "com.mystenlabs.suiwallet";
       } else if (key === "app.phantom") {
-        suiWalletId = "phantom";
+        const wallet = suiWallets.find((w) => w.name === "Phantom");
+        const isAvailable = !!wallet;
+
+        const existingWalletIndex = wallets.findIndex((w) => w.id === key);
+        if (existingWalletIndex !== -1) {
+          wallets[existingWalletIndex].wallet.suiWallet = wallet;
+          wallets[existingWalletIndex].isSui = true;
+          wallets[existingWalletIndex].isAvailable = isAvailable;
+        } else {
+          const newWallet = {
+            ...value,
+            wallet: { suiWallet: wallet },
+            isAvailable,
+            isBitcoin: false,
+            isEVM: false,
+            isStarknet: false,
+            isSolana: false,
+            isSui: true,
+          };
+          wallets.push(newWallet);
+        }
+        return;
+      } else if (key === "okx") {
+        suiWalletId = "com.okex.wallet";
       }
 
       const wallet = suiWallets.find((w) => w.id === suiWalletId);
       const isAvailable = !!wallet;
 
       const existingWalletIndex = wallets.findIndex((w) => w.id === key);
+
       if (existingWalletIndex !== -1) {
         wallets[existingWalletIndex].wallet.suiWallet = wallet;
         wallets[existingWalletIndex].isSui = true;
         wallets[existingWalletIndex].isAvailable = isAvailable;
       } else {
-        wallets.push({
+        const newWallet = {
           ...value,
           wallet: { suiWallet: wallet },
           isAvailable,
@@ -224,7 +249,8 @@ export const getAvailableWallets = (
           isStarknet: false,
           isSolana: false,
           isSui: true,
-        });
+        };
+        wallets.push(newWallet);
       }
     });
   }

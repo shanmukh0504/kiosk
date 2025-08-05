@@ -3,7 +3,7 @@ import pendingOrdersStore from "../../store/pendingOrdersStore";
 import { TransactionRow } from "./TransactionRow";
 import { useGarden } from "@gardenfi/react-hooks";
 import { OrderStatus, OrderWithStatus } from "@gardenfi/core";
-import { isBitcoin, isEVM, isSolana } from "@gardenfi/orderbook";
+import { isBitcoin, isEVM, isSolana, isSui } from "@gardenfi/orderbook";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 
 export const PendingTransactions = () => {
@@ -38,6 +38,17 @@ export const PendingTransactions = () => {
         return;
       }
       const tx = await garden.solanaHTLC.initiate(order);
+      if (!tx.ok) {
+        console.error(tx.error);
+        return;
+      }
+      txHash = tx.val;
+    } else if (isSui(order.source_swap.chain)) {
+      if (!garden.suiHTLC) {
+        console.error("Sui HTLC not available");
+        return;
+      }
+      const tx = await garden.suiHTLC.initiate(order);
       if (!tx.ok) {
         console.error(tx.error);
         return;
