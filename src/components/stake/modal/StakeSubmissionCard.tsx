@@ -16,6 +16,7 @@ import { stakeABI } from "../abi/stake";
 import { MIN_STAKE_AMOUNT } from "../../../constants/stake";
 import { Toast } from "../../toast/Toast";
 import { flowerABI } from "../abi/flower";
+import logger from "../../../utils/logger";
 
 type StakeSubmissionCardProps = {
   selectedDuration: DURATION;
@@ -123,13 +124,13 @@ export const StakeSubmissionCard: FC<StakeSubmissionCardProps> = ({
         hash,
       });
       //✅ stake success
-      console.log("Stake tx hash : ", hash);
+      logger.log("Stake tx hash : ", hash);
       Toast.success(
         `Staked ${amount} SEED for ${selectedDuration} months successfully`
       );
       onClose();
     } catch (e) {
-      console.error("error :", e);
+      logger.error("error :", e);
     } finally {
       setLoading(false);
     }

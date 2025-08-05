@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { LOCAL_STORAGE_KEYS } from "../constants/constants";
 import axios from "axios";
 import { API } from "../constants/api";
+import logger from "../utils/logger";
 
 export type NotificationProps = {
   id: string;
@@ -27,7 +28,7 @@ export const Notification = () => {
           setNotification(response.data.result);
         }
       } catch (error) {
-        console.log("Error getting notification", error);
+        logger.error("Error getting notification", error);
       }
     };
     fetchNotification();

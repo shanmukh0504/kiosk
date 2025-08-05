@@ -6,6 +6,7 @@ import "./index.css";
 import "@gardenfi/garden-book/style.css";
 import ReactDOM from "react-dom/client";
 import { WalletProviders } from "./layout/WalletProviders.tsx";
+import { WalletMonitor } from "./SentryInit.tsx";
 
 const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
@@ -13,6 +14,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <WalletProviders>
+          <WalletMonitor />
           <App />
         </WalletProviders>
       </QueryClientProvider>
