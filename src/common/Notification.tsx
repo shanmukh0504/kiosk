@@ -2,11 +2,11 @@ import { CloseIcon, Typography } from "@gardenfi/garden-book";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { LOCAL_STORAGE_KEYS } from "../constants/constants";
-import { useNotificationStore } from "../store/notificationStore";
+import { notificationStore } from "../store/notificationStore";
 
 export const Notification = () => {
   const [visible, setVisible] = useState(false);
-  const { notification } = useNotificationStore();
+  const { notification } = notificationStore();
 
   useEffect(() => {
     if (!notification) {
