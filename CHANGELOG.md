@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.0]
+
+### Fixed
+
+- updated open-graph image in metadata
+
 ## [1.0.13]
 
 ### Added
