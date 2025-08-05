@@ -15,11 +15,13 @@ import { Environment as GardenEnvironment } from "@gardenfi/utils";
 import { useSolanaWallet } from "../hooks/useSolanaWallet";
 import { rpcStore } from "../store/rpcStore";
 import { useEffect } from "react";
+import { useSuiWallet } from "../hooks/useSuiWallet";
 
 function App() {
   const { data: walletClient } = useWalletClient();
   const { account: starknetWallet } = useAccount();
   const { solanaAnchorProvider } = useSolanaWallet();
+  const { suiSelectedWallet } = useSuiWallet();
   const { fetchAndSetRPCs } = rpcStore();
 
   useEffect(() => {
@@ -41,12 +43,14 @@ function App() {
                 evmRelay: import.meta.env.VITE_RELAYER_URL,
                 starknetRelay: import.meta.env.VITE_STARKNET_URL,
                 solanaRelay: import.meta.env.VITE_SOLANA_URL,
+                suiRelay: import.meta.env.VITE_SUI_RELAY_URL,
               }
             : (network as unknown as GardenEnvironment),
         wallets: {
           evm: walletClient,
           starknet: starknetWallet,
           solana: solanaAnchorProvider ?? undefined,
+          sui: suiSelectedWallet ?? undefined,
         },
       }}
       handleSecretManagement={false}
