@@ -19,6 +19,7 @@
 ### Fixed
 
 - Fetch balance on mount.
+- Max spendable balance for Evm chains.
 
 ## [1.0.12]
 
