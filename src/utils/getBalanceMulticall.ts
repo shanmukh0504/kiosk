@@ -4,6 +4,7 @@ import BigNumber from "bignumber.js";
 import { createPublicClient, erc20Abi, Hex, http } from "viem";
 import { MULTICALL_CONTRACT_ADDRESSES } from "../constants/constants";
 import { multicall3Abi } from "../common/abi/multicall3";
+import logger from "./logger";
 
 export const getBalanceMulticall = async (
   tokenAddresses: Hex[],
@@ -19,9 +20,9 @@ export const getBalanceMulticall = async (
     MULTICALL_CONTRACT_ADDRESSES[viemChain.id];
 
   if (!multicallAddress) {
-    console.error(
-      "multicall contract address doesn't exist for the chain id ",
-      viemChain.id
+    logger.error(
+      "multicall contract address doesn't exist for the chain id " +
+        viemChain.id
     );
     throw Error("multicall contract address doesn't exist.");
   }

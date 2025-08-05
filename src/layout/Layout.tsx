@@ -7,6 +7,8 @@ import { Notification } from "../common/Notification";
 import { ViewPortListener } from "../common/ViewPortListener";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { network, THEMES } from "../constants/constants";
+import { viewPortStore } from "../store/viewPortStore";
+import { notificationStore } from "../store/notificationStore";
 
 type LayoutProps = {
   children: ReactNode;
@@ -14,11 +16,14 @@ type LayoutProps = {
 
 export const Layout: FC<LayoutProps> = ({ children }) => {
   const { fetchAndSetAssetsAndChains } = assetInfoStore();
+  const { isMobile } = viewPortStore();
   const theme = getCurrentTheme();
+  const { fetchNotification } = notificationStore();
 
   useEffect(() => {
     fetchAndSetAssetsAndChains();
-  }, [fetchAndSetAssetsAndChains]);
+    fetchNotification();
+  }, [fetchAndSetAssetsAndChains, fetchNotification]);
 
   return (
     <div className={`${theme} overflow-hidden text-dark-grey`}>
@@ -38,7 +43,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
           <Navbar />
           {children}
         </div>
-        <Notification />
+        {!isMobile && <Notification />}
         <Footer className={"mt-auto"} network={network} />
       </div>
     </div>

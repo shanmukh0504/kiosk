@@ -24,6 +24,7 @@ import BigNumber from "bignumber.js";
 import { useSolanaWallet } from "./useSolanaWallet";
 import { formatAmount, getOrderPair } from "../utils/utils";
 import { useNetworkFees } from "./useNetworkFees";
+import logger from "../utils/logger";
 
 export const useSwap = () => {
   const {
@@ -507,13 +508,13 @@ export const useSwap = () => {
           //order failed due to price fluctuation, refresh quote here
           fetchQuote(inputAmount, inputAsset, outputAsset, false);
         } else {
-          console.error("failed to create order ❌", res.error);
+          logger.error("failed to create order ❌", res.error);
         }
         setIsSwapping(false);
         return;
       }
 
-      console.log("orderCreated ✅", res.val);
+      logger.log("orderCreated ✅", res.val);
 
       if (isBitcoin(res.val.source_swap.chain)) {
         if (provider) {
@@ -523,7 +524,7 @@ export const useSwap = () => {
             Number(order.source_swap.amount)
           );
           if (bitcoinRes.error) {
-            console.error("failed to send bitcoin ❌", bitcoinRes.error);
+            logger.error("failed to send bitcoin ❌", bitcoinRes.error);
             setIsSwapping(false);
           }
           const updatedOrder = {
@@ -555,8 +556,9 @@ export const useSwap = () => {
       setIsOpen(true);
       clearSwapState();
     } catch (error) {
-      console.log("failed to create order ❌", error);
+      logger.error("failed to create order ❌", error);
       setIsSwapping(false);
+      throw error;
     }
   };
 
