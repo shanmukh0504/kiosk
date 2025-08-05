@@ -1,6 +1,6 @@
 import { Network } from "@gardenfi/utils";
 import { network } from "../../../constants/constants";
-import { BlockchainType } from "../../../constants/constants";
+import { BlockchainType } from "@gardenfi/orderbook";
 
 export const ecosystems = {
   [BlockchainType.Bitcoin]: {
@@ -133,6 +133,7 @@ export const GardenSupportedWallets: Record<
     {
       Bitcoin: network === Network.MAINNET,
       EVM: true,
+      Sui: true,
     }
   ),
   unisat: createWallet(
@@ -201,7 +202,7 @@ export const GardenSupportedWallets: Record<
   slush: createWallet(
     "slush",
     "Slush Wallet",
-    "wallets/Backpack.svg",
+    "wallets/SlushLogo.png",
     "https://slushwallet.com/",
     { Sui: true }
   ),
