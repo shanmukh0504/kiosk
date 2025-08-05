@@ -31,14 +31,14 @@ const RateDisplay = ({
   <div className={`flex min-w-fit items-center gap-1`}>
     <Typography
       size="h5"
-      weight="medium"
+      weight="regular"
       className={`!text-nowrap ${className}`}
     >
       1 {inputAsset?.symbol} ≈
     </Typography>
     <Typography
       size="h5"
-      weight="medium"
+      weight="regular"
       className={`!text-nowrap ${className}`}
     >
       {formattedRate} {outputAsset?.symbol}
@@ -147,7 +147,7 @@ export const FeesAndRateDetails = () => {
                   <div className="flex items-center gap-1">
                     <Typography
                       size="h5"
-                      weight="medium"
+                      weight="regular"
                       className="!text-mid-grey"
                     >
                       Rate
@@ -211,12 +211,17 @@ export const FeesAndRateDetails = () => {
                     <GasStationIcon className="h-3 w-3" />
                     <Typography
                       size="h5"
-                      weight="medium"
+                      weight="regular"
                       className="!text-nowrap"
                     >
-                      {fallbackNetworkFees === 0
-                        ? "Free"
-                        : "$" + formatAmount(fallbackNetworkFees, 0, 2)}
+                      {fallbackNetworkFees === 0 ? (
+                        "Free"
+                      ) : (
+                        <span className="flex items-center">
+                          <span className="font-sans">$</span>
+                          {formatAmount(fallbackNetworkFees, 0, 2)}
+                        </span>
+                      )}
                     </Typography>
                   </div>
                 </motion.div>

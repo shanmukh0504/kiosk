@@ -2,6 +2,10 @@
 
 ## [1.1.0]
 
+### Added
+
+- Brand refresh
+
 ### Fixed
 
 - updated open-graph image in metadata

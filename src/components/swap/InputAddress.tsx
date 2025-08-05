@@ -59,13 +59,13 @@ export const InputAddress = () => {
             <Typography
               data-tooltip-id={isRecoveryAddress ? tooltipId : ""}
               size="h5"
-              weight="bold"
+              weight="medium"
               onClick={() => inputRef.current!.focus()}
               className="w-fit"
             >
               {isRecoveryAddress ? "Refund" : "Receive"} address
             </Typography>
-            <Typography size="h3" weight="medium">
+            <Typography size="h3" weight="regular">
               <input
                 ref={inputRef}
                 className={`w-full outline-none placeholder:text-mid-grey ${

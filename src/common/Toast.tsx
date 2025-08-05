@@ -18,7 +18,7 @@ export const Toast: FC<ToastProps> = ({ content, link }) => {
         <div className="flex h-5 w-5 items-center justify-center">
           <CheckIcon />
         </div>
-        <Typography size="h3" weight="medium">
+        <Typography size="h3" weight="regular">
           {content}
         </Typography>
       </div>

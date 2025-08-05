@@ -8,29 +8,29 @@ body {
 
 @layer base {
   @font-face {
-    font-family: "Satoshi";
+    font-family: Haffer;
     font-weight: 300;
-    src: url("./fonts/Satoshi-Light.woff2");
+    src: url("./fonts/Haffer-Thin.woff2");
   }
   @font-face {
-    font-family: "Satoshi";
+    font-family: Haffer;
     font-weight: 400;
-    src: url("./fonts/Satoshi-Regular.woff2");
+    src: url("./fonts/Haffer-Light.woff2");
   }
   @font-face {
-    font-family: "Satoshi";
+    font-family: Haffer;
     font-weight: 500;
-    src: url("./fonts/Satoshi-Medium.woff2");
+    src: url("./fonts/Haffer-Regular.woff2");
   }
   @font-face {
-    font-family: "Satoshi";
+    font-family: Haffer;
     font-weight: 700;
-    src: url("./fonts/Satoshi-Bold.woff2");
+    src: url("./fonts/Haffer-Medium.woff2");
   }
   @font-face {
-    font-family: "Satoshi";
+    font-family: Haffer;
     font-weight: 800;
-    src: url("./fonts/Satoshi-Black.woff2");
+    src: url("./fonts/Haffer-Black.woff2");
   }
 
   input[type="number"]::-webkit-inner-spin-button,
@@ -51,7 +51,7 @@ body {
     @apply absolute left-0 top-0 h-full w-[168px] animate-shine bg-gradient-to-r from-transparent via-white/50 via-50% to-transparent opacity-0 content-[''];
   }
   .navbar-shine:before {
-    @apply animate-navbar-shine absolute left-0 top-0 h-full w-[84px] bg-gradient-to-l from-transparent via-white/75 via-25% to-transparent opacity-0 content-[''];
+    @apply absolute left-0 top-0 h-full w-[84px] animate-navbar-shine bg-gradient-to-l from-transparent via-white/75 via-25% to-transparent opacity-0 content-[''];
   }
 }
 
