@@ -11,6 +11,7 @@ import { swapStore } from "../../../store/swapStore";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
 import { assetInfoStore } from "../../../store/assetInfoStore";
+import { useSuiWallet } from "../../../hooks/useSuiWallet";
 
 type AddressMenuProps = {
   onClose: () => void;
@@ -21,6 +22,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const { starknetAddress, starknetDisconnect } = useStarknetWallet();
   const { account: btcAddress, disconnect: btcDisconnect } = useBitcoinWallet();
   const { solanaAddress, solanaDisconnect } = useSolanaWallet();
+  const { suiAddress, suiDisconnect } = useSuiWallet();
   const { setOpenModal } = modalStore();
   const { clear } = swapStore();
   const { clearBalances } = assetInfoStore();

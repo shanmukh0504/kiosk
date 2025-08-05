@@ -169,3 +169,11 @@ export const WALLET_SUPPORTED_CHAINS: Record<string, Chain[]> = {
     "starknet_sepolia",
   ],
 };
+
+export enum BlockchainType {
+  Bitcoin = "Bitcoin",
+  EVM = "EVM",
+  Solana = "Solana",
+  Starknet = "Starknet",
+  Sui = "Sui",
+}

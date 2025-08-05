@@ -21,10 +21,13 @@ import { ecosystems, evmToBTCid } from "./constants";
 import { AnimatePresence } from "framer-motion";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { ConnectingWalletStore } from "../../../store/connectWalletStore";
-import { BlockchainType } from "@gardenfi/orderbook";
+import { BlockchainType } from "../../../constants/constants";
 import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
 import { Wallet as SolanaWallet } from "@solana/wallet-adapter-react";
-import { Wallet as SuiWallet } from "@mysten/wallet-standard";
+import {
+  Wallet as SuiWallet,
+  WalletWithRequiredFeatures,
+} from "@mysten/wallet-standard";
 import { Connector as StarknetConnector } from "@starknet-react/core";
 import { useSuiWallet } from "../../../hooks/useSuiWallet";
 
@@ -61,7 +64,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     solanaDisconnect,
     solanaSelectedWallet,
   } = useSolanaWallet();
-  const { suiConnected, suiSelectedWallet, suiWallets } = useSuiWallet();
+  const { suiConnected, suiSelectedWallet, suiWallets, handleSuiConnect } =
+    useSuiWallet();
   const { modalData, setOpenModal } = modalStore();
   const showOnlyBTCWallets = !!modalData.connectWallet?.Bitcoin;
   const showOnlyStarknetWallets = !!modalData.connectWallet?.Starknet;
@@ -260,7 +264,12 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         );
         if (!success) throw new Error("Solana connection failed");
       } else if (connector.isSui) {
+        console.log("connector.wallet.suiWallet", connector.wallet);
         if (!connector.wallet?.suiWallet) return;
+        await handleSuiConnect(
+          connector.wallet.suiWallet as WalletWithRequiredFeatures
+        );
+        setConnectingWallet(null);
       }
     } catch (error) {
       console.error("Error connecting wallet:", error);

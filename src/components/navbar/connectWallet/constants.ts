@@ -1,6 +1,6 @@
 import { Network } from "@gardenfi/utils";
 import { network } from "../../../constants/constants";
-import { BlockchainType } from "@gardenfi/orderbook";
+import { BlockchainType } from "../../../constants/constants";
 
 export const ecosystems = {
   [BlockchainType.Bitcoin]: {
@@ -18,6 +18,10 @@ export const ecosystems = {
   [BlockchainType.Solana]: {
     name: "Solana",
     icon: "https://garden-finance.imgix.net/chain_images/solana.png",
+  },
+  [BlockchainType.Sui]: {
+    name: "Sui",
+    icon: "https://garden-finance.imgix.net/chain_images/sui.svg",
   },
 } as const;
 
@@ -45,6 +49,7 @@ interface BaseWallet {
   isEVMSupported: boolean;
   isStarknetSupported: boolean;
   isSolanaSupported: boolean;
+  isSuiSupported: boolean;
 }
 
 // Wallet capabilities interface
@@ -73,6 +78,7 @@ const createWallet = (
   isEVMSupported: capabilities[BlockchainType.EVM] ?? false,
   isStarknetSupported: capabilities[BlockchainType.Starknet] ?? false,
   isSolanaSupported: capabilities[BlockchainType.Solana] ?? false,
+  isSuiSupported: capabilities[BlockchainType.Sui] ?? false,
 });
 
 export const GardenSupportedWallets: Record<
@@ -109,7 +115,7 @@ export const GardenSupportedWallets: Record<
       EVM: network === Network.MAINNET,
       Bitcoin: true,
       Solana: true,
-      Sui: true
+      Sui: true,
     }
   ),
   "com.coinbase.wallet": createWallet(
@@ -162,9 +168,15 @@ export const GardenSupportedWallets: Record<
     Starknet: true,
     Bitcoin: network === Network.MAINNET,
   }),
-  leap: createWallet("leap", "Leap Wallet", "wallets/LeapLight.svg", "https://www.leapwallet.io/", {
-    EVM: network === Network.MAINNET,
-  }),
+  leap: createWallet(
+    "leap",
+    "Leap Wallet",
+    "wallets/LeapLight.svg",
+    "https://www.leapwallet.io/",
+    {
+      EVM: network === Network.MAINNET,
+    }
+  ),
   xverse: createWallet(
     "xverse",
     "Xverse",
@@ -185,5 +197,12 @@ export const GardenSupportedWallets: Record<
     "wallets/Backpack.svg",
     "https://backpack.app/",
     { Solana: true }
+  ),
+  slush: createWallet(
+    "slush",
+    "Slush Wallet",
+    "wallets/Backpack.svg",
+    "https://slushwallet.com/",
+    { Sui: true }
   ),
 };

@@ -195,6 +195,40 @@ export const getAvailableWallets = (
     });
   }
 
+  if (suiWallets) {
+    Object.entries(GardenSupportedWallets).forEach(([key, value]) => {
+      if (!value.isSuiSupported) return;
+
+      let suiWalletId = key;
+      if (key === "slush") {
+        suiWalletId = "com.mystenlabs.suiwallet";
+      } else if (key === "app.phantom") {
+        suiWalletId = "phantom";
+      }
+
+      const wallet = suiWallets.find((w) => w.id === suiWalletId);
+      const isAvailable = !!wallet;
+
+      const existingWalletIndex = wallets.findIndex((w) => w.id === key);
+      if (existingWalletIndex !== -1) {
+        wallets[existingWalletIndex].wallet.suiWallet = wallet;
+        wallets[existingWalletIndex].isSui = true;
+        wallets[existingWalletIndex].isAvailable = isAvailable;
+      } else {
+        wallets.push({
+          ...value,
+          wallet: { suiWallet: wallet },
+          isAvailable,
+          isBitcoin: false,
+          isEVM: false,
+          isStarknet: false,
+          isSolana: false,
+          isSui: true,
+        });
+      }
+    });
+  }
+
   return wallets.sort((a, b) => {
     if (a.id === "injected") return 1;
     if (b.id === "injected") return -1;

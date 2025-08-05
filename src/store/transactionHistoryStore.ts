@@ -43,7 +43,7 @@ const transactionHistoryStore = create<TransactionHistoryStoreState>(
           per_page: get().perPage,
         });
         if (!txns.ok) {
-          console.error(txns.error);
+          // console.error(txns.error);
           continue;
         }
         totalItems += txns.val.total_items;

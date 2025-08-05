@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { StakingPosition } from "./stakeStore";
-import { BlockchainType } from "@gardenfi/orderbook";
+import { BlockchainType } from "../constants/constants";
 
 export const modalNames = {
   connectWallet: "connectWallet",
