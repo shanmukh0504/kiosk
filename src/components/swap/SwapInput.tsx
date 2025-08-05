@@ -17,7 +17,7 @@ import {
 import { modalNames, modalStore } from "../../store/modalStore";
 import { ErrorFormat } from "../../constants/errors";
 import NumberFlow from "@number-flow/react";
-import clsx from "clsx/lite";
+import clsx from "clsx";
 import { formatAmount } from "../../utils/utils";
 
 type SwapInputProps = {
@@ -163,7 +163,9 @@ export const SwapInput: FC<SwapInputProps> = ({
             <div className="flex gap-2">
               {amount && Number(price) !== 0 && (
                 <Typography size="h5" weight="medium">
-                  <span className="text-mid-grey">~${formatAmount(price,0,3)}</span>
+                  <span className="text-mid-grey">
+                    ~${formatAmount(price, 0, 3)}
+                  </span>
                 </Typography>
               )}
               {/* {type === IOType.output && Number(price) !== 0 && (

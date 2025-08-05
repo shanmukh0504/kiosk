@@ -147,6 +147,8 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "corn",
   "solana",
   "botanix",
+  "bnbchain",
+  "bnbchain_testnet",
 ] as const;
 
 export const MULTICALL_CONTRACT_ADDRESSES: Record<number, string> = {

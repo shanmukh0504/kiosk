@@ -18,7 +18,7 @@ export const Notification = () => {
     );
 
     if (savedNotificationId !== notification?.id) setVisible(true);
-  }, [notification?.id]);
+  }, [notification]);
 
   const handleClose = () => {
     if (notification) {

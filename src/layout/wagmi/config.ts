@@ -17,6 +17,7 @@ import {
   monadTestnet,
   Chain,
   corn,
+  bscTestnet,
 } from "wagmi/chains";
 
 import { injected, metaMask } from "wagmi/connectors";
@@ -93,6 +94,7 @@ export const SupportedChains = [
   hyperliquid,
   corn,
   botanix,
+  bscTestnet,
 ] as const;
 
 export const leapConnector = injected({
@@ -139,5 +141,6 @@ export const config = createConfig({
     [hyperliquid.id]: http(),
     [corn.id]: http(),
     [botanix.id]: http(),
+    [bscTestnet.id]: http(),
   },
 });
