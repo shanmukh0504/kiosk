@@ -17,7 +17,7 @@ type NotificationState = {
   fetchNotification: () => Promise<void>;
 };
 
-export const useNotificationStore = create<NotificationState>((set) => ({
+export const notificationStore = create<NotificationState>((set) => ({
   notification: null,
   isLoading: false,
   error: null,

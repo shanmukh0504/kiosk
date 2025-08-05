@@ -61,7 +61,7 @@ export const EXTERNAL_ROUTES: Record<
     name: "Explorer",
     path:
       network === Network.TESTNET
-        ? "testnet-explorer.garden.finance/"
+        ? "https://testnet-explorer.garden.finance/"
         : "https://explorer.garden.finance/",
     enabled: true,
     isExternal: true,

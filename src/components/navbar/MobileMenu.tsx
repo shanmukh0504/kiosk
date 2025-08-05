@@ -7,13 +7,13 @@ import {
 import { useState } from "react";
 import { externalRoutes, routes } from "../../constants/constants";
 import { isCurrentRoute } from "../../utils/utils";
-import { useNotificationStore } from "../../store/notificationStore";
+import { notificationStore } from "../../store/notificationStore";
 import { HamburgerIcon } from "../../common/HamburgerIcon";
 import { MenuNotification } from "../../common/MenuNotification";
 
 export const MobileMenu = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const { notification } = useNotificationStore();
+  const { notification } = notificationStore();
 
   const handleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
