@@ -30,11 +30,11 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
       <ViewPortListener />
       <div className="relative z-10 bg-primary">
         <div
-          className="fixed inset-0 top-[50%] z-[-10] h-[50%] w-full"
+          className="fixed bottom-0 -z-10 h-full max-h-[612px] w-screen origin-bottom overflow-hidden opacity-60"
           style={{
             background:
               theme === THEMES.swap
-                ? "linear-gradient(180deg, rgba(188, 237, 220, 0.00) 0%, #BCEDDC 100%)"
+                ? "linear-gradient(180deg, rgba(188, 237, 220, 0) 0%, #BCEDDC 100%)"
                 : "linear-gradient(180deg, rgba(255, 189, 205, 0) 0%, #FFBDCD 100%)",
           }}
         />
