@@ -1,10 +1,5 @@
 import { ArrowRightIcon, Typography } from "@gardenfi/garden-book";
-import {
-  Asset,
-  isBitcoin,
-  isEvmNativeToken,
-  isSolana,
-} from "@gardenfi/orderbook";
+import { Asset } from "@gardenfi/orderbook";
 import { FC } from "react";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { AssetChainLogos } from "./AssetChainLogos";
@@ -25,20 +20,8 @@ export const SwapInfo: FC<SwapInfoProps> = ({
   equalSplit = false,
 }) => {
   const { allChains } = assetInfoStore();
-  const sendChain =
-    allChains &&
-    !isBitcoin(sendAsset.chain) &&
-    !isSolana(sendAsset.chain) &&
-    !isEvmNativeToken(sendAsset.chain, sendAsset.tokenAddress)
-      ? allChains[sendAsset.chain]
-      : undefined;
-  const receiveChain =
-    allChains &&
-    !isBitcoin(receiveAsset.chain) &&
-    !isSolana(receiveAsset.chain) &&
-    !isEvmNativeToken(receiveAsset.chain, receiveAsset.tokenAddress)
-      ? allChains[receiveAsset.chain]
-      : undefined;
+  const sendChain = allChains ? allChains[sendAsset.chain] : undefined;
+  const receiveChain = allChains ? allChains[receiveAsset.chain] : undefined;
 
   return (
     <div className="flex items-center justify-between">
@@ -50,7 +33,11 @@ export const SwapInfo: FC<SwapInfoProps> = ({
         </Typography>
         <AssetChainLogos
           tokenLogo={sendAsset.logo}
-          chainLogo={sendChain?.networkLogo}
+          chainLogo={
+            sendChain?.networkLogo === sendAsset.chain
+              ? ""
+              : sendChain?.networkLogo
+          }
         />
       </div>
       <ArrowRightIcon className={equalSplit ? "" : "h-5 w-9"} />
@@ -62,7 +49,11 @@ export const SwapInfo: FC<SwapInfoProps> = ({
         </Typography>
         <AssetChainLogos
           tokenLogo={receiveAsset.logo}
-          chainLogo={receiveChain?.networkLogo}
+          chainLogo={
+            receiveChain?.networkLogo === receiveAsset.logo
+              ? ""
+              : receiveChain?.networkLogo
+          }
         />
       </div>
     </div>

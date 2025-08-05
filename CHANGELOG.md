@@ -1,9 +1,24 @@
 # Changelog
 
-## [1.0.13]
+## [1.0.14]
+
+### Added
+
+- Added Sentry for error tracking.
 
 ### Fixed
 
+- Fixed sidebar menu and notification in mobile view.
+
+## [1.0.13]
+
+### Added
+
+- Added support for solana spl tokens.
+
+### Fixed
+
+- Fetch balance on mount.
 - Max spendable balance for Evm chains.
 
 ## [1.0.12]
