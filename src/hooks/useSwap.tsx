@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { BTC, swapStore } from "../store/swapStore";
 import { IOType, network } from "../constants/constants";
-import { Asset, Chain, isBitcoin, isSolana } from "@gardenfi/orderbook";
+import { Asset, Chain, Chains, isBitcoin, isSolana } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
 import {
@@ -24,6 +24,7 @@ import BigNumber from "bignumber.js";
 import { useSolanaWallet } from "./useSolanaWallet";
 import { formatAmount, getOrderPair } from "../utils/utils";
 import { useNetworkFees } from "./useNetworkFees";
+import { useSuiWallet } from "./useSuiWallet";
 
 export const useSwap = () => {
   const {
@@ -69,7 +70,7 @@ export const useSwap = () => {
   const { starknetAddress } = useStarknetWallet();
   const { setOpenModal } = modalStore();
   const { solanaAddress } = useSolanaWallet();
-
+  const { currentAccount } = useSuiWallet();
   useNetworkFees();
 
   const inputBalance = useMemo(() => {
@@ -376,6 +377,10 @@ export const useSwap = () => {
     fetchQuote(amount, inputAsset, outputAsset, true);
   };
 
+  const isSui = (chain: Chain) => {
+    return chain === Chains.sui || chain === Chains.sui_testnet;
+  };
+
   const needsWalletConnection = useMemo<null | string>(() => {
     if (!inputAsset || !outputAsset) return null;
 
@@ -392,6 +397,10 @@ export const useSwap = () => {
         check: (chain: Chain) => isSolana(chain),
         address: solanaAddress,
       },
+      sui: {
+        check: (chain: Chain) => isSui(chain),
+        address: currentAccount?.address,
+      },
     };
 
     for (const [chainKey, { check, address }] of Object.entries(
@@ -403,7 +412,14 @@ export const useSwap = () => {
     }
 
     return null;
-  }, [inputAsset, outputAsset, evmAddress, starknetAddress, solanaAddress]);
+  }, [
+    inputAsset,
+    outputAsset,
+    evmAddress,
+    starknetAddress,
+    solanaAddress,
+    currentAccount,
+  ]);
 
   const handleSwapClick = async () => {
     if (needsWalletConnection) {
