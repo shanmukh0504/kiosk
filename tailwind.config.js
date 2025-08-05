@@ -9,7 +9,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        rose: "#E36492",
+        rose: "#FC79C1",
         "dark-grey": "#473C75",
         "mid-grey": "#817A90",
         "light-grey": "#E3E0EB",

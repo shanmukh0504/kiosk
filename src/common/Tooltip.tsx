@@ -19,7 +19,7 @@ export const Tooltip: FC<TooltipProps> = ({
     <Typography size="h5" weight="regular">
       <ReactTooltip
         id={id}
-        className={`tooltip ${multiline ? "multiline" : ""}`}
+        className={`tooltip ${multiline ? "multiline" : ""} !bg-white !text-dark-grey !backdrop-blur-xl`}
         place={place}
         content={content}
       />
