@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { BTC, swapStore } from "../store/swapStore";
 import { IOType, network } from "../constants/constants";
-import { Asset, Chain, Chains, isBitcoin, isSolana } from "@gardenfi/orderbook";
+import { Asset, Chain, isBitcoin, isSolana, isSui } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
 import {
@@ -82,7 +82,9 @@ export const useSwap = () => {
     () =>
       inputBalance &&
       inputAsset &&
-      (!isStarknet(inputAsset.chain) && !isSolana(inputAsset.chain)
+      (!isStarknet(inputAsset.chain) &&
+      !isSolana(inputAsset.chain) &&
+      !isSui(inputAsset.chain)
         ? formatAmount(
             Number(inputBalance),
             inputAsset.decimals,
@@ -375,10 +377,6 @@ export const useSwap = () => {
     if (!inputAsset || !outputAsset || !amountInNumber) return;
 
     fetchQuote(amount, inputAsset, outputAsset, true);
-  };
-
-  const isSui = (chain: Chain) => {
-    return chain === Chains.sui || chain === Chains.sui_testnet;
   };
 
   const needsWalletConnection = useMemo<null | string>(() => {

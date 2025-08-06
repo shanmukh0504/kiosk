@@ -23,7 +23,14 @@ import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { rpcStore } from "../../store/rpcStore";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
-import { isEVM, isBitcoin, isStarknet, isSolana } from "@gardenfi/orderbook";
+import {
+  isEVM,
+  isBitcoin,
+  isStarknet,
+  isSolana,
+  isSui,
+} from "@gardenfi/orderbook";
+import { useSuiWallet } from "../../hooks/useSuiWallet";
 
 export const CreateSwap = () => {
   const [loadingDisabled, setLoadingDisabled] = useState(false);
@@ -34,6 +41,7 @@ export const CreateSwap = () => {
   const { address } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { solanaAnchorProvider } = useSolanaWallet();
+  const { currentAccount } = useSuiWallet();
   const {
     isAssetSelectorOpen,
     assets,
@@ -42,6 +50,7 @@ export const CreateSwap = () => {
     fetchAndSetFiatValues,
     fetchAndSetStarknetBalance,
     fetchAndSetSolanaBalance,
+    fetchAndSetSuiBalance,
     clearBalances,
   } = assetInfoStore();
 
@@ -171,6 +180,7 @@ export const CreateSwap = () => {
         starknetAddress && fetchAndSetStarknetBalance(starknetAddress),
         solanaAnchorProvider &&
           fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey),
+        currentAccount && fetchAndSetSuiBalance(currentAccount.address),
       ]);
     };
 
@@ -185,6 +195,8 @@ export const CreateSwap = () => {
         await fetchAndSetStarknetBalance(starknetAddress);
       if (isSolana(inputAsset.chain) && solanaAnchorProvider)
         await fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey);
+      if (isSui(inputAsset.chain) && currentAccount)
+        await fetchAndSetSuiBalance(currentAccount.address);
     };
 
     let interval: ReturnType<typeof setInterval>;

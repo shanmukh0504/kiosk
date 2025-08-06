@@ -1,5 +1,5 @@
 import { ArrowRightIcon, Typography } from "@gardenfi/garden-book";
-import { Asset, isNativeToken } from "@gardenfi/orderbook";
+import { Asset } from "@gardenfi/orderbook";
 import { FC } from "react";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { AssetChainLogos } from "./AssetChainLogos";
@@ -20,14 +20,8 @@ export const SwapInfo: FC<SwapInfoProps> = ({
   equalSplit = false,
 }) => {
   const { allChains } = assetInfoStore();
-  const sendChain =
-    allChains && !isNativeToken(sendAsset)
-      ? allChains[sendAsset.chain]
-      : undefined;
-  const receiveChain =
-    allChains && !isNativeToken(receiveAsset)
-      ? allChains[receiveAsset.chain]
-      : undefined;
+  const sendChain = allChains ? allChains[sendAsset.chain] : undefined;
+  const receiveChain = allChains ? allChains[receiveAsset.chain] : undefined;
 
   return (
     <div className="flex items-center justify-between">

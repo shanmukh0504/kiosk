@@ -236,23 +236,13 @@ export const getSuiTokenBalance = async (
   address: string,
   asset: Asset
 ): Promise<number> => {
-  /**
-   * To get the Sui token balance for a given address and token:
-   * - If the token is the native SUI coin, use the Sui JSON-RPC to fetch the coin balance for the address.
-   * - If the token is an SUI token (SUI Move coin), use the Sui JSON-RPC to fetch all coin objects of the given type for the address,
-   *   sum their balances, and return the total, formatted to the asset's decimals.
-   *
-   * We'll use the Sui JSON-RPC endpoint and fetch the balances using the Sui RPC API.
-   */
   if (!isSui(asset.chain)) return 0;
 
-  // Use the public Sui RPC endpoint (mainnet or testnet)
   const suiRpcUrl =
     network === Network.TESTNET
       ? "https://fullnode.testnet.sui.io:443"
       : "https://fullnode.mainnet.sui.io:443";
 
-  // Helper to call Sui JSON-RPC
   async function suiRpcCall(method: string, params: any[]) {
     const res = await fetch(suiRpcUrl, {
       method: "POST",
@@ -270,27 +260,25 @@ export const getSuiTokenBalance = async (
   }
 
   try {
-    // Native SUI coin
     if (
       asset.tokenAddress === "primary" ||
       asset.tokenAddress === "0x2::sui::SUI"
     ) {
-      // SUI native coin
-      // Use `suix_getBalance` or `sui_getBalance` (depending on endpoint)
-      // We'll use `suix_getBalance` which is supported on public endpoints
-      const result = await suiRpcCall("suix_getBalance", [address]);
-      // result.totalBalance is a string (in base units)
+      const result = await suiRpcCall("suix_getBalance", [
+        address,
+        "0x2::sui::SUI",
+      ]);
       return formatAmount(result.totalBalance, asset.decimals, 8);
     } else {
-      // SUI token (Move coin)
-      // Use suix_getAllBalances to get all coin types and filter for the token
       const result = await suiRpcCall("suix_getAllBalances", [address]);
-      // result is an array of { coinType, totalBalance, ... }
-      const token = result.find(
-        (b: any) =>
-          b.coinType === asset.tokenAddress ||
-          b.coinType === asset.tokenAddress.replace(/^0x/, "0x")
-      );
+
+      const token = Array.isArray(result)
+        ? result.find(
+            (b: any) =>
+              b.coinType === asset.tokenAddress ||
+              b.coinType === asset.tokenAddress.replace(/^0x/, "0x")
+          )
+        : undefined;
       if (!token) return 0;
       return formatAmount(token.totalBalance, asset.decimals, 8);
     }

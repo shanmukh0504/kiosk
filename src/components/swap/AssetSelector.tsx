@@ -35,6 +35,7 @@ import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { viewPortStore } from "../../store/viewPortStore";
 import { Network } from "@gardenfi/utils";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
+import { useSuiWallet } from "../../hooks/useSuiWallet";
 
 type props = {
   onClose: () => void;
@@ -55,6 +56,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const { account: btcAddress } = useBitcoinWallet();
   const { starknetAccount } = useStarknetWallet();
   const { solanaAddress } = useSolanaWallet();
+  const { currentAccount } = useSuiWallet();
   const { isMobile } = viewPortStore();
 
   const {
@@ -157,9 +159,12 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         })
     );
   }, [results, orderedChains, chains, chain, balances, fiatData]);
-
   const isAnyWalletConnected =
-    !!address || !!btcAddress || !!starknetAccount || !!solanaAddress;
+    !!address ||
+    !!btcAddress ||
+    !!starknetAccount ||
+    !!solanaAddress ||
+    !!currentAccount;
   const fiatBasedSortedResults = useMemo(() => {
     if (!isAnyWalletConnected) return sortedResults;
     return (

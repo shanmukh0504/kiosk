@@ -52,6 +52,10 @@ function App() {
           solana: solanaAnchorProvider ?? undefined,
           sui: suiSelectedWallet ?? undefined,
         },
+        solanaProgramAddress: {
+          native: import.meta.env.VITE_SOLANA_PROGRAM_ADDRESS_NATIVE,
+          spl: import.meta.env.VITE_SOLANA_PROGRAM_ADDRESS_SPL,
+        },
       }}
       handleSecretManagement={false}
     >
