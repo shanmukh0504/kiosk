@@ -51,7 +51,6 @@ export const CreateSwap = () => {
     fetchAndSetStarknetBalance,
     fetchAndSetSolanaBalance,
     fetchAndSetSuiBalance,
-    clearBalances,
   } = assetInfoStore();
 
   const { workingRPCs } = rpcStore();
@@ -86,7 +85,8 @@ export const CreateSwap = () => {
     if (
       isBitcoin(inputAsset.chain) ||
       isStarknet(inputAsset.chain) ||
-      isSolana(inputAsset.chain)
+      isSolana(inputAsset.chain) ||
+      isSui(inputAsset.chain)
     )
       return true;
     return WALLET_SUPPORTED_CHAINS[connector.id].includes(inputAsset.chain);
@@ -189,6 +189,8 @@ export const CreateSwap = () => {
       await fetchAndSetStarknetBalance(starknetAddress);
     if (isSolana(inputAsset.chain) && solanaAnchorProvider)
       await fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey);
+    if (isSui(inputAsset.chain) && currentAccount)
+      await fetchAndSetSuiBalance(currentAccount.address);
   }, [
     inputAsset,
     address,
