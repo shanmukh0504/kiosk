@@ -17,12 +17,12 @@
   "dependencies": {
     "@chainflip/sdk": "^1.8.3",
     "@coral-xyz/anchor": "^0.31.1",
-    "@gardenfi/core": "2.4.3-beta.3",
+    "@gardenfi/core": "2.4.3-beta.4",
     "@gardenfi/garden-book": "0.1.99",
-    "@gardenfi/orderbook": "2.4.3-beta.2",
-    "@gardenfi/react-hooks": "2.4.3-beta.3",
-    "@gardenfi/utils": "2.4.2",
-    "@gardenfi/wallet-connectors": "2.3.1",
+    "@gardenfi/orderbook": "2.4.3-beta.3",
+    "@gardenfi/react-hooks": "2.4.3-beta.4",
+    "@gardenfi/utils": "2.4.3-beta.1",
+    "@gardenfi/wallet-connectors": "2.3.3-beta.4",
     "@mysten/dapp-kit": "^0.17.2",
     "@mysten/wallet-standard": "^0.16.9",
     "@number-flow/react": "^0.5.9",
@@ -51,7 +51,7 @@
     "terser": "^5.39.2",
     "tw-colors": "^3.3.1",
     "vaul": "^1.1.0",
-    "viem": "^2.28.0",
+    "viem": "^2.33.1",
     "wagmi": "^2.12.5"
   },
   "devDependencies": {
