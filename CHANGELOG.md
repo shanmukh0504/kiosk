@@ -6,6 +6,10 @@
 
 - Brand refresh
 
+### Fixed
+
+- updated open-graph image in metadata
+
 ## [1.0.13]
 
 ### Added
