@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.14]
+
+### Fixed
+
+- Fixed formatAmount utility for larger values.
+
 ## [1.0.13]
 
 ### Added
