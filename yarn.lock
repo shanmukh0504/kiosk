@@ -542,13 +542,13 @@ __metadata:
   linkType: hard
 
 "@chainflip/utils@npm:^0.8.11":
-  version: 0.8.16
-  resolution: "@chainflip/utils@npm:0.8.16"
+  version: 0.8.17
+  resolution: "@chainflip/utils@npm:0.8.17"
   dependencies:
     "@date-fns/utc": "npm:^2.1.0"
     bignumber.js: "npm:^9.3.1"
     date-fns: "npm:4.1.0"
-  checksum: 10c0/ff8e5500b65eafef4e92c58762f9cf6f4880665c8e1e2f3249ad03c63748b7c8a7181b1c9a13e2c452be87235a0e13c775dffeb97cd891e4be54dc16421d9dbc
+  checksum: 10c0/f1ff64988fdcb8f79e942a1e2ba7de7fbb6a40ca5680ca68f57008b15195dfbd459e0ed1c1b671044364bcf0121053c8015176360b1d56cc6892fe8ddf86c8f9
   languageName: node
   linkType: hard
 
@@ -1063,7 +1063,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "@gardenfi/core@npm:2.4.3-beta.4":
   version: 2.4.3-beta.4
   resolution: "@gardenfi/core@npm:2.4.3-beta.4"
@@ -1074,15 +1073,6 @@ __metadata:
     "@mysten/signers": "npm:^0.3.4"
     "@mysten/sui": "npm:^1.37.1"
     "@mysten/wallet-standard": "npm:^0.16.9"
-=======
-"@gardenfi/core@npm:2.4.2-beta.1":
-  version: 2.4.2-beta.1
-  resolution: "@gardenfi/core@npm:2.4.2-beta.1"
-  dependencies:
-    "@coral-xyz/anchor": "npm:^0.30.1"
-    "@gardenfi/orderbook": "npm:2.4.2-beta.1"
-    "@gardenfi/utils": "npm:2.4.2"
->>>>>>> 1f8154d3ad234374908528270c872de7f5a56221
     "@solana/spl-token": "npm:^0.4.13"
     bignumber.js: "npm:^9.1.2"
     bip32: "npm:^4.0.0"
@@ -1093,17 +1083,13 @@ __metadata:
     tiny-secp256k1: "npm:^2.2.3"
     varuint-bitcoin: "npm:^1.1.2"
     yup: "npm:^1.4.0"
-<<<<<<< HEAD
   checksum: 10c0/249b298feeabfe04fd05a82e1bd56c9352756342b0115af6bbc9f11a26decf48698a2aae041ab8d97b413f250e31b29e30d6776ead622f4d8247d5ca4a34c492
-=======
-  checksum: 10c0/0aaaebf1cbbf3e51e069e687bd7ddb9a7ad266dbec05101e8bdf583664149e0e18a8db7c2692e2ea1f46528ff8650d167df6cfa4cd3338dc4236e3a7a9547a9a
->>>>>>> 1f8154d3ad234374908528270c872de7f5a56221
   languageName: node
   linkType: hard
 
-"@gardenfi/garden-book@npm:0.1.100":
-  version: 0.1.100
-  resolution: "@gardenfi/garden-book@npm:0.1.100"
+"@gardenfi/garden-book@npm:0.1.99":
+  version: 0.1.99
+  resolution: "@gardenfi/garden-book@npm:0.1.99"
   dependencies:
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^2.1.1"
@@ -1116,11 +1102,10 @@ __metadata:
   peerDependencies:
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 10c0/bbb870468c1502f821b3ea3a5f7e631f49c489f81ac3e483647fcc2c3df57f8383239ec30d98f97e0c58755421a051b85109baa76ee0949e5f58c54d373a9a55
+  checksum: 10c0/03bffbec62254c248f3619c0c4ebf5fcbb9883378567432c7a4ca720e59b643f8c985fc7634f94eabd741d046bfc5acbdf904e236d84c63764eb2162fbb3e538
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "@gardenfi/orderbook@npm:2.4.3-beta.3":
   version: 2.4.3-beta.3
   resolution: "@gardenfi/orderbook@npm:2.4.3-beta.3"
@@ -1158,32 +1143,6 @@ __metadata:
     jwt-decode: "npm:^4.0.0"
     tough-cookie: "npm:^5.1.2"
   checksum: 10c0/447d79b0df0368320c80df8e4213ae4650b3e110e0164337fddc1118a7711108e1ce31bf69c618bad8f3e320d494f2087eb927771eb674ec694119e48fb403a1
-=======
-"@gardenfi/orderbook@npm:2.4.2-beta.1":
-  version: 2.4.2-beta.1
-  resolution: "@gardenfi/orderbook@npm:2.4.2-beta.1"
-  dependencies:
-    "@coral-xyz/anchor": "npm:^0.30.1"
-    "@gardenfi/utils": "npm:2.4.2"
-    bufferutil: "npm:^4.0.8"
-    siwe: "npm:^2.1.4"
-    utf-8-validate: "npm:^6.0.3"
-    ws: "npm:^8.14.2"
-  checksum: 10c0/b0e576096e5ec5f28c1df2f71dd974052b34bb4d156729367ae97c99c8b2e7cf44f532f4215428442e35e83c557b74cf6254046b3837663f287552557f77bc02
-  languageName: node
-  linkType: hard
-
-"@gardenfi/react-hooks@npm:2.4.2-beta.1":
-  version: 2.4.2-beta.1
-  resolution: "@gardenfi/react-hooks@npm:2.4.2-beta.1"
-  dependencies:
-    "@gardenfi/core": "npm:2.4.2-beta.1"
-    "@gardenfi/orderbook": "npm:2.4.2-beta.1"
-    "@gardenfi/utils": "npm:2.4.2"
-    react: "npm:^18.3.1"
-    starknet: "npm:7.6.4"
-  checksum: 10c0/c2aec72b35e22b2841aea96e284318703ae882faa49258ed7e8f4e13e90332df577841847c8305a5503b54650bc1a12865a123ae738ae4835c6c679b02d1c522
->>>>>>> 1f8154d3ad234374908528270c872de7f5a56221
   languageName: node
   linkType: hard
 
@@ -1191,31 +1150,12 @@ __metadata:
   version: 2.3.3-beta.4
   resolution: "@gardenfi/wallet-connectors@npm:2.3.3-beta.4"
   dependencies:
-<<<<<<< HEAD
     "@gardenfi/core": "npm:2.4.3-beta.4"
     "@gardenfi/utils": "npm:2.4.3-beta.1"
-=======
-    "@peculiar/webcrypto": "npm:^1.5.0"
-    "@simplewebauthn/browser": "npm:^13.1.0"
-    fetch-cookie: "npm:^3.1.0"
-    jwt-decode: "npm:^4.0.0"
-    tough-cookie: "npm:^5.1.2"
-  checksum: 10c0/0e6a1dffe18517a4f41a8baaed1b1fee9c7312ca1b801d21c5f0b7fb9c502880a8e27553d7b2026451aa79074e14817e59954a01e2808dfaef59d7bb7359b0b4
-  languageName: node
-  linkType: hard
-
-"@gardenfi/wallet-connectors@npm:2.3.2-beta.2":
-  version: 2.3.2-beta.2
-  resolution: "@gardenfi/wallet-connectors@npm:2.3.2-beta.2"
-  dependencies:
-    "@gardenfi/core": "npm:2.4.2-beta.1"
-    "@gardenfi/utils": "npm:2.4.2"
->>>>>>> 1f8154d3ad234374908528270c872de7f5a56221
     axios: "npm:^1.7.9"
     bitcoinjs-lib: "npm:^6.1.7"
     react: "npm:^18.3.1"
     tiny-secp256k1: "npm:^2.2.3"
-<<<<<<< HEAD
   checksum: 10c0/ff5404758ae0e891c1a8ac731d47e5de9fbfd688618943c5f86342992ba0d05bfe637fdcee32d37d33c220b7b643ce100d962983c15f05c669a7f99c4471d6e2
   languageName: node
   linkType: hard
@@ -1229,9 +1169,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gql.tada/cli-utils@npm:1.7.0":
-  version: 1.7.0
-  resolution: "@gql.tada/cli-utils@npm:1.7.0"
+"@gql.tada/cli-utils@npm:1.7.1":
+  version: 1.7.1
+  resolution: "@gql.tada/cli-utils@npm:1.7.1"
   dependencies:
     "@0no-co/graphqlsp": "npm:^1.12.13"
     "@gql.tada/internal": "npm:1.0.8"
@@ -1247,7 +1187,7 @@ __metadata:
       optional: true
     "@gql.tada/vue-support":
       optional: true
-  checksum: 10c0/2e861dcaf153903aaea300dc25025b318caea081ecdcea486170872eeeb64a3a0d3a06b6e1a33e2c6c2ed0efc374bfe819ed74ba8009309db61517eebf405b89
+  checksum: 10c0/e1ab1e5c93bdfc9df24577eaa6ab77d0f287d5b5d850edc568def3a5d935a98723de543c62b3ba5e432b653ff97c9e8477d97563dc36c1eb39840776f89bc878
   languageName: node
   linkType: hard
 
@@ -1293,9 +1233,6 @@ __metadata:
   bin:
     proto-loader-gen-types: build/bin/proto-loader-gen-types.js
   checksum: 10c0/514a134a724b56d73d0a202b7e02c84479da21e364547bacb2f4995ebc0d52412a1a21653add9f004ebd146c1e6eb4bcb0b8846fdfe1bfa8a98ed8f3d203da4a
-=======
-  checksum: 10c0/87a708fea57ccb4d5a57248e5ff5fb2f8f1d6333674147212c459c43fa4cbceec9df69ff08a43508cbf2d5d386b23b7114d501d351e5aeebc16997fd25bc7d49
->>>>>>> 1f8154d3ad234374908528270c872de7f5a56221
   languageName: node
   linkType: hard
 
@@ -5053,38 +4990,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"@solana/web3.js@npm:^1.32.0":
+"@solana/web3.js@npm:^1.32.0, @solana/web3.js@npm:^1.36.0, @solana/web3.js@npm:^1.69.0, @solana/web3.js@npm:^1.91.4, @solana/web3.js@npm:^1.98.2":
   version: 1.98.4
   resolution: "@solana/web3.js@npm:1.98.4"
-  dependencies:
-    "@babel/runtime": "npm:^7.25.0"
-    "@noble/curves": "npm:^1.4.2"
-    "@noble/hashes": "npm:^1.4.0"
-    "@solana/buffer-layout": "npm:^4.0.1"
-    "@solana/codecs-numbers": "npm:^2.1.0"
-    agentkeepalive: "npm:^4.5.0"
-    bn.js: "npm:^5.2.1"
-    borsh: "npm:^0.7.0"
-    bs58: "npm:^4.0.1"
-    buffer: "npm:6.0.3"
-    fast-stable-stringify: "npm:^1.0.0"
-    jayson: "npm:^4.1.1"
-    node-fetch: "npm:^2.7.0"
-    rpc-websockets: "npm:^9.0.2"
-    superstruct: "npm:^2.0.2"
-  checksum: 10c0/73bf7b6b5b65c7f264587182bbfd65327775b4f3e4831750de6356f58858e57d49213098eec671650940bb7a9bbaa1f352e0710c4075f126d903d72ddddcbdbc
-  languageName: node
-  linkType: hard
-
-"@solana/web3.js@npm:^1.36.0, @solana/web3.js@npm:^1.69.0, @solana/web3.js@npm:^1.91.4, @solana/web3.js@npm:^1.98.2":
-  version: 1.98.2
-  resolution: "@solana/web3.js@npm:1.98.2"
-=======
-"@solana/web3.js@npm:^1.32.0, @solana/web3.js@npm:^1.36.0, @solana/web3.js@npm:^1.68.0, @solana/web3.js@npm:^1.69.0, @solana/web3.js@npm:^1.91.4, @solana/web3.js@npm:^1.98.2":
-  version: 1.98.4
-  resolution: "@solana/web3.js@npm:1.98.4"
->>>>>>> 1f8154d3ad234374908528270c872de7f5a56221
   dependencies:
     "@babel/runtime": "npm:^7.25.0"
     "@noble/curves": "npm:^1.4.2"
@@ -5413,11 +5321,11 @@ __metadata:
   linkType: hard
 
 "@swc/types@npm:^0.1.23":
-  version: 0.1.23
-  resolution: "@swc/types@npm:0.1.23"
+  version: 0.1.24
+  resolution: "@swc/types@npm:0.1.24"
   dependencies:
     "@swc/counter": "npm:^0.1.3"
-  checksum: 10c0/edbfe4a72257f40137e27b537bc17d47ccab28de7727471b859c00a1e67f5feac5e01e4b4e0a2365907ce024bb8c3de4b26b6260733e1b601094db54ae9b7477
+  checksum: 10c0/4ca95a338f070f48303e705996bacfc1219f606c45274bed4f6e3488b86b7b20397bd52792e58fdea0fa924fc939695b5eb5ff7f3ff4737382148fe6097e235a
   languageName: node
   linkType: hard
 
@@ -8031,11 +7939,11 @@ __metadata:
   linkType: hard
 
 "bare-url@npm:^2.1.0":
-  version: 2.1.6
-  resolution: "bare-url@npm:2.1.6"
+  version: 2.2.1
+  resolution: "bare-url@npm:2.2.1"
   dependencies:
     bare-path: "npm:^3.0.0"
-  checksum: 10c0/1ae8768d6e48c2ee46f7710d118ce8baae64d3f66bdc819831f1b50ea873201ae1d63306c4407115bc7963d968fef4d16879fc537a253d33aeeda30b8a0d0802
+  checksum: 10c0/37313c5fdcf75040d43bc1d8d2efaf60bdec7a9ba74fbc640ffeca7c4a9b226516293bc18b070c11d719b2a0c9ad12673a3e9861587fbb93406e79e9d1711722
   languageName: node
   linkType: hard
 
@@ -8833,24 +8741,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"chalk@npm:^5.3.0":
-  version: 5.5.0
-  resolution: "chalk@npm:5.5.0"
-  checksum: 10c0/23063b544f7c2fe57d25ff814807de561f8adfff72e4f0051051eaa606f772586470507ccd38d89166300eeaadb0164acde8bb8a0716a0f2d56ccdf3761d5e4f
-  languageName: node
-  linkType: hard
-
-"chalk@npm:^5.4.1":
-  version: 5.4.1
-  resolution: "chalk@npm:5.4.1"
-  checksum: 10c0/b23e88132c702f4855ca6d25cb5538b1114343e41472d5263ee8a37cccfccd9c4216d111e1097c6a27830407a1dc81fecdf2a56f2c63033d4dbbd88c10b0dcef
-=======
 "chalk@npm:^5.3.0, chalk@npm:^5.4.1":
   version: 5.5.0
   resolution: "chalk@npm:5.5.0"
   checksum: 10c0/23063b544f7c2fe57d25ff814807de561f8adfff72e4f0051051eaa606f772586470507ccd38d89166300eeaadb0164acde8bb8a0716a0f2d56ccdf3761d5e4f
->>>>>>> 1f8154d3ad234374908528270c872de7f5a56221
   languageName: node
   linkType: hard
 
@@ -9697,18 +9591,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-=======
-"dot-case@npm:^3.0.4":
-  version: 3.0.4
-  resolution: "dot-case@npm:3.0.4"
-  dependencies:
-    no-case: "npm:^3.0.4"
-    tslib: "npm:^2.0.3"
-  checksum: 10c0/5b859ea65097a7ea870e2c91b5768b72ddf7fa947223fd29e167bcdff58fe731d941c48e47a38ec8aa8e43044c8fbd15cd8fa21689a526bc34b6548197cd5b05
-  languageName: node
-  linkType: hard
-
 "dotenv@npm:^16.3.1":
   version: 16.6.1
   resolution: "dotenv@npm:16.6.1"
@@ -9716,7 +9598,6 @@ __metadata:
   languageName: node
   linkType: hard
 
->>>>>>> 1f8154d3ad234374908528270c872de7f5a56221
 "draggabilly@npm:^3.0.0":
   version: 3.0.0
   resolution: "draggabilly@npm:3.0.0"
@@ -9806,9 +9687,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.5.173":
-  version: 1.5.195
-  resolution: "electron-to-chromium@npm:1.5.195"
-  checksum: 10c0/48309745f0f222b18160176361c7e87d2e7ecb531e9a8cda688d4ef9d6a1caaa43373b9e48f78857d537f0a6e7826a65f8b2b0e758de166c8d16279477cfc6d2
+  version: 1.5.197
+  resolution: "electron-to-chromium@npm:1.5.197"
+  checksum: 10c0/2e48557a78bb17f1becdbcb4352ac570025cf7e304e5ad4657548a020c16646d1d5b00ffa149db3ebffb42a72981431305c566e7d7f971adaf5d15b9cb4c744a
   languageName: node
   linkType: hard
 
@@ -11010,13 +10891,13 @@ __metadata:
   linkType: hard
 
 "fs-extra@npm:^11.1.0":
-  version: 11.3.0
-  resolution: "fs-extra@npm:11.3.0"
+  version: 11.3.1
+  resolution: "fs-extra@npm:11.3.1"
   dependencies:
     graceful-fs: "npm:^4.2.0"
     jsonfile: "npm:^6.0.1"
     universalify: "npm:^2.0.0"
-  checksum: 10c0/5f95e996186ff45463059feb115a22fb048bdaf7e487ecee8a8646c78ed8fdca63630e3077d4c16ce677051f5e60d3355a06f3cd61f3ca43f48cc58822a44d0a
+  checksum: 10c0/61e5b7285b1ca72c68dfe1058b2514294a922683afac2a80aa90540f9bd85370763d675e3b408ef500077d355956fece3bd24b546790e261c3d3015967e2b2d9
   languageName: node
   linkType: hard
 
@@ -11090,7 +10971,6 @@ __metadata:
     "@chainflip/sdk": "npm:^1.8.3"
     "@coral-xyz/anchor": "npm:^0.31.1"
     "@eslint/js": "npm:^9.13.0"
-<<<<<<< HEAD
     "@gardenfi/core": "npm:2.4.3-beta.4"
     "@gardenfi/garden-book": "npm:0.1.99"
     "@gardenfi/orderbook": "npm:2.4.3-beta.3"
@@ -11099,14 +10979,6 @@ __metadata:
     "@gardenfi/wallet-connectors": "npm:2.3.3-beta.4"
     "@mysten/dapp-kit": "npm:^0.17.2"
     "@mysten/wallet-standard": "npm:^0.16.9"
-=======
-    "@gardenfi/core": "npm:2.4.2-beta.1"
-    "@gardenfi/garden-book": "npm:0.1.100"
-    "@gardenfi/orderbook": "npm:2.4.2-beta.1"
-    "@gardenfi/react-hooks": "npm:2.4.2-beta.1"
-    "@gardenfi/utils": "npm:2.4.2"
-    "@gardenfi/wallet-connectors": "npm:2.3.2-beta.2"
->>>>>>> 1f8154d3ad234374908528270c872de7f5a56221
     "@number-flow/react": "npm:^0.5.9"
     "@sentry/react": "npm:^9.41.0"
     "@sentry/vite-plugin": "npm:^4.0.2"
@@ -11396,19 +11268,19 @@ __metadata:
   linkType: hard
 
 "gql.tada@npm:^1.8.12":
-  version: 1.8.12
-  resolution: "gql.tada@npm:1.8.12"
+  version: 1.8.13
+  resolution: "gql.tada@npm:1.8.13"
   dependencies:
     "@0no-co/graphql.web": "npm:^1.0.5"
     "@0no-co/graphqlsp": "npm:^1.12.13"
-    "@gql.tada/cli-utils": "npm:1.7.0"
+    "@gql.tada/cli-utils": "npm:1.7.1"
     "@gql.tada/internal": "npm:1.0.8"
   peerDependencies:
     typescript: ^5.0.0
   bin:
     gql-tada: bin/cli.js
     gql.tada: bin/cli.js
-  checksum: 10c0/011c50a3e02e4b836ce69b01d5a523c1cf9526a031cd8f0d5e14a7505814381922f7ed3f21ae1b4508051fe1f868f1bd836bbea96fcec30c48cc383351a31d8e
+  checksum: 10c0/d8163f0d0122bc8c0ef6df9cc52f2a8c86c4a34d95f09c2120e78514975461ab307ad97da01a1998a953c441080e617be9e2d1b5c5cd788a647fef96cb62f0a3
   languageName: node
   linkType: hard
 
@@ -13376,11 +13248,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.9, node-fetch@npm:^2.7.0":
-=======
-"node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.7, node-fetch@npm:^2.7.0":
->>>>>>> 1f8154d3ad234374908528270c872de7f5a56221
+"node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.7, node-fetch@npm:^2.6.9, node-fetch@npm:^2.7.0":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
   dependencies:
@@ -13798,27 +13666,6 @@ __metadata:
     typescript:
       optional: true
   checksum: 10c0/15370d76f7e5fe1b06c5b9986bc709a8c433e4242660900b3d1adb2a56c8f762a2010a9166bdb95bdf531806cde7891911456c7ec8ba135fc232a5d5037ac673
-  languageName: node
-  linkType: hard
-
-"ox@npm:0.8.6":
-  version: 0.8.6
-  resolution: "ox@npm:0.8.6"
-  dependencies:
-    "@adraffy/ens-normalize": "npm:^1.11.0"
-    "@noble/ciphers": "npm:^1.3.0"
-    "@noble/curves": "npm:^1.9.1"
-    "@noble/hashes": "npm:^1.8.0"
-    "@scure/bip32": "npm:^1.7.0"
-    "@scure/bip39": "npm:^1.6.0"
-    abitype: "npm:^1.0.8"
-    eventemitter3: "npm:5.0.1"
-  peerDependencies:
-    typescript: ">=5.4.0"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 10c0/025c638966c6e569bb38a78a6f9f84bbeb9f5b0a594ef011ab3f81414edcaf5b20d9ea7d8f90471ddafdcb3f21c61f7a2255d35d2032e8daafbc8b20d98d27cf
   languageName: node
   linkType: hard
 
@@ -17494,34 +17341,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"viem@npm:>=2.23.11, viem@npm:>=2.29.0, viem@npm:^2.1.1, viem@npm:^2.21.1, viem@npm:^2.21.32, viem@npm:^2.21.35, viem@npm:^2.27.2, viem@npm:^2.31.7":
-  version: 2.33.1
-  resolution: "viem@npm:2.33.1"
-=======
-"viem@npm:>=2.23.11, viem@npm:>=2.29.0, viem@npm:^2.1.1, viem@npm:^2.21.1, viem@npm:^2.21.32, viem@npm:^2.21.35, viem@npm:^2.27.2, viem@npm:^2.28.0, viem@npm:^2.31.7":
-  version: 2.33.2
-  resolution: "viem@npm:2.33.2"
->>>>>>> 1f8154d3ad234374908528270c872de7f5a56221
-  dependencies:
-    "@noble/curves": "npm:1.9.2"
-    "@noble/hashes": "npm:1.8.0"
-    "@scure/bip32": "npm:1.7.0"
-    "@scure/bip39": "npm:1.6.0"
-    abitype: "npm:1.0.8"
-    isows: "npm:1.0.7"
-    ox: "npm:0.8.6"
-    ws: "npm:8.18.2"
-  peerDependencies:
-    typescript: ">=5.0.4"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 10c0/4b0cdbb322617897f71f6ffa9efc90f8cfad202f9a90d2275181db79e806a962f5d458e3d8b5f861a81e628c05b9a4ebf7853ebce26283291aec3f54a03a4df3
-  languageName: node
-  linkType: hard
-
-"viem@npm:^2.33.1":
+"viem@npm:>=2.23.11, viem@npm:>=2.29.0, viem@npm:^2.1.1, viem@npm:^2.21.1, viem@npm:^2.21.32, viem@npm:^2.21.35, viem@npm:^2.27.2, viem@npm:^2.31.7, viem@npm:^2.33.1":
   version: 2.33.2
   resolution: "viem@npm:2.33.2"
   dependencies:
@@ -18127,11 +17947,11 @@ __metadata:
   linkType: hard
 
 "yaml@npm:^2.3.4":
-  version: 2.8.0
-  resolution: "yaml@npm:2.8.0"
+  version: 2.8.1
+  resolution: "yaml@npm:2.8.1"
   bin:
     yaml: bin.mjs
-  checksum: 10c0/f6f7310cf7264a8107e72c1376f4de37389945d2fb4656f8060eca83f01d2d703f9d1b925dd8f39852a57034fafefde6225409ddd9f22aebfda16c6141b71858
+  checksum: 10c0/7c587be00d9303d2ae1566e03bc5bc7fe978ba0d9bf39cc418c3139d37929dfcb93a230d9749f2cb578b6aa5d9ebebc322415e4b653cb83acd8bc0bc321707f3
   languageName: node
   linkType: hard
 
