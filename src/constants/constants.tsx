@@ -41,6 +41,33 @@ export const INTERNAL_ROUTES: Record<
   // quests: { name: "Quests", path: "/quests" },
 } as const;
 
+export const EXTERNAL_ROUTES: Record<
+  string,
+  { name: string; path: string; enabled: boolean; isExternal?: boolean }
+> = {
+  docs: {
+    name: "Docs",
+    path: "https://docs.garden.finance/",
+    enabled: true,
+    isExternal: true,
+  },
+  blog: {
+    name: "Blog",
+    path: "https://garden.finance/blog",
+    enabled: true,
+    isExternal: true,
+  },
+  explorer: {
+    name: "Explorer",
+    path:
+      network === Network.TESTNET
+        ? "https://testnet-explorer.garden.finance/"
+        : "https://explorer.garden.finance/",
+    enabled: true,
+    isExternal: true,
+  },
+} as const;
+
 export const THEMES = {
   swap: "swap",
   quests: "quests",
@@ -144,6 +171,12 @@ export const routes = Object.entries(INTERNAL_ROUTES).filter(([key]) => {
   return INTERNAL_ROUTES[key].enabled;
 });
 
+export const externalRoutes = Object.entries(EXTERNAL_ROUTES).filter(
+  ([key]) => {
+    return EXTERNAL_ROUTES[key].enabled;
+  }
+);
+
 //if the wallet is not listed here, then it supports all chains
 export const WALLET_SUPPORTED_CHAINS: Record<string, Chain[]> = {
   "app.phantom": ["solana", "ethereum", "base", "bitcoin"],
@@ -172,10 +205,7 @@ export const WALLET_SUPPORTED_CHAINS: Record<string, Chain[]> = {
   ],
 };
 
-export enum BlockchainType {
-  Bitcoin = "Bitcoin",
-  EVM = "EVM",
-  Solana = "Solana",
-  Starknet = "Starknet",
-  Sui = "Sui",
-}
+export const SOCIAL_LINKS = {
+  discord: "https://discord.com/invite/dZwSjh9922",
+  x: "https://x.com/garden_finance",
+};

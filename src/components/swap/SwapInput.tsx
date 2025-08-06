@@ -18,7 +18,7 @@ import {
 import { modalNames, modalStore } from "../../store/modalStore";
 import { ErrorFormat } from "../../constants/errors";
 import NumberFlow from "@number-flow/react";
-import clsx from "clsx/lite";
+import clsx from "clsx";
 import { formatAmount } from "../../utils/utils";
 
 type SwapInputProps = {

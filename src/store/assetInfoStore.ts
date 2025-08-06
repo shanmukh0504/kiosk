@@ -38,6 +38,7 @@ import {
 import { Hex } from "viem";
 import { getSpendableBalance } from "../utils/getmaxBtc";
 import { getLegacyGasEstimate } from "../utils/getNativeTokenFee";
+import logger from "../utils/logger";
 
 export type Networks = {
   [chain in Chain]: ChainData & { assetConfig: Omit<AssetConfig, "chain">[] };
@@ -186,7 +187,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       }
       set({ allAssets, allChains, assets, chains });
     } catch (error) {
-      console.error("Failed to fetch assets data", error);
+      logger.error("failed to fetch assets data ❌", error);
       set({ error: "Failed to fetch assets data" });
     } finally {
       set({ isLoading: false });
@@ -308,7 +309,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
 
     address: string
   ) => {
-    const { assets, balances } = get();
+    const { assets } = get();
     if (!assets || !provider) return;
 
     try {
@@ -343,14 +344,14 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           {} as Record<string, BigNumber | undefined>
         );
 
-      set({ balances: { ...balances, ...btcBalance } });
+      set({ balances: { ...get().balances, ...btcBalance } });
     } catch {
       /*empty*/
     }
   },
 
   fetchAndSetStarknetBalance: async (address: string) => {
-    const { assets, balances } = get();
+    const { assets } = get();
     if (!assets) return;
 
     const starknetAsset = Object.values(assets).find((asset) =>
@@ -367,35 +368,36 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       starknetAsset.tokenAddress
     );
     starknetBalance[orderPair] = new BigNumber(balance);
-    set({ balances: { ...balances, ...starknetBalance } });
+    set({ balances: { ...get().balances, ...starknetBalance } });
   },
 
   fetchAndSetSolanaBalance: async (address: PublicKey) => {
-    const { assets, balances } = get();
+    const { assets } = get();
     if (!assets) return;
 
-    const solanaAsset = Object.values(assets).find((asset) =>
+    const solanaAssets = Object.values(assets).filter((asset) =>
       isSolana(asset.chain)
     );
 
-    if (!solanaAsset) return;
+    if (!solanaAssets.length) return;
     const solanaBalance: Record<string, BigNumber | undefined> = {};
 
-    const balance = await getSolanaTokenBalance(address, solanaAsset);
-    const orderPair = getOrderPair(solanaAsset.chain, solanaAsset.tokenAddress);
+    for (const asset of solanaAssets) {
+      const balance = await getSolanaTokenBalance(address, asset);
+      const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
 
-    if (isSolanaNativeToken(solanaAsset.chain, solanaAsset.tokenAddress)) {
-      const gas = 0.00380608;
-      solanaBalance[orderPair] = new BigNumber(
-        Math.max(0, Number((Number(balance) - gas).toFixed(8)))
-      );
-    } else solanaBalance[orderPair] = new BigNumber(balance);
-
-    set({ balances: { ...balances, ...solanaBalance } });
+      if (isSolanaNativeToken(asset.chain, asset.tokenAddress)) {
+        const gas = 0.00380608;
+        solanaBalance[orderPair] = new BigNumber(
+          Math.max(0, Number((Number(balance) - gas).toFixed(8)))
+        );
+      } else solanaBalance[orderPair] = new BigNumber(balance);
+    }
+    set({ balances: { ...get().balances, ...solanaBalance } });
   },
 
   fetchAndSetSuiBalance: async (address: string) => {
-    const { assets, balances } = get();
+    const { assets } = get();
     if (!assets) return;
 
     const suiAsset = Object.values(assets).find((asset) => isSui(asset.chain));
@@ -406,7 +408,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     const balance = await getSuiTokenBalance(address, suiAsset);
     const orderPair = getOrderPair(suiAsset.chain, suiAsset.tokenAddress);
     suiBalance[orderPair] = new BigNumber(balance);
-    set({ balances: { ...balances, ...suiBalance } });
+    set({ balances: { ...get().balances, ...suiBalance } });
   },
 
   clearBalances: () =>

@@ -60,13 +60,14 @@ export const getDayDifference = (date: string) => {
 export const formatAmount = (
   amount: string | number | bigint,
   decimals: number,
-  toFixed = 4
+  toFixed?: number
 ) => {
   const bigAmount = new BigNumber(amount);
   if (bigAmount.isZero()) return 0;
 
   const value = bigAmount.dividedBy(10 ** decimals);
-  let temp = value.toFixed(toFixed, BigNumber.ROUND_DOWN);
+  const precision = toFixed ? toFixed : (Number(value) > 10000 ? 2 : 4);
+  let temp = value.toFixed(precision, BigNumber.ROUND_DOWN);
 
   while (
     temp

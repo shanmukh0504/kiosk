@@ -27,6 +27,7 @@ import { WalletWithRequiredFeatures as SuiWallet } from "@mysten/wallet-standard
 import { Connector as StarknetConnector } from "@starknet-react/core";
 import { useSuiWallet } from "../../../hooks/useSuiWallet";
 import { BlockchainType } from "@gardenfi/orderbook";
+import logger from "../../../utils/logger";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -206,7 +207,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         if (!connector.wallet?.btcWallet) return;
         const res = await connect(connector.wallet.btcWallet);
         if (res.error) {
-          console.log("error connecting wallet", res.error);
+          logger.error("error connecting wallet", res.error);
         }
       } else if (connector.isEVM) {
         if (!connector.wallet?.evmWallet) return;
@@ -239,7 +240,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                 }
               }
             } catch (error) {
-              console.error("Error getting MetaMask version:", error);
+              logger.error("Error getting MetaMask version:", error);
             }
           }
         }
@@ -268,7 +269,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         setConnectingWallet(null);
       }
     } catch (error) {
-      console.error("Error connecting wallet:", error);
+      logger.error("Error connecting wallet:", error);
       await solanaDisconnect();
     } finally {
       setConnectingWallet(null);

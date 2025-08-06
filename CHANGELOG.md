@@ -10,7 +10,28 @@
 
 ### Fixed
 
+- Fixed formatAmount utility for larger values.
 - Max spendable balance for Evm chains.
+
+## [1.0.13]
+
+### Added
+
+- Added Sentry for error tracking.
+
+### Fixed
+
+- Fixed sidebar menu and notification in mobile view.
+
+## [1.0.12]
+
+### Added
+
+- Added support for solana spl tokens.
+
+### Fixed
+
+- Fetch balance on mount.
 
 ## [1.0.12]
 

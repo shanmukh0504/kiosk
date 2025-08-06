@@ -50,13 +50,7 @@ const ConnectedWallets = () => {
     } else {
       setPendingOrders([]);
     }
-  }, [
-    cleanupDeletedOrders,
-    isOrderDeleted,
-    pendingOrders,
-    isOrderExpired,
-    setPendingOrders,
-  ]);
+  }, [cleanupDeletedOrders, isOrderDeleted, pendingOrders, setPendingOrders]);
 
   return (
     <>

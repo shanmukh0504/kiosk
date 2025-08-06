@@ -20,6 +20,7 @@ import { RpcProvider, Contract } from "starknet";
 import { STARKNET_CONFIG } from "@gardenfi/core";
 import { network } from "../constants/constants";
 import { Connection, PublicKey } from "@solana/web3.js";
+import logger from "./logger";
 
 const erc20ABI = [
   {
@@ -83,7 +84,10 @@ export const getSolanaTokenBalance = async (
     try {
       tokenMint = new PublicKey(asset.tokenAddress);
     } catch (err) {
-      console.error("Invalid token mint address:", asset.tokenAddress, err);
+      logger.error("Invalid token mint address", {
+        address: asset.tokenAddress,
+        error: err,
+      });
       return 0;
     }
 
@@ -97,7 +101,7 @@ export const getSolanaTokenBalance = async (
     );
     return formatAmount(balance.value.amount, balance.value.decimals, 8);
   } catch (error) {
-    console.error("Error fetching Solana token balance:", error);
+    logger.error("Error fetching Solana token balance:", error);
     return 0;
   }
 };
@@ -135,7 +139,7 @@ export const getStarknetTokenBalance = async (
     );
     return balanceInDecimals;
   } catch (error) {
-    console.error("Error fetching Starknet balance:", error);
+    logger.error("Error fetching Starknet balance:", error);
     return 0;
   }
 };
@@ -199,7 +203,7 @@ export const getTokenBalance = async (address: string, asset: Asset) => {
 
     return balanceInDecimals;
   } catch (e) {
-    console.log(e);
+    logger.error("Error fetching token balance:", e);
     return 0;
   }
 };
@@ -227,7 +231,8 @@ export const getNativeBalance = async (address: string, asset: Asset) => {
     const balanceInDecimals = formatAmount(balance, asset.decimals, 8);
 
     return balanceInDecimals;
-  } catch {
+  } catch (error) {
+    logger.error("Error fetching native balance:", error);
     return 0;
   }
 };
