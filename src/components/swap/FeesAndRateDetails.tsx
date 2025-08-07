@@ -218,8 +218,7 @@ export const FeesAndRateDetails = () => {
                         "Free"
                       ) : (
                         <span className="flex items-center">
-                          <span className="font-sans">$</span>
-                          {formatAmount(fallbackNetworkFees, 0, 2)}
+                          ${formatAmount(fallbackNetworkFees, 0, 2)}
                         </span>
                       )}
                     </Typography>
