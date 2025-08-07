@@ -69,7 +69,7 @@ export const InputAddress = () => {
               <input
                 ref={inputRef}
                 className={`w-full outline-none placeholder:text-mid-grey ${
-                  !isValidBitcoinAddress ? "text-red-600" : ""
+                  !isValidBitcoinAddress ? "text-error-red" : ""
                 }`}
                 type="text"
                 value={displayAddress}

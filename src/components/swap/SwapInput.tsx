@@ -181,7 +181,11 @@ export const SwapInput: FC<SwapInputProps> = ({
           </div>
           {type === IOType.input &&
             (error ? (
-              <Typography size="h5" weight="regular" className="!text-red-500">
+              <Typography
+                size="h5"
+                weight="regular"
+                className="!text-error-red"
+              >
                 {error}
               </Typography>
             ) : balance !== undefined && !Number.isNaN(balance) ? (
@@ -199,7 +203,11 @@ export const SwapInput: FC<SwapInputProps> = ({
             ))}
           {type === IOType.output &&
             (error ? (
-              <Typography size="h5" weight="regular" className="!text-red-500">
+              <Typography
+                size="h5"
+                weight="regular"
+                className="!text-error-red"
+              >
                 {error}
               </Typography>
             ) : (
