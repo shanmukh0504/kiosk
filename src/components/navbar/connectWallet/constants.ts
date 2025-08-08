@@ -132,7 +132,7 @@ export const GardenSupportedWallets: Record<
     {
       Bitcoin: network === Network.MAINNET,
       EVM: true,
-      Sui: true,
+      Sui: network === Network.MAINNET,
     }
   ),
   unisat: createWallet(
