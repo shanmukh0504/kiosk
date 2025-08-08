@@ -144,15 +144,19 @@ export const OrderStatus: FC<OrderStatusProps> = ({
             <div className="mt-2 flex items-center justify-between">
               {currentStatus === SimplifiedOrderStatus.depositDetected ? (
                 <div className="flex gap-3">
-                  <Typography size="h3" weight="medium">
+                  <Typography
+                    size="h3"
+                    weight="medium"
+                    className="!leading-5"
+                  >
                     {currentStatus}
                   </Typography>
-                  <Typography size="h3" weight="regular">
+                  <Typography size="h3" weight="medium" className="my-auto">
                     {confirmationString}
                   </Typography>
                 </div>
               ) : (
-                <Typography size="h3" weight="medium">
+                <Typography size="h3" weight="medium" className="!leading-5">
                   {currentStatus}
                 </Typography>
               )}
