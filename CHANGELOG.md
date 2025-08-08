@@ -9,6 +9,9 @@
 ### Fixed
 
 - updated open-graph image in metadata
+- Fixed competitor comparisons screen
+- Fixed redirect url for explorer
+- Fixed status label for awaiting deposit
 
 ## [1.0.13]
 
