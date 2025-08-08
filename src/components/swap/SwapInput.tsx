@@ -294,7 +294,11 @@ export const SwapInput: FC<SwapInputProps> = ({
             <TokenInfo
               symbol={asset.symbol}
               tokenLogo={asset.logo}
-              chainLogo={network && network.networkLogo}
+              chainLogo={
+                asset.chain !== asset.name.toLowerCase() &&
+                network &&
+                network.networkLogo
+              }
               onClick={handleOpenAssetSelector}
             />
           ) : (

@@ -2,22 +2,16 @@ import {
   CloseIcon,
   GradientScroll,
   SearchIcon,
+  TokenNetworkLogos,
   Typography,
 } from "@gardenfi/garden-book";
 import BigNumber from "bignumber.js";
 import { FC, useState, ChangeEvent, useEffect, useMemo, useRef } from "react";
-import {
-  Asset,
-  isBitcoin,
-  isStarknet,
-  isSolana,
-  isSolanaNativeToken,
-} from "@gardenfi/orderbook";
+import { Asset, isStarknet, isSolana } from "@gardenfi/orderbook";
 import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { BTC, swapStore } from "../../store/swapStore";
 import { IOType, network } from "../../constants/constants";
 import { constructOrderPair } from "@gardenfi/core";
-import { AssetChainLogos } from "../../common/AssetChainLogos";
 import { modalStore } from "../../store/modalStore";
 import { ChainsTooltip } from "./ChainsTooltip";
 import { AvailableChainsSidebar } from "./AvailableChainsSidebar";
@@ -123,11 +117,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         })
         .filter((asset) => !chain || asset.chain === chain.identifier)
         .map((asset) => {
-          const network =
-            !isBitcoin(asset.chain) &&
-            !isSolanaNativeToken(asset.chain, asset.tokenAddress)
-              ? chains?.[asset.chain]
-              : undefined;
+          const network = chains?.[asset.chain];
           const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
           const balance = balances?.[orderPair];
           const fiatRate = fiatData?.[getAssetChainHTLCAddressPair(asset)] ?? 0;
@@ -393,7 +383,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                       >
                         <div className="flex w-full items-center gap-2">
                           <div className={`w-10`}>
-                            <AssetChainLogos
+                            <TokenNetworkLogos
                               tokenLogo={asset.logo}
                               chainLogo={network?.networkLogo}
                             />

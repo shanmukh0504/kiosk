@@ -9,6 +9,10 @@
 ### Fixed
 
 - updated open-graph image in metadata
+- Fixed competitor comparisons screen
+- Fixed redirect url for explorer
+- Fixed status label for awaiting deposit
+- Fixed Swap button's bg color on quote refreshes
 
 ## [1.0.13]
 

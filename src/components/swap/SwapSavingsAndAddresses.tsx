@@ -13,8 +13,6 @@ import { AddressDetails } from "./AddressDetails";
 import { swapStore } from "../../store/swapStore";
 
 type SwapSavingsProps = {
-  timeSaved: number;
-  costSaved: number;
   refundAddress: string | undefined;
   receiveAddress: string | undefined;
   showComparison: (type: "time" | "fees") => void;
@@ -22,14 +20,12 @@ type SwapSavingsProps = {
 };
 
 export const SwapSavingsAndAddresses = ({
-  timeSaved,
-  costSaved,
   refundAddress,
   receiveAddress,
   showComparison,
   networkFeesValue,
 }: SwapSavingsProps) => {
-  const { outputAsset, outputAmount } = swapStore();
+  const { outputAsset, outputAmount, maxTimeSaved, maxCostSaved } = swapStore();
 
   return (
     <motion.div className="flex flex-col" {...expandWithDelayAnimation}>
@@ -94,10 +90,10 @@ export const SwapSavingsAndAddresses = ({
         )}
       </div>
       <AnimatePresence mode="wait">
-        {(timeSaved > 0 || costSaved > 0) && (
+        {(maxTimeSaved > 0 || maxCostSaved > 0) && (
           <motion.div {...expandAnimation}>
             <div className="z-10" {...expandAnimation}></div>
-            {timeSaved > 0 && (
+            {maxTimeSaved > 0 && (
               <motion.div
                 key="time-saved"
                 {...expandAnimation}
@@ -121,16 +117,16 @@ export const SwapSavingsAndAddresses = ({
                     <Typography
                       size="h4"
                       weight="regular"
-                      className="!text-light-green"
+                      className=" !text-light-green"
                     >
-                      {formatTime(timeSaved)}
+                      {formatTime(maxTimeSaved)}
                     </Typography>
                   </div>
                 </div>
               </motion.div>
             )}
 
-            {costSaved > 0 && (
+            {maxCostSaved > 0 && (
               <motion.div
                 key="cost-saved"
                 {...expandAnimation}
@@ -150,13 +146,13 @@ export const SwapSavingsAndAddresses = ({
                   >
                     Cost saved
                   </Typography>
-                  <div className="flex gap-5 pt-1">
+                  <div className="flex gap-5">
                     <Typography
                       size="h4"
                       weight="regular"
                       className="!text-light-green"
                     >
-                      {`$${formatAmount(costSaved, 0, 2).toFixed(2)}`}
+                      {`$${formatAmount(maxCostSaved, 0, 2)}`}
                     </Typography>
                   </div>
                 </div>

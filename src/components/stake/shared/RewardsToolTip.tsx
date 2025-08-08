@@ -1,4 +1,4 @@
-import { AssetChainLogos, Typography } from "@gardenfi/garden-book";
+import { TokenNetworkLogos, Typography } from "@gardenfi/garden-book";
 import { motion } from "framer-motion";
 import { STAKE_REWARD } from "../constants";
 import { Url } from "@gardenfi/utils";
@@ -44,7 +44,7 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
             >
               cbBTC
             </Typography>
-            <AssetChainLogos
+            <TokenNetworkLogos
               tokenLogo={STAKE_REWARD.CBBTC.TOKEN_LOGO}
               chainLogo={STAKE_REWARD.CBBTC.CHAIN_LOGO}
               className="scale-[0.8054]"
@@ -67,7 +67,7 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
             >
               SEED
             </Typography>
-            <AssetChainLogos
+            <TokenNetworkLogos
               tokenLogo={STAKE_REWARD.SEED.TOKEN_LOGO}
               chainLogo={STAKE_REWARD.SEED.CHAIN_LOGO}
               className="scale-[0.8054]"
