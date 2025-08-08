@@ -1,8 +1,11 @@
-import { ArrowRightIcon, Typography } from "@gardenfi/garden-book";
+import {
+  ArrowRightIcon,
+  TokenNetworkLogos,
+  Typography,
+} from "@gardenfi/garden-book";
 import { Asset } from "@gardenfi/orderbook";
 import { FC } from "react";
 import { assetInfoStore } from "../store/assetInfoStore";
-import { AssetChainLogos } from "./AssetChainLogos";
 
 type SwapInfoProps = {
   sendAsset: Asset;
@@ -31,13 +34,9 @@ export const SwapInfo: FC<SwapInfoProps> = ({
         <Typography size="h3" weight="regular">
           {sendAmount}
         </Typography>
-        <AssetChainLogos
+        <TokenNetworkLogos
           tokenLogo={sendAsset.logo}
-          chainLogo={
-            sendAsset.chain.includes(sendAsset.name.toLowerCase())
-              ? ""
-              : sendChain?.networkLogo
-          }
+          chainLogo={sendChain?.networkLogo}
         />
       </div>
       <ArrowRightIcon className={equalSplit ? "" : "h-5 w-9"} />
@@ -47,13 +46,9 @@ export const SwapInfo: FC<SwapInfoProps> = ({
         <Typography size="h3" weight="regular">
           {receiveAmount}
         </Typography>
-        <AssetChainLogos
+        <TokenNetworkLogos
           tokenLogo={receiveAsset.logo}
-          chainLogo={
-            receiveChain?.networkLogo === receiveAsset.logo
-              ? ""
-              : receiveChain?.networkLogo
-          }
+          chainLogo={receiveChain?.networkLogo}
         />
       </div>
     </div>
