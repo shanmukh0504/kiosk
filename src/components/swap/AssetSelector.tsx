@@ -118,7 +118,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         .filter((asset) => !chain || asset.chain === chain.identifier)
         .map((asset) => {
           const network =
-            asset.chain === asset.name.toLowerCase()
+            asset.chain.includes(asset.name.toLowerCase())
               ? undefined
               : chains?.[asset.chain];
           const orderPair = getOrderPair(asset.chain, asset.tokenAddress);

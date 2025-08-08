@@ -34,7 +34,7 @@ export const SwapInfo: FC<SwapInfoProps> = ({
         <AssetChainLogos
           tokenLogo={sendAsset.logo}
           chainLogo={
-            sendAsset.chain === sendAsset.name.toLowerCase()
+            sendAsset.chain.includes(sendAsset.name.toLowerCase())
               ? ""
               : sendChain?.networkLogo
           }
