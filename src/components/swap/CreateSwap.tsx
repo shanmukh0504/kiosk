@@ -393,7 +393,7 @@ export const CreateSwap = () => {
             </div>
             <InputAddressAndFeeRateDetails />
             <Button
-              className="mt-3 transition-colors duration-500"
+              className={`mt-3 transition-colors duration-500 ${loadingDisabled ? '!bg-rose !text-white' : ""}`}
               variant={buttonVariant}
               size="lg"
               onClick={
