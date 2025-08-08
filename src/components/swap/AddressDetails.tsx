@@ -1,4 +1,4 @@
-import { Chain, isBitcoin } from "@gardenfi/orderbook";
+import { isBitcoin } from "@gardenfi/orderbook";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { FC, useId, useMemo } from "react";
 import { assetInfoStore } from "../../store/assetInfoStore";
@@ -6,6 +6,7 @@ import { ArrowNorthEastIcon, EditIcon } from "@gardenfi/garden-book";
 import { Typography } from "@gardenfi/garden-book";
 import { Tooltip } from "../../common/Tooltip";
 import { swapStore } from "../../store/swapStore";
+import { Url } from "@gardenfi/utils";
 
 type AddressDetailsProps = {
   isRefund?: boolean;
@@ -31,11 +32,10 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
     return allChains && chain ? allChains[chain] : null;
   }, [allChains, chain]);
 
-  const handleAddressRedirect = (address: string, chain: Chain) => {
+  const handleAddressRedirect = (address: string) => {
     if (!redirect) return;
-    if (isBitcoin(chain))
-      window.open(redirect.explorer + "address/" + address, "_blank");
-    else window.open(redirect.explorer + "/address/" + address, "_blank");
+    const url = new Url("address", redirect.explorer).endpoint(address);
+    window.open(url, "_blank");
   };
 
   return (
@@ -49,7 +49,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
           }`}
           onClick={(e) => {
             e.stopPropagation();
-            handleAddressRedirect(address, chain);
+            handleAddressRedirect(address);
           }}
         >
           <Typography
