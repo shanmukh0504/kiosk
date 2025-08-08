@@ -133,7 +133,7 @@ export const CompetitorComparisons: FC<CompetitorComparisonsProps> = ({
                   </Typography>
                 </div>
                 {isTime && (
-                  <div className="flex gap-6">
+                  <div className="flex gap-2 sm:gap-6">
                     {key !== "garden" && (
                       <Typography
                         className="!text-rose"
@@ -153,7 +153,7 @@ export const CompetitorComparisons: FC<CompetitorComparisonsProps> = ({
                   </div>
                 )}
                 {isFees && (
-                  <div className="flex gap-6">
+                  <div className="flex gap-2 sm:gap-6">
                     {key !== "garden" && (
                       <Typography
                         className="!text-rose"
