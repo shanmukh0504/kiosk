@@ -118,7 +118,7 @@ export const CreateSwap = () => {
   ]);
 
   const buttonDisabled = useMemo(() => {
-    return !!error.liquidityError || loadingDisabled
+    return !!error.liquidityError
       ? true
       : needsWalletConnection
         ? false
@@ -132,8 +132,7 @@ export const CreateSwap = () => {
     isSwapping,
     validSwap,
     error.liquidityError,
-    needsWalletConnection,
-    loadingDisabled,
+    needsWalletConnection
   ]);
 
   const buttonVariant = useMemo(() => {
@@ -393,9 +392,10 @@ export const CreateSwap = () => {
             </div>
             <InputAddressAndFeeRateDetails />
             <Button
-              className={`mt-3 transition-colors duration-500 ${loadingDisabled ? "!bg-rose !text-white" : ""}`}
+              className={`mt-3 transition-colors duration-500`}
               variant={buttonVariant}
               size="lg"
+              disabled={buttonDisabled || loadingDisabled}
               onClick={
                 needsWalletConnection ? handleConnectWallet : handleSwapClick
               }
