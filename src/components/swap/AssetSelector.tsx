@@ -140,7 +140,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           const formattedBalance =
             balance && asset && balance.toNumber() === 0
               ? ""
-              : balance && !isStarknet(asset.chain) && !isSolana(asset.chain)
+              : balance && !isStarknet(asset.chain) && !isSolana(asset.chain) && !isSui(asset.chain)
                 ? new BigNumber(balance)
                     .dividedBy(10 ** asset.decimals)
                     .toNumber()
@@ -159,6 +159,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         })
     );
   }, [results, orderedChains, chains, chain, balances, fiatData]);
+
+  console.log("sortedResults", sortedResults);
   const isAnyWalletConnected =
     !!address ||
     !!btcAddress ||
