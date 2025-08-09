@@ -115,6 +115,7 @@ export const GardenSupportedWallets: Record<
       EVM: network === Network.MAINNET,
       Bitcoin: true,
       Solana: true,
+      Sui: true,
     }
   ),
   "com.coinbase.wallet": createWallet(
