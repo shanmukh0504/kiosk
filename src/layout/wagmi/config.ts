@@ -17,9 +17,21 @@ import {
   monadTestnet,
   Chain,
   corn,
+  bscTestnet,
 } from "wagmi/chains";
 
 import { injected, metaMask, coinbaseWallet } from "wagmi/connectors";
+
+declare global {
+  interface Window {
+    leap?: {
+      ethereum?: any;
+    };
+    keplr?: {
+      ethereum?: any;
+    };
+  }
+}
 
 export const hyperliquidTestnet: Chain = {
   id: 998,
@@ -82,7 +94,30 @@ export const SupportedChains = [
   hyperliquid,
   corn,
   botanix,
+  bscTestnet,
 ] as const;
+
+export const leapConnector = injected({
+  target() {
+    return {
+      id: "leap",
+      name: "Leap Wallet",
+      provider:
+        typeof window !== "undefined" ? window.leap?.ethereum : undefined,
+    };
+  },
+});
+
+export const KeplrConnector = injected({
+  target() {
+    return {
+      id: "keplr",
+      name: "Keplr",
+      provider:
+        typeof window !== "undefined" ? window.keplr?.ethereum : undefined,
+    };
+  },
+});
 
 export const config = createConfig({
   chains: SupportedChains,
@@ -93,6 +128,8 @@ export const config = createConfig({
       appName: "Garden Finance",
       appLogoUrl: "https://garden-finance.imgix.net/token-images/seed.svg",
     }),
+    leapConnector,
+    KeplrConnector,
   ],
   transports: {
     [mainnet.id]: http(),
@@ -113,5 +150,6 @@ export const config = createConfig({
     [hyperliquid.id]: http(),
     [corn.id]: http(),
     [botanix.id]: http(),
+    [bscTestnet.id]: http(),
   },
 });

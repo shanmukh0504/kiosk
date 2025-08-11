@@ -1,40 +1,59 @@
-import { useEffect, useState } from "react";
-import { BitcoinNetwork } from "@catalogfi/wallets";
-import { calculateNetworkFees } from "../utils/getNetworkFees";
+import { useEffect } from "react";
+import { constructOrderPair } from "@gardenfi/core";
+import { calculateBitcoinNetworkFees } from "../utils/getNetworkFees";
 import { formatAmount } from "../utils/utils";
-import { Asset } from "@gardenfi/orderbook";
+import { isBitcoin } from "@gardenfi/orderbook";
+import { assetInfoStore } from "../store/assetInfoStore";
+import { swapStore } from "../store/swapStore";
+import { getBitcoinNetwork } from "../constants/constants";
+import logger from "../utils/logger";
 
-export const useNetworkFees = (
-  network: BitcoinNetwork,
-  outputAsset?: Asset
-) => {
-  const [networkFeesValue, setNetworkFeesValue] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState(false);
+export const useNetworkFees = () => {
+  const { strategies } = assetInfoStore();
+  const { setNetworkFees, setIsNetworkFeesLoading, inputAsset, outputAsset } =
+    swapStore();
+
+  const network = getBitcoinNetwork();
 
   useEffect(() => {
-    let intervalId: number | null = null;
+    if (!inputAsset || !outputAsset || !strategies.val) return;
+
     const fetchNetworkFees = async () => {
-      setIsLoading(true);
+      if (!strategies.val) return;
+
+      setIsNetworkFeesLoading(true);
       try {
-        const fees = await calculateNetworkFees(network, outputAsset);
-        setNetworkFeesValue(formatAmount(fees, 0, 2));
+        const strategy =
+          strategies.val[
+            constructOrderPair(
+              inputAsset.chain,
+              inputAsset.atomicSwapAddress,
+              outputAsset.chain,
+              outputAsset.atomicSwapAddress
+            )
+          ];
+        if (isBitcoin(inputAsset.chain) || isBitcoin(outputAsset.chain)) {
+          const fees = await calculateBitcoinNetworkFees(
+            network,
+            isBitcoin(inputAsset.chain) ? inputAsset : outputAsset
+          );
+          setNetworkFees(formatAmount(fees + strategy.fixed_fee, 0));
+        } else {
+          setNetworkFees(formatAmount(strategy.fixed_fee, 0));
+        }
       } catch (error) {
-        console.error(error);
-        setNetworkFeesValue(0);
+        logger.error("failed to fetch network fees ❌", error);
+        setNetworkFees(0);
       } finally {
-        setIsLoading(false);
+        setIsNetworkFeesLoading(false);
       }
     };
     fetchNetworkFees();
 
-    intervalId = window.setInterval(fetchNetworkFees, 15000);
+    const intervalId = setInterval(fetchNetworkFees, 15000);
 
     return () => {
-      if (intervalId) window.clearInterval(intervalId);
+      clearInterval(intervalId);
     };
-  }, [network, outputAsset]);
-  return {
-    networkFeesValue,
-    isLoading,
-  };
+  }, [network, inputAsset, outputAsset, strategies.val]);
 };

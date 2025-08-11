@@ -6,6 +6,7 @@ import { assetInfoStore } from "../store/assetInfoStore";
 import { getAssetFromSwap } from "../utils/utils";
 import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
+import { Toast } from "../components/toast/Toast";
 
 export enum SimplifiedOrderStatus {
   orderCreated = "Order created",
@@ -17,6 +18,7 @@ export enum SimplifiedOrderStatus {
   swapCompleted = "Swap completed",
   Refunded = "Refund completed",
   AwaitingRefund = "Awaiting refund",
+  Expired = "Expired",
 }
 
 export const STATUS_MAPPING: Record<string, SimplifiedOrderStatus> = {
@@ -32,29 +34,33 @@ type Status = {
 };
 
 export type OrderProgress = {
-  readonly [key in 1 | 2 | 3 | 4]: Status;
+  readonly [key in 1 | 2 | 3 | 4]?: Status;
 };
 
 export const useOrderStatus = () => {
   const { orderBook } = useGarden();
-  const { blockNumbers } = blockNumberStore();
+  const { fetchAndSetBlockNumbers } = blockNumberStore();
   const { assets } = assetInfoStore();
-  const { order, setOrder } = orderInProgressStore();
+  const { order: orderInProgress, setOrder } = orderInProgressStore();
   const { pendingOrders } = pendingOrdersStore();
 
-  const outputAsset = order && getAssetFromSwap(order.destination_swap, assets);
+  const outputAsset =
+    orderInProgress &&
+    getAssetFromSwap(orderInProgress.destination_swap, assets);
 
   const confirmationsString = useMemo(() => {
-    return order && order.status === OrderStatus.InitiateDetected
+    return orderInProgress &&
+      orderInProgress.status === OrderStatus.InitiateDetected
       ? "0" + "/" + "1"
       : "";
-  }, [order]);
+  }, [orderInProgress]);
 
   const viewableStatus =
-    (order?.status && STATUS_MAPPING[order?.status]) || null;
+    (orderInProgress?.status && STATUS_MAPPING[orderInProgress?.status]) ||
+    null;
 
   const orderProgress: OrderProgress | undefined = useMemo(() => {
-    switch (order?.status) {
+    switch (orderInProgress?.status) {
       case OrderStatus.Created:
         return {
           1: { title: SimplifiedOrderStatus.orderCreated, status: "completed" },
@@ -190,7 +196,7 @@ export const useOrderStatus = () => {
       case OrderStatus.CounterPartyRedeemDetected:
       case OrderStatus.CounterPartyRedeemed:
       case OrderStatus.Completed:
-        if (!order.source_swap.refund_tx_hash) {
+        if (!orderInProgress.source_swap.refund_tx_hash) {
           return {
             1: {
               title: SimplifiedOrderStatus.orderCreated,
@@ -229,50 +235,90 @@ export const useOrderStatus = () => {
             },
           };
         }
+      case OrderStatus.Expired:
+        return {
+          1: {
+            title: SimplifiedOrderStatus.orderCreated,
+            status: "completed",
+          },
+          2: {
+            title: SimplifiedOrderStatus.Expired,
+            status: "cancel",
+          },
+        };
       default:
         return undefined;
     }
-  }, [order, outputAsset?.symbol]);
+  }, [orderInProgress, outputAsset?.symbol]);
 
   useEffect(() => {
-    if (!order) return;
-    if (pendingOrders.length) {
-      //check in pending orders and update status
-      const orderFromPending = pendingOrders.find(
-        (o) => order.create_order.create_id === o.create_order.create_id
-      );
-      if (orderFromPending) setOrder(orderFromPending);
-    } else {
-      //fetch from orderbook and set status
-      if (
-        [
-          OrderStatus.RedeemDetected,
-          OrderStatus.Redeemed,
-          OrderStatus.CounterPartyRedeemDetected,
-          OrderStatus.CounterPartyRedeemed,
-          OrderStatus.Completed,
-        ].includes(order.status)
-      )
-        return;
+    if (!orderInProgress) return;
 
-      const fetchOrder = async () => {
-        if (!orderBook || !blockNumbers) return;
-        const orderFromOrderbook = await orderBook.getOrder(
-          order.create_order.create_id,
-          true
-        );
-        if (orderFromOrderbook.error) return;
-        const o = orderFromOrderbook.val;
-        const status = ParseOrderStatus(
-          o,
-          blockNumbers[o.source_swap.chain],
-          blockNumbers[o.destination_swap.chain]
-        );
-        setOrder({ ...o, status });
-      };
-      fetchOrder();
+    // Check if order is in pending orders
+    if (pendingOrders.length) {
+      const orderFromPending = pendingOrders.find(
+        (o) =>
+          orderInProgress.create_order.create_id === o.create_order.create_id
+      );
+      if (orderFromPending) {
+        setOrder(orderFromPending);
+        return;
+      }
     }
-  }, [pendingOrders, order, setOrder, orderBook, blockNumbers]);
+
+    // Skip fetching for completed orders
+    const completedStatuses = [
+      OrderStatus.RedeemDetected,
+      OrderStatus.Redeemed,
+      OrderStatus.CounterPartyRedeemDetected,
+      OrderStatus.CounterPartyRedeemed,
+      OrderStatus.Completed,
+    ];
+
+    if (completedStatuses.includes(orderInProgress.status)) return;
+
+    // Fetch order from orderbook
+    const fetchOrder = async () => {
+      if (!orderBook) return;
+      const blockNumbers = await fetchAndSetBlockNumbers();
+      if (!blockNumbers) return;
+
+      const orderFromOrderbook = await orderBook.getOrder(
+        orderInProgress.create_order.create_id,
+        true
+      );
+
+      if (!orderFromOrderbook.ok) return;
+
+      const o = orderFromOrderbook.val;
+      const status = ParseOrderStatus(
+        o,
+        blockNumbers[o.source_swap.chain],
+        blockNumbers[o.destination_swap.chain]
+      );
+
+      setOrder({ ...o, status });
+
+      if (completedStatuses.includes(status)) {
+        const inputAsset = getAssetFromSwap(o.source_swap, assets);
+        const outputAsset = getAssetFromSwap(o.destination_swap, assets);
+        if (!inputAsset || !outputAsset) return;
+
+        Toast.success(
+          `Swap success ${inputAsset.symbol} to ${outputAsset.symbol}`
+        );
+      }
+    };
+
+    fetchOrder();
+  }, [
+    pendingOrders,
+    orderInProgress,
+    setOrder,
+    orderBook,
+    fetchAndSetBlockNumbers,
+    assets,
+  ]);
 
   return {
     orderProgress,

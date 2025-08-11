@@ -10,6 +10,7 @@ import { MiniKitProvider } from "@coinbase/onchainkit/minikit";
 import { base } from "wagmi/chains";
 import { useEffect } from "react";
 import { sdk } from "./utils/coinbaseMiniAppSDK";
+import { WalletMonitor } from "./SentryInit.tsx";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,8 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
           <MiniKitProvider apiKey="your-onchainkit-api-key" chain={base}>
             <AppWithReady />
           </MiniKitProvider>
+          <WalletMonitor />
+          <App />
         </WalletProviders>
       </QueryClientProvider>
     </BrowserRouter>

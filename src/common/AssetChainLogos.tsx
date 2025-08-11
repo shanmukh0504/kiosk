@@ -21,7 +21,7 @@ export const AssetChainLogos: FC<AssetChainLogosProps> = ({
         src={tokenLogo}
         className="absolute left-0 z-30 h-5 w-5 rounded-full"
       />
-      {chainLogo ? (
+      {chainLogo !== tokenLogo ? (
         <img
           src={chainLogo}
           className="absolute right-0 z-20 h-5 w-5 rounded-full"

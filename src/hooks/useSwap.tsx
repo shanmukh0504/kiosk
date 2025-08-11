@@ -23,9 +23,8 @@ import pendingOrdersStore from "../store/pendingOrdersStore";
 import BigNumber from "bignumber.js";
 import { useSolanaWallet } from "./useSolanaWallet";
 import { formatAmount, getOrderPair } from "../utils/utils";
-// import { useWalletClient } from "wagmi";
-// import { Account } from "viem";
-// import { approve, checkAllowance } from "../utils/approve";
+import { useNetworkFees } from "./useNetworkFees";
+import logger from "../utils/logger";
 
 export const useSwap = () => {
   const {
@@ -42,6 +41,7 @@ export const useSwap = () => {
     tokenPrices,
     isFetchingQuote,
     isEditBTCAddress,
+    networkFees,
     setStrategy,
     setIsSwapping,
     setAmount,
@@ -69,15 +69,13 @@ export const useSwap = () => {
   const { address: evmAddress } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { setOpenModal } = modalStore();
-
-  const inputBalance = useMemo(
-    () =>
-      inputAsset &&
-      balances &&
-      balances[getOrderPair(inputAsset.chain, inputAsset.tokenAddress)],
-    [inputAsset, balances]
-  );
   const { solanaAddress } = useSolanaWallet();
+  useNetworkFees();
+
+  const inputBalance = useMemo(() => {
+    if (!inputAsset || !balances) return;
+    return balances[getOrderPair(inputAsset.chain, inputAsset.tokenAddress)];
+  }, [inputAsset, balances]);
 
   const inputTokenBalance = useMemo(
     () =>
@@ -94,8 +92,8 @@ export const useSwap = () => {
   );
 
   const isInsufficientBalance = useMemo(() => {
-    if (!inputTokenBalance || !inputAmount) return false;
-    return new BigNumber(inputAmount).gt(inputTokenBalance);
+    if (!inputAmount || inputTokenBalance == null) return false;
+    return BigNumber(inputAmount).gt(inputTokenBalance);
   }, [inputAmount, inputTokenBalance]);
 
   const isBitcoinSwap = useMemo(() => {
@@ -202,7 +200,7 @@ export const useSwap = () => {
               },
             },
           });
-          if (!quote || quote.error) {
+          if (!quote || !quote.ok) {
             if (quote?.error?.includes("AbortError")) {
               setError({ liquidityError: Errors.none });
               setIsFetchingQuote({ input: false, output: false });
@@ -232,8 +230,12 @@ export const useSwap = () => {
           const quoteAmountInDecimals = new BigNumber(Number(quoteAmount)).div(
             Math.pow(10, assetToChange.decimals)
           );
-
-          const rate = Number(quoteAmountInDecimals) / Number(amount);
+          // Add network fee to output amount before calculating rate
+          let outputAmountWithFee = Number(quoteAmountInDecimals);
+          if (!isBitcoin(fromAsset.chain) && !isBitcoin(toAsset.chain)) {
+            outputAmountWithFee = Number(quoteAmountInDecimals) + networkFees;
+          }
+          const rate = outputAmountWithFee / Number(amount);
           setRate(rate);
 
           setAmount(
@@ -250,16 +252,16 @@ export const useSwap = () => {
           const outputAmount = isExactOut
             ? new BigNumber(amount)
             : quoteAmountInDecimals;
-          const inputTokenPrice = inputAmount
-            .multipliedBy(quote.val.input_token_price)
-            .toFixed(2);
-          const outputTokenPrice = outputAmount
-            .multipliedBy(quote.val.output_token_price)
-            .toFixed(2);
+          const inputTokenPrice = inputAmount.multipliedBy(
+            quote.val.input_token_price
+          );
+          const outputTokenPrice = outputAmount.multipliedBy(
+            quote.val.output_token_price
+          );
 
           setTokenPrices({
-            input: inputTokenPrice,
-            output: outputTokenPrice,
+            input: inputTokenPrice.toString(),
+            output: outputTokenPrice.toString(),
           });
           setError({
             liquidityError: Errors.none,
@@ -276,6 +278,7 @@ export const useSwap = () => {
       setTokenPrices,
       setError,
       isSwapping,
+      networkFees,
     ]
   );
 
@@ -475,7 +478,7 @@ export const useSwap = () => {
         receiveAmount: outputAmountInDecimals,
         additionalData,
       });
-      if (res.error) {
+      if (!res.ok) {
         if (
           res.error.includes(
             "Cannot read properties of undefined (reading 'toLowerCase')"
@@ -488,13 +491,13 @@ export const useSwap = () => {
           //order failed due to price fluctuation, refresh quote here
           fetchQuote(inputAmount, inputAsset, outputAsset, false);
         } else {
-          console.error("failed to create order ❌", res.error);
+          logger.error("failed to create order ❌", res.error);
         }
         setIsSwapping(false);
         return;
       }
 
-      console.log("orderCreated ✅", res.val);
+      logger.log("orderCreated ✅", res.val);
 
       if (isBitcoin(res.val.source_swap.chain)) {
         if (provider) {
@@ -504,7 +507,7 @@ export const useSwap = () => {
             Number(order.source_swap.amount)
           );
           if (bitcoinRes.error) {
-            console.error("failed to send bitcoin ❌", bitcoinRes.error);
+            logger.error("failed to send bitcoin ❌", bitcoinRes.error);
             setIsSwapping(false);
           }
           const updatedOrder = {
@@ -536,8 +539,9 @@ export const useSwap = () => {
       setIsOpen(true);
       clearSwapState();
     } catch (error) {
-      console.log("failed to create order ❌", error);
+      logger.error("failed to create order ❌", error);
       setIsSwapping(false);
+      throw error;
     }
   };
 

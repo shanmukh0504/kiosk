@@ -150,14 +150,18 @@ export const GardenSupportedWallets: Record<
   ),
   argentX: createWallet(
     "argentX",
-    "Argent X",
+    "Ready Wallet (formerly Argent)",
     "wallet/argent.svg",
     "https://www.argent.xyz/argent-x",
     { Starknet: true }
   ),
   keplr: createWallet("keplr", "Keplr", "wallets/keplr.svg", "tallLink:", {
+    EVM: network === Network.MAINNET,
     Starknet: true,
     Bitcoin: network === Network.MAINNET,
+  }),
+  leap: createWallet("leap", "Leap Wallet", "wallets/LeapLight.svg", "https://www.leapwallet.io/", {
+    EVM: network === Network.MAINNET,
   }),
   xverse: createWallet(
     "xverse",

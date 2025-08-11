@@ -1,5 +1,6 @@
 import { BlockchainType, IOrderbook, MatchedOrder } from "@gardenfi/orderbook";
 import { create } from "zustand";
+import logger from "../utils/logger";
 
 type TransactionHistoryStoreState = {
   transactions: MatchedOrder[];
@@ -42,8 +43,8 @@ const transactionHistoryStore = create<TransactionHistoryStoreState>(
         const txns = await orderBook.getMatchedOrders(address, "fulfilled", {
           per_page: get().perPage,
         });
-        if (txns.error) {
-          console.error(txns.error);
+        if (!txns.ok) {
+          logger.error("failed to fetch transactions ❌", txns.error);
           continue;
         }
         totalItems += txns.val.total_items;

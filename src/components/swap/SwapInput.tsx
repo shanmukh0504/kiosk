@@ -18,6 +18,7 @@ import { modalNames, modalStore } from "../../store/modalStore";
 import { ErrorFormat } from "../../constants/errors";
 import NumberFlow from "@number-flow/react";
 import clsx from "clsx";
+import { formatAmount } from "../../utils/utils";
 
 type SwapInputProps = {
   type: IOType;
@@ -49,6 +50,12 @@ export const SwapInput: FC<SwapInputProps> = ({
 
   const { setOpenAssetSelector, chains } = assetInfoStore();
   const { setOpenModal } = modalStore();
+  // const { rate } = swapStore();
+
+  // const priceImpact = useMemo(() => {
+  //   if (!rate || rate === 0 || rate === 1) return 0;
+  //   return (1 - rate) * 100;
+  // }, [rate]);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -56,7 +63,8 @@ export const SwapInput: FC<SwapInputProps> = ({
     if (
       !chains ||
       (asset && isBitcoin(asset.chain)) ||
-      (asset && isSolanaNativeToken(asset.chain, asset.tokenAddress))
+      (asset && isSolanaNativeToken(asset.chain, asset.tokenAddress)) ||
+      (asset && isEvmNativeToken(asset.chain, asset.tokenAddress))
     )
       return;
     if (!asset) return;
@@ -104,20 +112,10 @@ export const SwapInput: FC<SwapInputProps> = ({
     }
   };
 
-  useEffect(() => {
-    setAnimated(true);
-  }, [asset, isFocused]);
-
   const handleBalanceClick = () => {
     if (type === IOType.input && balance && asset) {
-      if (
-        !isBitcoin(asset?.chain) &&
-        !isEvmNativeToken(asset?.chain, asset.tokenAddress) &&
-        !isSolanaNativeToken(asset?.chain, asset.tokenAddress)
-      ) {
-        const balanceStr = balance.toString();
-        onChange(balanceStr);
-      }
+      const balanceStr = balance.toString();
+      onChange(balanceStr);
     }
   };
 
@@ -125,6 +123,10 @@ export const SwapInput: FC<SwapInputProps> = ({
     setOpenAssetSelector(type);
     setOpenModal(modalNames.assetList);
   };
+
+  useEffect(() => {
+    setAnimated(true);
+  }, [asset, isFocused]);
 
   // Show loading opacity when loading
   useEffect(() => {
@@ -153,11 +155,24 @@ export const SwapInput: FC<SwapInputProps> = ({
             >
               {label}
             </Typography>
-            {amount && Number(price) !== 0 && (
-              <Typography size="h5" weight="medium">
-                <span className="text-mid-grey">~${price}</span>
-              </Typography>
-            )}
+            <div className="flex gap-2">
+              {amount && Number(price) !== 0 && (
+                <Typography size="h5" weight="medium">
+                  <span className="text-mid-grey">
+                    ~${formatAmount(price, 0, 3)}
+                  </span>
+                </Typography>
+              )}
+              {/* {type === IOType.output && Number(price) !== 0 && (
+                <Typography
+                  size="h5"
+                  weight="medium"
+                  className="!text-mid-grey"
+                >
+                  {formatAmount(priceImpact, 0, 3)}%
+                </Typography>
+              )} */}
+            </div>
           </div>
           {type === IOType.input &&
             (error ? (

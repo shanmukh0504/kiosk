@@ -12,6 +12,7 @@ import {
 } from "./starknet/config";
 import { config } from "./wagmi/config";
 import { MiniAppProvider } from "./MiniAppContextProvider.tsx";
+import { STARKNET_CONFIG } from "@gardenfi/core";
 
 interface WalletProviderProps {
   children: ReactNode;
@@ -20,20 +21,19 @@ interface WalletProviderProps {
 export const WalletProviders: FC<WalletProviderProps> = ({ children }) => {
   return (
     <MiniAppProvider>
-
-    <WagmiProvider config={config}>
-      <BTCWalletProvider network={network as Network} store={localStorage}>
-        <StarknetConfig
-          chains={starknetChains}
-          provider={starknetProviders}
-          connectors={starknetConnectors}
-          autoConnect
-        >
-          <SolanaProvider>{children}</SolanaProvider>
-        </StarknetConfig>
-      </BTCWalletProvider>
-    </WagmiProvider>
+      <WagmiProvider config={config}>
+        <BTCWalletProvider network={network as Network} store={localStorage}>
+          <StarknetConfig
+            defaultChainId={BigInt(STARKNET_CONFIG[network].chainId)}
+            chains={starknetChains}
+            provider={starknetProviders}
+            connectors={starknetConnectors}
+            autoConnect
+          >
+            <SolanaProvider>{children}</SolanaProvider>
+          </StarknetConfig>
+        </BTCWalletProvider>
+      </WagmiProvider>
     </MiniAppProvider>
-
   );
 };

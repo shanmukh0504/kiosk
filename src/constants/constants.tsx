@@ -1,16 +1,72 @@
 import { hyperliquid } from "@gardenfi/core";
-import { Asset, Chain, isBitcoin, isEVM } from "@gardenfi/orderbook";
+import {
+  Asset,
+  Chain,
+  isBitcoin,
+  isEVM,
+  isSolana,
+  isStarknet,
+} from "@gardenfi/orderbook";
 import { BitcoinNetwork } from "@gardenfi/react-hooks";
 import { Network } from "@gardenfi/utils";
 import { citreaTestnet } from "viem/chains";
 import { botanix } from "../layout/wagmi/config";
 
-export const INTERNAL_ROUTES: Record<string, { name: string; path: string[] }> =
-  {
-    swap: { name: "Swap", path: ["/", "/swap"] },
-    stake: { name: "Stake", path: ["/stake"] },
-    // quests: { name: "Quests", path: "/quests" },
-  } as const;
+export const network: Network = import.meta.env.VITE_NETWORK;
+export const environment: Environment = import.meta.env.VITE_ENVIRONMENT;
+export const isTestnet = network === Network.TESTNET;
+
+export const INTERNAL_ROUTES: Record<
+  string,
+  { name: string; path: string[]; enabled: boolean; isExternal?: boolean }
+> = {
+  swap: {
+    name: "Swap",
+    path: ["/", "/swap"],
+    enabled: true,
+    isExternal: false,
+  },
+  stake: {
+    name: "Stake",
+    path: ["/stake"],
+    enabled: network !== Network.TESTNET,
+    isExternal: false,
+  },
+  faucet: {
+    name: "Faucet",
+    path: ["https://testnetbtc.com"],
+    enabled: network === Network.TESTNET,
+    isExternal: true,
+  },
+  // quests: { name: "Quests", path: "/quests" },
+} as const;
+
+export const EXTERNAL_ROUTES: Record<
+  string,
+  { name: string; path: string; enabled: boolean; isExternal?: boolean }
+> = {
+  docs: {
+    name: "Docs",
+    path: "https://docs.garden.finance/",
+    enabled: true,
+    isExternal: true,
+  },
+  blog: {
+    name: "Blog",
+    path: "https://garden.finance/blog",
+    enabled: true,
+    isExternal: true,
+  },
+  explorer: {
+    name: "Explorer",
+    path:
+      network === Network.TESTNET
+        ? "https://testnet-explorer.garden.finance/"
+        : "https://explorer.garden.finance/",
+    enabled: true,
+    isExternal: true,
+  },
+} as const;
 
 export const THEMES = {
   swap: "swap",
@@ -38,12 +94,17 @@ export const BREAKPOINTS = {
 };
 
 export const getTimeEstimates = (inputAsset: Asset) => {
-  if (isEVM(inputAsset.chain)) {
+  if (
+    isEVM(inputAsset.chain) ||
+    isSolana(inputAsset.chain) ||
+    isStarknet(inputAsset.chain)
+  ) {
     return "~30s";
   }
   if (isBitcoin(inputAsset.chain)) {
     return "~10m";
   }
+
   return "";
 };
 
@@ -63,9 +124,6 @@ export enum Environment {
   Development = "development",
   Production = "production",
 }
-
-export const network: Network = import.meta.env.VITE_NETWORK;
-export const environment: Environment = import.meta.env.VITE_ENVIRONMENT;
 
 export const SUPPORTED_CHAINS: Chain[] = [
   "arbitrum",
@@ -89,6 +147,8 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "corn",
   "solana",
   "botanix",
+  "bnbchain",
+  "bnbchain_testnet",
 ] as const;
 
 export const MULTICALL_CONTRACT_ADDRESSES: Record<number, string> = {
@@ -102,16 +162,48 @@ export const QUERY_PARAMS = {
   inputAsset: "input-asset",
   outputChain: "output-chain",
   outputAsset: "output-asset",
+  inputAmount: "value",
 };
 
-export const isStakeDisable = network === Network.TESTNET;
-export const routes = Object.entries(INTERNAL_ROUTES).filter(
-  ([key]) => key !== "stake" || !isStakeDisable
+export const routes = Object.entries(INTERNAL_ROUTES).filter(([key]) => {
+  return INTERNAL_ROUTES[key].enabled;
+});
+
+export const externalRoutes = Object.entries(EXTERNAL_ROUTES).filter(
+  ([key]) => {
+    return EXTERNAL_ROUTES[key].enabled;
+  }
 );
 
-export const PHANTOM_SUPPORTED_CHAINS: Chain[] = [
-  "solana",
-  "ethereum",
-  "base",
-  "bitcoin",
-];
+//if the wallet is not listed here, then it supports all chains
+export const WALLET_SUPPORTED_CHAINS: Record<string, Chain[]> = {
+  "app.phantom": ["solana", "ethereum", "base", "bitcoin"],
+  leap: [
+    "ethereum",
+    "base",
+    "bitcoin",
+    "arbitrum",
+    "solana",
+    "bera",
+    "hyperliquid",
+    "unichain",
+    "citrea_testnet",
+  ],
+  keplr: [
+    "ethereum",
+    "base",
+    "bitcoin",
+    "arbitrum",
+    "starknet",
+    "bera",
+    "unichain",
+    "citrea_testnet",
+    "ethereum_sepolia",
+    "starknet_sepolia",
+  ],
+};
+
+export const SOCIAL_LINKS = {
+  discord: "https://discord.com/invite/dZwSjh9922",
+  x: "https://x.com/garden_finance",
+};

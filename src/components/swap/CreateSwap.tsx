@@ -1,7 +1,11 @@
 import { Button, ExchangeIcon } from "@gardenfi/garden-book";
 import { SwapInput } from "./SwapInput";
-import { getTimeEstimates, IOType } from "../../constants/constants";
-import { useEffect, useMemo, useState } from "react";
+import {
+  getTimeEstimates,
+  IOType,
+  WALLET_SUPPORTED_CHAINS,
+} from "../../constants/constants";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { useSearchParams } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
@@ -19,6 +23,7 @@ import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { rpcStore } from "../../store/rpcStore";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
+import { isEVM, isBitcoin, isStarknet, isSolana } from "@gardenfi/orderbook";
 
 export const CreateSwap = () => {
   const [loadingDisabled, setLoadingDisabled] = useState(false);
@@ -30,13 +35,13 @@ export const CreateSwap = () => {
   const { starknetAddress } = useStarknetWallet();
   const { solanaAnchorProvider } = useSolanaWallet();
   const {
+    isAssetSelectorOpen,
     assets,
     fetchAndSetBitcoinBalance,
     fetchAndSetEvmBalances,
     fetchAndSetFiatValues,
     fetchAndSetStarknetBalance,
     fetchAndSetSolanaBalance,
-    clearBalances,
   } = assetInfoStore();
 
   const { workingRPCs } = rpcStore();
@@ -63,6 +68,19 @@ export const CreateSwap = () => {
     swapAssets,
   } = useSwap();
   const { setOpenModal } = modalStore();
+  const { connector } = useEVMWallet();
+
+  const isChainSupported = useMemo(() => {
+    if (!connector || !inputAsset || !outputAsset) return true;
+    if (!WALLET_SUPPORTED_CHAINS[connector.id]) return true;
+    if (
+      isBitcoin(inputAsset.chain) ||
+      isStarknet(inputAsset.chain) ||
+      isSolana(inputAsset.chain)
+    )
+      return true;
+    return WALLET_SUPPORTED_CHAINS[connector.id].includes(inputAsset.chain);
+  }, [connector, inputAsset, outputAsset]);
 
   const buttonLabel = useMemo(() => {
     if (needsWalletConnection)
@@ -70,16 +88,19 @@ export const CreateSwap = () => {
 
     return error.liquidityError
       ? "Insufficient liquidity"
-      : error.insufficientBalanceError
-        ? "Insufficient balance"
-        : needsWalletConnection
-          ? `Connect ${capitalizeChain(needsWalletConnection)} Wallet`
-          : isApproving
-            ? "Approving..."
-            : isSwapping
-              ? "Signing"
-              : "Swap";
+      : !isChainSupported
+        ? "Wallet does not support the chain"
+        : error.insufficientBalanceError
+          ? "Insufficient balance"
+          : needsWalletConnection
+            ? `Connect ${capitalizeChain(needsWalletConnection)} Wallet`
+            : isApproving
+              ? "Approving..."
+              : isSwapping
+                ? "Signing"
+                : "Swap";
   }, [
+    isChainSupported,
     error.liquidityError,
     isApproving,
     isSwapping,
@@ -88,19 +109,20 @@ export const CreateSwap = () => {
   ]);
 
   const buttonDisabled = useMemo(() => {
-    return !!error.liquidityError ||
-      !!error.insufficientBalanceError ||
-      loadingDisabled ||
-      isSwapping
+    return !!error.liquidityError || loadingDisabled
       ? true
-      : needsWalletConnection || validSwap
+      : needsWalletConnection
         ? false
-        : true;
+        : !isChainSupported || isSwapping
+          ? true
+          : validSwap
+            ? false
+            : true;
   }, [
+    isChainSupported,
     isSwapping,
     validSwap,
     error.liquidityError,
-    error.insufficientBalanceError,
     needsWalletConnection,
     loadingDisabled,
   ]);
@@ -120,6 +142,55 @@ export const CreateSwap = () => {
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
 
+  const fetchAllBalances = useCallback(async () => {
+    await fetchAndSetFiatValues();
+    await Promise.allSettled([
+      address && fetchAndSetEvmBalances(address, workingRPCs),
+      btcAddress && provider && fetchAndSetBitcoinBalance(provider, btcAddress),
+      starknetAddress && fetchAndSetStarknetBalance(starknetAddress),
+      solanaAnchorProvider &&
+        fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey),
+    ]);
+  }, [
+    address,
+    provider,
+    btcAddress,
+    fetchAndSetEvmBalances,
+    fetchAndSetBitcoinBalance,
+    starknetAddress,
+    solanaAnchorProvider,
+    fetchAndSetFiatValues,
+    fetchAndSetStarknetBalance,
+    fetchAndSetSolanaBalance,
+    workingRPCs,
+  ]);
+
+  const fetchInputAssetBalance = useCallback(async () => {
+    await fetchAndSetFiatValues();
+    if (!inputAsset) return;
+    if (isEVM(inputAsset.chain) && address)
+      await fetchAndSetEvmBalances(address, workingRPCs, inputAsset);
+    if (isBitcoin(inputAsset.chain) && provider && btcAddress)
+      await fetchAndSetBitcoinBalance(provider, btcAddress);
+    if (isStarknet(inputAsset.chain) && starknetAddress)
+      await fetchAndSetStarknetBalance(starknetAddress);
+    if (isSolana(inputAsset.chain) && solanaAnchorProvider)
+      await fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey);
+  }, [
+    inputAsset,
+    address,
+    provider,
+    btcAddress,
+    fetchAndSetEvmBalances,
+    fetchAndSetBitcoinBalance,
+    starknetAddress,
+    solanaAnchorProvider,
+    fetchAndSetFiatValues,
+    fetchAndSetStarknetBalance,
+    fetchAndSetSolanaBalance,
+    workingRPCs,
+  ]);
+
   const handleConnectWallet = () => {
     if (!needsWalletConnection) return;
 
@@ -136,43 +207,28 @@ export const CreateSwap = () => {
 
   useEffect(() => {
     if (!assets) return;
+    fetchAllBalances();
+  }, [assets, fetchAllBalances]);
 
-    const updateBalances = async () => {
-      await fetchAndSetFiatValues();
-      if (address) {
-        await fetchAndSetEvmBalances(address, workingRPCs);
-      }
-      if (btcAddress && provider) {
-        await fetchAndSetBitcoinBalance(provider);
-      }
-      if (starknetAddress) {
-        await fetchAndSetStarknetBalance(starknetAddress);
-      }
-      if (solanaAnchorProvider) {
-        await fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey);
-      }
-    };
+  useEffect(() => {
+    if (!assets) return;
 
-    updateBalances();
-    const interval = setInterval(updateBalances, 7000);
+    const interval = setInterval(() => {
+      if (isAssetSelectorOpen.isOpen) {
+        fetchAllBalances();
+      } else {
+        fetchInputAssetBalance();
+      }
+    }, 7000);
 
     return () => {
       clearInterval(interval);
     };
   }, [
     assets,
-    address,
-    provider,
-    btcAddress,
-    fetchAndSetEvmBalances,
-    fetchAndSetBitcoinBalance,
-    starknetAddress,
-    solanaAnchorProvider,
-    fetchAndSetFiatValues,
-    fetchAndSetStarknetBalance,
-    fetchAndSetSolanaBalance,
-    clearBalances,
-    workingRPCs,
+    isAssetSelectorOpen.isOpen,
+    fetchAllBalances,
+    fetchInputAssetBalance,
   ]);
 
   useEffect(() => {
@@ -182,6 +238,7 @@ export const CreateSwap = () => {
       inputAssetSymbol = "",
       outputChain = "",
       outputAssetSymbol = "",
+      inputAmount: urlInputAmount = "",
     } = getQueryParams(searchParams);
 
     const fromAsset = getAssetFromChainAndSymbol(
@@ -205,8 +262,22 @@ export const CreateSwap = () => {
         setAsset(IOType.input, BTC);
       }
     }
+
+    if (urlInputAmount && urlInputAmount !== inputAmount) {
+      handleInputAmountChange(urlInputAmount);
+    }
+
     setAddParams(true);
-  }, [addParams, assets, inputAsset, outputAsset, searchParams, setAsset]);
+  }, [
+    addParams,
+    assets,
+    inputAsset,
+    outputAsset,
+    searchParams,
+    setAsset,
+    inputAmount,
+    handleInputAmountChange,
+  ]);
 
   useEffect(() => {
     if (!addParams || (!inputAsset && !outputAsset)) return;
@@ -216,6 +287,7 @@ export const CreateSwap = () => {
       prev.delete(QUERY_PARAMS.inputAsset);
       prev.delete(QUERY_PARAMS.outputChain);
       prev.delete(QUERY_PARAMS.outputAsset);
+      prev.delete(QUERY_PARAMS.inputAmount);
 
       if (inputAsset) {
         prev.set(QUERY_PARAMS.inputChain, inputAsset.chain);
@@ -225,10 +297,13 @@ export const CreateSwap = () => {
         prev.set(QUERY_PARAMS.outputChain, outputAsset.chain);
         prev.set(QUERY_PARAMS.outputAsset, outputAsset.symbol);
       }
+      if (inputAmount) {
+        prev.set(QUERY_PARAMS.inputAmount, inputAmount);
+      }
 
       return prev;
     });
-  }, [addParams, inputAsset, outputAsset, setSearchParams]);
+  }, [addParams, inputAsset, outputAsset, inputAmount, setSearchParams]);
 
   // Disable button when loading
   useEffect(() => {

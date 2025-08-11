@@ -25,6 +25,7 @@ import { BlockchainType } from "@gardenfi/orderbook";
 import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
 import { Wallet as SolanaWallet } from "@solana/wallet-adapter-react";
 import { Connector as StarknetConnector } from "@starknet-react/core";
+import logger from "../../../utils/logger";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -140,19 +141,26 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     }
     setConnectingWallet(connector.id);
     try {
-      if (
-        (connector.isBitcoin && connector.isEVM) ||
-        (connector.isBitcoin && connector.isStarknet) ||
-        (connector.isEVM && connector.isSolana) ||
-        (connector.isBitcoin && connector.isSolana) ||
-        (connector.isStarknet && connector.isSolana)
-      ) {
-        if (
-          (!connector.wallet?.evmWallet && !connector.wallet?.btcWallet) ||
-          (!connector.wallet?.btcWallet && !connector.wallet?.starknetWallet) ||
-          !connector.wallet?.btcWallet
-        )
-          return;
+      // Check if this is a multi-chain wallet
+      const isMultiChain = [
+        connector.isBitcoin && connector.isEVM,
+        connector.isBitcoin && connector.isStarknet,
+        connector.isEVM && connector.isSolana,
+        connector.isBitcoin && connector.isSolana,
+        connector.isStarknet && connector.isSolana,
+        connector.isStarknet && connector.isEVM,
+      ].some(Boolean);
+
+      if (isMultiChain) {
+        // Validate that we have at least two wallet types available
+        const walletTypes = [
+          connector.wallet?.evmWallet,
+          connector.wallet?.btcWallet,
+          connector.wallet?.starknetWallet,
+          connector.wallet?.solanaWallet,
+        ].filter(Boolean);
+
+        if (walletTypes.length < 2) return;
 
         setMultiWalletConnector({
           [BlockchainType.EVM]: connector.wallet.evmWallet,
@@ -177,7 +185,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         if (!connector.wallet?.btcWallet) return;
         const res = await connect(connector.wallet.btcWallet);
         if (res.error) {
-          console.log("error connecting wallet", res.error);
+          logger.error("error connecting wallet", res.error);
         }
       } else if (connector.isEVM) {
         if (!connector.wallet?.evmWallet) return;
@@ -210,7 +218,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                 }
               }
             } catch (error) {
-              console.error("Error getting MetaMask version:", error);
+              logger.error("Error getting MetaMask version:", error);
             }
           }
         }
@@ -234,7 +242,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         if (!success) throw new Error("Solana connection failed");
       }
     } catch (error) {
-      console.error("Error connecting wallet:", error);
+      logger.error("Error connecting wallet:", error);
       await solanaDisconnect();
     } finally {
       setConnectingWallet(null);

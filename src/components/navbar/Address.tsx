@@ -22,7 +22,8 @@ export const Address = () => {
       order.status !== OrderStatus.Redeemed &&
       order.status !== OrderStatus.CounterPartyRedeemDetected &&
       order.status !== OrderStatus.CounterPartyRedeemed &&
-      order.status !== OrderStatus.Completed
+      order.status !== OrderStatus.Completed &&
+      order.status !== OrderStatus.Expired
   ).length;
 
   useEffect(() => {

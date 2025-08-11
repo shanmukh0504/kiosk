@@ -4,7 +4,6 @@ import {
   Environment,
   INTERNAL_ROUTES,
   environment,
-  isStakeDisable,
   network,
 } from "../constants/constants";
 import { SwapPage } from "./swap";
@@ -60,18 +59,19 @@ function App() {
           solana: solanaAnchorProvider ?? undefined,
         },
       }}
+      handleSecretManagement={false}
     >
       <Layout>
         <Routes>
           {INTERNAL_ROUTES.swap.path.map((path) => (
             <Route key={path} path={path} element={<SwapPage />} />
           ))}
-          {isStakeDisable ? (
-            <Route path="/stake" element={<Navigate to="/" replace />} />
-          ) : (
+          {INTERNAL_ROUTES.stake.enabled ? (
             INTERNAL_ROUTES.stake.path.map((path) => (
               <Route key={path} path={path} element={<StakePage />} />
             ))
+          ) : (
+            <Route path="/stake" element={<Navigate to="/" replace />} />
           )}
         </Routes>
       </Layout>

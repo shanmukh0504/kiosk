@@ -1,3 +1,4 @@
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { execSync } from "child_process";
@@ -8,13 +9,20 @@ import wasm from "vite-plugin-wasm";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import topLevelAwait from "vite-plugin-top-level-await";
 import { metadataPlugin } from "./vite-metadata-plugin";
+import process from "process";
 
 const getRecentGitCommitHash = () => {
   try {
+    // Try to get from environment variable first (Docker build)
+    if (process.env.SOURCE_COMMIT) {
+      return process.env.SOURCE_COMMIT.substring(0, 7);
+    }
+    // Fallback to git command
     return execSync("git rev-parse --short HEAD").toString().trim();
   } catch (error) {
-    console.error("Failed to get Git commit hash", error);
-    return "unknown";
+    console.warn("Failed to get Git commit hash, using fallback", error);
+    // Use timestamp as fallback
+    return `build-${Date.now().toString(36)}`;
   }
 };
 
@@ -40,18 +48,6 @@ export default defineConfig({
       },
     }),
     topLevelAwait(),
-    viteStaticCopy({
-      targets: [
-        {
-          src: path.resolve(
-            path.dirname(new URL(import.meta.url).pathname),
-            "build-id.json"
-          ),
-          dest: "public",
-        },
-      ],
-    }),
-
     {
       name: "generate-build-id",
       buildEnd() {
@@ -82,17 +78,46 @@ export default defineConfig({
         });
       },
     },
+    viteStaticCopy({
+      targets: [
+        {
+          src: path.resolve(
+            path.dirname(new URL(import.meta.url).pathname),
+            "build-id.json"
+          ),
+          dest: "public",
+        },
+      ],
+    }),
+    sentryVitePlugin({
+      org: "garden",
+      project: "kiosk",
+      url: "https://telemetry.garden.finance/",
+    }),
   ],
+  esbuild: {
+    target: "esnext",
+    treeShaking: true,
+    drop: process.env.NODE_ENV === "production" ? ["console", "debugger"] : [],
+    minifyIdentifiers: true,
+    minifySyntax: true,
+    minifyWhitespace: true,
+  },
   build: {
     target: "esnext",
-    sourcemap: false,
+    sourcemap: true,
     minify: "terser",
+    reportCompressedSize: false,
+    chunkSizeWarningLimit: 2000,
     rollupOptions: {
       output: {
         manualChunks: {
-          "react-vendor": ["react", "react-dom"],
-          "ui-vendor": ["@gardenfi/garden-book", "framer-motion"],
-          "wallet-vendor": ["@gardenfi/wallet-connectors", "wagmi", "viem"],
+          vendor: ["react", "react-dom", "react-router-dom"],
+          libs: [
+            "@gardenfi/garden-book",
+            "framer-motion",
+            "@gardenfi/wallet-connectors",
+          ],
         },
       },
     },
