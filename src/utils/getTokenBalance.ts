@@ -245,10 +245,7 @@ export const getSuiTokenBalance = async (
 ): Promise<number> => {
   if (!isSui(asset.chain)) return 0;
 
-  const suiRpcUrl =
-    network === Network.TESTNET
-      ? "https://fullnode.testnet.sui.io:443"
-      : "https://fullnode.mainnet.sui.io:443";
+  const suiRpcUrl = getFullnodeUrl(network);
 
   async function suiRpcCall(method: string, params: any[]) {
     const res = await fetch(suiRpcUrl, {
