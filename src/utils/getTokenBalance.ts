@@ -16,11 +16,13 @@ import {
   http,
 } from "viem";
 import { formatAmount } from "./utils";
-import { RpcProvider, Contract } from "starknet";
+import { RpcProvider, Contract, UINT_128_MAX } from "starknet";
 import { STARKNET_CONFIG } from "@gardenfi/core";
 import { network } from "../constants/constants";
 import { Connection, PublicKey } from "@solana/web3.js";
 import logger from "./logger";
+import { Transaction } from "@mysten/sui/transactions";
+import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 
 const erc20ABI = [
   {
@@ -269,11 +271,38 @@ export const getSuiTokenBalance = async (
       asset.tokenAddress === "primary" ||
       asset.tokenAddress === "0x2::sui::SUI"
     ) {
+      const BUFFER_FEE_IN_MIST = 5_000_000;
       const result = await suiRpcCall("suix_getBalance", [
         address,
         "0x2::sui::SUI",
       ]);
-      return formatAmount(result.totalBalance, asset.decimals, 8);
+
+      const totalBalance = result.totalBalance;
+
+      const client = new SuiClient({ url: getFullnodeUrl(network) });
+
+      const tx = new Transaction();
+      tx.setSender(address);
+
+      const [coin] = tx.splitCoins(tx.gas, [totalBalance]);
+
+      tx.transferObjects([coin], address);
+      const data = await tx.build({ client });
+      const dryRunResult = await client.dryRunTransactionBlock({
+        transactionBlock: data,
+      });
+      const gasObject = dryRunResult.effects.gasUsed;
+
+      const totalGasCost =
+        Number(gasObject.computationCost) +
+        Number(gasObject.storageCost) +
+        Number(gasObject.nonRefundableStorageFee);
+
+      return formatAmount(
+        Math.max(totalBalance - (BUFFER_FEE_IN_MIST + totalGasCost), 0),
+        asset.decimals,
+        8
+      );
     } else {
       const result = await suiRpcCall("suix_getAllBalances", [address]);
 
