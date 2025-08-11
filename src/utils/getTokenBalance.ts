@@ -16,7 +16,7 @@ import {
   http,
 } from "viem";
 import { formatAmount } from "./utils";
-import { RpcProvider, Contract, UINT_128_MAX } from "starknet";
+import { RpcProvider, Contract } from "starknet";
 import { STARKNET_CONFIG } from "@gardenfi/core";
 import { network } from "../constants/constants";
 import { Connection, PublicKey } from "@solana/web3.js";
