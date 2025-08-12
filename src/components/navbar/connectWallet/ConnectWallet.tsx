@@ -368,7 +368,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
             href="https://garden.finance/terms.pdf"
             target="_blank"
             rel="noreferrer"
-            className="font-medium"
+            className="font-bold"
           >
             Terms of Service{" "}
           </a>
@@ -377,7 +377,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
             href="https://garden.finance/GardenFinancePrivacyPolicy.pdf"
             target="_blank"
             rel="noreferrer"
-            className="font-medium"
+            className="font-bold"
           >
             Privacy Policy
           </a>
