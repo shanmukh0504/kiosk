@@ -11,6 +11,7 @@
 ### Added
 
 - Added Sentry for error tracking.
+- Implemented Swap bridge functionality
 
 ### Fixed
 
