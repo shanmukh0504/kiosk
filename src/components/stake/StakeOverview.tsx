@@ -109,7 +109,7 @@ export const StakeOverview = () => {
       style={{ transformOrigin: "top" }}
     >
       <div className="mx-auto flex w-[328px] flex-col gap-[20px] rounded-[15px] bg-white p-6 sm:w-[424px] md:w-[740px] lg:w-[1000px]">
-        <Typography size="h5" weight="bold">
+        <Typography size="h5" weight="medium">
           Staking overview
         </Typography>
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
@@ -144,7 +144,8 @@ export const StakeOverview = () => {
                       cbBtcReward={formatAmount(
                         Number(
                           stakeRewards?.rewardResponse.cumulative_rewards_cbbtc
-                        ),8
+                        ),
+                        8
                       )}
                     />
                   }

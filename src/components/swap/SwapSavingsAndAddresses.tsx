@@ -13,8 +13,6 @@ import { AddressDetails } from "./AddressDetails";
 import { swapStore } from "../../store/swapStore";
 
 type SwapSavingsProps = {
-  timeSaved: number;
-  costSaved: number;
   refundAddress: string | undefined;
   receiveAddress: string | undefined;
   showComparison: (type: "time" | "fees") => void;
@@ -22,33 +20,31 @@ type SwapSavingsProps = {
 };
 
 export const SwapSavingsAndAddresses = ({
-  timeSaved,
-  costSaved,
   refundAddress,
   receiveAddress,
   showComparison,
   networkFeesValue,
 }: SwapSavingsProps) => {
-  const { outputAsset, outputAmount } = swapStore();
+  const { outputAsset, outputAmount, maxTimeSaved, maxCostSaved } = swapStore();
 
   return (
     <motion.div className="flex flex-col" {...expandWithDelayAnimation}>
       <div className="h-full">
         <div className="flex items-center justify-between px-4 pt-1">
           <div className="flex items-center gap-1">
-            <Typography size="h5" weight="medium" className="!text-mid-grey">
+            <Typography size="h5" weight="regular" className="!text-mid-grey">
               Network fee
             </Typography>
           </div>
           <div className="flex gap-5 py-1">
-            <Typography size="h5" weight="medium">
+            <Typography size="h5" weight="regular">
               {networkFeesValue === 0 ? "Free" : "$" + networkFeesValue}
             </Typography>
           </div>
         </div>
         <div className="flex items-center justify-between px-4">
           <div className="flex items-center gap-1">
-            <Typography size="h5" weight="medium" className="!text-mid-grey">
+            <Typography size="h5" weight="regular" className="!text-mid-grey">
               Minimum received
             </Typography>
             {/* <span
@@ -63,12 +59,12 @@ export const SwapSavingsAndAddresses = ({
                   <div className="flex min-w-32 justify-between">
                     <Typography
                       size="h5"
-                      weight="medium"
+                      weight="regular"
                       className="!text-mid-grey"
                     >
                       Slippage
                     </Typography>
-                    <Typography size="h5" weight="medium">
+                    <Typography size="h5" weight="regular">
                       0.50%
                     </Typography>
                   </div>
@@ -77,7 +73,7 @@ export const SwapSavingsAndAddresses = ({
             </span> */}
           </div>
           <div className="flex gap-5 py-1">
-            <Typography size="h5" weight="medium">
+            <Typography size="h5" weight="regular">
               {outputAmount} {outputAsset?.symbol}
             </Typography>
           </div>
@@ -94,17 +90,17 @@ export const SwapSavingsAndAddresses = ({
         )}
       </div>
       <AnimatePresence mode="wait">
-        {(timeSaved > 0 || costSaved > 0) && (
+        {(maxTimeSaved > 0 || maxCostSaved > 0) && (
           <motion.div {...expandAnimation}>
             <div className="z-10" {...expandAnimation}></div>
-            {timeSaved > 0 && (
+            {maxTimeSaved > 0 && (
               <motion.div
                 key="time-saved"
                 {...expandAnimation}
                 className="h-full w-full"
               >
                 <div
-                  className="relative z-10 flex cursor-pointer items-center justify-between gap-0 px-4 transition-all duration-200 ease-in-out hover:bg-white"
+                  className="relative z-10 flex cursor-pointer items-center justify-between gap-0 px-4 py-[3px] transition-all duration-200 ease-in-out hover:bg-white"
                   onClick={(e) => {
                     e.stopPropagation();
                     showComparison("time");
@@ -112,7 +108,7 @@ export const SwapSavingsAndAddresses = ({
                 >
                   <Typography
                     size="h5"
-                    weight="medium"
+                    weight="regular"
                     className="!text-mid-grey"
                   >
                     Time saved
@@ -120,24 +116,24 @@ export const SwapSavingsAndAddresses = ({
                   <div className="flex gap-5">
                     <Typography
                       size="h4"
-                      weight="medium"
-                      className="!text-light-green"
+                      weight="regular"
+                      className=" !text-light-green"
                     >
-                      {formatTime(timeSaved)}
+                      {formatTime(maxTimeSaved)}
                     </Typography>
                   </div>
                 </div>
               </motion.div>
             )}
 
-            {costSaved > 0 && (
+            {maxCostSaved > 0 && (
               <motion.div
                 key="cost-saved"
                 {...expandAnimation}
                 className="w-full"
               >
                 <div
-                  className="flex cursor-pointer items-center justify-between gap-0 px-4 transition-all duration-200 ease-in-out hover:bg-white"
+                  className="flex cursor-pointer items-center justify-between gap-0 px-4 py-[3px] transition-all duration-200 ease-in-out hover:bg-white"
                   onClick={(e) => {
                     e.stopPropagation();
                     showComparison("fees");
@@ -145,18 +141,18 @@ export const SwapSavingsAndAddresses = ({
                 >
                   <Typography
                     size="h5"
-                    weight="medium"
+                    weight="regular"
                     className="!text-mid-grey"
                   >
                     Cost saved
                   </Typography>
-                  <div className="flex gap-5 pt-1">
+                  <div className="flex gap-5">
                     <Typography
                       size="h4"
-                      weight="medium"
+                      weight="regular"
                       className="!text-light-green"
                     >
-                      {`$${formatAmount(costSaved, 0, 2).toFixed(2)}`}
+                      {`$${formatAmount(maxCostSaved, 0, 2)}`}
                     </Typography>
                   </div>
                 </div>

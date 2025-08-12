@@ -54,12 +54,12 @@ export const StakeInput = ({ balance }: { balance: number }) => {
   return (
     <div className="flex flex-col gap-3 rounded-xl bg-white p-4">
       <div className="flex justify-between">
-        <Typography size="h5" weight="bold">
+        <Typography size="h5" weight="medium">
           Stake SEED
         </Typography>
         <Typography
           size="h5"
-          weight="bold"
+          weight="medium"
           className="cursor-pointer"
           onClick={handleBalanceClick}
         >
@@ -67,7 +67,7 @@ export const StakeInput = ({ balance }: { balance: number }) => {
         </Typography>
       </div>
       <div className="flex justify-between">
-        <Typography size={"h2"} weight="bold">
+        <Typography size={"h2"} weight="medium">
           <input
             className="max-w-[200px] outline-none placeholder:text-mid-grey"
             type="text"
