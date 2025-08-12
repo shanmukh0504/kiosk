@@ -8,12 +8,7 @@ import {
 import { FC, useMemo, useRef, ChangeEvent, useState, useEffect } from "react";
 import { IOType } from "../../constants/constants";
 import { assetInfoStore } from "../../store/assetInfoStore";
-import {
-  Asset,
-  isBitcoin,
-  isEvmNativeToken,
-  isSolanaNativeToken,
-} from "@gardenfi/orderbook";
+import { Asset } from "@gardenfi/orderbook";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { ErrorFormat } from "../../constants/errors";
 import NumberFlow from "@number-flow/react";
@@ -50,23 +45,10 @@ export const SwapInput: FC<SwapInputProps> = ({
 
   const { setOpenAssetSelector, chains } = assetInfoStore();
   const { setOpenModal } = modalStore();
-  // const { rate } = swapStore();
-
-  // const priceImpact = useMemo(() => {
-  //   if (!rate || rate === 0 || rate === 1) return 0;
-  //   return (1 - rate) * 100;
-  // }, [rate]);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
   const network = useMemo(() => {
-    if (
-      !chains ||
-      (asset && isBitcoin(asset.chain)) ||
-      (asset && isSolanaNativeToken(asset.chain, asset.tokenAddress)) ||
-      (asset && isEvmNativeToken(asset.chain, asset.tokenAddress))
-    )
-      return;
     if (!asset) return;
     return chains && chains[asset.chain];
   }, [asset, chains]);
@@ -163,15 +145,6 @@ export const SwapInput: FC<SwapInputProps> = ({
                   </span>
                 </Typography>
               )}
-              {/* {type === IOType.output && Number(price) !== 0 && (
-                <Typography
-                  size="h5"
-                  weight="regular"
-                  className="!text-mid-grey"
-                >
-                  {formatAmount(priceImpact, 0, 3)}%
-                </Typography>
-              )} */}
             </div>
           </div>
           {type === IOType.input &&
@@ -288,12 +261,8 @@ export const SwapInput: FC<SwapInputProps> = ({
           {asset ? (
             <TokenInfo
               symbol={asset.symbol}
-              tokenLogo={asset.logo}
-              chainLogo={
-                asset.chain !== asset.name.toLowerCase() &&
-                network &&
-                network.networkLogo
-              }
+              tokenLogo={asset.logo || ""}
+              chainLogo={network?.networkLogo}
               onClick={handleOpenAssetSelector}
             />
           ) : (
