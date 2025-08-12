@@ -66,7 +66,7 @@ export const formatAmount = (
   if (bigAmount.isZero()) return 0;
 
   const value = bigAmount.dividedBy(10 ** decimals);
-  const precision = toFixed ? toFixed : (Number(value) > 10000 ? 2 : 4);
+  const precision = toFixed ? toFixed : Number(value) > 10000 ? 2 : 4;
   let temp = value.toFixed(precision, BigNumber.ROUND_DOWN);
 
   while (

@@ -144,7 +144,8 @@ export const StakeOverview = () => {
                       cbBtcReward={formatAmount(
                         Number(
                           stakeRewards?.rewardResponse.cumulative_rewards_cbbtc
-                        ),8
+                        ),
+                        8
                       )}
                     />
                   }

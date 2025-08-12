@@ -1,6 +1,10 @@
 import React from "react";
-import { Button, Typography, WarningIcon } from "@gardenfi/garden-book";
-import { CloseIcon } from "@gardenfi/garden-book";
+import {
+  Button,
+  Typography,
+  WarningIcon,
+  CloseIcon,
+} from "@gardenfi/garden-book";
 import { modalNames, modalStore } from "../../store/modalStore";
 
 type VersionUpdateModalProps = {

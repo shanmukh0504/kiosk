@@ -10,11 +10,9 @@ import {
   STAKING_CHAIN,
   STAKING_CONFIG,
 } from "../constants";
-import { useWriteContract } from "wagmi";
+import { useWriteContract, useSwitchChain } from "wagmi";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
-import { useSwitchChain } from "wagmi";
-import { Hex } from "viem";
-import { maxUint256 } from "viem";
+import { Hex, maxUint256 } from "viem";
 import { stakeABI } from "../abi/stake";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../../../layout/wagmi/config";
