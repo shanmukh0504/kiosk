@@ -35,11 +35,11 @@ export const OrderDetailsRow: FC<OrderDetailsRowProps> = ({
 
   return (
     <div className="flex justify-between">
-      <Typography size="h4" weight="medium">
+      <Typography size="h4" weight="regular">
         {title}
       </Typography>
       <div className="flex items-center gap-2">
-        <Typography size="h4" weight="medium">
+        <Typography size="h4" weight="regular">
           {link ? getTrimmedAddress(value) : value}
         </Typography>
         {copyString && <CopyToClipboard text={copyString} />}
@@ -128,7 +128,7 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
         onClick={handleDropdown}
         className="flex w-full cursor-pointer items-center justify-between"
       >
-        <Typography size="h5" weight="bold">
+        <Typography size="h5" weight="medium">
           Details
         </Typography>
         <div

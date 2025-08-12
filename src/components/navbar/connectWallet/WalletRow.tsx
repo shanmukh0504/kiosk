@@ -52,7 +52,7 @@ export const WalletRow: FC<WalletRowProps> = ({
               breakpoints={{
                 sm: "h2",
               }}
-              weight="medium"
+              weight="regular"
             >
               {name === "Injected"
                 ? "Browser Wallet"

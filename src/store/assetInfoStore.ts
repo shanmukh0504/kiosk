@@ -6,6 +6,7 @@ import {
   EvmChain,
   isBitcoin,
   isEVM,
+  isEvmNativeToken,
   isSolana,
   isSolanaNativeToken,
   isStarknet,
@@ -35,6 +36,7 @@ import {
 import { Hex } from "viem";
 import { getSpendableBalance } from "../utils/getmaxBtc";
 import logger from "../utils/logger";
+import { getLegacyGasEstimate } from "../utils/getNativeTokenFee";
 
 export type Networks = {
   [chain in Chain]: ChainData & { assetConfig: Omit<AssetConfig, "chain">[] };
@@ -235,52 +237,69 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     workingRpcs: Record<number, string[]>,
     fetchOnlyAsset?: Asset
   ) => {
-    const { assets } = get();
+    const { assets, balances } = get();
     if (!assets) return;
 
-    let tokensByChain: Partial<Record<Chain, string[]>> = {};
-    if (fetchOnlyAsset)
-      tokensByChain[fetchOnlyAsset.chain] = [fetchOnlyAsset.tokenAddress];
-    else {
-      tokensByChain = Object.values(assets).reduce(
-        (acc, asset) => {
-          if (!isEVM(asset.chain)) return acc;
-          if (!acc[asset.chain]) acc[asset.chain] = [];
-          acc[asset.chain].push(asset.tokenAddress);
-          return acc;
-        },
-        {} as Record<Chain, string[]>
-      );
+    let tokensByChain: Partial<Record<Chain, Asset[]>> = {};
+    const targetAssets = fetchOnlyAsset
+      ? [fetchOnlyAsset]
+      : Object.values(assets);
+
+    for (const asset of targetAssets) {
+      if (!isEVM(asset.chain)) continue;
+      if (!tokensByChain[asset.chain]) tokensByChain[asset.chain] = [];
+      tokensByChain[asset.chain]!.push(asset);
     }
 
     try {
       const balanceResults = await Promise.allSettled(
-        Object.entries(tokensByChain).map(async ([chain, tokenAddresses]) => {
+        Object.entries(tokensByChain).map(async ([chain, assets]) => {
           const chainBalances = await getBalanceMulticall(
-            tokenAddresses as Hex[],
+            assets.map((asset) => asset.tokenAddress) as Hex[],
             address as Hex,
             chain as EvmChain,
             workingRpcs
           );
 
-          return Object.entries(chainBalances).reduce(
-            (acc, [tokenAddress, balance]) => {
-              acc[getOrderPair(chain, tokenAddress)] = balance;
-              return acc;
-            },
-            {} as Record<string, BigNumber | undefined>
-          );
+          const updatedBalances: Record<string, BigNumber | undefined> = {};
+
+          for (const asset of assets!) {
+            const orderKey = getOrderPair(chain, asset.tokenAddress);
+            let balance = chainBalances[asset.tokenAddress];
+
+            if (
+              balance &&
+              balance.gt(0) &&
+              isEvmNativeToken(chain as EvmChain, asset.tokenAddress)
+            ) {
+              const fee = await getLegacyGasEstimate(
+                chain as EvmChain,
+                address as `0x${string}`,
+                asset.atomicSwapAddress as `0x${string}`
+              );
+
+              if (fee) {
+                const feeBN = new BigNumber(fee.gasCost);
+                balance = BigNumber.max(balance.minus(feeBN), 0);
+              }
+            }
+
+            updatedBalances[orderKey] = balance;
+          }
+
+          return updatedBalances;
         })
       );
-      const balances = balanceResults.reduce((acc, result) => {
+
+      const finalBalances = balanceResults.reduce((acc, result) => {
         return result.status === "fulfilled"
           ? { ...acc, ...result.value }
           : acc;
       }, {});
 
-      set({ balances: { ...get().balances, ...balances } });
-    } catch {
-      /*empty*/
+      set({ balances: { ...balances, ...finalBalances } });
+    } catch (err) {
+      console.error("Failed to fetch balances", err);
     }
   },
 
