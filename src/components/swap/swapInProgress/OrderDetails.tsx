@@ -7,7 +7,7 @@ import { useState, FC, useMemo } from "react";
 import { getTrimmedAddress } from "../../../utils/getTrimmedAddress";
 import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
 import BigNumber from "bignumber.js";
-import { getAssetFromSwap } from "../../../utils/utils";
+import { getAssetFromSwap, formatAmount } from "../../../utils/utils";
 import { assetInfoStore } from "../../../store/assetInfoStore";
 import { CopyToClipboard } from "../../../common/CopyToClipboard";
 import { Url } from "@gardenfi/utils";
@@ -35,11 +35,11 @@ export const OrderDetailsRow: FC<OrderDetailsRowProps> = ({
 
   return (
     <div className="flex justify-between">
-      <Typography size="h4" weight="medium">
+      <Typography size="h4" weight="regular">
         {title}
       </Typography>
       <div className="flex items-center gap-2">
-        <Typography size="h4" weight="medium">
+        <Typography size="h4" weight="regular">
           {link ? getTrimmedAddress(value) : value}
         </Typography>
         {copyString && <CopyToClipboard text={copyString} />}
@@ -104,17 +104,12 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
               )
           : new BigNumber(0),
         amountToFill: order
-          ? Number(
-              new BigNumber(order.source_swap.amount)
-                .dividedBy(10 ** (inputAsset?.decimals ?? 0))
-                .toFixed(inputAsset?.decimals ?? 0)
-            )
+          ? formatAmount(order.source_swap.amount, inputAsset?.decimals ?? 0)
           : 0,
         filledAmount: order
-          ? Number(
-              new BigNumber(order.source_swap.filled_amount)
-                .dividedBy(10 ** (inputAsset?.decimals ?? 0))
-                .toFixed(inputAsset?.decimals ?? 0)
+          ? formatAmount(
+              order.source_swap.filled_amount,
+              inputAsset?.decimals ?? 0
             )
           : 0,
       };
@@ -133,7 +128,7 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
         onClick={handleDropdown}
         className="flex w-full cursor-pointer items-center justify-between"
       >
-        <Typography size="h5" weight="bold">
+        <Typography size="h5" weight="medium">
           Details
         </Typography>
         <div

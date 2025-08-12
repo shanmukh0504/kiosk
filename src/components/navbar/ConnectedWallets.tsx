@@ -91,7 +91,7 @@ const ConnectedWallets = () => {
         )}
         {pendingOrdersCount ? (
           <div className="flex h-5 w-5 items-center justify-center rounded-full bg-rose p-2">
-            <Typography size="h5" weight="bold" className="h-4 !text-white">
+            <Typography size="h5" weight="medium" className="h-4 !text-white">
               {pendingOrdersCount}
             </Typography>
           </div>

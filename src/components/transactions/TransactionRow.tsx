@@ -25,7 +25,7 @@ enum StatusLabel {
   Completed = "Completed",
   Pending = "In progress...",
   Expired = "Expired",
-  ShouldInitiate = "Awaiting deposit",
+  ShouldInitiate = "Detecting deposit",
   InitiateDetected = "Deposit detected (0/1)",
   Initiated = "Deposit detected",
   Redeeming = "Redeeming",
@@ -146,10 +146,10 @@ export const TransactionRow: FC<TransactionProps> = ({
             />
           )}
           <div className="flex justify-between">
-            <Typography size="h5" weight="medium">
+            <Typography size="h5" weight="regular">
               {statusLabel}
             </Typography>
-            <Typography size="h5" weight="medium">
+            <Typography size="h5" weight="regular">
               {dayDifference}
             </Typography>
           </div>

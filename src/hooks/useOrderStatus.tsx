@@ -10,7 +10,7 @@ import { Toast } from "../components/toast/Toast";
 
 export enum SimplifiedOrderStatus {
   orderCreated = "Order created",
-  awaitingDeposit = "Awaiting deposit",
+  detectingDeposit = "Detecting deposit",
   depositDetected = "Deposit detected",
   depositConfirmed = "Deposit confirmed",
   redeeming = "Redeeming ",
@@ -65,7 +65,7 @@ export const useOrderStatus = () => {
         return {
           1: { title: SimplifiedOrderStatus.orderCreated, status: "completed" },
           2: {
-            title: SimplifiedOrderStatus.awaitingDeposit,
+            title: SimplifiedOrderStatus.detectingDeposit,
             status: "pending",
           },
           3: {
@@ -81,7 +81,7 @@ export const useOrderStatus = () => {
         return {
           1: { title: SimplifiedOrderStatus.orderCreated, status: "completed" },
           2: {
-            title: SimplifiedOrderStatus.awaitingDeposit,
+            title: SimplifiedOrderStatus.detectingDeposit,
             status: "inProgress",
           },
           3: {

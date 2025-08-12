@@ -252,7 +252,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   return (
     <div className="flex max-h-[600px] flex-col gap-[20px] p-3">
       <div className="flex items-center justify-between">
-        <Typography size="h4" weight="bold">
+        <Typography size="h4" weight="medium">
           Connect a Wallet
         </Typography>
         <div className="flex gap-4">
@@ -274,7 +274,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           {Object.values(ecosystems).map((ecosystem, i) => (
             <Chip
               key={i}
-              className={`cursor-pointer py-1 pl-3 pr-1 transition-colors ease-cubic-in-out hover:bg-opacity-50`}
+              className={`cursor-pointer !bg-opacity-50 py-1.5 pl-3 pr-1 transition-colors ease-cubic-in-out hover:!bg-opacity-100`}
               onClick={() => {
                 setSelectedEcosystem((prev) =>
                   prev ===
@@ -286,7 +286,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                 );
               }}
             >
-              <Typography size="h3" weight="medium">
+              <Typography size="h3" weight="regular">
                 {ecosystem.name}
               </Typography>
               <RadioCheckedIcon
@@ -362,7 +362,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       )}
 
       <div className="mb-2">
-        <Typography size="h4" weight="medium">
+        <Typography size="h4" weight="regular">
           By connecting a wallet, you agree to Garden&apos;s{" "}
           <a
             href="https://garden.finance/terms.pdf"
