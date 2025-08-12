@@ -132,7 +132,7 @@ export const CreateSwap = () => {
     isSwapping,
     validSwap,
     error.liquidityError,
-    needsWalletConnection
+    needsWalletConnection,
   ]);
 
   const buttonVariant = useMemo(() => {
