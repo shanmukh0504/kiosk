@@ -7,7 +7,7 @@ import {
 } from "../../constants/constants";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useSwap } from "../../hooks/useSwap";
-import { useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
 import {
@@ -23,13 +23,22 @@ import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { rpcStore } from "../../store/rpcStore";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
-import { isEVM, isBitcoin, isStarknet, isSolana } from "@gardenfi/orderbook";
+import {
+  isEVM,
+  isBitcoin,
+  isStarknet,
+  isSolana,
+  Chain,
+} from "@gardenfi/orderbook";
 
 export const CreateSwap = () => {
   const [loadingDisabled, setLoadingDisabled] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [addParams, setAddParams] = useState(false);
+
+  const navigate = useNavigate();
+  const { destinationChain } = useParams();
   const { account: btcAddress, provider } = useBitcoinWallet();
   const { address } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
@@ -236,7 +245,6 @@ export const CreateSwap = () => {
     const {
       inputChain = "",
       inputAssetSymbol = "",
-      outputChain = "",
       outputAssetSymbol = "",
       inputAmount: urlInputAmount = "",
     } = getQueryParams(searchParams);
@@ -246,20 +254,36 @@ export const CreateSwap = () => {
       inputChain,
       inputAssetSymbol
     );
-    const toAsset = getAssetFromChainAndSymbol(
-      assets,
-      outputChain,
-      outputAssetSymbol
-    );
 
-    setAsset(IOType.input, fromAsset);
+    // If already there put it, otherwise get it from the destination chain
+    const toAsset =
+      getAssetFromChainAndSymbol(
+        assets,
+        destinationChain || "",
+        outputAssetSymbol
+      ) ||
+      (destinationChain && !outputAssetSymbol
+        ? Object.values(assets).find(
+            (asset) => asset.chain === destinationChain && !asset.disabled
+          )
+        : undefined);
+
     setAsset(IOType.output, toAsset);
-    if (!fromAsset && !toAsset) {
-      const BTC = Object.values(assets).find(
-        (asset) => asset.name.toLowerCase() == "bitcoin"
-      );
-      if (BTC && !BTC.disabled) {
-        setAsset(IOType.input, BTC);
+
+    if (fromAsset) {
+      setAsset(IOType.input, fromAsset);
+    } else {
+      if (!isBitcoin(destinationChain as Chain)) {
+        const BTC = Object.values(assets).find((asset) =>
+          isBitcoin(asset.chain)
+        );
+        if (BTC && !BTC.disabled) {
+          if (!toAsset || !isBitcoin(toAsset.chain)) {
+            setAsset(IOType.input, BTC);
+          }
+        }
+      } else {
+        setAsset(IOType.input, undefined);
       }
     }
 
@@ -276,6 +300,7 @@ export const CreateSwap = () => {
     searchParams,
     setAsset,
     inputAmount,
+    destinationChain,
     handleInputAmountChange,
   ]);
 
@@ -285,7 +310,6 @@ export const CreateSwap = () => {
     setSearchParams((prev) => {
       prev.delete(QUERY_PARAMS.inputChain);
       prev.delete(QUERY_PARAMS.inputAsset);
-      prev.delete(QUERY_PARAMS.outputChain);
       prev.delete(QUERY_PARAMS.outputAsset);
       prev.delete(QUERY_PARAMS.inputAmount);
 
@@ -293,9 +317,15 @@ export const CreateSwap = () => {
         prev.set(QUERY_PARAMS.inputChain, inputAsset.chain);
         prev.set(QUERY_PARAMS.inputAsset, inputAsset.symbol);
       }
+
+      if (inputAsset && outputAsset && inputAsset.chain === outputAsset.chain) {
+        prev.delete(QUERY_PARAMS.inputChain);
+        prev.delete(QUERY_PARAMS.inputAsset);
+      }
       if (outputAsset) {
-        prev.set(QUERY_PARAMS.outputChain, outputAsset.chain);
         prev.set(QUERY_PARAMS.outputAsset, outputAsset.symbol);
+      } else {
+        prev.delete(QUERY_PARAMS.outputAsset);
       }
       if (inputAmount) {
         prev.set(QUERY_PARAMS.inputAmount, inputAmount);
@@ -303,7 +333,21 @@ export const CreateSwap = () => {
 
       return prev;
     });
-  }, [addParams, inputAsset, outputAsset, inputAmount, setSearchParams]);
+
+    if (outputAsset && outputAsset.chain !== destinationChain) {
+      navigate(`/bridge/${outputAsset.chain}`);
+    } else if (!outputAsset && destinationChain) {
+      navigate("/");
+    }
+  }, [
+    addParams,
+    inputAsset,
+    outputAsset,
+    inputAmount,
+    setSearchParams,
+    navigate,
+    destinationChain,
+  ]);
 
   // Disable button when loading
   useEffect(() => {

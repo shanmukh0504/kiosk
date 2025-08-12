@@ -22,7 +22,7 @@ export const INTERNAL_ROUTES: Record<
 > = {
   swap: {
     name: "Swap",
-    path: ["/", "/swap"],
+    path: ["/", "/swap", "/bridge/:destinationChain"],
     enabled: true,
     isExternal: false,
   },
