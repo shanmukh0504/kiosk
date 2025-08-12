@@ -4,6 +4,7 @@
 
 body {
   overscroll-behavior: none;
+  color: #473c75;
 }
 
 @layer base {
