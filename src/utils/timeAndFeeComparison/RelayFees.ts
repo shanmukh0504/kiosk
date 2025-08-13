@@ -8,11 +8,11 @@ import {
   BTC_TESTNET_CHAIN_ID,
   BTC_TESTNET_RECIPIENT,
   EVM_DEAD_ADDRESS,
-  BTC_MAINNET_CHAIN_ID,
   SwapPlatform,
 } from "./constants";
 import { getFormattedAsset } from "./utils";
 import axios from "axios";
+import { BTC_MAINNET_CHAIN_ID } from "./constants";
 import BigNumber from "bignumber.js";
 
 export const getRelayFee = async (
