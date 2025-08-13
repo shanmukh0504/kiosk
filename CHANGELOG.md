@@ -2,9 +2,14 @@
 
 ## [1.1.1]
 
+### Added
+
+- Added support for sui chain in garden.
+
 ### Fixed
 
-- Search functionality in AssetSelector component. 
+- Updated the asset routes in competitor savings constant.
+- Search functionality in AssetSelector component.
 
 ## [1.1.0]
 

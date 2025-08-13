@@ -11,12 +11,14 @@ import { useGarden } from "@gardenfi/react-hooks";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { deletedOrdersStore } from "../../store/deletedOrdersStore";
 import { isOrderExpired } from "@gardenfi/core";
+import { useSuiWallet } from "../../hooks/useSuiWallet";
 
 const ConnectedWallets = () => {
   const { address } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
+  const { suiConnected, currentAccount } = useSuiWallet();
   const { pendingOrders } = useGarden();
   const { setOpenModal } = modalStore();
   const { isOrderDeleted, cleanupDeletedOrders, deletedOrders } =
@@ -87,6 +89,13 @@ const ConnectedWallets = () => {
             src={ecosystems.Solana.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="Solana wallet"
+          />
+        )}
+        {suiConnected && currentAccount && (
+          <img
+            src={ecosystems.Sui.icon}
+            className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            alt="Sui wallet"
           />
         )}
         {pendingOrdersCount ? (

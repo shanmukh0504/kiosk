@@ -23,7 +23,14 @@ import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { rpcStore } from "../../store/rpcStore";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
-import { isEVM, isBitcoin, isStarknet, isSolana } from "@gardenfi/orderbook";
+import { useSuiWallet } from "../../hooks/useSuiWallet";
+import {
+  isEVM,
+  isBitcoin,
+  isStarknet,
+  isSolana,
+  isSui,
+} from "@gardenfi/orderbook";
 import { swapStore } from "../../store/swapStore";
 import { AnimatePresence, motion } from "framer-motion";
 import { CompetitorComparisons } from "./CompetitorComparisons";
@@ -37,6 +44,7 @@ export const CreateSwap = () => {
   const { address } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { solanaAnchorProvider } = useSolanaWallet();
+  const { currentAccount } = useSuiWallet();
   const {
     isAssetSelectorOpen,
     assets,
@@ -45,6 +53,7 @@ export const CreateSwap = () => {
     fetchAndSetFiatValues,
     fetchAndSetStarknetBalance,
     fetchAndSetSolanaBalance,
+    fetchAndSetSuiBalance,
   } = assetInfoStore();
   const {
     isComparisonVisible,
@@ -85,7 +94,8 @@ export const CreateSwap = () => {
     if (
       isBitcoin(inputAsset.chain) ||
       isStarknet(inputAsset.chain) ||
-      isSolana(inputAsset.chain)
+      isSolana(inputAsset.chain) ||
+      isSui(inputAsset.chain)
     )
       return true;
     return WALLET_SUPPORTED_CHAINS[connector.id].includes(inputAsset.chain);
@@ -158,13 +168,16 @@ export const CreateSwap = () => {
       starknetAddress && fetchAndSetStarknetBalance(starknetAddress),
       solanaAnchorProvider &&
         fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey),
+      currentAccount && fetchAndSetSuiBalance(currentAccount.address),
     ]);
   }, [
     address,
     provider,
     btcAddress,
+    currentAccount,
     fetchAndSetEvmBalances,
     fetchAndSetBitcoinBalance,
+    fetchAndSetSuiBalance,
     starknetAddress,
     solanaAnchorProvider,
     fetchAndSetFiatValues,
@@ -184,19 +197,23 @@ export const CreateSwap = () => {
       await fetchAndSetStarknetBalance(starknetAddress);
     if (isSolana(inputAsset.chain) && solanaAnchorProvider)
       await fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey);
+    if (isSui(inputAsset.chain) && currentAccount)
+      await fetchAndSetSuiBalance(currentAccount.address);
   }, [
+    fetchAndSetFiatValues,
     inputAsset,
     address,
+    fetchAndSetEvmBalances,
+    workingRPCs,
     provider,
     btcAddress,
-    fetchAndSetEvmBalances,
     fetchAndSetBitcoinBalance,
     starknetAddress,
-    solanaAnchorProvider,
-    fetchAndSetFiatValues,
     fetchAndSetStarknetBalance,
+    solanaAnchorProvider,
     fetchAndSetSolanaBalance,
-    workingRPCs,
+    currentAccount,
+    fetchAndSetSuiBalance,
   ]);
 
   const handleConnectWallet = () => {
