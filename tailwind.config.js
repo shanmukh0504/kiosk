@@ -9,8 +9,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        rose: "#E36492",
-        "dark-grey": "#554B6A",
+        rose: "#FC79C1",
+        "dark-grey": "#473C75",
         "mid-grey": "#817A90",
         "light-grey": "#E3E0EB",
         "off-white": "#F4F0FC",
@@ -53,14 +53,14 @@ export default {
   plugins: [
     createThemes({
       swap: {
-        primary: "#7BDCBA",
+        primary: "#E4EBF2",
         "primary-lighter": "#DEF6EE",
       },
       quests: {
         primary: "#D8BEFF",
       },
       stake: {
-        primary: "#FFCD82",
+        primary: "#E4EBF2",
       },
     }),
   ],

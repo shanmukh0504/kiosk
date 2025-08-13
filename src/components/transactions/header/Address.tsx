@@ -23,12 +23,12 @@ export const Address: FC<AddressProps> = ({ address, logo }) => {
   };
 
   return (
-    <div className="flex gap-2 rounded-full bg-white/50 px-2 py-[2px]">
+    <div className="flex items-center gap-2 rounded-full bg-white/50 px-2 py-[2px]">
       <img src={logo} className="my-1 h-5 w-5" />
       <Typography
         size="h3"
-        weight="medium"
-        className="cursor-pointer pt-[2px]"
+        weight="regular"
+        className="cursor-pointer"
         onClick={handleAddressClick}
         data-tooltip-id={addressTooltipId}
       >

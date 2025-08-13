@@ -10,12 +10,14 @@ import { useEffect } from "react";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { deletedOrdersStore } from "../../store/deletedOrdersStore";
+import { useSuiWallet } from "../../hooks/useSuiWallet";
 
 const ConnectedWallets = () => {
   const { address } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
+  const { suiConnected, currentAccount } = useSuiWallet();
   const { pendingOrders } = useGarden();
   const { setOpenModal } = modalStore();
   const { isOrderDeleted, cleanupDeletedOrders, deletedOrders } =
@@ -88,9 +90,16 @@ const ConnectedWallets = () => {
             alt="Solana wallet"
           />
         )}
+        {suiConnected && currentAccount && (
+          <img
+            src={ecosystems.Sui.icon}
+            className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            alt="Sui wallet"
+          />
+        )}
         {pendingOrdersCount ? (
           <div className="flex h-5 w-5 items-center justify-center rounded-full bg-rose p-2">
-            <Typography size="h5" weight="bold" className="h-4 !text-white">
+            <Typography size="h5" weight="medium" className="h-4 !text-white">
               {pendingOrdersCount}
             </Typography>
           </div>

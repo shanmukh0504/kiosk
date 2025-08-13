@@ -10,6 +10,7 @@ import { swapStore } from "../../../store/swapStore";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
 import { assetInfoStore } from "../../../store/assetInfoStore";
+import { useSuiWallet } from "../../../hooks/useSuiWallet";
 
 type AddressMenuProps = {
   onClose: () => void;
@@ -20,6 +21,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const { starknetAddress, starknetDisconnect } = useStarknetWallet();
   const { account: btcAddress, disconnect: btcDisconnect } = useBitcoinWallet();
   const { solanaAddress, solanaDisconnect } = useSolanaWallet();
+  const { suiConnected, currentAccount, suiDisconnect } = useSuiWallet();
   const { setOpenModal } = modalStore();
   const { clear } = swapStore();
   const { clearBalances } = assetInfoStore();
@@ -29,8 +31,14 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const logoutTooltipId = useId();
 
   const showConnectWallet = useMemo(() => {
-    return !(address && btcAddress && starknetAddress && solanaAddress);
-  }, [address, btcAddress, starknetAddress, solanaAddress]);
+    return !(
+      address &&
+      btcAddress &&
+      starknetAddress &&
+      solanaAddress &&
+      suiConnected
+    );
+  }, [address, btcAddress, starknetAddress, solanaAddress, suiConnected]);
 
   const handleDisconnectClick = () => {
     clear();
@@ -38,6 +46,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
     btcDisconnect();
     starknetDisconnect();
     solanaDisconnect();
+    suiDisconnect();
     clearBalances();
     onClose();
     setTimeout(() => {
@@ -66,6 +75,12 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
           )}
           {solanaAddress && (
             <Address address={solanaAddress} logo={ecosystems.Solana.icon} />
+          )}
+          {suiConnected && (
+            <Address
+              address={currentAccount?.address ?? ""}
+              logo={ecosystems.Sui.icon}
+            />
           )}
           {showConnectWallet && (
             <div

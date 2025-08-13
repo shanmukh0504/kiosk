@@ -1,4 +1,4 @@
-import { Chain, isBitcoin } from "@gardenfi/orderbook";
+import { isBitcoin } from "@gardenfi/orderbook";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
 import { FC, useId, useMemo } from "react";
 import { assetInfoStore } from "../../store/assetInfoStore";
@@ -9,6 +9,7 @@ import {
 } from "@gardenfi/garden-book";
 import { Tooltip } from "../../common/Tooltip";
 import { swapStore } from "../../store/swapStore";
+import { Url } from "@gardenfi/utils";
 
 type AddressDetailsProps = {
   isRefund?: boolean;
@@ -34,11 +35,10 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
     return allChains && chain ? allChains[chain] : null;
   }, [allChains, chain]);
 
-  const handleAddressRedirect = (address: string, chain: Chain) => {
+  const handleAddressRedirect = (address: string) => {
     if (!redirect) return;
-    if (isBitcoin(chain))
-      window.open(redirect.explorer + "address/" + address, "_blank");
-    else window.open(redirect.explorer + "/address/" + address, "_blank");
+    const url = new Url("address", redirect.explorer).endpoint(address);
+    window.open(url, "_blank");
   };
 
   return (
@@ -52,19 +52,19 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
           }`}
           onClick={(e) => {
             e.stopPropagation();
-            handleAddressRedirect(address, chain);
+            handleAddressRedirect(address);
           }}
         >
           <Typography
             data-tooltip-id={isRefund ? tooltipId : ""}
             size="h5"
-            weight="medium"
+            weight="regular"
             className="!text-mid-grey"
           >
             {isRefund ? "Refund" : "Receive"} address
           </Typography>
           <div className="flex items-center gap-2">
-            <Typography size="h5" weight="medium">
+            <Typography size="h5" weight="regular">
               {getTrimmedAddress(address)}
             </Typography>
             <div className="flex gap-1">
@@ -86,7 +86,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
           </div>
         </div>
       )}
-      <Typography size="h5" weight="medium">
+      <Typography size="h5" weight="regular">
         {isRefund && (
           <Tooltip
             id={tooltipId}
