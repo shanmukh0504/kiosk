@@ -24,6 +24,7 @@ function AppWithReady() {
     ) {
       sdkInstance.actions.ready();
     }
+    sdkInstance;
   }, []);
   return <App />;
 }
@@ -33,7 +34,10 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <WalletProviders>
-          <MiniKitProvider apiKey="your-onchainkit-api-key" chain={base}>
+          <MiniKitProvider
+            apiKey={import.meta.env.VITE_MINIAPP_KEY}
+            chain={base}
+          >
             <AppWithReady />
           </MiniKitProvider>
           <WalletMonitor />
