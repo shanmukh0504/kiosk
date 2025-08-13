@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.1]
+
+### Fixed
+
+- Updated the asset routes in competitor savings constant.
+
 ## [1.1.0]
 
 ### Added
