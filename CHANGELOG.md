@@ -9,6 +9,7 @@
 ### Fixed
 
 - Updated the asset routes in competitor savings constant.
+- Search functionality in AssetSelector component.
 
 ## [1.1.0]
 
