@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { BTC, swapStore } from "../store/swapStore";
 import { IOType, network } from "../constants/constants";
-import { Asset, Chain, isBitcoin, isSolana } from "@gardenfi/orderbook";
+import { Asset, Chain, isBitcoin, isSolana, isSui } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
 import {
@@ -24,6 +24,7 @@ import BigNumber from "bignumber.js";
 import { useSolanaWallet } from "./useSolanaWallet";
 import { formatAmount, getOrderPair } from "../utils/utils";
 import { useNetworkFees } from "./useNetworkFees";
+import { useSuiWallet } from "./useSuiWallet";
 import logger from "../utils/logger";
 
 export const useSwap = () => {
@@ -70,6 +71,7 @@ export const useSwap = () => {
   const { starknetAddress } = useStarknetWallet();
   const { setOpenModal } = modalStore();
   const { solanaAddress } = useSolanaWallet();
+  const { currentAccount } = useSuiWallet();
   useNetworkFees();
 
   const inputBalance = useMemo(() => {
@@ -81,7 +83,9 @@ export const useSwap = () => {
     () =>
       inputBalance &&
       inputAsset &&
-      (!isStarknet(inputAsset.chain) && !isSolana(inputAsset.chain)
+      (!isStarknet(inputAsset.chain) &&
+      !isSolana(inputAsset.chain) &&
+      !isSui(inputAsset.chain)
         ? formatAmount(
             Number(inputBalance),
             inputAsset.decimals,
@@ -401,6 +405,10 @@ export const useSwap = () => {
         check: (chain: Chain) => isSolana(chain),
         address: solanaAddress,
       },
+      sui: {
+        check: (chain: Chain) => isSui(chain),
+        address: currentAccount?.address,
+      },
     };
 
     for (const [chainKey, { check, address }] of Object.entries(
@@ -420,6 +428,7 @@ export const useSwap = () => {
     evmAddress,
     starknetAddress,
     solanaAddress,
+    currentAccount,
   ]);
 
   const handleSwapClick = async () => {

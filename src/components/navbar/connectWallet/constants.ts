@@ -19,6 +19,10 @@ export const ecosystems = {
     name: "Solana",
     icon: "https://garden-finance.imgix.net/chain_images/solana.png",
   },
+  [BlockchainType.Sui]: {
+    name: "Sui",
+    icon: "https://garden-finance.imgix.net/chain_images/sui.svg",
+  },
 } as const;
 
 export type EcosystemKeys = keyof typeof ecosystems;
@@ -45,6 +49,7 @@ interface BaseWallet {
   isEVMSupported: boolean;
   isStarknetSupported: boolean;
   isSolanaSupported: boolean;
+  isSuiSupported: boolean;
 }
 
 // Wallet capabilities interface
@@ -53,6 +58,7 @@ interface WalletCapabilities {
   [BlockchainType.EVM]?: boolean;
   [BlockchainType.Starknet]?: boolean;
   [BlockchainType.Solana]?: boolean;
+  [BlockchainType.Sui]?: boolean;
 }
 
 type GardenSupportedWalletsType = BaseWallet & WalletCapabilities;
@@ -72,6 +78,7 @@ const createWallet = (
   isEVMSupported: capabilities[BlockchainType.EVM] ?? false,
   isStarknetSupported: capabilities[BlockchainType.Starknet] ?? false,
   isSolanaSupported: capabilities[BlockchainType.Solana] ?? false,
+  isSuiSupported: capabilities[BlockchainType.Sui] ?? false,
 });
 
 export const GardenSupportedWallets: Record<
@@ -108,6 +115,7 @@ export const GardenSupportedWallets: Record<
       EVM: network === Network.MAINNET,
       Bitcoin: true,
       Solana: true,
+      Sui: true,
     }
   ),
   "com.coinbase.wallet": createWallet(
@@ -125,6 +133,7 @@ export const GardenSupportedWallets: Record<
     {
       Bitcoin: network === Network.MAINNET,
       EVM: true,
+      Sui: network === Network.MAINNET,
     }
   ),
   unisat: createWallet(
@@ -189,5 +198,12 @@ export const GardenSupportedWallets: Record<
     "wallets/Backpack.svg",
     "https://backpack.app/",
     { Solana: true }
+  ),
+  slush: createWallet(
+    "slush",
+    "Slush Wallet",
+    "wallets/SlushLogo.png",
+    "https://slushwallet.com/",
+    { Sui: true }
   ),
 };
