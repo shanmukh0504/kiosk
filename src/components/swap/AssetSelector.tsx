@@ -2,6 +2,7 @@ import {
   CloseIcon,
   GradientScroll,
   SearchIcon,
+  TokenNetworkLogos,
   Typography,
 } from "@gardenfi/garden-book";
 import BigNumber from "bignumber.js";
@@ -19,7 +20,6 @@ import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { BTC, swapStore } from "../../store/swapStore";
 import { IOType, network } from "../../constants/constants";
 import { constructOrderPair } from "@gardenfi/core";
-import { AssetChainLogos } from "../../common/AssetChainLogos";
 import { modalStore } from "../../store/modalStore";
 import { ChainsTooltip } from "./ChainsTooltip";
 import { AvailableChainsSidebar } from "./AvailableChainsSidebar";
@@ -127,13 +127,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         })
         .filter((asset) => !chain || asset.chain === chain.identifier)
         .map((asset) => {
-          const network =
-            !isBitcoin(asset.chain) &&
-            !isSolanaNativeToken(asset.chain, asset.tokenAddress) &&
-            !isEvmNativeToken(asset.chain, asset.tokenAddress) &&
-            !isSui(asset.chain)
-              ? chains?.[asset.chain]
-              : undefined;
+          const network = chains?.[asset.chain];
           const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
           const balance = balances?.[orderPair];
           const fiatRate = fiatData?.[getAssetChainHTLCAddressPair(asset)] ?? 0;
@@ -316,7 +310,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           className={`left-auto top-60 z-30 flex flex-col gap-3 rounded-[20px] sm:min-w-[468px] ${isMobile ? "" : "m-1"}`}
         >
           <div className="flex items-center justify-between p-1">
-            <Typography size="h4" weight="bold">
+            <Typography size="h4" weight="medium">
               {`Select token to ${
                 isAssetSelectorOpen.type === IOType.input ? "send" : "receive"
               }`}
@@ -364,7 +358,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                 >
                   <Typography
                     size="h4"
-                    weight="medium"
+                    weight="regular"
                     className="!flex !cursor-pointer !items-center !text-mid-grey"
                   >
                     +{orderedChains.length - visibleChainsCount}
@@ -375,7 +369,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           </div>
           <div className="flex w-full items-center justify-between rounded-2xl bg-white/50 px-4 py-[10px]">
             <div className="flex flex-grow items-center">
-              <Typography size="h4" weight="medium" className="gf-w-full">
+              <Typography size="h4" weight="regular" className="gf-w-full">
                 <input
                   ref={inputRef}
                   className="w-full bg-transparent outline-none placeholder:text-mid-grey focus:outline-none"
@@ -390,7 +384,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           </div>
           <div className="flex h-[316px] flex-col overflow-auto rounded-2xl bg-white">
             <div className="px-4 pb-1.5 pt-3">
-              <Typography size="h5" weight="bold">
+              <Typography size="h5" weight="medium">
                 {chain ? "Assets on " + chain.name : "Assets"}
               </Typography>
             </div>
@@ -406,7 +400,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                       >
                         <div className="flex w-full items-center gap-2">
                           <div className={`w-10`}>
-                            <AssetChainLogos
+                            <TokenNetworkLogos
                               tokenLogo={asset.logo}
                               chainLogo={network?.networkLogo}
                             />
@@ -415,7 +409,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                             className={`w-2/3`}
                             size={"h5"}
                             breakpoints={{ sm: "h4" }}
-                            weight="medium"
+                            weight="regular"
                           >
                             {asset.name}
                           </Typography>
@@ -427,7 +421,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                               breakpoints={{
                                 sm: "h4",
                               }}
-                              weight="medium"
+                              weight="regular"
                               className={`!text-mid-grey`}
                             >
                               {formatAmount(
@@ -442,7 +436,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                             breakpoints={{
                               sm: "h4",
                             }}
-                            weight="medium"
+                            weight="regular"
                             className={`!text-mid-grey`}
                           >
                             {asset.symbol}
@@ -454,7 +448,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                 )
               ) : (
                 <div className="flex min-h-[274px] w-full items-center justify-center">
-                  <Typography size="h4" weight="medium">
+                  <Typography size="h4" weight="regular">
                     No assets found.
                   </Typography>
                 </div>

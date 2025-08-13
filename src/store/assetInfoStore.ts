@@ -37,8 +37,8 @@ import {
 } from "../utils/getTokenBalance";
 import { Hex } from "viem";
 import { getSpendableBalance } from "../utils/getmaxBtc";
-import { getLegacyGasEstimate } from "../utils/getNativeTokenFee";
 import logger from "../utils/logger";
+import { getLegacyGasEstimate } from "../utils/getNativeTokenFee";
 
 export type Networks = {
   [chain in Chain]: ChainData & { assetConfig: Omit<AssetConfig, "chain">[] };

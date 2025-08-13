@@ -34,7 +34,9 @@ export const Navbar = () => {
 
   return (
     <div
-      className={"flex items-center justify-between gap-3 px-6 py-6 sm:px-10"}
+      className={
+        "flex items-center justify-between gap-3 px-6 py-6 text-dark-grey sm:px-10"
+      }
     >
       <div className="flex items-center gap-16 py-2">
         <GardenFullLogo
@@ -53,7 +55,7 @@ export const Navbar = () => {
                 target={route.isExternal ? "_blank" : undefined}
                 rel={route.isExternal ? "noreferrer" : undefined}
               >
-                <Typography size="h2" weight={isActive ? "bold" : "medium"}>
+                <Typography size="h2" weight={isActive ? "medium" : "regular"}>
                   {route.name}
                 </Typography>
               </a>
@@ -65,7 +67,7 @@ export const Navbar = () => {
         {!isMobile && isTestnet && (
           <div className="flex items-center gap-2 rounded-3xl bg-white/25 px-4 py-3">
             <CodeBlockIcon />
-            <Typography size="h3" weight="medium">
+            <Typography size="h3" weight="regular">
               Testnet
             </Typography>
           </div>

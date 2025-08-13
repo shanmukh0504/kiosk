@@ -141,7 +141,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
           alt="icon"
           className="h-5 w-5"
         />
-        <Typography size="h3" weight="medium">
+        <Typography size="h3" weight="regular">
           {connectors[BlockchainType.Bitcoin]?.name ??
             connectors[BlockchainType.Solana]?.adapter.name ??
             connectors[BlockchainType.Starknet]?.name ??
@@ -149,7 +149,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
         </Typography>
       </div>
       <div className="flex flex-col gap-1 rounded-2xl bg-white/50 p-4">
-        <Typography size="h5" weight="bold" className="px-4">
+        <Typography size="h5" weight="medium" className="px-4">
           Select ecosystems
         </Typography>
         {availableEcosystems.map(([key, ecosystem]) => (
@@ -162,7 +162,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
           >
             <img src={ecosystem.icon} alt={"icon"} className="h-8 w-8" />
             <div className="mr-auto flex justify-between">
-              <Typography size="h2" weight="medium">
+              <Typography size="h2" weight="regular">
                 {ecosystem.name}
               </Typography>
             </div>

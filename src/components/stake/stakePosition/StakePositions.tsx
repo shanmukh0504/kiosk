@@ -25,7 +25,7 @@ export const StakePositions = () => {
       style={{ transformOrigin: "top" }}
     >
       <div className="mx-auto mb-8 flex w-[328px] flex-col rounded-2xl bg-white/50 p-6 sm:w-[424px] md:w-[740px] lg:w-[1000px]">
-        <Typography size="h5" weight="bold">
+        <Typography size="h5" weight="medium">
           Staking positions
         </Typography>
         <div>
@@ -42,7 +42,7 @@ export const StakePositions = () => {
                 )
             )
           ) : (
-            <Typography size="h5" weight="medium" className="mt-4 text-center">
+            <Typography size="h5" weight="regular" className="mt-4 text-center">
               No staking position found.
             </Typography>
           )}

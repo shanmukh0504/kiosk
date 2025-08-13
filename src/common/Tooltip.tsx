@@ -16,10 +16,10 @@ export const Tooltip: FC<TooltipProps> = ({
   multiline,
 }) => {
   return (
-    <Typography size="h5" weight="medium">
+    <Typography size="h5" weight="regular">
       <ReactTooltip
         id={id}
-        className={`tooltip ${multiline ? "multiline" : ""}`}
+        className={`tooltip ${multiline ? "multiline" : ""} !bg-white !text-dark-grey !backdrop-blur-xl`}
         place={place}
         content={content}
       />

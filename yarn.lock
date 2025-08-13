@@ -1087,6 +1087,7 @@ __metadata:
   languageName: node
   linkType: hard
 
+<<<<<<< HEAD
 "@gardenfi/core@npm:2.4.6-beta.2":
   version: 2.4.6-beta.2
   resolution: "@gardenfi/core@npm:2.4.6-beta.2"
@@ -1114,6 +1115,11 @@ __metadata:
 "@gardenfi/garden-book@npm:0.1.100-beta.8":
   version: 0.1.100-beta.8
   resolution: "@gardenfi/garden-book@npm:0.1.100-beta.8"
+=======
+"@gardenfi/garden-book@npm:0.2.2":
+  version: 0.2.2
+  resolution: "@gardenfi/garden-book@npm:0.2.2"
+>>>>>>> 2ea9932e75bf654f040ae242589faa7321a64f84
   dependencies:
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^2.1.1"
@@ -1126,7 +1132,11 @@ __metadata:
   peerDependencies:
     react: ^18.2.0
     react-dom: ^18.2.0
+<<<<<<< HEAD
   checksum: 10c0/507371141bfc8dcaf57253fe057802e0caee64cef0af882887c473f18475127f1893fcb74becb517e779695acc82c4576e2a7371a65e8d1726d8c92173cb2132
+=======
+  checksum: 10c0/0f692020f8a9f2c74190c812afd3b1bfe183a19b296bbb5cca56d3a927e045841165303da4f17b82be01a643b0419952fa65dac13ce246e4ff482f04f2930428
+>>>>>>> 2ea9932e75bf654f040ae242589faa7321a64f84
   languageName: node
   linkType: hard
 
@@ -11022,6 +11032,7 @@ __metadata:
     "@chainflip/sdk": "npm:^1.8.3"
     "@coral-xyz/anchor": "npm:^0.31.1"
     "@eslint/js": "npm:^9.13.0"
+<<<<<<< HEAD
     "@gardenfi/core": "npm:2.4.6-beta.2"
     "@gardenfi/garden-book": "npm:0.1.100-beta.8"
     "@gardenfi/orderbook": "npm:2.4.6-beta.2"
@@ -11031,6 +11042,14 @@ __metadata:
     "@mysten/dapp-kit": "npm:^0.17.2"
     "@mysten/sui": "npm:^1.37.1"
     "@mysten/wallet-standard": "npm:^0.16.9"
+=======
+    "@gardenfi/core": "npm:2.4.2-beta.1"
+    "@gardenfi/garden-book": "npm:0.2.2"
+    "@gardenfi/orderbook": "npm:2.4.2-beta.1"
+    "@gardenfi/react-hooks": "npm:2.4.2-beta.1"
+    "@gardenfi/utils": "npm:2.4.2"
+    "@gardenfi/wallet-connectors": "npm:2.3.2-beta.2"
+>>>>>>> 2ea9932e75bf654f040ae242589faa7321a64f84
     "@number-flow/react": "npm:^0.5.9"
     "@sentry/react": "npm:^9.41.0"
     "@sentry/vite-plugin": "npm:^4.0.2"
