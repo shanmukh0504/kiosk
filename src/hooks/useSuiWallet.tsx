@@ -24,7 +24,7 @@ export const useSuiWallet = () => {
         { wallet },
         {
           onSuccess: () => {
-            console.log("connected");
+            // console.log("connected");
             resolve();
           },
           onError: (error: any) => {
@@ -39,7 +39,7 @@ export const useSuiWallet = () => {
     return new Promise<void>((resolve, reject) => {
       disconnect(undefined, {
         onSuccess: () => {
-          console.log("disconnected");
+          // console.log("disconnected");
           resolve();
         },
         onError: (error: any) => {
