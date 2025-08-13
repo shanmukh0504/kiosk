@@ -36,6 +36,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const [chain, setChain] = useState<ChainData>();
   const [input, setInput] = useState<string>("");
   const [results, setResults] = useState<Asset[]>();
+  const [searchResults, setSearchResults] = useState<Asset[]>();
   const [hoveredChain, setHoveredChain] = useState("");
   const [showAllChains, setShowAllChains] = useState(false);
   const [visibleChainsCount, setVisibleChainsCount] = useState<number>(7);
@@ -97,10 +98,11 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   );
 
   const sortedResults = useMemo(() => {
-    if (!results && orderedChains.length === 0) return [];
+    const assetsToSort = searchResults || results;
+    if (!assetsToSort && orderedChains.length === 0) return [];
     return (
-      results &&
-      results
+      assetsToSort &&
+      assetsToSort
         .sort((a, b) => {
           const chainA = chains?.[a.chain];
           const chainB = chains?.[b.chain];
@@ -142,7 +144,15 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           };
         })
     );
-  }, [results, orderedChains, chains, chain, balances, fiatData]);
+  }, [
+    searchResults,
+    results,
+    orderedChains,
+    chains,
+    chain,
+    balances,
+    fiatData,
+  ]);
 
   const isAnyWalletConnected =
     !!address || !!btcAddress || !!starknetAccount || !!solanaAddress;
@@ -222,11 +232,16 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   };
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-    if (!assets) return;
+    if (!results) return;
     const inputValue = e.target.value.toLowerCase();
     setInput(inputValue);
-    setResults(
-      Object.values(assets).filter(
+
+    if (!inputValue) {
+      setSearchResults(undefined);
+      return;
+    }
+    setSearchResults(
+      results.filter(
         (asset) =>
           asset.name?.toLowerCase().includes(inputValue) ||
           asset.symbol?.toLowerCase().includes(inputValue)
