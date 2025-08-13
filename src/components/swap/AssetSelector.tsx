@@ -7,15 +7,7 @@ import {
 } from "@gardenfi/garden-book";
 import BigNumber from "bignumber.js";
 import { FC, useState, ChangeEvent, useEffect, useMemo, useRef } from "react";
-import {
-  Asset,
-  isBitcoin,
-  isStarknet,
-  isSolana,
-  isSolanaNativeToken,
-  isEvmNativeToken,
-  isSui,
-} from "@gardenfi/orderbook";
+import { Asset, isStarknet, isSolana, isSui } from "@gardenfi/orderbook";
 import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { BTC, swapStore } from "../../store/swapStore";
 import { IOType, network } from "../../constants/constants";
