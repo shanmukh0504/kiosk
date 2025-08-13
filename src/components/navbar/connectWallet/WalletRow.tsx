@@ -45,7 +45,19 @@ export const WalletRow: FC<WalletRowProps> = ({
         }`}
       >
         <div className="flex items-center gap-4">
-          <img src={logo} alt={"icon"} className="h-6 w-6" />
+          <img
+            src={logo}
+            alt={"icon"}
+            className="h-6 w-6 object-contain"
+            style={{
+              width: 24,
+              height: 24,
+              minWidth: 24,
+              minHeight: 24,
+              maxWidth: 24,
+              maxHeight: 24,
+            }}
+          />
           <div className="flex items-center justify-between">
             <Typography
               size="h3"
@@ -74,8 +86,16 @@ export const WalletRow: FC<WalletRowProps> = ({
                       <img
                         key={ecosystem}
                         src={ecosystems[ecosystem as BlockchainType].icon ?? ""}
-                        height={24}
-                        width={24}
+                        alt={`${ecosystem} icon`}
+                        className="rounded-full object-contain"
+                        style={{
+                          width: 24,
+                          height: 24,
+                          minWidth: 24,
+                          minHeight: 24,
+                          maxWidth: 24,
+                          maxHeight: 24,
+                        }}
                       />
                     )
                 )}

@@ -2,6 +2,10 @@
 
 ## [1.1.1]
 
+### Added
+
+- Added support for sui chain in garden.
+
 ### Fixed
 
 - Updated the asset routes in competitor savings constant.
