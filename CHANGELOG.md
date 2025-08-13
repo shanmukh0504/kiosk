@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.1]
+
+### Added
+
+- Added support for sui chain in garden.
+
 ## [1.1.0]
 
 ### Added

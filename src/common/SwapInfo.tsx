@@ -36,7 +36,11 @@ export const SwapInfo: FC<SwapInfoProps> = ({
         </Typography>
         <TokenNetworkLogos
           tokenLogo={sendAsset.logo}
-          chainLogo={sendChain?.networkLogo}
+          chainLogo={
+            sendChain?.networkLogo === sendAsset.logo
+              ? ""
+              : sendChain?.networkLogo
+          }
         />
       </div>
       <ArrowRightIcon className={equalSplit ? "" : "h-5 w-9"} />

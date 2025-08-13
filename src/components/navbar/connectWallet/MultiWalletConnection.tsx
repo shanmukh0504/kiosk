@@ -12,8 +12,9 @@ import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { Wallet as SolanaWallet } from "@solana/wallet-adapter-react";
 import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
+import { WalletWithRequiredFeatures as SuiWallet } from "@mysten/wallet-standard";
 import { BlockchainType } from "@gardenfi/orderbook";
-
+import { useSuiWallet } from "../../../hooks/useSuiWallet";
 type Checked = Record<BlockchainType, boolean>;
 
 type MultiWalletConnectionProps = {
@@ -22,6 +23,7 @@ type MultiWalletConnectionProps = {
     [BlockchainType.Bitcoin]?: IInjectedBitcoinProvider;
     [BlockchainType.Starknet]?: StarknetConnector;
     [BlockchainType.Solana]?: SolanaWallet;
+    [BlockchainType.Sui]?: SuiWallet;
   };
   handleClose: () => void;
 };
@@ -43,13 +45,14 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   const { solanaConnect } = useSolanaWallet();
   const { starknetConnectAsync, starknetDisconnect, starknetSwitchChain } =
     useStarknetWallet();
-
+  const { handleSuiConnect } = useSuiWallet();
   const availableEcosystems = Object.entries(ecosystems).filter(
     ([, value]) =>
       (value.name === BlockchainType.EVM && connectors.EVM) ||
       (value.name === BlockchainType.Bitcoin && connectors.Bitcoin) ||
       (value.name === BlockchainType.Starknet && connectors.Starknet) ||
-      (value.name === BlockchainType.Solana && connectors.Solana)
+      (value.name === BlockchainType.Solana && connectors.Solana) ||
+      (value.name === BlockchainType.Sui && connectors.Sui)
   );
   // console.log("Available ecosystems:", availableEcosystems, connectors);
 
@@ -109,6 +112,14 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
         return;
       }
       await solanaConnect(connectors.Solana.adapter.name);
+    }
+
+    if (checked[BlockchainType.Sui]) {
+      if (!connectors.Sui) {
+        setLoading(false);
+        return;
+      }
+      await handleSuiConnect(connectors.Sui);
     }
 
     setLoading(false);
