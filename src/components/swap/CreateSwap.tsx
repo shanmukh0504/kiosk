@@ -200,18 +200,20 @@ export const CreateSwap = () => {
     if (isSui(inputAsset.chain) && currentAccount)
       await fetchAndSetSuiBalance(currentAccount.address);
   }, [
+    fetchAndSetFiatValues,
     inputAsset,
     address,
+    fetchAndSetEvmBalances,
+    workingRPCs,
     provider,
     btcAddress,
-    fetchAndSetEvmBalances,
     fetchAndSetBitcoinBalance,
     starknetAddress,
-    solanaAnchorProvider,
-    fetchAndSetFiatValues,
     fetchAndSetStarknetBalance,
+    solanaAnchorProvider,
     fetchAndSetSolanaBalance,
-    workingRPCs,
+    currentAccount,
+    fetchAndSetSuiBalance,
   ]);
 
   const handleConnectWallet = () => {

@@ -192,7 +192,6 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       }
 
       if (connector.isSolana && connector.isEVM && connector.isSui) {
-        console.log("connector.wallet.suiWallet", connector.wallet.suiWallet);
         if (!connector.wallet?.evmWallet || !connector.wallet?.solanaWallet)
           return;
         setMultiWalletConnector({
@@ -263,7 +262,6 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         );
         if (!success) throw new Error("Solana connection failed");
       } else if (connector.isSui) {
-        console.log("connector.wallet.suiWallet", connector);
         if (!connector.wallet?.suiWallet) return;
         await handleSuiConnect(connector.wallet.suiWallet);
         setConnectingWallet(null);

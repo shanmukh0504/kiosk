@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.1]
+
+### Added
+
+- Added support for sui chain in garden.
+
 ## [1.1.0]
 
 ### Added
@@ -16,14 +22,9 @@
 
 ## [1.0.14]
 
-### Added
-
-- Added support for sui chain in garden.
-
 ### Fixed
 
 - Fixed formatAmount utility for larger values.
-- Max spendable balance for Evm chains.
 
 ## [1.0.13]
 
