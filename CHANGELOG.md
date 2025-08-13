@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.1]
+
+### Fixed
+
+- Search functionality in AssetSelector component. 
+
 ## [1.1.0]
 
 ### Added
