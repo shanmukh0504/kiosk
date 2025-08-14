@@ -11,6 +11,7 @@ import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
 import { network } from "../constants/constants";
 import { DigestKey } from "@gardenfi/utils";
+import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 
 export const useNetworkFees = () => {
   const { strategies } = assetInfoStore();
@@ -30,7 +31,6 @@ export const useNetworkFees = () => {
     try {
       const client = new SuiClient({ url: suiRpcUrl });
 
-      const SUI_CLOCK_OBJECT_ID = "0x2::sui::SUI";
       const amount = BigInt(inputAmount);
       const registryId = asset?.tokenAddress;
       const solverAddress =
@@ -60,7 +60,7 @@ export const useNetworkFees = () => {
           tx.pure.u256(7200000),
           tx.pure.vector("u8", Buffer.from("")),
           coin,
-          tx.object(SUI_CLOCK_OBJECT_ID),
+          tx.object(SUI_CLOCK_OBJECT_ID as string),
         ],
       });
 
@@ -69,6 +69,8 @@ export const useNetworkFees = () => {
       const dryRunResult = await client.dryRunTransactionBlock({
         transactionBlock: data,
       });
+
+      console.log("dryRunResult", dryRunResult);
 
       // Extract gas usage from dry-run result
       const gasObject = dryRunResult.effects.gasUsed;
