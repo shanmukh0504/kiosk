@@ -10,6 +10,7 @@ import logger from "../utils/logger";
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
 import { network } from "../constants/constants";
+import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { DigestKey } from "@gardenfi/utils";
 
 export const useNetworkFees = () => {
@@ -30,7 +31,6 @@ export const useNetworkFees = () => {
     try {
       const client = new SuiClient({ url: suiRpcUrl });
 
-      const SUI_CLOCK_OBJECT_ID = "0x2::sui::SUI";
       const amount = BigInt(inputAmount);
       const registryId = asset?.tokenAddress;
       const solverAddress =
