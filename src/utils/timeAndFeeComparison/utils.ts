@@ -22,6 +22,8 @@ export const getChainId = (chain: string) => {
       return "evm-42161";
     case "base":
       return "evm-8453";
+    case "solana": 
+      return "sol";
     default:
       return `evm-${chain}`;
   }
