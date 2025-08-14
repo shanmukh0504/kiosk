@@ -23,7 +23,7 @@ export const VersionUpdateModal: React.FC<VersionUpdateModalProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <WarningIcon className="h-4 w-4" />
-            <Typography size="h4" weight="bold">
+            <Typography size="h4" weight="medium">
               Update required
             </Typography>
           </div>

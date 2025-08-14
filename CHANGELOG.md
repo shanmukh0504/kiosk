@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.1.1]
+
+### Added
+
+- Added support for sui chain in garden.
+
+### Fixed
+
+- Updated the asset routes in competitor savings constant.
+- Search functionality in AssetSelector component.
+
+## [1.1.0]
+
+### Added
+
+- Brand refresh
+
+### Fixed
+
+- updated open-graph image in metadata
+- Fixed competitor comparisons screen
+- Fixed redirect url for explorer
+- Fixed status label for awaiting deposit
+- Fixed Swap button's bg color on quote refreshes
+
 ## [1.0.14]
 
 ### Fixed
@@ -16,8 +41,9 @@
 ### Fixed
 
 - Fixed sidebar menu and notification in mobile view.
+- Asset chain logos display for evm native tokens.
 
-## [1.0.12]
+## [1.0.13]
 
 ### Added
 
@@ -26,6 +52,7 @@
 ### Fixed
 
 - Fetch balance on mount.
+- Max spendable balance for Evm chains.
 
 ## [1.0.12]
 
