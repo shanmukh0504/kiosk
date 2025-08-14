@@ -201,6 +201,7 @@ export const getAvailableWallets = (
         return;
       }
       let suiWalletId = key;
+      console.log("key", key);
       if (key === "slush") {
         suiWalletId = "com.mystenlabs.suiwallet";
       } else if (key === "app.phantom") {
@@ -226,8 +227,29 @@ export const getAvailableWallets = (
           wallets.push(newWallet);
         }
         return;
-      } else if (key === "okx") {
-        suiWalletId = "com.okex.wallet";
+      } else if (key === "com.okex.wallet") {
+        const wallet = suiWallets.find((w) => w.name === "OKX Wallet");
+        const isAvailable = !!wallet;
+
+        const existingWalletIndex = wallets.findIndex((w) => w.id === key);
+        if (existingWalletIndex !== -1) {
+          wallets[existingWalletIndex].wallet.suiWallet = wallet;
+          wallets[existingWalletIndex].isSui = true;
+          wallets[existingWalletIndex].isAvailable = isAvailable;
+        } else {
+          const newWallet = {
+            ...value,
+            wallet: { suiWallet: wallet },
+            isAvailable,
+            isBitcoin: false,
+            isEVM: false,
+            isStarknet: false,
+            isSolana: false,
+            isSui: true,
+          };
+          wallets.push(newWallet);
+        }
+        return;
       }
 
       const wallet = suiWallets.find((w) => w.id === suiWalletId);
