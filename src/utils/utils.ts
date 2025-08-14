@@ -133,6 +133,20 @@ export const getAssetFromChainAndSymbol = (
   return assetKey ? assets[assetKey] : undefined;
 };
 
+export const getFirstAssetFromChain = (
+  assets: Assets,
+  chain: string | null
+) => {
+  if (!chain) return undefined;
+
+  const assetKey = Object.keys(assets).find((key) => {
+    const asset = assets[key];
+    return asset.chain === chain && !asset.disabled;
+  });
+
+  return assetKey ? assets[assetKey] : undefined;
+};
+
 export const getOrderPair = (
   chain: string | null,
   tokenAddress: string | null

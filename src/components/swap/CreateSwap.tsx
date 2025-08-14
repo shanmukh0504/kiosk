@@ -13,6 +13,7 @@ import { modalNames, modalStore } from "../../store/modalStore";
 import {
   capitalizeChain,
   getAssetFromChainAndSymbol,
+  getFirstAssetFromChain,
   getQueryParams,
 } from "../../utils/utils";
 import { QUERY_PARAMS } from "../../constants/constants";
@@ -132,7 +133,7 @@ export const CreateSwap = () => {
   ]);
 
   const buttonDisabled = useMemo(() => {
-    return !!error.liquidityError
+    return error.liquidityError
       ? true
       : needsWalletConnection
         ? false
@@ -265,9 +266,22 @@ export const CreateSwap = () => {
     const {
       inputChain = "",
       inputAssetSymbol = "",
+      outputChain = "",
       outputAssetSymbol = "",
       inputAmount: urlInputAmount = "",
     } = getQueryParams(searchParams);
+
+    if (outputChain && !destinationChain) {
+      navigate(`/bridge/${outputChain}`);
+      return;
+    }
+
+    if (outputChain && !outputAssetSymbol) {
+      const outputChainAsset = getFirstAssetFromChain(assets, outputChain);
+      if (outputChainAsset) {
+        setAsset(IOType.output, outputChainAsset);
+      }
+    }
 
     const fromAsset = getAssetFromChainAndSymbol(
       assets,
@@ -275,17 +289,17 @@ export const CreateSwap = () => {
       inputAssetSymbol
     );
 
-    // If already there put it, otherwise get it from the destination chain
     const toAsset =
+      (outputChain && outputAssetSymbol
+        ? getAssetFromChainAndSymbol(assets, outputChain, outputAssetSymbol)
+        : undefined) ||
       getAssetFromChainAndSymbol(
         assets,
         destinationChain || "",
         outputAssetSymbol
       ) ||
       (destinationChain && !outputAssetSymbol
-        ? Object.values(assets).find(
-            (asset) => asset.chain === destinationChain && !asset.disabled
-          )
+        ? getFirstAssetFromChain(assets, destinationChain)
         : undefined);
 
     setAsset(IOType.output, toAsset);
@@ -322,6 +336,7 @@ export const CreateSwap = () => {
     inputAmount,
     destinationChain,
     handleInputAmountChange,
+    navigate,
   ]);
 
   useEffect(() => {
@@ -330,6 +345,7 @@ export const CreateSwap = () => {
     setSearchParams((prev) => {
       prev.delete(QUERY_PARAMS.inputChain);
       prev.delete(QUERY_PARAMS.inputAsset);
+      prev.delete(QUERY_PARAMS.outputChain);
       prev.delete(QUERY_PARAMS.outputAsset);
       prev.delete(QUERY_PARAMS.inputAmount);
 
