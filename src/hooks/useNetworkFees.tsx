@@ -32,7 +32,7 @@ export const useNetworkFees = () => {
       const client = new SuiClient({ url: suiRpcUrl });
 
       const amount = BigInt(inputAmount);
-      const registryId = asset?.tokenAddress;
+      const registryId = asset?.atomicSwapAddress;
       const solverAddress =
         "0x6e416201f2e6547293f5cd52d4a420bf26ceda4d3ef01283ab720d9fa927b5c2";
       const secretHash = DigestKey.generateRandom();
@@ -47,20 +47,17 @@ export const useNetworkFees = () => {
         target: `${SUI_CONFIG[network].packageId}::${
           SUI_CONFIG[network].moduleName
         }::initiate`,
-        typeArguments: [asset?.tokenAddress as string],
+        typeArguments: [asset?.tokenAddress],
         arguments: [
-          tx.object(registryId as string),
+          tx.object(registryId),
           tx.pure.address(address),
-          tx.pure.address(solverAddress as string),
-          tx.pure.vector(
-            "u8",
-            Buffer.from(secretHash.val?.digestKey as string, "hex")
-          ),
+          tx.pure.address(solverAddress),
+          tx.pure.vector("u8", Buffer.from(secretHash.val?.digestKey!, "hex")),
           tx.pure.u64(amount),
           tx.pure.u256(7200000),
           tx.pure.vector("u8", Buffer.from("")),
           coin,
-          tx.object(SUI_CLOCK_OBJECT_ID as string),
+          tx.object(SUI_CLOCK_OBJECT_ID),
         ],
       });
 
