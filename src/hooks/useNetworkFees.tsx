@@ -8,7 +8,7 @@ import { formatAmount } from "../utils/utils";
 import { isBitcoin, isSui } from "@gardenfi/orderbook";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { swapStore } from "../store/swapStore";
-import { getBitcoinNetwork, SUI_DUMMY_ADDRESS } from "../constants/constants";
+import { getBitcoinNetwork, SUI_SOLVER_ADDRESS } from "../constants/constants";
 import logger from "../utils/logger";
 
 export const useNetworkFees = () => {
@@ -57,7 +57,7 @@ export const useNetworkFees = () => {
 
         if (hasSuiInput) {
           const suiFees = await getSuiNetworkFee(
-            SUI_DUMMY_ADDRESS,
+            SUI_SOLVER_ADDRESS,
             inputAsset,
             inputAmount,
             fiatData
@@ -76,7 +76,7 @@ export const useNetworkFees = () => {
 
     const intervalId = setInterval(fetchNetworkFees, 15000);
 
-    return () => {
+    return () => { 
       clearInterval(intervalId);
     };
   }, [

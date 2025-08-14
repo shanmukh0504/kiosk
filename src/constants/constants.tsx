@@ -212,5 +212,5 @@ export const SOCIAL_LINKS = {
   x: "https://x.com/garden_finance",
 };
 
-export const SUI_DUMMY_ADDRESS =
-  "0xd001293f1f1f179ef1b4e34db109d008e62fb7e9a0fe98b74b001ec89578c072";
+export const SUI_SOLVER_ADDRESS =
+  "0x6e416201f2e6547293f5cd52d4a420bf26ceda4d3ef01283ab720d9fa927b5c2";
