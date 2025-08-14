@@ -45,27 +45,11 @@ export const calculateBitcoinNetworkFees = async (
 export const getSuiNetworkFee = async (address: string, asset: Asset, inputAmount: string, fiatData: Record<string, number | undefined>) => {
   const BUFFER_FEE_IN_MIST = 5_000_000;
  try {
-  const client = new SuiClient({ url: getFullnodeUrl(network) });
-
-  const tx = new Transaction();
-  tx.setSender(address);
-
   const amount = new BigNumber(inputAmount)
-    .multipliedBy(10 ** asset.decimals)
-    .toFixed(0);
-
-  const [coin] = tx.splitCoins(tx.gas, [BigInt(amount)]);
-
-  tx.transferObjects([coin], address);
-  const data = await tx.build({ client });
-  const dryRunResult = await client.dryRunTransactionBlock({
-    transactionBlock: data,
-  });
-  const gasObject = dryRunResult.effects.gasUsed;
-  const totalGasCost =
-    Number(gasObject.computationCost) +
-    Number(gasObject.storageCost) +
-    Number(gasObject.nonRefundableStorageFee);
+  .multipliedBy(10 ** asset.decimals)
+  .toFixed(0);
+  
+  const totalGasCost = await getSuiTotalGasFee(address, amount);
 
   const networkFee = BigNumber(BUFFER_FEE_IN_MIST + totalGasCost)
     .dividedBy(10 ** asset.decimals)
@@ -80,3 +64,22 @@ export const getSuiNetworkFee = async (address: string, asset: Asset, inputAmoun
   return 0;
 };
 
+export const getSuiTotalGasFee = async(address: string, amount: string) => {
+  const client = new SuiClient({ url: getFullnodeUrl(network) });
+  const tx = new Transaction();
+  tx.setSender(address);
+  
+  const [coin] = tx.splitCoins(tx.gas, [BigInt(amount)]);
+
+  tx.transferObjects([coin], address);
+  const data = await tx.build({ client });
+  const dryRunResult = await client.dryRunTransactionBlock({
+    transactionBlock: data,
+  });
+  const gasObject = dryRunResult.effects.gasUsed;
+  const totalGasCost =
+    Number(gasObject.computationCost) +
+    Number(gasObject.storageCost) +
+    Number(gasObject.nonRefundableStorageFee);
+  return totalGasCost;
+}

@@ -52,7 +52,6 @@ export const useNetworkFees = () => {
             bitcoin_network,
             hasBitcoinInput ? inputAsset : outputAsset
           );
-          console.log(bitcoinFees, "bf");
           totalFees += bitcoinFees;
         }
 
@@ -63,10 +62,8 @@ export const useNetworkFees = () => {
             inputAmount,
             fiatData
           );
-          console.log(suiFees, "sf");
           totalFees += suiFees;
         }
-        console.log(totalFees, "tf");
         setNetworkFees(formatAmount(totalFees, 0));
       } catch (error) {
         logger.error("failed to fetch network fees ❌", error);
