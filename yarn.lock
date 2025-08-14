@@ -1902,7 +1902,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mysten/sui@npm:1.37.2, @mysten/sui@npm:^1.37.1":
+"@mysten/sui@npm:1.37.2, @mysten/sui@npm:^1.37.1, @mysten/sui@npm:^1.37.2":
   version: 1.37.2
   resolution: "@mysten/sui@npm:1.37.2"
   dependencies:
@@ -11031,7 +11031,7 @@ __metadata:
     "@gardenfi/utils": "npm:2.4.6-beta.1"
     "@gardenfi/wallet-connectors": "npm:2.3.6-beta.5"
     "@mysten/dapp-kit": "npm:^0.17.2"
-    "@mysten/sui": "npm:^1.37.1"
+    "@mysten/sui": "npm:^1.37.2"
     "@mysten/wallet-standard": "npm:^0.16.9"
     "@number-flow/react": "npm:^0.5.9"
     "@sentry/react": "npm:^9.41.0"

@@ -211,3 +211,20 @@ export const SOCIAL_LINKS = {
   discord: "https://discord.com/invite/dZwSjh9922",
   x: "https://x.com/garden_finance",
 };
+
+export const SUI_CONFIG: Record<
+  Network,
+  { packageId: string; moduleName: string }
+> = {
+  [Network.TESTNET]: {
+    packageId:
+      '0x99865b03dd1bc03d0a6a805c454ea257c464f7abcccae9cd4b621b91e7ca04de',
+    moduleName: 'AtomicSwap',
+  },
+  [Network.MAINNET]: {
+    packageId:
+      '0xbfb5728aab0dd117747ef4574af6d3540ea6093109c22856e3ae201dfd58c0fc',
+    moduleName: 'AtomicSwap',
+  },
+  [Network.LOCALNET]: { packageId: '', moduleName: '' },
+} as const;
