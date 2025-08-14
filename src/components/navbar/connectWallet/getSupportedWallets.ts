@@ -201,7 +201,6 @@ export const getAvailableWallets = (
         return;
       }
       let suiWalletId = key;
-      console.log("key", key);
       if (key === "slush") {
         suiWalletId = "com.mystenlabs.suiwallet";
       } else if (key === "app.phantom") {
