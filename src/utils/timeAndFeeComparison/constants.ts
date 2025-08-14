@@ -195,6 +195,10 @@ export const ASSET_MAPPINGS: AssetMappings = {
       chainId: "9092725",
       currency: "tb1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqtlc5af",
     },
+    "ethereum:ETH": {
+      chainId: "1",
+      currency: "0x0000000000000000000000000000000000000000",
+    },
     "ethereum:WBTC": {
       chainId: "1",
       currency: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
@@ -223,8 +227,50 @@ export const ASSET_MAPPINGS: AssetMappings = {
       chainId: "42161",
       currency: "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
     },
+    "solana:cbBTC": {
+      chainId: "792703809",
+      currency: "cbbtcf3aa214zXHbiAZQwf4122FBYbraNdFqgw4iMij"
+    },
+    "solana:SOL": {
+      chainId: "792703809",
+      currency: "11111111111111111111111111111111"
+    },
+    "solana:USDC": {
+      chainId: "792703809",
+      currency: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+    },
+    "corn:BTCN": {
+      chainId: "21000000",
+      currency: "0x0000000000000000000000000000000000000000"
+    },
+    "unichain:USDC": {
+      chainId: "130",
+      currency: "0x078d782b760474a361dda0af3839290b0ef57ad6"
+    },
+    "unichain:WBTC": {
+      chainId: "130",
+      currency: "0x0555e30da8f98308edb960aa94c0db47230d2b9c"
+    },
+    "bnbchain:BTCB": {
+      chainId: "56",
+      currency: "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c"
+    },
+    "bnbchain:USDC": {
+      chainId: "56",
+      currency: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580"
+    },
+    "hyperliquid:uBTC": {
+      chainId: "999",
+      currency: "0x9fdbda0a5e284c32744d2f17ee5c74b284993463"
+    },
   },
   [SwapPlatform.CHAINFLIP]: {
+    "ethereum:ETH": {
+      chain: Chains.Ethereum,
+      asset: Assets.ETH,
+      htlc_address: "0x1ac7A0ebf13a996D5915e212900bE2d074f94988",
+      address: "0x0000000000000000000000000000000000000000"
+    },
     "bitcoin:BTC": {
       chain: Chains.Bitcoin,
       asset: Assets.BTC,
@@ -243,6 +289,18 @@ export const ASSET_MAPPINGS: AssetMappings = {
       htlc_address: "0xeaE7721d779276eb0f5837e2fE260118724a2Ba4",
       address: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
     },
+    "solana:USDC": {
+      chain: Chains.Solana,
+      asset: Assets.USDC,
+      htlc_address: "gdnvdMCHJgnidtU7SL8RkRshHPvDJU1pdfZEpoLvqdU_EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+    },
+    "solana:SOL": {
+      chain: Chains.Solana,
+      asset: Assets.SOL,
+      htlc_address: "primary",
+      address: "0x0000000000000000000000000000000000000000"
+    },
   },
 };
 
@@ -253,3 +311,5 @@ export const BTC_MAINNET_CHAIN_ID = "8253038";
 export const BTC_TESTNET_CHAIN_ID = "9092725";
 export const BTC_TESTNET_RECIPIENT =
   "tb1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqtlc5af";
+export const SOLANA_MAINNET_CHAIN_ID = "792703809";
+export const SOLANA_MAINNET_RECIPIENT = "CbKGgVKLJFb8bBrf58DnAkdryX6ubewVytn7X957YwNr";

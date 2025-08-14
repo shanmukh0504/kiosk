@@ -23,7 +23,17 @@ import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { rpcStore } from "../../store/rpcStore";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
-import { isEVM, isBitcoin, isStarknet, isSolana } from "@gardenfi/orderbook";
+import { useSuiWallet } from "../../hooks/useSuiWallet";
+import {
+  isEVM,
+  isBitcoin,
+  isStarknet,
+  isSolana,
+  isSui,
+} from "@gardenfi/orderbook";
+import { swapStore } from "../../store/swapStore";
+import { AnimatePresence, motion } from "framer-motion";
+import { CompetitorComparisons } from "./CompetitorComparisons";
 
 export const CreateSwap = () => {
   const [loadingDisabled, setLoadingDisabled] = useState(false);
@@ -34,6 +44,7 @@ export const CreateSwap = () => {
   const { address } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { solanaAnchorProvider } = useSolanaWallet();
+  const { currentAccount } = useSuiWallet();
   const {
     isAssetSelectorOpen,
     assets,
@@ -42,7 +53,14 @@ export const CreateSwap = () => {
     fetchAndSetFiatValues,
     fetchAndSetStarknetBalance,
     fetchAndSetSolanaBalance,
+    fetchAndSetSuiBalance,
   } = assetInfoStore();
+  const {
+    isComparisonVisible,
+    showComparison,
+    hideComparison,
+    updateComparisonSavings,
+  } = swapStore();
 
   const { getWorkingRPCsForChain} = rpcStore();
 
@@ -76,7 +94,8 @@ export const CreateSwap = () => {
     if (
       isBitcoin(inputAsset.chain) ||
       isStarknet(inputAsset.chain) ||
-      isSolana(inputAsset.chain)
+      isSolana(inputAsset.chain) ||
+      isSui(inputAsset.chain)
     )
       return true;
     return WALLET_SUPPORTED_CHAINS[connector.id].includes(inputAsset.chain);
@@ -109,7 +128,7 @@ export const CreateSwap = () => {
   ]);
 
   const buttonDisabled = useMemo(() => {
-    return !!error.liquidityError || loadingDisabled
+    return !!error.liquidityError
       ? true
       : needsWalletConnection
         ? false
@@ -124,7 +143,6 @@ export const CreateSwap = () => {
     validSwap,
     error.liquidityError,
     needsWalletConnection,
-    loadingDisabled,
   ]);
 
   const buttonVariant = useMemo(() => {
@@ -150,13 +168,16 @@ export const CreateSwap = () => {
       starknetAddress && fetchAndSetStarknetBalance(starknetAddress),
       solanaAnchorProvider &&
         fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey),
+      currentAccount && fetchAndSetSuiBalance(currentAccount.address),
     ]);
   }, [
     address,
     provider,
     btcAddress,
+    currentAccount,
     fetchAndSetEvmBalances,
     fetchAndSetBitcoinBalance,
+    fetchAndSetSuiBalance,
     starknetAddress,
     solanaAnchorProvider,
     fetchAndSetFiatValues,
@@ -176,18 +197,22 @@ export const CreateSwap = () => {
       await fetchAndSetStarknetBalance(starknetAddress);
     if (isSolana(inputAsset.chain) && solanaAnchorProvider)
       await fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey);
+    if (isSui(inputAsset.chain) && currentAccount)
+      await fetchAndSetSuiBalance(currentAccount.address);
   }, [
+    fetchAndSetFiatValues,
     inputAsset,
     address,
+    fetchAndSetEvmBalances,
     provider,
     btcAddress,
-    fetchAndSetEvmBalances,
     fetchAndSetBitcoinBalance,
     starknetAddress,
-    solanaAnchorProvider,
-    fetchAndSetFiatValues,
     fetchAndSetStarknetBalance,
+    solanaAnchorProvider,
     fetchAndSetSolanaBalance,
+    currentAccount,
+    fetchAndSetSuiBalance,
     getWorkingRPCsForChain,
   ]);
 
@@ -332,52 +357,71 @@ export const CreateSwap = () => {
   }, [clearSwapState, controller]);
 
   return (
-    <div
-      className={`before:pointer-events-none before:absolute before:left-0 before:top-0 before:h-full before:w-full before:bg-black before:bg-opacity-0 before:transition-colors before:duration-700 before:content-['']`}
-    >
-      <div className="flex flex-col px-2 pb-3 pt-2 sm:px-3 sm:pb-4 sm:pt-3">
-        <div className="relative flex flex-col gap-3">
-          <SwapInput
-            type={IOType.input}
-            amount={inputAmount}
-            asset={inputAsset}
-            onChange={handleInputAmountChange}
-            loading={loading.input}
-            price={tokenPrices.input}
-            error={error.inputError}
-            balance={inputTokenBalance}
-          />
-          <div
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
-            onClick={swapAssets}
-          >
-            <div className="h-8 w-8 origin-center rounded-full border border-light-grey bg-white p-1.5 transition-transform hover:scale-[1.1]"></div>
-            <ExchangeIcon className="pointer-events-none absolute bottom-1.5 left-1.5" />
-          </div>
-
-          <SwapInput
-            type={IOType.output}
-            amount={outputAmount}
-            asset={outputAsset}
-            onChange={handleOutputAmountChange}
-            loading={loading.output}
-            error={error.outputError}
-            price={tokenPrices.output}
-            timeEstimate={timeEstimate}
-          />
-        </div>
-        <InputAddressAndFeeRateDetails />
-        <Button
-          className="mt-3 transition-colors duration-500"
-          variant={buttonVariant}
-          size="lg"
-          onClick={
-            needsWalletConnection ? handleConnectWallet : handleSwapClick
-          }
+    <div className="relative">
+      <CompetitorComparisons
+        hide={hideComparison}
+        isTime={showComparison.isTime}
+        isFees={showComparison.isFees}
+        onComparisonUpdate={updateComparisonSavings}
+      />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key="create-swap"
+          initial={{ opacity: 1 }}
+          animate={{ opacity: isComparisonVisible ? 0 : 1 }}
+          transition={{
+            duration: isComparisonVisible ? 0.32 : 0.45,
+            delay: isComparisonVisible ? 0 : 0.25,
+            ease: "easeOut",
+          }}
+          className={`before:pointer-events-none before:absolute before:left-0 before:top-0 before:h-full before:w-full before:bg-black before:bg-opacity-0 before:transition-colors before:duration-700 before:content-['']`}
         >
-          {buttonLabel}
-        </Button>
-      </div>
+          <div className="flex flex-col px-2 pb-3 pt-2 sm:px-3 sm:pb-4 sm:pt-3">
+            <div className="relative flex flex-col gap-3">
+              <SwapInput
+                type={IOType.input}
+                amount={inputAmount}
+                asset={inputAsset}
+                onChange={handleInputAmountChange}
+                loading={loading.input}
+                price={tokenPrices.input}
+                error={error.inputError}
+                balance={inputTokenBalance}
+              />
+              <div
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+                onClick={swapAssets}
+              >
+                <div className="h-8 w-8 origin-center rounded-full border border-light-grey bg-white p-1.5 transition-transform hover:scale-[1.1]"></div>
+                <ExchangeIcon className="pointer-events-none absolute bottom-1.5 left-1.5" />
+              </div>
+
+              <SwapInput
+                type={IOType.output}
+                amount={outputAmount}
+                asset={outputAsset}
+                onChange={handleOutputAmountChange}
+                loading={loading.output}
+                error={error.outputError}
+                price={tokenPrices.output}
+                timeEstimate={timeEstimate}
+              />
+            </div>
+            <InputAddressAndFeeRateDetails />
+            <Button
+              className={`mt-3 transition-colors duration-500`}
+              variant={buttonVariant}
+              size="lg"
+              disabled={buttonDisabled || loadingDisabled}
+              onClick={
+                needsWalletConnection ? handleConnectWallet : handleSwapClick
+              }
+            >
+              {buttonLabel}
+            </Button>
+          </div>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 };

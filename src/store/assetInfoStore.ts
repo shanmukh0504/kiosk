@@ -6,9 +6,11 @@ import {
   EvmChain,
   isBitcoin,
   isEVM,
+  isEvmNativeToken,
   isSolana,
   isSolanaNativeToken,
   isStarknet,
+  isSui,
 } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
@@ -31,9 +33,12 @@ import { getOrderPair } from "../utils/utils";
 import {
   getSolanaTokenBalance,
   getStarknetTokenBalance,
+  getSuiTokenBalance,
 } from "../utils/getTokenBalance";
 import { Hex } from "viem";
 import { getSpendableBalance } from "../utils/getmaxBtc";
+import logger from "../utils/logger";
+import { getLegacyGasEstimate } from "../utils/getNativeTokenFee";
 
 export type Networks = {
   [chain in Chain]: ChainData & { assetConfig: Omit<AssetConfig, "chain">[] };
@@ -96,6 +101,7 @@ type AssetInfoState = {
   ) => Promise<void>;
   fetchAndSetStarknetBalance: (address: string) => Promise<void>;
   fetchAndSetSolanaBalance: (address: PublicKey) => Promise<void>;
+  fetchAndSetSuiBalance: (address: string) => Promise<void>;
   clearBalances: () => void;
 };
 
@@ -141,7 +147,6 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
         API().data.assets(network).toString()
       );
       const assetsData = res.data;
-
       const allChains: Chains = {};
       const allAssets: Assets = {};
       const assets: Assets = {};
@@ -159,7 +164,6 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           identifier: chainInfo.identifier,
           disabled: chainInfo.disabled,
         };
-
         let totalAssets = 0;
 
         for (const asset of chainInfo.assetConfig) {
@@ -183,7 +187,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       }
       set({ allAssets, allChains, assets, chains });
     } catch (error) {
-      console.error("Failed to fetch assets data", error);
+      logger.error("failed to fetch assets data ❌", error);
       set({ error: "Failed to fetch assets data" });
     } finally {
       set({ isLoading: false });
@@ -234,52 +238,69 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     getWorkingRPCsForChain: (chainId: number) => Promise<string[]>,
     fetchOnlyAsset?: Asset
   ) => {
-    const { assets } = get();
+    const { assets, balances } = get();
     if (!assets) return;
 
-    let tokensByChain: Partial<Record<Chain, string[]>> = {};
-    if (fetchOnlyAsset)
-      tokensByChain[fetchOnlyAsset.chain] = [fetchOnlyAsset.tokenAddress];
-    else {
-      tokensByChain = Object.values(assets).reduce(
-        (acc, asset) => {
-          if (!isEVM(asset.chain)) return acc;
-          if (!acc[asset.chain]) acc[asset.chain] = [];
-          acc[asset.chain].push(asset.tokenAddress);
-          return acc;
-        },
-        {} as Record<Chain, string[]>
-      );
+    let tokensByChain: Partial<Record<Chain, Asset[]>> = {};
+    const targetAssets = fetchOnlyAsset
+      ? [fetchOnlyAsset]
+      : Object.values(assets);
+
+    for (const asset of targetAssets) {
+      if (!isEVM(asset.chain)) continue;
+      if (!tokensByChain[asset.chain]) tokensByChain[asset.chain] = [];
+      tokensByChain[asset.chain]!.push(asset);
     }
 
     try {
       const balanceResults = await Promise.allSettled(
-        Object.entries(tokensByChain).map(async ([chain, tokenAddresses]) => {
+        Object.entries(tokensByChain).map(async ([chain, assets]) => {
           const chainBalances = await getBalanceMulticall(
-            tokenAddresses as Hex[],
+            assets.map((asset) => asset.tokenAddress) as Hex[],
             address as Hex,
             chain as EvmChain,
             getWorkingRPCsForChain
           );
 
-          return Object.entries(chainBalances).reduce(
-            (acc, [tokenAddress, balance]) => {
-              acc[getOrderPair(chain, tokenAddress)] = balance;
-              return acc;
-            },
-            {} as Record<string, BigNumber | undefined>
-          );
+          const updatedBalances: Record<string, BigNumber | undefined> = {};
+
+          for (const asset of assets!) {
+            const orderKey = getOrderPair(chain, asset.tokenAddress);
+            let balance = chainBalances[asset.tokenAddress];
+
+            if (
+              balance &&
+              balance.gt(0) &&
+              isEvmNativeToken(chain as EvmChain, asset.tokenAddress)
+            ) {
+              const fee = await getLegacyGasEstimate(
+                chain as EvmChain,
+                address as `0x${string}`,
+                asset.atomicSwapAddress as `0x${string}`
+              );
+
+              if (fee) {
+                const feeBN = new BigNumber(fee.gasCost);
+                balance = BigNumber.max(balance.minus(feeBN), 0);
+              }
+            }
+
+            updatedBalances[orderKey] = balance;
+          }
+
+          return updatedBalances;
         })
       );
-      const balances = balanceResults.reduce((acc, result) => {
+
+      const finalBalances = balanceResults.reduce((acc, result) => {
         return result.status === "fulfilled"
           ? { ...acc, ...result.value }
           : acc;
       }, {});
 
-      set({ balances: { ...get().balances, ...balances } });
-    } catch {
-      /*empty*/
+      set({ balances: { ...balances, ...finalBalances } });
+    } catch (err) {
+      console.error("Failed to fetch balances", err);
     }
   },
 
@@ -373,6 +394,21 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       } else solanaBalance[orderPair] = new BigNumber(balance);
     }
     set({ balances: { ...get().balances, ...solanaBalance } });
+  },
+
+  fetchAndSetSuiBalance: async (address: string) => {
+    const { assets } = get();
+    if (!assets) return;
+
+    const suiAsset = Object.values(assets).find((asset) => isSui(asset.chain));
+
+    if (!suiAsset) return;
+    const suiBalance: Record<string, BigNumber | undefined> = {};
+
+    const balance = await getSuiTokenBalance(address, suiAsset);
+    const orderPair = getOrderPair(suiAsset.chain, suiAsset.tokenAddress);
+    suiBalance[orderPair] = new BigNumber(balance);
+    set({ balances: { ...get().balances, ...suiBalance } });
   },
 
   clearBalances: () =>

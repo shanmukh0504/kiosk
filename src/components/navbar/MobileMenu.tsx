@@ -1,35 +1,45 @@
 import {
-  CloseIcon,
-  MenuIcon,
-  Sidebar,
+  BottomSheet,
+  DiscordIcon,
   Typography,
+  XSolidIcon,
 } from "@gardenfi/garden-book";
 import { useState } from "react";
-import { routes } from "../../constants/constants";
+import {
+  externalRoutes,
+  routes,
+  SOCIAL_LINKS,
+} from "../../constants/constants";
 import { isCurrentRoute } from "../../utils/utils";
+import { notificationStore } from "../../store/notificationStore";
+import { HamburgerIcon } from "../../common/HamburgerIcon";
+import { MenuNotification } from "../../common/MenuNotification";
+import { Link } from "react-router-dom";
 
 export const MobileMenu = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const { notification } = notificationStore();
 
   const handleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
   };
 
+  const handleOpenChange = (open: boolean) => {
+    setSidebarOpen(open);
+  };
+
   return (
     <>
       <div
-        className="flex min-h-8 min-w-8 cursor-pointer items-center justify-center rounded-full bg-white/50 sm:hidden"
+        className={`z-[999] flex min-h-8 min-w-8 cursor-pointer items-center justify-center rounded-full transition-all duration-500 sm:hidden ${isSidebarOpen ? "bg-white" : "bg-white/50"}`}
         onClick={handleSidebar}
       >
-        <MenuIcon />
+        <HamburgerIcon isSidebarOpen={isSidebarOpen} />
       </div>
 
-      <Sidebar open={isSidebarOpen} className="z-40 !px-0 py-6" size={"small"}>
-        <div className="flex flex-col items-end gap-8 py-2">
-          <div className="cursor-pointer px-6">
-            <CloseIcon onClick={handleSidebar} />
-          </div>
-          <div className={`flex w-full flex-col text-right`}>
+      <BottomSheet open={isSidebarOpen} onOpenChange={handleOpenChange}>
+        <div className="flex flex-col items-end gap-8 rounded-2xl bg-white p-6">
+          <div className={`flex w-full flex-col gap-3 text-left`}>
             {routes.map(([, route]) => {
               const paths = route.path;
               const isActive = paths.some(isCurrentRoute);
@@ -40,17 +50,47 @@ export const MobileMenu = () => {
                   href={primaryPath}
                   target={route.isExternal ? "_blank" : undefined}
                   rel={route.isExternal ? "noreferrer" : undefined}
-                  className="px-6 py-[14px] hover:bg-white"
+                  onClick={() => handleSidebar()}
                 >
-                  <Typography size="h2" weight={isActive ? "bold" : "medium"}>
+                  <Typography
+                    size="h3"
+                    weight={isActive ? "medium" : "regular"}
+                  >
                     {route.name}
                   </Typography>
                 </a>
               );
             })}
           </div>
+          <div className={`flex w-full flex-col gap-3 text-left`}>
+            {externalRoutes.map(([, route]) => {
+              return (
+                <a
+                  key={route.name}
+                  href={route.path}
+                  target={route.isExternal ? "_blank" : undefined}
+                  rel={route.isExternal ? "noreferrer" : undefined}
+                >
+                  <Typography size="h3" weight="regular">
+                    {route.name}
+                  </Typography>
+                </a>
+              );
+            })}
+          </div>
+          <div className={`flex w-full gap-6 text-dark-grey`}>
+            {/* TODO: import social media Icons and links */}
+            <Link to={SOCIAL_LINKS.discord} target="_blank">
+              <DiscordIcon />
+            </Link>
+            <Link to={SOCIAL_LINKS.x} target="_blank">
+              <XSolidIcon />
+            </Link>
+          </div>
         </div>
-      </Sidebar>
+
+        {notification && <MenuNotification notification={notification} />}
+      </BottomSheet>
     </>
   );
 };

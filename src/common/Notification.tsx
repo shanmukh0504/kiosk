@@ -2,36 +2,11 @@ import { CloseIcon, Typography } from "@gardenfi/garden-book";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { LOCAL_STORAGE_KEYS } from "../constants/constants";
-import axios from "axios";
-import { API } from "../constants/api";
-
-export type NotificationProps = {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  link: string;
-};
+import { notificationStore } from "../store/notificationStore";
 
 export const Notification = () => {
   const [visible, setVisible] = useState(false);
-  const [notification, setNotification] = useState<NotificationProps | null>(
-    null
-  );
-
-  useEffect(() => {
-    const fetchNotification = async () => {
-      try {
-        const response = await axios.get(API().data.notification().toString());
-        if (response.data) {
-          setNotification(response.data.result);
-        }
-      } catch (error) {
-        console.log("Error getting notification", error);
-      }
-    };
-    fetchNotification();
-  }, []);
+  const { notification } = notificationStore();
 
   useEffect(() => {
     if (!notification) {
@@ -43,7 +18,7 @@ export const Notification = () => {
     );
 
     if (savedNotificationId !== notification?.id) setVisible(true);
-  }, [notification?.id]);
+  }, [notification]);
 
   const handleClose = () => {
     if (notification) {
@@ -106,13 +81,13 @@ export const Notification = () => {
               target="_blank"
               className="flex w-fit max-w-[306px] flex-col gap-1 leading-4"
             >
-              <Typography size="h4" weight="bold">
+              <Typography size="h4" weight="medium">
                 {notification.title}
               </Typography>
               <Typography
                 className="whitespace-wrap mb-1 inline-block overflow-hidden text-ellipsis text-mid-grey"
                 size="h5"
-                weight="medium"
+                weight="regular"
               >
                 {notification.description}
               </Typography>

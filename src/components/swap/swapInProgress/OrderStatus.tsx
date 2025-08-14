@@ -57,7 +57,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({
             } `}
           >
             <div className="flex items-center justify-between">
-              <Typography size="h5" weight="bold">
+              <Typography size="h5" weight="medium">
                 Order status
               </Typography>
               <div
@@ -90,7 +90,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({
                         <span
                           className="absolute top-2 z-10 h-full border-l-[1px] border-dark-grey"
                           style={{
-                            height: "calc(100% + 6px)",
+                            height: "calc(100% + 4px)",
                             borderImage:
                               Object.values(orderProgress)[index + 1].status ===
                               "inProgress"
@@ -119,13 +119,13 @@ export const OrderStatus: FC<OrderStatusProps> = ({
                       <Typography
                         size="h4"
                         weight={
-                          currentStatus === step.title ? "bold" : "medium"
+                          currentStatus === step.title ? "medium" : "regular"
                         }
                       >
                         {step.title}
                       </Typography>
                       {index === 1 && step.status === "inProgress" && (
-                        <Typography size="h5" weight="medium">
+                        <Typography size="h5" weight="regular">
                           {confirmationString}
                         </Typography>
                       )}
@@ -147,20 +147,24 @@ export const OrderStatus: FC<OrderStatusProps> = ({
             <div className="mt-2 flex items-center justify-between">
               {currentStatus === SimplifiedOrderStatus.depositDetected ? (
                 <div className="flex gap-3">
-                  <Typography size="h3" weight="bold">
+                  <Typography
+                    size="h3"
+                    weight="medium"
+                    className="!leading-5"
+                  >
                     {currentStatus}
                   </Typography>
-                  <Typography size="h3" weight="medium">
+                  <Typography size="h3" weight="medium" className="my-auto">
                     {confirmationString}
                   </Typography>
                 </div>
               ) : (
-                <Typography size="h3" weight="bold">
+                <Typography size="h3" weight="medium" className="!leading-5">
                   {currentStatus}
                 </Typography>
               )}
               {orderProgress && (
-                <Typography size="h5" weight="bold" className="my-auto">
+                <Typography size="h5" weight="medium" className="my-auto">
                   {completedSteps} of {NoOfSteps}
                 </Typography>
               )}
@@ -168,7 +172,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({
           </div>
         </>
       ) : viewableStatus ? (
-        <Typography size="h3" weight="bold">
+        <Typography size="h3" weight="medium">
           {viewableStatus}
         </Typography>
       ) : (

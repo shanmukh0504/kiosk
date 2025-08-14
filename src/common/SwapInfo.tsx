@@ -1,8 +1,11 @@
-import { ArrowRightIcon, Typography } from "@gardenfi/garden-book";
-import { Asset, isBitcoin, isSolanaNativeToken } from "@gardenfi/orderbook";
+import {
+  ArrowRightIcon,
+  TokenNetworkLogos,
+  Typography,
+} from "@gardenfi/garden-book";
+import { Asset } from "@gardenfi/orderbook";
 import { FC } from "react";
 import { assetInfoStore } from "../store/assetInfoStore";
-import { AssetChainLogos } from "./AssetChainLogos";
 
 type SwapInfoProps = {
   sendAsset: Asset;
@@ -20,40 +23,34 @@ export const SwapInfo: FC<SwapInfoProps> = ({
   equalSplit = false,
 }) => {
   const { allChains } = assetInfoStore();
-  const sendChain =
-    allChains &&
-    !isBitcoin(sendAsset.chain) &&
-    !isSolanaNativeToken(sendAsset.chain, sendAsset.tokenAddress)
-      ? allChains[sendAsset.chain]
-      : undefined;
-  const receiveChain =
-    allChains &&
-    !isBitcoin(receiveAsset.chain) &&
-    !isSolanaNativeToken(sendAsset.chain, sendAsset.tokenAddress)
-      ? allChains[receiveAsset.chain]
-      : undefined;
+  const sendChain = allChains ? allChains[sendAsset.chain] : undefined;
+  const receiveChain = allChains ? allChains[receiveAsset.chain] : undefined;
 
   return (
     <div className="flex items-center justify-between">
       <div
         className={`flex items-center justify-start gap-2 ${equalSplit ? "w-fit" : "w-full"}`}
       >
-        <Typography size="h3" weight="medium">
+        <Typography size="h3" weight="regular">
           {sendAmount}
         </Typography>
-        <AssetChainLogos
+        <TokenNetworkLogos
           tokenLogo={sendAsset.logo}
-          chainLogo={sendChain?.networkLogo}
+          chainLogo={
+            sendChain?.networkLogo === sendAsset.logo
+              ? ""
+              : sendChain?.networkLogo
+          }
         />
       </div>
       <ArrowRightIcon className={equalSplit ? "" : "h-5 w-9"} />
       <div
         className={`flex items-center justify-end gap-2 ${equalSplit ? "w-fit" : "w-full"}`}
       >
-        <Typography size="h3" weight="medium">
+        <Typography size="h3" weight="regular">
           {receiveAmount}
         </Typography>
-        <AssetChainLogos
+        <TokenNetworkLogos
           tokenLogo={receiveAsset.logo}
           chainLogo={receiveChain?.networkLogo}
         />

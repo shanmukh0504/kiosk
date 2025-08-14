@@ -15,12 +15,14 @@ import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { viewPortStore } from "../../store/viewPortStore";
+import { useSuiWallet } from "../../hooks/useSuiWallet";
 
 export const Navbar = () => {
   const { isConnected, address } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
+  const { suiConnected } = useSuiWallet();
   const { setOpenModal } = modalStore();
   const { isMobile } = viewPortStore();
 
@@ -32,7 +34,9 @@ export const Navbar = () => {
 
   return (
     <div
-      className={"flex items-center justify-between gap-3 px-6 py-6 sm:px-10"}
+      className={
+        "flex items-center justify-between gap-3 px-6 py-6 text-dark-grey sm:px-10"
+      }
     >
       <div className="flex items-center gap-16 py-2">
         <GardenFullLogo
@@ -51,7 +55,7 @@ export const Navbar = () => {
                 target={route.isExternal ? "_blank" : undefined}
                 rel={route.isExternal ? "noreferrer" : undefined}
               >
-                <Typography size="h2" weight={isActive ? "bold" : "medium"}>
+                <Typography size="h2" weight={isActive ? "medium" : "regular"}>
                   {route.name}
                 </Typography>
               </a>
@@ -63,19 +67,24 @@ export const Navbar = () => {
         {!isMobile && isTestnet && (
           <div className="flex items-center gap-2 rounded-3xl bg-white/25 px-4 py-3">
             <CodeBlockIcon />
-            <Typography size="h3" weight="medium">
+            <Typography size="h3" weight="regular">
               Testnet
             </Typography>
           </div>
         )}
-        {address || starknetAddress || btcAddress || solanaAddress ? (
+        {address ||
+        starknetAddress ||
+        btcAddress ||
+        solanaAddress ||
+        suiConnected ? (
           <ConnectedWallets />
         ) : (
           <Button
             variant="primary"
             onClick={handleConnectClick}
-            className="!h-12 min-w-28 !rounded-3xl"
-            size="lg"
+            className="!rounded-3xl"
+            size="sm"
+            breakpoints={{ sm: "lg" }}
           >
             Connect
           </Button>

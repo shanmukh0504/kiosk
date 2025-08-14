@@ -6,6 +6,7 @@ import {
   isEVM,
   isSolana,
   isStarknet,
+  isSui,
 } from "@gardenfi/orderbook";
 import { BitcoinNetwork } from "@gardenfi/react-hooks";
 import { Network } from "@gardenfi/utils";
@@ -41,6 +42,33 @@ export const INTERNAL_ROUTES: Record<
   // quests: { name: "Quests", path: "/quests" },
 } as const;
 
+export const EXTERNAL_ROUTES: Record<
+  string,
+  { name: string; path: string; enabled: boolean; isExternal?: boolean }
+> = {
+  docs: {
+    name: "Docs",
+    path: "https://docs.garden.finance/",
+    enabled: true,
+    isExternal: true,
+  },
+  blog: {
+    name: "Blog",
+    path: "https://garden.finance/blog",
+    enabled: true,
+    isExternal: true,
+  },
+  explorer: {
+    name: "Explorer",
+    path:
+      network === Network.TESTNET
+        ? "https://testnet-explorer.garden.finance/"
+        : "https://explorer.garden.finance/",
+    enabled: true,
+    isExternal: true,
+  },
+} as const;
+
 export const THEMES = {
   swap: "swap",
   quests: "quests",
@@ -70,7 +98,8 @@ export const getTimeEstimates = (inputAsset: Asset) => {
   if (
     isEVM(inputAsset.chain) ||
     isSolana(inputAsset.chain) ||
-    isStarknet(inputAsset.chain)
+    isStarknet(inputAsset.chain) ||
+    isSui(inputAsset.chain)
   ) {
     return "~30s";
   }
@@ -122,6 +151,8 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "botanix",
   "bnbchain",
   "bnbchain_testnet",
+  "sui",
+  "sui_testnet",
 ] as const;
 
 export const MULTICALL_CONTRACT_ADDRESSES: Record<number, string> = {
@@ -141,6 +172,12 @@ export const QUERY_PARAMS = {
 export const routes = Object.entries(INTERNAL_ROUTES).filter(([key]) => {
   return INTERNAL_ROUTES[key].enabled;
 });
+
+export const externalRoutes = Object.entries(EXTERNAL_ROUTES).filter(
+  ([key]) => {
+    return EXTERNAL_ROUTES[key].enabled;
+  }
+);
 
 //if the wallet is not listed here, then it supports all chains
 export const WALLET_SUPPORTED_CHAINS: Record<string, Chain[]> = {
@@ -168,4 +205,9 @@ export const WALLET_SUPPORTED_CHAINS: Record<string, Chain[]> = {
     "ethereum_sepolia",
     "starknet_sepolia",
   ],
+};
+
+export const SOCIAL_LINKS = {
+  discord: "https://discord.com/invite/dZwSjh9922",
+  x: "https://x.com/garden_finance",
 };
