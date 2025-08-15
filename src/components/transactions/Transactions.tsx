@@ -10,6 +10,7 @@ import { BlockchainType } from "@gardenfi/orderbook";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { starknetAddressToXOnly, toXOnly } from "../../utils/utils";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
+import { useSuiWallet } from "../../hooks/useSuiWallet";
 
 type TransactionsProps = {
   isOpen: boolean;
@@ -27,12 +28,14 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
     EVM: "",
     Starknet: "",
     Solana: "",
+    Sui: "",
   });
 
   const { garden } = useGarden();
   const { address } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { solanaAddress } = useSolanaWallet();
+  const { currentAccount } = useSuiWallet();
   const { fetchTransactions, totalItems, transactions, loadMore } =
     transactionHistoryStore();
 
@@ -58,12 +61,14 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
           EVM: address ?? "",
           Starknet: starknetAddressToXOnly(starknetAddress ?? ""),
           Solana: solanaAddress ?? "",
+          Sui: currentAccount?.address ?? "",
         });
         fetchTransactions(garden.orderbook, {
           Bitcoin: toXOnly(publicKey),
           EVM: address ?? "",
           Starknet: starknetAddressToXOnly(starknetAddress ?? ""),
           Solana: solanaAddress ?? "",
+          Sui: currentAccount?.address ?? "",
         });
       });
     }
@@ -74,6 +79,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
     fetchTransactions,
     isOpen,
     solanaAddress,
+    currentAccount,
   ]);
 
   return (

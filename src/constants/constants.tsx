@@ -6,6 +6,7 @@ import {
   isEVM,
   isSolana,
   isStarknet,
+  isSui,
 } from "@gardenfi/orderbook";
 import { BitcoinNetwork } from "@gardenfi/react-hooks";
 import { Network } from "@gardenfi/utils";
@@ -97,7 +98,8 @@ export const getTimeEstimates = (inputAsset: Asset) => {
   if (
     isEVM(inputAsset.chain) ||
     isSolana(inputAsset.chain) ||
-    isStarknet(inputAsset.chain)
+    isStarknet(inputAsset.chain) ||
+    isSui(inputAsset.chain)
   ) {
     return "~30s";
   }
@@ -149,6 +151,8 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "botanix",
   "bnbchain",
   "bnbchain_testnet",
+  "sui",
+  "sui_testnet",
 ] as const;
 
 export const MULTICALL_CONTRACT_ADDRESSES: Record<number, string> = {
