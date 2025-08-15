@@ -10,6 +10,7 @@
 
 - Updated the asset routes in competitor savings constant.
 - Search functionality in AssetSelector component.
+- Updated network fees logic for Sui chain.
 
 ## [1.1.0]
 
