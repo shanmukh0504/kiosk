@@ -211,3 +211,6 @@ export const SOCIAL_LINKS = {
   discord: "https://discord.com/invite/dZwSjh9922",
   x: "https://x.com/garden_finance",
 };
+
+export const SUI_SOLVER_ADDRESS =
+  "0x6e416201f2e6547293f5cd52d4a420bf26ceda4d3ef01283ab720d9fa927b5c2";

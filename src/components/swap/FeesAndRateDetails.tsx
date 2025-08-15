@@ -9,7 +9,7 @@ import { BTC, swapStore } from "../../store/swapStore";
 
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { Asset, isBitcoin, isSolana } from "@gardenfi/orderbook";
+import { Asset, isBitcoin, isSolana, isSui } from "@gardenfi/orderbook";
 import { motion, AnimatePresence } from "framer-motion";
 import { delayedFadeAnimation } from "../../animations/animations";
 import { SwapSavingsAndAddresses } from "./SwapSavingsAndAddresses";
@@ -66,7 +66,9 @@ export const FeesAndRateDetails = () => {
   const fallbackNetworkFees = useMemo(() => {
     return !isNetworkFeesLoading && networkFees !== undefined
       ? networkFees
-      : 0.49;
+      : inputAsset && isSui(inputAsset?.chain)
+        ? 0.03
+        : 0.49;
   }, [networkFees, isNetworkFeesLoading]);
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
