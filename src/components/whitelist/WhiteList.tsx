@@ -8,7 +8,7 @@ import { Button, LogoutIcon, Typography } from "@gardenfi/garden-book";
 import { network } from "../../constants/constants";
 import { swapStore } from "../../store/swapStore";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { balanceStore } from "../../store/balanceStore";
+import { assetInfoStore } from "../../store/assetInfoStore";
 
 type WhiteListProps = {
   open: boolean;
@@ -19,7 +19,7 @@ export const Whitelist: FC<WhiteListProps> = ({ onClose }) => {
   const { disconnect } = useEVMWallet();
   const { clear } = swapStore();
   const { disconnect: btcDisconnect } = useBitcoinWallet();
-  const { clearBalances } = balanceStore();
+  const { clearBalances } = assetInfoStore();
   const { address } = useEVMWallet();
   const { setOpenModal } = modalStore();
 

@@ -1,12 +1,10 @@
 name: Node.js Package
-
 on:
   push:
     branches:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -17,7 +15,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 20
-
       - name: Install dependencies
         run: |
           corepack enable
@@ -27,3 +24,36 @@ jobs:
         run: yarn build
         env:
           NODE_OPTIONS: "--max-old-space-size=8192"
+
+  check-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Check if CHANGELOG.md was modified
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            # For pull requests, compare against base branch
+            echo "Checking PR changes..."
+            changed_files=$(git diff --name-only origin/${{ github.base_ref }}..HEAD)
+            context="PR"
+          else
+            # For pushes, compare against previous commit
+            echo "Checking push changes..."
+            changed_files=$(git diff --name-only HEAD~1..HEAD)
+            context="push"
+          fi
+
+          echo "Changed files in this $context:"
+          echo "$changed_files"
+
+          # Check if CHANGELOG.md is in the changed files
+          if echo "$changed_files" | grep -q "CHANGELOG.md"; then
+            echo "✅ CHANGELOG.md has been updated."
+          else
+            echo "❌ CHANGELOG.md must be updated."
+            exit 1
+          fi

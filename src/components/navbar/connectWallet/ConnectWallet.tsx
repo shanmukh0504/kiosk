@@ -33,7 +33,6 @@ type ConnectWalletProps = {
   open: boolean;
   onClose: () => void;
 };
-
 export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   const [multiWalletConnector, setMultiWalletConnector] = useState<{
     [BlockchainType.EVM]?: Connector | undefined;
@@ -72,7 +71,6 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   const showOnlySolanaWallets = !!modalData.connectWallet?.Solana;
   const showOnlySuiWallets = !!modalData.connectWallet?.Sui;
 
-  // Add useEffect to handle initial ecosystem selection
   useEffect(() => {
     const selected = showOnlyStarknetWallets
       ? BlockchainType.Starknet
@@ -96,8 +94,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   ]);
 
   const allAvailableWallets = useMemo(() => {
-    let allWallets;
-    allWallets = getAvailableWallets(
+    let allWallets = getAvailableWallets(
       availableWallets,
       connectors,
       starknetConnectors,
@@ -157,7 +154,6 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       return;
     }
     setConnectingWallet(connector.id);
-
     try {
       // Check if this is a multi-chain wallet
       const isMultiChain = [
@@ -348,7 +344,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                   onClick={async () => {
                     await handleConnect(wallet);
                   }}
-                  isConnecting={connectingWallet === wallet.id}
+                  isConnecting={connectingWallet === wallet.id.toLowerCase()}
                   isConnected={{
                     [BlockchainType.Bitcoin]: !!(
                       provider &&

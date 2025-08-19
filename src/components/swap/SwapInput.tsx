@@ -156,7 +156,7 @@ export const SwapInput: FC<SwapInputProps> = ({
               >
                 {error}
               </Typography>
-            ) : balance !== undefined ? (
+            ) : balance !== undefined && !Number.isNaN(balance) ? (
               <div
                 className="flex cursor-pointer items-center gap-1"
                 onClick={handleBalanceClick}
@@ -225,7 +225,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                       isAnimating && "pointer-events-none"
                     )}
                     style={{ fontKerning: "none" }}
-                    type="tel"
+                    inputMode="decimal"
                     value={amount}
                     onChange={handleAmountChange}
                     onFocus={() => setIsFocused(true)}

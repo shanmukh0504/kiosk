@@ -14,7 +14,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { delayedFadeAnimation } from "../../animations/animations";
 import { SwapSavingsAndAddresses } from "./SwapSavingsAndAddresses";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
-import { TooltipWrapper } from "../../common/ToolTipWrapper.tsx";
+import { TooltipWrapper } from "../../common/ToolTipWrapper";
 import { formatAmount } from "../../utils/utils";
 
 const RateDisplay = ({

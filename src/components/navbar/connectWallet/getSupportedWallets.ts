@@ -65,6 +65,7 @@ export const getAvailableWallets = (
   if (evmWallets) {
     Object.entries(GardenSupportedWallets).forEach(([key, value]) => {
       if (!value.isEVMSupported) return;
+      if (key === "app.phantom") return;
       let wallet = evmWallets.find((w) => w.id === key);
       let isAvailable = !!wallet;
 

@@ -2,18 +2,6 @@ import { Network } from "@gardenfi/utils";
 import { network } from "../../../constants/constants";
 import { BlockchainType } from "@gardenfi/orderbook";
 
-export const evmToBTCid: Record<string, string> = {
-  "com.okex.wallet": "okx",
-  "app.phantom": "phantom",
-} as const;
-
-export const btcToEVMid: Record<string, string> = {
-  okx: "com.okex.wallet",
-  phantom: "app.phantom",
-} as const;
-
-export const MAX_VISIBLE_WALLETS = 3;
-
 export const ecosystems = {
   [BlockchainType.Bitcoin]: {
     name: "Bitcoin",
@@ -39,8 +27,19 @@ export const ecosystems = {
 
 export type EcosystemKeys = keyof typeof ecosystems;
 
-export type blockChainType = keyof typeof BlockchainType;
+export const evmToBTCid: Record<string, string> = {
+  "com.okex.wallet": "okx",
+  "app.phantom": "phantom",
+} as const;
 
+export const btcToEVMid: Record<string, string> = {
+  okx: "com.okex.wallet",
+  phantom: "app.phantom",
+} as const;
+
+export const MAX_VISIBLE_WALLETS = 3;
+
+// Base wallet interface
 interface BaseWallet {
   id: string;
   name: string;
@@ -52,7 +51,6 @@ interface BaseWallet {
   isSolanaSupported: boolean;
   isSuiSupported: boolean;
 }
-
 // Wallet capabilities interface
 interface WalletCapabilities {
   [BlockchainType.Bitcoin]?: boolean;
@@ -61,9 +59,7 @@ interface WalletCapabilities {
   [BlockchainType.Solana]?: boolean;
   [BlockchainType.Sui]?: boolean;
 }
-
 type GardenSupportedWalletsType = BaseWallet & WalletCapabilities;
-
 const createWallet = (
   id: string,
   name: string,
@@ -81,7 +77,6 @@ const createWallet = (
   isSolanaSupported: capabilities[BlockchainType.Solana] ?? false,
   isSuiSupported: capabilities[BlockchainType.Sui] ?? false,
 });
-
 export const GardenSupportedWallets: Record<
   string,
   GardenSupportedWalletsType

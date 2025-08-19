@@ -3,7 +3,7 @@ import { EvmChain, isEvmNativeToken } from "@gardenfi/orderbook";
 import BigNumber from "bignumber.js";
 import { createPublicClient, erc20Abi, Hex, http } from "viem";
 import { MULTICALL_CONTRACT_ADDRESSES } from "../constants/constants";
-import { multicall3Abi } from "../common/abi/multicall3.ts";
+import { multicall3Abi } from "../common/abi/multicall3";
 import logger from "./logger";
 
 export const getBalanceMulticall = async (
