@@ -2,8 +2,7 @@ import { BitcoinProvider, BitcoinNetwork } from "@gardenfi/core";
 import { BTC } from "../store/swapStore";
 import axios from "axios";
 import { API } from "../constants/api";
-import { isBitcoin, Asset } from "@gardenfi/orderbook";
-import { Chains } from "@gardenfi/orderbook";
+import { isBitcoin, Asset, Chains } from "@gardenfi/orderbook";
 
 type AssetEntry = {
   chain: string;
