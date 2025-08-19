@@ -51,6 +51,7 @@ interface BaseWallet {
   isSolanaSupported: boolean;
   isSuiSupported: boolean;
 }
+
 // Wallet capabilities interface
 interface WalletCapabilities {
   [BlockchainType.Bitcoin]?: boolean;
@@ -59,7 +60,9 @@ interface WalletCapabilities {
   [BlockchainType.Solana]?: boolean;
   [BlockchainType.Sui]?: boolean;
 }
+
 type GardenSupportedWalletsType = BaseWallet & WalletCapabilities;
+
 const createWallet = (
   id: string,
   name: string,
@@ -77,6 +80,7 @@ const createWallet = (
   isSolanaSupported: capabilities[BlockchainType.Solana] ?? false,
   isSuiSupported: capabilities[BlockchainType.Sui] ?? false,
 });
+
 export const GardenSupportedWallets: Record<
   string,
   GardenSupportedWalletsType

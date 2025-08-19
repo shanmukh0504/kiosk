@@ -5,7 +5,6 @@ import { StakeInput } from "./StakeInput";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { stakeStore, StakeType } from "../../store/stakeStore";
-import { useBalances } from "../../hooks/useBalances";
 import { useEffect, useId, useMemo } from "react";
 import { Tooltip } from "../../common/Tooltip";
 import { MIN_STAKE_AMOUNT } from "../../constants/stake";
@@ -13,6 +12,9 @@ import { GardenPassVotes, SEED_FOR_MINTING_NFT } from "./constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { fadeAnimation } from "../../animations/animations";
 import { useStake } from "../../hooks/useStake";
+import { assetInfoStore } from "../../store/assetInfoStore";
+import { formatAmount, getOrderPair } from "../../utils/utils";
+import { rpcStore } from "../../store/rpcStore";
 
 export const StakeComponent = () => {
   const { isConnected, address } = useEVMWallet();
@@ -31,8 +33,21 @@ export const StakeComponent = () => {
     setStakeType,
   } = stakeStore();
   const { handleNftStake, loading } = useStake();
-  const { tokenBalance } = useBalances(asset);
+  const { workingRPCs } = rpcStore();
+  const { balances, fetchAndSetEvmBalances } = assetInfoStore();
   const tooltipId = useId();
+
+  const balance =
+    balances &&
+    asset &&
+    balances[getOrderPair(asset.chain, asset.tokenAddress)];
+
+  const tokenBalance = useMemo(() => {
+    if (balance && asset) {
+      return formatAmount(Number(balance), asset.decimals);
+    }
+    return 0;
+  }, [balance, asset]);
 
   const isStakeable = useMemo(
     () =>
@@ -100,6 +115,11 @@ export const StakeComponent = () => {
     clearStakePosData,
     fetchAndSetRewards,
   ]);
+
+  useEffect(() => {
+    if (address && asset) fetchAndSetEvmBalances(address, workingRPCs, asset);
+  }, [address, fetchAndSetEvmBalances, workingRPCs, asset]);
+
   return (
     <div className="z-10 flex w-full max-w-[328px] flex-col gap-6 rounded-2xl bg-white bg-opacity-50 p-4 pb-5 sm:max-w-[460px]">
       <div className="flex flex-col gap-6">

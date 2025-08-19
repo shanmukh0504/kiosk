@@ -3,9 +3,9 @@ import {
   TokenNetworkLogos,
   Typography,
 } from "@gardenfi/garden-book";
+import { Asset } from "@gardenfi/orderbook";
 import { FC } from "react";
 import { assetInfoStore } from "../store/assetInfoStore";
-import { Asset } from "@gardenfi/orderbook";
 
 type SwapInfoProps = {
   sendAsset: Asset;
