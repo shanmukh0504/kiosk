@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { Layout } from "../layout/Layout";
 import {
   Environment,
@@ -64,13 +64,9 @@ function App() {
           {INTERNAL_ROUTES.swap.path.map((path) => (
             <Route key={path} path={path} element={<SwapPage />} />
           ))}
-          {INTERNAL_ROUTES.stake.enabled ? (
-            INTERNAL_ROUTES.stake.path.map((path) => (
-              <Route key={path} path={path} element={<StakePage />} />
-            ))
-          ) : (
-            <Route path="/stake" element={<Navigate to="/" replace />} />
-          )}
+          {INTERNAL_ROUTES.stake.path.map((path) => (
+            <Route key={path} path={path} element={<StakePage />} />
+          ))}
         </Routes>
       </Layout>
     </GardenProvider>
