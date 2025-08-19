@@ -1,6 +1,8 @@
 import { isBitcoin } from "@gardenfi/orderbook";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
-import { FC, useId, useMemo } from "react";
+import { useMemo } from "react";
+import { useId } from "react";
+import { FC } from "react";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import {
   ArrowNorthEastIcon,
