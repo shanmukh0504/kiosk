@@ -181,12 +181,12 @@ export const FeesAndRateDetails = () => {
                     className="!text-nowrap"
                   >
                     {fallbackNetworkFees === 0 ? (
-                        "Free"
-                      ) : (
-                        <span className="flex items-center">
-                          ${formatAmount(fallbackNetworkFees, 0, 2)}
-                        </span>
-                      )}
+                      "Free"
+                    ) : (
+                      <span className="flex items-center">
+                        ${formatAmount(fallbackNetworkFees, 0, 2)}
+                      </span>
+                    )}
                   </Typography>
                 </div>
               </motion.div>

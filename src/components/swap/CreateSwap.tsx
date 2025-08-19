@@ -128,7 +128,7 @@ export const CreateSwap = () => {
   ]);
 
   const buttonDisabled = useMemo(() => {
-    return !!error.liquidityError
+    return error.liquidityError
       ? true
       : needsWalletConnection
         ? false

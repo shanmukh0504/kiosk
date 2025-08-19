@@ -6,6 +6,7 @@
   "scripts": {
     "typecheck": "tsc -b --noEmit",
     "dev": "vite",
+    "postinstall": "husky install",
     "lint": "eslint . --ext .js,.ts,.jsx,.tsx --fix",
     "preview": "vite preview",
     "build": "tsc -b && vite build --mode mainnet",

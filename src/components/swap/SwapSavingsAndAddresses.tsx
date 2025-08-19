@@ -117,7 +117,7 @@ export const SwapSavingsAndAddresses = ({
                     <Typography
                       size="h4"
                       weight="regular"
-                      className=" !text-light-green"
+                      className="!text-light-green"
                     >
                       {formatTime(maxTimeSaved)}
                     </Typography>

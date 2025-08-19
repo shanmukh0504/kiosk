@@ -204,27 +204,27 @@ export const swapStore = create<SwapState>((set) => ({
     set({ isValidBitcoinAddress });
   },
   showComparisonHandler: (type) => {
-    set({ 
+    set({
       isComparisonVisible: true,
       showComparison: {
         isTime: type === "time",
         isFees: type === "fees",
-      }
+      },
     });
   },
   hideComparison: () => {
-    set({ 
+    set({
       isComparisonVisible: false,
       showComparison: {
         isTime: false,
         isFees: false,
-      }
+      },
     });
   },
   updateComparisonSavings: (time, cost) => {
-    set({ 
+    set({
       maxTimeSaved: time,
-      maxCostSaved: cost 
+      maxCostSaved: cost,
     });
   },
   clearSwapState: () => {

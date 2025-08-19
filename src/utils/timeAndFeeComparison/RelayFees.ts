@@ -1,6 +1,7 @@
 import { isBitcoin, Asset } from "@gardenfi/orderbook";
-import { SOLANA_MAINNET_CHAIN_ID, SOLANA_MAINNET_RECIPIENT } from "./constants";
 import {
+  SOLANA_MAINNET_CHAIN_ID,
+  SOLANA_MAINNET_RECIPIENT,
   API_URLS,
   RELAY_BTC_SWAP_TIME,
   comparisonMetric,
@@ -9,10 +10,10 @@ import {
   BTC_TESTNET_RECIPIENT,
   EVM_DEAD_ADDRESS,
   SwapPlatform,
+  BTC_MAINNET_CHAIN_ID,
 } from "./constants";
 import { getFormattedAsset } from "./utils";
 import axios from "axios";
-import { BTC_MAINNET_CHAIN_ID } from "./constants";
 import BigNumber from "bignumber.js";
 
 export const getRelayFee = async (
