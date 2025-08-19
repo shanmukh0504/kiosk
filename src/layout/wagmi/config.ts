@@ -17,9 +17,21 @@ import {
   monadTestnet,
   Chain,
   corn,
+  bscTestnet,
 } from "wagmi/chains";
 
 import { injected, metaMask } from "wagmi/connectors";
+
+declare global {
+  interface Window {
+    leap?: {
+      ethereum?: any;
+    };
+    keplr?: {
+      ethereum?: any;
+    };
+  }
+}
 
 export const hyperliquidTestnet: Chain = {
   id: 998,
@@ -42,6 +54,27 @@ export const hyperliquidTestnet: Chain = {
   },
 };
 
+export const botanix: Chain = {
+  id: 3637,
+  name: "Botanix Mainnet",
+  nativeCurrency: {
+    name: "Botanix",
+    symbol: "BTC",
+    decimals: 18,
+  },
+  blockExplorers: {
+    default: {
+      name: "Botanix Explorer",
+      url: "https://botanixscan.io/",
+    },
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.botanixlabs.com/"],
+    },
+  },
+};
+
 export const SupportedChains = [
   mainnet,
   arbitrum,
@@ -60,11 +93,35 @@ export const SupportedChains = [
   hyperliquidTestnet,
   hyperliquid,
   corn,
+  botanix,
+  bscTestnet,
 ] as const;
+
+export const leapConnector = injected({
+  target() {
+    return {
+      id: "leap",
+      name: "Leap Wallet",
+      provider:
+        typeof window !== "undefined" ? window.leap?.ethereum : undefined,
+    };
+  },
+});
+
+export const KeplrConnector = injected({
+  target() {
+    return {
+      id: "keplr",
+      name: "Keplr",
+      provider:
+        typeof window !== "undefined" ? window.keplr?.ethereum : undefined,
+    };
+  },
+});
 
 export const config = createConfig({
   chains: SupportedChains,
-  connectors: [injected(), metaMask()],
+  connectors: [injected(), metaMask(), leapConnector, KeplrConnector],
   transports: {
     [mainnet.id]: http(),
     [arbitrum.id]: http(),
@@ -83,5 +140,7 @@ export const config = createConfig({
     [hyperliquidTestnet.id]: http(),
     [hyperliquid.id]: http(),
     [corn.id]: http(),
+    [botanix.id]: http(),
+    [bscTestnet.id]: http(),
   },
 });

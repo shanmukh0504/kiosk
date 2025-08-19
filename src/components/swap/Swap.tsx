@@ -10,6 +10,7 @@ import { OrderActions, OrderStatus } from "@gardenfi/core";
 import orderInProgressStore from "../../store/orderInProgressStore";
 import pendingOrdersStore from "../../store/pendingOrdersStore";
 import { useSearchParams } from "react-router-dom";
+import logger from "../../utils/logger";
 export const Swap = () => {
   const [, setSearchParams] = useSearchParams();
 
@@ -26,7 +27,7 @@ export const Swap = () => {
     console.error("garden error", order.create_order.create_id, error);
 
   const handleLog = (orderId: string, log: string) =>
-    console.log("garden log", orderId, log);
+    logger.log("garden log", { orderId, log });
 
   useEffect(() => {
     if (isOpen) {
@@ -47,7 +48,7 @@ export const Swap = () => {
       const outputAsset = getAssetFromSwap(destination_swap, assets);
       if (!inputAsset || !outputAsset) return;
 
-      console.log("order success ✅", order.create_order.create_id);
+      logger.log("order success ✅", order.create_order.create_id);
 
       const updatedOrder = {
         ...order,
@@ -58,7 +59,7 @@ export const Swap = () => {
         status: OrderStatus.RedeemDetected,
       };
       updateOrder(updatedOrder);
-
+      console.log("updatedOrder", updatedOrder);
       Toast.success(
         `Swap success ${inputAsset.symbol} to ${outputAsset.symbol}`
       );
@@ -76,11 +77,11 @@ export const Swap = () => {
   }, [garden, assets, order, updateOrder]);
 
   return (
-    <div className="mx-auto flex h-full w-full max-w-[328px] flex-col justify-center gap-4 sm:max-w-[424px] lg:min-h-[calc(100vh-96px)]">
-      <div className="flex h-full flex-col justify-center gap-4 lg:-translate-y-7">
+    <div className="mx-auto flex h-full w-full max-w-[328px] flex-col justify-center gap-4 sm:min-h-[calc(100vh-96px)] sm:max-w-[424px]">
+      <div className="flex h-full flex-col justify-center gap-4 sm:-translate-y-7">
         <ToastContainer />
         <div
-          className={`relative overflow-hidden rounded-[20px] bg-white/50 lg:translate-y-[-48px]`}
+          className={`relative overflow-hidden rounded-[20px] bg-white/50 sm:translate-y-[-48px]`}
         >
           {isOpen ? <SwapInProgress /> : <CreateSwap />}
         </div>

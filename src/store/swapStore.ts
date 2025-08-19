@@ -25,22 +25,34 @@ type SwapState = {
   outputAsset?: Asset;
   inputAmount: string;
   outputAmount: string;
+  rate: number;
+  networkFees: number;
   btcAddress: string;
   isSwapping: boolean;
   isApproving: boolean;
   strategy: string;
   tokenPrices: TokenPrices;
   error: SwapErrors;
+  isNetworkFeesLoading: boolean;
   isFetchingQuote: FetchingQuote;
   isEditBTCAddress: boolean;
   isComparisonVisible: boolean;
   isValidBitcoinAddress: boolean;
+  showComparison: {
+    isTime: boolean;
+    isFees: boolean;
+  };
+  maxTimeSaved: number;
+  maxCostSaved: number;
   setTokenPrices: (tokenPrices: TokenPrices) => void;
   setIsSwapping: (isSwapping: boolean) => void;
   setIsApproving: (isApproving: boolean) => void;
   setStrategy: (strategy: string) => void;
   setAsset: (ioType: IOType, asset: Asset | undefined) => void;
   setAmount: (ioType: IOType, amount: string) => void;
+  setRate: (rate: number) => void;
+  setNetworkFees: (networkFees: number) => void;
+  setIsNetworkFeesLoading: (isNetworkFeesLoading: boolean) => void;
   setBtcAddress: (btcAddress: string) => void;
   swapAssets: () => void;
   setError: (error: SwapErrors) => void;
@@ -48,8 +60,12 @@ type SwapState = {
   setIsEditBTCAddress: (isEditBTCAddress: boolean) => void;
   setIsComparisonVisible: (isComparisonVisible: boolean) => void;
   setIsValidBitcoinAddress: (isValidBitcoinAddress: boolean) => void;
+  showComparisonHandler: (type: "time" | "fees") => void;
+  hideComparison: () => void;
+  updateComparisonSavings: (time: number, cost: number) => void;
   clearSwapState: () => void;
   clear: () => void;
+  clearSwapInputState: () => void;
 };
 
 export const BTC = {
@@ -66,8 +82,11 @@ export const swapStore = create<SwapState>((set) => ({
   inputAsset: BTC,
   inputAmount: "",
   outputAmount: "",
+  rate: 0,
+  networkFees: 0,
   btcAddress: "",
   isApproving: false,
+  isNetworkFeesLoading: false,
   swapInProgress: {
     isOpen: false,
     order: null,
@@ -91,6 +110,12 @@ export const swapStore = create<SwapState>((set) => ({
   isEditBTCAddress: false,
   isComparisonVisible: false,
   isValidBitcoinAddress: false,
+  showComparison: {
+    isTime: false,
+    isFees: false,
+  },
+  maxTimeSaved: 0,
+  maxCostSaved: 0,
   setAsset: (ioType, asset) => {
     set((state) => ({
       ...state,
@@ -102,6 +127,21 @@ export const swapStore = create<SwapState>((set) => ({
       ...state,
       [ioType === IOType.input ? "inputAmount" : "outputAmount"]: amount,
     }));
+  },
+  setRate: (rate) => {
+    set((state) => ({
+      ...state,
+      rate,
+    }));
+  },
+  setNetworkFees: (networkFees) => {
+    set((state) => ({
+      ...state,
+      networkFees,
+    }));
+  },
+  setIsNetworkFeesLoading: (isNetworkFeesLoading) => {
+    set({ isNetworkFeesLoading });
   },
   setBtcAddress: (btcAddress) => {
     set((state) => ({
@@ -163,10 +203,35 @@ export const swapStore = create<SwapState>((set) => ({
   setIsValidBitcoinAddress: (isValidBitcoinAddress) => {
     set({ isValidBitcoinAddress });
   },
+  showComparisonHandler: (type) => {
+    set({
+      isComparisonVisible: true,
+      showComparison: {
+        isTime: type === "time",
+        isFees: type === "fees",
+      },
+    });
+  },
+  hideComparison: () => {
+    set({
+      isComparisonVisible: false,
+      showComparison: {
+        isTime: false,
+        isFees: false,
+      },
+    });
+  },
+  updateComparisonSavings: (time, cost) => {
+    set({
+      maxTimeSaved: time,
+      maxCostSaved: cost,
+    });
+  },
   clearSwapState: () => {
     set({
       inputAmount: "",
       outputAmount: "",
+      rate: 0,
       btcAddress: "",
       outputAsset: undefined,
       inputAsset: BTC,
@@ -189,6 +254,12 @@ export const swapStore = create<SwapState>((set) => ({
       },
       isEditBTCAddress: false,
       isValidBitcoinAddress: false,
+      showComparison: {
+        isTime: false,
+        isFees: false,
+      },
+      maxTimeSaved: 0,
+      maxCostSaved: 0,
     });
   },
   clear: () => {
@@ -196,6 +267,7 @@ export const swapStore = create<SwapState>((set) => ({
       inputAmount: "",
       outputAmount: "",
       btcAddress: "",
+      rate: 0,
       outputAsset: undefined,
       inputAsset: BTC,
       isSwapping: false,
@@ -217,6 +289,29 @@ export const swapStore = create<SwapState>((set) => ({
       },
       isEditBTCAddress: false,
       isValidBitcoinAddress: false,
+      showComparison: {
+        isTime: false,
+        isFees: false,
+      },
+      maxTimeSaved: 0,
+      maxCostSaved: 0,
+    });
+  },
+  clearSwapInputState: () => {
+    set({
+      inputAmount: "",
+      outputAmount: "",
+      rate: 0,
+      tokenPrices: {
+        input: "0",
+        output: "0",
+      },
+      error: {
+        inputError: Errors.none,
+        outputError: Errors.none,
+        liquidityError: Errors.none,
+        insufficientBalanceError: Errors.none,
+      },
     });
   },
 }));

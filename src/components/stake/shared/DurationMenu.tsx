@@ -32,14 +32,14 @@ const DurationMenu: FC<DurationMenuProps> = ({
         className="flex w-full cursor-pointer items-center justify-between rounded-2xl bg-white px-3 py-[10px] text-2xl text-dark-grey outline-none"
       >
         <div className="flex items-center gap-4">
-          <Typography size="h2" weight="medium">
+          <Typography size="h2" weight="regular">
             {selectedDuration === INFINITE ? (
-              <InfinityIcon />
+              <InfinityIcon className="h-6" />
             ) : (
               `${selectedDuration} months`
             )}
           </Typography>
-          <Typography size="h4" weight="medium" className="mt-1">
+          <Typography size="h4" weight="regular" className="mt-1">
             {DURATION_MAP[selectedDuration].votes}x Multiplier
           </Typography>
         </div>
@@ -57,20 +57,20 @@ const DurationMenu: FC<DurationMenuProps> = ({
               animate={{
                 height: ["100%", "500%"],
                 transition: {
-                  duration: 0.1,
-                  ease: "easeInOut",
-                  once: true,
+                  type: "spring",
+                  stiffness: 250,
+                  damping: 20,
                 },
               }}
               exit={{
                 height: ["500%", "100%"],
                 transition: {
-                  duration: 0.1,
-                  ease: "easeOut",
-                  once: true,
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 25,
                 },
               }}
-              className="absolute z-10 flex w-full translate-y-[-100%] flex-col-reverse overflow-hidden rounded-2xl bg-white shadow-2xl sm:-mt-[48px] sm:-translate-y-0 sm:flex-col"
+              className="absolute z-10 flex w-full -translate-y-full flex-col-reverse overflow-hidden rounded-2xl bg-white shadow-2xl sm:-mt-[44px] sm:-translate-y-0 sm:flex-col"
             >
               {Object.keys(DURATION_MAP).map((item) => {
                 const multiplier = DURATION_MAP[item as DURATION].votes;
@@ -83,9 +83,9 @@ const DurationMenu: FC<DurationMenuProps> = ({
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <Typography size="h2" weight="medium">
+                        <Typography size="h2" weight="regular">
                           {item === INFINITE ? (
-                            <InfinityIcon />
+                            <InfinityIcon className="h-6" />
                           ) : (
                             `${item} months`
                           )}
@@ -93,8 +93,8 @@ const DurationMenu: FC<DurationMenuProps> = ({
 
                         <Typography
                           size="h4"
-                          weight="medium"
-                          className="text-grey mt-1"
+                          weight="regular"
+                          className="mt-1 !text-mid-grey"
                         >
                           {multiplier}x Multiplier
                         </Typography>

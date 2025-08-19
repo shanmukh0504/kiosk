@@ -65,9 +65,11 @@ export function metadataPlugin(): Plugin {
           path.join(config.build.outDir, "index.html"),
           "utf-8"
         );
-
-        const routesToPrerender = ["/", "/swap", "/stake"];
-
+        const isTestnet = config.env.VITE_NETWORK === "testnet";
+        // Only prerender /stake if not testnet
+        const routesToPrerender = isTestnet
+          ? ["/", "/swap"]
+          : ["/", "/swap", "/stake"];
         for (const route of routesToPrerender) {
           // Generate metadata for this route
           const metadata = generatePageMetadata(route);

@@ -37,16 +37,16 @@ export const EarningsToolTip = ({
     >
       <div className="absolute right-0 mb-[15px] ml-4 mr-[64px] mt-[-5px] h-[14px] w-[14px] rotate-45 rounded-sm bg-white sm:right-auto sm:mb-0 sm:ml-[-5px] sm:mr-0 sm:mt-[15px]"></div>
       <div className="flex max-w-[240px] flex-col gap-2 rounded-2xl bg-white shadow-custom">
-        <Typography size="h5" weight="medium" className="px-3 pt-3">
+        <Typography size="h5" weight="regular" className="px-3 pt-3">
           This earning is from the previous epoch that has already passed.
         </Typography>
         <div className="flex flex-col gap-1 px-3">
-          <Typography size="h5" weight="bold">
+          <Typography size="h5" weight="medium">
             ${formatAmount(earnings ?? 0, 0, 2)}
           </Typography>
           <Typography
             size="h5"
-            weight="medium"
+            weight="regular"
             className={
               Number(earningRate ?? 0) > 0
                 ? "!text-light-green"
@@ -64,7 +64,7 @@ export const EarningsToolTip = ({
             config={chartConfig}
             className="h-[100px] w-full px-1 pb-0.5"
           >
-            <Typography size="h5" weight="medium">
+            <Typography size="h5" weight="regular">
               <ResponsiveContainer width="100%" height="105%">
                 <BarChart
                   data={[...(earningsData ?? [])].reverse()}
@@ -98,7 +98,7 @@ export const EarningsToolTip = ({
                       if (!payload?.[0]?.value) return null;
                       return (
                         <div className="rounded-md bg-white/75 px-2 py-1 backdrop-blur-sm">
-                          <Typography size="h5" weight="medium">
+                          <Typography size="h5" weight="regular">
                             ${formatAmount(Number(payload[0].value), 0, 2)}
                           </Typography>
                         </div>

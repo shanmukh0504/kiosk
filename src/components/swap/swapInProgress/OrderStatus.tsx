@@ -1,19 +1,25 @@
 import {
+  CancelIcon,
   KeyboardDownIcon,
   RadioCheckedIcon,
   Typography,
 } from "@gardenfi/garden-book";
 import { useState, FC } from "react";
-import { OrderProgress } from "../../../hooks/useOrderStatus";
+import {
+  OrderProgress,
+  SimplifiedOrderStatus,
+} from "../../../hooks/useOrderStatus";
 
 type OrderStatusProps = {
   orderProgress: OrderProgress | undefined;
   viewableStatus?: string | null;
+  confirmationString: string;
 };
 
 export const OrderStatus: FC<OrderStatusProps> = ({
   orderProgress,
   viewableStatus,
+  confirmationString,
 }) => {
   const [dropdown, setDropdown] = useState(false);
 
@@ -48,7 +54,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({
             } `}
           >
             <div className="flex items-center justify-between">
-              <Typography size="h5" weight="bold">
+              <Typography size="h5" weight="medium">
                 Order status
               </Typography>
               <div
@@ -62,7 +68,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({
           </div>
 
           <div
-            className={`overflow-hidden transition-all duration-300 ease-in-out ${
+            className={`transition-all duration-300 ease-in-out ${
               dropdown ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
             }`}
           >
@@ -81,7 +87,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({
                         <span
                           className="absolute top-2 z-10 h-full border-l-[1px] border-dark-grey"
                           style={{
-                            height: "calc(100% + 8px)",
+                            height: "calc(100% + 4px)",
                             borderImage:
                               Object.values(orderProgress)[index + 1].status ===
                               "inProgress"
@@ -91,7 +97,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({
                         />
                       )}
                     {step.status === "completed" && (
-                      <span className="relative z-20 flex h-2 w-2 -translate-x-[3.5px] items-center justify-center rounded-full border border-dark-grey bg-white">
+                      <span className="relative z-20 flex h-2 w-2 flex-shrink-0 -translate-x-[3.5px] items-center justify-center rounded-full border border-dark-grey bg-white">
                         <RadioCheckedIcon className="absolute h-2 w-2" />
                       </span>
                     )}
@@ -101,12 +107,26 @@ export const OrderStatus: FC<OrderStatusProps> = ({
                     {step.status === "pending" && (
                       <div className="h-2 w-2 -translate-x-[3.5px] rounded-full border-[1px] border-dark-grey" />
                     )}
-                    <Typography
-                      size="h3"
-                      weight={currentStatus === step.title ? "bold" : "medium"}
-                    >
-                      {step.title}
-                    </Typography>
+                    {step.status === "cancel" && (
+                      <span className="relative z-20 flex h-2 w-2 flex-shrink-0 -translate-x-[3.5px] items-center justify-center rounded-full border border-error-red bg-white">
+                        <CancelIcon className="absolute h-2 w-2" />
+                      </span>
+                    )}
+                    <div className="flex w-full items-center justify-between">
+                      <Typography
+                        size="h4"
+                        weight={
+                          currentStatus === step.title ? "medium" : "regular"
+                        }
+                      >
+                        {step.title}
+                      </Typography>
+                      {index === 1 && step.status === "inProgress" && (
+                        <Typography size="h5" weight="regular">
+                          {confirmationString}
+                        </Typography>
+                      )}
+                    </div>
                   </li>
                 ))}
             </ul>
@@ -122,11 +142,26 @@ export const OrderStatus: FC<OrderStatusProps> = ({
             }}
           >
             <div className="mt-2 flex items-center justify-between">
-              <Typography size="h3" weight="bold">
-                {currentStatus}
-              </Typography>
+              {currentStatus === SimplifiedOrderStatus.depositDetected ? (
+                <div className="flex gap-3">
+                  <Typography
+                    size="h3"
+                    weight="medium"
+                    className="!leading-5"
+                  >
+                    {currentStatus}
+                  </Typography>
+                  <Typography size="h3" weight="medium" className="my-auto">
+                    {confirmationString}
+                  </Typography>
+                </div>
+              ) : (
+                <Typography size="h3" weight="medium" className="!leading-5">
+                  {currentStatus}
+                </Typography>
+              )}
               {orderProgress && (
-                <Typography size="h5" weight="bold" className="my-auto">
+                <Typography size="h5" weight="medium" className="my-auto">
                   {completedSteps} of {NoOfSteps}
                 </Typography>
               )}
@@ -134,7 +169,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({
           </div>
         </>
       ) : viewableStatus ? (
-        <Typography size="h3" weight="bold">
+        <Typography size="h3" weight="medium">
           {viewableStatus}
         </Typography>
       ) : (

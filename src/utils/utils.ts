@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
 import { INTERNAL_ROUTES, QUERY_PARAMS, THEMES } from "../constants/constants";
 import { Assets } from "../store/assetInfoStore";
-import { Swap } from "@gardenfi/orderbook";
+import { Asset, Swap } from "@gardenfi/orderbook";
 
 export const isProduction = () => {
   return import.meta.env.VITE_ENVIRONMENT === "production";
@@ -36,6 +36,7 @@ export const getQueryParams = (urlParams: URLSearchParams) => {
     inputAssetSymbol: urlParams.get(QUERY_PARAMS.inputAsset),
     outputChain: urlParams.get(QUERY_PARAMS.outputChain),
     outputAssetSymbol: urlParams.get(QUERY_PARAMS.outputAsset),
+    inputAmount: urlParams.get(QUERY_PARAMS.inputAmount),
   };
 };
 
@@ -59,14 +60,15 @@ export const getDayDifference = (date: string) => {
 export const formatAmount = (
   amount: string | number | bigint,
   decimals: number,
-  toFixed = 4,
+  toFixed?: number,
   modulus = false
 ) => {
   const bigAmount = new BigNumber(amount).abs();
   if (bigAmount.isZero()) return 0;
 
   const value = bigAmount.dividedBy(10 ** decimals);
-  let temp = value.toFixed(toFixed, BigNumber.ROUND_DOWN);
+  const precision = toFixed ? toFixed : Number(value) > 10000 ? 2 : 4;
+  let temp = value.toFixed(precision, BigNumber.ROUND_DOWN);
 
   while (
     temp
@@ -125,11 +127,19 @@ export const getAssetFromChainAndSymbol = (
   return assetKey ? assets[assetKey] : undefined;
 };
 
+export const getOrderPair = (
+  chain: string | null,
+  tokenAddress: string | null
+) => (chain && tokenAddress ? `${chain}_${tokenAddress.toLowerCase()}` : "");
+
+export const getAssetChainHTLCAddressPair = (asset: Asset) =>
+  `${asset.chain}_${asset.atomicSwapAddress.toLowerCase()}`;
+
 export const getProtocolFee = (fees: number) => {
   const protocolBips = 7;
   const totalBips = 30;
   const protocolFee = fees * (protocolBips / totalBips);
-  return formatAmount(protocolFee, 0, 2);
+  return protocolFee;
 };
 
 export const getDaysUntilNextEpoch = (

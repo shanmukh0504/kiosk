@@ -1,20 +1,30 @@
-import { Button, GardenFullLogo, Typography } from "@gardenfi/garden-book";
-import { INTERNAL_ROUTES } from "../../constants/constants";
+import {
+  Button,
+  CodeBlockIcon,
+  GardenFullLogo,
+  Typography,
+} from "@gardenfi/garden-book";
+import { isTestnet, routes } from "../../constants/constants";
 import { API } from "../../constants/api";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
-// import { Address } from "./Address";
 import { isCurrentRoute } from "../../utils/utils";
 import { MobileMenu } from "./MobileMenu";
 import { modalNames, modalStore } from "../../store/modalStore";
 import ConnectedWallets from "./ConnectedWallets";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { useSolanaWallet } from "../../hooks/useSolanaWallet";
+import { viewPortStore } from "../../store/viewPortStore";
+import { useSuiWallet } from "../../hooks/useSuiWallet";
 
 export const Navbar = () => {
   const { isConnected, address } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { account: btcAddress } = useBitcoinWallet();
+  const { solanaAddress } = useSolanaWallet();
+  const { suiConnected } = useSuiWallet();
   const { setOpenModal } = modalStore();
+  const { isMobile } = viewPortStore();
 
   const handleHomeLogoClick = () => window.open(API().home, "_blank");
   const handleConnectClick = () => {
@@ -24,7 +34,9 @@ export const Navbar = () => {
 
   return (
     <div
-      className={"flex items-center justify-between gap-3 px-6 py-6 sm:px-10"}
+      className={
+        "flex items-center justify-between gap-3 px-6 py-6 text-dark-grey sm:px-10"
+      }
     >
       <div className="flex items-center gap-16 py-2">
         <GardenFullLogo
@@ -32,13 +44,18 @@ export const Navbar = () => {
           className="cursor-pointer"
         />
         <div className="hidden gap-12 sm:flex sm:items-center">
-          {Object.values(INTERNAL_ROUTES).map((route) => {
+          {routes.map(([, route]) => {
             const paths = route.path;
             const isActive = paths.some(isCurrentRoute);
             const primaryPath = paths[0];
             return (
-              <a key={primaryPath} href={primaryPath}>
-                <Typography size="h2" weight={isActive ? "bold" : "medium"}>
+              <a
+                key={primaryPath}
+                href={primaryPath}
+                target={route.isExternal ? "_blank" : undefined}
+                rel={route.isExternal ? "noreferrer" : undefined}
+              >
+                <Typography size="h2" weight={isActive ? "medium" : "regular"}>
                   {route.name}
                 </Typography>
               </a>
@@ -46,20 +63,34 @@ export const Navbar = () => {
           })}
         </div>
       </div>
-      {address || starknetAddress || btcAddress ? (
-        <ConnectedWallets />
-      ) : (
-        <Button
-          variant="primary"
-          onClick={handleConnectClick}
-          className="ml-auto min-w-28"
-          size="sm"
-          breakpoints={{ md: "md" }}
-        >
-          Connect
-        </Button>
-      )}
-      <MobileMenu />
+      <div className="flex items-center gap-3">
+        {!isMobile && isTestnet && (
+          <div className="flex items-center gap-2 rounded-3xl bg-white/25 px-4 py-3">
+            <CodeBlockIcon />
+            <Typography size="h3" weight="regular">
+              Testnet
+            </Typography>
+          </div>
+        )}
+        {address ||
+        starknetAddress ||
+        btcAddress ||
+        solanaAddress ||
+        suiConnected ? (
+          <ConnectedWallets />
+        ) : (
+          <Button
+            variant="primary"
+            onClick={handleConnectClick}
+            className="!rounded-3xl"
+            size="sm"
+            breakpoints={{ sm: "lg" }}
+          >
+            Connect
+          </Button>
+        )}
+        <MobileMenu />
+      </div>
     </div>
   );
 };

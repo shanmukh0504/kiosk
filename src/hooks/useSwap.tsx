@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { swapStore } from "../store/swapStore";
+import { BTC, swapStore } from "../store/swapStore";
 import { IOType, network } from "../constants/constants";
-import { Asset, Chain, isBitcoin } from "@gardenfi/orderbook";
+import { Asset, Chain, isBitcoin, isSolana, isSui } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
 import {
@@ -14,7 +14,6 @@ import { useStarknetWallet } from "./useStarknetWallet";
 import { useEVMWallet } from "./useEVMWallet";
 import { modalNames, modalStore } from "../store/modalStore";
 import { isStarknet, isEVM } from "@gardenfi/orderbook";
-import { useBalances } from "./useBalances";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { Environment } from "@gardenfi/utils";
 import { Errors } from "../constants/errors";
@@ -22,10 +21,11 @@ import { ConnectingWalletStore } from "../store/connectWalletStore";
 import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import BigNumber from "bignumber.js";
-import { formatAmount } from "../utils/utils";
-// import { useWalletClient } from "wagmi";
-// import { Account } from "viem";
-// import { approve, checkAllowance } from "../utils/approve";
+import { useSolanaWallet } from "./useSolanaWallet";
+import { formatAmount, getOrderPair } from "../utils/utils";
+import { useNetworkFees } from "./useNetworkFees";
+import { useSuiWallet } from "./useSuiWallet";
+import logger from "../utils/logger";
 
 export const useSwap = () => {
   const {
@@ -36,14 +36,17 @@ export const useSwap = () => {
     isSwapping,
     isApproving,
     strategy,
+    rate,
     error,
     btcAddress,
     tokenPrices,
     isFetchingQuote,
     isEditBTCAddress,
+    networkFees,
     setStrategy,
     setIsSwapping,
     setAmount,
+    setRate,
     setError,
     swapAssets,
     setAsset,
@@ -56,8 +59,7 @@ export const useSwap = () => {
     setBtcAddress,
     setIsComparisonVisible,
   } = swapStore();
-  const { tokenBalance: inputTokenBalance } = useBalances(inputAsset);
-  const { strategies } = assetInfoStore();
+  const { strategies, balances } = assetInfoStore();
   const { setOrder, setIsOpen } = orderInProgressStore();
   const { updateOrder } = pendingOrdersStore();
   const { disconnect } = useEVMWallet();
@@ -68,10 +70,35 @@ export const useSwap = () => {
   const { address: evmAddress } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { setOpenModal } = modalStore();
-  const isInsufficientBalance = useMemo(
-    () => new BigNumber(inputAmount).gt(inputTokenBalance),
-    [inputAmount, inputTokenBalance]
+  const { solanaAddress } = useSolanaWallet();
+  const { currentAccount } = useSuiWallet();
+  useNetworkFees();
+
+  const inputBalance = useMemo(() => {
+    if (!inputAsset || !balances) return;
+    return balances[getOrderPair(inputAsset.chain, inputAsset.tokenAddress)];
+  }, [inputAsset, balances]);
+
+  const inputTokenBalance = useMemo(
+    () =>
+      inputBalance &&
+      inputAsset &&
+      (!isStarknet(inputAsset.chain) &&
+      !isSolana(inputAsset.chain) &&
+      !isSui(inputAsset.chain)
+        ? formatAmount(
+            Number(inputBalance),
+            inputAsset.decimals,
+            Math.min(inputAsset.decimals, BTC.decimals)
+          )
+        : Number(inputBalance)),
+    [inputBalance, inputAsset]
   );
+
+  const isInsufficientBalance = useMemo(() => {
+    if (!inputAmount || inputTokenBalance == null) return false;
+    return BigNumber(inputAmount).gt(inputTokenBalance);
+  }, [inputAmount, inputTokenBalance]);
 
   const isBitcoinSwap = useMemo(() => {
     return !!(
@@ -177,7 +204,7 @@ export const useSwap = () => {
               },
             },
           });
-          if (!quote || quote.error) {
+          if (!quote || !quote.ok) {
             if (quote?.error?.includes("AbortError")) {
               setError({ liquidityError: Errors.none });
               setIsFetchingQuote({ input: false, output: false });
@@ -207,6 +234,14 @@ export const useSwap = () => {
           const quoteAmountInDecimals = new BigNumber(Number(quoteAmount)).div(
             Math.pow(10, assetToChange.decimals)
           );
+          // Add network fee to output amount before calculating rate
+          let outputAmountWithFee = Number(quoteAmountInDecimals);
+          if (!isBitcoin(fromAsset.chain) && !isBitcoin(toAsset.chain)) {
+            outputAmountWithFee = Number(quoteAmountInDecimals) + networkFees;
+          }
+          const rate = outputAmountWithFee / Number(amount);
+          setRate(rate);
+
           setAmount(
             isExactOut ? IOType.input : IOType.output,
             Number(
@@ -221,16 +256,16 @@ export const useSwap = () => {
           const outputAmount = isExactOut
             ? new BigNumber(amount)
             : quoteAmountInDecimals;
-          const inputTokenPrice = inputAmount
-            .multipliedBy(quote.val.input_token_price)
-            .toFixed(2);
-          const outputTokenPrice = outputAmount
-            .multipliedBy(quote.val.output_token_price)
-            .toFixed(2);
+          const inputTokenPrice = inputAmount.multipliedBy(
+            quote.val.input_token_price
+          );
+          const outputTokenPrice = outputAmount.multipliedBy(
+            quote.val.output_token_price
+          );
 
           setTokenPrices({
-            input: inputTokenPrice,
-            output: outputTokenPrice,
+            input: inputTokenPrice.toString(),
+            output: outputTokenPrice.toString(),
           });
           setError({
             liquidityError: Errors.none,
@@ -242,10 +277,12 @@ export const useSwap = () => {
       getQuote,
       setIsFetchingQuote,
       setStrategy,
+      setRate,
       setAmount,
       setTokenPrices,
       setError,
       isSwapping,
+      networkFees,
     ]
   );
 
@@ -346,6 +383,15 @@ export const useSwap = () => {
   const needsWalletConnection = useMemo<null | string>(() => {
     if (!inputAsset || !outputAsset) return null;
 
+    if (
+      !inputAmount ||
+      inputAmount === "0" ||
+      !outputAmount ||
+      outputAmount === "0"
+    ) {
+      return null;
+    }
+
     const chainRequirements = {
       evm: {
         check: (chain: Chain) => isEVM(chain),
@@ -354,6 +400,14 @@ export const useSwap = () => {
       starknet: {
         check: (chain: Chain) => isStarknet(chain),
         address: starknetAddress,
+      },
+      solana: {
+        check: (chain: Chain) => isSolana(chain),
+        address: solanaAddress,
+      },
+      sui: {
+        check: (chain: Chain) => isSui(chain),
+        address: currentAccount?.address,
       },
     };
 
@@ -366,7 +420,16 @@ export const useSwap = () => {
     }
 
     return null;
-  }, [inputAsset, outputAsset, evmAddress, starknetAddress]);
+  }, [
+    inputAsset,
+    outputAsset,
+    inputAmount,
+    outputAmount,
+    evmAddress,
+    starknetAddress,
+    solanaAddress,
+    currentAccount,
+  ]);
 
   const handleSwapClick = async () => {
     if (needsWalletConnection) {
@@ -441,8 +504,7 @@ export const useSwap = () => {
         receiveAmount: outputAmountInDecimals,
         additionalData,
       });
-
-      if (res.error) {
+      if (!res.ok) {
         if (
           res.error.includes(
             "Cannot read properties of undefined (reading 'toLowerCase')"
@@ -455,13 +517,13 @@ export const useSwap = () => {
           //order failed due to price fluctuation, refresh quote here
           fetchQuote(inputAmount, inputAsset, outputAsset, false);
         } else {
-          console.error("failed to create order ❌", res.error);
+          logger.error("failed to create order ❌", res.error);
         }
         setIsSwapping(false);
         return;
       }
 
-      console.log("orderCreated ✅", res.val);
+      logger.log("orderCreated ✅", res.val);
 
       if (isBitcoin(res.val.source_swap.chain)) {
         if (provider) {
@@ -471,7 +533,7 @@ export const useSwap = () => {
             Number(order.source_swap.amount)
           );
           if (bitcoinRes.error) {
-            console.error("failed to send bitcoin ❌", bitcoinRes.error);
+            logger.error("failed to send bitcoin ❌", bitcoinRes.error);
             setIsSwapping(false);
           }
           const updatedOrder = {
@@ -503,8 +565,9 @@ export const useSwap = () => {
       setIsOpen(true);
       clearSwapState();
     } catch (error) {
-      console.log("failed to create order ❌", error);
+      logger.error("failed to create order ❌", error);
       setIsSwapping(false);
+      throw error;
     }
   };
 
@@ -621,6 +684,7 @@ export const useSwap = () => {
     outputAsset,
     tokenPrices,
     strategy,
+    rate,
     error,
     isEditBTCAddress,
     loading: isFetchingQuote,

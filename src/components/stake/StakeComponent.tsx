@@ -12,6 +12,7 @@ import { MIN_STAKE_AMOUNT } from "../../constants/stake";
 import { GardenPassVotes, SEED_FOR_MINTING_NFT } from "./constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { fadeAnimation } from "../../animations/animations";
+import { useStake } from "../../hooks/useStake";
 
 export const StakeComponent = () => {
   const { isConnected, address } = useEVMWallet();
@@ -19,7 +20,6 @@ export const StakeComponent = () => {
   const {
     asset,
     inputCustomSeed,
-    inputPassSeed,
     fetchAndSetStakingStats,
     fetchAndSetStakeApy,
     fetchStakePosData,
@@ -30,6 +30,7 @@ export const StakeComponent = () => {
     stakeType,
     setStakeType,
   } = stakeStore();
+  const { handleNftStake, loading } = useStake();
   const { tokenBalance } = useBalances(asset);
   const tooltipId = useId();
 
@@ -39,23 +40,27 @@ export const StakeComponent = () => {
         ? Number(inputCustomSeed) > 0 &&
           Number(inputCustomSeed) <= Number(tokenBalance) &&
           Number(inputCustomSeed) % MIN_STAKE_AMOUNT === 0
-        : Number(inputPassSeed) > 0 &&
-          Number(inputPassSeed) <= Number(tokenBalance) &&
-          Number(inputPassSeed) % SEED_FOR_MINTING_NFT === 0,
-    [isConnected, inputCustomSeed, inputPassSeed, tokenBalance, stakeType]
+        : Number(SEED_FOR_MINTING_NFT) > 0 &&
+          Number(SEED_FOR_MINTING_NFT) <= Number(tokenBalance) &&
+          Number(SEED_FOR_MINTING_NFT) % SEED_FOR_MINTING_NFT === 0,
+    [isConnected, inputCustomSeed, tokenBalance, stakeType]
   );
 
   const handleStakeClick = () => {
-    if (!isStakeable) return;
-    setOpenModal(modalNames.manageStake, {
-      stake: {
-        isStake: true,
-        amount:
-          stakeType === StakeType.CUSTOM
-            ? inputCustomSeed.toString()
-            : inputPassSeed.toString(),
-      },
-    });
+    if (!isStakeable || loading) return;
+    if (stakeType === StakeType.CUSTOM) {
+      setOpenModal(modalNames.manageStake, {
+        stake: {
+          isStake: true,
+          amount:
+            stakeType === StakeType.CUSTOM
+              ? inputCustomSeed.toString()
+              : SEED_FOR_MINTING_NFT.toString(),
+        },
+      });
+    } else {
+      handleNftStake(Number(SEED_FOR_MINTING_NFT));
+    }
   };
 
   useEffect(() => {
@@ -99,7 +104,7 @@ export const StakeComponent = () => {
     <div className="z-10 flex w-full max-w-[328px] flex-col gap-6 rounded-2xl bg-white bg-opacity-50 p-4 pb-5 sm:max-w-[460px]">
       <div className="flex flex-col gap-6">
         <div className="flex w-full items-center justify-between">
-          <Typography size="h4" weight="bold">
+          <Typography size="h4" weight="medium">
             Stake
           </Typography>
           <Switch<StakeType>
@@ -112,13 +117,13 @@ export const StakeComponent = () => {
           />
         </div>
         <div className="flex flex-col gap-6">
-          <Typography size="h4" weight="medium">
+          <Typography size="h4" weight="regular">
             <AnimatePresence mode="wait">
               {stakeType === StakeType.CUSTOM ? (
                 <motion.span key="custom" {...fadeAnimation}>
                   Deposit SEED into Garden and unlock new opportunities like
                   discounted fees. Stake in multiples of{" "}
-                  <Typography className="!text-rose" weight="bold">
+                  <Typography className="!text-rose" weight="medium">
                     2100 SEED
                   </Typography>{" "}
                   to participate
@@ -180,8 +185,9 @@ export const StakeComponent = () => {
           <StakeInput balance={tokenBalance} />
           <Button
             size="lg"
-            variant={isStakeable ? "primary" : "disabled"}
+            variant={isStakeable && !loading ? "primary" : "disabled"}
             onClick={handleStakeClick}
+            loading={loading}
           >
             Stake
           </Button>

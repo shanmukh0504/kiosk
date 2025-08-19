@@ -1,3 +1,4 @@
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { execSync } from "child_process";
@@ -8,13 +9,20 @@ import wasm from "vite-plugin-wasm";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import topLevelAwait from "vite-plugin-top-level-await";
 import { metadataPlugin } from "./vite-metadata-plugin";
+import process from "process";
 
 const getRecentGitCommitHash = () => {
   try {
+    // Try to get from environment variable first (Docker build)
+    if (process.env.SOURCE_COMMIT) {
+      return process.env.SOURCE_COMMIT.substring(0, 7);
+    }
+    // Fallback to git command
     return execSync("git rev-parse --short HEAD").toString().trim();
   } catch (error) {
-    console.error("Failed to get Git commit hash", error);
-    return "unknown";
+    console.warn("Failed to get Git commit hash, using fallback", error);
+    // Use timestamp as fallback
+    return `build-${Date.now().toString(36)}`;
   }
 };
 
@@ -40,6 +48,36 @@ export default defineConfig({
       },
     }),
     topLevelAwait(),
+    // {
+    //   name: "generate-build-id",
+    //   buildEnd() {
+    //     generateBuildIdFile();
+    //   },
+    //   configureServer(server) {
+    //     generateBuildIdFile();
+    //     // Have to write a custom middleware to serve the build Id file,
+    //     // because vite dev server doesn't serve files from public directory as soon as they are generated.
+    //     server.middlewares.use((req, res, next) => {
+    //       if (req.url === "/build-id.json") {
+    //         const buildIdPath = path.resolve(
+    //           path.dirname(new URL(import.meta.url).pathname),
+    //           "public/build-id.json"
+    //         );
+    //         fs.readFile(buildIdPath, (err, data) => {
+    //           if (err) {
+    //             res.statusCode = 404;
+    //             res.end("Build ID not found");
+    //           } else {
+    //             res.setHeader("Content-Type", "application/json");
+    //             res.end(data);
+    //           }
+    //         });
+    //       } else {
+    //         next();
+    //       }
+    //     });
+    //   },
+    // },
     viteStaticCopy({
       targets: [
         {
@@ -51,52 +89,35 @@ export default defineConfig({
         },
       ],
     }),
-
-    {
-      name: "generate-build-id",
-      buildEnd() {
-        generateBuildIdFile();
-      },
-      configureServer(server) {
-        generateBuildIdFile();
-        // Have to write a custom middleware to serve the build Id file,
-        // because vite dev server doesn't serve files from public directory as soon as they are generated.
-        server.middlewares.use((req, res, next) => {
-          if (req.url === "/build-id.json") {
-            const buildIdPath = path.resolve(
-              path.dirname(new URL(import.meta.url).pathname),
-              "public/build-id.json"
-            );
-            fs.readFile(buildIdPath, (err, data) => {
-              if (err) {
-                res.statusCode = 404;
-                res.end("Build ID not found");
-              } else {
-                res.setHeader("Content-Type", "application/json");
-                res.end(data);
-              }
-            });
-          } else {
-            next();
-          }
-        });
-      },
-    },
+    sentryVitePlugin({
+      org: "garden",
+      project: "kiosk",
+      url: "https://telemetry.garden.finance/",
+    }),
   ],
+  esbuild: {
+    target: "esnext",
+    treeShaking: true,
+    drop: process.env.NODE_ENV === "production" ? ["console", "debugger"] : [],
+    minifyIdentifiers: true,
+    minifySyntax: true,
+    minifyWhitespace: true,
+  },
   build: {
     target: "esnext",
-    sourcemap: false,
+    sourcemap: true,
     minify: "terser",
+    reportCompressedSize: false,
+    chunkSizeWarningLimit: 2000,
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes("node_modules")) {
-            const dirs = id.split("node_modules/")[1].split("/");
-            if (dirs[0].startsWith("@")) {
-              return dirs.slice(0, 2).join("/");
-            }
-            return dirs[0];
-          }
+        manualChunks: {
+          vendor: ["react", "react-dom", "react-router-dom"],
+          libs: [
+            "@gardenfi/garden-book",
+            "framer-motion",
+            "@gardenfi/wallet-connectors",
+          ],
         },
       },
     },

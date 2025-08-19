@@ -1,4 +1,4 @@
-import { AssetChainLogos, Typography } from "@gardenfi/garden-book";
+import { TokenNetworkLogos, Typography } from "@gardenfi/garden-book";
 import { motion } from "framer-motion";
 import { STAKE_REWARD } from "../constants";
 import { Url } from "@gardenfi/utils";
@@ -21,21 +21,21 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="relative mx-auto flex"
     >
-      <div className="absolute mb-[15px] ml-4 mt-[-5px] h-[14px] w-[14px] rotate-45 rounded-sm bg-white sm:mb-0 sm:ml-[-5px] sm:mt-[15px]"></div>
+      <div className="absolute mb-[15px] ml-40 mt-[-5px] h-[14px] w-[14px] rotate-45 rounded-sm bg-white md:ml-[-5px] md:mt-[15px]"></div>
       <div className="flex max-w-[257px] flex-col gap-2 rounded-2xl bg-white px-4 py-3 shadow-custom">
-        <Typography size="h5" weight="medium">
+        <Typography size="h5" weight="regular">
           Total rewards represent the cumulative earnings so far, broken down by
           token.
         </Typography>
         <div className="flex flex-wrap items-center justify-between space-y-1">
           {!!cbBtc && (
             <div className="flex items-center gap-1">
-              <Typography size="h4" weight="medium" className="w-[87px]">
+              <Typography size="h4" weight="regular" className="w-[87px]">
                 {cbBtc}
               </Typography>
               <Typography
                 size="h4"
-                weight="medium"
+                weight="regular"
                 className={`relative w-11 cursor-pointer before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
                 onClick={() =>
                   handleRedirect(
@@ -46,7 +46,7 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
               >
                 cbBTC
               </Typography>
-              <AssetChainLogos
+              <TokenNetworkLogos
                 tokenLogo={STAKE_REWARD.CBBTC.TOKEN_LOGO}
                 chainLogo={STAKE_REWARD.CBBTC.CHAIN_LOGO}
                 className="scale-[0.8054]"
@@ -55,12 +55,12 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
           )}
           {!!seed && (
             <div className="flex items-center gap-1">
-              <Typography size="h4" weight="medium" className="w-[87px]">
+              <Typography size="h4" weight="regular" className="w-[87px]">
                 {seed}
               </Typography>
               <Typography
                 size="h4"
-                weight="medium"
+                weight="regular"
                 className={`relative mr-2 w-9 cursor-pointer before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
                 onClick={() =>
                   handleRedirect(
@@ -71,7 +71,7 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
               >
                 SEED
               </Typography>
-              <AssetChainLogos
+              <TokenNetworkLogos
                 tokenLogo={STAKE_REWARD.SEED.TOKEN_LOGO}
                 chainLogo={STAKE_REWARD.SEED.CHAIN_LOGO}
                 className="scale-[0.8054]"

@@ -1,8 +1,9 @@
 import { Typography } from "@gardenfi/garden-book";
 import { FC } from "react";
 import { Loader } from "../../../common/Loader";
-import { EcosystemKeys, ecosystems } from "./constants";
+import { ecosystems } from "./constants";
 import { motion } from "framer-motion";
+import { BlockchainType } from "@gardenfi/orderbook";
 
 type WalletRowProps = {
   name: string;
@@ -14,7 +15,7 @@ type WalletRowProps = {
 };
 
 type IsConnected = {
-  [key in EcosystemKeys]: boolean;
+  [key in BlockchainType]: boolean;
 };
 
 export const WalletRow: FC<WalletRowProps> = ({
@@ -44,14 +45,26 @@ export const WalletRow: FC<WalletRowProps> = ({
         }`}
       >
         <div className="flex items-center gap-4">
-          <img src={logo} alt={"icon"} className="h-6 w-6" />
+          <img
+            src={logo}
+            alt={"icon"}
+            className="h-6 w-6 object-contain"
+            style={{
+              width: 24,
+              height: 24,
+              minWidth: 24,
+              minHeight: 24,
+              maxWidth: 24,
+              maxHeight: 24,
+            }}
+          />
           <div className="flex items-center justify-between">
             <Typography
               size="h3"
               breakpoints={{
                 sm: "h2",
               }}
-              weight="medium"
+              weight="regular"
             >
               {name === "Injected"
                 ? "Browser Wallet"
@@ -72,9 +85,17 @@ export const WalletRow: FC<WalletRowProps> = ({
                     isConnected && (
                       <img
                         key={ecosystem}
-                        src={ecosystems[ecosystem as EcosystemKeys].icon ?? ""}
-                        height={24}
-                        width={24}
+                        src={ecosystems[ecosystem as BlockchainType].icon ?? ""}
+                        alt={`${ecosystem} icon`}
+                        className="rounded-full object-contain"
+                        style={{
+                          width: 24,
+                          height: 24,
+                          minWidth: 24,
+                          minHeight: 24,
+                          maxWidth: 24,
+                          maxHeight: 24,
+                        }}
                       />
                     )
                 )}

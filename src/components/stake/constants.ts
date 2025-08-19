@@ -14,7 +14,6 @@ export const DURATION_MAP = {
 export type DURATION = keyof typeof DURATION_MAP;
 export const SEED_DECIMALS = 18;
 export const INFINITE = "INFINITE";
-export const TEN_THOUSAND = 10000;
 export const SEED_FOR_MINTING_NFT = 21000;
 export const MIN_STAKE_AMOUNT = 2100;
 

@@ -53,7 +53,7 @@ export const OverviewStats: FC<props> = ({
           xs: "h5",
           sm: titleSize,
         }}
-        weight={size === "xs" ? "medium" : "bold"}
+        weight={size === "xs" ? "regular" : "medium"}
         className={`${textColor} flex items-center gap-0.5 whitespace-nowrap`}
       >
         {title}
@@ -74,7 +74,7 @@ export const OverviewStats: FC<props> = ({
       <Typography
         size={valueSize}
         breakpoints={valueBreakpoints}
-        weight={size === "xs" || size === "sm" ? "medium" : "bold"}
+        weight="regular"
         className={`${textColor} flex items-center gap-1 lg:whitespace-nowrap`}
       >
         {Number(value) < 0 ? value?.toString().slice(1) : value}

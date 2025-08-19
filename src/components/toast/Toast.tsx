@@ -23,7 +23,7 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
   }, [isVisible, hideToast]);
 
   return (
-    <div className={`min-h-10 lg:-translate-y-[48px] ${className}`}>
+    <div className={`min-h-10 sm:-translate-y-[48px] ${className}`}>
       {isVisible && (
         <div
           className={`shine relative flex items-center justify-between overflow-hidden rounded-2xl bg-white/25 px-4 py-2 backdrop-blur-[20px]`}
@@ -38,7 +38,7 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
                 </span>
               )}
             </div>
-            <Typography size="h3" weight="medium">
+            <Typography size="h3" weight="regular">
               {content}
             </Typography>
           </div>

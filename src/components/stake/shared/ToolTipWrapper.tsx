@@ -24,7 +24,7 @@ export const TooltipWrapper: FC<TooltipWrapperProps> = ({
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(true);
 
-  const { isMobile } = viewPortStore();
+  const { isMobile, isSmallTab } = viewPortStore();
 
   useEffect(() => {
     if (!targetRef?.current || !tooltipRef.current) return;
@@ -34,8 +34,14 @@ export const TooltipWrapper: FC<TooltipWrapperProps> = ({
       if (!rect) return;
 
       setPosition({
-        top: isMobile ? rect.top - offsetY * -1.5 : rect.top - offsetY,
-        left: isMobile ? rect.left - offsetX * 16 : rect.right + offsetX,
+        top:
+          isMobile || isSmallTab
+            ? rect.top - offsetY * -1.5
+            : rect.top - offsetY,
+        left:
+          isMobile || isSmallTab
+            ? rect.left - offsetX * 16
+            : rect.right + offsetX,
       });
     };
 

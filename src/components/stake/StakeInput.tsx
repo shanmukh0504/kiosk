@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef, useEffect } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { MinusIcon, PlusIcon, Typography } from "@gardenfi/garden-book";
 import { stakeStore, StakeType } from "../../store/stakeStore";
 import { MIN_STAKE_AMOUNT } from "../../constants/stake";
@@ -9,20 +9,10 @@ import { fadeAnimation } from "../../animations/animations";
 import { SEED_FOR_MINTING_NFT } from "./constants";
 
 export const StakeInput = ({ balance }: { balance: number }) => {
-  const {
-    stakeType,
-    inputCustomSeed,
-    inputPassSeed,
-    setInputCustomSeed,
-    setInputPassSeed,
-  } = stakeStore();
-  const [passCount, setPassCount] = useState(1);
-  const [passSeed, setPassSeed] = useState(SEED_FOR_MINTING_NFT);
+  const { stakeType, inputCustomSeed, setInputCustomSeed } = stakeStore();
   const [animated] = useState(true);
-  const [isFocused, setIsFocused] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   const stakeableBalance = useMemo(
     () => Math.floor(balance / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT,
@@ -31,140 +21,49 @@ export const StakeInput = ({ balance }: { balance: number }) => {
 
   const handleBalanceClick = () => {
     if (!balance || balance === 0 || balance < MIN_STAKE_AMOUNT) return;
-
-    if (stakeType === StakeType.GARDEN_PASS) {
-      const maxPasses = Math.floor(balance / SEED_FOR_MINTING_NFT);
-      setPassCount(maxPasses);
-      const newPassSeed = maxPasses * SEED_FOR_MINTING_NFT;
-      setInputPassSeed(newPassSeed);
-    } else {
-      setInputCustomSeed(stakeableBalance);
-    }
-  };
-
-  const roundToNearestMultiple = (value: number) => {
-    const rounded = Math.round(value / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT;
-    if (balance && rounded > balance) {
-      return Math.floor(balance / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT;
-    }
-    return rounded;
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let input = e.target.value;
-
-    if (!/^[0-9]*\.?[0-9]*$/.test(input)) {
-      return;
-    }
-
-    if (input.startsWith(".")) {
-      input = "0" + input;
-    }
-
-    const parts = input.split(".");
-    if (input === "-") return;
-
-    if (parts.length > 2) {
-      return;
-    }
-
-    const numValue = Number(input);
-    if (stakeType === StakeType.CUSTOM) {
-      setInputCustomSeed(numValue);
-    } else {
-      setInputPassSeed(numValue);
-    }
-  };
-
-  const handleInputBlur = () => {
-    if (stakeType === StakeType.CUSTOM) {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-
-      timeoutRef.current = setTimeout(() => {
-        const currentValue = Number(inputCustomSeed) || 0;
-        const roundedValue = roundToNearestMultiple(currentValue);
-        if (stakeType === StakeType.CUSTOM) {
-          setInputCustomSeed(roundedValue);
-        } else {
-          setInputPassSeed(roundedValue);
-        }
-      }, 500);
-    }
-    setIsFocused(false);
+    setInputCustomSeed(stakeableBalance);
   };
 
   const handleMinusClick = () => {
-    if (stakeType === StakeType.GARDEN_PASS) {
-      if (passCount > 1) {
-        const newPassCount = passCount - 1;
-        setPassCount(newPassCount);
-        const newPassSeed = newPassCount * SEED_FOR_MINTING_NFT;
-        setPassSeed(newPassSeed);
-        setInputPassSeed(newPassSeed);
-      }
+    const currentAmount = Number(inputCustomSeed) || 0;
+    if (currentAmount % MIN_STAKE_AMOUNT === 0) {
+      const newAmount = Math.max(currentAmount - MIN_STAKE_AMOUNT, 0);
+      setInputCustomSeed(newAmount);
     } else {
-      const currentAmount = Number(inputCustomSeed) || 0;
-      if (currentAmount % MIN_STAKE_AMOUNT === 0) {
-        const newAmount = Math.max(currentAmount - MIN_STAKE_AMOUNT, 0);
-        setInputCustomSeed(newAmount);
-      } else {
-        const newAmount =
-          Math.floor(currentAmount / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT;
-        setInputCustomSeed(newAmount);
-      }
+      const newAmount =
+        Math.floor(currentAmount / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT;
+      setInputCustomSeed(newAmount);
     }
   };
 
   const handlePlusClick = () => {
-    if (stakeType === StakeType.GARDEN_PASS) {
-      const newPassCount = passCount + 1;
-      setPassCount(newPassCount);
-      const newPassSeed = newPassCount * SEED_FOR_MINTING_NFT;
-      setPassSeed(newPassSeed);
-      setInputPassSeed(newPassSeed);
+    const currentAmount = Number(inputCustomSeed) || 0;
+    if (currentAmount % MIN_STAKE_AMOUNT === 0) {
+      const newAmount = currentAmount + MIN_STAKE_AMOUNT;
+      setInputCustomSeed(newAmount);
     } else {
-      const currentAmount = Number(inputCustomSeed) || 0;
-      if (currentAmount % MIN_STAKE_AMOUNT === 0) {
-        const newAmount = currentAmount + MIN_STAKE_AMOUNT;
-        setInputCustomSeed(newAmount);
-      } else {
-        const newAmount =
-          Math.floor(currentAmount / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT +
-          MIN_STAKE_AMOUNT;
-        setInputCustomSeed(newAmount);
-      }
+      const newAmount =
+        Math.floor(currentAmount / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT +
+        MIN_STAKE_AMOUNT;
+      setInputCustomSeed(newAmount);
     }
   };
 
   useEffect(() => {
-    if (stakeType === StakeType.CUSTOM) {
-      if (Number(inputCustomSeed) === 0) {
-        setInputCustomSeed(0);
-      }
-    } else {
-      if (Number(inputPassSeed) === 0) {
-        setInputPassSeed(0);
-      }
+    if (Number(inputCustomSeed) === 0) {
+      setInputCustomSeed(0);
     }
-  }, [
-    inputCustomSeed,
-    inputPassSeed,
-    setInputCustomSeed,
-    setInputPassSeed,
-    stakeType,
-  ]);
+  }, [inputCustomSeed, setInputCustomSeed, stakeType]);
 
   return (
     <div className="flex flex-col gap-3 rounded-xl bg-white p-4">
       <div className="flex justify-between">
-        <Typography size="h5" weight="bold">
+        <Typography size="h5" weight="medium">
           Stake SEED
         </Typography>
         <Typography
           size="h5"
-          weight="bold"
+          weight="medium"
           className="cursor-pointer"
           onClick={handleBalanceClick}
         >
@@ -173,13 +72,13 @@ export const StakeInput = ({ balance }: { balance: number }) => {
       </div>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Typography size={"h2"} weight="bold">
+          <Typography size={"h2"} weight="medium">
             <AnimatePresence mode="wait">
               {stakeType === StakeType.GARDEN_PASS ? (
                 <motion.div key="garden-pass" {...fadeAnimation}>
                   <div className="relative flex w-[200px] md:w-[240px]">
                     <NumberFlow
-                      value={passCount}
+                      value={1}
                       locales="en-US"
                       style={{ fontKerning: "none" }}
                       format={{
@@ -192,9 +91,9 @@ export const StakeInput = ({ balance }: { balance: number }) => {
                       className="w-fit tracking-normal duration-200 ease-in-out"
                       willChange
                     />
-                    <span className="!font-medium text-mid-grey">
+                    <span className="!font-normal text-mid-grey">
                       <NumberFlow
-                        value={passSeed}
+                        value={SEED_FOR_MINTING_NFT}
                         locales="en-US"
                         style={{ fontKerning: "none" }}
                         format={{
@@ -221,53 +120,35 @@ export const StakeInput = ({ balance }: { balance: number }) => {
                     <div
                       className={clsx(
                         "relative flex w-full items-center",
-                        !isAnimating && "cursor-text",
                         isAnimating && "pointer-events-none"
                       )}
                       onClick={(e) => {
                         if (isAnimating) return;
                         e.preventDefault();
-                        setIsFocused(true);
                         setTimeout(() => {
                           inputRef.current?.focus();
                         }, 0);
                       }}
                     >
-                      {isFocused ? (
-                        <input
-                          ref={inputRef}
-                          className={clsx(
-                            "w-full bg-transparent py-[1px] text-start font-[inherit] outline-none",
-                            isAnimating && "pointer-events-none"
-                          )}
-                          style={{ fontKerning: "none" }}
-                          type="tel"
-                          value={inputCustomSeed}
-                          onChange={handleInputChange}
-                          onFocus={() => setIsFocused(true)}
-                          onBlur={handleInputBlur}
-                        />
-                      ) : (
-                        <NumberFlow
-                          value={inputCustomSeed}
-                          locales="en-US"
-                          style={{ fontKerning: "none", width: "100%" }}
-                          format={{
-                            useGrouping: false,
-                          }}
-                          plugins={[continuous]}
-                          aria-hidden="true"
-                          animated={animated}
-                          onAnimationsStart={() => {
-                            setIsAnimating(true);
-                          }}
-                          onAnimationsFinish={() => {
-                            setIsAnimating(false);
-                          }}
-                          className="w-full text-start font-[inherit] tracking-normal duration-200 ease-in-out"
-                          willChange
-                        />
-                      )}
+                      <NumberFlow
+                        value={inputCustomSeed}
+                        locales="en-US"
+                        style={{ fontKerning: "none", width: "100%" }}
+                        format={{
+                          useGrouping: false,
+                        }}
+                        plugins={[continuous]}
+                        aria-hidden="true"
+                        animated={animated}
+                        onAnimationsStart={() => {
+                          setIsAnimating(true);
+                        }}
+                        onAnimationsFinish={() => {
+                          setIsAnimating(false);
+                        }}
+                        className="w-full text-start font-[inherit] tracking-normal duration-200 ease-in-out"
+                        willChange
+                      />
                     </div>
                   </div>
                 </motion.div>
@@ -275,10 +156,12 @@ export const StakeInput = ({ balance }: { balance: number }) => {
             </AnimatePresence>
           </Typography>
         </div>
-        <div className="flex gap-3">
-          <MinusIcon onClick={handleMinusClick} className="cursor-pointer" />
-          <PlusIcon onClick={handlePlusClick} className="cursor-pointer" />
-        </div>
+        {stakeType === StakeType.CUSTOM && (
+          <div className="flex gap-3">
+            <MinusIcon onClick={handleMinusClick} className="cursor-pointer" />
+            <PlusIcon onClick={handlePlusClick} className="cursor-pointer" />
+          </div>
+        )}
       </div>
     </div>
   );

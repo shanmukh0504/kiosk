@@ -8,11 +8,12 @@ import {
 import { FC, useMemo, useRef, ChangeEvent, useState, useEffect } from "react";
 import { IOType } from "../../constants/constants";
 import { assetInfoStore } from "../../store/assetInfoStore";
-import { Asset, isBitcoin, isEvmNativeToken } from "@gardenfi/orderbook";
+import { Asset } from "@gardenfi/orderbook";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { ErrorFormat } from "../../constants/errors";
 import NumberFlow from "@number-flow/react";
-import clsx from "clsx/lite";
+import clsx from "clsx";
+import { formatAmount } from "../../utils/utils";
 
 type SwapInputProps = {
   type: IOType;
@@ -48,7 +49,6 @@ export const SwapInput: FC<SwapInputProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const network = useMemo(() => {
-    if (!chains || (asset && isBitcoin(asset.chain))) return;
     if (!asset) return;
     return chains && chains[asset.chain];
   }, [asset, chains]);
@@ -94,19 +94,10 @@ export const SwapInput: FC<SwapInputProps> = ({
     }
   };
 
-  useEffect(() => {
-    setAnimated(true);
-  }, [asset, isFocused]);
-
   const handleBalanceClick = () => {
     if (type === IOType.input && balance && asset) {
-      if (
-        !isBitcoin(asset?.chain) &&
-        !isEvmNativeToken(asset?.chain, asset.tokenAddress)
-      ) {
-        const balanceStr = balance.toString();
-        onChange(balanceStr);
-      }
+      const balanceStr = balance.toString();
+      onChange(balanceStr);
     }
   };
 
@@ -114,6 +105,10 @@ export const SwapInput: FC<SwapInputProps> = ({
     setOpenAssetSelector(type);
     setOpenModal(modalNames.assetList);
   };
+
+  useEffect(() => {
+    setAnimated(true);
+  }, [asset, isFocused]);
 
   // Show loading opacity when loading
   useEffect(() => {
@@ -137,20 +132,28 @@ export const SwapInput: FC<SwapInputProps> = ({
           <div className="flex gap-3">
             <Typography
               size="h5"
-              weight="bold"
+              weight="medium"
               onClick={() => inputRef.current!.focus()}
             >
               {label}
             </Typography>
-            {amount && Number(price) !== 0 && (
-              <Typography size="h5" weight="medium">
-                <span className="text-mid-grey">~${price}</span>
-              </Typography>
-            )}
+            <div className="flex gap-2">
+              {amount && Number(price) !== 0 && (
+                <Typography size="h5" weight="regular">
+                  <span className="text-mid-grey">
+                    ~${formatAmount(price, 0, 3)}
+                  </span>
+                </Typography>
+              )}
+            </div>
           </div>
           {type === IOType.input &&
             (error ? (
-              <Typography size="h5" weight="medium" className="!text-red-500">
+              <Typography
+                size="h5"
+                weight="regular"
+                className="!text-error-red"
+              >
                 {error}
               </Typography>
             ) : balance !== undefined ? (
@@ -159,7 +162,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                 onClick={handleBalanceClick}
               >
                 <WalletIcon className="h-2.5 w-2.5" />
-                <Typography size="h5" weight="medium">
+                <Typography size="h5" weight="regular">
                   {balance}
                 </Typography>
               </div>
@@ -168,7 +171,11 @@ export const SwapInput: FC<SwapInputProps> = ({
             ))}
           {type === IOType.output &&
             (error ? (
-              <Typography size="h5" weight="medium" className="!text-red-500">
+              <Typography
+                size="h5"
+                weight="regular"
+                className="!text-error-red"
+              >
                 {error}
               </Typography>
             ) : (
@@ -177,7 +184,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                   <TimerIcon className="h-4" />
                   <Typography
                     size="h5"
-                    weight="medium"
+                    weight="regular"
                     className="!leading-none"
                   >
                     {timeEstimate}
@@ -192,7 +199,7 @@ export const SwapInput: FC<SwapInputProps> = ({
             breakpoints={{
               sm: "h2",
             }}
-            weight="bold"
+            weight="medium"
           >
             <div className="relative w-[150px] max-w-[150px] md:w-[200px] md:max-w-[200px]">
               <div
@@ -254,8 +261,8 @@ export const SwapInput: FC<SwapInputProps> = ({
           {asset ? (
             <TokenInfo
               symbol={asset.symbol}
-              tokenLogo={asset.logo}
-              chainLogo={network && network.networkLogo}
+              tokenLogo={asset.logo || ""}
+              chainLogo={network?.networkLogo}
               onClick={handleOpenAssetSelector}
             />
           ) : (
@@ -268,7 +275,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                 breakpoints={{
                   sm: "h2",
                 }}
-                weight="medium"
+                weight="regular"
               >
                 Select token
               </Typography>

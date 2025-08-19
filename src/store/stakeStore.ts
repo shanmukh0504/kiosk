@@ -53,7 +53,6 @@ type EpochEarnings = {
 type StakeStoreState = {
   asset: Asset;
   inputCustomSeed: number;
-  inputPassSeed: number;
   error: string | null;
   totalStakedAmount: number;
   totalVotes: number;
@@ -77,7 +76,6 @@ type StakeStoreState = {
     accumulatedRewardUSD: number;
   } | null;
   setInputCustomSeed: (value: number) => void;
-  setInputPassSeed: (value: number) => void;
   setStakeType: (type: StakeType) => void;
   fetchStakePosData: (address: string) => Promise<void>;
   fetchAndSetStakingStats: () => Promise<void>;
@@ -150,7 +148,6 @@ type StakingPositionApiResponse = {
 export const stakeStore = create<StakeStoreState>((set) => ({
   asset: SEED,
   inputCustomSeed: 0,
-  inputPassSeed: 21000,
   error: null,
   stakePosData: null,
   totalStakedAmount: 0,
@@ -166,7 +163,6 @@ export const stakeStore = create<StakeStoreState>((set) => ({
     stakeRewards: false,
   },
   setInputCustomSeed: (value: number) => set({ inputCustomSeed: value }),
-  setInputPassSeed: (value: number) => set({ inputPassSeed: value }),
   setStakeType: (type: StakeType) => set({ stakeType: type }),
   fetchStakePosData: async (address: string) => {
     try {
@@ -318,6 +314,7 @@ export const stakeStore = create<StakeStoreState>((set) => ({
       const response = await axios.get<{ data: EpochResponse[] }>(
         API().stake.epoch.toString()
       );
+      console.log("epochData", response.data.data);
       set({ epochData: response.data.data });
     } catch (error) {
       console.error("Error fetching current epoch :", error);

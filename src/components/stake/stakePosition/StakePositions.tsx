@@ -9,8 +9,6 @@ import { StakeDetails } from "./StakeDetail";
 import { motion } from "framer-motion";
 import { stakePositionAnimation } from "../../../animations/animations";
 
-// const ANIMATION_DELAY = 120;
-
 export const StakePositions = () => {
   const { stakePosData } = stakeStore();
 
@@ -28,38 +26,38 @@ export const StakePositions = () => {
       exit="exit"
       style={{ transformOrigin: "top" }}
     >
-      <div className="mx-auto mb-8 mt-4 flex w-[328px] flex-col rounded-2xl bg-white/50 p-6 pt-5 sm:w-[424px] md:w-[740px]">
-        <div className="no-scrollbar overflow-x-auto">
+      <div className="mx-auto mb-8 mt-4 flex w-[328px] flex-col rounded-2xl bg-white/50 p-6 pt-5 sm:w-[460px] md:w-[740px]">
+        <div className="custom-scrollbar overflow-x-auto">
           <table className="w-full table-fixed">
             <thead className="border-b border-white">
               <tr>
                 <th className="w-24 pb-4 pr-2 text-left">
-                  <Typography size="h5" weight="medium">
+                  <Typography size="h5" weight="regular">
                     Staked SEED
                   </Typography>
                 </th>
                 <th className="w-28 px-4 pb-4 text-left sm:px-2">
-                  <Typography size="h5" weight="medium">
+                  <Typography size="h5" weight="regular">
                     Duration
                   </Typography>
                 </th>
                 <th className="w-20 px-4 pb-4 text-left sm:px-2 sm:pl-2">
-                  <Typography size="h5" weight="medium">
+                  <Typography size="h5" weight="regular">
                     Votes
                   </Typography>
                 </th>
                 <th className="w-24 px-4 pb-4 text-left sm:px-2">
-                  <Typography size="h5" weight="medium">
+                  <Typography size="h5" weight="regular">
                     Multiplier
                   </Typography>
                 </th>
                 <th className="w-28 px-4 pb-4 text-left sm:px-2">
-                  <Typography size="h5" weight="medium">
+                  <Typography size="h5" weight="regular">
                     Rewards
                   </Typography>
                 </th>
                 <th className="w-28 pb-4 pr-8 text-left sm:pr-0">
-                  <Typography size="h5" weight="medium">
+                  <Typography size="h5" weight="regular">
                     End date
                   </Typography>
                 </th>
@@ -78,7 +76,7 @@ export const StakePositions = () => {
               ) : (
                 <Typography
                   size="h5"
-                  weight="medium"
+                  weight="regular"
                   className="mt-4 text-center"
                 >
                   No staking position found.

@@ -17,6 +17,7 @@ type TransactionProps = {
   order: MatchedOrder;
   status?: OrderStatus;
   isLast: boolean;
+  isFirst: boolean;
   onClick?: () => void;
 };
 
@@ -24,7 +25,7 @@ enum StatusLabel {
   Completed = "Completed",
   Pending = "In progress...",
   Expired = "Expired",
-  ShouldInitiate = "Awaiting deposit",
+  ShouldInitiate = "Detecting deposit",
   InitiateDetected = "Deposit detected (0/1)",
   Initiated = "Deposit detected",
   Redeeming = "Redeeming",
@@ -60,6 +61,7 @@ export const TransactionRow: FC<TransactionProps> = ({
   status,
   isLast,
   onClick,
+  isFirst,
 }) => {
   const { create_order, source_swap, destination_swap } = order;
   const { allAssets } = assetInfoStore();
@@ -124,30 +126,33 @@ export const TransactionRow: FC<TransactionProps> = ({
   if (!sendAsset || !receiveAsset) return null;
 
   return (
-    <div
-      className={`flex flex-col gap-1 p-4 ${isLast ? "rounded-b-2xl" : ""} ${
-        statusLabel !== StatusLabel.Expired
-          ? "cursor-pointer hover:bg-white/50"
-          : ""
-      }`}
-      onClick={handleTransactionClick}
-    >
-      <div className={`flex flex-col gap-1`}>
-        {sendAmount && receiveAmount && (
-          <SwapInfo
-            sendAsset={sendAsset}
-            receiveAsset={receiveAsset}
-            sendAmount={sendAmount}
-            receiveAmount={receiveAmount}
-          />
-        )}
-        <div className="flex justify-between">
-          <Typography size="h5" weight="medium">
-            {statusLabel}
-          </Typography>
-          <Typography size="h5" weight="medium">
-            {dayDifference}
-          </Typography>
+    <div>
+      {!isFirst && <div className="h-px w-full bg-white/50"></div>}
+      <div
+        className={`flex flex-col gap-1 p-4 ${isLast ? "rounded-b-2xl" : ""} ${
+          statusLabel !== StatusLabel.Expired
+            ? "cursor-pointer hover:bg-white/50"
+            : ""
+        }`}
+        onClick={handleTransactionClick}
+      >
+        <div className={`flex flex-col gap-1`}>
+          {sendAmount && receiveAmount && (
+            <SwapInfo
+              sendAsset={sendAsset}
+              receiveAsset={receiveAsset}
+              sendAmount={sendAmount}
+              receiveAmount={receiveAmount}
+            />
+          )}
+          <div className="flex justify-between">
+            <Typography size="h5" weight="regular">
+              {statusLabel}
+            </Typography>
+            <Typography size="h5" weight="regular">
+              {dayDifference}
+            </Typography>
+          </div>
         </div>
       </div>
     </div>

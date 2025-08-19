@@ -139,7 +139,7 @@ export const StakeRewards = () => {
       style={{ transformOrigin: "top" }}
     >
       <div className="mx-auto flex w-[328px] flex-col gap-[20px] rounded-[15px] bg-white p-6 sm:w-[460px] md:w-[740px]">
-        <Typography size="h5" weight="bold">
+        <Typography size="h5" weight="medium">
           Rewards
         </Typography>
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
@@ -149,7 +149,7 @@ export const StakeRewards = () => {
                 title={"Current Epoch"}
                 value={epochData?.length ?? 0}
                 size="sm"
-                className="w-[120px] sm:w-fit md:w-[90px]"
+                className="w-[120px] self-start sm:w-fit md:w-[90px]"
               />
               <AnimatePresence>
                 <OverviewStats
@@ -167,7 +167,7 @@ export const StakeRewards = () => {
                       />
                     </TooltipWrapper>
                   }
-                  className="w-[120px] sm:w-fit md:w-[90px]"
+                  className="w-[120px] self-start sm:w-fit md:w-[90px]"
                   targetRef={statRef}
                 />
               </AnimatePresence>
@@ -175,14 +175,14 @@ export const StakeRewards = () => {
                 title={"Next epoch in"}
                 value={`${daysUntilNextEpoch} days`}
                 size="sm"
-                className="w-[90px] sm:w-fit md:w-[80px] xl:w-[90px]"
+                className="w-[90px] self-start sm:w-fit md:w-[80px] xl:w-[90px]"
               />
               <OverviewStats
                 title={"Claim rewards"}
                 value={`${availableReward || 0} cbBTC`}
                 size="sm"
                 isPink
-                className="w-[90px] sm:w-fit md:w-[80px] xl:w-[90px]"
+                className="w-[90px] sm:w-fit md:w-[80px] md:text-nowrap xl:w-[90px]"
               />
             </div>
           </div>

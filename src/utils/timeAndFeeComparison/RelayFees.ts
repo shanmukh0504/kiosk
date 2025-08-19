@@ -1,5 +1,5 @@
 import { isBitcoin } from "@gardenfi/orderbook";
-import { API_URLS, RELAY_BTC_SWAP_TIME } from "./constants";
+import { API_URLS, RELAY_BTC_SWAP_TIME, SOLANA_MAINNET_CHAIN_ID, SOLANA_MAINNET_RECIPIENT } from "./constants";
 import { Asset } from "@gardenfi/orderbook";
 import { comparisonMetric } from "./constants";
 import {
@@ -35,7 +35,7 @@ export const getRelayFee = async (
   const user =
     srcFormat.chainId !== BTC_MAINNET_CHAIN_ID &&
     srcFormat.chainId != BTC_TESTNET_CHAIN_ID
-      ? EVM_DEAD_ADDRESS
+      ? srcFormat.chainId !== SOLANA_MAINNET_CHAIN_ID ? EVM_DEAD_ADDRESS :SOLANA_MAINNET_RECIPIENT
       : srcFormat.chainId === BTC_TESTNET_CHAIN_ID
         ? BTC_TESTNET_RECIPIENT
         : BTC_MAINNET_RECIPIENT;
@@ -43,7 +43,7 @@ export const getRelayFee = async (
   const recipient =
     destFormat.chainId !== BTC_MAINNET_CHAIN_ID &&
     destFormat.chainId != BTC_TESTNET_CHAIN_ID
-      ? EVM_DEAD_ADDRESS
+      ? destFormat.chainId !== SOLANA_MAINNET_CHAIN_ID ? EVM_DEAD_ADDRESS :SOLANA_MAINNET_RECIPIENT
       : destFormat.chainId === BTC_TESTNET_CHAIN_ID
         ? BTC_TESTNET_RECIPIENT
         : BTC_MAINNET_RECIPIENT;

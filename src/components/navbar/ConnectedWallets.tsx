@@ -8,12 +8,17 @@ import pendingOrdersStore from "../../store/pendingOrdersStore";
 import { OrderStatus } from "@gardenfi/core";
 import { useEffect } from "react";
 import { useGarden } from "@gardenfi/react-hooks";
+import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { deletedOrdersStore } from "../../store/deletedOrdersStore";
+import { isOrderExpired } from "@gardenfi/core";
+import { useSuiWallet } from "../../hooks/useSuiWallet";
 
 const ConnectedWallets = () => {
   const { address } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { account: btcAddress } = useBitcoinWallet();
+  const { solanaAddress } = useSolanaWallet();
+  const { suiConnected, currentAccount } = useSuiWallet();
   const { pendingOrders } = useGarden();
   const { setOpenModal } = modalStore();
   const { isOrderDeleted, cleanupDeletedOrders, deletedOrders } =
@@ -33,12 +38,13 @@ const ConnectedWallets = () => {
         (entry) => entry.orderId === order.create_order.create_id
       )
   ).length;
-
   useEffect(() => {
     if (pendingOrders.length > 0) {
       cleanupDeletedOrders(pendingOrders);
       const filteredOrders = pendingOrders.filter(
-        (orders) => !isOrderDeleted(orders.create_order.create_id)
+        (orders) =>
+          !isOrderDeleted(orders.create_order.create_id) &&
+          !isOrderExpired(orders)
       );
       setPendingOrders(filteredOrders);
     } else {
@@ -50,9 +56,12 @@ const ConnectedWallets = () => {
     <>
       <Opacity
         level="medium"
-        className="ml-auto flex min-h-[32px] min-w-[32px] cursor-pointer items-center justify-center gap-1.5 rounded-[24px] p-2 transition-all duration-300 hover:bg-opacity-80 sm:min-h-[40px] sm:min-w-[40px] sm:gap-2 sm:p-3"
+        className="relative z-0 ml-auto flex min-h-[32px] min-w-[32px] cursor-pointer items-center justify-center gap-1.5 overflow-hidden rounded-[24px] p-2 transition-all duration-300 hover:bg-opacity-80 sm:min-h-[40px] sm:min-w-[40px] sm:gap-2 sm:p-3"
         onClick={handleAddressClick}
       >
+        {!!pendingOrdersCount && (
+          <div className="navbar-shine absolute left-0 top-0 -z-10 h-full w-full translate-x-[-25%] scale-150" />
+        )}
         <WalletIcon className="h-4 w-4 sm:h-5 sm:w-5" />
         {address && (
           <img
@@ -75,9 +84,23 @@ const ConnectedWallets = () => {
             alt="Starknet wallet"
           />
         )}
+        {solanaAddress && (
+          <img
+            src={ecosystems.Solana.icon}
+            className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            alt="Solana wallet"
+          />
+        )}
+        {suiConnected && currentAccount && (
+          <img
+            src={ecosystems.Sui.icon}
+            className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            alt="Sui wallet"
+          />
+        )}
         {pendingOrdersCount ? (
-          <div className="flex h-5 w-5 items-center justify-center rounded-full border border-rose p-2">
-            <Typography size="h5" weight="bold" className="h-4 !text-rose">
+          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-rose p-2">
+            <Typography size="h5" weight="medium" className="h-4 !text-white">
               {pendingOrdersCount}
             </Typography>
           </div>

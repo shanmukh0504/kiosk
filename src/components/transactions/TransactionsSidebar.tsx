@@ -34,7 +34,7 @@ export const TransactionsSidebar: FC<SidebarProps> = ({ open, onClose }) => {
     >
       <div
         ref={sliderRef}
-        className={`fixed top-0 flex flex-col bg-white/50 backdrop-blur-[20px] ${open ? "right-0" : "right-[-480px]"} transition-right h-full w-[480px] duration-500 ease-cubic-in-out`}
+        className={`fixed top-0 flex flex-col bg-white/50 backdrop-blur-[20px] ${open ? "right-0" : "right-[-480px]"} transition-right scrollbar-hide h-full w-[480px] overflow-y-auto duration-500 ease-cubic-in-out`}
       >
         <div className="flex justify-end p-6">
           <CloseIcon
@@ -44,7 +44,7 @@ export const TransactionsSidebar: FC<SidebarProps> = ({ open, onClose }) => {
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex max-h-[100vh] flex-col gap-5 overflow-y-auto px-6">
+        <div className="flex max-h-[100vh] flex-col gap-5 px-6">
           <AddressMenu onClose={onClose} />
           <Transactions isOpen={open} />
         </div>

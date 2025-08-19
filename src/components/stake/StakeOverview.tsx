@@ -1,10 +1,9 @@
 import { KeyboardUpIcon, Typography } from "@gardenfi/garden-book";
 import { stakeStore } from "../../store/stakeStore";
-import { SEED_DECIMALS, TEN_THOUSAND } from "../../constants/stake";
+import { SEED_DECIMALS } from "../../constants/stake";
 import { useRef } from "react";
 import { formatAmount } from "../../utils/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { TooltipWrapper } from "./shared/ToolTipWrapper";
 import { OverviewStats } from "./shared/OverviewStats";
 import { RewardsToolTip } from "./shared/RewardsToolTip";
 
@@ -61,9 +60,7 @@ export const StakeOverview = ({
   const formattedAmount =
     totalStakedAmount === undefined
       ? "0"
-      : totalStakedAmount >= TEN_THOUSAND
-        ? totalStakedAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-        : totalStakedAmount.toString();
+      : totalStakedAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
   return (
     <AnimatePresence mode="wait">
@@ -75,7 +72,7 @@ export const StakeOverview = ({
         style={{ transformOrigin: "top" }}
       >
         <div className="mx-auto mt-4 flex w-[328px] flex-col gap-[20px] rounded-[15px] bg-white/50 p-6 backdrop-blur-[20] sm:w-[460px] md:w-[740px]">
-          <Typography size="h5" weight="bold">
+          <Typography size="h5" weight="medium">
             Staking overview
           </Typography>
           <div className="flex items-start justify-between gap-4 sm:items-center">
@@ -106,22 +103,20 @@ export const StakeOverview = ({
                     size="sm"
                     info
                     toolTip={
-                      <TooltipWrapper targetRef={statRef}>
-                        <RewardsToolTip
-                          seed={formatAmount(
-                            stakeRewards?.totalSeedReward ?? 0,
-                            SEED_DECIMALS,
-                            4
-                          )}
-                          cbBtc={formatAmount(
-                            Number(
-                              stakeRewards?.rewardResponse
-                                .cumulative_rewards_cbbtc ?? 0
-                            ),
-                            8
-                          )}
-                        />
-                      </TooltipWrapper>
+                      <RewardsToolTip
+                        seed={formatAmount(
+                          stakeRewards?.totalSeedReward ?? 0,
+                          SEED_DECIMALS,
+                          4
+                        )}
+                        cbBtc={formatAmount(
+                          Number(
+                            stakeRewards?.rewardResponse
+                              .cumulative_rewards_cbbtc ?? 0
+                          ),
+                          8
+                        )}
+                      />
                     }
                     targetRef={statRef}
                     className="sm:w-fit md:mr-5 md:w-[100px]"

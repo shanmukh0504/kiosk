@@ -1,8 +1,7 @@
-import { AssetChainLogos, Typography } from "@gardenfi/garden-book";
+import { TokenNetworkLogos, Typography } from "@gardenfi/garden-book";
 import { motion } from "framer-motion";
 import { STAKE_REWARD } from "../constants";
 import { Url } from "@gardenfi/utils";
-import { useEffect } from "react";
 import { formatAmount } from "../../../utils/utils";
 
 type UnitRewardTooltipProps = {
@@ -15,11 +14,6 @@ export const UnitRewardTooltip = ({ seed, cbBtc }: UnitRewardTooltipProps) => {
     window.open(addressExplorer.endpoint("address").endpoint(address));
   };
 
-  useEffect(() => {
-    console.log("cbbtc", formatAmount(cbBtc ?? 0, 0, 2).toFixed(8));
-    console.log("seed", formatAmount(seed ?? 0, 0, 2).toFixed(8));
-  }, []);
-
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8, y: -10 }}
@@ -28,17 +22,17 @@ export const UnitRewardTooltip = ({ seed, cbBtc }: UnitRewardTooltipProps) => {
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="relative mx-auto flex"
     >
-      <div className="absolute mb-[15px] ml-4 mt-[-5px] h-[14px] w-[14px] rotate-45 rounded-sm bg-white sm:mb-0 sm:ml-[-5px] sm:mt-[15px]"></div>
+      <div className="absolute mb-[15px] ml-24 mt-[-5px] h-[14px] w-[14px] rotate-45 rounded-sm bg-white md:mb-0 md:ml-[-5px] md:mt-[15px]"></div>
       <div className="flex max-w-[257px] flex-col gap-2 rounded-2xl bg-white px-4 py-3 shadow-custom">
         <div className="flex flex-wrap items-center justify-between space-y-1">
           {(cbBtc ?? 0) > 0 && (
             <div className="flex items-center gap-1">
-              <Typography size="h4" weight="medium" className="w-[87px]">
+              <Typography size="h4" weight="regular" className="w-[87px]">
                 {formatAmount(cbBtc ?? 0, 0, 8).toFixed(8)}
               </Typography>
               <Typography
                 size="h4"
-                weight="medium"
+                weight="regular"
                 className={`relative cursor-pointer before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
                 onClick={() =>
                   handleRedirect(
@@ -49,7 +43,7 @@ export const UnitRewardTooltip = ({ seed, cbBtc }: UnitRewardTooltipProps) => {
               >
                 cbBTC
               </Typography>
-              <AssetChainLogos
+              <TokenNetworkLogos
                 tokenLogo={STAKE_REWARD.CBBTC.TOKEN_LOGO}
                 chainLogo={STAKE_REWARD.CBBTC.CHAIN_LOGO}
                 className="scale-[0.8054]"
@@ -58,12 +52,12 @@ export const UnitRewardTooltip = ({ seed, cbBtc }: UnitRewardTooltipProps) => {
           )}
           {(seed ?? 0) > 0 && (
             <div className="flex items-center gap-1">
-              <Typography size="h4" weight="medium" className="w-[87px]">
+              <Typography size="h4" weight="regular" className="w-[87px]">
                 {formatAmount(seed ?? 0, 0, 8)}
               </Typography>
               <Typography
                 size="h4"
-                weight="medium"
+                weight="regular"
                 className={`relative cursor-pointer before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
                 onClick={() =>
                   handleRedirect(
@@ -74,7 +68,7 @@ export const UnitRewardTooltip = ({ seed, cbBtc }: UnitRewardTooltipProps) => {
               >
                 SEED
               </Typography>
-              <AssetChainLogos
+              <TokenNetworkLogos
                 tokenLogo={STAKE_REWARD.SEED.TOKEN_LOGO}
                 chainLogo={STAKE_REWARD.SEED.CHAIN_LOGO}
                 className="scale-[0.8054]"

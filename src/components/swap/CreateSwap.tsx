@@ -1,7 +1,11 @@
 import { Button, ExchangeIcon } from "@gardenfi/garden-book";
 import { SwapInput } from "./SwapInput";
-import { getTimeEstimates, IOType } from "../../constants/constants";
-import { useEffect, useMemo, useState } from "react";
+import {
+  getTimeEstimates,
+  IOType,
+  WALLET_SUPPORTED_CHAINS,
+} from "../../constants/constants";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { useSearchParams } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
@@ -12,15 +16,53 @@ import {
   getQueryParams,
 } from "../../utils/utils";
 import { QUERY_PARAMS } from "../../constants/constants";
+import { ecosystems } from "../navbar/connectWallet/constants";
 import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { useEVMWallet } from "../../hooks/useEVMWallet";
+import { useStarknetWallet } from "../../hooks/useStarknetWallet";
+import { rpcStore } from "../../store/rpcStore";
+import { useSolanaWallet } from "../../hooks/useSolanaWallet";
+import { useSuiWallet } from "../../hooks/useSuiWallet";
+import {
+  isEVM,
+  isBitcoin,
+  isStarknet,
+  isSolana,
+  isSui,
+} from "@gardenfi/orderbook";
+import { swapStore } from "../../store/swapStore";
+import { AnimatePresence, motion } from "framer-motion";
+import { CompetitorComparisons } from "./CompetitorComparisons";
 
 export const CreateSwap = () => {
   const [loadingDisabled, setLoadingDisabled] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [addParams, setAddParams] = useState(false);
+  const { account: btcAddress, provider } = useBitcoinWallet();
+  const { address } = useEVMWallet();
+  const { starknetAddress } = useStarknetWallet();
+  const { solanaAnchorProvider } = useSolanaWallet();
+  const { currentAccount } = useSuiWallet();
+  const {
+    isAssetSelectorOpen,
+    assets,
+    fetchAndSetBitcoinBalance,
+    fetchAndSetEvmBalances,
+    fetchAndSetFiatValues,
+    fetchAndSetStarknetBalance,
+    fetchAndSetSolanaBalance,
+    fetchAndSetSuiBalance,
+  } = assetInfoStore();
+  const {
+    isComparisonVisible,
+    showComparison,
+    hideComparison,
+    updateComparisonSavings,
+  } = swapStore();
 
-  const { assets } = assetInfoStore();
+  const { workingRPCs } = rpcStore();
 
   const {
     outputAmount,
@@ -44,20 +86,40 @@ export const CreateSwap = () => {
     swapAssets,
   } = useSwap();
   const { setOpenModal } = modalStore();
+  const { connector } = useEVMWallet();
+
+  const isChainSupported = useMemo(() => {
+    if (!connector || !inputAsset || !outputAsset) return true;
+    if (!WALLET_SUPPORTED_CHAINS[connector.id]) return true;
+    if (
+      isBitcoin(inputAsset.chain) ||
+      isStarknet(inputAsset.chain) ||
+      isSolana(inputAsset.chain) ||
+      isSui(inputAsset.chain)
+    )
+      return true;
+    return WALLET_SUPPORTED_CHAINS[connector.id].includes(inputAsset.chain);
+  }, [connector, inputAsset, outputAsset]);
 
   const buttonLabel = useMemo(() => {
+    if (needsWalletConnection)
+      return `Connect ${capitalizeChain(needsWalletConnection)} Wallet`;
+
     return error.liquidityError
       ? "Insufficient liquidity"
-      : error.insufficientBalanceError
-        ? "Insufficient balance"
-        : needsWalletConnection
-          ? `Connect ${capitalizeChain(needsWalletConnection)} Wallet`
-          : isApproving
-            ? "Approving..."
-            : isSwapping
-              ? "Signing"
-              : "Swap";
+      : !isChainSupported
+        ? "Wallet does not support the chain"
+        : error.insufficientBalanceError
+          ? "Insufficient balance"
+          : needsWalletConnection
+            ? `Connect ${capitalizeChain(needsWalletConnection)} Wallet`
+            : isApproving
+              ? "Approving..."
+              : isSwapping
+                ? "Signing"
+                : "Swap";
   }, [
+    isChainSupported,
     error.liquidityError,
     isApproving,
     isSwapping,
@@ -66,21 +128,21 @@ export const CreateSwap = () => {
   ]);
 
   const buttonDisabled = useMemo(() => {
-    return !!error.liquidityError ||
-      !!error.insufficientBalanceError ||
-      loadingDisabled ||
-      isSwapping
+    return error.liquidityError
       ? true
-      : needsWalletConnection || validSwap
+      : needsWalletConnection
         ? false
-        : true;
+        : !isChainSupported || isSwapping
+          ? true
+          : validSwap
+            ? false
+            : true;
   }, [
+    isChainSupported,
     isSwapping,
     validSwap,
     error.liquidityError,
-    error.insufficientBalanceError,
     needsWalletConnection,
-    loadingDisabled,
   ]);
 
   const buttonVariant = useMemo(() => {
@@ -98,22 +160,101 @@ export const CreateSwap = () => {
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
 
+  const fetchAllBalances = useCallback(async () => {
+    await fetchAndSetFiatValues();
+    await Promise.allSettled([
+      address && fetchAndSetEvmBalances(address, workingRPCs),
+      btcAddress && provider && fetchAndSetBitcoinBalance(provider, btcAddress),
+      starknetAddress && fetchAndSetStarknetBalance(starknetAddress),
+      solanaAnchorProvider &&
+        fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey),
+      currentAccount && fetchAndSetSuiBalance(currentAccount.address),
+    ]);
+  }, [
+    address,
+    provider,
+    btcAddress,
+    currentAccount,
+    fetchAndSetEvmBalances,
+    fetchAndSetBitcoinBalance,
+    fetchAndSetSuiBalance,
+    starknetAddress,
+    solanaAnchorProvider,
+    fetchAndSetFiatValues,
+    fetchAndSetStarknetBalance,
+    fetchAndSetSolanaBalance,
+    workingRPCs,
+  ]);
+
+  const fetchInputAssetBalance = useCallback(async () => {
+    await fetchAndSetFiatValues();
+    if (!inputAsset) return;
+    if (isEVM(inputAsset.chain) && address)
+      await fetchAndSetEvmBalances(address, workingRPCs, inputAsset);
+    if (isBitcoin(inputAsset.chain) && provider && btcAddress)
+      await fetchAndSetBitcoinBalance(provider, btcAddress);
+    if (isStarknet(inputAsset.chain) && starknetAddress)
+      await fetchAndSetStarknetBalance(starknetAddress);
+    if (isSolana(inputAsset.chain) && solanaAnchorProvider)
+      await fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey);
+    if (isSui(inputAsset.chain) && currentAccount)
+      await fetchAndSetSuiBalance(currentAccount.address);
+  }, [
+    fetchAndSetFiatValues,
+    inputAsset,
+    address,
+    fetchAndSetEvmBalances,
+    workingRPCs,
+    provider,
+    btcAddress,
+    fetchAndSetBitcoinBalance,
+    starknetAddress,
+    fetchAndSetStarknetBalance,
+    solanaAnchorProvider,
+    fetchAndSetSolanaBalance,
+    currentAccount,
+    fetchAndSetSuiBalance,
+  ]);
+
   const handleConnectWallet = () => {
-    if (needsWalletConnection === "starknet") {
-      setOpenModal(modalNames.connectWallet, {
-        Starknet: true,
-        Bitcoin: false,
-        EVM: false,
-      });
-    }
-    if (needsWalletConnection === "evm") {
-      setOpenModal(modalNames.connectWallet, {
-        EVM: true,
-        Starknet: false,
-        Bitcoin: false,
-      });
-    }
+    if (!needsWalletConnection) return;
+
+    const modalState = Object.values(ecosystems).reduce(
+      (acc, { name }) => {
+        acc[name] = name.toLowerCase() === needsWalletConnection;
+        return acc;
+      },
+      {} as Record<string, boolean>
+    );
+
+    setOpenModal(modalNames.connectWallet, modalState);
   };
+
+  useEffect(() => {
+    if (!assets) return;
+    fetchAllBalances();
+  }, [assets, fetchAllBalances]);
+
+  useEffect(() => {
+    if (!assets) return;
+
+    const interval = setInterval(() => {
+      if (isAssetSelectorOpen.isOpen) {
+        fetchAllBalances();
+      } else {
+        fetchInputAssetBalance();
+      }
+    }, 7000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [
+    assets,
+    isAssetSelectorOpen.isOpen,
+    fetchAllBalances,
+    fetchInputAssetBalance,
+  ]);
 
   useEffect(() => {
     if (!assets || addParams) return;
@@ -122,6 +263,7 @@ export const CreateSwap = () => {
       inputAssetSymbol = "",
       outputChain = "",
       outputAssetSymbol = "",
+      inputAmount: urlInputAmount = "",
     } = getQueryParams(searchParams);
 
     const fromAsset = getAssetFromChainAndSymbol(
@@ -141,10 +283,26 @@ export const CreateSwap = () => {
       const BTC = Object.values(assets).find(
         (asset) => asset.name.toLowerCase() == "bitcoin"
       );
-      BTC && !BTC.disabled ? setAsset(IOType.input, BTC) : null;
+      if (BTC && !BTC.disabled) {
+        setAsset(IOType.input, BTC);
+      }
     }
+
+    if (urlInputAmount && urlInputAmount !== inputAmount) {
+      handleInputAmountChange(urlInputAmount);
+    }
+
     setAddParams(true);
-  }, [addParams, assets, inputAsset, outputAsset, searchParams, setAsset]);
+  }, [
+    addParams,
+    assets,
+    inputAsset,
+    outputAsset,
+    searchParams,
+    setAsset,
+    inputAmount,
+    handleInputAmountChange,
+  ]);
 
   useEffect(() => {
     if (!addParams || (!inputAsset && !outputAsset)) return;
@@ -154,6 +312,7 @@ export const CreateSwap = () => {
       prev.delete(QUERY_PARAMS.inputAsset);
       prev.delete(QUERY_PARAMS.outputChain);
       prev.delete(QUERY_PARAMS.outputAsset);
+      prev.delete(QUERY_PARAMS.inputAmount);
 
       if (inputAsset) {
         prev.set(QUERY_PARAMS.inputChain, inputAsset.chain);
@@ -163,10 +322,13 @@ export const CreateSwap = () => {
         prev.set(QUERY_PARAMS.outputChain, outputAsset.chain);
         prev.set(QUERY_PARAMS.outputAsset, outputAsset.symbol);
       }
+      if (inputAmount) {
+        prev.set(QUERY_PARAMS.inputAmount, inputAmount);
+      }
 
       return prev;
     });
-  }, [addParams, inputAsset, outputAsset, setSearchParams]);
+  }, [addParams, inputAsset, outputAsset, inputAmount, setSearchParams]);
 
   // Disable button when loading
   useEffect(() => {
@@ -195,52 +357,71 @@ export const CreateSwap = () => {
   }, [clearSwapState, controller]);
 
   return (
-    <div
-      className={`before:pointer-events-none before:absolute before:left-0 before:top-0 before:h-full before:w-full before:bg-black before:bg-opacity-0 before:transition-colors before:duration-700 before:content-['']`}
-    >
-      <div className="flex flex-col px-2 pb-3 pt-2 sm:px-3 sm:pb-4 sm:pt-3">
-        <div className="relative flex flex-col gap-3">
-          <SwapInput
-            type={IOType.input}
-            amount={inputAmount}
-            asset={inputAsset}
-            onChange={handleInputAmountChange}
-            loading={loading.input}
-            price={tokenPrices.input}
-            error={error.inputError}
-            balance={inputTokenBalance}
-          />
-          <div
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
-            onClick={swapAssets}
-          >
-            <div className="h-8 w-8 origin-center rounded-full border border-light-grey bg-white p-1.5 transition-transform hover:scale-[1.1]"></div>
-            <ExchangeIcon className="pointer-events-none absolute bottom-1.5 left-1.5" />
-          </div>
-
-          <SwapInput
-            type={IOType.output}
-            amount={outputAmount}
-            asset={outputAsset}
-            onChange={handleOutputAmountChange}
-            loading={loading.output}
-            error={error.outputError}
-            price={tokenPrices.output}
-            timeEstimate={timeEstimate}
-          />
-        </div>
-        <InputAddressAndFeeRateDetails />
-        <Button
-          className="mt-3 transition-colors duration-500"
-          variant={buttonVariant}
-          size="lg"
-          onClick={
-            needsWalletConnection ? handleConnectWallet : handleSwapClick
-          }
+    <div className="relative">
+      <CompetitorComparisons
+        hide={hideComparison}
+        isTime={showComparison.isTime}
+        isFees={showComparison.isFees}
+        onComparisonUpdate={updateComparisonSavings}
+      />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key="create-swap"
+          initial={{ opacity: 1 }}
+          animate={{ opacity: isComparisonVisible ? 0 : 1 }}
+          transition={{
+            duration: isComparisonVisible ? 0.32 : 0.45,
+            delay: isComparisonVisible ? 0 : 0.25,
+            ease: "easeOut",
+          }}
+          className={`before:pointer-events-none before:absolute before:left-0 before:top-0 before:h-full before:w-full before:bg-black before:bg-opacity-0 before:transition-colors before:duration-700 before:content-['']`}
         >
-          {buttonLabel}
-        </Button>
-      </div>
+          <div className="flex flex-col px-2 pb-3 pt-2 sm:px-3 sm:pb-4 sm:pt-3">
+            <div className="relative flex flex-col gap-3">
+              <SwapInput
+                type={IOType.input}
+                amount={inputAmount}
+                asset={inputAsset}
+                onChange={handleInputAmountChange}
+                loading={loading.input}
+                price={tokenPrices.input}
+                error={error.inputError}
+                balance={inputTokenBalance}
+              />
+              <div
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+                onClick={swapAssets}
+              >
+                <div className="h-8 w-8 origin-center rounded-full border border-light-grey bg-white p-1.5 transition-transform hover:scale-[1.1]"></div>
+                <ExchangeIcon className="pointer-events-none absolute bottom-1.5 left-1.5" />
+              </div>
+
+              <SwapInput
+                type={IOType.output}
+                amount={outputAmount}
+                asset={outputAsset}
+                onChange={handleOutputAmountChange}
+                loading={loading.output}
+                error={error.outputError}
+                price={tokenPrices.output}
+                timeEstimate={timeEstimate}
+              />
+            </div>
+            <InputAddressAndFeeRateDetails />
+            <Button
+              className={`mt-3 transition-colors duration-500`}
+              variant={buttonVariant}
+              size="lg"
+              disabled={buttonDisabled || loadingDisabled}
+              onClick={
+                needsWalletConnection ? handleConnectWallet : handleSwapClick
+              }
+            >
+              {buttonLabel}
+            </Button>
+          </div>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 };

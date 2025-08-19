@@ -60,7 +60,10 @@ export const Modal = () => {
         <AssetSelector onClose={() => setCloseModal(modalNames.assetList)} />
       </ResponsiveModal>
 
-      <ResponsiveModal open={modalName.manageStake}>
+      <ResponsiveModal
+        open={modalName.manageStake}
+        onClose={() => setCloseModal(modalNames.manageStake)}
+      >
         <StakeModal onClose={() => setCloseModal(modalNames.manageStake)} />
       </ResponsiveModal>
 

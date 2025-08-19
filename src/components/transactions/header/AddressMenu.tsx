@@ -7,9 +7,11 @@ import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { modalNames, modalStore } from "../../../store/modalStore";
 import { ecosystems } from "../../navbar/connectWallet/constants";
 import { Address } from "./Address";
-import { balanceStore } from "../../../store/balanceStore";
 import { swapStore } from "../../../store/swapStore";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
+import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
+import { assetInfoStore } from "../../../store/assetInfoStore";
+import { useSuiWallet } from "../../../hooks/useSuiWallet";
 
 type AddressMenuProps = {
   onClose: () => void;
@@ -19,25 +21,38 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const { address, disconnect } = useEVMWallet();
   const { starknetAddress, starknetDisconnect } = useStarknetWallet();
   const { account: btcAddress, disconnect: btcDisconnect } = useBitcoinWallet();
+  const { solanaAddress, solanaDisconnect } = useSolanaWallet();
+  const { suiConnected, currentAccount, suiDisconnect } = useSuiWallet();
   const { setOpenModal } = modalStore();
   const { clear } = swapStore();
-  const { clearBalances } = balanceStore();
+  const { clearBalances } = assetInfoStore();
   const addTooltipId = useId();
   const languageTooltipId = useId();
   const referralTooltipId = useId();
   const logoutTooltipId = useId();
 
   const showConnectWallet = useMemo(() => {
-    return !(address && btcAddress && starknetAddress);
-  }, [address, btcAddress, starknetAddress]);
+    return !(
+      address &&
+      btcAddress &&
+      starknetAddress &&
+      solanaAddress &&
+      suiConnected
+    );
+  }, [address, btcAddress, starknetAddress, solanaAddress, suiConnected]);
 
   const handleDisconnectClick = () => {
     clear();
     disconnect();
-    onClose();
     btcDisconnect();
     starknetDisconnect();
+    solanaDisconnect();
+    suiDisconnect();
     clearBalances();
+    onClose();
+    setTimeout(() => {
+      clearBalances();
+    }, 2000);
   };
 
   const handleBTCWalletClick = () => {
@@ -57,6 +72,15 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
             <Address
               address={starknetAddress}
               logo={ecosystems.Starknet.icon}
+            />
+          )}
+          {solanaAddress && (
+            <Address address={solanaAddress} logo={ecosystems.Solana.icon} />
+          )}
+          {suiConnected && (
+            <Address
+              address={currentAccount?.address ?? ""}
+              logo={ecosystems.Sui.icon}
             />
           )}
           {showConnectWallet && (

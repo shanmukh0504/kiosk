@@ -28,7 +28,7 @@ export const GardenPass = () => {
         </div>
         <div className="w-full cursor-pointer">
           <Button
-            className="w-full !bg-white !py-3 !font-medium !text-rose"
+            className="!font-regular w-full !bg-white !py-3 !text-rose"
             size="lg"
           >
             <span>View at OpenSea</span>
@@ -62,7 +62,7 @@ export const GardenPass = () => {
         </div>
         <div className="w-full cursor-pointer opacity-0 transition-all duration-300 ease-in-out group-hover:opacity-100">
           <Button
-            className="w-full !bg-white !py-3 !font-medium !text-rose"
+            className="!font-regular w-full !bg-white !py-3 !text-rose"
             size="lg"
           >
             <span>View at OpenSea</span>

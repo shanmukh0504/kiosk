@@ -1,40 +1,90 @@
-import { useEffect, useState } from "react";
-import { BitcoinNetwork } from "@catalogfi/wallets";
-import { calculateNetworkFees } from "../utils/getNetworkFees";
+import { useEffect } from "react";
+import { constructOrderPair } from "@gardenfi/core";
+import {
+  calculateBitcoinNetworkFees,
+  getSuiNetworkFee,
+} from "../utils/getNetworkFees";
 import { formatAmount } from "../utils/utils";
-import { Asset } from "@gardenfi/orderbook";
+import { isBitcoin, isSui } from "@gardenfi/orderbook";
+import { assetInfoStore } from "../store/assetInfoStore";
+import { swapStore } from "../store/swapStore";
+import { getBitcoinNetwork, SUI_SOLVER_ADDRESS } from "../constants/constants";
+import logger from "../utils/logger";
 
-export const useNetworkFees = (
-  network: BitcoinNetwork,
-  outputAsset?: Asset
-) => {
-  const [networkFeesValue, setNetworkFeesValue] = useState<string>("Free");
-  const [isLoading, setIsLoading] = useState(false);
+export const useNetworkFees = () => {
+  const { strategies, fiatData } = assetInfoStore();
+  const {
+    setNetworkFees,
+    setIsNetworkFeesLoading,
+    inputAsset,
+    outputAsset,
+    inputAmount,
+  } = swapStore();
+
+  const bitcoin_network = getBitcoinNetwork();
 
   useEffect(() => {
-    let intervalId: number | null = null;
+    if (!inputAsset || !outputAsset || !strategies.val) return;
+
     const fetchNetworkFees = async () => {
-      setIsLoading(true);
+      if (!strategies.val) return;
+
+      setIsNetworkFeesLoading(true);
       try {
-        const fees = await calculateNetworkFees(network, outputAsset);
-        setNetworkFeesValue(`$${formatAmount(fees, 0, 2)}`);
+        const strategy =
+          strategies.val[
+            constructOrderPair(
+              inputAsset.chain,
+              inputAsset.atomicSwapAddress,
+              outputAsset.chain,
+              outputAsset.atomicSwapAddress
+            )
+          ];
+
+        const hasBitcoinInput = isBitcoin(inputAsset.chain);
+        const hasBitcoinOutput = isBitcoin(outputAsset.chain);
+        const hasSuiInput = isSui(inputAsset.chain);
+
+        let totalFees = strategy.fixed_fee;
+
+        if (hasBitcoinInput || hasBitcoinOutput) {
+          const bitcoinFees = await calculateBitcoinNetworkFees(
+            bitcoin_network,
+            hasBitcoinInput ? inputAsset : outputAsset
+          );
+          totalFees += bitcoinFees;
+        }
+
+        if (hasSuiInput) {
+          const suiFees = await getSuiNetworkFee(
+            SUI_SOLVER_ADDRESS,
+            inputAsset,
+            inputAmount,
+            fiatData
+          );
+          totalFees += suiFees;
+        }
+        setNetworkFees(formatAmount(totalFees, 0));
       } catch (error) {
-        console.error(error);
-        setNetworkFeesValue("Free");
+        logger.error("failed to fetch network fees ❌", error);
+        setNetworkFees(0);
       } finally {
-        setIsLoading(false);
+        setIsNetworkFeesLoading(false);
       }
     };
     fetchNetworkFees();
 
-    intervalId = window.setInterval(fetchNetworkFees, 15000);
+    const intervalId = setInterval(fetchNetworkFees, 15000);
 
     return () => {
-      if (intervalId) window.clearInterval(intervalId);
+      clearInterval(intervalId);
     };
-  }, [network, outputAsset]);
-  return {
-    networkFeesValue,
-    isLoading,
-  };
+  }, [
+    bitcoin_network,
+    inputAsset,
+    outputAsset,
+    strategies.val,
+    inputAmount,
+    fiatData,
+  ]);
 };

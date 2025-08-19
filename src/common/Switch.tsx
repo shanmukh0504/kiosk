@@ -25,7 +25,7 @@ export const Switch = <T extends string>({
           key={option.value}
           onClick={() => onChange(option.value)}
         >
-          <Typography weight="bold" size="h4">
+          <Typography weight="medium" size="h4">
             {option.label}
           </Typography>
         </span>

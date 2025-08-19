@@ -42,18 +42,11 @@ export const delayedFadeAnimation: Variants = {
   initial: { opacity: 0 },
   animate: {
     opacity: 1,
-    transition: {
-      duration: 0.3,
-      delay: 0.1,
-      ease: "easeInOut",
-    },
+    transition: { duration: 0.2, ease: "easeInOut" },
   },
   exit: {
     opacity: 0,
-    transition: {
-      duration: 0.1,
-      ease: "easeInOut",
-    },
+    transition: { duration: 0.2, ease: "easeInOut" },
   },
 };
 
@@ -64,7 +57,7 @@ export const expandWithDelayAnimation: Variants = {
     height: "auto",
     transition: {
       duration: 0.4,
-      opacity: { delay: 0.1, ease: "easeOut" },
+      opacity: { delay: 0.23, ease: "easeOut" },
       ease: "easeOut",
     },
   },
@@ -72,8 +65,8 @@ export const expandWithDelayAnimation: Variants = {
     opacity: 0,
     height: 0,
     transition: {
-      duration: 0.4,
-      height: { delay: 0.1, ease: "easeOut" },
+      duration: 0.2,
+      height: { delay: 0.23, ease: "easeOut" },
       ease: "easeOut",
     },
   },

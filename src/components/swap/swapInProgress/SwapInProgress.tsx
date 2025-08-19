@@ -25,7 +25,8 @@ export const SwapInProgress = () => {
   const { order, setIsOpen } = orderInProgressStore();
   const { allAssets } = assetInfoStore();
   const { addDeletedOrder } = deletedOrdersStore();
-  const { orderProgress, viewableStatus } = useOrderStatus();
+  const { orderProgress, viewableStatus, confirmationsString } =
+    useOrderStatus();
 
   const { depositAddress, inputAsset, outputAsset } = useMemo(() => {
     return {
@@ -63,8 +64,8 @@ export const SwapInProgress = () => {
   return order ? (
     <div className="animate-fade-out flex flex-col gap-3 p-3">
       <div className="flex items-center justify-between p-1">
-        <Typography size="h4" weight="bold">
-          Swap progress
+        <Typography size="h4" weight="medium">
+          Swap in progress
         </Typography>
         <div className="flex items-center justify-center gap-3">
           {showDeleteButton && (
@@ -81,7 +82,7 @@ export const SwapInProgress = () => {
         onClick={handleClickTransaction}
       >
         <div className="flex items-center gap-2">
-          <Typography size="h5" weight="bold">
+          <Typography size="h5" weight="medium">
             Transaction
           </Typography>
           <ArrowNorthEastIcon className="h-[10px] w-[10px]" />
@@ -113,11 +114,11 @@ export const SwapInProgress = () => {
           order.status === OrderStatusEnum.Created) && (
           <div className="flex justify-between rounded-2xl bg-white p-4">
             <div className="flex flex-col gap-2">
-              <Typography size="h5" weight="bold">
+              <Typography size="h5" weight="medium">
                 Deposit address
               </Typography>
               <div className="flex items-center gap-2">
-                <Typography size="h3" weight="bold">
+                <Typography size="h3" weight="medium">
                   {getTrimmedAddress(depositAddress, 8, 6)}
                 </Typography>
                 <CopyToClipboard text={depositAddress} />
@@ -129,6 +130,7 @@ export const SwapInProgress = () => {
       <OrderStatus
         orderProgress={orderProgress}
         viewableStatus={viewableStatus}
+        confirmationString={confirmationsString}
       />
       <OrderDetails order={order} />
     </div>

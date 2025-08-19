@@ -45,7 +45,7 @@ export const StakeStats: FC<props> = ({
           xs: "h5",
           sm: titleSize,
         }}
-        weight={size === "xs" ? "medium" : "bold"}
+        weight={size === "xs" ? "regular" : "medium"}
         className={`${textColor} whitespace-nowrap`}
       >
         {title}
@@ -54,7 +54,7 @@ export const StakeStats: FC<props> = ({
         <Typography
           size={valueSize}
           breakpoints={valueBreakpoints}
-          weight={size === "xs" ? "medium" : size === "sm" ? "medium" : "bold"}
+          weight="medium"
           className={`${textColor} whitespace-nowrap`}
         >
           {value}
