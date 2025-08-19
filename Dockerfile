@@ -146,12 +146,12 @@ RUN printf 'server {\n\
     gzip_types text/plain text/css application/json application/javascript text/xml application/xml text/javascript;\n\
     \n\
     location / {\n\
-    try_files $uri $uri.html $uri/ =404;\n\
+        try_files $uri $uri/ /index.html;\n\
     }\n\
     \n\
-    error_page 404 = @redirect_to_root;\n\
-    location @redirect_to_root {\n\
-    return 302 /;\n\
+    # Handle direct access to routes like /stake, /swap, /quests\n\
+    location ~ ^/(stake|swap|quests|transactions|whitelist) {\n\
+        try_files $uri /index.html;\n\
     }\n\
     \n\
     # Cache static assets aggressively\n\
