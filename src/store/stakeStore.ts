@@ -52,7 +52,7 @@ type EpochEarnings = {
 
 type StakeStoreState = {
   asset: Asset;
-  inputCustomSeed: number;
+  amount: number;
   error: string | null;
   totalStakedAmount: number;
   totalVotes: number;
@@ -75,7 +75,7 @@ type StakeStoreState = {
     totalSeedReward: number;
     accumulatedRewardUSD: number;
   } | null;
-  setInputCustomSeed: (value: number) => void;
+  setAmount: (value: number) => void;
   setStakeType: (type: StakeType) => void;
   fetchStakePosData: (address: string) => Promise<void>;
   fetchAndSetStakingStats: () => Promise<void>;
@@ -147,7 +147,7 @@ type StakingPositionApiResponse = {
 
 export const stakeStore = create<StakeStoreState>((set) => ({
   asset: SEED,
-  inputCustomSeed: 0,
+  amount: 0,
   error: null,
   stakePosData: null,
   totalStakedAmount: 0,
@@ -162,7 +162,7 @@ export const stakeStore = create<StakeStoreState>((set) => ({
   loading: {
     stakeRewards: false,
   },
-  setInputCustomSeed: (value: number) => set({ inputCustomSeed: value }),
+  setAmount: (value: number) => set({ amount: value }),
   setStakeType: (type: StakeType) => set({ stakeType: type }),
   fetchStakePosData: async (address: string) => {
     try {

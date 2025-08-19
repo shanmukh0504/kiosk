@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type ToastType = "success" | "error";
+type ToastType = "success" | "error" | "topUp" | "gardenPass";
 
 interface ToastState {
   isVisible: boolean;

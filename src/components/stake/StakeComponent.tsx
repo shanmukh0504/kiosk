@@ -21,7 +21,7 @@ export const StakeComponent = () => {
   const { setOpenModal } = modalStore();
   const {
     asset,
-    inputCustomSeed,
+    amount,
     fetchAndSetStakingStats,
     fetchAndSetStakeApy,
     fetchStakePosData,
@@ -52,13 +52,13 @@ export const StakeComponent = () => {
   const isStakeable = useMemo(
     () =>
       isConnected && stakeType === StakeType.CUSTOM
-        ? Number(inputCustomSeed) > 0 &&
-          Number(inputCustomSeed) <= Number(tokenBalance) &&
-          Number(inputCustomSeed) % MIN_STAKE_AMOUNT === 0
+        ? Number(amount) > 0 &&
+          Number(amount) <= Number(tokenBalance) &&
+          Number(amount) % MIN_STAKE_AMOUNT === 0
         : Number(SEED_FOR_MINTING_NFT) > 0 &&
           Number(SEED_FOR_MINTING_NFT) <= Number(tokenBalance) &&
           Number(SEED_FOR_MINTING_NFT) % SEED_FOR_MINTING_NFT === 0,
-    [isConnected, inputCustomSeed, tokenBalance, stakeType]
+    [isConnected, amount, tokenBalance, stakeType]
   );
 
   const handleStakeClick = () => {
@@ -69,7 +69,7 @@ export const StakeComponent = () => {
           isStake: true,
           amount:
             stakeType === StakeType.CUSTOM
-              ? inputCustomSeed.toString()
+              ? amount.toString()
               : SEED_FOR_MINTING_NFT.toString(),
         },
       });
@@ -117,7 +117,15 @@ export const StakeComponent = () => {
   ]);
 
   useEffect(() => {
-    if (address && asset) fetchAndSetEvmBalances(address, workingRPCs, asset);
+    if (address && asset) {
+      fetchAndSetEvmBalances(address, workingRPCs, asset);
+
+      const interval = setInterval(() => {
+        fetchAndSetEvmBalances(address, workingRPCs, asset);
+      }, 5000);
+
+      return () => clearInterval(interval);
+    }
   }, [address, fetchAndSetEvmBalances, workingRPCs, asset]);
 
   return (

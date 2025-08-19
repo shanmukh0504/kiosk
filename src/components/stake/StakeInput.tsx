@@ -7,9 +7,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import clsx from "clsx/lite";
 import { fadeAnimation } from "../../animations/animations";
 import { SEED_FOR_MINTING_NFT } from "./constants";
+import { Toast } from "../toast/Toast";
 
 export const StakeInput = ({ balance }: { balance: number }) => {
-  const { stakeType, inputCustomSeed, setInputCustomSeed } = stakeStore();
+  const { stakeType, amount, setAmount } = stakeStore();
   const [animated] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -18,42 +19,60 @@ export const StakeInput = ({ balance }: { balance: number }) => {
     () => Math.floor(balance / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT,
     [balance]
   );
-
   const handleBalanceClick = () => {
     if (!balance || balance === 0 || balance < MIN_STAKE_AMOUNT) return;
-    setInputCustomSeed(stakeableBalance);
+    setAmount(stakeableBalance);
   };
 
   const handleMinusClick = () => {
-    const currentAmount = Number(inputCustomSeed) || 0;
+    const currentAmount = Number(amount) || 0;
     if (currentAmount % MIN_STAKE_AMOUNT === 0) {
       const newAmount = Math.max(currentAmount - MIN_STAKE_AMOUNT, 0);
-      setInputCustomSeed(newAmount);
+      setAmount(newAmount);
     } else {
       const newAmount =
         Math.floor(currentAmount / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT;
-      setInputCustomSeed(newAmount);
+      setAmount(newAmount);
     }
   };
 
   const handlePlusClick = () => {
-    const currentAmount = Number(inputCustomSeed) || 0;
+    const currentAmount = Number(amount) || 0;
     if (currentAmount % MIN_STAKE_AMOUNT === 0) {
       const newAmount = currentAmount + MIN_STAKE_AMOUNT;
-      setInputCustomSeed(newAmount);
+      setAmount(newAmount);
     } else {
       const newAmount =
         Math.floor(currentAmount / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT +
         MIN_STAKE_AMOUNT;
-      setInputCustomSeed(newAmount);
+      setAmount(newAmount);
     }
   };
 
   useEffect(() => {
-    if (Number(inputCustomSeed) === 0) {
-      setInputCustomSeed(0);
+    if (Number(amount) === 0) {
+      setAmount(0);
     }
-  }, [inputCustomSeed, setInputCustomSeed, stakeType]);
+  }, [amount, setAmount, stakeType]);
+
+  useEffect(() => {
+    if (balance && amount > balance && stakeType === StakeType.CUSTOM) {
+      Toast.topUp(
+        "Top up SEED to lock in your stake",
+        "https://app.garden.finance/?output-chain=arbitrum&output-asset=SEED"
+      );
+    }
+    if (
+      balance &&
+      Number(SEED_FOR_MINTING_NFT) > balance &&
+      stakeType === StakeType.GARDEN_PASS
+    ) {
+      Toast.gardenPass(
+        "Grab some more SEED to get the garden pass",
+        "https://app.garden.finance/?output-chain=arbitrum&output-asset=SEED"
+      );
+    }
+  }, [amount, balance, stakeType]);
 
   return (
     <div className="flex flex-col gap-3 rounded-xl bg-white p-4">
@@ -64,8 +83,10 @@ export const StakeInput = ({ balance }: { balance: number }) => {
         <Typography
           size="h5"
           weight="medium"
-          className="cursor-pointer"
-          onClick={handleBalanceClick}
+          className={stakeType === StakeType.CUSTOM ? "cursor-pointer" : ""}
+          onClick={
+            stakeType === StakeType.CUSTOM ? handleBalanceClick : undefined
+          }
         >
           {balance ? balance.toFixed(3) : 0} available
         </Typography>
@@ -131,7 +152,7 @@ export const StakeInput = ({ balance }: { balance: number }) => {
                       }}
                     >
                       <NumberFlow
-                        value={inputCustomSeed}
+                        value={amount}
                         locales="en-US"
                         style={{ fontKerning: "none", width: "100%" }}
                         format={{

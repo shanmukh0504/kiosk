@@ -1,5 +1,6 @@
 import {
   ArrowNorthEastIcon,
+  Button,
   CheckIcon,
   CloseIcon,
   Typography,
@@ -38,16 +39,32 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
                 </span>
               )}
             </div>
-            <Typography size="h3" weight="regular">
+            <Typography
+              size="h4"
+              breakpoints={{
+                md: "h3",
+              }}
+              weight="regular"
+            >
               {content}
             </Typography>
           </div>
-          {link && (
-            <Link to={link} target="_blank">
-              <div className="flex h-5 w-5 items-center justify-center">
-                <ArrowNorthEastIcon />
-              </div>
-            </Link>
+          {link && (type === "topUp" || type === "gardenPass") ? (
+            <Button
+              size="sm"
+              className="!h-fit !min-w-fit !rounded-full !bg-white/50 !px-3 !py-0.5 !text-sm !font-normal !text-dark-grey"
+              onClick={() => window.open(link, "_blank")}
+            >
+              Buy SEED
+            </Button>
+          ) : (
+            link && (
+              <Link to={link} target="_blank">
+                <div className="flex h-5 w-5 items-center justify-center">
+                  <ArrowNorthEastIcon />
+                </div>
+              </Link>
+            )
           )}
         </div>
       )}
@@ -63,5 +80,13 @@ export const Toast = {
   error: (content: string, link?: string) => {
     const showToast = useToastStore.getState().showToast;
     showToast("error", content, link);
+  },
+  topUp: (content: string, link?: string) => {
+    const showToast = useToastStore.getState().showToast;
+    showToast("topUp", content, link);
+  },
+  gardenPass: (content: string, link?: string) => {
+    const showToast = useToastStore.getState().showToast;
+    showToast("gardenPass", content, link);
   },
 };

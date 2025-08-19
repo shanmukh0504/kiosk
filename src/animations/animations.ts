@@ -166,10 +166,6 @@ export const gardenPassSmallContainerVariants: Variants = {
     opacity: 1,
     scale: 1,
     transition: {
-      type: "spring",
-      stiffness: 300,
-      damping: 30,
-      mass: 1,
       opacity: {
         delay: 0.1,
       },
@@ -182,10 +178,6 @@ export const gardenPassSmallContainerVariants: Variants = {
     opacity: 0,
     scale: 0.9,
     transition: {
-      type: "spring",
-      stiffness: 300,
-      damping: 30,
-      mass: 1,
       y: {
         delay: 0.1,
       },
@@ -210,10 +202,6 @@ export const gardenPassContentVariants: Variants = {
     scale: 1,
     marginRight: 16,
     transition: {
-      type: "spring",
-      stiffness: 200,
-      damping: 25,
-      mass: 1,
       scale: {
         delay: 0.2,
       },

@@ -16,6 +16,7 @@ export const GardenPass = () => {
       initial="initial"
       animate="animate"
       exit="exit"
+      transition={springTransition}
       className="w-full"
     >
       <div className="z-0 flex w-full items-center justify-between gap-3.5 overflow-hidden rounded-2xl bg-white/50 p-3 backdrop-blur-md">

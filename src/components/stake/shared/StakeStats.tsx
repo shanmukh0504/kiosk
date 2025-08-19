@@ -50,7 +50,7 @@ export const StakeStats: FC<props> = ({
       >
         {title}
       </Typography>
-      <span ref={targetRef} className="inline-block cursor-pointer">
+      <span ref={targetRef} className="inline-block">
         <Typography
           size={valueSize}
           breakpoints={valueBreakpoints}
