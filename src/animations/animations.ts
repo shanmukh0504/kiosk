@@ -188,34 +188,28 @@ export const stakePositionAnimation = (length: number) => ({
   initial: {
     opacity: 0,
     height: 0,
-    y: -10,
   },
   animate: {
     opacity: 1,
     height: "auto",
-    y: 0,
     transition: {
-      duration: Math.max(0.5, 0.02 * length),
-      ease: "easeInOut",
+      duration: Math.max(0.5, 0.09 * length),
+      ease: "easeOut",
       opacity: {
         duration: 0.2,
         delay: 0.2,
-        ease: "easeInOut",
+        ease: "easeOut",
       },
     },
   },
   exit: {
     opacity: 0,
     height: 0,
-    y: -10,
     transition: {
-      duration: 0.5,
-      ease: "easeInOut",
-      height: {
-        duration: 0.5,
-        delay: 0.2,
-        ease: "easeInOut",
-      },
+      type: "spring",
+      stiffness: 100,
+      damping: 20,
+      mass: 1,
     },
   },
 });

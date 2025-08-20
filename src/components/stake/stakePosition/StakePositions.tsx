@@ -25,8 +25,9 @@ export const StakePositions = () => {
       initial="initial"
       exit="exit"
       style={{ transformOrigin: "top" }}
+      className="mx-auto w-fit overflow-hidden rounded-2xl"
     >
-      <div className="mx-auto mb-8 mt-4 flex w-[328px] flex-col rounded-2xl bg-white/50 p-6 pt-5 sm:w-[460px] md:w-[740px]">
+      <div className="mx-auto mt-4 flex w-[328px] flex-col rounded-2xl bg-white/50 p-6 pt-5 sm:w-[460px] md:w-[740px]">
         <div className="custom-scrollbar overflow-x-auto">
           <table className="w-full table-fixed">
             <thead className="border-b border-white">
@@ -64,7 +65,6 @@ export const StakePositions = () => {
                 <th className="w-4"></th>
               </tr>
             </thead>
-            {/* TODO: Animate the rows to fade in step by step*/}
             <tbody>
               {stakePosData && stakePosData.length > 0 ? (
                 stakePosData?.map(
