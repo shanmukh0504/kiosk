@@ -9,8 +9,8 @@ import {
 } from "../components/stake/constants";
 import { useEVMWallet } from "./useEVMWallet";
 import { useReadContract, useSwitchChain, useWriteContract } from "wagmi";
-import { Address, erc20Abi, Hex, maxUint256 } from "viem";
-import { simulateContract, waitForTransactionReceipt } from "wagmi/actions";
+import { erc20Abi, Hex, maxUint256 } from "viem";
+import { waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../layout/wagmi/config";
 import { flowerABI } from "../components/stake/abi/flower";
 import { logger } from "@sentry/react";
@@ -47,8 +47,13 @@ export const useStake = () => {
 
   const { writeContractAsync } = useWriteContract();
 
-  const handleStake = async (amount: number, selectedDuration: DURATION) => {
+  const handleStake = async (
+    amount: number,
+    shouldMintNFT: boolean,
+    selectedDuration: DURATION
+  ) => {
     if (!chainId || !address) return;
+    const stakingConfig = STAKING_CONFIG[STAKING_CHAIN];
     if (!stakingConfig) return;
 
     try {
@@ -66,16 +71,17 @@ export const useStake = () => {
         return;
       }
       if (allowance.data === 0n || allowance.data < _amount) {
-        const { request } = await simulateContract(config, {
+        const res = await writeContractAsync({
           abi: erc20Abi,
           functionName: "approve",
           address: stakingConfig.SEED_ADDRESS as Hex,
-          args: [stakingConfig.STAKING_CONTRACT_ADDRESS as Hex, maxUint256],
-          account: address as Address,
-          chainId: STAKING_CHAIN,
+          args: [
+            shouldMintNFT
+              ? (stakingConfig.FLOWER_CONTRACT_ADDRESS as Hex)
+              : (stakingConfig.STAKING_CONTRACT_ADDRESS as Hex),
+            maxUint256,
+          ],
         });
-
-        const res = await writeContractAsync(request);
         await waitForTransactionReceipt(config, {
           hash: res,
         });
@@ -83,21 +89,35 @@ export const useStake = () => {
       //approve successful, go ahead with stake
 
       let hash;
-      const lockDuration =
-        selectedDuration === "INFINITE"
-          ? maxUint256
-          : BigInt(
-              DURATION_MAP[selectedDuration].lockDuration * ETH_BLOCKS_PER_DAY
-            );
+      if (shouldMintNFT) {
+        const mintRes = await writeContractAsync({
+          abi: flowerABI,
+          functionName: "mint",
+          address: stakingConfig.FLOWER_CONTRACT_ADDRESS as Hex,
+          args: [stakingConfig.GARDEN_FILLER_ADDRESS as Hex],
+        });
 
-      const stakeRes = await writeContractAsync({
-        abi: stakeABI,
-        functionName: "vote",
-        address: stakingConfig.STAKING_CONTRACT_ADDRESS as Hex,
-        args: [stakingConfig.GARDEN_FILLER_ADDRESS as Hex, units, lockDuration],
-      });
-      hash = stakeRes;
+        hash = mintRes;
+      } else {
+        const lockDuration =
+          selectedDuration === "INFINITE"
+            ? maxUint256
+            : BigInt(
+                DURATION_MAP[selectedDuration].lockDuration * ETH_BLOCKS_PER_DAY
+              );
 
+        const stakeRes = await writeContractAsync({
+          abi: stakeABI,
+          functionName: "vote",
+          address: stakingConfig.STAKING_CONTRACT_ADDRESS as Hex,
+          args: [
+            stakingConfig.GARDEN_FILLER_ADDRESS as Hex,
+            units,
+            lockDuration,
+          ],
+        });
+        hash = stakeRes;
+      }
       await waitForTransactionReceipt(config, {
         hash,
       });
@@ -114,62 +134,5 @@ export const useStake = () => {
     }
   };
 
-  const handleNftStake = async (nftAmount: number) => {
-    if (!chainId || !address) return;
-    if (!stakingConfig) return;
-
-    try {
-      setLoading(true);
-      if (chainId !== STAKING_CHAIN) {
-        await switchChainAsync({ chainId: STAKING_CHAIN });
-      }
-      const allowance = await refetch();
-      const _amount =
-        BigInt(nftAmount) * BigInt(10 ** stakingConfig.SEED_DECIMALS);
-
-      if (allowance.data === undefined) {
-        setLoading(false);
-        return;
-      }
-      if (allowance.data === 0n || allowance.data < _amount) {
-        const { request } = await simulateContract(config, {
-          abi: erc20Abi,
-          functionName: "approve",
-          address: stakingConfig.SEED_ADDRESS as Hex,
-          args: [stakingConfig.FLOWER_CONTRACT_ADDRESS as Hex, maxUint256],
-          account: address as Address,
-          chainId: STAKING_CHAIN,
-        });
-
-        const res = await writeContractAsync(request);
-        await waitForTransactionReceipt(config, {
-          hash: res,
-        });
-      }
-      //approve successful, go ahead with stake
-
-      let hash;
-      const mintRes = await writeContractAsync({
-        abi: flowerABI,
-        functionName: "mint",
-        address: stakingConfig.FLOWER_CONTRACT_ADDRESS as Hex,
-        args: [stakingConfig.GARDEN_FILLER_ADDRESS as Hex],
-      });
-
-      hash = mintRes;
-
-      await waitForTransactionReceipt(config, {
-        hash,
-      });
-      //✅ stake success
-      logger.info("Stake tx hash : ", { hash });
-      Toast.success(`Staked ${nftAmount} SEED for NFT successfully`);
-    } catch (e) {
-      logger.error("error :", { e });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { handleStake, handleNftStake, loading };
+  return { handleStake, loading };
 };

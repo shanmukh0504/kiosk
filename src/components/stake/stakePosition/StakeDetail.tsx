@@ -1,4 +1,4 @@
-import { Button, FeesIcon, Typography } from "@gardenfi/garden-book";
+import { Button, NFTIcon, Typography } from "@gardenfi/garden-book";
 import { FC, useRef, useState, useEffect } from "react";
 import {
   StakePositionStatus,
@@ -201,7 +201,7 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
           className="flex items-center gap-1"
         >
           {formattedAmount}
-          {stakePos.isGardenerPass && <FeesIcon className="h-4" />}
+          {stakePos.isGardenerPass && <NFTIcon className="h-4" />}
         </Typography>
       </td>
       <td className="px-4 py-3 text-left sm:px-2">

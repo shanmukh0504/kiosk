@@ -38,7 +38,7 @@ export const StakeComponent = () => {
     stakeType,
     setStakeType,
   } = stakeStore();
-  const { handleNftStake, loading } = useStake();
+  const { handleStake, loading } = useStake();
   const { workingRPCs } = rpcStore();
   const { balances, fetchAndSetEvmBalances } = assetInfoStore();
   const tooltipId = useId();
@@ -86,7 +86,7 @@ export const StakeComponent = () => {
         },
       });
     } else {
-      handleNftStake(Number(SEED_FOR_MINTING_NFT));
+      handleStake(Number(SEED_FOR_MINTING_NFT), true, "INFINITE");
     }
   };
 

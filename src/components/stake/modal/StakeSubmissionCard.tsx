@@ -18,7 +18,7 @@ export const StakeSubmissionCard: FC<StakeSubmissionCardProps> = ({
     <Button
       variant={loading ? "disabled" : "primary"}
       size="lg"
-      onClick={() => handleStake(amount, selectedDuration)}
+      onClick={() => handleStake(amount, false, selectedDuration)}
       loading={loading}
       className="w-full sm:w-fit"
     >

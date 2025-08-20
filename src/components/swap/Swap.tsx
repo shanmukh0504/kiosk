@@ -59,6 +59,7 @@ export const Swap = () => {
         status: OrderStatus.RedeemDetected,
       };
       updateOrder(updatedOrder);
+      console.log("Triggering toast");
       Toast.success(
         `Swap success ${inputAsset.symbol} to ${outputAsset.symbol}`
       );
@@ -66,6 +67,7 @@ export const Swap = () => {
 
     garden.on("error", handleErrorLog);
     garden.on("log", handleLog);
+    console.log("Triggering success");
     garden.on("success", handleSuccess);
 
     return () => {

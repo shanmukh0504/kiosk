@@ -12,7 +12,7 @@ import { useToastStore } from "../../store/toastStore";
 
 export const StakeInput = ({ balance }: { balance: number }) => {
   const { stakeType, amount, setAmount } = stakeStore();
-  const { hideToast } = useToastStore();
+  const { hideStaticToast } = useToastStore();
 
   const [animated] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -59,32 +59,25 @@ export const StakeInput = ({ balance }: { balance: number }) => {
   }, [amount, setAmount, stakeType]);
 
   useEffect(() => {
-    if (balance && amount > balance && stakeType === StakeType.CUSTOM) {
-      Toast.topUp(
-        "Top up SEED to lock in your stake",
-        "https://app.garden.finance/?output-chain=arbitrum&output-asset=SEED"
-      );
-    }
-    if (
-      balance &&
-      Number(SEED_FOR_MINTING_NFT) > balance &&
-      stakeType === StakeType.GARDEN_PASS
-    ) {
-      Toast.gardenPass(
-        "Grab some more SEED to get the garden pass",
-        "https://app.garden.finance/?output-chain=arbitrum&output-asset=SEED"
-      );
-    }
+    hideStaticToast("needSeed");
 
-    if (
-      balance &&
-      (stakeType === StakeType.CUSTOM
-        ? amount < balance
-        : balance > SEED_FOR_MINTING_NFT)
-    ) {
-      hideToast();
+    if (balance) {
+      if (stakeType === StakeType.CUSTOM && amount > balance) {
+        Toast.needSeed(
+          "Don’t have SEED tokens?",
+          "https://app.garden.finance/?output-chain=arbitrum&output-asset=SEED"
+        );
+      } else if (
+        stakeType === StakeType.GARDEN_PASS &&
+        balance < SEED_FOR_MINTING_NFT
+      ) {
+        Toast.needSeed(
+          "Don’t have SEED tokens?",
+          "https://app.garden.finance/?output-chain=arbitrum&output-asset=SEED"
+        );
+      }
     }
-  }, [amount, balance, stakeType, hideToast]);
+  }, [amount, balance, stakeType, hideStaticToast]);
 
   return (
     <div className="flex flex-col gap-3 overflow-hidden rounded-xl bg-white p-4">
