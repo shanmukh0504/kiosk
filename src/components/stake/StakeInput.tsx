@@ -8,9 +8,12 @@ import clsx from "clsx/lite";
 import { fadeAnimation } from "../../animations/animations";
 import { SEED_FOR_MINTING_NFT } from "./constants";
 import { Toast } from "../toast/Toast";
+import { useToastStore } from "../../store/toastStore";
 
 export const StakeInput = ({ balance }: { balance: number }) => {
   const { stakeType, amount, setAmount } = stakeStore();
+  const { hideToast } = useToastStore();
+
   const [animated] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -51,7 +54,7 @@ export const StakeInput = ({ balance }: { balance: number }) => {
 
   useEffect(() => {
     if (Number(amount) === 0) {
-      setAmount(0);
+      setAmount(MIN_STAKE_AMOUNT);
     }
   }, [amount, setAmount, stakeType]);
 
@@ -72,7 +75,16 @@ export const StakeInput = ({ balance }: { balance: number }) => {
         "https://app.garden.finance/?output-chain=arbitrum&output-asset=SEED"
       );
     }
-  }, [amount, balance, stakeType]);
+
+    if (
+      balance &&
+      (stakeType === StakeType.CUSTOM
+        ? amount < balance
+        : balance > SEED_FOR_MINTING_NFT)
+    ) {
+      hideToast();
+    }
+  }, [amount, balance, stakeType, hideToast]);
 
   return (
     <div className="flex flex-col gap-3 overflow-hidden rounded-xl bg-white p-4">

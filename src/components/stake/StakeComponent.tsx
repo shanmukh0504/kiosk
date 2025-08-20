@@ -68,6 +68,11 @@ export const StakeComponent = () => {
     [isConnected, amount, tokenBalance, stakeType]
   );
 
+  const shouldBuySeed = useMemo(() => {
+    if (!balance) return true;
+    return balance && Number(balance) < MIN_STAKE_AMOUNT;
+  }, [balance]);
+
   const handleStakeClick = () => {
     if (!isStakeable || loading) return;
     if (stakeType === StakeType.CUSTOM) {
@@ -83,6 +88,13 @@ export const StakeComponent = () => {
     } else {
       handleNftStake(Number(SEED_FOR_MINTING_NFT));
     }
+  };
+
+  const handleBuySeedClick = () => {
+    window.open(
+      "https://app.garden.finance/?output-chain=arbitrum&output-asset=SEED",
+      "_blank"
+    );
   };
 
   useEffect(() => {
@@ -125,11 +137,9 @@ export const StakeComponent = () => {
 
   useEffect(() => {
     if (address && asset) {
-      console.log("fetching evm balances");
       fetchAndSetEvmBalances(address, workingRPCs, asset);
 
       const interval = setInterval(() => {
-        console.log("fetching evm balances 2");
         fetchAndSetEvmBalances(address, workingRPCs, asset);
       }, 5000);
 
@@ -248,11 +258,19 @@ export const StakeComponent = () => {
           <StakeInput balance={tokenBalance} />
           <Button
             size="lg"
-            variant={isStakeable && !loading ? "primary" : "disabled"}
-            onClick={handleStakeClick}
+            variant={
+              (isStakeable && !loading) || shouldBuySeed
+                ? "primary"
+                : "disabled"
+            }
+            onClick={shouldBuySeed ? handleBuySeedClick : handleStakeClick}
             loading={loading}
           >
-            {stakeType === StakeType.GARDEN_PASS ? "Buy Garden Pass" : "Stake"}
+            {shouldBuySeed
+              ? "Buy SEED"
+              : stakeType === StakeType.GARDEN_PASS
+                ? "Buy Garden Pass"
+                : "Stake"}
           </Button>
         </div>
         <Tooltip

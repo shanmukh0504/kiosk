@@ -147,7 +147,7 @@ type StakingPositionApiResponse = {
 
 export const stakeStore = create<StakeStoreState>((set) => ({
   asset: SEED,
-  amount: 0,
+  amount: 2100,
   error: null,
   stakePosData: null,
   totalStakedAmount: 0,

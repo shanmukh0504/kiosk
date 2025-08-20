@@ -17,11 +17,11 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
   const { isVisible, content, link, type, hideToast } = useToastStore();
 
   useEffect(() => {
-    if (isVisible) {
+    if (isVisible && type !== "topUp" && type !== "gardenPass") {
       const timer = setTimeout(hideToast, 10000);
-      return () => clearTimeout(timer); // Clear timeout if component unmounts
+      return () => clearTimeout(timer);
     }
-  }, [isVisible, hideToast]);
+  }, [isVisible, hideToast, type]);
 
   return (
     <div className={`min-h-10 sm:-translate-y-[48px] ${className}`}>

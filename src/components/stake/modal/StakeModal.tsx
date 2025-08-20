@@ -52,7 +52,7 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
 
   const handleClose = () => {
     setSelectedDuration(6);
-    setAmount(0);
+    setAmount(2100);
     onClose();
   };
 
