@@ -63,7 +63,7 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
 
   return (
     <div className={`min-h-10 sm:-translate-y-[48px] ${className}`}>
-      {isVisible && (
+      {isVisible ? (
         <div
           className={`shine relative flex items-center justify-between overflow-hidden rounded-2xl bg-white/25 px-4 py-2 backdrop-blur-[20px]`}
         >
@@ -95,9 +95,9 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
             </Link>
           )}
         </div>
+      ) : (
+        <>{renderStaticToast()}</>
       )}
-
-      {!isVisible && <>{renderStaticToast()}</>}
     </div>
   );
 };
