@@ -53,12 +53,6 @@ export const StakeInput = ({ balance }: { balance: number }) => {
   };
 
   useEffect(() => {
-    if (Number(amount) === 0) {
-      setAmount(MIN_STAKE_AMOUNT);
-    }
-  }, [amount, setAmount, stakeType]);
-
-  useEffect(() => {
     hideStaticToast();
 
     if (balance) {
