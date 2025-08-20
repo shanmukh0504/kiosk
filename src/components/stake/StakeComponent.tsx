@@ -1,4 +1,9 @@
-import { Button, InfoIcon, Typography } from "@gardenfi/garden-book";
+import {
+  ArrowNorthEastIcon,
+  Button,
+  InfoIcon,
+  Typography,
+} from "@gardenfi/garden-book";
 import { Switch } from "../../common/Switch";
 import { StakeStats } from "./shared/StakeStats";
 import { StakeInput } from "./StakeInput";
@@ -10,11 +15,12 @@ import { Tooltip } from "../../common/Tooltip";
 import { MIN_STAKE_AMOUNT } from "../../constants/stake";
 import { GardenPassVotes, SEED_FOR_MINTING_NFT } from "./constants";
 import { motion, AnimatePresence } from "framer-motion";
-import { fadeAnimation } from "../../animations/animations";
+import { fadeAnimation, springTransition } from "../../animations/animations";
 import { useStake } from "../../hooks/useStake";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { formatAmount, getOrderPair } from "../../utils/utils";
 import { rpcStore } from "../../store/rpcStore";
+import { viewPortStore } from "../../store/viewPortStore";
 
 export const StakeComponent = () => {
   const { isConnected, address } = useEVMWallet();
@@ -36,6 +42,7 @@ export const StakeComponent = () => {
   const { workingRPCs } = rpcStore();
   const { balances, fetchAndSetEvmBalances } = assetInfoStore();
   const tooltipId = useId();
+  const { isMobile, isSmallTab } = viewPortStore();
 
   const balance =
     balances &&
@@ -118,9 +125,11 @@ export const StakeComponent = () => {
 
   useEffect(() => {
     if (address && asset) {
+      console.log("fetching evm balances");
       fetchAndSetEvmBalances(address, workingRPCs, asset);
 
       const interval = setInterval(() => {
+        console.log("fetching evm balances 2");
         fetchAndSetEvmBalances(address, workingRPCs, asset);
       }, 5000);
 
@@ -144,8 +153,8 @@ export const StakeComponent = () => {
             onChange={setStakeType}
           />
         </div>
-        <div className="flex flex-col gap-6">
-          <Typography size="h4" weight="regular">
+        <div className="flex flex-col">
+          <Typography size="h4" weight="regular" className="mb-6">
             <AnimatePresence mode="wait">
               {stakeType === StakeType.CUSTOM ? (
                 <motion.span key="custom" {...fadeAnimation}>
@@ -164,6 +173,32 @@ export const StakeComponent = () => {
               )}
             </AnimatePresence>
           </Typography>
+          <AnimatePresence mode="wait">
+            {stakeType === StakeType.GARDEN_PASS &&
+              (isMobile || isSmallTab) && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0, marginBottom: 0 }}
+                  animate={{ height: "auto", opacity: 1, marginBottom: 24 }}
+                  exit={{ height: 0, opacity: 0, marginBottom: 0 }}
+                  transition={springTransition}
+                >
+                  <Typography
+                    size="h4"
+                    weight="regular"
+                    className="flex items-center gap-1"
+                  >
+                    check out the NFT at{" "}
+                    <span
+                      onClick={() => window.open("", "_blank")}
+                      className="flex cursor-pointer items-center gap-1 text-rose"
+                    >
+                      <span>OpenSea</span>
+                      <ArrowNorthEastIcon className="h-3 w-3 p-0.5" />
+                    </span>
+                  </Typography>
+                </motion.div>
+              )}
+          </AnimatePresence>
           <div className="flex gap-10">
             <StakeStats
               title={
@@ -175,6 +210,11 @@ export const StakeComponent = () => {
                 </div>
               }
               value={`${stakingStats?.globalApy || 0} %`}
+              size="sm"
+            />
+            <StakeStats
+              title={"SEED locked"}
+              value={`${stakingStats?.seedLockedPercentage || 0} %`}
               size="sm"
             />
             <AnimatePresence mode="wait">
@@ -192,11 +232,6 @@ export const StakeComponent = () => {
                   {...fadeAnimation}
                   className="flex gap-10"
                 >
-                  <StakeStats
-                    title={"SEED locked"}
-                    value={`${stakingStats?.seedLockedPercentage || 0} %`}
-                    size="sm"
-                  />
                   <StakeStats
                     title={"Avg lock time"}
                     value={`${stakingStats?.averageLockTime || 0} days`}
@@ -217,7 +252,7 @@ export const StakeComponent = () => {
             onClick={handleStakeClick}
             loading={loading}
           >
-            Stake
+            {stakeType === StakeType.GARDEN_PASS ? "Buy Garden Pass" : "Stake"}
           </Button>
         </div>
         <Tooltip

@@ -36,7 +36,7 @@ export const StakePositions = () => {
                     Staked SEED
                   </Typography>
                 </th>
-                <th className="w-28 px-4 pb-4 text-left sm:px-2">
+                <th className="w-32 px-4 pb-4 text-left sm:px-2 md:w-28">
                   <Typography size="h5" weight="regular">
                     Duration
                   </Typography>

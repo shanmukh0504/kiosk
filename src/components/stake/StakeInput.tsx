@@ -75,7 +75,7 @@ export const StakeInput = ({ balance }: { balance: number }) => {
   }, [amount, balance, stakeType]);
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl bg-white p-4">
+    <div className="flex flex-col gap-3 overflow-hidden rounded-xl bg-white p-4">
       <div className="flex justify-between">
         <Typography size="h5" weight="medium">
           Stake SEED
@@ -177,12 +177,51 @@ export const StakeInput = ({ balance }: { balance: number }) => {
             </AnimatePresence>
           </Typography>
         </div>
-        {stakeType === StakeType.CUSTOM && (
-          <div className="flex gap-3">
-            <MinusIcon onClick={handleMinusClick} className="cursor-pointer" />
-            <PlusIcon onClick={handlePlusClick} className="cursor-pointer" />
-          </div>
-        )}
+        <AnimatePresence mode="wait">
+          {stakeType === StakeType.CUSTOM && (
+            <div className="flex gap-3">
+              <motion.div
+                key="minus"
+                initial={{ opacity: 0, x: 40 }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                }}
+                exit={{ opacity: 0, x: 40, transition: { delay: 0.05 } }}
+                transition={{
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 25,
+                }}
+              >
+                <MinusIcon
+                  onClick={handleMinusClick}
+                  className="cursor-pointer"
+                />
+              </motion.div>
+              <motion.div
+                key="plus"
+                initial={{ opacity: 0, x: 30 }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                  transition: { delay: 0.05 },
+                }}
+                exit={{ opacity: 0, x: 40 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 20,
+                }}
+              >
+                <PlusIcon
+                  onClick={handlePlusClick}
+                  className="cursor-pointer"
+                />
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

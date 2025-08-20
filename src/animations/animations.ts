@@ -151,46 +151,6 @@ export const gardenPassContainerVariants: Variants = {
   },
 };
 
-export const gardenPassSmallContainerVariants: Variants = {
-  initial: {
-    y: "20%",
-    scale: 0.65,
-    height: 0,
-    marginBottom: 0,
-    opacity: 0,
-  },
-  animate: {
-    y: 0,
-    height: "auto",
-    marginBottom: "12px",
-    opacity: 1,
-    scale: 1,
-    transition: {
-      opacity: {
-        delay: 0.1,
-      },
-    },
-  },
-  exit: {
-    y: "20%",
-    height: 0,
-    marginBottom: 0,
-    opacity: 0,
-    scale: 0.9,
-    transition: {
-      y: {
-        delay: 0.1,
-      },
-      height: {
-        delay: 0.1,
-      },
-      scale: {
-        delay: 0.1,
-      },
-    },
-  },
-};
-
 export const gardenPassContentVariants: Variants = {
   initial: {
     opacity: 0,

@@ -11250,6 +11250,7 @@ __metadata:
     eslint-plugin-react-refresh: "npm:^0.4.9"
     framer-motion: "npm:^11.18.1"
     globals: "npm:^15.11.0"
+    hamburger-react: "npm:^2.5.2"
     lodash.debounce: "npm:^4.0.8"
     postcss: "npm:^8.4.41"
     prettier: "npm:3.4.2"
@@ -11576,6 +11577,15 @@ __metadata:
     ufo: "npm:^1.6.1"
     uncrypto: "npm:^0.1.3"
   checksum: 10c0/5182a722d01fe18af5cb62441aaa872b630f4e1ac2cf1782e1f442e65fdfddb85eb6723bf73a96184c2dc1f1e3771d713ef47c456a9a4e92c640b025ba91044c
+  languageName: node
+  linkType: hard
+
+"hamburger-react@npm:^2.5.2":
+  version: 2.5.2
+  resolution: "hamburger-react@npm:2.5.2"
+  peerDependencies:
+    react: ^16.8 || ^17 || ^18 || ^19
+  checksum: 10c0/75db5194d21d5a728436bb3bb00129b709a10ef465999b5bd14869f5c23b91c4f63f64fcbe1704f7516ff4dfbfe636d4018d5b8ddd6a7d4d7335d829f3b46a9b
   languageName: node
   linkType: hard
 

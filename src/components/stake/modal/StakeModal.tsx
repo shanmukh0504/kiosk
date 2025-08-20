@@ -50,6 +50,12 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
     return 6;
   };
 
+  const handleClose = () => {
+    setSelectedDuration(6);
+    setAmount(0);
+    onClose();
+  };
+
   useEffect(() => {
     setSelectedDuration(
       getDurationFromVotes(
@@ -58,14 +64,8 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
     );
   }, [modalData.manageStake?.extend?.stakingPosition.votes]);
 
-  const handleClose = () => {
-    setSelectedDuration(6);
-    setAmount(0);
-    onClose();
-  };
-
   return (
-    <div className="transition-left left-auto top-60 z-50 flex min-w-[576px] flex-col gap-4 rounded-[20px] p-3 duration-700 ease-cubic-in-out">
+    <div className="transition-left left-auto top-60 z-50 flex flex-col gap-4 rounded-[20px] p-3 duration-700 ease-cubic-in-out md:min-w-[576px]">
       <div className="flex justify-between">
         <Typography size="h4" weight="medium">
           Set duration

@@ -2,6 +2,7 @@ import {
   Button,
   CodeBlockIcon,
   GardenFullLogo,
+  GardenIcon,
   Typography,
 } from "@gardenfi/garden-book";
 import { isTestnet, routes } from "../../constants/constants";
@@ -41,7 +42,11 @@ export const Navbar = () => {
       <div className="flex items-center gap-16 py-2">
         <GardenFullLogo
           onClick={handleHomeLogoClick}
-          className="cursor-pointer"
+          className="hidden cursor-pointer sm:block"
+        />
+        <GardenIcon
+          onClick={handleHomeLogoClick}
+          className="h-8 w-8 cursor-pointer sm:hidden"
         />
         <div className="hidden gap-12 sm:flex sm:items-center">
           {routes.map(([, route]) => {

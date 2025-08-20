@@ -38,6 +38,7 @@ const ConnectedWallets = () => {
         (entry) => entry.orderId === order.create_order.create_id
       )
   ).length;
+
   useEffect(() => {
     if (pendingOrders.length > 0) {
       cleanupDeletedOrders(pendingOrders);
@@ -56,7 +57,7 @@ const ConnectedWallets = () => {
     <>
       <Opacity
         level="medium"
-        className="relative z-0 ml-auto flex min-h-[32px] min-w-[32px] cursor-pointer items-center justify-center gap-1.5 overflow-hidden rounded-[24px] p-2 transition-all duration-300 hover:bg-opacity-80 sm:min-h-[40px] sm:min-w-[40px] sm:gap-2 sm:p-3"
+        className="relative z-0 ml-auto flex min-h-[32px] min-w-[32px] cursor-pointer items-center justify-center gap-1.5 overflow-hidden rounded-[24px] p-2 px-3 transition-all duration-300 hover:bg-opacity-80 sm:min-h-[40px] sm:min-w-[40px] sm:gap-2 sm:p-3"
         onClick={handleAddressClick}
       >
         {!!pendingOrdersCount && (

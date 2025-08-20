@@ -2,7 +2,7 @@ import {
   BottomSheet,
   DiscordIcon,
   Typography,
-  XSolidIcon,
+  XIcon,
 } from "@gardenfi/garden-book";
 import { useState } from "react";
 import {
@@ -12,12 +12,13 @@ import {
 } from "../../constants/constants";
 import { isCurrentRoute } from "../../utils/utils";
 import { notificationStore } from "../../store/notificationStore";
-import { HamburgerIcon } from "../../common/HamburgerIcon";
+import { Fade as Hamburger } from "hamburger-react";
 import { MenuNotification } from "../../common/MenuNotification";
 import { Link } from "react-router-dom";
 
 export const MobileMenu = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+
   const { notification } = notificationStore();
 
   const handleSidebar = () => {
@@ -31,10 +32,12 @@ export const MobileMenu = () => {
   return (
     <>
       <div
-        className={`z-[999] flex min-h-8 min-w-8 cursor-pointer items-center justify-center rounded-full transition-all duration-500 sm:hidden ${isSidebarOpen ? "bg-white" : "bg-white/50"}`}
+        className={`z-[999] flex max-h-8 max-w-8 cursor-pointer items-center justify-center rounded-full transition-all duration-500 sm:hidden ${isSidebarOpen ? "bg-white" : "bg-white/50"}`}
         onClick={handleSidebar}
       >
-        <HamburgerIcon isSidebarOpen={isSidebarOpen} />
+        <span>
+          <Hamburger toggled={isSidebarOpen} size={16} rounded />
+        </span>
       </div>
 
       <BottomSheet open={isSidebarOpen} onOpenChange={handleOpenChange}>
@@ -84,7 +87,7 @@ export const MobileMenu = () => {
               <DiscordIcon />
             </Link>
             <Link to={SOCIAL_LINKS.x} target="_blank">
-              <XSolidIcon />
+              <XIcon />
             </Link>
           </div>
         </div>

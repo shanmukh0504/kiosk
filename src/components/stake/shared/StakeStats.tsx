@@ -54,7 +54,7 @@ export const StakeStats: FC<props> = ({
         <Typography
           size={valueSize}
           breakpoints={valueBreakpoints}
-          weight="medium"
+          weight="regular"
           className={`${textColor} whitespace-nowrap`}
         >
           {value}

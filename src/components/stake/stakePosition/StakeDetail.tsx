@@ -44,6 +44,7 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
   const [hovered, setHovered] = useState(false);
   const targetRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const clickTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isPermaStake = stakePos.isPerma;
   const menuId = `stake-menu-${stakePos.id}`;
@@ -165,6 +166,15 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
     };
   }, [hovered, isMenuOpen, closeMenu]);
 
+  useEffect(() => {
+    return () => {
+      if (clickTimeoutRef.current) {
+        clearTimeout(clickTimeoutRef.current);
+        clickTimeoutRef.current = null;
+      }
+    };
+  }, []);
+
   return (
     <motion.tr
       initial={{ opacity: 0, y: -30 }}
@@ -200,7 +210,7 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
             Expired
           </Typography>
         ) : (
-          <div className="flex items-center">
+          <div className="flex items-center text-nowrap">
             {isPermaStake ? (
               <>
                 <Typography size="h4" weight="regular">
@@ -274,11 +284,19 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
         <td
           onClick={(e) => {
             e.stopPropagation();
+            e.preventDefault();
+            if (clickTimeoutRef.current) {
+              clearTimeout(clickTimeoutRef.current);
+              clickTimeoutRef.current = null;
+            }
             if (isMenuOpen) {
               closeMenu();
             } else {
               setOpenMenu(menuId);
             }
+            clickTimeoutRef.current = setTimeout(() => {
+              clickTimeoutRef.current = null;
+            }, 150);
           }}
           className="mx-1 w-4 cursor-pointer p-1"
         >
@@ -344,136 +362,5 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
         </td>
       )}
     </motion.tr>
-    // <div className="flex flex-col gap-5 py-5">
-    //   <div className="flex cursor-pointer items-center justify-between">
-    //     <div className="flex items-center gap-5">
-    //       <Typography
-    //         size={"h4"}
-    //         breakpoints={{
-    //           sm: "h4",
-    //           md: "h3",
-    //         }}
-    //         weight="regular"
-    //         className="w-24 md:w-[120px]"
-    //       >
-    //         {formattedAmount} SEED
-    //       </Typography>
-    //       <Typography
-    //         size={"h4"}
-    //         breakpoints={{
-    //           sm: "h4",
-    //           md: "h3",
-    //         }}
-    //         weight="regular"
-    //         className="flex w-[120px] items-center"
-    //       >
-    //         {hasExpired ? (
-    //           "Expired"
-    //         ) : (
-    //           <>
-    //             {isPermaStake ? (
-    //               <InfinityIcon className="h-4" />
-    //             ) : (
-    //               `${daysPassedSinceStake} / ${expiryInDays}`
-    //             )}
-    //             <span className="ml-2">days</span>
-    //           </>
-    //         )}
-    //       </Typography>
-
-    //       <Typography size="h4" weight="regular" className="hidden sm:block">
-    //         {stakePos.votes} {stakePos.votes === 1 ? "Vote" : "Votes"}
-    //       </Typography>
-    //     </div>
-    //     <KeyboardUpIcon
-    //       className={`mr-2 transition-transform duration-300 ease-in-out ${showDetails ? "-rotate-180" : "rotate-0"}`}
-    //     />
-    //   </div>
-    //   <motion.div
-    //     className="flex flex-col justify-between gap-4 md:flex-row"
-    //     animate={{
-    //       marginTop: ["-64px", "0px"],
-    //       opacity: ["0%", "100%"],
-    //       transition: {
-    //         duration: 0.15,
-    //         ease: "easeInOut",
-    //         opacity: {
-    //           delay: 0.1,
-    //           duration: 0.15,
-    //           ease: "easeInOut",
-    //         },
-    //       },
-    //     }}
-    //     exit={{
-    //       marginTop: ["0px", "-64px"],
-    //       opacity: ["100%", "0%"],
-    //       transition: {
-    //         duration: 0.15,
-    //         ease: "easeInOut",
-    //         marginTop: {
-    //           duration: 0.2,
-    //           ease: "easeInOut",
-    //         },
-    //         opacity: {
-    //           duration: 0.1,
-    //         },
-    //       },
-    //     }}
-    //   >
-    //     <div className="flex flex-col gap-4 sm:gap-5 md:flex-row">
-    //       <div className="flex gap-2 md:gap-10">
-    //         <StakeStats
-    //           title={`${stakePos.votes === 1 ? "Vote" : "Votes"}`}
-    //           value={stakePos.votes}
-    //           size="xs"
-    //           className="block w-[120px] md:hidden"
-    //         />
-    //         <StakeStats
-    //           title={"APY"}
-    //           value={`${stakeApy || 0} %`}
-    //           size="xs"
-    //           className="w-[120px]"
-    //         />
-    //       </div>
-    //       <div className="flex flex-col gap-4 md:flex-row md:gap-5">
-    //         <div className="flex items-center gap-2 md:gap-5">
-    //           <StakeStats
-    //             title={"Multiplier"}
-    //             value={`${multiplier}x`}
-    //             size="xs"
-    //             className="w-[120px]"
-    //           />
-    //           <StakeStats
-    //             title={"End date"}
-    //             value={stakeEndDateString}
-    //             size="xs"
-    //             className="w-[120px]"
-    //           />
-    //         </div>
-
-    //         <div className="relative">
-    //           <StakeStats
-    //             targetRef={targetRef}
-    //             title={"Rewards"}
-    //             value={`~$${reward}`}
-    //             size="xs"
-    //             toolTip={
-    //               <RewardsToolTip seed={seedReward} cbBtc={stakeReward} />
-    //             }
-    //           />
-    //         </div>
-    //       </div>
-    //     </div>
-    //     {isExtendable ? (
-    //       <Button variant="secondary" size="sm" onClick={handleExtend}>
-    //         Extend
-    //       </Button>
-    //     ) : isExpired ? (
-    //       <UnstakeAndRestake stakePos={stakePos} />
-    //     ) : (
-    //       <></>
-    //     )}
-    //   </motion.div>
-    // </div>
   );
 };
