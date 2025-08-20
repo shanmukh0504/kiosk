@@ -59,20 +59,16 @@ export const StakeInput = ({ balance }: { balance: number }) => {
   }, [amount, setAmount, stakeType]);
 
   useEffect(() => {
-    hideStaticToast("needSeed");
+    hideStaticToast();
 
     if (balance) {
-      if (stakeType === StakeType.CUSTOM && amount > balance) {
+      const needsMoreSeed =
+        (stakeType === StakeType.CUSTOM && amount > balance) ||
+        (stakeType === StakeType.GARDEN_PASS && balance < SEED_FOR_MINTING_NFT);
+
+      if (needsMoreSeed) {
         Toast.needSeed(
-          "Don’t have SEED tokens?",
-          "https://app.garden.finance/?output-chain=arbitrum&output-asset=SEED"
-        );
-      } else if (
-        stakeType === StakeType.GARDEN_PASS &&
-        balance < SEED_FOR_MINTING_NFT
-      ) {
-        Toast.needSeed(
-          "Don’t have SEED tokens?",
+          "Don't have SEED tokens?",
           "https://app.garden.finance/?output-chain=arbitrum&output-asset=SEED"
         );
       }

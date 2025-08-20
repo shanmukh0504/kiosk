@@ -25,14 +25,13 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
     }
   }, [isVisible, type, hideToast]);
 
-  // Render static toasts (topUp, gardenPass) if they have content and should be visible
-  const renderStaticToast = (toastType: "needSeed") => {
-    const toast = staticToasts[toastType];
+  const renderStaticToast = () => {
+    const toast = staticToasts.needSeed;
     if (!toast.content || !toast.isVisible) return null;
 
     return (
       <div
-        key={toastType}
+        key="needSeed"
         className={`shine relative flex items-center justify-between overflow-hidden rounded-2xl bg-white/25 px-4 py-2 backdrop-blur-[20px]`}
       >
         <div className="flex items-center gap-2">
@@ -98,7 +97,7 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
         </div>
       )}
 
-      {!isVisible && <>{renderStaticToast("needSeed")}</>}
+      {!isVisible && <>{renderStaticToast()}</>}
     </div>
   );
 };
@@ -114,6 +113,6 @@ export const Toast = {
   },
   needSeed: (content: string, link?: string) => {
     const showStaticToast = useToastStore.getState().showStaticToast;
-    showStaticToast("needSeed", content, link);
+    showStaticToast(content, link);
   },
 };

@@ -12,9 +12,8 @@ interface ToastState {
   };
   showToast: (type: ToastType, content: string, link?: string) => void;
   hideToast: () => void;
-  showStaticToast: (type: "needSeed", content: string, link?: string) => void;
-  hideStaticToast: (type: "needSeed") => void;
-  setStaticToastVisibility: (type: "needSeed", isVisible: boolean) => void;
+  showStaticToast: (content: string, link?: string) => void;
+  hideStaticToast: () => void;
 }
 
 export const useToastStore = create<ToastState>((set, get) => ({
@@ -24,6 +23,7 @@ export const useToastStore = create<ToastState>((set, get) => ({
   staticToasts: {
     needSeed: { isVisible: false, content: "", link: undefined },
   },
+
   showToast: (type, content, link) => {
     set({
       isVisible: true,
@@ -35,6 +35,7 @@ export const useToastStore = create<ToastState>((set, get) => ({
       },
     });
   },
+
   hideToast: () => {
     const { staticToasts } = get();
     set({
@@ -49,27 +50,19 @@ export const useToastStore = create<ToastState>((set, get) => ({
       },
     });
   },
-  showStaticToast: (type, content, link) => {
+
+  showStaticToast: (content, link) => {
     set({
       staticToasts: {
-        ...get().staticToasts,
-        [type]: { isVisible: true, content, link: link ?? undefined },
+        needSeed: { isVisible: true, content, link },
       },
     });
   },
-  hideStaticToast: (type) => {
+
+  hideStaticToast: () => {
     set({
       staticToasts: {
-        ...get().staticToasts,
-        [type]: { isVisible: false, content: "", link: undefined },
-      },
-    });
-  },
-  setStaticToastVisibility: (type, isVisible) => {
-    set({
-      staticToasts: {
-        ...get().staticToasts,
-        [type]: { ...get().staticToasts[type], isVisible },
+        needSeed: { isVisible: false, content: "", link: undefined },
       },
     });
   },
