@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2]
+
+### Fixed
+
+- Fixed from bitcoin orders fetch issue
+- Changed and improved the connect, available wallets handling.
+
 ## [1.1.1]
 
 ### Added
