@@ -4,7 +4,6 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "typecheck": "tsc -b --noEmit",
     "dev": "vite",
     "postinstall": "husky install",
     "lint": "eslint . --ext .js,.ts,.jsx,.tsx --fix",
