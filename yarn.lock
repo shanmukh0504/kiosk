@@ -1053,7 +1053,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@farcaster/miniapp-sdk@npm:0.1.9":
+"@farcaster/miniapp-sdk@npm:0.1.9, @farcaster/miniapp-sdk@npm:^0.1.9":
   version: 0.1.9
   resolution: "@farcaster/miniapp-sdk@npm:0.1.9"
   dependencies:
@@ -11146,6 +11146,7 @@ __metadata:
     "@coinbase/wallet-sdk": "npm:^4.3.4"
     "@coral-xyz/anchor": "npm:^0.31.1"
     "@eslint/js": "npm:^9.13.0"
+    "@farcaster/miniapp-sdk": "npm:^0.1.9"
     "@gardenfi/core": "npm:2.4.6-beta.5"
     "@gardenfi/garden-book": "npm:0.2.2"
     "@gardenfi/orderbook": "npm:2.4.6-beta.5"
