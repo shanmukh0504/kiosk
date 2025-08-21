@@ -18,7 +18,46 @@ const queryClient = new QueryClient();
 function AppWithReady() {
   useEffect(() => {
     const run = async () => {
-      await farcasterSdk.actions.ready();
+      try {
+        console.log("Farcaster SDK:", farcasterSdk);
+        console.log("Farcaster SDK actions:", farcasterSdk?.actions);
+        console.log(
+          "Farcaster SDK ready method:",
+          farcasterSdk?.actions?.ready
+        );
+        console.log(
+          "Is ready a function?",
+          typeof farcasterSdk?.actions?.ready
+        );
+        console.log("Window location:", window.location.href);
+        console.log("User agent:", navigator.userAgent);
+
+        // Check if we're in a Farcaster environment
+        const isInFarcaster =
+          window.location.href.includes("farcaster") ||
+          navigator.userAgent.includes("Farcaster") ||
+          window.location.href.includes("warpcast");
+        console.log("Detected Farcaster environment:", isInFarcaster);
+
+        if (
+          farcasterSdk &&
+          farcasterSdk.actions &&
+          typeof farcasterSdk.actions.ready === "function"
+        ) {
+          console.log("Calling sdk.actions.ready()...");
+          await farcasterSdk.actions.ready();
+          console.log("sdk.actions.ready() completed successfully");
+        } else {
+          console.warn("Farcaster SDK not available or ready method not found");
+          console.log("SDK structure:", {
+            hasSdk: !!farcasterSdk,
+            hasActions: !!(farcasterSdk && farcasterSdk.actions),
+            readyType: typeof farcasterSdk?.actions?.ready,
+          });
+        }
+      } catch (error) {
+        console.error("Error calling sdk.actions.ready():", error);
+      }
     };
     void run();
   }, []);
