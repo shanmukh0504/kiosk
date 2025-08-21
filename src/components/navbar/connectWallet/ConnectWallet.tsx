@@ -178,7 +178,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           connector.wallet?.solanaWallet,
           connector.wallet?.suiWallet,
         ].filter(Boolean);
-        console.log("connector.wallet.suiWallet", connector);
+
         if (walletTypes.length < 2) return;
 
         setMultiWalletConnector({
