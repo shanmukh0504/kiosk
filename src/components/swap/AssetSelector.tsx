@@ -2,16 +2,16 @@ import {
   CloseIcon,
   GradientScroll,
   SearchIcon,
+  TokenNetworkLogos,
   Typography,
 } from "@gardenfi/garden-book";
 import BigNumber from "bignumber.js";
 import { FC, useState, ChangeEvent, useEffect, useMemo, useRef } from "react";
-import { Asset, isStarknet, isSolana } from "@gardenfi/orderbook";
+import { Asset, isStarknet, isSolana, isSui } from "@gardenfi/orderbook";
 import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { BTC, swapStore } from "../../store/swapStore";
 import { IOType, network } from "../../constants/constants";
 import { constructOrderPair } from "@gardenfi/core";
-import { AssetChainLogos } from "../../common/AssetChainLogos";
 import { modalStore } from "../../store/modalStore";
 import { ChainsTooltip } from "./ChainsTooltip";
 import { AvailableChainsSidebar } from "./AvailableChainsSidebar";
@@ -27,6 +27,7 @@ import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { viewPortStore } from "../../store/viewPortStore";
 import { Network } from "@gardenfi/utils";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
+import { useSuiWallet } from "../../hooks/useSuiWallet";
 
 type props = {
   onClose: () => void;
@@ -36,6 +37,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const [chain, setChain] = useState<ChainData>();
   const [input, setInput] = useState<string>("");
   const [results, setResults] = useState<Asset[]>();
+  const [searchResults, setSearchResults] = useState<Asset[]>();
   const [hoveredChain, setHoveredChain] = useState("");
   const [showAllChains, setShowAllChains] = useState(false);
   const [visibleChainsCount, setVisibleChainsCount] = useState<number>(7);
@@ -47,6 +49,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const { account: btcAddress } = useBitcoinWallet();
   const { starknetAccount } = useStarknetWallet();
   const { solanaAddress } = useSolanaWallet();
+  const { currentAccount } = useSuiWallet();
   const { isMobile } = viewPortStore();
 
   const {
@@ -97,10 +100,11 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   );
 
   const sortedResults = useMemo(() => {
-    if (!results && orderedChains.length === 0) return [];
+    const assetsToSort = searchResults || results;
+    if (!assetsToSort && orderedChains.length === 0) return [];
     return (
-      results &&
-      results
+      assetsToSort &&
+      assetsToSort
         .sort((a, b) => {
           const chainA = chains?.[a.chain];
           const chainB = chains?.[b.chain];
@@ -124,7 +128,10 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           const formattedBalance =
             balance && asset && balance.toNumber() === 0
               ? ""
-              : balance && !isStarknet(asset.chain) && !isSolana(asset.chain)
+              : balance &&
+                  !isStarknet(asset.chain) &&
+                  !isSolana(asset.chain) &&
+                  !isSui(asset.chain)
                 ? new BigNumber(balance)
                     .dividedBy(10 ** asset.decimals)
                     .toNumber()
@@ -142,10 +149,22 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           };
         })
     );
-  }, [results, orderedChains, chains, chain, balances, fiatData]);
+  }, [
+    searchResults,
+    results,
+    orderedChains,
+    chains,
+    chain,
+    balances,
+    fiatData,
+  ]);
 
   const isAnyWalletConnected =
-    !!address || !!btcAddress || !!starknetAccount || !!solanaAddress;
+    !!address ||
+    !!btcAddress ||
+    !!starknetAccount ||
+    !!solanaAddress ||
+    !!currentAccount;
   const fiatBasedSortedResults = useMemo(() => {
     if (!isAnyWalletConnected) return sortedResults;
     return (
@@ -222,11 +241,16 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   };
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-    if (!assets) return;
+    if (!results) return;
     const inputValue = e.target.value.toLowerCase();
     setInput(inputValue);
-    setResults(
-      Object.values(assets).filter(
+
+    if (!inputValue) {
+      setSearchResults(undefined);
+      return;
+    }
+    setSearchResults(
+      results.filter(
         (asset) =>
           asset.name?.toLowerCase().includes(inputValue) ||
           asset.symbol?.toLowerCase().includes(inputValue)
@@ -293,7 +317,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           className={`left-auto top-60 z-30 flex flex-col gap-3 rounded-[20px] sm:min-w-[468px] ${isMobile ? "" : "m-1"}`}
         >
           <div className="flex items-center justify-between p-1">
-            <Typography size="h4" weight="bold">
+            <Typography size="h4" weight="medium">
               {`Select token to ${
                 isAssetSelectorOpen.type === IOType.input ? "send" : "receive"
               }`}
@@ -341,7 +365,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                 >
                   <Typography
                     size="h4"
-                    weight="medium"
+                    weight="regular"
                     className="!flex !cursor-pointer !items-center !text-mid-grey"
                   >
                     +{orderedChains.length - visibleChainsCount}
@@ -352,7 +376,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           </div>
           <div className="flex w-full items-center justify-between rounded-2xl bg-white/50 px-4 py-[10px]">
             <div className="flex flex-grow items-center">
-              <Typography size="h4" weight="medium" className="gf-w-full">
+              <Typography size="h4" weight="regular" className="gf-w-full">
                 <input
                   ref={inputRef}
                   className="w-full bg-transparent outline-none placeholder:text-mid-grey focus:outline-none"
@@ -367,7 +391,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           </div>
           <div className="flex h-[316px] flex-col overflow-auto rounded-2xl bg-white">
             <div className="px-4 pb-1.5 pt-3">
-              <Typography size="h5" weight="bold">
+              <Typography size="h5" weight="medium">
                 {chain ? "Assets on " + chain.name : "Assets"}
               </Typography>
             </div>
@@ -383,7 +407,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                       >
                         <div className="flex w-full items-center gap-2">
                           <div className={`w-10`}>
-                            <AssetChainLogos
+                            <TokenNetworkLogos
                               tokenLogo={asset.logo}
                               chainLogo={network?.networkLogo}
                             />
@@ -392,7 +416,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                             className={`w-2/3`}
                             size={"h5"}
                             breakpoints={{ sm: "h4" }}
-                            weight="medium"
+                            weight="regular"
                           >
                             {asset.name}
                           </Typography>
@@ -404,7 +428,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                               breakpoints={{
                                 sm: "h4",
                               }}
-                              weight="medium"
+                              weight="regular"
                               className={`!text-mid-grey`}
                             >
                               {formatAmount(
@@ -419,7 +443,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                             breakpoints={{
                               sm: "h4",
                             }}
-                            weight="medium"
+                            weight="regular"
                             className={`!text-mid-grey`}
                           >
                             {asset.symbol}
@@ -431,7 +455,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                 )
               ) : (
                 <div className="flex min-h-[274px] w-full items-center justify-center">
-                  <Typography size="h4" weight="medium">
+                  <Typography size="h4" weight="regular">
                     No assets found.
                   </Typography>
                 </div>

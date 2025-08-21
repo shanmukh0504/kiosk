@@ -81,13 +81,13 @@ export const Notification = () => {
               target="_blank"
               className="flex w-fit max-w-[306px] flex-col gap-1 leading-4"
             >
-              <Typography size="h4" weight="bold">
+              <Typography size="h4" weight="medium">
                 {notification.title}
               </Typography>
               <Typography
                 className="whitespace-wrap mb-1 inline-block overflow-hidden text-ellipsis text-mid-grey"
                 size="h5"
-                weight="medium"
+                weight="regular"
               >
                 {notification.description}
               </Typography>

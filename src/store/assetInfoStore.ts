@@ -10,6 +10,7 @@ import {
   isSolana,
   isSolanaNativeToken,
   isStarknet,
+  isSui,
 } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
@@ -32,6 +33,7 @@ import { getOrderPair } from "../utils/utils";
 import {
   getSolanaTokenBalance,
   getStarknetTokenBalance,
+  getSuiTokenBalance,
 } from "../utils/getTokenBalance";
 import { Hex } from "viem";
 import { getSpendableBalance } from "../utils/getmaxBtc";
@@ -99,6 +101,7 @@ type AssetInfoState = {
   ) => Promise<void>;
   fetchAndSetStarknetBalance: (address: string) => Promise<void>;
   fetchAndSetSolanaBalance: (address: PublicKey) => Promise<void>;
+  fetchAndSetSuiBalance: (address: string) => Promise<void>;
   clearBalances: () => void;
 };
 
@@ -144,7 +147,6 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
         API().data.assets(network).toString()
       );
       const assetsData = res.data;
-
       const allChains: Chains = {};
       const allAssets: Assets = {};
       const assets: Assets = {};
@@ -162,7 +164,6 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           identifier: chainInfo.identifier,
           disabled: chainInfo.disabled,
         };
-
         let totalAssets = 0;
 
         for (const asset of chainInfo.assetConfig) {
@@ -393,6 +394,21 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       } else solanaBalance[orderPair] = new BigNumber(balance);
     }
     set({ balances: { ...get().balances, ...solanaBalance } });
+  },
+
+  fetchAndSetSuiBalance: async (address: string) => {
+    const { assets } = get();
+    if (!assets) return;
+
+    const suiAsset = Object.values(assets).find((asset) => isSui(asset.chain));
+
+    if (!suiAsset) return;
+    const suiBalance: Record<string, BigNumber | undefined> = {};
+
+    const balance = await getSuiTokenBalance(address, suiAsset);
+    const orderPair = getOrderPair(suiAsset.chain, suiAsset.tokenAddress);
+    suiBalance[orderPair] = new BigNumber(balance);
+    set({ balances: { ...get().balances, ...suiBalance } });
   },
 
   clearBalances: () =>

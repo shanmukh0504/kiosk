@@ -36,21 +36,21 @@ export const QuestModal: React.FC<QuestModalProps> = ({
             onClick={onClose}
           />
         </div>
-        <Typography size="h3" weight="medium">
+        <Typography size="h3" weight="regular">
           {description}
         </Typography>
         <div className="flex flex-col gap-5">
-          <Typography size="h4" weight="bold">
+          <Typography size="h4" weight="medium">
             Explore our socials
           </Typography>
           <div className="flex justify-between">
             <div className="flex items-center gap-4">
               <TrustWallet className="h-9 w-9" />
               <div className="flex flex-col">
-                <Typography size="h4" weight="bold">
+                <Typography size="h4" weight="medium">
                   Follow @garden_finance
                 </Typography>
-                <Typography size="h5" weight="medium">
+                <Typography size="h5" weight="regular">
                   Follow our 𝕏 account
                 </Typography>
               </div>

@@ -5,6 +5,7 @@ import {
   isEVM,
   isEvmNativeToken,
   isStarknet,
+  isSui,
 } from "@gardenfi/orderbook";
 import { Network, with0x } from "@gardenfi/utils";
 import BigNumber from "bignumber.js";
@@ -20,6 +21,8 @@ import { STARKNET_CONFIG } from "@gardenfi/core";
 import { network } from "../constants/constants";
 import { Connection, PublicKey } from "@solana/web3.js";
 import logger from "./logger";
+import { getFullnodeUrl } from "@mysten/sui/client";
+import { getSuiTotalGasFee } from "./getNetworkFees";
 
 const erc20ABI = [
   {
@@ -232,6 +235,68 @@ export const getNativeBalance = async (address: string, asset: Asset) => {
     return balanceInDecimals;
   } catch (error) {
     logger.error("Error fetching native balance:", error);
+    return 0;
+  }
+};
+
+export const getSuiTokenBalance = async (
+  address: string,
+  asset: Asset
+): Promise<number> => {
+  if (!isSui(asset.chain)) return 0;
+
+  const suiRpcUrl = getFullnodeUrl(network);
+
+  async function suiRpcCall(method: string, params: any[]) {
+    const res = await fetch(suiRpcUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method,
+        params,
+      }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    return data.result;
+  }
+
+  try {
+    if (
+      asset.tokenAddress === "primary" ||
+      asset.tokenAddress === "0x2::sui::SUI"
+    ) {
+      const BUFFER_FEE_IN_MIST = 5_000_000;
+      const result = await suiRpcCall("suix_getBalance", [
+        address,
+        "0x2::sui::SUI",
+      ]);
+
+      const totalBalance = result.totalBalance;
+      const totalGasCost = await getSuiTotalGasFee(address, totalBalance);
+
+      return formatAmount(
+        Math.max(totalBalance - (BUFFER_FEE_IN_MIST + totalGasCost), 0),
+        asset.decimals,
+        8
+      );
+    } else {
+      const result = await suiRpcCall("suix_getAllBalances", [address]);
+
+      const token = Array.isArray(result)
+        ? result.find(
+            (b: any) =>
+              b.coinType === asset.tokenAddress ||
+              b.coinType === asset.tokenAddress.replace(/^0x/, "0x")
+          )
+        : undefined;
+      if (!token) return 0;
+      return formatAmount(token.totalBalance, asset.decimals, 8);
+    }
+  } catch (error) {
+    console.error("Error fetching Sui token balance:", error);
     return 0;
   }
 };

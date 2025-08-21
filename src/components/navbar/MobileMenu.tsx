@@ -39,7 +39,7 @@ export const MobileMenu = () => {
 
       <BottomSheet open={isSidebarOpen} onOpenChange={handleOpenChange}>
         <div className="flex flex-col items-end gap-8 rounded-2xl bg-white p-6">
-          <div className={`flex w-full flex-col gap-4 text-left`}>
+          <div className={`flex w-full flex-col gap-3 text-left`}>
             {routes.map(([, route]) => {
               const paths = route.path;
               const isActive = paths.some(isCurrentRoute);
@@ -52,14 +52,17 @@ export const MobileMenu = () => {
                   rel={route.isExternal ? "noreferrer" : undefined}
                   onClick={() => handleSidebar()}
                 >
-                  <Typography size="h3" weight={isActive ? "bold" : "medium"}>
+                  <Typography
+                    size="h3"
+                    weight={isActive ? "medium" : "regular"}
+                  >
                     {route.name}
                   </Typography>
                 </a>
               );
             })}
           </div>
-          <div className={`flex w-full flex-col gap-4 text-left`}>
+          <div className={`flex w-full flex-col gap-3 text-left`}>
             {externalRoutes.map(([, route]) => {
               return (
                 <a
@@ -68,14 +71,14 @@ export const MobileMenu = () => {
                   target={route.isExternal ? "_blank" : undefined}
                   rel={route.isExternal ? "noreferrer" : undefined}
                 >
-                  <Typography size="h3" weight="medium">
+                  <Typography size="h3" weight="regular">
                     {route.name}
                   </Typography>
                 </a>
               );
             })}
           </div>
-          <div className={`flex w-full gap-6`}>
+          <div className={`flex w-full gap-6 text-dark-grey`}>
             {/* TODO: import social media Icons and links */}
             <Link to={SOCIAL_LINKS.discord} target="_blank">
               <DiscordIcon />
