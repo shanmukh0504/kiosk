@@ -17,7 +17,10 @@ const queryClient = new QueryClient();
 
 function AppWithReady() {
   useEffect(() => {
-    farcasterSdk.actions.ready();
+    const run = async () => {
+      await farcasterSdk.actions.ready();
+    };
+    void run();
   }, []);
 
   return <App />;
