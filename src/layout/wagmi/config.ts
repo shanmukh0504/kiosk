@@ -19,6 +19,7 @@ import {
   corn,
   bscTestnet,
 } from "wagmi/chains";
+import { farcasterMiniApp as miniAppConnector } from "@farcaster/miniapp-wagmi-connector";
 
 import { injected, metaMask, coinbaseWallet } from "wagmi/connectors";
 
@@ -130,6 +131,7 @@ export const config = createConfig({
     }),
     leapConnector,
     KeplrConnector,
+    miniAppConnector(),
   ],
   transports: {
     [mainnet.id]: http(),

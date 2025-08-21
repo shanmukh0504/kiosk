@@ -11147,6 +11147,7 @@ __metadata:
     "@coral-xyz/anchor": "npm:^0.31.1"
     "@eslint/js": "npm:^9.13.0"
     "@farcaster/miniapp-sdk": "npm:^0.1.9"
+    "@farcaster/miniapp-wagmi-connector": "npm:^1.0.0"
     "@gardenfi/core": "npm:2.4.6-beta.5"
     "@gardenfi/garden-book": "npm:0.2.2"
     "@gardenfi/orderbook": "npm:2.4.6-beta.5"
