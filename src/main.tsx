@@ -14,18 +14,19 @@ import { WalletMonitor } from "./SentryInit.tsx";
 
 const queryClient = new QueryClient();
 
-useEffect(() => {
-  const run = async () => {
-    try {
-      if (farcasterSdk) {
-        await farcasterSdk.actions.ready();
-      }
-    } catch (_err) {
-      console.error("Error initializing Farcaster SDK", _err);
-    }
-  };
-  void run();
-}, []);
+function AppWithReady() {
+  useEffect(() => {
+    const run = async () => {
+      try {
+        if (farcasterSdk) {
+          await farcasterSdk.actions.ready();
+        }
+      } catch (_err) {}
+    };
+    void run();
+  }, []);
+  return <App />;
+}
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
@@ -36,7 +37,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             apiKey={import.meta.env.VITE_MINIAPP_KEY}
             chain={base}
           >
-            <App />
+            <AppWithReady />
           </MiniKitProvider>
           <WalletMonitor />
         </WalletProviders>
