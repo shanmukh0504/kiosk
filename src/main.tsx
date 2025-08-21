@@ -41,7 +41,6 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             <AppWithReady />
           </MiniKitProvider>
           <WalletMonitor />
-          <App />
         </WalletProviders>
       </QueryClientProvider>
     </BrowserRouter>

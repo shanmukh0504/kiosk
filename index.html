@@ -7,14 +7,18 @@
       content="width=device-width, initial-scale=1, maximum-scale=1"
     />
 
-    <meta name="description" content="<!--meta-description-->" />
-    <meta name="keywords" content="<!--meta-keywords-->" />
+    <title>Garden Finance</title>
+    <meta name="description" content="Bridge with Garden Finance" />
+    <meta name="keywords" content="gardenFinance, miniApp, coinbaseWallet" />
 
     <!-- Open Graph Tags for Social Sharing -->
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="<!--meta-og-image-->" />
-    <meta property="og:title" content="<!--meta-og-title-->" />
-    <meta property="og:description" content="<!--meta-og-description-->" />
+    <meta
+      property="og:image"
+      content="https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/metadata.png"
+    />
+    <meta property="og:title" content="Garden Finance" />
+    <meta property="og:description" content="Bridge with Garden Finance" />
 
     <!-- Twitter Card meta tags -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -22,26 +26,41 @@
     <meta name="twitter:creator" content="@garden_finance" />
     <meta
       name="twitter:image"
-      content="https://app.garden.finance<!--meta-twt-image-->"
+      content="https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/metadata.png"
     />
 
-    <!-- For backward compatibility -->
+    <!-- Explicit Farcaster Frame tags -->
+    <meta name="fc:frame" content="vNext" />
+    <meta
+      name="fc:frame:image"
+      content="https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/metadata.png"
+    />
+    <meta name="fc:frame:button:1" content="Launch Garden Finance" />
+    <meta name="fc:frame:button:1:action" content="link" />
+    <meta
+      name="fc:frame:button:1:target"
+      content="https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/"
+    />
+    <meta
+      name="fc:frame:post_url"
+      content="https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/api/webhook"
+    />
+
+    <!-- Backward-compatible JSON blob -->
     <meta
       name="fc:frame"
       content='{
         "version": "next",
         "name": "Garden Finance",
-        "iconUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/favicon-32x32.png",
+        "iconUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/favicon.svg",
         "imageUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/metadata.png",
-        "splashImageUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/metadata.png",
+        "splashImageUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/preview.png",
         "splashBackgroundColor": "#ffffff",
         "homeUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io",
         "webhookUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/api/webhook",
         "subtitle": "Bridge with Garden Finance",
         "description": "Bridge with Garden Finance",
         "screenshotUrls": [
-          "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/metadata.png",
-          "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/metadata.png",
           "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/metadata.png"
         ],
         "primaryCategory": "social",
@@ -53,17 +72,19 @@
         "ogImageUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/metadata.png",
         "castShareUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io",
         "button": {
-          "title": "Bridge with Garden Finance",
+          "title": "Launch Garden Finance",
           "action": {
             "type": "launch_frame",
             "name": "Garden Finance",
             "url": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io",
-            "splashImageUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/metadata.png",
+            "splashImageUrl": "https://h8swk8ccsogkoc4s04808sgo.162.55.81.185.sslip.io/preview.png",
             "splashBackgroundColor": "#f5f0ec"
           }
         }
       }'
     />
+
+    <!-- Coinbase deeplink -->
     <meta name="coinbase-wallet-deeplink" content="true" />
 
     <!-- Google Tag Manager -->
@@ -81,24 +102,20 @@
     </script>
     <!-- End Google Tag Manager -->
 
-    <title><!--meta-title--></title>
     <link rel="icon" href="/favicon.svg" />
-    <link
-      rel="canonical"
-      href="https://app.garden.finance<!--meta-canonical-->"
-    />
+    <link rel="canonical" href="https://app.garden.finance" />
   </head>
 
   <body>
     <!-- Google Tag Manager (noscript) -->
-    <noscript
-      ><iframe
+    <noscript>
+      <iframe
         src="https://www.googletagmanager.com/ns.html?id=GTM-KJQK5H47"
         height="0"
         width="0"
         style="display: none; visibility: hidden"
-      ></iframe
-    ></noscript>
+      ></iframe>
+    </noscript>
     <!-- End Google Tag Manager (noscript) -->
 
     <div id="root"></div>
