@@ -33,6 +33,10 @@ function App() {
       await sdk.back.enableWebNavigation();
     })();
     fetchAndSetRPCs();
+    (async () => {
+      await sdk.actions.ready({ disableNativeGestures: true });
+      await sdk.back.enableWebNavigation();
+    })();
   }, []);
   // useEffect(() => {
   //   if (!isFrameReady) {
