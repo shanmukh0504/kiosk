@@ -378,22 +378,13 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                     [BlockchainType.Sui]: !!(
                       wallet.isSui &&
                       suiConnected &&
-                      // For Phantom Sui wallet, match by name
                       ((wallet.id === "app.phantom" &&
                         suiSelectedWallet?.name === "Phantom") ||
-                        // For Slush, match by id "com.mystenlabs.suiwallet"
-                        (wallet.id === "slush" &&
+                        (wallet.name === "Slush Wallet" &&
                           suiSelectedWallet?.id ===
                             "com.mystenlabs.suiwallet") ||
-                        // For OKX, match by id "com.okex.wallet"
-                        (wallet.id === "okx" &&
-                          suiSelectedWallet?.id === "com.okex.wallet") ||
-                        // For all others, match by id (case-insensitive)
-                        (wallet.id !== "app.phantom" &&
-                          wallet.id !== "slush" &&
-                          wallet.id !== "okx" &&
-                          suiSelectedWallet?.id?.toLowerCase() ===
-                            wallet.id.toLowerCase()))
+                        (wallet.name === "OKX Wallet" &&
+                          suiSelectedWallet?.name === "OKX Wallet"))
                     ),
                   }}
                   isAvailable={wallet.isAvailable}
