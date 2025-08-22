@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.1.2]
+## [1.1.3]
 
 ### Added
 
@@ -12,6 +12,7 @@
 - Search functionality in AssetSelector component.
 - Updated network fees logic for Sui chain.
 - Updated GradientScroll height for UX.
+- Updated Gardenfi Package versions to latest version.
 
 ## [1.1.0]
 
