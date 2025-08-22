@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.2]
+
+### Fixed
+
+- Updated @gardenfi version to latest version.
+- Remove unused Code.
+- Change XIcon from solid to outline.
+
 ## [1.1.1]
 
 ### Added
@@ -11,6 +19,7 @@
 - Updated the asset routes in competitor savings constant.
 - Search functionality in AssetSelector component.
 - Updated network fees logic for Sui chain.
+- Updated GradientScroll height for UX.
 
 ## [1.1.0]
 
