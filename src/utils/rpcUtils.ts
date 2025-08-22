@@ -8,10 +8,6 @@ type RPCValidationResult = {
   responseTime?: number;
 };
 
-type WorkingRPCResult = {
-  [chainId: number]: string[];
-};
-
 export const testRPC = async (
   rpcUrl: string,
   timeoutMs: number = 1000
@@ -105,21 +101,12 @@ export const getWorkingRPCs = async (
   return workingRPCs;
 };
 
-export const getAllRPCs = async (
-  supportedChains: Chain[],
+export const getRPCsForChain = async (
+  chain: Chain,
   maxRPCsPerChain: number = 20
-): Promise<WorkingRPCResult> => {
-  const result: WorkingRPCResult = {};
+): Promise<string[]> => {
   const rpcs = await getChainListRPCs();
-
-  supportedChains.map((chain) => {
-    const reqRPCs = rpcs[chain.id];
-    
-    if (!reqRPCs || reqRPCs.length === 0) {
-      result[chain.id] = [chain.rpcUrls.default.http[0]];
-    } else {
-      result[chain.id] = reqRPCs.slice(0, maxRPCsPerChain);
-    }
-  });
-  return result;
+  const reqRPCs = rpcs[chain.id];
+  if (!reqRPCs || reqRPCs.length === 0) return [chain.rpcUrls.default.http[0]];
+  return reqRPCs.slice(0, maxRPCsPerChain);
 };
