@@ -28,13 +28,8 @@ function App() {
   // const { isFrameReady, setFrameReady } = useMiniKit();
 
   useEffect(() => {
-    (async () => {
-      await sdk.actions.ready({ disableNativeGestures: true });
-      await sdk.back.enableWebNavigation();
-    })();
     fetchAndSetRPCs();
     (async () => {
-      await sdk.actions.ready({ disableNativeGestures: true });
       await sdk.back.enableWebNavigation();
     })();
   }, []);

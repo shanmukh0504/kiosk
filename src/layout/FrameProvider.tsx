@@ -42,9 +42,11 @@ export function FrameProvider({ children }: { children: ReactNode }) {
         setContext(ctx);
         await sdk.actions.ready({ disableNativeGestures: true });
         console.log("SDK actions.ready resolved successfully");
+        console.log("Mini App is now ready and splash screen should be hidden");
         if (!mounted) return;
         setIsSDKLoaded(true);
       } catch (e) {
+        console.error("Failed to initialize Mini App SDK:", e);
         setIsSDKLoaded(false);
       } finally {
         setIsLoading(false);
