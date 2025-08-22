@@ -1,74 +1,121 @@
-import type { Context } from "@farcaster/miniapp-sdk";
-import sdk from "@farcaster/miniapp-sdk";
-import {
-  type ReactNode,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+"use client";
 
-type FrameContextValue = {
-  context?: Context.MiniAppContext;
-  isLoading: boolean;
+import { useEffect, useState, useCallback } from "react";
+import sdk, { type Context } from "@farcaster/frame-sdk";
+import { createStore } from "mipd";
+import React from "react";
+
+interface FrameContextType {
   isSDKLoaded: boolean;
-  isEthProviderAvailable: boolean;
-  actions: typeof sdk.actions;
-  haptics: typeof sdk.haptics;
-};
+  context: Context.MiniAppContext | undefined;
+}
 
-const FrameProviderContext = createContext<FrameContextValue | undefined>(
+const FrameContext = React.createContext<FrameContextType | undefined>(
   undefined
 );
 
 export function useFrame() {
-  const ctx = useContext(FrameProviderContext);
-  if (!ctx) throw new Error("useFrame must be used within a FrameProvider");
-  return ctx;
-}
-
-export function FrameProvider({ children }: { children: ReactNode }) {
-  const [context, setContext] = useState<Context.MiniAppContext>();
-  const [isLoading, setIsLoading] = useState(true);
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
+  const [context, setContext] = useState<Context.MiniAppContext>();
+  const [added, setAdded] = useState(false);
+  const [lastEvent, setLastEvent] = useState("");
+  const [addFrameResult, setAddFrameResult] = useState("");
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      setIsLoading(true);
-      try {
-        const ctx = await sdk.context;
-        if (!mounted) return;
-        setContext(ctx);
-        await sdk.actions.ready({ disableNativeGestures: true });
-        console.log("SDK actions.ready resolved successfully");
-        console.log("Mini App is now ready and splash screen should be hidden");
-        if (!mounted) return;
-        setIsSDKLoaded(true);
-      } catch (e) {
-        console.error("Failed to initialize Mini App SDK:", e);
-        setIsSDKLoaded(false);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
+  const addFrame = useCallback(async () => {
+    try {
+      const result = await sdk.actions.addFrame();
+
+      setAddFrameResult(
+        result.notificationDetails
+          ? `Added, got notificaton token ${result.notificationDetails.token} and url ${result.notificationDetails.url}`
+          : "Added, got no notification details"
+      );
+    } catch (error) {
+      setAddFrameResult(`Error: ${error}`);
+    }
   }, []);
 
+  useEffect(() => {
+    const load = async () => {
+      const context = await sdk.context;
+      setContext(context);
+      setIsSDKLoaded(true);
+
+      // Set up event listeners
+      sdk.on("miniAppAdded", ({ notificationDetails }) => {
+        console.log("Frame added", notificationDetails);
+        setAdded(true);
+        setLastEvent("Frame added");
+      });
+
+      sdk.on("miniAppAddRejected", ({ reason }) => {
+        console.log("Frame add rejected", reason);
+        setAdded(false);
+        setLastEvent(`Frame add rejected: ${reason}`);
+      });
+
+      sdk.on("miniAppRemoved", () => {
+        console.log("Frame removed");
+        setAdded(false);
+        setLastEvent("Frame removed");
+      });
+
+      sdk.on("notificationsEnabled", ({ notificationDetails }) => {
+        console.log("Notifications enabled", notificationDetails);
+        setLastEvent("Notifications enabled");
+      });
+
+      sdk.on("notificationsDisabled", () => {
+        console.log("Notifications disabled");
+        setLastEvent("Notifications disabled");
+      });
+
+      sdk.on("primaryButtonClicked", () => {
+        console.log("Primary button clicked");
+        setLastEvent("Primary button clicked");
+      });
+
+      // Call ready action
+      console.log("Calling ready");
+      sdk.actions.ready();
+
+      // Set up MIPD Store
+      const store = createStore();
+      store.subscribe((providerDetails) => {
+        console.log("PROVIDER DETAILS", providerDetails);
+      });
+    };
+
+    if (sdk && !isSDKLoaded) {
+      console.log("Calling load");
+      setIsSDKLoaded(true);
+      load();
+      return () => {
+        sdk.removeAllListeners();
+      };
+    }
+  }, [isSDKLoaded]);
+
+  return {
+    isSDKLoaded,
+    context,
+    added,
+    lastEvent,
+    addFrame,
+    addFrameResult,
+  };
+}
+
+export function FrameProvider({ children }: { children: React.ReactNode }) {
+  const { isSDKLoaded, context } = useFrame();
+
+  if (!isSDKLoaded) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <FrameProviderContext.Provider
-      value={{
-        context,
-        isLoading,
-        isSDKLoaded,
-        isEthProviderAvailable: Boolean(sdk.wallet.ethProvider),
-        actions: sdk.actions,
-        haptics: sdk.haptics,
-      }}
-    >
+    <FrameContext.Provider value={{ isSDKLoaded, context }}>
       {children}
-    </FrameProviderContext.Provider>
+    </FrameContext.Provider>
   );
 }

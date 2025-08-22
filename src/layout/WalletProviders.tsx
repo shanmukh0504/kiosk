@@ -11,10 +11,10 @@ import {
   connectors as starknetConnectors,
 } from "./starknet/config";
 import { config } from "./wagmi/config";
-// import { MiniAppProvider } from "./MiniAppContextProvider.tsx";
 import { STARKNET_CONFIG } from "@gardenfi/core";
 import { SuiProvider } from "./sui/SuiProvider.tsx";
 import { FrameProvider } from "./FrameProvider.tsx";
+// import { MiniAppProvider } from "./MiniAppContextProvider.tsx";
 
 interface WalletProviderProps {
   children: ReactNode;
