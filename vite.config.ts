@@ -9,6 +9,7 @@ import wasm from "vite-plugin-wasm";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import topLevelAwait from "vite-plugin-top-level-await";
 import { metadataPlugin } from "./vite-metadata-plugin";
+import { frameMetadataPlugin } from "./vite-frame-metadata-plugin";
 import process from "process";
 
 const getRecentGitCommitHash = () => {
@@ -40,6 +41,7 @@ export default defineConfig({
     react(),
     wasm(),
     metadataPlugin(),
+    frameMetadataPlugin(),
     nodePolyfills({
       globals: {
         process: true,
@@ -53,7 +55,11 @@ export default defineConfig({
       buildEnd() {
         generateBuildIdFile();
       },
-      configureServer(server: { middlewares: { use: (arg0: (req: any, res: any, next: any) => void) => void; }; }) {
+      configureServer(server: {
+        middlewares: {
+          use: (arg0: (req: any, res: any, next: any) => void) => void;
+        };
+      }) {
         generateBuildIdFile();
         // Have to write a custom middleware to serve the build Id file,
         // because vite dev server doesn't serve files from public directory as soon as they are generated.

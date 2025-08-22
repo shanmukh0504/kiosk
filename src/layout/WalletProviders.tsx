@@ -14,28 +14,31 @@ import { config } from "./wagmi/config";
 import { MiniAppProvider } from "./MiniAppContextProvider.tsx";
 import { STARKNET_CONFIG } from "@gardenfi/core";
 import { SuiProvider } from "./sui/SuiProvider.tsx";
+import { FrameProvider } from "./FrameProvider.tsx";
 
 interface WalletProviderProps {
   children: ReactNode;
 }
 export const WalletProviders: FC<WalletProviderProps> = ({ children }) => {
   return (
-    <MiniAppProvider>
-      <WagmiProvider config={config}>
-        <BTCWalletProvider network={network as Network} store={localStorage}>
-          <StarknetConfig
-            defaultChainId={BigInt(STARKNET_CONFIG[network].chainId)}
-            chains={starknetChains}
-            provider={starknetProviders}
-            connectors={starknetConnectors}
-            autoConnect
-          >
-            <SolanaProvider>
-              <SuiProvider>{children}</SuiProvider>
-            </SolanaProvider>
-          </StarknetConfig>
-        </BTCWalletProvider>
-      </WagmiProvider>
-    </MiniAppProvider>
+    <FrameProvider>
+      <MiniAppProvider>
+        <WagmiProvider config={config}>
+          <BTCWalletProvider network={network as Network} store={localStorage}>
+            <StarknetConfig
+              defaultChainId={BigInt(STARKNET_CONFIG[network].chainId)}
+              chains={starknetChains}
+              provider={starknetProviders}
+              connectors={starknetConnectors}
+              autoConnect
+            >
+              <SolanaProvider>
+                <SuiProvider>{children}</SuiProvider>
+              </SolanaProvider>
+            </StarknetConfig>
+          </BTCWalletProvider>
+        </WagmiProvider>
+      </MiniAppProvider>
+    </FrameProvider>
   );
 };

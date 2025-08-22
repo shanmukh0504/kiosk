@@ -1,4 +1,4 @@
-import { StrictMode, useEffect } from "react";
+import { StrictMode } from "react";
 import { BrowserRouter } from "react-router-dom";
 import ReactDOM from "react-dom/client";
 
@@ -10,25 +10,9 @@ import "@gardenfi/garden-book/style.css";
 import { WalletProviders } from "./layout/WalletProviders.tsx";
 // import { MiniKitProvider } from "@coinbase/onchainkit/minikit";
 // import { base } from "wagmi/chains";
-import { sdk as farcasterSdk } from "@farcaster/frame-sdk";
 import { WalletMonitor } from "./SentryInit.tsx";
 
 const queryClient = new QueryClient();
-
-function AppWithReady() {
-  useEffect(() => {
-    const run = async () => {
-      try {
-        await farcasterSdk.actions.ready({ disableNativeGestures: true });
-      } catch (error) {
-        console.error("Error calling sdk.actions.ready():", error);
-      }
-    };
-    void run();
-  }, []);
-
-  return <App />;
-}
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
@@ -39,7 +23,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             apiKey={import.meta.env.VITE_MINIAPP_KEY}
             chain={base}
           > */}
-          <AppWithReady />
+          <App />
           {/* </MiniKitProvider> */}
           <WalletMonitor />
         </WalletProviders>
