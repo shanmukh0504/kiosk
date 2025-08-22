@@ -2,8 +2,9 @@
 
 ## [1.1.2]
 
-### Added
+### Fixed
 
+- Change XIcon from solid to outline.
 - New Stake page with GardenPass and refreshed UI.
 
 ## [1.1.1]
