@@ -13,6 +13,7 @@
 - Updated network fees logic for Sui chain.
 - Updated GradientScroll height for UX.
 - Updated Gardenfi Package versions to latest version.
+- Remove unused Code.
 
 ## [1.1.0]
 
