@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.3]
+
+### Fixed
+
+- Change XIcon from solid to outline.
+
 ## [1.1.1]
 
 ### Added
