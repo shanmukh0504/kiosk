@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.1.1]
+## [1.1.2]
 
 ### Added
 
@@ -11,6 +11,7 @@
 - Updated the asset routes in competitor savings constant.
 - Search functionality in AssetSelector component.
 - Updated network fees logic for Sui chain.
+- Updated GradientScroll height for UX.
 
 ## [1.1.0]
 
