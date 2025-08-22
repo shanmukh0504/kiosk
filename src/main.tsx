@@ -8,9 +8,9 @@ import "./index.css";
 import "@gardenfi/garden-book/style.css";
 
 import { WalletProviders } from "./layout/WalletProviders.tsx";
-import { MiniKitProvider } from "@coinbase/onchainkit/minikit";
-import { base } from "wagmi/chains";
-import { sdk as farcasterSdk } from "@farcaster/miniapp-sdk";
+// import { MiniKitProvider } from "@coinbase/onchainkit/minikit";
+// import { base } from "wagmi/chains";
+import { sdk as farcasterSdk } from "@farcaster/frame-sdk";
 import { WalletMonitor } from "./SentryInit.tsx";
 
 const queryClient = new QueryClient();
@@ -19,42 +19,7 @@ function AppWithReady() {
   useEffect(() => {
     const run = async () => {
       try {
-        console.log("Farcaster SDK:", farcasterSdk);
-        console.log("Farcaster SDK actions:", farcasterSdk?.actions);
-        console.log(
-          "Farcaster SDK ready method:",
-          farcasterSdk?.actions?.ready
-        );
-        console.log(
-          "Is ready a function?",
-          typeof farcasterSdk?.actions?.ready
-        );
-        console.log("Window location:", window.location.href);
-        console.log("User agent:", navigator.userAgent);
-
-        // Check if we're in a Farcaster environment
-        const isInFarcaster =
-          window.location.href.includes("farcaster") ||
-          navigator.userAgent.includes("Farcaster") ||
-          window.location.href.includes("warpcast");
-        console.log("Detected Farcaster environment:", isInFarcaster);
-
-        if (
-          farcasterSdk &&
-          farcasterSdk.actions &&
-          typeof farcasterSdk.actions.ready === "function"
-        ) {
-          console.log("Calling sdk.actions.ready()...");
-          await farcasterSdk.actions.ready();
-          console.log("sdk.actions.ready() completed successfully");
-        } else {
-          console.warn("Farcaster SDK not available or ready method not found");
-          console.log("SDK structure:", {
-            hasSdk: !!farcasterSdk,
-            hasActions: !!(farcasterSdk && farcasterSdk.actions),
-            readyType: typeof farcasterSdk?.actions?.ready,
-          });
-        }
+        await farcasterSdk.actions.ready({ disableNativeGestures: true });
       } catch (error) {
         console.error("Error calling sdk.actions.ready():", error);
       }
@@ -70,12 +35,12 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <WalletProviders>
-          <MiniKitProvider
+          {/* <MiniKitProvider
             apiKey={import.meta.env.VITE_MINIAPP_KEY}
             chain={base}
-          >
-            <AppWithReady />
-          </MiniKitProvider>
+          > */}
+          <AppWithReady />
+          {/* </MiniKitProvider> */}
           <WalletMonitor />
         </WalletProviders>
       </QueryClientProvider>
