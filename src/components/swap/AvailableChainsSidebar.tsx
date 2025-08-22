@@ -102,9 +102,10 @@ export const AvailableChainsSidebar = ({
           >
             <GradientScroll
               height={isMobile ? 384 : 376}
+              gradientHeight={42}
               className="rounded-2xl"
             >
-              <div className="flex w-full flex-col pb-1 pt-2">
+              <div className="flex w-full flex-col pb-2 pt-2">
                 {filteredChains.length > 0 ? (
                   filteredChains.map((c) => {
                     return (
