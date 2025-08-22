@@ -2,6 +2,12 @@
 
 ## [1.1.2]
 
+### Fixed
+
+- Change XIcon from solid to outline.
+
+## [1.1.1]
+
 ### Added
 
 - Added support for sui chain in garden.
