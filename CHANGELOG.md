@@ -1,6 +1,12 @@
 # Changelog
 
-## [1.1.3]
+## [1.1.2]
+
+### Fixed
+
+- Updated @gardenfi version to latest version.
+
+## [1.1.1]
 
 ### Added
 
