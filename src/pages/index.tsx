@@ -17,6 +17,7 @@ import { rpcStore } from "../store/rpcStore";
 import { useEffect } from "react";
 // import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import { useSuiWallet } from "../hooks/useSuiWallet";
+import sdk from "@farcaster/miniapp-sdk";
 
 function App() {
   const { data: walletClient } = useWalletClient();
@@ -27,9 +28,12 @@ function App() {
   // const { isFrameReady, setFrameReady } = useMiniKit();
 
   useEffect(() => {
+    (async () => {
+      await sdk.actions.ready({ disableNativeGestures: true });
+      await sdk.back.enableWebNavigation();
+    })();
     fetchAndSetRPCs();
   }, []);
-
   // useEffect(() => {
   //   if (!isFrameReady) {
   //     setFrameReady();
