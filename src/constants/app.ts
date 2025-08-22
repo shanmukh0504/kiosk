@@ -7,7 +7,7 @@ export const APP_TAGLINE =
 
 // Farcaster Frame metadata
 export const FRAME_METADATA = {
-  version: "vNext",
+  version: "next",
   imageUrl: `${APP_URL}/metadata.png`,
   button: {
     title: "Launch Garden Finance",

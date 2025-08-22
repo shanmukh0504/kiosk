@@ -20,7 +20,7 @@ var APP_NAME = "Garden Finance";
 var APP_DESCRIPTION = "Bridge with Garden Finance";
 var APP_TAGLINE = "Move Bitcoin. without. trust. Garden is the fastest and most cost-efficient way to move native Bitcoin between chains, without giving up custody.";
 var FRAME_METADATA = {
-  version: "vNext",
+  version: "next",
   imageUrl: `${APP_URL}/metadata.png`,
   button: {
     title: "Launch Garden Finance",
