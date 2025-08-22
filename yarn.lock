@@ -1063,7 +1063,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/core@npm:2.5.2, @gardenfi/core@npm:^2.5.2":
+"@gardenfi/core@npm:2.5.2":
   version: 2.5.2
   resolution: "@gardenfi/core@npm:2.5.2"
   dependencies:
@@ -1087,6 +1087,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@gardenfi/core@npm:2.5.2-beta.2":
+  version: 2.5.2-beta.2
+  resolution: "@gardenfi/core@npm:2.5.2-beta.2"
+  dependencies:
+    "@coral-xyz/anchor": "npm:^0.31.1"
+    "@gardenfi/orderbook": "npm:2.5.2-beta.1"
+    "@gardenfi/utils": "npm:2.5.2"
+    "@mysten/signers": "npm:^0.3.4"
+    "@mysten/sui": "npm:^1.37.1"
+    "@mysten/wallet-standard": "npm:^0.16.9"
+    "@solana/spl-token": "npm:^0.4.13"
+    bignumber.js: "npm:^9.1.2"
+    bip32: "npm:^4.0.0"
+    bip39: "npm:^3.1.0"
+    bitcoinjs-lib: "npm:^6.1.5"
+    ecpair: "npm:^2.1.0"
+    starknet: "npm:7.6.4"
+    tiny-secp256k1: "npm:^2.2.3"
+    varuint-bitcoin: "npm:^1.1.2"
+    yup: "npm:^1.4.0"
+  checksum: 10c0/032ace29fe52111c043ed9b311d49f83d24559f293eac9a6600f75a29facf7266af4c11a1c586f705142b776959f94a55cd07546cbb314738d7fb09dc88e33db
+  languageName: node
+  linkType: hard
+
 "@gardenfi/garden-book@npm:0.2.2":
   version: 0.2.2
   resolution: "@gardenfi/garden-book@npm:0.2.2"
@@ -1106,7 +1130,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/orderbook@npm:2.5.2, @gardenfi/orderbook@npm:^2.5.2":
+"@gardenfi/orderbook@npm:2.5.2":
   version: 2.5.2
   resolution: "@gardenfi/orderbook@npm:2.5.2"
   dependencies:
@@ -1120,16 +1144,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/react-hooks@npm:^2.5.2":
-  version: 2.5.2
-  resolution: "@gardenfi/react-hooks@npm:2.5.2"
+"@gardenfi/orderbook@npm:2.5.2-beta.1":
+  version: 2.5.2-beta.1
+  resolution: "@gardenfi/orderbook@npm:2.5.2-beta.1"
   dependencies:
-    "@gardenfi/core": "npm:2.5.2"
-    "@gardenfi/orderbook": "npm:2.5.2"
+    "@coral-xyz/anchor": "npm:^0.31.1"
+    "@gardenfi/utils": "npm:2.5.2"
+    bufferutil: "npm:^4.0.8"
+    siwe: "npm:^2.1.4"
+    utf-8-validate: "npm:^6.0.3"
+    ws: "npm:^8.14.2"
+  checksum: 10c0/0875c2eae6b4e90ea329d04b9949788402eca9291874e50743c04c79a214b4619826f9b744d445c5b5aeaa7ea79007893f25d0d1db75ca4c54e2ec27fb33774c
+  languageName: node
+  linkType: hard
+
+"@gardenfi/react-hooks@npm:2.5.2-beta.2":
+  version: 2.5.2-beta.2
+  resolution: "@gardenfi/react-hooks@npm:2.5.2-beta.2"
+  dependencies:
+    "@gardenfi/core": "npm:2.5.2-beta.2"
+    "@gardenfi/orderbook": "npm:2.5.2-beta.1"
     "@gardenfi/utils": "npm:2.5.2"
     react: "npm:^18.3.1"
     starknet: "npm:7.6.4"
-  checksum: 10c0/ee7e4455bb753828854e8fc05bd55984241af299c11ecd819da4e2f3d75b475810a4d11789d876f4ebcc9ffd3d094b367ce8a15d88f4df763677514794f9c7b5
+  checksum: 10c0/f69707b068ff76a408bc7f3df054981f7d7ad52987c267c2e1ae33bd3feff554f1d13add6f6ef43dd8b0dbb45102b2a9ec4b84e716d92057b5fe606e998cd13f
   languageName: node
   linkType: hard
 
@@ -11011,10 +11049,10 @@ __metadata:
     "@chainflip/sdk": "npm:^1.8.3"
     "@coral-xyz/anchor": "npm:^0.31.1"
     "@eslint/js": "npm:^9.13.0"
-    "@gardenfi/core": "npm:^2.5.2"
+    "@gardenfi/core": "npm:2.5.2-beta.2"
     "@gardenfi/garden-book": "npm:0.2.2"
-    "@gardenfi/orderbook": "npm:^2.5.2"
-    "@gardenfi/react-hooks": "npm:^2.5.2"
+    "@gardenfi/orderbook": "npm:2.5.2-beta.1"
+    "@gardenfi/react-hooks": "npm:2.5.2-beta.2"
     "@gardenfi/utils": "npm:^2.5.2"
     "@gardenfi/wallet-connectors": "npm:^2.4.2"
     "@mysten/dapp-kit": "npm:^0.17.2"

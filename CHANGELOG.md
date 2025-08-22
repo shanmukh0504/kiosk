@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.3]
+
+### Added
+
+- Added support for core chain.
+
 ## [1.1.2]
 
 ### Fixed
