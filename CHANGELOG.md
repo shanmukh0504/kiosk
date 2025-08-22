@@ -4,6 +4,8 @@
 
 ### Fixed
 
+- Updated @gardenfi version to latest version.
+- Remove unused Code.
 - Change XIcon from solid to outline.
 
 ## [1.1.1]
