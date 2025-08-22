@@ -153,6 +153,7 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "bnbchain_testnet",
   "sui",
   "sui_testnet",
+  "core",
 ] as const;
 
 export const MULTICALL_CONTRACT_ADDRESSES: Record<number, string> = {
