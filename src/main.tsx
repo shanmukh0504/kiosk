@@ -8,8 +8,6 @@ import "./index.css";
 import "@gardenfi/garden-book/style.css";
 
 import { WalletProviders } from "./layout/WalletProviders.tsx";
-// import { MiniKitProvider } from "@coinbase/onchainkit/minikit";
-// import { base } from "wagmi/chains";
 import { WalletMonitor } from "./SentryInit.tsx";
 
 const queryClient = new QueryClient();
@@ -19,12 +17,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <WalletProviders>
-          {/* <MiniKitProvider
-            apiKey={import.meta.env.VITE_MINIAPP_KEY}
-            chain={base}
-          > */}
           <App />
-          {/* </MiniKitProvider> */}
           <WalletMonitor />
         </WalletProviders>
       </QueryClientProvider>

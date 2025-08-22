@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import sdk, { type Context } from "@farcaster/frame-sdk";
+import FrameNotificationDetails from "@farcaster/frame-sdk";
 import { createStore } from "mipd";
 import React from "react";
 

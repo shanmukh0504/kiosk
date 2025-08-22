@@ -15,9 +15,7 @@ import { Environment as GardenEnvironment } from "@gardenfi/utils";
 import { useSolanaWallet } from "../hooks/useSolanaWallet";
 import { rpcStore } from "../store/rpcStore";
 import { useEffect } from "react";
-// import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import { useSuiWallet } from "../hooks/useSuiWallet";
-import sdk from "@farcaster/miniapp-sdk";
 
 function App() {
   const { data: walletClient } = useWalletClient();
@@ -25,22 +23,10 @@ function App() {
   const { solanaAnchorProvider } = useSolanaWallet();
   const { suiSelectedWallet } = useSuiWallet();
   const { fetchAndSetRPCs } = rpcStore();
-  // const { isFrameReady, setFrameReady } = useMiniKit();
 
   useEffect(() => {
     fetchAndSetRPCs();
-    (async () => {
-      await sdk.back.enableWebNavigation();
-    })();
   }, []);
-  // useEffect(() => {
-  //   if (!isFrameReady) {
-  //     setFrameReady();
-  //   }
-  // }, [isFrameReady, setFrameReady]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
 
   return (
     <GardenProvider

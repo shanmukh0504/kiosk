@@ -163,7 +163,7 @@ RUN printf 'server {\n\
     \n\
     # Security headers\n\
     add_header X-Content-Type-Options "nosniff" always;\n\
-    add_header Content-Security-Policy "frame-ancestors 'self' https://*.farcaster.xyz https://*.warpcast.com https://*.coinbase.com;" always;\n\
+    add_header Content-Security-Policy "frame-ancestors *;" always;\n\
     }\n' > /etc/nginx/conf.d/default.conf
 
 
