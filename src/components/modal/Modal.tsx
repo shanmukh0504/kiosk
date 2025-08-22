@@ -4,7 +4,7 @@ import { ConnectWallet } from "../navbar/connectWallet/ConnectWallet";
 import { TransactionsComponent } from "../transactions/TransactionsComponent";
 import { ResponsiveModal } from "./ResponsiveModal";
 import { AssetSelector } from "../swap/AssetSelector";
-import { Whitelist } from "../whitelist/WhiteList";
+// import { Whitelist } from "../whitelist/WhiteList";
 import { StakeModal } from "../stake/modal/StakeModal";
 import { VersionUpdateModal } from "./VersionUpdateModal";
 
@@ -46,12 +46,12 @@ export const Modal = () => {
         open={modalName.transactions}
         onClose={() => setCloseModal(modalNames.transactions)}
       />
-      <ResponsiveModal open={modalName.whiteList}>
+      {/* <ResponsiveModal open={modalName.whiteList}>
         <Whitelist
           open={modalName.whiteList}
           onClose={() => setCloseModal(modalNames.whiteList)}
         />
-      </ResponsiveModal>
+      </ResponsiveModal> */}
 
       <ResponsiveModal
         open={modalName.assetList}
