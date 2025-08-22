@@ -1,26 +1,26 @@
 {
   "accountAssociation": {
     "header": "eyJmaWQiOjEyNTI2NDUsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhlNDE3OTUyQThjNEY0MjM5OUFBMzlGQTIwN0Q4Q0JhMDk0OEY1NTU5In0",
-    "payload": "eyJkb21haW4iOiJjb2luYmFzZWFwcC5zdGFnaW5nLmpoZWIuY29tIn0",
-    "signature": "MHhjOGM3ZDljYjBmMzU2ZDE2MDA3MWExMGU0MWM5YTlmNzgwYWYzNjZiNWJlNzIxZDYzOWViY2E5OTVmMGMxYzc1MTcyYWJlNDQzNTE3OTIwZGFhM2VmYzFhMDk4NDRiYWUxYjE2YzkwOTYwNjc2MDNlZWJkNmYyNjE1ZjcxMTVlMjFi"
+    "payload": "eyJkb21haW4iOiJnYXJkZW5hcHAuc3RhZ2luZy5qaGViLmNvbSJ9",
+    "signature": "MHg4NjlhYTRjNWQyZWQwODMzNGJkMTBjZDVhMjhhMjhlY2QyYTQ4ZDBiZDQ1OTc0OTJiYTg3N2M3MGVkNTkwOTQ4MGYzZGVkOWZlY2ViNDFjNGNiMjE2YzliNjMwYzZkY2JhMGY1OWViZWY1ZWM4NzcyZTBmMWM4NmE1ZjdiZWFmMjFi"
   },
     "frame": {
       "name": "Garden Finance",
       "version": "1",
-      "iconUrl": "https://coinbaseapp.staging.jheb.com/favicon.svg",
-      "homeUrl": "https://coinbaseapp.staging.jheb.com",
-      "imageUrl": "https://coinbaseapp.staging.jheb.com/metadata.png",
+      "iconUrl": "https://gardenapp.staging.jheb.com/favicon.svg",
+      "homeUrl": "https://gardenapp.staging.jheb.com",
+      "imageUrl": "https://gardenapp.staging.jheb.com/metadata.png",
       "buttonTitle": "Bridge with Garden Finance",
-      "splashImageUrl": "https://coinbaseapp.staging.jheb.com/metadata.png",
+      "splashImageUrl": "https://gardenapp.staging.jheb.com/metadata.png",
       "splashBackgroundColor": "#FFFFFF",
-      "webhookUrl": "https://coinbaseapp.staging.jheb.com/api/webhook",
+      "webhookUrl": "https://gardenapp.staging.jheb.com/api/webhook",
       "subtitle": "Bridge with Garden Finance",
       "primaryCategory": "finance",
       "description": "Move Bitcoin. without. trust. Garden is the fastest and most cost-efficient way to move native Bitcoin between chains, without giving up custody.",
       "screenshotUrls": [
-        "https://coinbaseapp.staging.jheb.com/metadata.png"
+        "https://gardenapp.staging.jheb.com/metadata.png"
       ],
-      "heroImageUrl": "https://coinbaseapp.staging.jheb.com/metadata.png",
+      "heroImageUrl": "https://gardenapp.staging.jheb.com/metadata.png",
       "tags": [
         "bitcoin",
         "finance",
@@ -30,7 +30,7 @@
       "tagline": "Bridge with Garden Finance",
       "ogTitle": "Garden Finance",
       "ogDescription": "Bridge with Garden Finance",
-      "ogImageUrl": "https://coinbaseapp.staging.jheb.com/metadata.png",
-      "castShareUrl": "https://coinbaseapp.staging.jheb.com/metadata.png"
+      "ogImageUrl": "https://gardenapp.staging.jheb.com/metadata.png",
+      "castShareUrl": "https://gardenapp.staging.jheb.com/metadata.png"
     }
 }
