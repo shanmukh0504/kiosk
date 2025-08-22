@@ -8,8 +8,7 @@ import fs from "fs";
 import wasm from "vite-plugin-wasm";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import topLevelAwait from "vite-plugin-top-level-await";
-import { metadataPlugin } from "./vite-metadata-plugin";
-import { frameMetadataPlugin } from "./vite-frame-metadata-plugin";
+import { frameMetadataPlugin, metadataPlugin } from "./vite-metadata-plugin";
 import process from "process";
 
 const getRecentGitCommitHash = () => {

@@ -1,6 +1,5 @@
 // App URLs and metadata constants
-export const APP_URL =
-  import.meta.env.VITE_APP_URL || "https://coinbaseapp.staging.jheb.com";
+export const APP_URL = "https://coinbaseapp.staging.jheb.com";
 export const APP_NAME = "Garden Finance";
 export const APP_DESCRIPTION = "Bridge with Garden Finance";
 export const APP_TAGLINE =
