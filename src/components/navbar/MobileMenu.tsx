@@ -2,7 +2,7 @@ import {
   BottomSheet,
   DiscordIcon,
   Typography,
-  XSolidIcon,
+  XIcon,
 } from "@gardenfi/garden-book";
 import { useState } from "react";
 import {
@@ -84,7 +84,7 @@ export const MobileMenu = () => {
               <DiscordIcon />
             </Link>
             <Link to={SOCIAL_LINKS.x} target="_blank">
-              <XSolidIcon />
+              <XIcon />
             </Link>
           </div>
         </div>
