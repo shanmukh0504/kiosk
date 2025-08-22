@@ -1,59 +1,69 @@
 import type { Context } from "@farcaster/miniapp-sdk";
 import sdk from "@farcaster/miniapp-sdk";
-import { useQuery } from "@tanstack/react-query";
-import { type ReactNode, createContext, useContext } from "react";
+import {
+  type ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
-interface FrameContextValue {
-  context: Context.MiniAppContext | undefined;
+type FrameContextValue = {
+  context?: Context.MiniAppContext;
   isLoading: boolean;
   isSDKLoaded: boolean;
   isEthProviderAvailable: boolean;
-  actions: typeof sdk.actions | undefined;
-  haptics: typeof sdk.haptics | undefined;
-}
+  actions: typeof sdk.actions;
+  haptics: typeof sdk.haptics;
+};
 
 const FrameProviderContext = createContext<FrameContextValue | undefined>(
   undefined
 );
 
 export function useFrame() {
-  const context = useContext(FrameProviderContext);
-  if (context === undefined) {
-    throw new Error("useFrame must be used within a FrameProvider");
-  }
-  return context;
+  const ctx = useContext(FrameProviderContext);
+  if (!ctx) throw new Error("useFrame must be used within a FrameProvider");
+  return ctx;
 }
 
-interface FrameProviderProps {
-  children: ReactNode;
-}
+export function FrameProvider({ children }: { children: ReactNode }) {
+  const [context, setContext] = useState<Context.MiniAppContext>();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSDKLoaded, setIsSDKLoaded] = useState(false);
 
-export function FrameProvider({ children }: FrameProviderProps) {
-  const farcasterContextQuery = useQuery({
-    queryKey: ["farcaster-context"],
-    queryFn: async () => {
-      const context = await sdk.context;
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      setIsLoading(true);
       try {
-        await sdk.actions.ready();
-        return { context, isReady: true };
-      } catch (err) {
-        console.error("SDK initialization error:", err);
+        const ctx = await sdk.context;
+        if (!mounted) return;
+        setContext(ctx);
+        await sdk.actions.ready({ disableNativeGestures: true });
+        console.log("SDK actions.ready resolved successfully");
+        if (!mounted) return;
+        setIsSDKLoaded(true);
+      } catch (e) {
+        setIsSDKLoaded(false);
+      } finally {
+        setIsLoading(false);
       }
-      return { context, isReady: false };
-    },
-  });
-
-  const isReady = farcasterContextQuery.data?.isReady ?? false;
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <FrameProviderContext.Provider
       value={{
-        context: farcasterContextQuery.data?.context,
+        context,
+        isLoading,
+        isSDKLoaded,
+        isEthProviderAvailable: Boolean(sdk.wallet.ethProvider),
         actions: sdk.actions,
         haptics: sdk.haptics,
-        isLoading: farcasterContextQuery.isPending,
-        isSDKLoaded: isReady && Boolean(farcasterContextQuery.data?.context),
-        isEthProviderAvailable: Boolean(sdk.wallet.ethProvider),
       }}
     >
       {children}
