@@ -22,7 +22,7 @@
     "tags": ["bitcoin", "finance", "defi", "bridge"],
     "tagline": "Bridge with Garden Finance",
     "ogTitle": "Garden Finance",
-    "ogDescription": "Bridge BTC across Ethereum, Arbitrum, Base, Berachain, Hyperliquid & more. Swap BTC, wBTC, cbBTC, USDC, and LBTC with fast, trustless settlements via Garden.",
+    "ogDescription": "Bridge BTC across Ethereum, Arbitrum, Base, Berachain, Hyperliquid and more.",
     "ogImageUrl": "https://gardenapp.staging.jheb.com/metadata.png",
     "castShareUrl": "https://gardenapp.staging.jheb.com/metadata.png"
   }
