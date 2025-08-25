@@ -552,28 +552,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@coinbase/onchainkit@npm:^0.38.15":
-  version: 0.38.19
-  resolution: "@coinbase/onchainkit@npm:0.38.19"
-  dependencies:
-    "@farcaster/frame-sdk": "npm:^0.1.8"
-    "@farcaster/miniapp-wagmi-connector": "npm:^1.0.0"
-    "@tanstack/react-query": "npm:^5"
-    "@wagmi/core": "npm:^2.16.7"
-    clsx: "npm:^2.1.1"
-    graphql: "npm:^14 || ^15 || ^16"
-    graphql-request: "npm:^6.1.0"
-    qrcode: "npm:^1.5.4"
-    tailwind-merge: "npm:^2.3.0"
-    viem: "npm:^2.27.2"
-    wagmi: "npm:^2.16.0"
-  peerDependencies:
-    react: ^18 || ^19
-    react-dom: ^18 || ^19
-  checksum: 10c0/e3344124b93aeba7ce1c89930890fff04e122cfeac7a9a548e64e6867379e18205179f444d4479b17904adf3ac05e0640153e7e3baf39ce7d2d14ef089966e77
-  languageName: node
-  linkType: hard
-
 "@coinbase/wallet-sdk@npm:4.3.6":
   version: 4.3.6
   resolution: "@coinbase/wallet-sdk@npm:4.3.6"
@@ -587,19 +565,6 @@ __metadata:
     viem: "npm:^2.27.2"
     zustand: "npm:5.0.3"
   checksum: 10c0/ad5c7b124217ef191950c8c485d709d806f4a17eb039b1b8f325510cbc751b48c1e68acf8b44c3b24bb35682e44a6e3140eaba2d623166bf5a4e9dd4c4aef2e1
-  languageName: node
-  linkType: hard
-
-"@coinbase/wallet-sdk@npm:^4.3.4":
-  version: 4.3.7
-  resolution: "@coinbase/wallet-sdk@npm:4.3.7"
-  dependencies:
-    "@noble/hashes": "npm:^1.4.0"
-    clsx: "npm:^1.2.1"
-    eventemitter3: "npm:^5.0.1"
-    preact: "npm:^10.24.2"
-    viem: "npm:^2.27.2"
-  checksum: 10c0/cc7530fdacd0a5813bc1f1f648c8262ab4fa2c04981e98f4ba62ac075aa893a03a99f387ca37d93ac27499cd838fdef198ebafc49b73e8f94317d9c02a4eb694
   languageName: node
   linkType: hard
 
@@ -5493,7 +5458,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:^5, @tanstack/react-query@npm:^5.25.0, @tanstack/react-query@npm:^5.51.23":
+"@tanstack/react-query@npm:^5.25.0, @tanstack/react-query@npm:^5.51.23":
   version: 5.85.5
   resolution: "@tanstack/react-query@npm:5.85.5"
   dependencies:
@@ -6681,7 +6646,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wagmi/core@npm:2.19.0, @wagmi/core@npm:^2.16.7":
+"@wagmi/core@npm:2.19.0":
   version: 2.19.0
   resolution: "@wagmi/core@npm:2.19.0"
   dependencies:
@@ -11142,8 +11107,6 @@ __metadata:
   resolution: "garden-kiosk@workspace:."
   dependencies:
     "@chainflip/sdk": "npm:^1.8.3"
-    "@coinbase/onchainkit": "npm:^0.38.15"
-    "@coinbase/wallet-sdk": "npm:^4.3.4"
     "@coral-xyz/anchor": "npm:^0.31.1"
     "@eslint/js": "npm:^9.13.0"
     "@farcaster/frame-sdk": "npm:^0.1.8"
@@ -11477,19 +11440,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-request@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "graphql-request@npm:6.1.0"
-  dependencies:
-    "@graphql-typed-document-node/core": "npm:^3.2.0"
-    cross-fetch: "npm:^3.1.5"
-  peerDependencies:
-    graphql: 14 - 16
-  checksum: 10c0/f8167925a110e8e1de93d56c14245e7e64391dc8dce5002dd01bf24a3059f345d4ca1bb6ce2040e2ec78264211b0704e75da3e63984f0f74d2042f697a4e8cc6
-  languageName: node
-  linkType: hard
-
-"graphql@npm:^14 || ^15 || ^16, graphql@npm:^15.5.0 || ^16.0.0 || ^17.0.0, graphql@npm:^16.11.0":
+"graphql@npm:^15.5.0 || ^16.0.0 || ^17.0.0, graphql@npm:^16.11.0":
   version: 16.11.0
   resolution: "graphql@npm:16.11.0"
   checksum: 10c0/124da7860a2292e9acf2fed0c71fc0f6a9b9ca865d390d112bdd563c1f474357141501c12891f4164fe984315764736ad67f705219c62f7580681d431a85db88
@@ -14320,7 +14271,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"preact@npm:^10.16.0, preact@npm:^10.24.2":
+"preact@npm:^10.16.0":
   version: 10.27.1
   resolution: "preact@npm:10.27.1"
   checksum: 10c0/28c2862c94e1d69e81a476068e016aeca25a815874bb52cfbb31c3e78e0ab6799911a51cbdfcc9f8a3c183d81996a015dd7ac9850eaf90f2719d2f2e20d5b56f
@@ -16374,7 +16325,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwind-merge@npm:^2.3.0, tailwind-merge@npm:^2.4.0":
+"tailwind-merge@npm:^2.4.0":
   version: 2.6.0
   resolution: "tailwind-merge@npm:2.6.0"
   checksum: 10c0/fc8a5535524de9f4dacf1c16ab298581c7bb757d68a95faaf28942b1c555a619bba9d4c6726fe83986e44973b315410c1a5226e5354c30ba82353bd6d2288fa5
@@ -17733,7 +17684,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wagmi@npm:^2.12.5, wagmi@npm:^2.16.0":
+"wagmi@npm:^2.12.5":
   version: 2.16.4
   resolution: "wagmi@npm:2.16.4"
   dependencies:
