@@ -1,29 +1,29 @@
 {
   "accountAssociation": {
-    "header": "eyJmaWQiOjEyNTI2NDUsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhlNDE3OTUyQThjNEY0MjM5OUFBMzlGQTIwN0Q4Q0JhMDk0OEY1NTU5In0",
-    "payload": "eyJkb21haW4iOiJnYXJkZW5hcHAuc3RhZ2luZy5qaGViLmNvbSJ9",
-    "signature": "MHg4NjlhYTRjNWQyZWQwODMzNGJkMTBjZDVhMjhhMjhlY2QyYTQ4ZDBiZDQ1OTc0OTJiYTg3N2M3MGVkNTkwOTQ4MGYzZGVkOWZlY2ViNDFjNGNiMjE2YzliNjMwYzZkY2JhMGY1OWViZWY1ZWM4NzcyZTBmMWM4NmE1ZjdiZWFmMjFi"
+    "header": "eyJmaWQiOjExMTMwNjYsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHg4NTg2RTc4MjMwNTlBODFjQTUwZWZmYzk3YmIyODczODA1MERkZUUwIn0",
+    "payload": "eyJkb21haW4iOiJhcHAuZ2FyZGVuLmZpbmFuY2UifQ",
+    "signature": "MHg1MmVmMWQ0NGE5NWRiODEyNWQxNGM4ZGViYTFjZmRlOWFkOWM3YTMyN2ViNWMxODU3NDhlOTVhMTY0ZjNjYjYwNTFjNzdlMWM3OGE3ZmMyOTE2NjdkNTNkODMxNTY4NWNiZmViNjEwZDI4NDE2OWZjMWMxYTU5NTZjMGZhNzkzNDFj"
   },
   "frame": {
     "name": "Garden Finance",
     "version": "next",
-    "iconUrl": "https://gardenapp.staging.jheb.com/favicon.svg",
-    "homeUrl": "https://gardenapp.staging.jheb.com",
-    "imageUrl": "https://gardenapp.staging.jheb.com/metadata.png",
+    "iconUrl": "https://app.garden.finance/favicon.svg",
+    "homeUrl": "https://app.garden.finance",
+    "imageUrl": "https://app.garden.finance/metadata.png",
     "buttonTitle": "Bridge with Garden Finance",
-    "splashImageUrl": "https://gardenapp.staging.jheb.com/icon.svg",
+    "splashImageUrl": "https://app.garden.finance/icon.svg",
     "splashBackgroundColor": "#E4EBF2",
-    "webhookUrl": "https://gardenapp.staging.jheb.com/api/webhook",
+    "webhookUrl": "https://app.garden.finance/api/webhook",
     "subtitle": "Bridge with Garden Finance",
     "primaryCategory": "finance",
     "description": "Move Bitcoin. without. trust. Garden is the fastest and most cost-efficient way to move native Bitcoin between chains, without giving up custody.",
-    "screenshotUrls": ["https://gardenapp.staging.jheb.com/preview.png"],
-    "heroImageUrl": "https://gardenapp.staging.jheb.com/metadata.png",
+    "screenshotUrls": ["https://app.garden.finance/preview.png"],
+    "heroImageUrl": "https://app.garden.finance/metadata.png",
     "tags": ["bitcoin", "finance", "defi", "bridge"],
     "tagline": "Bridge with Garden Finance",
     "ogTitle": "Garden Finance",
     "ogDescription": "Bridge BTC across Ethereum, Arbitrum, Base, Berachain, Hyperliquid and more.",
-    "ogImageUrl": "https://gardenapp.staging.jheb.com/metadata.png",
-    "castShareUrl": "https://gardenapp.staging.jheb.com/metadata.png"
+    "ogImageUrl": "https://app.garden.finance/metadata.png",
+    "castShareUrl": "https://app.garden.finance/metadata.png"
   }
 }
