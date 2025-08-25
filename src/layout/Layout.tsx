@@ -6,7 +6,6 @@ import { Modal } from "../components/modal/Modal";
 import { Notification } from "../common/Notification";
 import { ViewPortListener } from "../common/ViewPortListener";
 import { assetInfoStore } from "../store/assetInfoStore";
-import { MiniAppProvider } from "./MiniAppContextProvider";
 import { network, THEMES } from "../constants/constants";
 import { viewPortStore } from "../store/viewPortStore";
 import { notificationStore } from "../store/notificationStore";
@@ -52,9 +51,5 @@ const LayoutContent: FC<LayoutProps> = ({ children }) => {
 };
 
 export const Layout: FC<LayoutProps> = ({ children }) => {
-  return (
-    <MiniAppProvider>
-      <LayoutContent>{children}</LayoutContent>
-    </MiniAppProvider>
-  );
+  return <LayoutContent>{children}</LayoutContent>;
 };
