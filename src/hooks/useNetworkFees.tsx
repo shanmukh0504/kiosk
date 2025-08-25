@@ -1,19 +1,27 @@
 import { useEffect } from "react";
 import { constructOrderPair } from "@gardenfi/core";
-import { calculateBitcoinNetworkFees } from "../utils/getNetworkFees";
+import {
+  calculateBitcoinNetworkFees,
+  getSuiNetworkFee,
+} from "../utils/getNetworkFees";
 import { formatAmount } from "../utils/utils";
-import { isBitcoin } from "@gardenfi/orderbook";
+import { isBitcoin, isSui } from "@gardenfi/orderbook";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { swapStore } from "../store/swapStore";
-import { getBitcoinNetwork } from "../constants/constants";
+import { getBitcoinNetwork, SUI_SOLVER_ADDRESS } from "../constants/constants";
 import logger from "../utils/logger";
 
 export const useNetworkFees = () => {
-  const { strategies } = assetInfoStore();
-  const { setNetworkFees, setIsNetworkFeesLoading, inputAsset, outputAsset } =
-    swapStore();
+  const { strategies, fiatData } = assetInfoStore();
+  const {
+    setNetworkFees,
+    setIsNetworkFeesLoading,
+    inputAsset,
+    outputAsset,
+    inputAmount,
+  } = swapStore();
 
-  const network = getBitcoinNetwork();
+  const bitcoin_network = getBitcoinNetwork();
 
   useEffect(() => {
     if (!inputAsset || !outputAsset || !strategies.val) return;
@@ -32,15 +40,31 @@ export const useNetworkFees = () => {
               outputAsset.atomicSwapAddress
             )
           ];
-        if (isBitcoin(inputAsset.chain) || isBitcoin(outputAsset.chain)) {
-          const fees = await calculateBitcoinNetworkFees(
-            network,
-            isBitcoin(inputAsset.chain) ? inputAsset : outputAsset
+
+        const hasBitcoinInput = isBitcoin(inputAsset.chain);
+        const hasBitcoinOutput = isBitcoin(outputAsset.chain);
+        const hasSuiInput = isSui(inputAsset.chain);
+
+        let totalFees = strategy.fixed_fee;
+
+        if (hasBitcoinInput || hasBitcoinOutput) {
+          const bitcoinFees = await calculateBitcoinNetworkFees(
+            bitcoin_network,
+            hasBitcoinInput ? inputAsset : outputAsset
           );
-          setNetworkFees(formatAmount(fees + strategy.fixed_fee, 0));
-        } else {
-          setNetworkFees(formatAmount(strategy.fixed_fee, 0));
+          totalFees += bitcoinFees;
         }
+
+        if (hasSuiInput) {
+          const suiFees = await getSuiNetworkFee(
+            SUI_SOLVER_ADDRESS,
+            inputAsset,
+            inputAmount,
+            fiatData
+          );
+          totalFees += suiFees;
+        }
+        setNetworkFees(formatAmount(totalFees, 0));
       } catch (error) {
         logger.error("failed to fetch network fees ❌", error);
         setNetworkFees(0);
@@ -55,5 +79,12 @@ export const useNetworkFees = () => {
     return () => {
       clearInterval(intervalId);
     };
-  }, [network, inputAsset, outputAsset, strategies.val]);
+  }, [
+    bitcoin_network,
+    inputAsset,
+    outputAsset,
+    strategies.val,
+    inputAmount,
+    fiatData,
+  ]);
 };
