@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from "react";
 import sdk, { type Context } from "@farcaster/frame-sdk";
-import FrameNotificationDetails from "@farcaster/frame-sdk";
 import { createStore } from "mipd";
 import React from "react";
 
@@ -111,9 +110,19 @@ export function FrameProvider({ children }: { children: React.ReactNode }) {
   const { isSDKLoaded, context } = useFrame();
 
   if (!isSDKLoaded) {
-    return <div>Loading...</div>;
+    return (
+      <div className="relative z-10 h-screen w-screen bg-[#E4EBF2]">
+        <div
+          className="fixed bottom-0 -z-10 h-full max-h-[612px] w-screen origin-bottom overflow-hidden opacity-60"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(188, 237, 220, 0) 0%, #BCEDDC 100%)",
+          }}
+        />
+        <div className="loader-shine absolute left-1/2 top-1/2 h-[264px] w-[424px] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl bg-gray-200/50"></div>
+      </div>
+    );
   }
-
   return (
     <FrameContext.Provider value={{ isSDKLoaded, context }}>
       {children}

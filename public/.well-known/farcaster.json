@@ -4,33 +4,26 @@
     "payload": "eyJkb21haW4iOiJnYXJkZW5hcHAuc3RhZ2luZy5qaGViLmNvbSJ9",
     "signature": "MHg4NjlhYTRjNWQyZWQwODMzNGJkMTBjZDVhMjhhMjhlY2QyYTQ4ZDBiZDQ1OTc0OTJiYTg3N2M3MGVkNTkwOTQ4MGYzZGVkOWZlY2ViNDFjNGNiMjE2YzliNjMwYzZkY2JhMGY1OWViZWY1ZWM4NzcyZTBmMWM4NmE1ZjdiZWFmMjFi"
   },
-    "frame": {
-      "name": "Garden Finance",
-      "version": "next",
-      "iconUrl": "https://gardenapp.staging.jheb.com/favicon.svg",
-      "homeUrl": "https://gardenapp.staging.jheb.com",
-      "imageUrl": "https://gardenapp.staging.jheb.com/metadata.png",
-      "buttonTitle": "Bridge with Garden Finance",
-      "splashImageUrl": "https://gardenapp.staging.jheb.com/metadata.png",
-      "splashBackgroundColor": "#FFFFFF",
-      "webhookUrl": "https://gardenapp.staging.jheb.com/api/webhook",
-      "subtitle": "Bridge with Garden Finance",
-      "primaryCategory": "finance",
-      "description": "Move Bitcoin. without. trust. Garden is the fastest and most cost-efficient way to move native Bitcoin between chains, without giving up custody.",
-      "screenshotUrls": [
-        "https://gardenapp.staging.jheb.com/metadata.png"
-      ],
-      "heroImageUrl": "https://gardenapp.staging.jheb.com/metadata.png",
-      "tags": [
-        "bitcoin",
-        "finance",
-        "defi",
-        "bridge"
-      ],
-      "tagline": "Bridge with Garden Finance",
-      "ogTitle": "Garden Finance",
-      "ogDescription": "Bridge with Garden Finance",
-      "ogImageUrl": "https://gardenapp.staging.jheb.com/metadata.png",
-      "castShareUrl": "https://gardenapp.staging.jheb.com/metadata.png"
-    }
+  "frame": {
+    "name": "Garden Finance",
+    "version": "next",
+    "iconUrl": "https://gardenapp.staging.jheb.com/favicon.svg",
+    "homeUrl": "https://gardenapp.staging.jheb.com",
+    "imageUrl": "https://gardenapp.staging.jheb.com/metadata.png",
+    "buttonTitle": "Bridge with Garden Finance",
+    "splashImageUrl": "https://gardenapp.staging.jheb.com/favicon.svg",
+    "splashBackgroundColor": "#FFFFFF",
+    "webhookUrl": "https://gardenapp.staging.jheb.com/api/webhook",
+    "subtitle": "Bridge with Garden Finance",
+    "primaryCategory": "finance",
+    "description": "Move Bitcoin. without. trust. Garden is the fastest and most cost-efficient way to move native Bitcoin between chains, without giving up custody.",
+    "screenshotUrls": ["https://gardenapp.staging.jheb.com/metadata.png"],
+    "heroImageUrl": "https://gardenapp.staging.jheb.com/metadata.png",
+    "tags": ["bitcoin", "finance", "defi", "bridge"],
+    "tagline": "Bridge with Garden Finance",
+    "ogTitle": "Garden Finance",
+    "ogDescription": "Bridge with Garden Finance",
+    "ogImageUrl": "https://gardenapp.staging.jheb.com/metadata.png",
+    "castShareUrl": "https://gardenapp.staging.jheb.com/metadata.png"
+  }
 }
