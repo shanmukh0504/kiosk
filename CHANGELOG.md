@@ -8,7 +8,7 @@
 
 ### Fixed
 
-- Disable Core chain in output-asset on Phantom wallet.
+- Disable Core chain in output-asset on Phantom and Keplr wallet .
 
 ## [1.1.2]
 
