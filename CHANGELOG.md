@@ -6,6 +6,10 @@
 
 - Added support for core chain.
 
+### Fixed
+
+- Disable Core chain in output-asset on Phantom wallet.
+
 ## [1.1.2]
 
 ### Fixed
