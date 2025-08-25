@@ -93,9 +93,6 @@ export const CreateSwap = () => {
     if (!WALLET_SUPPORTED_CHAINS[connector.id]) return true;
 
     if (outputAsset.chain === "core") {
-      console.log(
-        WALLET_SUPPORTED_CHAINS[connector.id].includes(outputAsset.chain)
-      );
       return WALLET_SUPPORTED_CHAINS[connector.id].includes(outputAsset.chain);
     }
 
