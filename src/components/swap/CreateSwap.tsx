@@ -91,6 +91,11 @@ export const CreateSwap = () => {
   const isChainSupported = useMemo(() => {
     if (!connector || !inputAsset || !outputAsset) return true;
     if (!WALLET_SUPPORTED_CHAINS[connector.id]) return true;
+
+    if (connector.id === "app.phantom" && outputAsset.chain === "core") {
+      return false;
+    }
+
     if (
       isBitcoin(inputAsset.chain) ||
       isStarknet(inputAsset.chain) ||
