@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.4]
+
+### Added
+
+- Made required changes to support our kiosk app to support coinbase mini app
+
 ## [1.1.3]
 
 ### Added
