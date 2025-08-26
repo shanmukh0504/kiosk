@@ -14,7 +14,7 @@ type LayoutProps = {
   children: ReactNode;
 };
 
-export const Layout: FC<LayoutProps> = ({ children }) => {
+const LayoutContent: FC<LayoutProps> = ({ children }) => {
   const { fetchAndSetAssetsAndChains } = assetInfoStore();
   const { isMobile } = viewPortStore();
   const theme = getCurrentTheme();
@@ -48,4 +48,8 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
       </div>
     </div>
   );
+};
+
+export const Layout: FC<LayoutProps> = ({ children }) => {
+  return <LayoutContent>{children}</LayoutContent>;
 };

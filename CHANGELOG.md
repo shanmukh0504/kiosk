@@ -4,6 +4,7 @@
 
 ### Added
 
+- Made required changes to support our kiosk app to support coinbase mini app
 - Added support for core chain.
 
 ## [1.1.2]
