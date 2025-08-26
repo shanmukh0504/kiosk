@@ -1,11 +1,18 @@
 # Changelog
 
+## [1.1.3]
+
+### Added
+
+- Added support for core chain.
+
 ## [1.1.2]
 
 ### Fixed
 
-- Fixed from bitcoin orders fetch issue
-- Changed and improved the connect, available wallets handling.
+- Updated @gardenfi version to latest version.
+- Remove unused Code.
+- Change XIcon from solid to outline.
 
 ## [1.1.1]
 
@@ -18,6 +25,7 @@
 - Updated the asset routes in competitor savings constant.
 - Search functionality in AssetSelector component.
 - Updated network fees logic for Sui chain.
+- Updated GradientScroll height for UX.
 
 ## [1.1.0]
 
