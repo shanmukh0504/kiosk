@@ -7,6 +7,11 @@
 - Made required changes to support our kiosk app to support coinbase mini app
 - Added support for core chain.
 
+### Fixed
+
+- Fixed from bitcoin orders fetch issue
+- Changed and improved the connect, available wallets handling.
+
 ## [1.1.2]
 
 ### Fixed
