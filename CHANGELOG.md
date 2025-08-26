@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.4]
+
+### Fixed
+
+- Rate conversion and display token price for inputAsset in place of rate.
+
 ## [1.1.3]
 
 ### Added

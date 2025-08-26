@@ -236,7 +236,10 @@ export const useSwap = () => {
           );
           // Add network fee to output amount before calculating rate
           let outputAmountWithFee = Number(quoteAmountInDecimals);
-          if (!isBitcoin(fromAsset.chain) && !isBitcoin(toAsset.chain)) {
+          if (
+            fromAsset.symbol.includes("USD") &&
+            toAsset.symbol.includes("USD")
+          ) {
             outputAmountWithFee = Number(quoteAmountInDecimals) + networkFees;
           }
           const rate = outputAmountWithFee / Number(amount);

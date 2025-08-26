@@ -21,11 +21,13 @@ const RateDisplay = ({
   inputAsset,
   outputAsset,
   formattedRate,
+  formattedTokenPrice,
   className = "",
 }: {
   inputAsset?: Asset;
   outputAsset?: Asset;
-  formattedRate: number;
+  formattedRate?: number;
+  formattedTokenPrice?: number;
   className?: string;
 }) => (
   <div className={`flex min-w-fit items-center gap-1`}>
@@ -41,7 +43,8 @@ const RateDisplay = ({
       weight="regular"
       className={`!text-nowrap ${className}`}
     >
-      {formattedRate} {outputAsset?.symbol}
+      {formattedRate && `${formattedRate} ${outputAsset?.symbol}`}
+      {formattedTokenPrice && `$${formattedTokenPrice}`}
     </Typography>
   </div>
 );
@@ -55,6 +58,7 @@ export const FeesAndRateDetails = () => {
     inputAsset,
     outputAsset,
     rate,
+    tokenPrices,
     networkFees,
     isNetworkFeesLoading,
     showComparisonHandler,
@@ -75,6 +79,11 @@ export const FeesAndRateDetails = () => {
   const formattedRate = useMemo(
     () => formatAmount(rate, 0, isBitcoinChains ? 7 : 3),
     [isBitcoinChains, rate]
+  );
+
+  const formattedTokenPrice = useMemo(
+    () => formatAmount(tokenPrices.input, 0, 2),
+    [tokenPrices.input]
   );
 
   const refundAddress = useMemo(
@@ -148,7 +157,7 @@ export const FeesAndRateDetails = () => {
                 <RateDisplay
                   inputAsset={inputAsset}
                   outputAsset={outputAsset}
-                  formattedRate={formattedRate}
+                  formattedTokenPrice={formattedTokenPrice}
                   className="!text-mid-grey"
                 />
               </motion.div>
@@ -166,7 +175,7 @@ export const FeesAndRateDetails = () => {
                 <RateDisplay
                   inputAsset={inputAsset}
                   outputAsset={outputAsset}
-                  formattedRate={formattedRate}
+                  formattedTokenPrice={formattedTokenPrice}
                 />
               </motion.div>
             ) : (
@@ -183,12 +192,12 @@ export const FeesAndRateDetails = () => {
                     className="!text-nowrap"
                   >
                     {fallbackNetworkFees === 0 ? (
-                        "Free"
-                      ) : (
-                        <span className="flex items-center">
-                          ${formatAmount(fallbackNetworkFees, 0, 2)}
-                        </span>
-                      )}
+                      "Free"
+                    ) : (
+                      <span className="flex items-center">
+                        ${formatAmount(fallbackNetworkFees, 0, 2)}
+                      </span>
+                    )}
                   </Typography>
                 </div>
               </motion.div>
