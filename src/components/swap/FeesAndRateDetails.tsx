@@ -188,7 +188,7 @@ export const FeesAndRateDetails = () => {
                   <GasStationIcon className="h-3 w-3" />
                   <Typography
                     size="h5"
-                    weight="medium"
+                    weight="regular"
                     className="!text-nowrap"
                   >
                     {fallbackNetworkFees === 0 ? (
