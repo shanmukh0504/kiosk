@@ -236,10 +236,7 @@ export const useSwap = () => {
           );
           // Add network fee to output amount before calculating rate
           let outputAmountWithFee = Number(quoteAmountInDecimals);
-          if (
-            fromAsset.symbol.includes("USD") &&
-            toAsset.symbol.includes("USD")
-          ) {
+          if (fromAsset.decimals === 6 && toAsset.decimals === 6) {
             outputAmountWithFee = Number(quoteAmountInDecimals) + networkFees;
           }
           const rate = outputAmountWithFee / Number(amount);
