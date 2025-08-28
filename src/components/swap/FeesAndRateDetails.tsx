@@ -9,7 +9,7 @@ import { BTC, swapStore } from "../../store/swapStore";
 
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { Asset, isBitcoin, isSolana, isSui } from "@gardenfi/orderbook";
+import { Asset, isBitcoin, isSolana } from "@gardenfi/orderbook";
 import { motion, AnimatePresence } from "framer-motion";
 import { delayedFadeAnimation } from "../../animations/animations";
 import { SwapSavingsAndAddresses } from "./SwapSavingsAndAddresses";
