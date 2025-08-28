@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.4]
+
+### Fixed
+
+- Fixed fallback network fees handling
+
 ## [1.1.3]
 
 ### Added
