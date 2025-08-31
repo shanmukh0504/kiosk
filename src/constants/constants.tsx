@@ -215,3 +215,6 @@ export const SOCIAL_LINKS = {
 
 export const SUI_SOLVER_ADDRESS =
   "0x6e416201f2e6547293f5cd52d4a420bf26ceda4d3ef01283ab720d9fa927b5c2";
+
+export const SUI_DEFAULT_NETWORK_FEE = 0.03;
+export const BITCOIN_DEFAULT_NETWORK_FEE = 0.49;

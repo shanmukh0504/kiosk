@@ -9,7 +9,7 @@ import { BTC, swapStore } from "../../store/swapStore";
 
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { Asset, isBitcoin, isSolana, isSui } from "@gardenfi/orderbook";
+import { Asset, isBitcoin, isSolana } from "@gardenfi/orderbook";
 import { motion, AnimatePresence } from "framer-motion";
 import { delayedFadeAnimation } from "../../animations/animations";
 import { SwapSavingsAndAddresses } from "./SwapSavingsAndAddresses";
@@ -54,26 +54,11 @@ export const FeesAndRateDetails = () => {
   const [isHovered, setIsHovered] = useState(false);
   const targetRef = useRef<HTMLDivElement>(null);
 
-  const {
-    inputAsset,
-    outputAsset,
-    rate,
-    tokenPrices,
-    networkFees,
-    isNetworkFeesLoading,
-    showComparisonHandler,
-  } = swapStore();
+  const { inputAsset, outputAsset, rate, networkFees, showComparisonHandler, tokenPrices } =
+    swapStore();
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
   const { address } = useEVMWallet();
-
-  const fallbackNetworkFees = useMemo(() => {
-    return !isNetworkFeesLoading && networkFees !== undefined
-      ? networkFees
-      : inputAsset && isSui(inputAsset?.chain)
-        ? 0.03
-        : 0.49;
-  }, [networkFees, isNetworkFeesLoading]);
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
   const formattedRate = useMemo(
@@ -191,11 +176,11 @@ export const FeesAndRateDetails = () => {
                     weight="regular"
                     className="!text-nowrap"
                   >
-                    {fallbackNetworkFees === 0 ? (
+                    {networkFees === 0 ? (
                       "Free"
                     ) : (
                       <span className="flex items-center">
-                        ${formatAmount(fallbackNetworkFees, 0, 2)}
+                        ${formatAmount(networkFees, 0, 2)}
                       </span>
                     )}
                   </Typography>
@@ -226,7 +211,7 @@ export const FeesAndRateDetails = () => {
             refundAddress={refundAddress}
             receiveAddress={receiveAddress}
             showComparison={showComparisonHandler}
-            networkFeesValue={formatAmount(fallbackNetworkFees, 0, 2)}
+            networkFeesValue={formatAmount(networkFees, 0, 2)}
           />
         )}
       </AnimatePresence>

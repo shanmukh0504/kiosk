@@ -13,39 +13,39 @@ type WorkingRPCResult = {
 };
 
 export const testRPC = async (
-  rpcUrl: string,
-  timeoutMs: number = 1000
+  rpcUrl: string
+  // timeoutMs: number = 1000
 ): Promise<RPCValidationResult> => {
-  const startTime = Date.now();
+  // const startTime = Date.now();
 
   try {
-    const response = await axios.post(
-      rpcUrl,
-      {
-        jsonrpc: "2.0",
-        method: "eth_blockNumber",
-        params: [],
-        id: 1,
-      },
-      {
-        timeout: timeoutMs,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    // const response = await axios.post(
+    //   rpcUrl,
+    //   {
+    //     jsonrpc: "2.0",
+    //     method: "eth_blockNumber",
+    //     params: [],
+    //     id: 1,
+    //   },
+    //   {
+    //     timeout: timeoutMs,
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //   }
+    // );
 
-    const responseTime = Date.now() - startTime;
+    // const responseTime = Date.now() - startTime;
 
-    const { result } = response.data;
-    if (typeof result === "string" && result.startsWith("0x")) {
-      return {
-        url: rpcUrl,
-        isWorking: true,
-        blockNumber: parseInt(result, 16),
-        responseTime,
-      };
-    }
+    // const { result } = response.data;
+    // if (typeof result === "string" && result.startsWith("0x")) {
+    //   return {
+    //     url: rpcUrl,
+    //     isWorking: true,
+    //     blockNumber: parseInt(result, 16),
+    //     responseTime,
+    //   };
+    // }
 
     return { url: rpcUrl, isWorking: false };
   } catch {

@@ -2,15 +2,20 @@
 
 ## [1.1.4]
 
-### Fixed
-
+- Fixed fallback network fees handling
 - Rate conversion and display token price for inputAsset in place of rate.
 
 ## [1.1.3]
 
 ### Added
 
+- Made required changes to support our kiosk app to support coinbase mini app
 - Added support for core chain.
+
+### Fixed
+
+- Fixed from bitcoin orders fetch issue
+- Changed and improved the connect, available wallets handling.
 
 ## [1.1.2]
 
