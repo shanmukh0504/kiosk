@@ -54,8 +54,14 @@ export const FeesAndRateDetails = () => {
   const [isHovered, setIsHovered] = useState(false);
   const targetRef = useRef<HTMLDivElement>(null);
 
-  const { inputAsset, outputAsset, rate, networkFees, showComparisonHandler, tokenPrices } =
-    swapStore();
+  const {
+    inputAsset,
+    outputAsset,
+    rate,
+    networkFees,
+    showComparisonHandler,
+    tokenPrices,
+  } = swapStore();
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
   const { address } = useEVMWallet();
