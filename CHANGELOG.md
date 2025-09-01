@@ -1,14 +1,23 @@
 # Changelog
 
+## [1.1.4]
+
+### Fixed
+
+- Fixed fallback network fees handling
+- Disable Core chain in output-asset on Phantom, Keplr and Leap wallet.
+
 ## [1.1.3]
 
 ### Added
 
+- Made required changes to support our kiosk app to support coinbase mini app
 - Added support for core chain.
 
 ### Fixed
 
-- Disable Core chain in output-asset on Phantom, Keplr and Leap wallet.
+- Fixed from bitcoin orders fetch issue
+- Changed and improved the connect, available wallets handling.
 
 ## [1.1.2]
 

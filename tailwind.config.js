@@ -40,10 +40,15 @@ export default {
           "0%": { transform: "translateX(-100%) skewX(135deg)", opacity: 1 },
           "100%": { left: "100%", transform: "skewX(135deg)", opacity: 1 },
         },
+        "loader-shine": {
+          "0%": { transform: "translateX(-120%) skewX(135deg)", opacity: 1 },
+          "100%": { left: "120%", transform: "skewX(135deg)", opacity: 1 },
+        },
       },
       animation: {
         shine: `shine 1s ${cubicInOut}`,
         "navbar-shine": `navbar-shine 2s ${customCubic} infinite`,
+        "loader-shine": `loader-shine 2s ${customCubic} infinite`,
       },
       boxShadow: {
         custom: "0px 0px 16px #554B6A14",

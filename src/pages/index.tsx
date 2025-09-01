@@ -26,7 +26,6 @@ function App() {
 
   useEffect(() => {
     fetchAndSetRPCs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
