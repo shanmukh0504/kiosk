@@ -2,7 +2,9 @@
 
 ## [1.1.4]
 
-- Fixed fallback network fees handling
+- Fixed fallback network fees handling.
+- Progress steps for refunded orders.
+- reduced fallback rpc calls for balance fetching.
 - Rate conversion and display token price for inputAsset in place of rate.
 
 ## [1.1.3]
