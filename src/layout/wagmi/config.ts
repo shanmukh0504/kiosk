@@ -19,8 +19,9 @@ import {
   corn,
   bscTestnet,
 } from "wagmi/chains";
+import { farcasterMiniApp as miniAppConnector } from "@farcaster/miniapp-wagmi-connector";
 
-import { injected, metaMask } from "wagmi/connectors";
+import { injected, metaMask, coinbaseWallet } from "wagmi/connectors";
 
 declare global {
   interface Window {
@@ -121,7 +122,17 @@ export const KeplrConnector = injected({
 
 export const config = createConfig({
   chains: SupportedChains,
-  connectors: [injected(), metaMask(), leapConnector, KeplrConnector],
+  connectors: [
+    injected(),
+    metaMask(),
+    coinbaseWallet({
+      appName: "Garden Finance",
+      appLogoUrl: "https://garden-finance.imgix.net/token-images/seed.svg",
+    }),
+    leapConnector,
+    KeplrConnector,
+    miniAppConnector(),
+  ],
   transports: {
     [mainnet.id]: http(),
     [arbitrum.id]: http(),

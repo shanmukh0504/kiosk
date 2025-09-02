@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.1.4]
+
+### Fixed
+
+- Fixed fallback network fees handling.
+- Progress steps for refunded orders.
+- reduced fallback rpc calls for balance fetching.
+
+## [1.1.3]
+
+### Added
+
+- Made required changes to support our kiosk app to support coinbase mini app
+- Added support for core chain.
+
+### Fixed
+
+- Fixed from bitcoin orders fetch issue
+- Changed and improved the connect, available wallets handling.
+
 ## [1.1.2]
 
 ### Fixed
@@ -7,8 +27,6 @@
 - Updated @gardenfi version to latest version.
 - Remove unused Code.
 - Change XIcon from solid to outline.
-- Progress steps for refunded orders.
-- reduced fallback rpc calls for balance fetching.
 
 ## [1.1.1]
 

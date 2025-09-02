@@ -1,0 +1,29 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjExMTMwNjYsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHg4NTg2RTc4MjMwNTlBODFjQTUwZWZmYzk3YmIyODczODA1MERkZUUwIn0",
+    "payload": "eyJkb21haW4iOiJhcHAuZ2FyZGVuLmZpbmFuY2UifQ",
+    "signature": "MHg1MmVmMWQ0NGE5NWRiODEyNWQxNGM4ZGViYTFjZmRlOWFkOWM3YTMyN2ViNWMxODU3NDhlOTVhMTY0ZjNjYjYwNTFjNzdlMWM3OGE3ZmMyOTE2NjdkNTNkODMxNTY4NWNiZmViNjEwZDI4NDE2OWZjMWMxYTU5NTZjMGZhNzkzNDFj"
+  },
+  "frame": {
+    "name": "Garden Finance",
+    "version": "next",
+    "iconUrl": "https://app.garden.finance/favicon.svg",
+    "homeUrl": "https://app.garden.finance",
+    "imageUrl": "https://app.garden.finance/metadata.png",
+    "buttonTitle": "Bridge with Garden Finance",
+    "splashImageUrl": "https://app.garden.finance/icon.svg",
+    "splashBackgroundColor": "#E4EBF2",
+    "webhookUrl": "https://app.garden.finance/api/webhook",
+    "subtitle": "Bridge with Garden Finance",
+    "primaryCategory": "finance",
+    "description": "Move Bitcoin. without. trust. Garden is the fastest and most cost-efficient way to move native Bitcoin between chains, without giving up custody.",
+    "screenshotUrls": ["https://app.garden.finance/preview.png"],
+    "heroImageUrl": "https://app.garden.finance/metadata.png",
+    "tags": ["bitcoin", "finance", "defi", "bridge"],
+    "tagline": "Bridge with Garden Finance",
+    "ogTitle": "Garden Finance",
+    "ogDescription": "Bridge BTC across Ethereum, Arbitrum, Base, Berachain, Hyperliquid and more.",
+    "ogImageUrl": "https://app.garden.finance/metadata.png",
+    "castShareUrl": "https://app.garden.finance/metadata.png"
+  }
+}
