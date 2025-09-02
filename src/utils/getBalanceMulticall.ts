@@ -68,6 +68,8 @@ export const getBalanceMulticall = async (
       transport:
         viemChain.id === 80094 || viemChain.id === 80084
           ? http("https://rpc.berachain-apis.com")
+          : viemChain.id === 1
+            ? http("https://eth-mainnet.nodereal.io/v1/1659dfb40aa24bbb8153a677b98064d7")
           : http(),
       chain: viemChain,
     });
