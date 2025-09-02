@@ -14,7 +14,6 @@ import { Link } from "react-router-dom";
 import { Tooltip } from "../../common/Tooltip";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { formatAmount, getOrderPair } from "../../utils/utils";
-import { rpcStore } from "../../store/rpcStore";
 
 export const Stake: FC = () => {
   const { isConnected, address } = useEVMWallet();
@@ -31,7 +30,6 @@ export const Stake: FC = () => {
     fetchAndSetRewards,
   } = stakeStore();
   const { balances, fetchAndSetEvmBalances } = assetInfoStore();
-  const { workingRPCs } = rpcStore();
   const tooltipId = useId();
 
   const balance =
@@ -104,14 +102,14 @@ export const Stake: FC = () => {
     if (!address) return;
 
     const updateBalances = async () => {
-      await fetchAndSetEvmBalances(address, workingRPCs, asset);
+      await fetchAndSetEvmBalances(address, asset);
     };
 
     updateBalances();
     const interval = setInterval(updateBalances, 7000);
 
     return () => clearInterval(interval);
-  }, [address, asset, fetchAndSetEvmBalances, workingRPCs]);
+  }, [address, asset, fetchAndSetEvmBalances]);
 
   return (
     <div className="mb-8 mt-10 flex flex-col gap-6 sm:mb-16">

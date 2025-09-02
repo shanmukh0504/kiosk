@@ -4,7 +4,9 @@
 
 ### Fixed
 
-- Fixed fallback network fees handling
+- Fixed fallback network fees handling.
+- Progress steps for refunded orders.
+- reduced fallback rpc calls for balance fetching.
 
 ## [1.1.3]
 
