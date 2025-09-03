@@ -7,7 +7,7 @@
 - Fixed fallback network fees handling.
 - Progress steps for refunded orders.
 - Reduced fallback rpc calls for balance fetching.
-- Fixed favicon in safari browser.
+- Fixed favicon in safari browser by updating the format to .png.
 
 ## [1.1.3]
 
