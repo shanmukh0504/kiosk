@@ -41,6 +41,7 @@
 - Search functionality in AssetSelector component.
 - Updated network fees logic for Sui chain.
 - Updated GradientScroll height for UX.
+- Updated the script url
 
 ## [1.1.0]
 
