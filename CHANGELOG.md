@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.1.4]
+
+### Fixed
+
+- Fixed fallback network fees handling.
+- Progress steps for refunded orders.
+- Reduced fallback rpc calls for balance fetching.
+- Fixed favicon in safari browser by updating the format to .png.
+
+## [1.1.3]
+
+### Added
+
+- Made required changes to support our kiosk app to support coinbase mini app
+- Added support for core chain.
+
+### Fixed
+
+- Fixed from bitcoin orders fetch issue
+- Changed and improved the connect, available wallets handling.
+
+## [1.1.2]
+
+### Fixed
+
+- Updated @gardenfi version to latest version.
+- Remove unused Code.
+- Change XIcon from solid to outline.
+
 ## [1.1.1]
 
 ### Added
@@ -11,6 +40,7 @@
 - Updated the asset routes in competitor savings constant.
 - Search functionality in AssetSelector component.
 - Updated network fees logic for Sui chain.
+- Updated GradientScroll height for UX.
 - Updated the script url
 
 ## [1.1.0]

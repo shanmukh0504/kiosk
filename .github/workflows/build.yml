@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted-amd64
     steps:
       - uses: actions/checkout@v3
         with:
@@ -29,7 +29,7 @@ jobs:
           NODE_OPTIONS: "--max-old-space-size=8192"
 
   check-changelog:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted-amd64
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3

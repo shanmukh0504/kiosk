@@ -7,6 +7,7 @@
       content="width=device-width, initial-scale=1, maximum-scale=1"
     />
 
+    <title><!--meta-title--></title>
     <meta name="description" content="<!--meta-description-->" />
     <meta name="keywords" content="<!--meta-keywords-->" />
 
@@ -20,10 +21,37 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="garden.finance" />
     <meta name="twitter:creator" content="@garden_finance" />
+    <meta name="twitter:image" content="<!--meta-twt-image-->" />
+
+    <!-- Security: upgrade insecure requests to HTTPS -->
     <meta
-      name="twitter:image"
-      content="https://app.garden.finance<!--meta-twt-image-->"
+      http-equiv="Content-Security-Policy"
+      content="upgrade-insecure-requests"
     />
+
+    <!-- Explicit Farcaster Frame tags -->
+    <meta name="fc:mini-app" content="next" />
+    <meta
+      name="fc:mini-app:image"
+      content="https://app.garden.finance/metadata.png"
+    />
+    <meta name="fc:mini-app:button:1" content="Launch Garden Finance" />
+    <meta name="fc:mini-app:button:1:action" content="link" />
+    <meta
+      name="fc:mini-app:button:1:target"
+      content="https://app.garden.finance/"
+    />
+    <meta
+      name="fc:mini-app:post_url"
+      content="https://app.garden.finance/api/webhook"
+    />
+
+    <!-- Backward-compatible JSON blob -->
+    <!-- This will be replaced by the frame metadata plugin -->
+    <meta name="fc:mini-app" content="" />
+
+    <!-- Coinbase deeplink -->
+    <meta name="coinbase-wallet-deeplink" content="true" />
 
     <!-- Google Tag Manager -->
     <script>
@@ -40,23 +68,23 @@
     </script>
     <!-- End Google Tag Manager -->
 
-    <title><!--meta-title--></title>
-    <link rel="icon" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.png" >
     <link
       rel="canonical"
       href="https://app.garden.finance<!--meta-canonical-->"
     />
   </head>
+
   <body>
     <!-- Google Tag Manager (noscript) -->
-    <noscript
-      ><iframe
+    <noscript>
+      <iframe
         src="https://www.googletagmanager.com/ns.html?id=GTM-KJQK5H47"
         height="0"
         width="0"
         style="display: none; visibility: hidden"
-      ></iframe
-    ></noscript>
+      ></iframe>
+    </noscript>
     <!-- End Google Tag Manager (noscript) -->
 
     <div id="root"></div>

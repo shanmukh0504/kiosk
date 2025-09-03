@@ -92,7 +92,6 @@ type AssetInfoState = {
   fetchAndSetFiatValues: () => Promise<void>;
   fetchAndSetEvmBalances: (
     address: string,
-    workingRpcs: Record<number, string[]>,
     fetchOnlyAsset?: Asset
   ) => Promise<void>;
   fetchAndSetBitcoinBalance: (
@@ -235,10 +234,9 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
 
   fetchAndSetEvmBalances: async (
     address: string,
-    workingRpcs: Record<number, string[]>,
     fetchOnlyAsset?: Asset
   ) => {
-    const { assets, balances } = get();
+    const { assets } = get();
     if (!assets) return;
 
     let tokensByChain: Partial<Record<Chain, Asset[]>> = {};
@@ -258,8 +256,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           const chainBalances = await getBalanceMulticall(
             assets.map((asset) => asset.tokenAddress) as Hex[],
             address as Hex,
-            chain as EvmChain,
-            workingRpcs
+            chain as EvmChain
           );
 
           const updatedBalances: Record<string, BigNumber | undefined> = {};
@@ -298,7 +295,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           : acc;
       }, {});
 
-      set({ balances: { ...balances, ...finalBalances } });
+      set({ balances: { ...get().balances, ...finalBalances } });
     } catch (err) {
       console.error("Failed to fetch balances", err);
     }

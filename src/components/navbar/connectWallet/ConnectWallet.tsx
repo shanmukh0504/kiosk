@@ -16,7 +16,7 @@ import {
 import { WalletRow } from "./WalletRow";
 import { MultiWalletConnection } from "./MultiWalletConnection";
 import { handleEVMConnect, handleStarknetConnect } from "./handleConnect";
-import { modalNames, modalStore } from "../../../store/modalStore";
+import { modalStore } from "../../../store/modalStore";
 import { ecosystems, evmToBTCid } from "./constants";
 import { AnimatePresence } from "framer-motion";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
@@ -64,7 +64,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   } = useSolanaWallet();
   const { suiConnected, suiSelectedWallet, suiWallets, handleSuiConnect } =
     useSuiWallet();
-  const { modalData, setOpenModal } = modalStore();
+  const { modalData } = modalStore();
   const showOnlyBTCWallets = !!modalData.connectWallet?.Bitcoin;
   const showOnlyStarknetWallets = !!modalData.connectWallet?.Starknet;
   const showOnlyEVMWallets = !!modalData.connectWallet?.EVM;
@@ -178,7 +178,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           connector.wallet?.solanaWallet,
           connector.wallet?.suiWallet,
         ].filter(Boolean);
-        console.log("connector.wallet.suiWallet", connector);
+
         if (walletTypes.length < 2) return;
 
         setMultiWalletConnector({
@@ -210,39 +210,6 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         }
       } else if (connector.isEVM) {
         if (!connector.wallet?.evmWallet) return;
-
-        if (
-          connector.id === "metaMaskSDK" ||
-          connector.id === "io.metamask" ||
-          (connector.id === "injected" && window.ethereum?.isMetaMask)
-        ) {
-          const provider = window.ethereum;
-          if (provider && (provider.isMetaMask || provider._metamask)) {
-            try {
-              const version = await provider.request({
-                method: "web3_clientVersion",
-                params: [],
-              });
-
-              const versionMatch = version.match(/v(\d+\.\d+\.\d+)/);
-              const versionNumber = versionMatch ? versionMatch[1] : null;
-
-              if (versionNumber) {
-                const [major, minor, patch] = versionNumber
-                  .split(".")
-                  .map(Number);
-                if (major === 12 && minor === 15 && patch === 1) {
-                  onClose();
-                  setOpenModal(modalNames.versionUpdate);
-                  setConnectingWallet(null);
-                  return;
-                }
-              }
-            } catch (error) {
-              logger.error("Error getting MetaMask version:", error);
-            }
-          }
-        }
 
         await handleEVMConnect(connector.wallet.evmWallet, connectAsync);
         setConnectingWallet(null);

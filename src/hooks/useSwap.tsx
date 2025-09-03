@@ -512,7 +512,6 @@ export const useSwap = () => {
         ) {
           disconnect();
           setConnectingWallet(null);
-          setOpenModal(modalNames.versionUpdate);
         } else if (res.error.includes("destination amount too high")) {
           //order failed due to price fluctuation, refresh quote here
           fetchQuote(inputAmount, inputAsset, outputAsset, false);
