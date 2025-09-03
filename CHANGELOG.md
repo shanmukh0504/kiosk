@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.4]
+
+### Fixed
+
+- Fixed fallback network fees handling.
+- Progress steps for refunded orders.
+- Reduced fallback rpc calls for balance fetching.
+- Fixed favicon in safari browser.
+
 ## [1.1.3]
 
 ### Added

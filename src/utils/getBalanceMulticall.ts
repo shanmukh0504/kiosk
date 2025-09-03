@@ -5,12 +5,12 @@ import { createPublicClient, erc20Abi, Hex, http } from "viem";
 import { MULTICALL_CONTRACT_ADDRESSES } from "../constants/constants";
 import { multicall3Abi } from "../common/abi/multicall3";
 import logger from "./logger";
+import { getRPCsForChain, getWorkingRPCs } from "./rpcUtils";
 
 export const getBalanceMulticall = async (
   tokenAddresses: Hex[],
   address: Hex,
   chain: EvmChain,
-  workingRPCs: Record<number, string[]>
 ): Promise<Record<string, BigNumber | undefined>> => {
   const viemChain = evmToViemChainMap[chain];
   if (!viemChain || tokenAddresses.length === 0) return {};
@@ -68,6 +68,8 @@ export const getBalanceMulticall = async (
       transport:
         viemChain.id === 80094 || viemChain.id === 80084
           ? http("https://rpc.berachain-apis.com")
+          : viemChain.id === 1
+            ? http("https://eth-mainnet.nodereal.io/v1/1659dfb40aa24bbb8153a677b98064d7")
           : http(),
       chain: viemChain,
     });
@@ -75,9 +77,10 @@ export const getBalanceMulticall = async (
   } catch {
     // fallback to working RPCs
   }
+  const chainRPCs = await getRPCsForChain(viemChain);
+  const workingChainRPCs = await getWorkingRPCs(chainRPCs);
 
-  const fallbacks = workingRPCs[viemChain.id] || [];
-  for (const rpcUrl of fallbacks) {
+  for (const rpcUrl of workingChainRPCs) {
     try {
       const fallbackClient = createPublicClient({
         transport: http(rpcUrl),
