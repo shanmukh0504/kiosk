@@ -104,7 +104,7 @@ export function metadataPlugin(): Plugin {
 function generatePageMetadata(path: string): Metadata {
   const baseMetadata: Record<string, Metadata> = {
     "/": {
-      title: "Bridge BTC to Ethereum, Arbitrum, Base, Hyperliquid | Garden",
+      title: "Bridge BTC to Ethereum, Solana, Arbitrum, Base | Garden",
       description:
         "Bridge BTC across Ethereum, Arbitrum, Base, Berachain, Hyperliquid & more. Swap BTC, wBTC, cbBTC, USDC, and LBTC with fast, trustless settlements via Garden.",
       keywords: [
