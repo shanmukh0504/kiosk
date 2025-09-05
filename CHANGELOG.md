@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.5]
+
+### Fixed
+
+- Updated balance retrieval function to use fallback RPC clients as default instead of default wallet RPCs.
+
 ## [1.1.4]
 
 ### Fixed
