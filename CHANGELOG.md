@@ -1,11 +1,19 @@
 # Changelog
 
+## [1.1.5]
+
+### Fixed
+
+- Rate conversion and display token price for inputAsset in place of rate.
+
 ## [1.1.4]
+
+### Fixed
 
 - Fixed fallback network fees handling.
 - Progress steps for refunded orders.
-- reduced fallback rpc calls for balance fetching.
-- Rate conversion and display token price for inputAsset in place of rate.
+- Reduced fallback rpc calls for balance fetching.
+- Fixed favicon in safari browser by updating the format to .png.
 
 ## [1.1.3]
 
@@ -39,6 +47,7 @@
 - Search functionality in AssetSelector component.
 - Updated network fees logic for Sui chain.
 - Updated GradientScroll height for UX.
+- Updated the script url
 
 ## [1.1.0]
 
