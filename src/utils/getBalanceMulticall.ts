@@ -76,7 +76,6 @@ export const getBalanceMulticall = async (
   };
   const chainRpcs = workingRPCs[viemChain.id];
   for (const rpcUrl of chainRpcs) {
-    console.log("rpcUrl", rpcUrl , viemChain.id);
     try {
       const defaultClient = createPublicClient({
         transport: http(rpcUrl),
