@@ -1,6 +1,18 @@
 import { describe, it, expect } from "vitest";
 import { getBalanceMulticall } from "./getBalanceMulticall";
 import { Chains } from "@gardenfi/orderbook";
+import { base } from "viem/chains";
+
+const mockWorkingRpcs = {
+  [base.id]: [
+    "https://base-mainnet.public.blastapi.io",
+    "https://base.public.blockpi.network/v1/rpc/public",
+    "https://mainnet.base.org",
+    "https://base.gateway.tenderly.co",
+    "https://developer-access-mainnet.base.org",
+  ],
+};
+
 
 describe("getBalanceMulticall", () => {
   it("should return the balance of the tokens", async () => {
@@ -13,6 +25,7 @@ describe("getBalanceMulticall", () => {
       ],
       "0xd53D4f100AaBA314bF033f99f86a312BfbdDF113",
       Chains.base,
+      mockWorkingRpcs
     );
 
     expect(balance).toHaveProperty(
@@ -33,7 +46,8 @@ describe("getBalanceMulticall", () => {
     const balance = await getBalanceMulticall(
       [],
       "0xd53D4f100AaBA314bF033f99f86a312BfbdDF113",
-      Chains.base
+      Chains.base,
+      mockWorkingRpcs
     );
 
     expect(balance).toEqual({});
