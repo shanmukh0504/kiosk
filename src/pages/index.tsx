@@ -14,12 +14,19 @@ import { useAccount } from "@starknet-react/core";
 import { Environment as GardenEnvironment } from "@gardenfi/utils";
 import { useSolanaWallet } from "../hooks/useSolanaWallet";
 import { useSuiWallet } from "../hooks/useSuiWallet";
+import { useEffect } from "react";
+import { assetInfoStore } from "../store/assetInfoStore";
 
 function App() {
   const { data: walletClient } = useWalletClient();
   const { account: starknetWallet } = useAccount();
   const { solanaAnchorProvider } = useSolanaWallet();
   const { suiSelectedWallet } = useSuiWallet();
+  const { fetchAndSetRPCs } = assetInfoStore();
+
+  useEffect(() => {
+    fetchAndSetRPCs();
+  }, [fetchAndSetRPCs]);
 
   return (
     <GardenProvider
