@@ -100,7 +100,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   );
 
   const sortedResults = useMemo(() => {
-    const assetsToSort = searchResults || results;
+    const assetsToSort = input ? searchResults : results;
     if (!assetsToSort && orderedChains.length === 0) return [];
     return (
       assetsToSort &&
@@ -157,6 +157,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     chain,
     balances,
     fiatData,
+    input,
   ]);
 
   const isAnyWalletConnected =
