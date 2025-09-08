@@ -60,7 +60,7 @@ export const FeesAndRateDetails = () => {
     rate,
     networkFees,
     showComparisonHandler,
-    tokenPrices,
+    fiatTokenPrices,
   } = swapStore();
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
@@ -73,8 +73,8 @@ export const FeesAndRateDetails = () => {
   );
 
   const formattedTokenPrice = useMemo(
-    () => formatAmount(tokenPrices.input, 0, 2),
-    [tokenPrices.input]
+    () => formatAmount(fiatTokenPrices.input, 0, 2),
+    [fiatTokenPrices.input]
   );
 
   const refundAddress = useMemo(
