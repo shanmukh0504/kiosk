@@ -51,6 +51,7 @@ export const useSwap = () => {
     swapAssets,
     setAsset,
     setIsFetchingQuote,
+    setFiatTokenPrices,
     isComparisonVisible,
     setIsValidBitcoinAddress,
     // setIsApproving,
@@ -262,7 +263,10 @@ export const useSwap = () => {
           const outputTokenPrice = outputAmount.multipliedBy(
             quote.val.output_token_price
           );
-
+          setFiatTokenPrices({
+            input: quote.val.input_token_price.toString(),
+            output: quote.val.output_token_price.toString(),
+          });
           setTokenPrices({
             input: inputTokenPrice.toString(),
             output: outputTokenPrice.toString(),
