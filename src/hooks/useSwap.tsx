@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { BTC, swapStore } from "../store/swapStore";
 import { IOType, network } from "../constants/constants";
 import { Asset, Chain, isBitcoin, isSolana, isSui } from "@gardenfi/orderbook";
@@ -434,7 +434,6 @@ export const useSwap = () => {
     solanaAddress,
     currentAccount,
   ]);
-  const [errText, setErrText] = useState("");
 
   const handleSwapClick = async () => {
     if (needsWalletConnection) {
@@ -509,8 +508,8 @@ export const useSwap = () => {
         receiveAmount: outputAmountInDecimals,
         additionalData,
       });
-      setErrText(res.error || "no err");
       if (!res.ok) {
+        alert(res.error);
         if (
           res.error.includes(
             "Cannot read properties of undefined (reading 'toLowerCase')"
@@ -710,6 +709,5 @@ export const useSwap = () => {
     setAsset,
     clearSwapState,
     setIsComparisonVisible,
-    errText,
   };
 };

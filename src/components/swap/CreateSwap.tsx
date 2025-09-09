@@ -85,8 +85,6 @@ export const CreateSwap = () => {
   const { setOpenModal } = modalStore();
   const { connector } = useEVMWallet();
 
-  const { errText } = useSwap();
-
   const isChainSupported = useMemo(() => {
     if (!connector || !inputAsset || !outputAsset) return true;
     if (!WALLET_SUPPORTED_CHAINS[connector.id]) return true;
@@ -415,7 +413,6 @@ export const CreateSwap = () => {
               }
             >
               {buttonLabel}
-              {"errText"}
             </Button>
           </div>
         </motion.div>
