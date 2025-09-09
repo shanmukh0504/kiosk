@@ -5,12 +5,12 @@ import { createPublicClient, erc20Abi, Hex, http } from "viem";
 import { MULTICALL_CONTRACT_ADDRESSES } from "../constants/constants";
 import { multicall3Abi } from "../common/abi/multicall3";
 import logger from "./logger";
-import { getRPCsForChain, getWorkingRPCs } from "./rpcUtils";
 
 export const getBalanceMulticall = async (
   tokenAddresses: Hex[],
   address: Hex,
   chain: EvmChain,
+  workingRPCs: Record<number, string[]>
 ): Promise<Record<string, BigNumber | undefined>> => {
   const viemChain = evmToViemChainMap[chain];
   if (!viemChain || tokenAddresses.length === 0) return {};
@@ -63,33 +63,38 @@ export const getBalanceMulticall = async (
     );
   };
 
-  try {
-    const defaultClient = createPublicClient({
-      transport:
-        viemChain.id === 80094 || viemChain.id === 80084
-          ? http("https://rpc.berachain-apis.com")
-          : viemChain.id === 1
-            ? http("https://eth-mainnet.nodereal.io/v1/1659dfb40aa24bbb8153a677b98064d7")
-          : http(),
-      chain: viemChain,
-    });
-    return await fetchBalances(defaultClient);
-  } catch {
-    // fallback to working RPCs
-  }
-  const chainRPCs = await getRPCsForChain(viemChain);
-  const workingChainRPCs = await getWorkingRPCs(chainRPCs);
-
-  for (const rpcUrl of workingChainRPCs) {
+  const getDefaultRpcUrl = (): string => {
+    switch (viemChain.id) {
+      case 80094:
+      case 80084:
+        return "https://rpc.berachain-apis.com";
+      case 1:
+        return "https://eth-mainnet.nodereal.io/v1/1659dfb40aa24bbb8153a677b98064d7";
+      default:
+        return viemChain.rpcUrls.default.http[0];
+    }
+  };
+  const chainRpcs = workingRPCs[viemChain.id];
+  for (const rpcUrl of chainRpcs) {
     try {
-      const fallbackClient = createPublicClient({
+      const defaultClient = createPublicClient({
         transport: http(rpcUrl),
         chain: viemChain,
       });
-      return await fetchBalances(fallbackClient);
+      return await fetchBalances(defaultClient);
     } catch {
       // continue to next fallback
     }
   }
-  return {};
+
+  try {
+    const defaultRpcUrl = getDefaultRpcUrl();
+    const defaultClient = createPublicClient({
+      transport: http(defaultRpcUrl),
+      chain: viemChain,
+    });
+    return await fetchBalances(defaultClient);  
+  } catch {
+    return {};
+  }
 };
