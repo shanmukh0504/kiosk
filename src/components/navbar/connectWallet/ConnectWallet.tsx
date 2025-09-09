@@ -351,7 +351,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                           suiSelectedWallet?.id ===
                             "com.mystenlabs.suiwallet") ||
                         (wallet.name === "OKX Wallet" &&
-                          suiSelectedWallet?.name === "OKX Wallet"))
+                          suiSelectedWallet?.name === "OKX Wallet") ||
+                        (wallet.name === "Tokeo" &&
+                          suiSelectedWallet?.name === "Tokeo"))
                     ),
                   }}
                   isAvailable={wallet.isAvailable}
