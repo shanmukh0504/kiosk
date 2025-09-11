@@ -89,7 +89,7 @@ const blockchainConfigs = {
     flagKey: "isSolana" as const,
     inputKey: "solanaWallets" as const,
     finder: (wallets: SolanaWallet[], key: string) => {
-      const normalizedKey = key === "app.phantom" ? "phantom" : key;
+      const normalizedKey = key === "app.phantom" ? "phantom" : key === "app.backpack" ? "backpack" : key;
       return wallets?.find(
         (w) => w.adapter.name.toLowerCase() === normalizedKey.toLowerCase()
       );
@@ -160,7 +160,7 @@ const manualEVMChecks: Record<
       !!window.backpack &&
       typeof window.backpack === "object" &&
       "ethereum" in window.backpack,
-    connectorId: "backpack",
+    connectorId: "app.backpack",
   },
 };
 

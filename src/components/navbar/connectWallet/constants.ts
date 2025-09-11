@@ -193,7 +193,7 @@ export const GardenSupportedWallets: Record<
     { Solana: true }
   ),
   backpack: createWallet(
-    "backpack",
+    "app.backpack",
     "Backpack",
     "wallets/Backpack.svg",
     "https://backpack.app/",
