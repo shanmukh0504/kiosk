@@ -45,7 +45,13 @@ const blockchainConfigs = {
     inputKey: "evmWallets" as const,
     finder: (wallets: GetConnectorsReturnType, key: string) =>
       wallets?.find((w) => w.id === key),
-    availabilityChecker: (wallet: any) => !!wallet,
+    availabilityChecker: (wallet: any, key: string) => {
+      const manualCheck = manualEVMChecks[key];
+      if (manualCheck) {
+        return manualCheck.check();
+      }
+      return !!wallet;
+    },
   },
   [BlockchainType.Bitcoin]: {
     supportKey: "isBitcoinSupported" as const,
@@ -70,7 +76,11 @@ const blockchainConfigs = {
         braavos: () => window.starknet_braavos,
         keplr: () => window.starknet_keplr,
       } as Record<string, () => unknown>;
-      return !!(checks[key]?.() || wallet);
+      const manualCheck = checks[key];
+      if (manualCheck) {
+        return !!manualCheck();
+      }
+      return !!wallet;
     },
   },
   [BlockchainType.Solana]: {
@@ -91,7 +101,11 @@ const blockchainConfigs = {
         solflare: () => window.solflare,
         backpack: () => window.backpack,
       } as Record<string, () => unknown>;
-      return !!(checks[key]?.() || wallet);
+      const manualCheck = checks[key];
+      if (manualCheck) {
+        return !!manualCheck();
+      }
+      return !!wallet;
     },
   },
   [BlockchainType.Sui]: {
@@ -141,6 +155,13 @@ const manualEVMChecks: Record<
       "ethereum" in window.leap,
     connectorId: "leap",
   },
+  backpack: {
+    check: () =>
+      !!window.backpack &&
+      typeof window.backpack === "object" &&
+      "ethereum" in window.backpack,
+    connectorId: "backpack",
+  },
 };
 
 function createInitialWallet(config: any): Wallet {
@@ -164,7 +185,7 @@ function updateWalletWithBlockchain(
 ): void {
   const config = blockchainConfigs[blockchain];
   wallet.wallet[config.walletKey] = foundWallet;
-  wallet[config.flagKey] = !!foundWallet;
+  wallet[config.flagKey] = true;
   if (isAvailable) {
     wallet.isAvailable = true;
   }
@@ -194,18 +215,6 @@ function processBlockchainWallets(
 
     let foundWallet = config.finder(inputWallets as any, key);
     let isAvailable = config.availabilityChecker(foundWallet, key);
-
-    if (blockchain === BlockchainType.EVM && manualEVMChecks[key]) {
-      const manualCheck = manualEVMChecks[key];
-      if (!isAvailable && manualCheck.check()) {
-        if (Array.isArray(inputWallets)) {
-          foundWallet =
-            inputWallets.find((w: any) => w.id === manualCheck.connectorId) ||
-            foundWallet;
-        }
-        isAvailable = true;
-      }
-    }
 
     const walletId = key;
     if (!walletMap.has(walletId)) {

@@ -320,6 +320,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                     ),
                     [BlockchainType.EVM]: !!(
                       connector &&
+                      wallet.isEVM &&
                       (connector.id === wallet.id ||
                         (typeof window !== "undefined" &&
                           window.ethereum &&

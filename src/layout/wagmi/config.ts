@@ -31,6 +31,9 @@ declare global {
     keplr?: {
       ethereum?: any;
     };
+    backpack?: {
+      ethereum?: any;
+    };
   }
 }
 
@@ -109,6 +112,16 @@ export const leapConnector = injected({
   },
 });
 
+export const backpackConnector = injected({
+  target() {
+    return {
+      id: "backpack",
+      name: "Backpack",
+      provider: typeof window !== "undefined" ? window.backpack?.ethereum : undefined,
+    }
+  },
+})
+
 export const KeplrConnector = injected({
   target() {
     return {
@@ -131,6 +144,7 @@ export const config = createConfig({
     }),
     leapConnector,
     KeplrConnector,
+    backpackConnector,
     miniAppConnector(),
   ],
   transports: {
