@@ -357,6 +357,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                         (wallet.name === "Slush Wallet" &&
                           suiSelectedWallet?.id ===
                             "com.mystenlabs.suiwallet") ||
+                        (wallet.name === "Backpack" &&
+                          suiSelectedWallet?.name === "Backpack") ||
                         (wallet.name === "OKX Wallet" &&
                           suiSelectedWallet?.name === "OKX Wallet"))
                     ),

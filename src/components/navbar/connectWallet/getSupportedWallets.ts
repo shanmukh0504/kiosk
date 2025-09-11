@@ -99,7 +99,7 @@ const blockchainConfigs = {
       const checks = {
         "app.phantom": () => window.phantom,
         solflare: () => window.solflare,
-        backpack: () => window.backpack,
+        "app.backpack": () => window.backpack,
       } as Record<string, () => unknown>;
       const manualCheck = checks[key];
       if (manualCheck) {
@@ -118,12 +118,15 @@ const blockchainConfigs = {
         slush: "com.mystenlabs.suiwallet",
         "app.phantom": "Phantom",
         "com.okex.wallet": "OKX Wallet",
+        "app.backpack": "Backpack",
       } as Record<string, string>;
 
       if (key === "app.phantom") {
         return wallets?.find((w) => w.name === "Phantom");
       } else if (key === "com.okex.wallet") {
         return wallets?.find((w) => w.name === "OKX Wallet");
+      } else if (key === "app.backpack") {
+        return wallets?.find((w) => w.name === "Backpack");
       } else {
         const walletId = walletNameMap[key] || key;
         return wallets?.find((w) => w.id === walletId);
@@ -226,50 +229,62 @@ function processBlockchainWallets(
   });
 }
 
+// Multi-chain wallet configurations
+const multiChainWallets = {
+  "app.phantom": {
+    solanaName: "phantom",
+    suiName: "Phantom",
+  },
+  "app.backpack": {
+    solanaName: "backpack", 
+    suiName: "Backpack",
+  },
+} as const;
+
 function handleMultiChainWallets(
   walletMap: Map<string, Wallet>,
   walletInputs: WalletInputs
 ): void {
-  const phantomId = "app.phantom";
-  const phantomConfig = GardenSupportedWallets[phantomId];
+  Object.entries(multiChainWallets).forEach(([walletId, multiChainConfig]) => {
+    const config = GardenSupportedWallets[walletId];
+    if (!config) return;
 
-  if (!phantomConfig) return;
+    const evmWallet = config.isEVMSupported
+      ? walletInputs.evmWallets?.find((w) => w.id === walletId)
+      : undefined;
 
-  const evmWallet = phantomConfig.isEVMSupported
-    ? walletInputs.evmWallets?.find((w) => w.id === phantomId)
-    : undefined;
+    const solanaWallet = config.isSolanaSupported
+      ? walletInputs.solanaWallets?.find(
+          (w) => w.adapter.name.toLowerCase() === multiChainConfig.solanaName
+        )
+      : undefined;
 
-  const solanaWallet = phantomConfig.isSolanaSupported
-    ? walletInputs.solanaWallets?.find(
-        (w) => w.adapter.name.toLowerCase() === "phantom"
-      )
-    : undefined;
+    const suiWallet = config.isSuiSupported
+      ? walletInputs.suiWallets?.find((w) => w.name === multiChainConfig.suiName)
+      : undefined;
 
-  const suiWallet = phantomConfig.isSuiSupported
-    ? walletInputs.suiWallets?.find((w) => w.name === "Phantom")
-    : undefined;
+    const isEVM = !!evmWallet;
+    const isSolana = !!solanaWallet;
+    const isSui = !!suiWallet;
+    const isAvailable = isEVM || isSolana || isSui;
 
-  const isEVM = !!evmWallet;
-  const isSolana = !!solanaWallet;
-  const isSui = !!suiWallet;
-  const isAvailable = isEVM || isSolana || isSui;
+    if (isAvailable) {
+      if (!walletMap.has(walletId)) {
+        walletMap.set(walletId, createInitialWallet(config));
+      }
 
-  if (!isAvailable) return;
-
-  if (!walletMap.has(phantomId)) {
-    walletMap.set(phantomId, createInitialWallet(phantomConfig));
-  }
-
-  const wallet = walletMap.get(phantomId)!;
-  wallet.wallet = {
-    evmWallet: evmWallet,
-    solanaWallet: solanaWallet,
-    suiWallet: suiWallet,
-  };
-  wallet.isEVM = isEVM;
-  wallet.isSolana = isSolana;
-  wallet.isSui = isSui;
-  wallet.isAvailable = true;
+      const wallet = walletMap.get(walletId)!;
+      wallet.wallet = {
+        evmWallet,
+        solanaWallet,
+        suiWallet,
+      };
+      wallet.isEVM = isEVM;
+      wallet.isSolana = isSolana;
+      wallet.isSui = isSui;
+      wallet.isAvailable = true;
+    }
+  });
 }
 
 export const getAvailableWallets = (

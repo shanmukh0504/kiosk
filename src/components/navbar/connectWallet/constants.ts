@@ -192,12 +192,12 @@ export const GardenSupportedWallets: Record<
     "https://www.solflare.com/",
     { Solana: true }
   ),
-  backpack: createWallet(
+  "app.backpack": createWallet(
     "app.backpack",
     "Backpack",
     "wallets/Backpack.svg",
     "https://backpack.app/",
-    { Solana: true, EVM: true }
+    { Solana: network === Network.MAINNET, EVM: network === Network.MAINNET, Sui: network === Network.MAINNET }
   ),
   slush: createWallet(
     "slush",
