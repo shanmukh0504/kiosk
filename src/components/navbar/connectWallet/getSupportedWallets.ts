@@ -234,6 +234,7 @@ const multiChainWallets = {
   "app.phantom": {
     solanaName: "phantom",
     suiName: "Phantom",
+    bitcoinId: "phantom",
   },
   "app.backpack": {
     solanaName: "backpack", 
@@ -253,6 +254,10 @@ function handleMultiChainWallets(
       ? walletInputs.evmWallets?.find((w) => w.id === walletId)
       : undefined;
 
+    const btcWallet = config.isBitcoinSupported && "bitcoinId" in multiChainConfig
+      ? walletInputs.bitcoinWallets?.[multiChainConfig.bitcoinId]
+      : undefined;
+
     const solanaWallet = config.isSolanaSupported
       ? walletInputs.solanaWallets?.find(
           (w) => w.adapter.name.toLowerCase() === multiChainConfig.solanaName
@@ -264,9 +269,10 @@ function handleMultiChainWallets(
       : undefined;
 
     const isEVM = !!evmWallet;
+    const isBitcoin = !!btcWallet;
     const isSolana = !!solanaWallet;
     const isSui = !!suiWallet;
-    const isAvailable = isEVM || isSolana || isSui;
+    const isAvailable = isEVM || isBitcoin || isSolana || isSui;
 
     if (isAvailable) {
       if (!walletMap.has(walletId)) {
@@ -276,10 +282,12 @@ function handleMultiChainWallets(
       const wallet = walletMap.get(walletId)!;
       wallet.wallet = {
         evmWallet,
+        btcWallet,
         solanaWallet,
         suiWallet,
       };
       wallet.isEVM = isEVM;
+      wallet.isBitcoin = isBitcoin;
       wallet.isSolana = isSolana;
       wallet.isSui = isSui;
       wallet.isAvailable = true;
