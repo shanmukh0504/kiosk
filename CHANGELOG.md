@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.6]
+
+### Fixed
+
+- Fixed missing Bitcoin chain in Phantom wallet's multi-chain connection modal.
+
 ## [1.1.5]
 
 ### Fixed
