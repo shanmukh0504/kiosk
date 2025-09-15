@@ -45,7 +45,13 @@ const blockchainConfigs = {
     inputKey: "evmWallets" as const,
     finder: (wallets: GetConnectorsReturnType, key: string) =>
       wallets?.find((w) => w.id === key),
-    availabilityChecker: (wallet: any) => !!wallet,
+    availabilityChecker: (wallet: any, key: string) => {
+      const manualCheck = manualEVMChecks[key];
+      if (manualCheck) {
+        return manualCheck.check();
+      }
+      return !!wallet;
+    },
   },
   [BlockchainType.Bitcoin]: {
     supportKey: "isBitcoinSupported" as const,
@@ -70,7 +76,11 @@ const blockchainConfigs = {
         braavos: () => window.starknet_braavos,
         keplr: () => window.starknet_keplr,
       } as Record<string, () => unknown>;
-      return !!(checks[key]?.() || wallet);
+      const manualCheck = checks[key];
+      if (manualCheck) {
+        return !!manualCheck();
+      }
+      return !!wallet;
     },
   },
   [BlockchainType.Solana]: {
@@ -79,7 +89,7 @@ const blockchainConfigs = {
     flagKey: "isSolana" as const,
     inputKey: "solanaWallets" as const,
     finder: (wallets: SolanaWallet[], key: string) => {
-      const normalizedKey = key === "app.phantom" ? "phantom" : key;
+      const normalizedKey = key === "app.phantom" ? "phantom" : key ;
       return wallets?.find(
         (w) => w.adapter.name.toLowerCase() === normalizedKey.toLowerCase()
       );
@@ -88,10 +98,13 @@ const blockchainConfigs = {
       if (typeof window === "undefined") return false;
       const checks = {
         "app.phantom": () => window.phantom,
-        solflare: () => window.solflare,
-        backpack: () => window.backpack,
+        solflare: () => window.solflare
       } as Record<string, () => unknown>;
-      return !!(checks[key]?.() || wallet);
+      const manualCheck = checks[key];
+      if (manualCheck) {
+        return !!manualCheck();
+      }
+      return !!wallet;
     },
   },
   [BlockchainType.Sui]: {
@@ -164,7 +177,7 @@ function updateWalletWithBlockchain(
 ): void {
   const config = blockchainConfigs[blockchain];
   wallet.wallet[config.walletKey] = foundWallet;
-  wallet[config.flagKey] = !!foundWallet;
+  wallet[config.flagKey] = true;
   if (isAvailable) {
     wallet.isAvailable = true;
   }
@@ -195,18 +208,6 @@ function processBlockchainWallets(
     let foundWallet = config.finder(inputWallets as any, key);
     let isAvailable = config.availabilityChecker(foundWallet, key);
 
-    if (blockchain === BlockchainType.EVM && manualEVMChecks[key]) {
-      const manualCheck = manualEVMChecks[key];
-      if (!isAvailable && manualCheck.check()) {
-        if (Array.isArray(inputWallets)) {
-          foundWallet =
-            inputWallets.find((w: any) => w.id === manualCheck.connectorId) ||
-            foundWallet;
-        }
-        isAvailable = true;
-      }
-    }
-
     const walletId = key;
     if (!walletMap.has(walletId)) {
       walletMap.set(walletId, createInitialWallet(value));
@@ -217,50 +218,66 @@ function processBlockchainWallets(
   });
 }
 
+// Multi-chain wallet configurations
+const multiChainWallets = {
+  "app.phantom": {
+    solanaName: "phantom",
+    suiName: "Phantom",
+    bitcoinId: "phantom",
+  },
+} as const;
+
 function handleMultiChainWallets(
   walletMap: Map<string, Wallet>,
   walletInputs: WalletInputs
 ): void {
-  const phantomId = "app.phantom";
-  const phantomConfig = GardenSupportedWallets[phantomId];
+  Object.entries(multiChainWallets).forEach(([walletId, multiChainConfig]) => {
+    const config = GardenSupportedWallets[walletId];
+    if (!config) return;
 
-  if (!phantomConfig) return;
+    const evmWallet = config.isEVMSupported
+      ? walletInputs.evmWallets?.find((w) => w.id === walletId)
+      : undefined;
 
-  const evmWallet = phantomConfig.isEVMSupported
-    ? walletInputs.evmWallets?.find((w) => w.id === phantomId)
-    : undefined;
+    const btcWallet = config.isBitcoinSupported && "bitcoinId" in multiChainConfig
+      ? walletInputs.bitcoinWallets?.[multiChainConfig.bitcoinId]
+      : undefined;
 
-  const solanaWallet = phantomConfig.isSolanaSupported
-    ? walletInputs.solanaWallets?.find(
-        (w) => w.adapter.name.toLowerCase() === "phantom"
-      )
-    : undefined;
+    const solanaWallet = config.isSolanaSupported
+      ? walletInputs.solanaWallets?.find(
+          (w) => w.adapter.name.toLowerCase() === multiChainConfig.solanaName
+        )
+      : undefined;
 
-  const suiWallet = phantomConfig.isSuiSupported
-    ? walletInputs.suiWallets?.find((w) => w.name === "Phantom")
-    : undefined;
+    const suiWallet = config.isSuiSupported
+      ? walletInputs.suiWallets?.find((w) => w.name === multiChainConfig.suiName)
+      : undefined;
 
-  const isEVM = !!evmWallet;
-  const isSolana = !!solanaWallet;
-  const isSui = !!suiWallet;
-  const isAvailable = isEVM || isSolana || isSui;
+    const isEVM = !!evmWallet;
+    const isBitcoin = !!btcWallet;
+    const isSolana = !!solanaWallet;
+    const isSui = !!suiWallet;
+    const isAvailable = isEVM || isBitcoin || isSolana || isSui;
 
-  if (!isAvailable) return;
+    if (isAvailable) {
+      if (!walletMap.has(walletId)) {
+        walletMap.set(walletId, createInitialWallet(config));
+      }
 
-  if (!walletMap.has(phantomId)) {
-    walletMap.set(phantomId, createInitialWallet(phantomConfig));
-  }
-
-  const wallet = walletMap.get(phantomId)!;
-  wallet.wallet = {
-    evmWallet: evmWallet,
-    solanaWallet: solanaWallet,
-    suiWallet: suiWallet,
-  };
-  wallet.isEVM = isEVM;
-  wallet.isSolana = isSolana;
-  wallet.isSui = isSui;
-  wallet.isAvailable = true;
+      const wallet = walletMap.get(walletId)!;
+      wallet.wallet = {
+        evmWallet,
+        btcWallet,
+        solanaWallet,
+        suiWallet,
+      };
+      wallet.isEVM = isEVM;
+      wallet.isBitcoin = isBitcoin;
+      wallet.isSolana = isSolana;
+      wallet.isSui = isSui;
+      wallet.isAvailable = true;
+    }
+  });
 }
 
 export const getAvailableWallets = (

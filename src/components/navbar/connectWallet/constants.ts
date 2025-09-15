@@ -97,7 +97,7 @@ export const GardenSupportedWallets: Record<
     "Metamask",
     "wallets/metamask.svg",
     "https://metamask.io/download/",
-    { EVM: true, Solana: true }
+    { EVM: true }
   ),
   "com.brave.wallet": createWallet(
     "com.brave.wallet",
