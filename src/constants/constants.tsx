@@ -206,7 +206,7 @@ export const WALLET_SUPPORTED_CHAINS: Record<string, Chain[]> = {
     "ethereum_sepolia",
     "starknet_sepolia",
   ],
-  "app.backpack": ["ethereum", "solana", "sui", "base", "arbitrum"],
+  "app.backpack": ["ethereum", "solana", "sui", "base", "arbitrum", "bera"],
 };
 
 export const SOCIAL_LINKS = {
