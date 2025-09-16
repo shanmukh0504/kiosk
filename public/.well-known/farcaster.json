@@ -5,25 +5,28 @@
     "signature": "MHg1MmVmMWQ0NGE5NWRiODEyNWQxNGM4ZGViYTFjZmRlOWFkOWM3YTMyN2ViNWMxODU3NDhlOTVhMTY0ZjNjYjYwNTFjNzdlMWM3OGE3ZmMyOTE2NjdkNTNkODMxNTY4NWNiZmViNjEwZDI4NDE2OWZjMWMxYTU5NTZjMGZhNzkzNDFj"
   },
   "frame": {
-    "name": "Garden Finance",
+    "name": "Garden",
     "version": "next",
     "iconUrl": "https://app.garden.finance/favicon.svg",
     "homeUrl": "https://app.garden.finance",
     "imageUrl": "https://app.garden.finance/metadata.png",
-    "buttonTitle": "Bridge with Garden Finance",
+    "buttonTitle": "Bridge with Garden",
     "splashImageUrl": "https://app.garden.finance/icon.svg",
     "splashBackgroundColor": "#E4EBF2",
     "webhookUrl": "https://app.garden.finance/api/webhook",
-    "subtitle": "Bridge with Garden Finance",
+    "subtitle": "Bridge with Garden",
     "primaryCategory": "finance",
-    "description": "Move Bitcoin. without. trust. Garden is the fastest and most cost-efficient way to move native Bitcoin between chains, without giving up custody.",
+    "description": "Garden is the fastest Bitcoin bridge, enabling trustless cross-chain Bitcoin swaps in as little as 30 seconds.",
     "screenshotUrls": ["https://app.garden.finance/preview.png"],
     "heroImageUrl": "https://app.garden.finance/metadata.png",
     "tags": ["bitcoin", "finance", "defi", "bridge"],
-    "tagline": "Bridge with Garden Finance",
+    "tagline": "Bridge with Garden",
     "ogTitle": "Garden Finance",
-    "ogDescription": "Bridge BTC across Ethereum, Arbitrum, Base, Berachain, Hyperliquid and more.",
+    "ogDescription": "Garden is the fastest Bitcoin bridge, enabling trustless cross-chain Bitcoin swaps in as little as 30 seconds.",
     "ogImageUrl": "https://app.garden.finance/metadata.png",
     "castShareUrl": "https://app.garden.finance/metadata.png"
+  },
+  "baseBuilder": {
+    "allowedAddresses": ["0x536b455c36ED1EEf77c14290e21C581f007316c4"]
   }
 }

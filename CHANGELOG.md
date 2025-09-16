@@ -1,10 +1,16 @@
 # Changelog
 
-## [1.1.6]
+## [1.1.7]
 
 ### Added
 
 - Added Evm and Sui support for Backpack wallet.
+
+## [1.1.6]
+
+### Fixed
+
+- Fixed missing Bitcoin chain in Phantom wallet's multi-chain connection modal.
 
 ## [1.1.5]
 
@@ -13,6 +19,7 @@
 - Updated balance retrieval function to use fallback RPC clients as default instead of default wallet RPCs.
 - Rate conversion and display estimated token price for inputAsset.
 - Fixed fiat token prices.
+- Updated description in farcaster config.
 
 
 ## [1.1.4]
