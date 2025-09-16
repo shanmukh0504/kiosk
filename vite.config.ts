@@ -103,6 +103,7 @@ export default defineConfig({
   esbuild: {
     target: "esnext",
     treeShaking: true,
+    drop: process.env.NODE_ENV === "production" ? ["console", "debugger"] : [],
     minifyIdentifiers: true,
     minifySyntax: true,
     minifyWhitespace: true,

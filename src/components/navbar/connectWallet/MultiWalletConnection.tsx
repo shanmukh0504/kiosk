@@ -106,20 +106,21 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
       }
     }
 
-    if (checked[BlockchainType.Solana]) {
-      if (!connectors.Solana) {
-        setLoading(false);
-        return;
-      }
-      await solanaConnect(connectors.Solana.adapter.name);
-    }
-
     if (checked[BlockchainType.Sui]) {
       if (!connectors.Sui) {
         setLoading(false);
         return;
       }
       await handleSuiConnect(connectors.Sui);
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+
+    if (checked[BlockchainType.Solana]) {
+      if (!connectors.Solana) {
+        setLoading(false);
+        return;
+      }
+      await solanaConnect(connectors.Solana.adapter.name);
     }
 
     setLoading(false);
