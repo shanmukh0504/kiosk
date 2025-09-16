@@ -46,9 +46,6 @@ export const useSuiWallet = () => {
   };
 
   const suiDisconnect = async () => {
-    if (!suiConnected) {
-      return Promise.resolve();
-    }
 
     return new Promise<void>((resolve, reject) => {
       disconnect(undefined, {
