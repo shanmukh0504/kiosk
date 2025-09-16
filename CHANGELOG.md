@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.6]
+
+### Fixed
+
+- Fixed missing Bitcoin chain in Phantom wallet's multi-chain connection modal.
+- Updated description in farcaster config.
+
 ## [1.1.5]
 
 ### Fixed
