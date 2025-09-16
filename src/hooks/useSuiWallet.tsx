@@ -19,15 +19,50 @@ export const useSuiWallet = () => {
   const { mutate: connect } = useConnectWallet();
   const { mutate: disconnect } = useDisconnectWallet();
   const handleSuiConnect = async (wallet: WalletWithRequiredFeatures) => {
+    console.log("sui - Starting connection process:", {
+      targetWallet: wallet.name,
+      currentWallet: suiSelectedWallet?.name,
+      isConnected: suiConnected,
+      connectionStatus,
+      availableWallets: wallets.map((w) => w.name),
+    });
+
+    if (suiConnected && suiSelectedWallet?.name === wallet.name) {
+      return;
+    }
+
+    if (suiConnected && suiSelectedWallet?.name !== wallet.name) {
+      try {
+        await suiDisconnect();
+        // Add a small delay to let the disconnection complete
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      } catch (error) {
+        console.log(
+          "sui - Failed to disconnect previous wallet, proceeding anyway:",
+          error
+        );
+      }
+    }
+
     return new Promise<void>((resolve, reject) => {
       connect(
         { wallet },
         {
           onSuccess: () => {
-            // console.log("connected");
+            console.log("sui - Connection successful:", {
+              connectedWallet: wallet.name,
+              connectionStatus: "connected",
+              actualCurrentWallet: suiSelectedWallet?.name,
+            });
             resolve();
           },
           onError: (error: any) => {
+            console.log("sui - Connection failed:", {
+              targetWallet: wallet.name,
+              currentWallet: suiSelectedWallet?.name,
+              error: error.message || error,
+              errorType: error.constructor.name,
+            });
             reject(error);
           },
         }
@@ -36,14 +71,22 @@ export const useSuiWallet = () => {
   };
 
   const suiDisconnect = async () => {
-    return new Promise<void>((resolve, reject) => {
+
+    // If already disconnected, resolve immediately
+    if (!suiConnected) {
+      console.log("sui - Already disconnected, skipping disconnection");
+      return Promise.resolve();
+    }
+
+    return new Promise<void>((resolve) => {
       disconnect(undefined, {
         onSuccess: () => {
-          // console.log("disconnected");
           resolve();
         },
         onError: (error: any) => {
-          reject(error);
+          // Don't reject on disconnection failure, just resolve to allow connection to proceed
+          console.log("sui - Proceeding despite disconnection failure", error);
+          resolve();
         },
       });
     });
