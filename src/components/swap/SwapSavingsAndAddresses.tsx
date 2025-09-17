@@ -1,6 +1,6 @@
 import { Typography } from "@gardenfi/garden-book";
 import { AnimatePresence, motion } from "framer-motion";
-import { formatAmount, formatAmountUsd } from "../../utils/utils";
+import { formatAmountUsd } from "../../utils/utils";
 import {
   expandAnimation,
   expandWithDelayAnimation,
