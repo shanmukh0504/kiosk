@@ -89,7 +89,7 @@ const blockchainConfigs = {
     flagKey: "isSolana" as const,
     inputKey: "solanaWallets" as const,
     finder: (wallets: SolanaWallet[], key: string) => {
-      const normalizedKey = key === "app.phantom" ? "phantom" : key ;
+      const normalizedKey = key === "app.phantom" ? "phantom" : key === "app.backpack" ? "backpack" : key;
       return wallets?.find(
         (w) => w.adapter.name.toLowerCase() === normalizedKey.toLowerCase()
       );
@@ -98,7 +98,8 @@ const blockchainConfigs = {
       if (typeof window === "undefined") return false;
       const checks = {
         "app.phantom": () => window.phantom,
-        solflare: () => window.solflare
+        solflare: () => window.solflare,
+        "app.backpack": () => window.backpack,
       } as Record<string, () => unknown>;
       const manualCheck = checks[key];
       if (manualCheck) {
@@ -117,12 +118,15 @@ const blockchainConfigs = {
         slush: "com.mystenlabs.suiwallet",
         "app.phantom": "Phantom",
         "com.okex.wallet": "OKX Wallet",
+        "app.backpack": "Backpack",
       } as Record<string, string>;
 
       if (key === "app.phantom") {
         return wallets?.find((w) => w.name === "Phantom");
       } else if (key === "com.okex.wallet") {
         return wallets?.find((w) => w.name === "OKX Wallet");
+      } else if (key === "app.backpack") {
+        return wallets?.find((w) => w.name === "Backpack");
       } else {
         const walletId = walletNameMap[key] || key;
         return wallets?.find((w) => w.id === walletId);
@@ -153,6 +157,13 @@ const manualEVMChecks: Record<
       typeof window.leap === "object" &&
       "ethereum" in window.leap,
     connectorId: "leap",
+  },
+  backpack: {
+    check: () =>
+      !!window.backpack &&
+      typeof window.backpack === "object" &&
+      "ethereum" in window.backpack,
+    connectorId: "app.backpack",
   },
 };
 
@@ -224,6 +235,10 @@ const multiChainWallets = {
     solanaName: "phantom",
     suiName: "Phantom",
     bitcoinId: "phantom",
+  },
+  "app.backpack": {
+    solanaName: "backpack", 
+    suiName: "Backpack",
   },
 } as const;
 
