@@ -1,6 +1,6 @@
 import { Typography } from "@gardenfi/garden-book";
 import { AnimatePresence, motion } from "framer-motion";
-import { formatAmount } from "../../utils/utils";
+import { formatAmount, formatAmountUsd } from "../../utils/utils";
 import {
   expandAnimation,
   expandWithDelayAnimation,
@@ -115,9 +115,9 @@ export const SwapSavingsAndAddresses = ({
                   </Typography>
                   <div className="flex gap-5">
                     <Typography
-                      size="h4"
+                      size="h5"
                       weight="regular"
-                      className=" !text-light-green"
+                      className="!text-light-green"
                     >
                       {formatTime(maxTimeSaved)}
                     </Typography>
@@ -148,11 +148,11 @@ export const SwapSavingsAndAddresses = ({
                   </Typography>
                   <div className="flex gap-5">
                     <Typography
-                      size="h4"
+                      size="h5"
                       weight="regular"
                       className="!text-light-green"
                     >
-                      {`$${formatAmount(maxCostSaved, 0, 2)}`}
+                      {`$${formatAmountUsd(maxCostSaved, 0)}`}
                     </Typography>
                   </div>
                 </div>

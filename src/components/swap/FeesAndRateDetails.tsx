@@ -3,6 +3,7 @@ import {
   GasStationIcon,
   InfoIcon,
   KeyboardDownIcon,
+  SwapHorizontalIcon,
   Typography,
 } from "@gardenfi/garden-book";
 import { BTC, swapStore } from "../../store/swapStore";
@@ -15,7 +16,7 @@ import { delayedFadeAnimation } from "../../animations/animations";
 import { SwapSavingsAndAddresses } from "./SwapSavingsAndAddresses";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { TooltipWrapper } from "../../common/ToolTipWrapper";
-import { formatAmount } from "../../utils/utils";
+import { formatAmount, formatAmountUsd } from "../../utils/utils";
 
 const RateDisplay = ({
   inputAsset,
@@ -26,8 +27,8 @@ const RateDisplay = ({
 }: {
   inputAsset?: Asset;
   outputAsset?: Asset;
-  formattedRate?: number;
-  formattedTokenPrice?: number;
+  formattedRate?: string | number;
+  formattedTokenPrice?: string | number;
   className?: string;
 }) => (
   <div className={`flex min-w-fit items-center gap-1`}>
@@ -36,7 +37,18 @@ const RateDisplay = ({
       weight="regular"
       className={`!text-nowrap ${className}`}
     >
-      1 {inputAsset?.symbol} ≈
+      1 {inputAsset?.symbol}
+    </Typography>
+    <Typography
+      size="h5"
+      weight="regular"
+      className={`!text-nowrap ${className}`}
+    >
+      {formattedTokenPrice ? (
+        "≈"
+      ) : (
+        <SwapHorizontalIcon className="fill-dark-grey" />
+      )}
     </Typography>
     <Typography
       size="h5"
@@ -73,7 +85,7 @@ export const FeesAndRateDetails = () => {
   );
 
   const formattedTokenPrice = useMemo(
-    () => formatAmount(fiatTokenPrices.input, 0, 2),
+    () => formatAmountUsd(fiatTokenPrices.input, 0),
     [fiatTokenPrices.input]
   );
 
@@ -186,7 +198,7 @@ export const FeesAndRateDetails = () => {
                       "Free"
                     ) : (
                       <span className="flex items-center">
-                        ${formatAmount(networkFees, 0, 2)}
+                        ${formatAmountUsd(networkFees, 0)}
                       </span>
                     )}
                   </Typography>
@@ -217,7 +229,7 @@ export const FeesAndRateDetails = () => {
             refundAddress={refundAddress}
             receiveAddress={receiveAddress}
             showComparison={showComparisonHandler}
-            networkFeesValue={formatAmount(networkFees, 0, 2)}
+            networkFeesValue={Number(formatAmountUsd(networkFees, 0))}
           />
         )}
       </AnimatePresence>
