@@ -7,7 +7,7 @@ import {
   formatTimeDiff,
 } from "../../utils/timeAndFeeComparison/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { formatAmount } from "../../utils/utils";
+import { formatAmount, formatAmountUsd } from "../../utils/utils";
 import BigNumber from "bignumber.js";
 import { useCompetitorTimeFees } from "../../hooks/useCompetitorTimeFees";
 
@@ -160,7 +160,7 @@ export const CompetitorComparisons: FC<CompetitorComparisonsProps> = ({
                         size="h5"
                         weight="regular"
                       >
-                        {`${Number(feeDiff) >= 0 ? "-" : "+"}$${Math.abs(Number(feeDiff))}`}
+                        {`${Number(feeDiff) >= 0 ? "-" : "+"}$${formatAmountUsd(Math.abs(Number(feeDiff)), 0)}`}
                       </Typography>
                     )}
                     <Typography
@@ -168,7 +168,7 @@ export const CompetitorComparisons: FC<CompetitorComparisonsProps> = ({
                       size="h5"
                       weight="regular"
                     >
-                      {`$${formatAmount(fee, 0, 2)}`}
+                      {`$${formatAmountUsd(fee, 0)}`}
                     </Typography>
                   </div>
                 )}

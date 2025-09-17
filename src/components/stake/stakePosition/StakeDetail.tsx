@@ -10,7 +10,7 @@ import {
   stakeStore,
   StakingPosition,
 } from "../../../store/stakeStore";
-import { formatAmount } from "../../../utils/utils";
+import { formatAmount, formatAmountUsd } from "../../../utils/utils";
 import { ETH_BLOCKS_PER_DAY, SEED_DECIMALS, TEN_THOUSAND } from "../constants";
 import { getMultiplier } from "../../../utils/stakingUtils";
 import { modalNames, modalStore } from "../../../store/modalStore";
@@ -205,7 +205,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
                 <div className="relative">
                   <StakeStats
                     title={"Rewards"}
-                    value={`~$${reward}`}
+                    value={`~$${formatAmountUsd(reward, 0)}`}
                     size="xs"
                     toolTip={
                       <TooltipWrapper
