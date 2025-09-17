@@ -19,12 +19,22 @@ export const useSuiWallet = () => {
   const { mutate: connect } = useConnectWallet();
   const { mutate: disconnect } = useDisconnectWallet();
   const handleSuiConnect = async (wallet: WalletWithRequiredFeatures) => {
+    if (suiConnected && suiSelectedWallet?.name === wallet.name) {
+      return;
+    }
+
+    if (suiConnected && suiSelectedWallet?.name !== wallet.name) {
+      try {
+        await suiDisconnect();
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      } catch {}
+    }
+
     return new Promise<void>((resolve, reject) => {
       connect(
         { wallet },
         {
           onSuccess: () => {
-            // console.log("connected");
             resolve();
           },
           onError: (error: any) => {
@@ -36,10 +46,10 @@ export const useSuiWallet = () => {
   };
 
   const suiDisconnect = async () => {
+
     return new Promise<void>((resolve, reject) => {
       disconnect(undefined, {
         onSuccess: () => {
-          // console.log("disconnected");
           resolve();
         },
         onError: (error: any) => {

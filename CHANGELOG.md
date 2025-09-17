@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.7]
+
+### Added
+
+- Added Evm and Sui support for Backpack wallet.
+
 ## [1.1.6]
 
 ### Fixed
