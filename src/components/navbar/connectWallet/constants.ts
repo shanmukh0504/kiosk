@@ -197,7 +197,11 @@ export const GardenSupportedWallets: Record<
     "Backpack",
     "wallets/Backpack.svg",
     "https://backpack.app/",
-    { Solana: network === Network.MAINNET, EVM: network === Network.MAINNET, Sui: network === Network.MAINNET }
+    {
+      Solana: network === Network.MAINNET,
+      EVM: network === Network.MAINNET,
+      Sui: network === Network.MAINNET,
+    }
   ),
   slush: createWallet(
     "slush",

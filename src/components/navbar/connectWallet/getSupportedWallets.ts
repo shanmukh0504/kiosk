@@ -89,7 +89,12 @@ const blockchainConfigs = {
     flagKey: "isSolana" as const,
     inputKey: "solanaWallets" as const,
     finder: (wallets: SolanaWallet[], key: string) => {
-      const normalizedKey = key === "app.phantom" ? "phantom" : key === "app.backpack" ? "backpack" : key;
+      const normalizedKey =
+        key === "app.phantom"
+          ? "phantom"
+          : key === "app.backpack"
+            ? "backpack"
+            : key;
       return wallets?.find(
         (w) => w.adapter.name.toLowerCase() === normalizedKey.toLowerCase()
       );
@@ -237,7 +242,7 @@ const multiChainWallets = {
     bitcoinId: "phantom",
   },
   "app.backpack": {
-    solanaName: "backpack", 
+    solanaName: "backpack",
     suiName: "Backpack",
   },
 } as const;
@@ -254,9 +259,10 @@ function handleMultiChainWallets(
       ? walletInputs.evmWallets?.find((w) => w.id === walletId)
       : undefined;
 
-    const btcWallet = config.isBitcoinSupported && "bitcoinId" in multiChainConfig
-      ? walletInputs.bitcoinWallets?.[multiChainConfig.bitcoinId]
-      : undefined;
+    const btcWallet =
+      config.isBitcoinSupported && "bitcoinId" in multiChainConfig
+        ? walletInputs.bitcoinWallets?.[multiChainConfig.bitcoinId]
+        : undefined;
 
     const solanaWallet = config.isSolanaSupported
       ? walletInputs.solanaWallets?.find(
@@ -265,7 +271,9 @@ function handleMultiChainWallets(
       : undefined;
 
     const suiWallet = config.isSuiSupported
-      ? walletInputs.suiWallets?.find((w) => w.name === multiChainConfig.suiName)
+      ? walletInputs.suiWallets?.find(
+          (w) => w.name === multiChainConfig.suiName
+        )
       : undefined;
 
     const isEVM = !!evmWallet;

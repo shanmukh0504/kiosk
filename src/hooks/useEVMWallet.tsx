@@ -1,5 +1,10 @@
-import { useAccount, useConnect, useDisconnect, useWalletClient } from "wagmi";
-import { useChainId } from "wagmi";
+import {
+  useAccount,
+  useConnect,
+  useDisconnect,
+  useWalletClient,
+  useChainId,
+} from "wagmi";
 import { clearLocalStorageExcept } from "../utils/utils";
 import { LOCAL_STORAGE_KEYS } from "../constants/constants";
 

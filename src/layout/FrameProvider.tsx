@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import sdk, { type Context } from "@farcaster/frame-sdk";
-import React from "react";
 
 interface FrameContextType {
   isSDKLoaded: boolean;

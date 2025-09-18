@@ -241,10 +241,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     }
   },
 
-  fetchAndSetEvmBalances: async (
-    address: string,
-    fetchOnlyAsset?: Asset
-  ) => {
+  fetchAndSetEvmBalances: async (address: string, fetchOnlyAsset?: Asset) => {
     const { assets, workingRPCs } = get();
     if (!assets) return;
 

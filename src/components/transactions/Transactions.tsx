@@ -1,7 +1,6 @@
-import { Chip, Typography } from "@gardenfi/garden-book";
+import { Chip, Typography, Button } from "@gardenfi/garden-book";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useEffect, FC, useState, useMemo } from "react";
-import { Button } from "@gardenfi/garden-book";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import transactionHistoryStore from "../../store/transactionHistoryStore";
 import { PendingTransactions } from "./PendingTransactions";
