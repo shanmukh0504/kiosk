@@ -3,6 +3,17 @@
 
 export PATH="$PWD/node_modules/.bin:$PATH"
 
+if [ "${HUSKY:-1}" = "0" ]; then
+  exit 0
+fi
+
 yarn lint
 
 git add .
+
+if git diff --cached --quiet; then
+  if [ "${ALLOW_EMPTY_COMMIT:-0}" != "1" ]; then
+    echo "Aborting commit: no staged changes. Stage files or set ALLOW_EMPTY_COMMIT=1 to allow an empty commit." >&2
+    exit 1
+  fi
+fi
