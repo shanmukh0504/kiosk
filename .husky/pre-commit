@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+export PATH="$PWD/node_modules/.bin:$PATH"
+
 yarn lint
 
 git add .
