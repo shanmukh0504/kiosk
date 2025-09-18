@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.7]
+
+- Fixed USD value formatting and rate display.
+- Added Evm and Sui support for Backpack wallet.
+
 ## [1.1.6]
 
 ### Fixed

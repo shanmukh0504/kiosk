@@ -38,7 +38,7 @@ export const getThorFee = async (
         timeout: 10000,
         headers: {
           "X-Api-Key": "3a86e7e1-54fd-4766-8cf5-d16ae00dde1b",
-          "X-Version": "2",
+          "X-Version": "3",
           "Content-Type": "application/json",
         },
       }
