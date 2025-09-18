@@ -178,7 +178,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           connector.wallet?.solanaWallet,
           connector.wallet?.suiWallet,
         ].filter(Boolean);
-        console.log("connector.wallet.suiWallet", connector);
+
         if (walletTypes.length < 2) return;
 
         setMultiWalletConnector({
@@ -318,15 +318,19 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                       (provider.id === wallet.id ||
                         provider.id === evmToBTCid[wallet.id])
                     ),
-                    [BlockchainType.EVM]: !!(
-                      connector &&
-                      (connector.id === wallet.id ||
-                        (typeof window !== "undefined" &&
-                          window.ethereum &&
-                          window.ethereum.isCoinbaseWallet &&
-                          connector.id === "injected" &&
-                          wallet.id === "com.coinbase.wallet"))
-                    ),
+                    [BlockchainType.EVM]: (() =>
+                      !!(
+                        connector &&
+                        wallet.isEVM &&
+                        (connector.id === wallet.id ||
+                          (wallet.id === "app.backpack" &&
+                            connector.id === "backpack") ||
+                          (typeof window !== "undefined" &&
+                            window.ethereum &&
+                            window.ethereum.isCoinbaseWallet &&
+                            connector.id === "injected" &&
+                            wallet.id === "com.coinbase.wallet"))
+                      ))(),
                     [BlockchainType.Starknet]: !!(
                       starknetConnector &&
                       wallet.isStarknet &&
@@ -338,7 +342,10 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                       solanaConnected &&
                       ((wallet.id === "app.phantom" &&
                         solanaSelectedWallet?.adapter.name === "Phantom") ||
+                        (wallet.id === "app.backpack" &&
+                          solanaSelectedWallet?.adapter.name === "Backpack") ||
                         (wallet.id !== "app.phantom" &&
+                          wallet.id !== "app.backpack" &&
                           solanaSelectedWallet?.adapter.name.toLowerCase() ===
                             wallet.id.toLowerCase()))
                     ),
@@ -350,6 +357,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                         (wallet.name === "Slush Wallet" &&
                           suiSelectedWallet?.id ===
                             "com.mystenlabs.suiwallet") ||
+                        (wallet.name === "Backpack" &&
+                          suiSelectedWallet?.name === "Backpack") ||
                         (wallet.name === "OKX Wallet" &&
                           suiSelectedWallet?.name === "OKX Wallet"))
                     ),

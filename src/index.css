@@ -1,3 +1,6 @@
+/* Import Mini App specific styles */
+@import "./styles/miniApp.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -27,6 +30,9 @@ body {
   }
   .navbar-shine:before {
     @apply absolute left-0 top-0 h-full w-[84px] animate-navbar-shine bg-gradient-to-l from-transparent via-white/75 via-25% to-transparent opacity-0 content-[''];
+  }
+  .loader-shine:before {
+    @apply absolute left-0 top-0 h-full w-[424px] animate-loader-shine bg-gradient-to-l from-transparent via-white/75 via-25% to-transparent opacity-0 content-[''];
   }
 }
 

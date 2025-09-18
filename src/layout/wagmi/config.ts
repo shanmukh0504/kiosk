@@ -19,8 +19,9 @@ import {
   corn,
   bscTestnet,
 } from "wagmi/chains";
+import { farcasterMiniApp as miniAppConnector } from "@farcaster/miniapp-wagmi-connector";
 
-import { injected, metaMask } from "wagmi/connectors";
+import { injected, metaMask, coinbaseWallet } from "wagmi/connectors";
 
 declare global {
   interface Window {
@@ -28,6 +29,9 @@ declare global {
       ethereum?: any;
     };
     keplr?: {
+      ethereum?: any;
+    };
+    backpack?: {
       ethereum?: any;
     };
   }
@@ -108,6 +112,17 @@ export const leapConnector = injected({
   },
 });
 
+export const backpackConnector = injected({
+  target() {
+    return {
+      id: "backpack",
+      name: "Backpack",
+      provider:
+        typeof window !== "undefined" ? window.backpack?.ethereum : undefined,
+    };
+  },
+});
+
 export const KeplrConnector = injected({
   target() {
     return {
@@ -121,7 +136,18 @@ export const KeplrConnector = injected({
 
 export const config = createConfig({
   chains: SupportedChains,
-  connectors: [injected(), metaMask(), leapConnector, KeplrConnector],
+  connectors: [
+    injected(),
+    metaMask(),
+    coinbaseWallet({
+      appName: "Garden Finance",
+      appLogoUrl: "https://garden-finance.imgix.net/token-images/seed.svg",
+    }),
+    leapConnector,
+    KeplrConnector,
+    backpackConnector,
+    miniAppConnector(),
+  ],
   transports: {
     [mainnet.id]: http(),
     [arbitrum.id]: http(),

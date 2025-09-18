@@ -7,9 +7,10 @@ import { PendingTransactions } from "./PendingTransactions";
 import { CompletedTransactions } from "./CompletedTransactions";
 import { BlockchainType } from "@gardenfi/orderbook";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
-import { starknetAddressToXOnly, toXOnly } from "../../utils/utils";
+import { starknetAddressToXOnly } from "../../utils/utils";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 
 type TransactionsProps = {
   isOpen: boolean;
@@ -35,6 +36,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   const { starknetAddress } = useStarknetWallet();
   const { solanaAddress } = useSolanaWallet();
   const { currentAccount } = useSuiWallet();
+  const { account: btcAddress } = useBitcoinWallet();
   const { fetchTransactions, totalItems, transactions, loadMore } =
     transactionHistoryStore();
 
@@ -42,11 +44,12 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
     () => activeTab === "completed" && transactions.length < totalItems,
     [transactions.length, totalItems, activeTab]
   );
+  const orderbookUrl = import.meta.env.VITE_ORDERBOOK_URL;
 
   const handleLoadMore = async () => {
     if (!garden) return;
     setIsLoadingMore(true);
-    await loadMore(garden.orderbook, connectedWallets).finally(() => {
+    await loadMore(orderbookUrl, connectedWallets).finally(() => {
       setIsLoadingMore(false);
     });
   };
@@ -54,21 +57,19 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   useEffect(() => {
     if (!garden || !isOpen) return;
     if (garden) {
-      garden.btcWallet?.getPublicKey().then((publicKey) => {
-        setConnectedWallets({
-          Bitcoin: toXOnly(publicKey),
-          EVM: address ?? "",
-          Starknet: starknetAddressToXOnly(starknetAddress ?? ""),
-          Solana: solanaAddress ?? "",
-          Sui: currentAccount?.address ?? "",
-        });
-        fetchTransactions(garden.orderbook, {
-          Bitcoin: toXOnly(publicKey),
-          EVM: address ?? "",
-          Starknet: starknetAddressToXOnly(starknetAddress ?? ""),
-          Solana: solanaAddress ?? "",
-          Sui: currentAccount?.address ?? "",
-        });
+      setConnectedWallets({
+        Bitcoin: btcAddress ?? "",
+        EVM: address ?? "",
+        Starknet: starknetAddressToXOnly(starknetAddress ?? ""),
+        Solana: solanaAddress ?? "",
+        Sui: currentAccount?.address ?? "",
+      });
+      fetchTransactions(orderbookUrl, {
+        Bitcoin: btcAddress ?? "",
+        EVM: address ?? "",
+        Starknet: starknetAddressToXOnly(starknetAddress ?? ""),
+        Solana: solanaAddress ?? "",
+        Sui: currentAccount?.address ?? "",
       });
     }
   }, [
@@ -79,6 +80,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
     isOpen,
     solanaAddress,
     currentAccount,
+    btcAddress,
   ]);
 
   return (

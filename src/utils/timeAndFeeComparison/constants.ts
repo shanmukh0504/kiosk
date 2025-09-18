@@ -180,11 +180,18 @@ export const ASSET_MAPPINGS: AssetMappings = {
   [SwapPlatform.THORSWAP]: {
     "bitcoin:BTC": "BTC.BTC",
     "arbitrum:USDC": "ARB.USDC-0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+    "ethereum:ETH": "ETH.ETH",
     "ethereum:USDC": "ETH.USDC-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
     "ethereum:WBTC": "ETH.WBTC-0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
     "ethereum:cbBTC": "ETH.cbBTC-0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
     "base:USDC": "BASE.USDC-0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
     "base:cbBTC": "BASE.CBBTC-0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+    "bnbchain:BNB": "BSC.BNB",
+    "bnbchain:BTCB": "BSC.BTCB-0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
+    "bnbchain:USDC": "BSC.USDC-0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+    "solana:SOL": "SOL.SOL",
+    "solana:USDC": "SOL.USDC-EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    "solana:cbBTC": "SOL.cbBTC-cbbtcf3aa214zXHbiAZQwf4122FBYbraNdFqgw4iMij",
   },
   [SwapPlatform.RELAY]: {
     "bitcoin:BTC": {

@@ -8,7 +8,12 @@ import { formatAmount } from "../utils/utils";
 import { isBitcoin, isSui } from "@gardenfi/orderbook";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { swapStore } from "../store/swapStore";
-import { getBitcoinNetwork, SUI_SOLVER_ADDRESS } from "../constants/constants";
+import {
+  BITCOIN_DEFAULT_NETWORK_FEE,
+  getBitcoinNetwork,
+  SUI_DEFAULT_NETWORK_FEE,
+  SUI_SOLVER_ADDRESS,
+} from "../constants/constants";
 import logger from "../utils/logger";
 
 export const useNetworkFees = () => {
@@ -47,23 +52,34 @@ export const useNetworkFees = () => {
 
         let totalFees = strategy.fixed_fee;
 
+        const feeCalculations = [];
+
         if (hasBitcoinInput || hasBitcoinOutput) {
-          const bitcoinFees = await calculateBitcoinNetworkFees(
-            bitcoin_network,
-            hasBitcoinInput ? inputAsset : outputAsset
+          feeCalculations.push(
+            calculateBitcoinNetworkFees(
+              bitcoin_network,
+              hasBitcoinInput ? inputAsset : outputAsset
+            ).catch(() => BITCOIN_DEFAULT_NETWORK_FEE)
           );
-          totalFees += bitcoinFees;
+        } else {
+          feeCalculations.push(Promise.resolve(0));
         }
 
         if (hasSuiInput) {
-          const suiFees = await getSuiNetworkFee(
-            SUI_SOLVER_ADDRESS,
-            inputAsset,
-            inputAmount,
-            fiatData
+          feeCalculations.push(
+            getSuiNetworkFee(
+              SUI_SOLVER_ADDRESS,
+              inputAsset,
+              inputAmount,
+              fiatData
+            ).catch(() => SUI_DEFAULT_NETWORK_FEE)
           );
-          totalFees += suiFees;
+        } else {
+          feeCalculations.push(Promise.resolve(0));
         }
+
+        const [bitcoinFees, suiFees] = await Promise.all(feeCalculations);
+        totalFees += bitcoinFees + suiFees;
         setNetworkFees(formatAmount(totalFees, 0));
       } catch (error) {
         logger.error("failed to fetch network fees ❌", error);
