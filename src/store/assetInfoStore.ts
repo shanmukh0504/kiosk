@@ -222,11 +222,10 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           chains[chainInfo.identifier] = allChains[chainInfo.identifier];
         }
       }
-      set({ allAssets, allChains, assets, chains, error: null }); // Clear any previous errors on success
+      set({ allAssets, allChains, assets, chains });
     } catch (error) {
-      const errorMessage = "Failed to fetch assets data after multiple retries";
-      logger.error(`${errorMessage} ❌`, error);
-      set({ error: errorMessage });
+      logger.error("failed to fetch assets data ❌", error);
+      set({ error: "Failed to fetch assets data" });
     } finally {
       set({ isLoading: false });
     }
