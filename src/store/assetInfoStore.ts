@@ -149,12 +149,41 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     }),
 
   fetchAndSetAssetsAndChains: async () => {
+    const maxRetries = 3;
+    const timeout = 3000;
+    let attempt = 0;
+
+    const fetchAssetsWithTimeout = async (): Promise<Networks> => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      try {
+        const res = await axios.get<Networks>(
+          API().data.assets(network).toString(),
+          {
+            signal: controller.signal,
+            timeout: timeout,
+          }
+        );
+        clearTimeout(timeoutId);
+        return res.data;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        attempt++;
+
+        if (attempt >= maxRetries) {
+          throw error;
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        return fetchAssetsWithTimeout();
+      }
+    };
+
     try {
       set({ isLoading: true });
-      const res = await axios.get<Networks>(
-        API().data.assets(network).toString()
-      );
-      const assetsData = res.data;
+      const assetsData = await fetchAssetsWithTimeout();
+
       const allChains: Chains = {};
       const allAssets: Assets = {};
       const assets: Assets = {};
@@ -193,10 +222,11 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           chains[chainInfo.identifier] = allChains[chainInfo.identifier];
         }
       }
-      set({ allAssets, allChains, assets, chains });
+      set({ allAssets, allChains, assets, chains, error: null }); // Clear any previous errors on success
     } catch (error) {
-      logger.error("failed to fetch assets data ❌", error);
-      set({ error: "Failed to fetch assets data" });
+      const errorMessage = "Failed to fetch assets data after multiple retries";
+      logger.error(`${errorMessage} ❌`, error);
+      set({ error: errorMessage });
     } finally {
       set({ isLoading: false });
     }

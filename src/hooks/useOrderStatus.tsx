@@ -305,7 +305,7 @@ export const useOrderStatus = () => {
         if (!inputAsset || !outputAsset) return;
 
         Toast.success(
-          `Swap success ${inputAsset.symbol} to ${outputAsset.symbol}`
+          `Successfully swapped ${inputAsset.symbol} to ${outputAsset.symbol}`
         );
       }
     };
