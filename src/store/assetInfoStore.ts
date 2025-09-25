@@ -150,39 +150,37 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
 
   fetchAndSetAssetsAndChains: async () => {
     const maxRetries = 3;
-    const timeout = 3000;
+    const abortAfterMs = 3000;
     let attempt = 0;
 
-    const fetchAssetsWithTimeout = async (): Promise<Networks> => {
+    const fetchAssetsWithRetry = async (): Promise<Networks> => {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      const timer = setTimeout(() => controller.abort(), abortAfterMs);
 
       try {
         const res = await axios.get<Networks>(
           API().data.assets(network).toString(),
-          {
-            signal: controller.signal,
-            timeout: timeout,
-          }
+          { signal: controller.signal }
         );
-        clearTimeout(timeoutId);
         return res.data;
       } catch (error) {
-        clearTimeout(timeoutId);
         attempt++;
-
         if (attempt >= maxRetries) {
-          throw error;
+          console.log("Failed to fetch assets data ❌", error);
+          return {} as Networks;
         }
 
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        return fetchAssetsWithTimeout();
+        const delay = 100 * Math.pow(2, attempt - 1);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        return fetchAssetsWithRetry();
+      } finally {
+        clearTimeout(timer);
       }
     };
 
     try {
       set({ isLoading: true });
-      const assetsData = await fetchAssetsWithTimeout();
+      const assetsData = await fetchAssetsWithRetry();
 
       const allChains: Chains = {};
       const allAssets: Assets = {};
