@@ -149,7 +149,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     }),
 
   fetchAndSetAssetsAndChains: async () => {
-    const maxRetries = 3;
+    const maxRetries = 7;
     const abortAfterMs = 3000;
     let attempt = 0;
 
