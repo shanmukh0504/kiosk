@@ -9,7 +9,11 @@ export const formatTime = (totalSeconds: number | string): string => {
   const minutes = Math.floor((sec % 3600) / 60);
   const seconds = (sec % 60).toFixed(0);
 
-  return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m ${seconds}s`;
+  return hours > 0
+    ? `${hours}h ${minutes}m`
+    : minutes > 0
+      ? `${minutes}m ${seconds}s`
+      : `${seconds}s`;
 };
 
 export const getChainId = (chain: string) => {
