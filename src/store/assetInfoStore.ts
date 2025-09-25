@@ -154,13 +154,10 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     let attempt = 0;
 
     const fetchAssetsWithRetry = async (): Promise<Networks> => {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), abortAfterMs);
-
       try {
         const res = await axios.get<Networks>(
           API().data.assets(network).toString(),
-          { signal: controller.signal }
+          { timeout: abortAfterMs }
         );
         return res.data;
       } catch (error) {
@@ -173,8 +170,6 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
         const delay = 100 * Math.pow(2, attempt - 1);
         await new Promise((resolve) => setTimeout(resolve, delay));
         return fetchAssetsWithRetry();
-      } finally {
-        clearTimeout(timer);
       }
     };
 
