@@ -52,7 +52,8 @@ export const REWARD_CONFIG = {
       REWARD_TOKEN_DECIMALS: 8,
       EXPLORER: new Url("https://sepolia.basescan.org"),
       TOKEN_LOGO: "https://garden-finance.imgix.net/token-images/cbBTC.svg",
-      CHAIN_LOGO: "https://garden-finance.imgix.net/chain_images/base.svg",
+      CHAIN_LOGO:
+        "https://garden-finance.imgix.net/chain_images/base-white.svg",
     },
     //base
     8453: {
@@ -61,7 +62,8 @@ export const REWARD_CONFIG = {
       REWARD_TOKEN_DECIMALS: 8,
       EXPLORER: new Url("https://basescan.org"),
       TOKEN_LOGO: "https://garden-finance.imgix.net/token-images/cbBTC.svg",
-      CHAIN_LOGO: "https://garden-finance.imgix.net/chain_images/base.svg",
+      CHAIN_LOGO:
+        "https://garden-finance.imgix.net/chain_images/base-white.svg",
     },
   },
   SEED: {
