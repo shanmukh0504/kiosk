@@ -7,6 +7,7 @@
 - Updated balance retrieval function to use fallback RPC clients as default instead of default wallet RPCs.
 - Rate conversion and display estimated token price for inputAsset.
 - Fixed fiat token prices.
+- Add Tokeo wallet support for SUI Mainnet
 
 
 ## [1.1.4]
