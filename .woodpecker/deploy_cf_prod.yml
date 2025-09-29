@@ -36,9 +36,9 @@ steps:
         from_secret: TESTNET_VITE_REWARD_URL
       VITE_STAKING_URL:
         from_secret: TESTNET_VITE_STAKING_URL
-    # Trigger pipeline on all pushes
+    # Trigger pipeline on manual trigger on dev/testnet branches
     when:
-      event: [push,manual]
+      event: manual
       branch: [dev,testnet]
     commands:
       - apk add --no-cache python3 make g++ linux-headers eudev-dev pkgconf
@@ -66,10 +66,7 @@ steps:
       - corepack enable
       - yarn dlx wrangler@latest pages publish dist --project-name $CF_PROJECT_NAME --branch $BRANCH
 
-
-
 ########### Mainnet Pipeline ###########
-steps:
   # Step 1: Build the Vite app (runs on all branches)
   - name: build
     image: node:20-alpine
@@ -96,7 +93,7 @@ steps:
         from_secret: MAINNET_VITE_REWARD_URL
       VITE_STAKING_URL:
         from_secret: MAINNET_VITE_STAKING_URL
-    # Trigger pipeline on all pushes
+    # Trigger pipeline on manual trigger on main/mainnet branches
     when:
       event: manual
       branch: [main,mainnet]
