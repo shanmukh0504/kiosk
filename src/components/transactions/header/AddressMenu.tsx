@@ -1,6 +1,5 @@
-import { FC, useMemo } from "react";
+import { FC, useMemo, useId } from "react";
 import { AddIcon, LogoutIcon } from "@gardenfi/garden-book";
-import { useId } from "react";
 import { Tooltip } from "../../../common/Tooltip";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";

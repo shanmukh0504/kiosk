@@ -8,9 +8,7 @@ type RPCValidationResult = {
   responseTime?: number;
 };
 
-export const testRPC = async (
-  rpcUrl: string
-): Promise<RPCValidationResult> => {
+export const testRPC = async (rpcUrl: string): Promise<RPCValidationResult> => {
   const startTime = Date.now();
 
   try {

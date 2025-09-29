@@ -180,11 +180,18 @@ export const ASSET_MAPPINGS: AssetMappings = {
   [SwapPlatform.THORSWAP]: {
     "bitcoin:BTC": "BTC.BTC",
     "arbitrum:USDC": "ARB.USDC-0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+    "ethereum:ETH": "ETH.ETH",
     "ethereum:USDC": "ETH.USDC-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
     "ethereum:WBTC": "ETH.WBTC-0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
     "ethereum:cbBTC": "ETH.cbBTC-0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
     "base:USDC": "BASE.USDC-0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
     "base:cbBTC": "BASE.CBBTC-0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+    "bnbchain:BNB": "BSC.BNB",
+    "bnbchain:BTCB": "BSC.BTCB-0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
+    "bnbchain:USDC": "BSC.USDC-0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+    "solana:SOL": "SOL.SOL",
+    "solana:USDC": "SOL.USDC-EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    "solana:cbBTC": "SOL.cbBTC-cbbtcf3aa214zXHbiAZQwf4122FBYbraNdFqgw4iMij",
   },
   [SwapPlatform.RELAY]: {
     "bitcoin:BTC": {
@@ -229,39 +236,39 @@ export const ASSET_MAPPINGS: AssetMappings = {
     },
     "solana:cbBTC": {
       chainId: "792703809",
-      currency: "cbbtcf3aa214zXHbiAZQwf4122FBYbraNdFqgw4iMij"
+      currency: "cbbtcf3aa214zXHbiAZQwf4122FBYbraNdFqgw4iMij",
     },
     "solana:SOL": {
       chainId: "792703809",
-      currency: "11111111111111111111111111111111"
+      currency: "11111111111111111111111111111111",
     },
     "solana:USDC": {
       chainId: "792703809",
-      currency: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+      currency: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
     },
     "corn:BTCN": {
       chainId: "21000000",
-      currency: "0x0000000000000000000000000000000000000000"
+      currency: "0x0000000000000000000000000000000000000000",
     },
     "unichain:USDC": {
       chainId: "130",
-      currency: "0x078d782b760474a361dda0af3839290b0ef57ad6"
+      currency: "0x078d782b760474a361dda0af3839290b0ef57ad6",
     },
     "unichain:WBTC": {
       chainId: "130",
-      currency: "0x0555e30da8f98308edb960aa94c0db47230d2b9c"
+      currency: "0x0555e30da8f98308edb960aa94c0db47230d2b9c",
     },
     "bnbchain:BTCB": {
       chainId: "56",
-      currency: "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c"
+      currency: "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
     },
     "bnbchain:USDC": {
       chainId: "56",
-      currency: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580"
+      currency: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580",
     },
     "hyperliquid:uBTC": {
       chainId: "999",
-      currency: "0x9fdbda0a5e284c32744d2f17ee5c74b284993463"
+      currency: "0x9fdbda0a5e284c32744d2f17ee5c74b284993463",
     },
   },
   [SwapPlatform.CHAINFLIP]: {
@@ -269,7 +276,7 @@ export const ASSET_MAPPINGS: AssetMappings = {
       chain: Chains.Ethereum,
       asset: Assets.ETH,
       htlc_address: "0x1ac7A0ebf13a996D5915e212900bE2d074f94988",
-      address: "0x0000000000000000000000000000000000000000"
+      address: "0x0000000000000000000000000000000000000000",
     },
     "bitcoin:BTC": {
       chain: Chains.Bitcoin,
@@ -292,14 +299,15 @@ export const ASSET_MAPPINGS: AssetMappings = {
     "solana:USDC": {
       chain: Chains.Solana,
       asset: Assets.USDC,
-      htlc_address: "gdnvdMCHJgnidtU7SL8RkRshHPvDJU1pdfZEpoLvqdU_EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-      address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+      htlc_address:
+        "gdnvdMCHJgnidtU7SL8RkRshHPvDJU1pdfZEpoLvqdU_EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
     },
     "solana:SOL": {
       chain: Chains.Solana,
       asset: Assets.SOL,
       htlc_address: "primary",
-      address: "0x0000000000000000000000000000000000000000"
+      address: "0x0000000000000000000000000000000000000000",
     },
   },
 };
@@ -312,4 +320,5 @@ export const BTC_TESTNET_CHAIN_ID = "9092725";
 export const BTC_TESTNET_RECIPIENT =
   "tb1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqtlc5af";
 export const SOLANA_MAINNET_CHAIN_ID = "792703809";
-export const SOLANA_MAINNET_RECIPIENT = "CbKGgVKLJFb8bBrf58DnAkdryX6ubewVytn7X957YwNr";
+export const SOLANA_MAINNET_RECIPIENT =
+  "CbKGgVKLJFb8bBrf58DnAkdryX6ubewVytn7X957YwNr";

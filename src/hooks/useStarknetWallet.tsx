@@ -1,6 +1,10 @@
-import { useAccount, useConnect, useDisconnect } from "@starknet-react/core";
+import {
+  useAccount,
+  useConnect,
+  useDisconnect,
+  useSwitchChain,
+} from "@starknet-react/core";
 import { useEffect } from "react";
-import { useSwitchChain } from "@starknet-react/core";
 import { constants } from "starknet";
 import { network } from "../constants/constants";
 import { Network } from "@gardenfi/utils";

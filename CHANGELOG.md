@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.1.8]
+
+- Update toast for successful swap and add abort controller to fetch assets function.
+
+## [1.1.7]
+
+- Fixed USD value formatting and rate display.
+- Added Evm and Sui support for Backpack wallet.
+- Added Husky pre-commit hook to run ESLint with --fix, restage updated files, and block empty commits.
+
+## [1.1.6]
+
+### Fixed
+
+- Fixed missing Bitcoin chain in Phantom wallet's multi-chain connection modal.
+- Updated description in farcaster config.
+
 ## [1.1.5]
 
 ### Fixed
@@ -8,7 +25,6 @@
 - Rate conversion and display estimated token price for inputAsset.
 - Fixed fiat token prices.
 - Add Tokeo wallet support for SUI Mainnet
-
 
 ## [1.1.4]
 
