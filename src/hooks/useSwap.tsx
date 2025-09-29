@@ -509,7 +509,6 @@ export const useSwap = () => {
         additionalData,
       });
       if (!res.ok) {
-        alert(res.error);
         if (
           res.error.includes(
             "Cannot read properties of undefined (reading 'toLowerCase')"
