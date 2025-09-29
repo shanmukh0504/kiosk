@@ -1,0 +1,127 @@
+# woodpecker.yml
+# Build Vite app and deploy to Cloudflare Pages using secrets
+
+
+clone:
+  git:
+    image: woodpeckerci/plugin-git
+    settings:
+      depth: 0
+
+########### Testnet Pipeline ###########
+steps:
+  # Step 1: Build the Vite app (runs on all branches)
+  - name: build
+    image: node:20-alpine
+    environment:
+      NODE_OPTIONS:
+        from_secret: NODE_OPTIONS
+      NODE_VERSION:
+        from_secret: NODE_VERSION
+      SKIP_INSTALL_DEPS:
+        from_secret: SKIP_INSTALL_DEPS
+      VITE_ENVIRONMENT:
+        from_secret: TESTNET_VITE_ENVIRONMENT
+      VITE_EXPLORER_URL:
+        from_secret: TESTNET_VITE_EXPLORER_URL
+      VITE_INFO_URL:
+        from_secret: TESTNET_VITE_INFO_URL
+      VITE_NETWORK:
+        from_secret: TESTNET_VITE_NETWORK
+      VITE_ORDERBOOK_URL:
+        from_secret: TESTNET_VITE_ORDERBOOK_URL
+      VITE_QUOTE_URL:
+        from_secret: TESTNET_VITE_QUOTE_URL
+      VITE_REWARD_URL:
+        from_secret: TESTNET_VITE_REWARD_URL
+      VITE_STAKING_URL:
+        from_secret: TESTNET_VITE_STAKING_URL
+    # Trigger pipeline on all pushes
+    when:
+      event: [push,manual]
+      branch: [dev,testnet]
+    commands:
+      - apk add --no-cache python3 make g++ linux-headers eudev-dev pkgconf
+      - corepack enable
+      - yarn set version 4.5.1
+      - yarn install
+      - yarn build
+
+  # Step 2: Deploy to Cloudflare Pages (runs only when manually triggered)
+  - name: deploy
+    image: node:20-alpine
+    environment:
+      CF_API_TOKEN:
+        from_secret: cf_api_token
+      CF_ACCOUNT_ID:
+        from_secret: cf_account_id
+      CF_PROJECT_NAME:
+        from_secret: testnet_cf_project_name
+      BRANCH:
+        from_secret: testnet_cf_branch
+    when:
+      event: manual
+      branch: [dev,testnet]
+    commands:
+      - corepack enable
+      - yarn dlx wrangler@latest pages publish dist --project-name $CF_PROJECT_NAME --branch $BRANCH
+
+
+
+########### Mainnet Pipeline ###########
+steps:
+  # Step 1: Build the Vite app (runs on all branches)
+  - name: build
+    image: node:20-alpine
+    environment:
+      NODE_OPTIONS:
+        from_secret: NODE_OPTIONS
+      NODE_VERSION:
+        from_secret: NODE_VERSION
+      SKIP_INSTALL_DEPS:
+        from_secret: SKIP_INSTALL_DEPS
+      VITE_ENVIRONMENT:
+        from_secret: MAINNET_VITE_ENVIRONMENT
+      VITE_EXPLORER_URL:
+        from_secret: MAINNET_VITE_EXPLORER_URL
+      VITE_INFO_URL:
+        from_secret: MAINNET_VITE_INFO_URL
+      VITE_NETWORK:
+        from_secret: MAINNET_VITE_NETWORK
+      VITE_ORDERBOOK_URL:
+        from_secret: MAINNET_VITE_ORDERBOOK_URL
+      VITE_QUOTE_URL:
+        from_secret: MAINNET_VITE_QUOTE_URL
+      VITE_REWARD_URL:
+        from_secret: MAINNET_VITE_REWARD_URL
+      VITE_STAKING_URL:
+        from_secret: MAINNET_VITE_STAKING_URL
+    # Trigger pipeline on all pushes
+    when:
+      event: manual
+      branch: [main,mainnet]
+    commands:
+      - apk add --no-cache python3 make g++ linux-headers eudev-dev pkgconf
+      - corepack enable
+      - yarn set version 4.5.1
+      - yarn install
+      - yarn build
+
+  # Step 2: Deploy to Cloudflare Pages (runs only when manually triggered)
+  - name: deploy
+    image: node:20-alpine
+    environment:
+      CF_API_TOKEN:
+        from_secret: cf_api_token
+      CF_ACCOUNT_ID:
+        from_secret: cf_account_id
+      CF_PROJECT_NAME:
+        from_secret: mainnet_cf_project_name
+      BRANCH:
+        from_secret: mainnet_cf_branch
+    when:
+      event: manual
+      branch: [main,mainnet]
+    commands:
+      - corepack enable
+      - yarn dlx wrangler@latest pages publish dist --project-name $CF_PROJECT_NAME --branch $BRANCH
