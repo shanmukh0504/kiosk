@@ -146,7 +146,11 @@ const manualEVMChecks: Record<
   { check: () => boolean; connectorId: string }
 > = {
   "com.coinbase.wallet": {
-    check: () => !!(window.ethereum && window.ethereum.isCoinbaseWallet),
+    check: () =>
+      !!(
+        (window.ethereum && window.ethereum.isCoinbaseWallet) ||
+        window.coinbaseWalletExtension
+      ),
     connectorId: "injected",
   },
   keplr: {
