@@ -53,7 +53,7 @@ const RateDisplay = ({
       )}
     </Typography>
     {isFetchingQuote ? (
-      <div className="h-4 w-8 animate-[pulse_1.5s_ease-in-out_infinite] rounded bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200%_100%]"></div>
+      <div className="h-4 w-11 animate-[pulse_1.5s_ease-in-out_infinite] rounded bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 bg-[length:200%_100%]"></div>
     ) : (
       <Typography
         size="h5"
@@ -136,15 +136,16 @@ export const FeesAndRateDetails = () => {
 
   useEffect(() => {
     const assetChanged =
-      (previousAssets.current.inputAsset?.symbol !== inputAsset?.symbol &&
-        previousAssets.current.inputAsset?.chain !== inputAsset?.chain) ||
-      (previousAssets.current.outputAsset?.symbol !== outputAsset?.symbol &&
-        previousAssets.current.outputAsset?.chain !== outputAsset?.chain);
-    if (assetChanged && (isFetchingQuote.input || isFetchingQuote.output)) {
+      previousAssets.current.inputAsset?.symbol !== inputAsset?.symbol ||
+      previousAssets.current.inputAsset?.chain !== inputAsset?.chain ||
+      previousAssets.current.outputAsset?.symbol !== outputAsset?.symbol ||
+      previousAssets.current.outputAsset?.chain !== outputAsset?.chain;
+
+    if (assetChanged && inputAsset && outputAsset) {
       setIsAssetLoading(true);
       previousAssets.current = { inputAsset, outputAsset };
     }
-    if (!isFetchingQuote.input && !isFetchingQuote.output) {
+    if (!isFetchingQuote.input && !isFetchingQuote.output && !assetChanged) {
       setIsAssetLoading(false);
     }
   }, [inputAsset, outputAsset, isFetchingQuote.input, isFetchingQuote.output]);
