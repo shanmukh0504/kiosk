@@ -63,7 +63,6 @@ export const TransactionRow: FC<TransactionProps> = ({
   const { setOrder, setIsOpen } = orderInProgressStore();
   const { setCloseModal } = modalStore();
   // const { evmInitiate } = useGarden();
-
   const sendAsset = useMemo(
     () => getAssetFromSwap(source_swap, allAssets),
     [source_swap, allAssets]

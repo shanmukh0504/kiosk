@@ -10,7 +10,7 @@ import { assetInfoStore } from "../store/assetInfoStore";
 import { swapStore } from "../store/swapStore";
 import {
   BITCOIN_DEFAULT_NETWORK_FEE,
-  getBitcoinNetwork,
+  network,
   SUI_DEFAULT_NETWORK_FEE,
   SUI_SOLVER_ADDRESS,
 } from "../constants/constants";
@@ -25,8 +25,6 @@ export const useNetworkFees = () => {
     outputAsset,
     inputAmount,
   } = swapStore();
-
-  const bitcoin_network = getBitcoinNetwork();
 
   useEffect(() => {
     if (!inputAsset || !outputAsset || !strategies.val) return;
@@ -57,7 +55,7 @@ export const useNetworkFees = () => {
         if (hasBitcoinInput || hasBitcoinOutput) {
           feeCalculations.push(
             calculateBitcoinNetworkFees(
-              bitcoin_network,
+              network,
               hasBitcoinInput ? inputAsset : outputAsset
             ).catch(() => BITCOIN_DEFAULT_NETWORK_FEE)
           );
@@ -95,12 +93,5 @@ export const useNetworkFees = () => {
     return () => {
       clearInterval(intervalId);
     };
-  }, [
-    bitcoin_network,
-    inputAsset,
-    outputAsset,
-    strategies.val,
-    inputAmount,
-    fiatData,
-  ]);
+  }, [network, inputAsset, outputAsset, strategies.val, inputAmount, fiatData]);
 };

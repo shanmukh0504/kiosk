@@ -5,9 +5,6 @@ export const mergeOrders = (
   updatedOrder: Order
 ): Order => {
   if (!currentOrder) return updatedOrder;
-  if (
-    currentOrder.create_order.create_id !== updatedOrder.create_order.create_id
-  )
-    return updatedOrder;
+  if (currentOrder.order_id !== updatedOrder.order_id) return updatedOrder;
   return updatedOrder;
 };

@@ -14,14 +14,10 @@ import logger from "../../utils/logger";
 export const Swap = () => {
   const [, setSearchParams] = useSearchParams();
 
-  const { fetchAndSetStrategies, assets } = assetInfoStore();
+  const { assets } = assetInfoStore();
   const { garden } = useGarden();
   const { order, isOpen } = orderInProgressStore();
   const { updateOrder } = pendingOrdersStore();
-
-  useEffect(() => {
-    fetchAndSetStrategies();
-  }, [fetchAndSetStrategies]);
 
   const handleErrorLog = (order: Order, error: string) =>
     console.error("garden error", order.order_id, error);

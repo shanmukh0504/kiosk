@@ -3,29 +3,19 @@ import { IOType, network, SUPPORTED_CHAINS } from "../constants/constants";
 import {
   Asset,
   Chain,
-  EvmChain,
+  EVMChains,
   isBitcoin,
   isEVM,
   isEvmNativeToken,
   isSolana,
-  isSolanaNativeToken,
   isStarknet,
   isSui,
 } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
-import {
-  BitcoinNetwork,
-  BitcoinProvider,
-  Quote,
-  Strategies,
-} from "@gardenfi/core";
+import { BitcoinProvider, Quote, Strategies } from "@gardenfi/core";
 import { generateTokenKey } from "../utils/generateTokenKey";
 import { PublicKey } from "@solana/web3.js";
-
-type AssetConfig = Asset & {
-  disabled?: boolean;
-};
 import BigNumber from "bignumber.js";
 import { getBalanceMulticall } from "../utils/getBalanceMulticall";
 import { IInjectedBitcoinProvider } from "@gardenfi/wallet-connectors";
@@ -41,11 +31,46 @@ import logger from "../utils/logger";
 import { getLegacyGasEstimate } from "../utils/getNativeTokenFee";
 import { SupportedChains } from "../layout/wagmi/config";
 import { getAllWorkingRPCs } from "../utils/rpcUtils";
+import { Network } from "@gardenfi/utils";
 
-export type Networks = {
-  [chain in Chain]: ChainData & { assetConfig: Omit<AssetConfig, "chain">[] };
+// New API Response Types
+export type ApiAsset = {
+  id: string;
+  chain: string;
+  icon: string;
+  htlc: {
+    address: string;
+    schema: string;
+  } | null;
+  token: {
+    address: string;
+    schema: string | null;
+  } | null;
+  decimals: number;
+  min_amount: string;
+  max_amount: string;
+  price: number;
 };
 
+export type ApiChainData = {
+  chain: string;
+  id: string;
+  icon: string;
+  explorer_url: string;
+  confirmation_target: number;
+  source_timelock: string;
+  destination_timelock: string;
+  supported_htlc_schemas: string[];
+  supported_token_schemas: string[];
+  assets: ApiAsset[];
+};
+
+export type ApiChainsResponse = {
+  status: string;
+  result: ApiChainData[];
+};
+
+// Internal Types
 export type ChainData = {
   chainId: number;
   explorer: string;
@@ -54,6 +79,17 @@ export type ChainData = {
   name: string;
   identifier: Chain;
   disabled: boolean;
+  confirmationTarget: number;
+  sourceTimelock: string;
+  destinationTimelock: string;
+  supportedHtlcSchemas: string[];
+  supportedTokenSchemas: string[];
+};
+
+export type AssetConfig = Asset & {
+  disabled?: boolean;
+  price?: number;
+  chainData: ChainData;
 };
 
 export type FiatData = {
@@ -61,6 +97,7 @@ export type FiatData = {
   htlc_address: string;
   token_price: number;
 };
+
 export type FiatResponse = {
   status: string;
   result: FiatData[];
@@ -68,6 +105,68 @@ export type FiatResponse = {
 
 export type Assets = Record<string, AssetConfig>;
 export type Chains = Partial<Record<Chain, ChainData>>;
+
+// Helper functions to parse API data
+function parseChainIdentifier(chainName: string): Chain | null {
+  const chainMap: Record<string, Chain> = {
+    solana_testnet: "solana_testnet",
+    solana_mainnet: "solana",
+    base_sepolia: "base_sepolia",
+    base_mainnet: "base",
+    monad_testnet: "monad_testnet",
+    ethereum_sepolia: "ethereum_sepolia",
+    ethereum_mainnet: "ethereum",
+    bnbchain_testnet: "bnbchain_testnet",
+    bnbchain_mainnet: "bnbchain",
+    bitcoin_testnet: "bitcoin_testnet",
+    bitcoin_mainnet: "bitcoin",
+    citrea_testnet: "citrea_testnet",
+    sui_testnet: "sui_testnet",
+    sui_mainnet: "sui",
+    starknet_sepolia: "starknet_sepolia",
+    starknet_mainnet: "starknet",
+    arbitrum_sepolia: "arbitrum_sepolia",
+    arbitrum_mainnet: "arbitrum",
+  };
+
+  return chainMap[chainName] || null;
+}
+
+function parseChainId(idString: string): number {
+  // Parse chain ID from formats like "evm:84532", "solana:103", "bitcoin", "sui", etc.
+  const parts = idString.split(":");
+  if (parts.length > 1) {
+    const parsed = parseInt(parts[1], 10);
+    return isNaN(parsed) ? 0 : parsed;
+  }
+  // For non-numeric chains like bitcoin, sui, return 0
+  return 0;
+}
+
+function formatChainName(chainName: string): string {
+  return chainName
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function formatAssetName(symbol: string): string {
+  const assetNames: Record<string, string> = {
+    BTC: "Bitcoin",
+    WBTC: "Wrapped Bitcoin",
+    CBBTC: "Coinbase Wrapped Bitcoin",
+    IBTC: "iBTC",
+    CBTC: "Citrea Bitcoin",
+    WCBTC: "Wrapped Citrea Bitcoin",
+    SOL: "Solana",
+    USDC: "USD Coin",
+    USDT: "Tether USD",
+    SUI: "Sui",
+    SEED: "Seed Token",
+  };
+
+  return assetNames[symbol] || symbol;
+}
 
 type AssetInfoState = {
   allChains: Chains | null;
@@ -151,48 +250,99 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   fetchAndSetAssetsAndChains: async () => {
     try {
       set({ isLoading: true });
-      const res = await axios.get<Networks>(
+      const res = await axios.get<ApiChainsResponse>(
         API().data.assets(network).toString()
       );
-      const assetsData = res.data;
+
+      if (res.data.status !== "Ok") {
+        throw new Error("Failed to fetch chains data");
+      }
+
       const allChains: Chains = {};
       const allAssets: Assets = {};
       const assets: Assets = {};
       const chains: Chains = {};
 
-      for (const chainInfo of Object.values(assetsData)) {
-        if (!SUPPORTED_CHAINS.includes(chainInfo.identifier)) continue;
+      for (const apiChain of res.data.result) {
+        const chainIdentifier = parseChainIdentifier(apiChain.chain);
 
-        allChains[chainInfo.identifier] = {
-          chainId: chainInfo.chainId,
-          explorer: chainInfo.explorer,
-          networkLogo: chainInfo.networkLogo,
-          networkType: chainInfo.networkType,
-          name: chainInfo.name,
-          identifier: chainInfo.identifier,
-          disabled: chainInfo.disabled,
+        if (!chainIdentifier || !SUPPORTED_CHAINS.includes(chainIdentifier)) {
+          continue;
+        }
+
+        // Parse chain ID from the "id" field (e.g., "evm:84532" -> 84532, "solana:103" -> 103)
+        const chainId = parseChainId(apiChain.id);
+
+        // Determine network type from the id field
+        const networkType = apiChain.id.includes("evm")
+          ? "evm"
+          : apiChain.id.includes("solana")
+            ? "solana"
+            : apiChain.id.includes("sui")
+              ? "sui"
+              : apiChain.id.includes("starknet")
+                ? "starknet"
+                : apiChain.id.includes("bitcoin")
+                  ? "bitcoin"
+                  : "other";
+
+        const chainData: ChainData = {
+          chainId,
+          explorer: apiChain.explorer_url,
+          networkLogo: apiChain.icon,
+          networkType,
+          name: formatChainName(apiChain.chain),
+          identifier: chainIdentifier,
+          disabled: false, // API doesn't have disabled field, default to false
+          confirmationTarget: apiChain.confirmation_target,
+          sourceTimelock: apiChain.source_timelock,
+          destinationTimelock: apiChain.destination_timelock,
+          supportedHtlcSchemas: apiChain.supported_htlc_schemas,
+          supportedTokenSchemas: apiChain.supported_token_schemas,
         };
+
+        allChains[chainIdentifier] = chainData;
         let totalAssets = 0;
 
-        for (const asset of chainInfo.assetConfig) {
-          const tokenKey = generateTokenKey(
-            chainInfo.identifier,
-            asset.atomicSwapAddress
-          );
-          allAssets[tokenKey] = {
-            ...asset,
-            chain: chainInfo.identifier,
+        for (const apiAsset of apiChain.assets) {
+          // Use htlc.address as atomicSwapAddress
+          const atomicSwapAddress = apiAsset.htlc?.address || "";
+          // For native tokens, use atomicSwapAddress as tokenAddress to ensure consistent lookups
+          const tokenAddress = apiAsset.token?.address || atomicSwapAddress;
+
+          const tokenKey = generateTokenKey(chainIdentifier, tokenAddress);
+
+          // Extract name and symbol from the asset ID (e.g., "solana_testnet:sol" -> "SOL")
+          const assetSymbol =
+            apiAsset.id.split(":")[1]?.toUpperCase() || "UNKNOWN";
+          const assetName = formatAssetName(assetSymbol);
+
+          const assetConfig: AssetConfig = {
+            chain: chainIdentifier,
+            atomicSwapAddress,
+            tokenAddress,
+            decimals: apiAsset.decimals,
+            name: assetName,
+            symbol: assetSymbol,
+            logo: apiAsset.icon,
+            disabled: false,
+            price: apiAsset.price,
+            chainData, // Include chain data in each asset
           };
-          if (!asset.disabled && !chainInfo.disabled) {
-            assets[tokenKey] = allAssets[tokenKey];
+
+          allAssets[tokenKey] = assetConfig;
+
+          if (!assetConfig.disabled && !chainData.disabled) {
+            assets[tokenKey] = assetConfig;
             totalAssets++;
           }
         }
 
         if (totalAssets > 0) {
-          chains[chainInfo.identifier] = allChains[chainInfo.identifier];
+          chains[chainIdentifier] = chainData;
         }
       }
+
       set({ allAssets, allChains, assets, chains });
     } catch (error) {
       logger.error("failed to fetch assets data ❌", error);
@@ -241,10 +391,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     }
   },
 
-  fetchAndSetEvmBalances: async (
-    address: string,
-    fetchOnlyAsset?: Asset
-  ) => {
+  fetchAndSetEvmBalances: async (address: string, fetchOnlyAsset?: Asset) => {
     const { assets, workingRPCs } = get();
     if (!assets) return;
 
@@ -265,7 +412,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           const chainBalances = await getBalanceMulticall(
             assets.map((asset) => asset.tokenAddress) as Hex[],
             address as Hex,
-            chain as EvmChain,
+            chain as EVMChains,
             workingRPCs
           );
 
@@ -278,10 +425,10 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
             if (
               balance &&
               balance.gt(0) &&
-              isEvmNativeToken(chain as EvmChain, asset.tokenAddress)
+              isEvmNativeToken(chain as EVMChains, asset.tokenAddress)
             ) {
               const fee = await getLegacyGasEstimate(
-                chain as EvmChain,
+                chain as EVMChains,
                 address as `0x${string}`,
                 asset.atomicSwapAddress as `0x${string}`
               );
@@ -326,7 +473,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       const formattedBalance = new BigNumber(balance.val.confirmed);
 
       const _provider = new BitcoinProvider(
-        network === "mainnet" ? BitcoinNetwork.Mainnet : BitcoinNetwork.Testnet
+        network === "mainnet" ? Network.MAINNET : Network.TESTNET
       );
 
       const feeRate = await _provider.getFeeRates();
@@ -393,7 +540,10 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       const balance = await getSolanaTokenBalance(address, asset);
       const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
 
-      if (isSolanaNativeToken(asset.chain, asset.tokenAddress)) {
+      // Check if it's native SOL - when tokenAddress equals atomicSwapAddress, it's a native token
+      const isNativeSOL = asset.tokenAddress === asset.atomicSwapAddress;
+
+      if (isNativeSOL) {
         const gas = 0.00380608;
         solanaBalance[orderPair] = new BigNumber(
           Math.max(0, Number((Number(balance) - gas).toFixed(8)))

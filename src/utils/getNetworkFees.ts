@@ -1,4 +1,4 @@
-import { BitcoinProvider, BitcoinNetwork } from "@gardenfi/core";
+import { BitcoinProvider } from "@gardenfi/core";
 import { BTC } from "../store/swapStore";
 import axios from "axios";
 import { API } from "../constants/api";
@@ -8,6 +8,7 @@ import { network } from "../constants/constants";
 import { Transaction } from "@mysten/sui/transactions";
 import { getAssetChainHTLCAddressPair } from "./utils";
 import BigNumber from "bignumber.js";
+import { Network } from "@gardenfi/utils";
 
 type AssetEntry = {
   chain: string;
@@ -20,14 +21,14 @@ const getBTCPrice = async (): Promise<number> => {
     timeout: 2000,
   });
   const data = response.data;
-  const btcEntry = data.result.find(
-    (entry: AssetEntry) => entry.chain.includes(Chains.bitcoin)
+  const btcEntry = data.result.find((entry: AssetEntry) =>
+    entry.chain.includes(Chains.bitcoin)
   );
   return btcEntry?.token_price || 0;
 };
 
 export const calculateBitcoinNetworkFees = async (
-  network: BitcoinNetwork,
+  network: Network,
   asset?: Asset
 ): Promise<number> => {
   if (asset && !isBitcoin(asset.chain)) return 0;
@@ -42,33 +43,38 @@ export const calculateBitcoinNetworkFees = async (
   return feesInBTC * btcPrice;
 };
 
-export const getSuiNetworkFee = async (address: string, asset: Asset, inputAmount: string, fiatData: Record<string, number | undefined>) => {
+export const getSuiNetworkFee = async (
+  address: string,
+  asset: Asset,
+  inputAmount: string,
+  fiatData: Record<string, number | undefined>
+) => {
   const BUFFER_FEE_IN_MIST = 5_000_000;
- try {
-  const amount = new BigNumber(inputAmount)
-  .multipliedBy(10 ** asset.decimals)
-  .toFixed(0);
-  
-  const totalGasCost = await getSuiTotalGasFee(address, amount);
+  try {
+    const amount = new BigNumber(inputAmount)
+      .multipliedBy(10 ** asset.decimals)
+      .toFixed(0);
 
-  const networkFee = BigNumber(BUFFER_FEE_IN_MIST + totalGasCost)
-    .dividedBy(10 ** asset.decimals)
-    .toNumber();
+    const totalGasCost = await getSuiTotalGasFee(address, amount);
 
-  const tokenPriceUsd =
-    (fiatData && fiatData[getAssetChainHTLCAddressPair(asset)]) ?? 0;
-  return networkFee * tokenPriceUsd;
- } catch (error) {
-  console.log(error);
- } 
+    const networkFee = BigNumber(BUFFER_FEE_IN_MIST + totalGasCost)
+      .dividedBy(10 ** asset.decimals)
+      .toNumber();
+
+    const tokenPriceUsd =
+      (fiatData && fiatData[getAssetChainHTLCAddressPair(asset)]) ?? 0;
+    return networkFee * tokenPriceUsd;
+  } catch (error) {
+    console.log(error);
+  }
   return 0;
 };
 
-export const getSuiTotalGasFee = async(address: string, amount: string) => {
+export const getSuiTotalGasFee = async (address: string, amount: string) => {
   const client = new SuiClient({ url: getFullnodeUrl(network) });
   const tx = new Transaction();
   tx.setSender(address);
-  
+
   const [coin] = tx.splitCoins(tx.gas, [BigInt(amount)]);
 
   tx.transferObjects([coin], address);
@@ -82,4 +88,4 @@ export const getSuiTotalGasFee = async(address: string, amount: string) => {
     Number(gasObject.storageCost) +
     Number(gasObject.nonRefundableStorageFee);
   return totalGasCost;
-}
+};

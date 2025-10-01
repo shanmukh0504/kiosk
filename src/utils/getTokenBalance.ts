@@ -76,7 +76,12 @@ export const getSolanaTokenBalance = async (
     const publicKey =
       typeof address === "string" ? new PublicKey(address) : address;
 
-    if (asset.tokenAddress === "primary") {
+    // Check if it's native SOL - when tokenAddress equals atomicSwapAddress, it's a native token
+    const isNativeSOL =
+      asset.tokenAddress === asset.atomicSwapAddress ||
+      asset.tokenAddress === "primary";
+
+    if (isNativeSOL) {
       // Native SOL balance
       const balance = await connection.getBalance(publicKey);
       return formatAmount(balance, asset.decimals, 8);
@@ -264,10 +269,13 @@ export const getSuiTokenBalance = async (
   }
 
   try {
-    if (
+    // Check if it's native SUI - when tokenAddress equals atomicSwapAddress, it's a native token
+    const isNativeSUI =
+      asset.tokenAddress === asset.atomicSwapAddress ||
       asset.tokenAddress === "primary" ||
-      asset.tokenAddress === "0x2::sui::SUI"
-    ) {
+      asset.tokenAddress === "0x2::sui::SUI";
+
+    if (isNativeSUI) {
       const BUFFER_FEE_IN_MIST = 5_000_000;
       const result = await suiRpcCall("suix_getBalance", [
         address,

@@ -84,9 +84,7 @@ const transactionHistoryStore = create<TransactionHistoryStoreState>(
           totalItems += txns.result?.total_items ?? 0;
           for (const order of txns.result?.data ?? []) {
             const uniqueId =
-              order.create_order.create_id ??
-              order.create_order.create_id ??
-              JSON.stringify(order);
+              order.order_id ?? order.order_id ?? JSON.stringify(order);
             if (!seenOrderIds.has(uniqueId)) {
               seenOrderIds.add(uniqueId);
               newTransactions.push(order);

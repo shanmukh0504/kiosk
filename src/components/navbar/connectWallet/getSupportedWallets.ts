@@ -38,7 +38,7 @@ type WalletInputs = {
   suiWallets?: SuiWallet[];
 };
 const blockchainConfigs = {
-  [BlockchainType.EVM]: {
+  [BlockchainType.evm]: {
     supportKey: "isEVMSupported" as const,
     walletKey: "evmWallet" as const,
     flagKey: "isEVM" as const,
@@ -53,7 +53,7 @@ const blockchainConfigs = {
       return !!wallet;
     },
   },
-  [BlockchainType.Bitcoin]: {
+  [BlockchainType.bitcoin]: {
     supportKey: "isBitcoinSupported" as const,
     walletKey: "btcWallet" as const,
     flagKey: "isBitcoin" as const,
@@ -62,7 +62,7 @@ const blockchainConfigs = {
       wallets?.[key] ?? wallets?.[evmToBTCid[key]],
     availabilityChecker: (wallet: any) => !!wallet,
   },
-  [BlockchainType.Starknet]: {
+  [BlockchainType.starknet]: {
     supportKey: "isStarknetSupported" as const,
     walletKey: "starknetWallet" as const,
     flagKey: "isStarknet" as const,
@@ -83,13 +83,18 @@ const blockchainConfigs = {
       return !!wallet;
     },
   },
-  [BlockchainType.Solana]: {
+  [BlockchainType.solana]: {
     supportKey: "isSolanaSupported" as const,
     walletKey: "solanaWallet" as const,
     flagKey: "isSolana" as const,
     inputKey: "solanaWallets" as const,
     finder: (wallets: SolanaWallet[], key: string) => {
-      const normalizedKey = key === "app.phantom" ? "phantom" : key === "app.backpack" ? "backpack" : key;
+      const normalizedKey =
+        key === "app.phantom"
+          ? "phantom"
+          : key === "app.backpack"
+            ? "backpack"
+            : key;
       return wallets?.find(
         (w) => w.adapter.name.toLowerCase() === normalizedKey.toLowerCase()
       );
@@ -108,7 +113,7 @@ const blockchainConfigs = {
       return !!wallet;
     },
   },
-  [BlockchainType.Sui]: {
+  [BlockchainType.sui]: {
     supportKey: "isSuiSupported" as const,
     walletKey: "suiWallet" as const,
     flagKey: "isSui" as const,
@@ -210,11 +215,11 @@ function processBlockchainWallets(
     | SuiWallet[]
     | undefined;
 
-  if (!inputWallets && blockchain !== BlockchainType.Bitcoin) return;
+  if (!inputWallets && blockchain !== BlockchainType.bitcoin) return;
 
   Object.entries(GardenSupportedWallets).forEach(([key, value]) => {
     if (!value[config.supportKey]) return;
-    if (blockchain === BlockchainType.EVM && key === "app.phantom") return;
+    if (blockchain === BlockchainType.evm && key === "app.phantom") return;
 
     let foundWallet = config.finder(inputWallets as any, key);
     let isAvailable = config.availabilityChecker(foundWallet, key);
@@ -237,7 +242,7 @@ const multiChainWallets = {
     bitcoinId: "phantom",
   },
   "app.backpack": {
-    solanaName: "backpack", 
+    solanaName: "backpack",
     suiName: "Backpack",
   },
 } as const;
@@ -254,9 +259,10 @@ function handleMultiChainWallets(
       ? walletInputs.evmWallets?.find((w) => w.id === walletId)
       : undefined;
 
-    const btcWallet = config.isBitcoinSupported && "bitcoinId" in multiChainConfig
-      ? walletInputs.bitcoinWallets?.[multiChainConfig.bitcoinId]
-      : undefined;
+    const btcWallet =
+      config.isBitcoinSupported && "bitcoinId" in multiChainConfig
+        ? walletInputs.bitcoinWallets?.[multiChainConfig.bitcoinId]
+        : undefined;
 
     const solanaWallet = config.isSolanaSupported
       ? walletInputs.solanaWallets?.find(
@@ -265,7 +271,9 @@ function handleMultiChainWallets(
       : undefined;
 
     const suiWallet = config.isSuiSupported
-      ? walletInputs.suiWallets?.find((w) => w.name === multiChainConfig.suiName)
+      ? walletInputs.suiWallets?.find(
+          (w) => w.name === multiChainConfig.suiName
+        )
       : undefined;
 
     const isEVM = !!evmWallet;
@@ -314,11 +322,11 @@ export const getAvailableWallets = (
 
   (
     [
-      BlockchainType.EVM,
-      BlockchainType.Bitcoin,
-      BlockchainType.Starknet,
-      BlockchainType.Solana,
-      BlockchainType.Sui,
+      BlockchainType.evm,
+      BlockchainType.bitcoin,
+      BlockchainType.starknet,
+      BlockchainType.solana,
+      BlockchainType.sui,
     ] as const
   ).forEach((blockchain) => {
     processBlockchainWallets(walletMap, walletInputs, blockchain);

@@ -4,23 +4,23 @@ import { BlockchainType } from "@gardenfi/orderbook";
 
 export const ecosystems = {
   [BlockchainType.bitcoin]: {
-    name: "Bitcoin",
+    name: "bitcoin",
     icon: "https://garden-finance.imgix.net/token-images/bitcoin.svg",
   },
   [BlockchainType.evm]: {
-    name: "EVM",
+    name: "evm",
     icon: "https://garden-finance.imgix.net/token-images/ethereum.svg",
   },
   [BlockchainType.starknet]: {
-    name: "Starknet",
+    name: "starknet",
     icon: "https://garden-finance.imgix.net/starknet-logo.svg",
   },
   [BlockchainType.solana]: {
-    name: "Solana",
+    name: "solana",
     icon: "https://garden-finance.imgix.net/chain_images/solana.png",
   },
   [BlockchainType.sui]: {
-    name: "Sui",
+    name: "sui",
     icon: "https://garden-finance.imgix.net/chain_images/sui.svg",
   },
 } as const;

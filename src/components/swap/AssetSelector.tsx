@@ -11,7 +11,6 @@ import { Asset, isStarknet, isSolana, isSui } from "@gardenfi/orderbook";
 import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { BTC, swapStore } from "../../store/swapStore";
 import { IOType, network } from "../../constants/constants";
-import { constructOrderPair } from "@gardenfi/core";
 import { modalStore } from "../../store/modalStore";
 import { ChainsTooltip } from "./ChainsTooltip";
 import { AvailableChainsSidebar } from "./AvailableChainsSidebar";
@@ -57,13 +56,11 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     CloseAssetSelector,
     assets,
     chains,
-    strategies,
     balances,
     fiatData,
   } = assetInfoStore();
   const { modalName } = modalStore();
-  const { setAsset, inputAsset, outputAsset, clearSwapInputState } =
-    swapStore();
+  const { setAsset, inputAsset, outputAsset } = swapStore();
 
   const orderedChains = useMemo(() => {
     // TODO: remove hyperevm once we have a proper types (hyperliquid is not in the types)
@@ -207,23 +204,6 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           isAssetSelectorOpen.type === IOType.input ? inputAsset : outputAsset
         );
       }
-      // if input asset is selected, check if the output asset is supported
-      if (
-        isAssetSelectorOpen.type === IOType.input &&
-        outputAsset &&
-        strategies.val
-      ) {
-        const op = constructOrderPair(
-          asset.chain,
-          asset.atomicSwapAddress,
-          outputAsset.chain,
-          outputAsset.atomicSwapAddress
-        );
-        if (!strategies.val[op]) {
-          setAsset(IOType.output, undefined);
-          clearSwapInputState();
-        }
-      }
     }
     CloseAssetSelector();
     setTimeout(() => {
@@ -260,30 +240,9 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   };
 
   useEffect(() => {
-    if (!assets || !strategies.val) return;
-    if (!comparisonToken || isAssetSelectorOpen.type === IOType.input) {
-      setResults(Object.values(assets));
-    } else {
-      const supportedTokens = Object.values(assets).filter((asset) => {
-        const op =
-          isAssetSelectorOpen.type === IOType.input
-            ? constructOrderPair(
-                asset.chain,
-                asset.atomicSwapAddress,
-                comparisonToken.chain,
-                comparisonToken.atomicSwapAddress
-              )
-            : constructOrderPair(
-                comparisonToken.chain,
-                comparisonToken.atomicSwapAddress,
-                asset.chain,
-                asset.atomicSwapAddress
-              );
-        return strategies.val && strategies.val[op] !== undefined;
-      });
-      setResults([...supportedTokens, comparisonToken]);
-    }
-  }, [assets, comparisonToken, isAssetSelectorOpen.type, strategies.val]);
+    if (!assets) return;
+    setResults(Object.values(assets));
+  }, [assets]);
 
   useEffect(() => {
     setVisibleChainsCount(isMobile ? 5 : 7);
@@ -403,10 +362,10 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             >
               {fiatBasedSortedResults && fiatBasedSortedResults.length > 0 ? (
                 fiatBasedSortedResults?.map(
-                  ({ asset, network, formattedBalance }) => {
+                  ({ asset, network, formattedBalance }, index) => {
                     return (
                       <div
-                        key={`${asset.chain}-${asset.atomicSwapAddress}`}
+                        key={`${asset.chain}-${asset.atomicSwapAddress}-${asset.tokenAddress || "native"}-${index}`}
                         className="flex w-full cursor-pointer items-center justify-between gap-2 px-4 py-1.5 hover:bg-off-white"
                         onClick={() => handleClick(asset)}
                       >

@@ -110,7 +110,7 @@ export const AvailableChainsSidebar = ({
                   filteredChains.map((c) => {
                     return (
                       <div
-                        key={c.chainId}
+                        key={c.identifier}
                         className="flex w-full cursor-pointer items-center justify-between hover:bg-off-white"
                         onClick={() => onClick(c)}
                       >
