@@ -63,7 +63,7 @@ export const formatAmount = (
   toFixed?: number
 ) => {
   const bigAmount = new BigNumber(amount);
-  if (bigAmount.isZero()) return 0;
+  if (bigAmount.isZero()) return "0";
 
   const value = bigAmount.dividedBy(10 ** decimals);
   const precision = toFixed ? toFixed : Number(value) > 10000 ? 2 : 4;
@@ -79,15 +79,24 @@ export const formatAmount = (
     temp = value.toFixed(temp.split(".")[1].length + 2, BigNumber.ROUND_DOWN);
   }
 
-  return Number(temp);
+  return temp;
+};
+
+export const formatAmountInNumber = (
+  amount: string | number | bigint,
+  decimals: number,
+  toFixed?: number
+): number => {
+  const num = formatAmount(amount, decimals, toFixed);
+  return Number(num);
 };
 
 export const formatAmountUsd = (
   amount: string | number | bigint,
   decimals: number
 ) => {
-  const num = formatAmount(amount, decimals);
-  return Number(num).toLocaleString("en-US", {
+  const num = formatAmountInNumber(amount, decimals);
+  return num.toLocaleString("en-US", {
     maximumFractionDigits: 2,
   });
 };

@@ -15,7 +15,7 @@ import {
   encodeFunctionData,
   http,
 } from "viem";
-import { formatAmount } from "./utils";
+import { formatAmountInNumber } from "./utils";
 import { RpcProvider, Contract } from "starknet";
 import { network } from "../constants/constants";
 import { Connection, PublicKey } from "@solana/web3.js";
@@ -78,7 +78,7 @@ export const getSolanaTokenBalance = async (
     if (asset.tokenAddress === "primary") {
       // Native SOL balance
       const balance = await connection.getBalance(publicKey);
-      return formatAmount(balance, asset.decimals, 8);
+      return formatAmountInNumber(balance, asset.decimals, 8);
     }
 
     let tokenMint: PublicKey;
@@ -100,7 +100,11 @@ export const getSolanaTokenBalance = async (
     const balance = await connection.getTokenAccountBalance(
       tokenAccounts.value[0].pubkey
     );
-    return formatAmount(balance.value.amount, balance.value.decimals, 8);
+    return formatAmountInNumber(
+      balance.value.amount,
+      balance.value.decimals,
+      8
+    );
   } catch (error) {
     logger.error("Error fetching Solana token balance:", error);
     return 0;
@@ -133,7 +137,7 @@ export const getStarknetTokenBalance = async (
     const shift128 = new BigNumber(2).pow(128);
     const totalBalance = low.plus(high.multipliedBy(shift128));
 
-    const balanceInDecimals = formatAmount(
+    const balanceInDecimals = formatAmountInNumber(
       Number(totalBalance),
       asset.decimals,
       8
@@ -229,7 +233,7 @@ export const getNativeBalance = async (address: string, asset: Asset) => {
       address: address as `0x${string}`,
     });
 
-    const balanceInDecimals = formatAmount(balance, asset.decimals, 8);
+    const balanceInDecimals = formatAmountInNumber(balance, asset.decimals, 8);
 
     return balanceInDecimals;
   } catch (error) {
@@ -276,7 +280,7 @@ export const getSuiTokenBalance = async (
       const totalBalance = result.totalBalance;
       const totalGasCost = await getSuiTotalGasFee(address, totalBalance);
 
-      return formatAmount(
+      return formatAmountInNumber(
         Math.max(totalBalance - (BUFFER_FEE_IN_MIST + totalGasCost), 0),
         asset.decimals,
         8
@@ -292,7 +296,7 @@ export const getSuiTokenBalance = async (
           )
         : undefined;
       if (!token) return 0;
-      return formatAmount(token.totalBalance, asset.decimals, 8);
+      return formatAmountInNumber(token.totalBalance, asset.decimals, 8);
     }
   } catch (error) {
     console.error("Error fetching Sui token balance:", error);

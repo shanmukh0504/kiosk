@@ -7,7 +7,7 @@ import { useState, FC, useMemo } from "react";
 import { getTrimmedAddress } from "../../../utils/getTrimmedAddress";
 import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
 import BigNumber from "bignumber.js";
-import { getAssetFromSwap, formatAmount } from "../../../utils/utils";
+import { getAssetFromSwap, formatAmountInNumber } from "../../../utils/utils";
 import { assetInfoStore } from "../../../store/assetInfoStore";
 import { CopyToClipboard } from "../../../common/CopyToClipboard";
 import { Url } from "@gardenfi/utils";
@@ -104,10 +104,13 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
               )
           : new BigNumber(0),
         amountToFill: order
-          ? formatAmount(order.source_swap.amount, inputAsset?.decimals ?? 0)
+          ? formatAmountInNumber(
+              order.source_swap.amount,
+              inputAsset?.decimals ?? 0
+            )
           : 0,
         filledAmount: order
-          ? formatAmount(
+          ? formatAmountInNumber(
               order.source_swap.filled_amount,
               inputAsset?.decimals ?? 0
             )

@@ -6,7 +6,7 @@ import { useReadContract, useSwitchChain, useWriteContract } from "wagmi";
 import { useState, useMemo } from "react";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { Hex } from "viem";
-import { formatAmount, formatAmountUsd } from "../../utils/utils";
+import { formatAmountInNumber, formatAmountUsd } from "../../utils/utils";
 import { REWARD_CHAIN, STAKE_REWARD } from "./constants";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../../layout/wagmi/config";
@@ -45,7 +45,7 @@ export const StakeOverview = () => {
 
   const availableReward = useMemo(() => {
     return stakeRewards
-      ? formatAmount(
+      ? formatAmountInNumber(
           stakeRewards.totalcbBtcReward - Number(claimedAmount ?? 0),
           8,
           8
@@ -136,12 +136,12 @@ export const StakeOverview = () => {
                   size="sm"
                   toolTip={
                     <TooltipWrapper
-                      seedReward={formatAmount(
+                      seedReward={formatAmountInNumber(
                         stakeRewards?.totalSeedReward ?? 0,
                         SEED_DECIMALS,
                         4
                       )}
-                      cbBtcReward={formatAmount(
+                      cbBtcReward={formatAmountInNumber(
                         Number(
                           stakeRewards?.rewardResponse.cumulative_rewards_cbbtc
                         ),

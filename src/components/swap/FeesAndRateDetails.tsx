@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import {
   GasStationIcon,
   InfoIcon,
@@ -16,7 +16,7 @@ import { delayedFadeAnimation } from "../../animations/animations";
 import { SwapSavingsAndAddresses } from "./SwapSavingsAndAddresses";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { TooltipWrapper } from "../../common/ToolTipWrapper";
-import { formatAmount, formatAmountUsd } from "../../utils/utils";
+import { formatAmountInNumber, formatAmountUsd } from "../../utils/utils";
 
 const RateDisplay = ({
   inputAsset,
@@ -24,11 +24,13 @@ const RateDisplay = ({
   formattedRate,
   formattedTokenPrice,
   className = "",
+  isFetchingQuote = false,
 }: {
   inputAsset?: Asset;
   outputAsset?: Asset;
   formattedRate?: string | number;
   formattedTokenPrice?: string | number;
+  isFetchingQuote?: boolean;
   className?: string;
 }) => (
   <div className={`flex min-w-fit items-center gap-1`}>
@@ -50,20 +52,38 @@ const RateDisplay = ({
         <SwapHorizontalIcon className="fill-dark-grey" />
       )}
     </Typography>
-    <Typography
-      size="h5"
-      weight="regular"
-      className={`!text-nowrap ${className}`}
-    >
-      {formattedRate && `${formattedRate} ${outputAsset?.symbol}`}
-      {formattedTokenPrice && `$${formattedTokenPrice}`}
-    </Typography>
+    {isFetchingQuote ? (
+      <div className="h-4 w-8 animate-[pulse_1.5s_ease-in-out_infinite] rounded bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200%_100%]"></div>
+    ) : (
+      <Typography
+        size="h5"
+        weight="regular"
+        className={`!text-nowrap ${className}`}
+      >
+        {formattedRate && `${formattedRate}`}
+        {formattedTokenPrice && `$${formattedTokenPrice}`}
+      </Typography>
+    )}
+    {formattedRate && (
+      <Typography
+        size="h5"
+        weight="regular"
+        className={`!text-nowrap ${className}`}
+      >
+        {outputAsset?.symbol}
+      </Typography>
+    )}
   </div>
 );
 
 export const FeesAndRateDetails = () => {
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isAssetLoading, setIsAssetLoading] = useState(false);
+  const previousAssets = useRef<{
+    inputAsset?: Asset;
+    outputAsset?: Asset;
+  }>({});
   const targetRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -73,6 +93,7 @@ export const FeesAndRateDetails = () => {
     networkFees,
     showComparisonHandler,
     fiatTokenPrices,
+    isFetchingQuote,
   } = swapStore();
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
@@ -80,7 +101,7 @@ export const FeesAndRateDetails = () => {
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
   const formattedRate = useMemo(
-    () => formatAmount(rate, 0, isBitcoinChains ? 7 : 3),
+    () => formatAmountInNumber(rate, 0, isBitcoinChains ? 7 : 3),
     [isBitcoinChains, rate]
   );
 
@@ -112,6 +133,21 @@ export const FeesAndRateDetails = () => {
         : undefined,
     [outputAsset, btcAddress, solanaAddress, address]
   );
+
+  useEffect(() => {
+    const assetChanged =
+      (previousAssets.current.inputAsset?.symbol !== inputAsset?.symbol &&
+        previousAssets.current.inputAsset?.chain !== inputAsset?.chain) ||
+      (previousAssets.current.outputAsset?.symbol !== outputAsset?.symbol &&
+        previousAssets.current.outputAsset?.chain !== outputAsset?.chain);
+    if (assetChanged && (isFetchingQuote.input || isFetchingQuote.output)) {
+      setIsAssetLoading(true);
+      previousAssets.current = { inputAsset, outputAsset };
+    }
+    if (!isFetchingQuote.input && !isFetchingQuote.output) {
+      setIsAssetLoading(false);
+    }
+  }, [inputAsset, outputAsset, isFetchingQuote.input, isFetchingQuote.output]);
 
   return (
     <div className="flex flex-col rounded-2xl bg-white/50 pb-4 transition-all duration-200">
@@ -145,6 +181,7 @@ export const FeesAndRateDetails = () => {
                           inputAsset={inputAsset}
                           outputAsset={outputAsset}
                           formattedRate={formattedRate}
+                          isFetchingQuote={isAssetLoading}
                         />
                       </TooltipWrapper>
                     )}
@@ -162,6 +199,7 @@ export const FeesAndRateDetails = () => {
                   outputAsset={outputAsset}
                   formattedTokenPrice={formattedTokenPrice}
                   className="!text-mid-grey"
+                  isFetchingQuote={isAssetLoading}
                 />
               </motion.div>
             )}
@@ -179,6 +217,7 @@ export const FeesAndRateDetails = () => {
                   inputAsset={inputAsset}
                   outputAsset={outputAsset}
                   formattedTokenPrice={formattedTokenPrice}
+                  isFetchingQuote={isAssetLoading}
                 />
               </motion.div>
             ) : (

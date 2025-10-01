@@ -2,8 +2,13 @@
 
 ## [1.1.8]
 
+### Fixed
+
 - Update toast for successful swap and add abort controller to fetch assets function.
 - Update the coinbase wallet id.
+- updated output error handling.
+- token balance to handle balance from being converted scientific notation.
+- added delay in balance fetching on mount.
 
 ## [1.1.7]
 

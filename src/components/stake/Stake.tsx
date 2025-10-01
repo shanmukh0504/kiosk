@@ -13,7 +13,7 @@ import { AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Tooltip } from "../../common/Tooltip";
 import { assetInfoStore } from "../../store/assetInfoStore";
-import { formatAmount, getOrderPair } from "../../utils/utils";
+import { formatAmountInNumber, getOrderPair } from "../../utils/utils";
 
 export const Stake: FC = () => {
   const { isConnected, address } = useEVMWallet();
@@ -38,7 +38,7 @@ export const Stake: FC = () => {
     balances[getOrderPair(asset.chain, asset.tokenAddress)];
   const tokenBalance = useMemo(() => {
     if (balance && asset) {
-      return formatAmount(Number(balance), asset.decimals);
+      return formatAmountInNumber(Number(balance), asset.decimals);
     }
     return 0;
   }, [balance, asset]);

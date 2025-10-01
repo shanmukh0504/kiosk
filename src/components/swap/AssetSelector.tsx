@@ -138,8 +138,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                 : balance?.toNumber();
 
           const fiatBalance =
-            formattedBalance &&
-            (Number(formattedBalance) * Number(fiatRate)).toFixed(5);
+            formattedBalance && (formattedBalance * fiatRate).toFixed(5);
 
           return {
             asset,
@@ -437,7 +436,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                               className={`!text-mid-grey`}
                             >
                               {formatAmount(
-                                Number(formattedBalance),
+                                formattedBalance,
                                 0,
                                 Math.min(asset.decimals, BTC.decimals)
                               )}

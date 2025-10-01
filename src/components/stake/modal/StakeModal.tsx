@@ -7,7 +7,7 @@ import { DURATION, DURATION_MAP, SEED_DECIMALS } from "../constants";
 import { StakeSubmissionCard } from "./StakeSubmissionCard";
 import { ExtendStake } from "./ExtendStake";
 import { stakeStore } from "../../../store/stakeStore";
-import { formatAmount } from "../../../utils/utils";
+import { formatAmountInNumber } from "../../../utils/utils";
 import DurationMenu from "../shared/DurationMenu";
 import { Restake } from "./Restake";
 
@@ -29,12 +29,12 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
   const amount = isStake
     ? Number(modalData.manageStake?.stake?.amount) || 0
     : isExtend
-      ? formatAmount(
+      ? formatAmountInNumber(
           modalData.manageStake?.extend?.stakingPosition.amount || 0,
           SEED_DECIMALS
         )
       : isRestake
-        ? formatAmount(
+        ? formatAmountInNumber(
             modalData.manageStake?.restake?.stakingPosition.amount || 0,
             SEED_DECIMALS
           )

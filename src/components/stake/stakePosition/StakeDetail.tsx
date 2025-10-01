@@ -10,7 +10,7 @@ import {
   stakeStore,
   StakingPosition,
 } from "../../../store/stakeStore";
-import { formatAmount, formatAmountUsd } from "../../../utils/utils";
+import { formatAmountInNumber, formatAmountUsd } from "../../../utils/utils";
 import { ETH_BLOCKS_PER_DAY, SEED_DECIMALS, TEN_THOUSAND } from "../constants";
 import { getMultiplier } from "../../../utils/stakingUtils";
 import { modalNames, modalStore } from "../../../store/modalStore";
@@ -34,20 +34,20 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
     !isPermaStake && stakePos.status === StakePositionStatus.staked;
   const isExpired = stakePos.status === StakePositionStatus.expired;
 
-  const stakeReward = formatAmount(
+  const stakeReward = formatAmountInNumber(
     stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedCBBTCRewards || 0,
     8,
     8
   );
 
   const stakeApy = Number((stakeApys?.[stakePos.id] || 0).toFixed(2));
-  const stakeAmount = formatAmount(stakePos.amount, SEED_DECIMALS, 0);
+  const stakeAmount = formatAmountInNumber(stakePos.amount, SEED_DECIMALS, 0);
   const formattedAmount =
     stakeAmount >= TEN_THOUSAND
       ? stakeAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       : stakeAmount.toString();
 
-  const seedReward = formatAmount(
+  const seedReward = formatAmountInNumber(
     stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedSeedRewards ??
       "0",
     SEED_DECIMALS,
@@ -74,7 +74,7 @@ export const StakeDetails: FC<props> = ({ stakePos }) => {
   const multiplier = getMultiplier(stakePos);
   const currentDate = new Date();
   const hasExpired = currentDate > stakeEndDate;
-  const reward = formatAmount(
+  const reward = formatAmountInNumber(
     stakeRewards?.stakewiseRewards[stakePos.id]?.accumulatedRewardsUSD || 0,
     0,
     2

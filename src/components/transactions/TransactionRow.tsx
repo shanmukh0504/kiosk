@@ -3,7 +3,7 @@ import { Typography } from "@gardenfi/garden-book";
 import { SwapInfo } from "../../common/SwapInfo";
 import { MatchedOrder } from "@gardenfi/orderbook";
 import {
-  formatAmount,
+  formatAmountInNumber,
   getAssetFromSwap,
   getDayDifference,
 } from "../../utils/utils";
@@ -84,7 +84,7 @@ export const TransactionRow: FC<TransactionProps> = ({
   const sendAmount = useMemo(
     () =>
       sendAsset &&
-      formatAmount(
+      formatAmountInNumber(
         create_order.source_amount,
         sendAsset?.decimals ?? 0,
         Math.min(sendAsset.decimals, BTC.decimals)
@@ -94,7 +94,7 @@ export const TransactionRow: FC<TransactionProps> = ({
   const receiveAmount = useMemo(
     () =>
       receiveAsset &&
-      formatAmount(
+      formatAmountInNumber(
         create_order.destination_amount,
         receiveAsset?.decimals ?? 0,
         Math.min(receiveAsset.decimals, BTC.decimals)
