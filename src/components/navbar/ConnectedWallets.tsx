@@ -1,16 +1,15 @@
+import { useEffect } from "react";
+import { useGarden } from "@gardenfi/react-hooks";
+import { OrderStatus } from "@gardenfi/orderbook";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { Opacity, Typography, WalletIcon } from "@gardenfi/garden-book";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { ecosystems } from "./connectWallet/constants";
-import { Opacity, Typography, WalletIcon } from "@gardenfi/garden-book";
 import { modalNames, modalStore } from "../../store/modalStore";
 import pendingOrdersStore from "../../store/pendingOrdersStore";
-import { OrderStatus } from "@gardenfi/core";
-import { useEffect } from "react";
-import { useGarden } from "@gardenfi/react-hooks";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { deletedOrdersStore } from "../../store/deletedOrdersStore";
-import { isOrderExpired } from "@gardenfi/core";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
 
 const ConnectedWallets = () => {
@@ -31,20 +30,15 @@ const ConnectedWallets = () => {
     (order) =>
       order.status !== OrderStatus.RedeemDetected &&
       order.status !== OrderStatus.Redeemed &&
-      order.status !== OrderStatus.CounterPartyRedeemDetected &&
-      order.status !== OrderStatus.CounterPartyRedeemed &&
-      order.status !== OrderStatus.Completed &&
-      !deletedOrders.some(
-        (entry) => entry.orderId === order.create_order.create_id
-      )
+      !deletedOrders.some((entry) => entry.orderId === order.order_id)
   ).length;
   useEffect(() => {
     if (pendingOrders.length > 0) {
       cleanupDeletedOrders(pendingOrders);
       const filteredOrders = pendingOrders.filter(
         (orders) =>
-          !isOrderDeleted(orders.create_order.create_id) &&
-          !isOrderExpired(orders)
+          !isOrderDeleted(orders.order_id) &&
+          !(orders.status === OrderStatus.Expired)
       );
       setPendingOrders(filteredOrders);
     } else {
@@ -65,35 +59,35 @@ const ConnectedWallets = () => {
         <WalletIcon className="h-4 w-4 sm:h-5 sm:w-5" />
         {address && (
           <img
-            src={ecosystems.EVM.icon}
+            src={ecosystems.evm.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="EVM wallet"
           />
         )}
         {btcAddress && (
           <img
-            src={ecosystems.Bitcoin.icon}
+            src={ecosystems.bitcoin.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="Bitcoin wallet"
           />
         )}
         {starknetAddress && (
           <img
-            src={ecosystems.Starknet.icon}
+            src={ecosystems.starknet.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="Starknet wallet"
           />
         )}
         {solanaAddress && (
           <img
-            src={ecosystems.Solana.icon}
+            src={ecosystems.solana.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="Solana wallet"
           />
         )}
         {suiConnected && currentAccount && (
           <img
-            src={ecosystems.Sui.icon}
+            src={ecosystems.sui.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="Sui wallet"
           />

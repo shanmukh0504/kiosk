@@ -11,7 +11,7 @@ import {
   connectors as starknetConnectors,
 } from "./starknet/config";
 import { config } from "./wagmi/config";
-import { STARKNET_CONFIG } from "@gardenfi/core";
+// import { STARKNET_CONFIG } from "@gardenfi/core";
 import { SuiProvider } from "./sui/SuiProvider.tsx";
 import { FrameProvider } from "./FrameProvider.tsx";
 
@@ -23,7 +23,7 @@ export const WalletProviders: FC<WalletProviderProps> = ({ children }) => {
     <WagmiProvider config={config}>
       <BTCWalletProvider network={network as Network} store={localStorage}>
         <StarknetConfig
-          defaultChainId={BigInt(STARKNET_CONFIG[network].chainId)}
+          defaultChainId={BigInt("0x534e5f5345504f4c4941")}
           chains={starknetChains}
           provider={starknetProviders}
           connectors={starknetConnectors}

@@ -25,11 +25,11 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   const [connectedWallets, setConnectedWallets] = useState<
     Record<BlockchainType, string>
   >({
-    Bitcoin: "",
-    EVM: "",
-    Starknet: "",
-    Solana: "",
-    Sui: "",
+    bitcoin: "",
+    evm: "",
+    starknet: "",
+    solana: "",
+    sui: "",
   });
 
   const { garden } = useGarden();
@@ -59,18 +59,18 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
     if (!garden || !isOpen) return;
     if (garden) {
       setConnectedWallets({
-        Bitcoin: btcAddress ?? "",
-        EVM: address ?? "",
-        Starknet: starknetAddressToXOnly(starknetAddress ?? ""),
-        Solana: solanaAddress ?? "",
-        Sui: currentAccount?.address ?? "",
+        bitcoin: btcAddress ?? "",
+        evm: address ?? "",
+        starknet: starknetAddressToXOnly(starknetAddress ?? ""),
+        solana: solanaAddress ?? "",
+        sui: currentAccount?.address ?? "",
       });
       fetchTransactions(orderbookUrl, {
-        Bitcoin: btcAddress ?? "",
-        EVM: address ?? "",
-        Starknet: starknetAddressToXOnly(starknetAddress ?? ""),
-        Solana: solanaAddress ?? "",
-        Sui: currentAccount?.address ?? "",
+        bitcoin: btcAddress ?? "",
+        evm: address ?? "",
+        starknet: starknetAddressToXOnly(starknetAddress ?? ""),
+        solana: solanaAddress ?? "",
+        sui: currentAccount?.address ?? "",
       });
     }
   }, [

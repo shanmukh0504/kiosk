@@ -5,7 +5,7 @@ import {
 } from "@gardenfi/garden-book";
 import { useState, FC, useMemo } from "react";
 import { getTrimmedAddress } from "../../../utils/getTrimmedAddress";
-import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
+import { isBitcoin, Order } from "@gardenfi/orderbook";
 import BigNumber from "bignumber.js";
 import { getAssetFromSwap, formatAmount } from "../../../utils/utils";
 import { assetInfoStore } from "../../../store/assetInfoStore";
@@ -13,7 +13,7 @@ import { CopyToClipboard } from "../../../common/CopyToClipboard";
 import { Url } from "@gardenfi/utils";
 
 type OrderDetailsProps = {
-  order: MatchedOrder;
+  order: Order;
 };
 
 type OrderDetailsRowProps = {

@@ -11,7 +11,7 @@ import { StakePage } from "./stake";
 import { GardenProvider } from "@gardenfi/react-hooks";
 import { useWalletClient } from "wagmi";
 import { useAccount } from "@starknet-react/core";
-import { Environment as GardenEnvironment } from "@gardenfi/utils";
+import { Network as GardenEnvironment } from "@gardenfi/utils";
 import { useSolanaWallet } from "../hooks/useSolanaWallet";
 import { useSuiWallet } from "../hooks/useSuiWallet";
 import { useEffect } from "react";
@@ -34,17 +34,14 @@ function App() {
         environment:
           environment === Environment.Staging
             ? {
-                environment: GardenEnvironment.TESTNET,
-                orderbook: import.meta.env.VITE_ORDERBOOK_URL,
+                network: GardenEnvironment.TESTNET,
                 auth: import.meta.env.VITE_AUTH_URL,
-                quote: import.meta.env.VITE_QUOTE_URL,
                 info: import.meta.env.VITE_INFO_URL,
-                evmRelay: import.meta.env.VITE_RELAYER_URL,
-                starknetRelay: import.meta.env.VITE_STARKNET_URL,
-                solanaRelay: import.meta.env.VITE_SOLANA_URL,
-                suiRelay: import.meta.env.VITE_SUI_RELAY_URL,
+                relayer: import.meta.env.VITE_RELAYER_URL,
+                baseurl: import.meta.env.VITE_BASE_URL,
               }
             : (network as unknown as GardenEnvironment),
+        apiKey: import.meta.env.VITE_API_KEY,
         wallets: {
           evm: walletClient,
           starknet: starknetWallet,
@@ -56,7 +53,8 @@ function App() {
           spl: import.meta.env.VITE_SOLANA_PROGRAM_ADDRESS_SPL,
         },
       }}
-      handleSecretManagement={false}
+      setRedeemServiceEnabled={false}
+      store={localStorage}
     >
       <Layout>
         <Routes>

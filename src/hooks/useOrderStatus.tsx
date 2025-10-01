@@ -1,4 +1,3 @@
-import { OrderStatus, ParseOrderStatus } from "@gardenfi/core";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useEffect, useMemo } from "react";
 import { blockNumberStore } from "../store/blockNumberStore";
@@ -7,6 +6,7 @@ import { getAssetFromSwap } from "../utils/utils";
 import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import { Toast } from "../components/toast/Toast";
+import { OrderStatus, ParseOrderStatus } from "@gardenfi/orderbook";
 
 export enum SimplifiedOrderStatus {
   orderCreated = "Order created",
@@ -66,22 +66,6 @@ export const useOrderStatus = () => {
           1: { title: SimplifiedOrderStatus.orderCreated, status: "completed" },
           2: {
             title: SimplifiedOrderStatus.detectingDeposit,
-            status: "pending",
-          },
-          3: {
-            title: SimplifiedOrderStatus.redeeming + outputAsset?.symbol,
-            status: "pending",
-          },
-          4: {
-            title: SimplifiedOrderStatus.swapCompleted,
-            status: "pending",
-          },
-        };
-      case OrderStatus.Matched:
-        return {
-          1: { title: SimplifiedOrderStatus.orderCreated, status: "completed" },
-          2: {
-            title: SimplifiedOrderStatus.detectingDeposit,
             status: "inProgress",
           },
           3: {
@@ -131,46 +115,6 @@ export const useOrderStatus = () => {
             status: "pending",
           },
         };
-      case OrderStatus.CounterPartyInitiateDetected:
-      case OrderStatus.CounterPartyInitiated:
-        return {
-          1: {
-            title: SimplifiedOrderStatus.orderCreated,
-            status: "completed",
-          },
-          2: {
-            title: SimplifiedOrderStatus.depositConfirmed,
-            status: "completed",
-          },
-          3: {
-            title: SimplifiedOrderStatus.redeeming + outputAsset?.symbol,
-            status: "inProgress",
-          },
-          4: {
-            title: SimplifiedOrderStatus.swapCompleted,
-            status: "pending",
-          },
-        };
-      case OrderStatus.CounterPartyRefundDetected:
-      case OrderStatus.CounterPartyRefunded:
-        return {
-          1: {
-            title: SimplifiedOrderStatus.orderCreated,
-            status: "completed",
-          },
-          2: {
-            title: SimplifiedOrderStatus.depositConfirmed,
-            status: "completed",
-          },
-          3: {
-            title: SimplifiedOrderStatus.AwaitingRefund,
-            status: "inProgress",
-          },
-          4: {
-            title: SimplifiedOrderStatus.Refunded,
-            status: "pending",
-          },
-        };
       case OrderStatus.RefundDetected:
       case OrderStatus.Refunded:
         return {
@@ -193,9 +137,6 @@ export const useOrderStatus = () => {
         };
       case OrderStatus.RedeemDetected:
       case OrderStatus.Redeemed:
-      case OrderStatus.CounterPartyRedeemDetected:
-      case OrderStatus.CounterPartyRedeemed:
-      case OrderStatus.Completed:
         if (!orderInProgress.source_swap.refund_tx_hash) {
           return {
             1: {
@@ -257,8 +198,7 @@ export const useOrderStatus = () => {
     // Check if order is in pending orders
     if (pendingOrders.length) {
       const orderFromPending = pendingOrders.find(
-        (o) =>
-          orderInProgress.create_order.create_id === o.create_order.create_id
+        (o) => orderInProgress.order_id === o.order_id
       );
       if (orderFromPending) {
         setOrder(orderFromPending);
@@ -270,9 +210,6 @@ export const useOrderStatus = () => {
     const completedStatuses = [
       OrderStatus.RedeemDetected,
       OrderStatus.Redeemed,
-      OrderStatus.CounterPartyRedeemDetected,
-      OrderStatus.CounterPartyRedeemed,
-      OrderStatus.Completed,
     ];
 
     if (completedStatuses.includes(orderInProgress.status)) return;
@@ -284,18 +221,13 @@ export const useOrderStatus = () => {
       if (!blockNumbers) return;
 
       const orderFromOrderbook = await orderBook.getOrder(
-        orderInProgress.create_order.create_id,
-        true
+        orderInProgress.order_id
       );
 
       if (!orderFromOrderbook.ok) return;
 
       const o = orderFromOrderbook.val;
-      const status = ParseOrderStatus(
-        o,
-        blockNumbers[o.source_swap.chain],
-        blockNumbers[o.destination_swap.chain]
-      );
+      const status = ParseOrderStatus(o);
 
       setOrder({ ...o, status });
 

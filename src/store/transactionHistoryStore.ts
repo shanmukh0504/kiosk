@@ -1,13 +1,9 @@
-import {
-  BlockchainType,
-  MatchedOrder,
-  PaginatedData,
-} from "@gardenfi/orderbook";
+import { BlockchainType, Order, PaginatedData } from "@gardenfi/orderbook";
 import { create } from "zustand";
 import logger from "../utils/logger";
 import { APIResponse, Fetcher } from "@gardenfi/utils";
 
-export const ConstructMatchedOrdersUrl = (
+export const ConstructOrdersUrl = (
   baseUrl: string,
   params?: {
     [key: string]: string | number | boolean | undefined;
@@ -25,7 +21,7 @@ export const ConstructMatchedOrdersUrl = (
 };
 
 type TransactionHistoryStoreState = {
-  transactions: MatchedOrder[];
+  transactions: Order[];
   isLoading: boolean;
   perPage: number;
   totalItems: number;
@@ -64,19 +60,19 @@ const transactionHistoryStore = create<TransactionHistoryStoreState>(
           (addr) => addr !== ""
         );
         const urls = addresses.map((address) =>
-          ConstructMatchedOrdersUrl(orderbookUrl, {
+          ConstructOrdersUrl(orderbookUrl, {
             address,
             per_page: perPage,
             status: "fulfilled",
           })
         );
         const fetchPromises = urls.map((url) =>
-          Fetcher.get<APIResponse<PaginatedData<MatchedOrder>>>(url)
+          Fetcher.get<APIResponse<PaginatedData<Order>>>(url)
         );
 
         const results = await Promise.all(fetchPromises);
 
-        const newTransactions: MatchedOrder[] = [];
+        const newTransactions: Order[] = [];
         let totalItems = 0;
         const seenOrderIds = new Set<string>();
 

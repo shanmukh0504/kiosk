@@ -1,20 +1,19 @@
 import { FC, useMemo } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { SwapInfo } from "../../common/SwapInfo";
-import { MatchedOrder } from "@gardenfi/orderbook";
+import { Order, OrderStatus } from "@gardenfi/orderbook";
 import {
   formatAmount,
   getAssetFromSwap,
   getDayDifference,
 } from "../../utils/utils";
-import { OrderStatus } from "@gardenfi/core";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
 import orderInProgressStore from "../../store/orderInProgressStore";
 import { BTC } from "../../store/swapStore";
 
 type TransactionProps = {
-  order: MatchedOrder;
+  order: Order;
   status?: OrderStatus;
   isLast: boolean;
   isFirst: boolean;
@@ -33,23 +32,19 @@ enum StatusLabel {
 
 const getOrderStatusLabel = (status: OrderStatus) => {
   switch (status) {
-    case OrderStatus.Matched:
+    case OrderStatus.Created:
       return StatusLabel.ShouldInitiate;
-    case OrderStatus.DeadLineExceeded:
+    case OrderStatus.Expired:
       return StatusLabel.Expired;
     case OrderStatus.InitiateDetected:
       return StatusLabel.InitiateDetected;
     case OrderStatus.Initiated:
-    case OrderStatus.CounterPartyInitiateDetected:
-    case OrderStatus.CounterPartyInitiated:
+    case OrderStatus.AwaitingRedeem:
       return StatusLabel.Redeeming;
     case OrderStatus.Redeemed:
     case OrderStatus.RedeemDetected:
     case OrderStatus.Refunded:
     case OrderStatus.RefundDetected:
-    case OrderStatus.CounterPartyRedeemed:
-    case OrderStatus.CounterPartyRedeemDetected:
-    case OrderStatus.Completed:
       return StatusLabel.Completed;
     default:
       return StatusLabel.Pending;
@@ -63,7 +58,7 @@ export const TransactionRow: FC<TransactionProps> = ({
   onClick,
   isFirst,
 }) => {
-  const { create_order, source_swap, destination_swap } = order;
+  const { source_swap, destination_swap } = order;
   const { allAssets } = assetInfoStore();
   const { setOrder, setIsOpen } = orderInProgressStore();
   const { setCloseModal } = modalStore();
@@ -85,25 +80,25 @@ export const TransactionRow: FC<TransactionProps> = ({
     () =>
       sendAsset &&
       formatAmount(
-        create_order.source_amount,
+        order.source_swap.amount,
         sendAsset?.decimals ?? 0,
         Math.min(sendAsset.decimals, BTC.decimals)
       ),
-    [create_order.source_amount, sendAsset]
+    [order.source_swap.amount, sendAsset]
   );
   const receiveAmount = useMemo(
     () =>
       receiveAsset &&
       formatAmount(
-        create_order.destination_amount,
+        order.destination_swap.amount,
         receiveAsset?.decimals ?? 0,
         Math.min(receiveAsset.decimals, BTC.decimals)
       ),
-    [create_order.destination_amount, receiveAsset]
+    [order.destination_swap.amount, receiveAsset]
   );
   const dayDifference = useMemo(
-    () => getDayDifference(create_order.updated_at),
-    [create_order.updated_at]
+    () => getDayDifference(order.created_at),
+    [order.created_at]
   );
 
   const handleTransactionClick = async () => {

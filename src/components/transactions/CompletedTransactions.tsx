@@ -2,7 +2,7 @@ import { Typography } from "@gardenfi/garden-book";
 import transactionHistoryStore from "../../store/transactionHistoryStore";
 import { TransactionsSkeleton } from "./TransactionsSkeleton";
 import { TransactionRow } from "./TransactionRow";
-import { OrderStatus } from "@gardenfi/core";
+import { OrderStatus } from "@gardenfi/orderbook";
 import { useMemo } from "react";
 import { getAssetFromSwap } from "../../utils/utils";
 import { assetInfoStore } from "../../store/assetInfoStore";
@@ -34,7 +34,7 @@ export const CompletedTransactions = () => {
           <div key={index} className="w-full">
             <TransactionRow
               order={order}
-              status={OrderStatus.Completed}
+              status={OrderStatus.Refunded} // TODO
               isLast={index === filteredTransactions.length - 1}
               isFirst={index === 0}
             />
