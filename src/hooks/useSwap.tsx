@@ -3,6 +3,8 @@ import { BTC, swapStore } from "../store/swapStore";
 import { IOType, network } from "../constants/constants";
 import {
   Asset,
+  BitcoinOrderResponse,
+  BlockchainType,
   Chain,
   isBitcoin,
   isSolana,
@@ -66,7 +68,7 @@ export const useSwap = () => {
   const { setOrder, setIsOpen } = orderInProgressStore();
   const { updateOrder } = pendingOrdersStore();
   const { disconnect } = useEVMWallet();
-  const { swap, getQuote } = useGarden();
+  const { swap, getQuote, garden } = useGarden();
   const { provider, account } = useBitcoinWallet();
   const controller = useRef<AbortController | null>(null);
   const { setConnectingWallet } = ConnectingWalletStore();
@@ -123,7 +125,6 @@ export const useSwap = () => {
       outputAmount &&
       inputAmount &&
       outputAsset &&
-      strategy &&
       isValidBitcoinAddress &&
       !error.inputError &&
       !error.outputError &&
@@ -135,7 +136,6 @@ export const useSwap = () => {
     outputAmount,
     inputAmount,
     outputAsset,
-    strategy,
     error,
     isValidBitcoinAddress,
   ]);
@@ -229,7 +229,10 @@ export const useSwap = () => {
             return;
           }
 
-          const [quoteAmount] = Object.entries(quote.val.quotes)[0];
+          const quoteAmount = isExactOut
+            ? quote.val[0].source.amount
+            : quote.val[0].destination.amount;
+
           const assetToChange = isExactOut ? fromAsset : toAsset;
           const quoteAmountInDecimals = new BigNumber(Number(quoteAmount)).div(
             Math.pow(10, assetToChange.decimals)
@@ -250,25 +253,13 @@ export const useSwap = () => {
           );
           setIsFetchingQuote({ input: false, output: false });
 
-          const inputAmount = isExactOut
-            ? quoteAmountInDecimals
-            : new BigNumber(amount);
-          const outputAmount = isExactOut
-            ? new BigNumber(amount)
-            : quoteAmountInDecimals;
-          const inputTokenPrice = inputAmount.multipliedBy(
-            quote.val.input_token_price
-          );
-          const outputTokenPrice = outputAmount.multipliedBy(
-            quote.val.output_token_price
-          );
           setFiatTokenPrices({
-            input: quote.val.input_token_price.toString(),
-            output: quote.val.output_token_price.toString(),
+            input: quote.val[0].source.value.toString(),
+            output: quote.val[0].destination.value.toString(),
           });
           setTokenPrices({
-            input: inputTokenPrice.toString(),
-            output: outputTokenPrice.toString(),
+            input: quote.val[0].source.value.toString(),
+            output: quote.val[0].destination.value.toString(),
           });
           setError({
             liquidityError: Errors.none,
@@ -450,9 +441,9 @@ export const useSwap = () => {
       .multipliedBy(10 ** outputAsset.decimals)
       .toFixed();
 
-    const addresses = isBitcoinSwap
+    const addresses: Partial<Record<BlockchainType, string>> = isBitcoinSwap
       ? {
-          btcAddress,
+          bitcoin: btcAddress,
         }
       : {};
 
@@ -494,7 +485,7 @@ export const useSwap = () => {
         toAsset: outputAsset,
         sendAmount: inputAmountInDecimals,
         receiveAmount: outputAmountInDecimals,
-        additionalData,
+        addresses,
       });
       if (!res.ok) {
         if (
@@ -516,12 +507,24 @@ export const useSwap = () => {
 
       logger.log("orderCreated ✅", res.val);
 
-      if (isBitcoin(res.val.source_swap.chain)) {
+      // Extract order ID from response - could be string or BitcoinOrderResponse
+      const orderId = typeof res.val === "string" ? res.val : res.val.order_id;
+      const orderResult = await garden?.getOrder(orderId);
+
+      if (!orderResult || !orderResult.ok) {
+        logger.error("failed to fetch order ❌", orderResult?.error);
+        setIsSwapping(false);
+        return;
+      }
+
+      const order = orderResult.val;
+
+      if (isBitcoin(inputAsset.chain)) {
+        const orderResponse = res.val as BitcoinOrderResponse;
         if (provider) {
-          const order = res.val;
           const bitcoinRes = await provider.sendBitcoin(
-            order.source_swap.swap_id,
-            Number(order.source_swap.amount)
+            orderResponse.to,
+            Number(orderResponse.amount)
           );
           if (bitcoinRes.error) {
             logger.error("failed to send bitcoin ❌", bitcoinRes.error);
@@ -544,15 +547,15 @@ export const useSwap = () => {
           return;
         }
         setIsSwapping(false);
-        setOrder({ ...res.val, status: OrderStatus.Created });
+        setOrder({ ...order, status: OrderStatus.Created });
         setIsOpen(true);
-        updateOrder({ ...res.val, status: OrderStatus.Created });
+        updateOrder({ ...order, status: OrderStatus.Created });
         clearSwapState();
         return;
       }
       setIsSwapping(false);
-      setOrder({ ...res.val, status: OrderStatus.InitiateDetected });
-      updateOrder({ ...res.val, status: OrderStatus.InitiateDetected });
+      setOrder({ ...order, status: OrderStatus.InitiateDetected });
+      updateOrder({ ...order, status: OrderStatus.InitiateDetected });
       setIsOpen(true);
       clearSwapState();
     } catch (error) {

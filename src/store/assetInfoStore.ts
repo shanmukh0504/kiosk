@@ -106,34 +106,13 @@ export type FiatResponse = {
 export type Assets = Record<string, AssetConfig>;
 export type Chains = Partial<Record<Chain, ChainData>>;
 
-// Helper functions to parse API data
 function parseChainIdentifier(chainName: string): Chain | null {
-  const chainMap: Record<string, Chain> = {
-    solana_testnet: "solana_testnet",
-    solana_mainnet: "solana",
-    base_sepolia: "base_sepolia",
-    base_mainnet: "base",
-    monad_testnet: "monad_testnet",
-    ethereum_sepolia: "ethereum_sepolia",
-    ethereum_mainnet: "ethereum",
-    bnbchain_testnet: "bnbchain_testnet",
-    bnbchain_mainnet: "bnbchain",
-    bitcoin_testnet: "bitcoin_testnet",
-    bitcoin_mainnet: "bitcoin",
-    citrea_testnet: "citrea_testnet",
-    sui_testnet: "sui_testnet",
-    sui_mainnet: "sui",
-    starknet_sepolia: "starknet_sepolia",
-    starknet_mainnet: "starknet",
-    arbitrum_sepolia: "arbitrum_sepolia",
-    arbitrum_mainnet: "arbitrum",
-  };
-
-  return chainMap[chainName] || null;
+  return SUPPORTED_CHAINS.includes(chainName as Chain)
+    ? (chainName as Chain)
+    : null;
 }
 
 function parseChainId(idString: string): number {
-  // Parse chain ID from formats like "evm:84532", "solana:103", "bitcoin", "sui", etc.
   const parts = idString.split(":");
   if (parts.length > 1) {
     const parsed = parseInt(parts[1], 10);
@@ -150,6 +129,7 @@ function formatChainName(chainName: string): string {
     .join(" ");
 }
 
+//TODO: Botanix Bitcoin
 function formatAssetName(symbol: string): string {
   const assetNames: Record<string, string> = {
     BTC: "Bitcoin",
@@ -162,7 +142,12 @@ function formatAssetName(symbol: string): string {
     USDC: "USD Coin",
     USDT: "Tether USD",
     SUI: "Sui",
-    SEED: "Seed Token",
+    SEED: "SEED",
+    UBTC: "Unit Bitcoin",
+    ETH: "Ethereum",
+    BTCN: "Bitcorn",
+    LBTC: "Lombard Bitcoin",
+    BTCB: "Binance Bitcoin",
   };
 
   return assetNames[symbol] || symbol;
