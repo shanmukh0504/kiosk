@@ -13,7 +13,7 @@ import {
 } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
-import { constructOrderPair, validateBTCAddress } from "@gardenfi/core";
+import { validateBTCAddress } from "@gardenfi/core";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useStarknetWallet } from "./useStarknetWallet";
 import { useEVMWallet } from "./useEVMWallet";
@@ -40,7 +40,6 @@ export const useSwap = () => {
     outputAsset,
     isSwapping,
     isApproving,
-    strategy,
     rate,
     error,
     btcAddress,
@@ -64,7 +63,7 @@ export const useSwap = () => {
     setBtcAddress,
     setIsComparisonVisible,
   } = swapStore();
-  const { strategies, balances } = assetInfoStore();
+  const { balances } = assetInfoStore();
   const { setOrder, setIsOpen } = orderInProgressStore();
   const { updateOrder } = pendingOrdersStore();
   const { disconnect } = useEVMWallet();
@@ -149,33 +148,28 @@ export const useSwap = () => {
       minAmount: 0,
       maxAmount: 0,
     };
-    if (!inputAsset || !outputAsset || !strategies.val) return defaultLimits;
-
-    const limits =
-      strategies.val[
-        constructOrderPair(
-          inputAsset.chain,
-          inputAsset.atomicSwapAddress,
-          outputAsset.chain,
-          outputAsset.atomicSwapAddress
-        )
-      ];
-
-    if (!limits) return defaultLimits;
+    if (!inputAsset || !outputAsset) return defaultLimits;
+    if (
+      !inputAsset.minAmount ||
+      !inputAsset.maxAmount ||
+      !outputAsset.minAmount ||
+      !outputAsset.maxAmount
+    )
+      return defaultLimits;
     else
       return {
         minAmount: formatAmount(
-          limits.minAmount,
+          inputAsset.minAmount,
           inputAsset.decimals,
           inputAsset.decimals
         ),
         maxAmount: formatAmount(
-          limits.maxAmount,
+          inputAsset.maxAmount,
           inputAsset.decimals,
           inputAsset.decimals
         ),
       };
-  }, [inputAsset, outputAsset, strategies.val]);
+  }, [inputAsset, outputAsset]);
 
   const debouncedFetchQuote = useMemo(
     () =>
@@ -273,6 +267,7 @@ export const useSwap = () => {
       setRate,
       setAmount,
       setTokenPrices,
+      setFiatTokenPrices,
       setError,
       isSwapping,
       networkFees,
@@ -677,7 +672,6 @@ export const useSwap = () => {
     inputAsset,
     outputAsset,
     tokenPrices,
-    strategy,
     rate,
     error,
     isEditBTCAddress,

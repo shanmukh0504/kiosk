@@ -13,7 +13,7 @@ import {
 } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
-import { BitcoinProvider, Quote, Strategies } from "@gardenfi/core";
+import { BitcoinProvider } from "@gardenfi/core";
 import { generateTokenKey } from "../utils/generateTokenKey";
 import { PublicKey } from "@solana/web3.js";
 import BigNumber from "bignumber.js";
@@ -91,6 +91,8 @@ export type AssetConfig = Asset & {
   asset?: string;
   disabled?: boolean;
   price?: number;
+  minAmount?: string;
+  maxAmount?: string;
 };
 
 export type FiatData = {
@@ -168,16 +170,10 @@ type AssetInfoState = {
     type: IOType;
   };
   error: string | null;
-  strategies: {
-    val: Strategies | null;
-    error: string | null;
-    isLoading: boolean;
-  };
   setOpenAssetSelector: (type: IOType) => void;
   CloseAssetSelector: () => void;
   fetchAndSetRPCs: () => Promise<void>;
   fetchAndSetAssetsAndChains: () => Promise<void>;
-  fetchAndSetStrategies: () => Promise<void>;
   fetchAndSetFiatValues: () => Promise<void>;
   fetchAndSetEvmBalances: (
     address: string,
@@ -207,11 +203,6 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   },
   isLoading: false,
   error: null,
-  strategies: {
-    val: null,
-    error: null,
-    isLoading: false,
-  },
   fetchAndSetRPCs: async () => {
     set({ isLoading: true });
     const workingRPCs = await getAllWorkingRPCs([...SupportedChains]);
@@ -312,6 +303,8 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
             disabled: false,
             price: apiAsset.price,
             chainData, // Include chain data in each asset
+            minAmount: apiAsset.min_amount,
+            maxAmount: apiAsset.max_amount,
           };
 
           allAssets[tokenKey] = assetConfig;
@@ -333,25 +326,6 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       set({ error: "Failed to fetch assets data" });
     } finally {
       set({ isLoading: false });
-    }
-  },
-
-  fetchAndSetStrategies: async () => {
-    try {
-      const quote = new Quote(API().quote.quote.toString());
-      set({ strategies: { ...get().strategies, isLoading: true } });
-      const res = await quote.getStrategies();
-      if (!res.ok) return;
-
-      set({ strategies: { val: res.val, isLoading: false, error: null } });
-    } catch {
-      set({
-        strategies: {
-          ...get().strategies,
-          error: "Failed to fetch strategies",
-          isLoading: false,
-        },
-      });
     }
   },
 

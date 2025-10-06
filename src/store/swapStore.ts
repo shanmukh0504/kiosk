@@ -31,7 +31,6 @@ type SwapState = {
   btcAddress: string;
   isSwapping: boolean;
   isApproving: boolean;
-  strategy: string; //TODO
   tokenPrices: TokenPrices;
   fiatTokenPrices: TokenPrices;
   error: SwapErrors;
@@ -50,7 +49,6 @@ type SwapState = {
   setTokenPrices: (tokenPrices: TokenPrices) => void;
   setIsSwapping: (isSwapping: boolean) => void;
   setIsApproving: (isApproving: boolean) => void;
-  setStrategy: (strategy: string) => void;
   setAsset: (ioType: IOType, asset: Asset | undefined) => void;
   setAmount: (ioType: IOType, amount: string) => void;
   setRate: (rate: number) => void;
@@ -96,7 +94,6 @@ export const swapStore = create<SwapState>((set) => ({
     order: null,
   },
   isSwapping: false,
-  strategy: "",
   tokenPrices: {
     input: "0",
     output: "0",
@@ -193,9 +190,6 @@ export const swapStore = create<SwapState>((set) => ({
   setIsEditBTCAddress: (isEditBTCAddress) => {
     set({ isEditBTCAddress });
   },
-  setStrategy: (strategy) => {
-    set({ strategy });
-  },
   setTokenPrices: (tokenPrices) => {
     set({ tokenPrices });
   },
@@ -248,7 +242,6 @@ export const swapStore = create<SwapState>((set) => ({
       inputAsset: BTC,
       isApproving: false,
       isSwapping: false,
-      strategy: "",
       tokenPrices: {
         input: "0",
         output: "0",
@@ -287,7 +280,6 @@ export const swapStore = create<SwapState>((set) => ({
       inputAsset: BTC,
       isSwapping: false,
       isApproving: false,
-      strategy: "",
       tokenPrices: {
         input: "0",
         output: "0",
