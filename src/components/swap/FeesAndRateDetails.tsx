@@ -17,6 +17,7 @@ import { SwapSavingsAndAddresses } from "./SwapSavingsAndAddresses";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { TooltipWrapper } from "../../common/ToolTipWrapper";
 import { formatAmount, formatAmountUsd } from "../../utils/utils";
+import { assetInfoStore } from "../../store/assetInfoStore";
 
 const RateDisplay = ({
   inputAsset,
@@ -66,17 +67,12 @@ export const FeesAndRateDetails = () => {
   const [isHovered, setIsHovered] = useState(false);
   const targetRef = useRef<HTMLDivElement>(null);
 
-  const {
-    inputAsset,
-    outputAsset,
-    rate,
-    networkFees,
-    showComparisonHandler,
-    fiatTokenPrices,
-  } = swapStore();
+  const { inputAsset, outputAsset, rate, networkFees, showComparisonHandler } =
+    swapStore();
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
   const { address } = useEVMWallet();
+  const { assets, allAssets } = assetInfoStore();
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
   const formattedRate = useMemo(
@@ -84,10 +80,23 @@ export const FeesAndRateDetails = () => {
     [isBitcoinChains, rate]
   );
 
-  const formattedTokenPrice = useMemo(
-    () => formatAmountUsd(fiatTokenPrices.input, 0),
-    [fiatTokenPrices.input]
-  );
+  const formattedTokenPrice = useMemo(() => {
+    let price = inputAsset?.price;
+    if (inputAsset && isBitcoin(inputAsset.chain)) {
+      const source = assets ?? allAssets;
+      if (source) {
+        const values = Object.values(source);
+        const btcNative = values.find(
+          (a) =>
+            isBitcoin(a.chain) &&
+            (a.symbol?.toUpperCase() === "BTC" ||
+              a.asset?.toLowerCase().endsWith(":btc"))
+        );
+        price = btcNative?.price ?? price;
+      }
+    }
+    return formatAmountUsd(price, 0);
+  }, [assets, allAssets, inputAsset]);
 
   const refundAddress = useMemo(
     () =>

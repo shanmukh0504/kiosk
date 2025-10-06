@@ -9,7 +9,7 @@ export const ConstructOrdersUrl = (
     [key: string]: string | number | boolean | undefined;
   }
 ): URL => {
-  const url = new URL("/orders/matched", baseUrl);
+  const url = new URL("/v2/orders", baseUrl);
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined) {

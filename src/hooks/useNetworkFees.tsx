@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { constructOrderPair } from "@gardenfi/core";
 import {
   calculateBitcoinNetworkFees,
   getSuiNetworkFee,
@@ -16,8 +15,10 @@ import {
 } from "../constants/constants";
 import logger from "../utils/logger";
 
+const DEFAULT_BASE_FEE = 0; //TODO: get from API
+
 export const useNetworkFees = () => {
-  const { strategies, fiatData } = assetInfoStore();
+  const { fiatData } = assetInfoStore();
   const {
     setNetworkFees,
     setIsNetworkFeesLoading,
@@ -27,37 +28,33 @@ export const useNetworkFees = () => {
   } = swapStore();
 
   useEffect(() => {
-    if (!inputAsset || !outputAsset || !strategies.val) return;
+    if (!inputAsset || !outputAsset) return;
 
     const fetchNetworkFees = async () => {
-      if (!strategies.val) return;
-
       setIsNetworkFeesLoading(true);
       try {
-        const strategy =
-          strategies.val[
-            constructOrderPair(
-              inputAsset.chain,
-              inputAsset.atomicSwapAddress,
-              outputAsset.chain,
-              outputAsset.atomicSwapAddress
-            )
-          ];
-
         const hasBitcoinInput = isBitcoin(inputAsset.chain);
         const hasBitcoinOutput = isBitcoin(outputAsset.chain);
         const hasSuiInput = isSui(inputAsset.chain);
 
-        let totalFees = strategy.fixed_fee;
+        // Start with base fee (network/protocol fee)
+        let totalFees = DEFAULT_BASE_FEE;
 
         const feeCalculations = [];
 
+        // Calculate Bitcoin network fees if Bitcoin is involved
         if (hasBitcoinInput || hasBitcoinOutput) {
           feeCalculations.push(
             calculateBitcoinNetworkFees(
               network,
               hasBitcoinInput ? inputAsset : outputAsset
-            ).catch(() => BITCOIN_DEFAULT_NETWORK_FEE)
+            ).catch((err) => {
+              logger.error(
+                "Bitcoin fee calculation failed, using default",
+                err
+              );
+              return BITCOIN_DEFAULT_NETWORK_FEE;
+            })
           );
         } else {
           feeCalculations.push(Promise.resolve(0));
@@ -70,7 +67,10 @@ export const useNetworkFees = () => {
               inputAsset,
               inputAmount,
               fiatData
-            ).catch(() => SUI_DEFAULT_NETWORK_FEE)
+            ).catch((err) => {
+              logger.error("Sui fee calculation failed, using default", err);
+              return SUI_DEFAULT_NETWORK_FEE;
+            })
           );
         } else {
           feeCalculations.push(Promise.resolve(0));
@@ -93,5 +93,13 @@ export const useNetworkFees = () => {
     return () => {
       clearInterval(intervalId);
     };
-  }, [network, inputAsset, outputAsset, strategies.val, inputAmount, fiatData]);
+  }, [
+    network,
+    inputAsset,
+    outputAsset,
+    inputAmount,
+    fiatData,
+    setNetworkFees,
+    setIsNetworkFeesLoading,
+  ]);
 };

@@ -1,5 +1,5 @@
 import { evmToViemChainMap } from "@gardenfi/core";
-import { EvmChain, isEvmNativeToken } from "@gardenfi/orderbook";
+import { EVMChains, isEvmNativeToken } from "@gardenfi/orderbook";
 import BigNumber from "bignumber.js";
 import { createPublicClient, erc20Abi, Hex, http } from "viem";
 import { MULTICALL_CONTRACT_ADDRESSES } from "../constants/constants";
@@ -9,7 +9,7 @@ import logger from "./logger";
 export const getBalanceMulticall = async (
   tokenAddresses: Hex[],
   address: Hex,
-  chain: EvmChain,
+  chain: EVMChains,
   workingRPCs: Record<number, string[]>
 ): Promise<Record<string, BigNumber | undefined>> => {
   const viemChain = evmToViemChainMap[chain];
@@ -93,7 +93,7 @@ export const getBalanceMulticall = async (
       transport: http(defaultRpcUrl),
       chain: viemChain,
     });
-    return await fetchBalances(defaultClient);  
+    return await fetchBalances(defaultClient);
   } catch {
     return {};
   }

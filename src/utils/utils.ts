@@ -27,7 +27,8 @@ export const capitalizeChain = (chainKey: string) => {
  * @returns
  */
 export const getAssetFromSwap = (swap: Swap, assets: Assets | null) => {
-  return assets && assets[`${swap.chain}_${swap.asset.toLowerCase()}`];
+  if (!assets) return;
+  return Object.values(assets).find((asset) => asset.asset === swap.asset);
 };
 
 export const getQueryParams = (urlParams: URLSearchParams) => {
@@ -66,7 +67,7 @@ export const formatAmount = (
   if (bigAmount.isZero()) return 0;
 
   const value = bigAmount.dividedBy(10 ** decimals);
-  const precision = toFixed ? toFixed : (Number(value) > 10000 ? 2 : 4);
+  const precision = toFixed ? toFixed : Number(value) > 10000 ? 2 : 4;
   let temp = value.toFixed(precision, BigNumber.ROUND_DOWN);
 
   while (
@@ -83,14 +84,15 @@ export const formatAmount = (
 };
 
 export const formatAmountUsd = (
-  amount: string | number | bigint,
+  amount: string | number | bigint | undefined,
   decimals: number
 ) => {
+  if (!amount) return 0;
   const num = formatAmount(amount, decimals);
-  return Number(num).toLocaleString('en-US',{
-    maximumFractionDigits: 2
+  return Number(num).toLocaleString("en-US", {
+    maximumFractionDigits: 2,
   });
-}
+};
 
 export const isCurrentRoute = (route: string) =>
   window.location.pathname === route;

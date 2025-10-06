@@ -45,7 +45,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
     () => activeTab === "completed" && transactions.length < totalItems,
     [transactions.length, totalItems, activeTab]
   );
-  const orderbookUrl = import.meta.env.VITE_ORDERBOOK_URL;
+  const orderbookUrl = import.meta.env.VITE_BASE_URL;
 
   const handleLoadMore = async () => {
     if (!garden) return;

@@ -1,30 +1,39 @@
 import { BitcoinProvider } from "@gardenfi/core";
 import { BTC } from "../store/swapStore";
-import axios from "axios";
-import { API } from "../constants/api";
-import { Chains, isBitcoin, Asset } from "@gardenfi/orderbook";
+import { isBitcoin, Asset } from "@gardenfi/orderbook";
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 import { network } from "../constants/constants";
 import { Transaction } from "@mysten/sui/transactions";
 import { getAssetChainHTLCAddressPair } from "./utils";
 import BigNumber from "bignumber.js";
 import { Network } from "@gardenfi/utils";
-
-type AssetEntry = {
-  chain: string;
-  htlc_address: string;
-  token_price: number;
-};
+import { assetInfoStore } from "../store/assetInfoStore";
 
 const getBTCPrice = async (): Promise<number> => {
-  const response = await axios.get(API().quote.fiatValues.toString(), {
-    timeout: 2000,
-  });
-  const data = response.data;
-  const btcEntry = data.result.find((entry: AssetEntry) =>
-    entry.chain.includes(Chains.bitcoin)
-  );
-  return btcEntry?.token_price || 0;
+  try {
+    const { assets, allAssets } = assetInfoStore.getState();
+    const source = assets ?? allAssets;
+    if (source) {
+      const values = Object.values(source);
+      const btcNative = values.find(
+        (a) =>
+          isBitcoin(a.chain) &&
+          (a.symbol?.toUpperCase() === "BTC" ||
+            a.asset?.toLowerCase().endsWith(":btc"))
+      );
+      if (btcNative?.price && Number.isFinite(btcNative.price)) {
+        return btcNative.price;
+      }
+
+      const anyBtcOnBitcoin = values.find((a) => isBitcoin(a.chain) && a.price);
+      if (anyBtcOnBitcoin?.price && Number.isFinite(anyBtcOnBitcoin.price)) {
+        return anyBtcOnBitcoin.price;
+      }
+    }
+  } catch (err) {
+    console.log("Error in getBTCPrice:", err);
+  }
+  return 0;
 };
 
 export const calculateBitcoinNetworkFees = async (

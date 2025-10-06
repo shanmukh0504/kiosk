@@ -87,9 +87,10 @@ export type ChainData = {
 };
 
 export type AssetConfig = Asset & {
+  chainData?: ChainData;
+  asset?: string;
   disabled?: boolean;
   price?: number;
-  chainData: ChainData;
 };
 
 export type FiatData = {
@@ -290,19 +291,17 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
         let totalAssets = 0;
 
         for (const apiAsset of apiChain.assets) {
-          // Use htlc.address as atomicSwapAddress
           const atomicSwapAddress = apiAsset.htlc?.address || "";
-          // For native tokens, use atomicSwapAddress as tokenAddress to ensure consistent lookups
           const tokenAddress = apiAsset.token?.address || atomicSwapAddress;
 
           const tokenKey = generateTokenKey(chainIdentifier, tokenAddress);
 
-          // Extract name and symbol from the asset ID (e.g., "solana_testnet:sol" -> "SOL")
           const assetSymbol =
             apiAsset.id.split(":")[1]?.toUpperCase() || "UNKNOWN";
           const assetName = formatAssetName(assetSymbol);
 
           const assetConfig: AssetConfig = {
+            asset: apiAsset.id,
             chain: chainIdentifier,
             atomicSwapAddress,
             tokenAddress,
