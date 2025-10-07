@@ -278,7 +278,7 @@ export const CreateSwap = () => {
       const BTC = Object.values(assets).find(
         (asset) => asset.name.toLowerCase() == "bitcoin"
       );
-      if (BTC && !BTC.disabled) {
+      if (BTC) {
         setAsset(IOType.input, BTC);
       }
     }

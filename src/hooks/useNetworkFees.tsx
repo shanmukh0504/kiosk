@@ -94,7 +94,6 @@ export const useNetworkFees = () => {
       clearInterval(intervalId);
     };
   }, [
-    network,
     inputAsset,
     outputAsset,
     inputAmount,

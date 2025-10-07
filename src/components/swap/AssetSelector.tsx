@@ -7,8 +7,12 @@ import {
 } from "@gardenfi/garden-book";
 import BigNumber from "bignumber.js";
 import { FC, useState, ChangeEvent, useEffect, useMemo, useRef } from "react";
-import { Asset, isStarknet, isSolana, isSui } from "@gardenfi/orderbook";
-import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
+import { isStarknet, isSolana, isSui } from "@gardenfi/orderbook";
+import {
+  AssetConfig,
+  assetInfoStore,
+  ChainData,
+} from "../../store/assetInfoStore";
 import { BTC, swapStore } from "../../store/swapStore";
 import { IOType, network } from "../../constants/constants";
 import { modalStore } from "../../store/modalStore";
@@ -35,8 +39,8 @@ type props = {
 export const AssetSelector: FC<props> = ({ onClose }) => {
   const [chain, setChain] = useState<ChainData>();
   const [input, setInput] = useState<string>("");
-  const [results, setResults] = useState<Asset[]>();
-  const [searchResults, setSearchResults] = useState<Asset[]>();
+  const [results, setResults] = useState<AssetConfig[]>();
+  const [searchResults, setSearchResults] = useState<AssetConfig[]>();
   const [hoveredChain, setHoveredChain] = useState("");
   const [showAllChains, setShowAllChains] = useState(false);
   const [visibleChainsCount, setVisibleChainsCount] = useState<number>(7);
@@ -58,6 +62,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     chains,
     balances,
     fiatData,
+    isRouteValid,
+    getValidDestinations,
   } = assetInfoStore();
   const { modalName } = modalStore();
   const { setAsset, inputAsset, outputAsset } = swapStore();
@@ -99,6 +105,13 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const sortedResults = useMemo(() => {
     const assetsToSort = input ? searchResults : results;
     if (!assetsToSort && orderedChains.length === 0) return [];
+
+    // Get valid destinations if we're selecting output and have an input asset
+    let validDestinations: AssetConfig[] = [];
+    if (isAssetSelectorOpen.type === IOType.output && inputAsset) {
+      validDestinations = getValidDestinations(inputAsset);
+    }
+
     return (
       assetsToSort &&
       assetsToSort
@@ -117,6 +130,19 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           return 0;
         })
         .filter((asset) => !chain || asset.chain === chain.identifier)
+        .filter((asset) => {
+          // If we're selecting output and have an input asset, use route validator
+          if (isAssetSelectorOpen.type === IOType.output && inputAsset) {
+            // Check if this asset is in the valid destinations
+            return validDestinations.some(
+              (validAsset) =>
+                validAsset.chain === asset.chain &&
+                validAsset.atomicSwapAddress === asset.atomicSwapAddress &&
+                validAsset.tokenAddress === asset.tokenAddress
+            );
+          }
+          return true;
+        })
         .map((asset) => {
           const network = chains?.[asset.chain];
           const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
@@ -148,6 +174,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     );
   }, [
     searchResults,
+    getValidDestinations,
+    inputAsset,
     results,
     orderedChains,
     chains,
@@ -155,6 +183,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     balances,
     fiatData,
     input,
+    isAssetSelectorOpen.type,
   ]);
 
   const isAnyWalletConnected =
@@ -163,6 +192,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     !!starknetAccount ||
     !!solanaAddress ||
     !!currentAccount;
+
   const fiatBasedSortedResults = useMemo(() => {
     if (!isAnyWalletConnected) return sortedResults;
     return (
@@ -190,11 +220,19 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     ];
   }, [visibleChainsCount, orderedChains, sidebarSelectedChain]);
 
-  const handleClick = (asset?: Asset) => {
+  const handleClick = (asset?: AssetConfig) => {
     if (asset) {
       const isMatchingToken =
         asset.chain === comparisonToken?.chain &&
         asset.atomicSwapAddress === comparisonToken?.atomicSwapAddress;
+      // If selecting input and current output is invalid for the new input, clear output first
+      if (
+        isAssetSelectorOpen.type === IOType.input &&
+        outputAsset &&
+        !isRouteValid(asset, outputAsset)
+      ) {
+        setAsset(IOType.output, undefined);
+      }
       setAsset(isAssetSelectorOpen.type, asset);
       if (isMatchingToken) {
         setAsset(

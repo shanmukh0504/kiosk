@@ -25,7 +25,7 @@ class RouteValidator {
   // Fetch policy from the API
   async loadPolicy(): Promise<void> {
     try {
-      const response = await fetch(`${this.apiBaseUrl}/policy`, {
+      const response = await fetch(`${this.apiBaseUrl}/v2/policy`, {
         headers: {
           "garden-app-id": this.apiKey,
           accept: "application/json",

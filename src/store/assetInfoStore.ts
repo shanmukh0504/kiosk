@@ -3,6 +3,7 @@ import { IOType, network, SUPPORTED_CHAINS } from "../constants/constants";
 import {
   Asset,
   Chain,
+  ChainAsset,
   EVMChains,
   isBitcoin,
   isEVM,
@@ -14,6 +15,7 @@ import {
 import { API } from "../constants/api";
 import axios from "axios";
 import { BitcoinProvider } from "@gardenfi/core";
+import { RouteValidator } from "../utils/routeValidator";
 import { generateTokenKey } from "../utils/generateTokenKey";
 import { PublicKey } from "@solana/web3.js";
 import BigNumber from "bignumber.js";
@@ -36,6 +38,7 @@ import { Network } from "@gardenfi/utils";
 // New API Response Types
 export type ApiAsset = {
   id: string;
+  name: string;
   chain: string;
   icon: string;
   htlc: {
@@ -75,10 +78,8 @@ export type ChainData = {
   chainId: number;
   explorer: string;
   networkLogo: string;
-  networkType: string;
   name: string;
   identifier: Chain;
-  disabled: boolean;
   confirmationTarget: number;
   sourceTimelock: string;
   destinationTimelock: string;
@@ -87,9 +88,8 @@ export type ChainData = {
 };
 
 export type AssetConfig = Asset & {
+  asset: string;
   chainData?: ChainData;
-  asset?: string;
-  disabled?: boolean;
   price?: number;
   minAmount?: string;
   maxAmount?: string;
@@ -132,35 +132,12 @@ function formatChainName(chainName: string): string {
     .join(" ");
 }
 
-//TODO: Botanix Bitcoin
-function formatAssetName(symbol: string): string {
-  const assetNames: Record<string, string> = {
-    BTC: "Bitcoin",
-    WBTC: "Wrapped Bitcoin",
-    CBBTC: "Coinbase Wrapped Bitcoin",
-    IBTC: "iBTC",
-    CBTC: "Citrea Bitcoin",
-    WCBTC: "Wrapped Citrea Bitcoin",
-    SOL: "Solana",
-    USDC: "USD Coin",
-    USDT: "Tether USD",
-    SUI: "Sui",
-    SEED: "SEED",
-    UBTC: "Unit Bitcoin",
-    ETH: "Ethereum",
-    BTCN: "Bitcorn",
-    LBTC: "Lombard Bitcoin",
-    BTCB: "Binance Bitcoin",
-  };
-
-  return assetNames[symbol] || symbol;
-}
-
 type AssetInfoState = {
   allChains: Chains | null;
   allAssets: Assets | null;
   assets: Assets | null;
   chains: Chains | null;
+  routeValidator: RouteValidator | null;
   fiatData: Record<string, number | undefined>;
   balances: Record<string, BigNumber | undefined>;
   workingRPCs: Record<number, string[]>;
@@ -177,7 +154,7 @@ type AssetInfoState = {
   fetchAndSetFiatValues: () => Promise<void>;
   fetchAndSetEvmBalances: (
     address: string,
-    fetchOnlyAsset?: Asset
+    fetchOnlyAsset?: AssetConfig
   ) => Promise<void>;
   fetchAndSetBitcoinBalance: (
     provider: IInjectedBitcoinProvider,
@@ -187,6 +164,8 @@ type AssetInfoState = {
   fetchAndSetSolanaBalance: (address: PublicKey) => Promise<void>;
   fetchAndSetSuiBalance: (address: string) => Promise<void>;
   clearBalances: () => void;
+  isRouteValid: (from: AssetConfig, to: AssetConfig) => boolean;
+  getValidDestinations: (fromAsset: AssetConfig) => AssetConfig[];
 };
 
 export const assetInfoStore = create<AssetInfoState>((set, get) => ({
@@ -194,6 +173,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   chains: null,
   allAssets: null,
   allChains: null,
+  routeValidator: null,
   fiatData: {},
   balances: {},
   workingRPCs: {},
@@ -227,6 +207,13 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   fetchAndSetAssetsAndChains: async () => {
     try {
       set({ isLoading: true });
+      // Initialize and load the route policy once
+      const validator = new RouteValidator(
+        import.meta.env.VITE_BASE_URL,
+        import.meta.env.VITE_API_KEY
+      );
+      await validator.loadPolicy();
+      set({ routeValidator: validator });
       const res = await axios.get<ApiChainsResponse>(
         API().data.assets(network).toString()
       );
@@ -250,27 +237,12 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
         // Parse chain ID from the "id" field (e.g., "evm:84532" -> 84532, "solana:103" -> 103)
         const chainId = parseChainId(apiChain.id);
 
-        // Determine network type from the id field
-        const networkType = apiChain.id.includes("evm")
-          ? "evm"
-          : apiChain.id.includes("solana")
-            ? "solana"
-            : apiChain.id.includes("sui")
-              ? "sui"
-              : apiChain.id.includes("starknet")
-                ? "starknet"
-                : apiChain.id.includes("bitcoin")
-                  ? "bitcoin"
-                  : "other";
-
         const chainData: ChainData = {
           chainId,
           explorer: apiChain.explorer_url,
           networkLogo: apiChain.icon,
-          networkType,
           name: formatChainName(apiChain.chain),
           identifier: chainIdentifier,
-          disabled: false, // API doesn't have disabled field, default to false
           confirmationTarget: apiChain.confirmation_target,
           sourceTimelock: apiChain.source_timelock,
           destinationTimelock: apiChain.destination_timelock,
@@ -289,7 +261,6 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
 
           const assetSymbol =
             apiAsset.id.split(":")[1]?.toUpperCase() || "UNKNOWN";
-          const assetName = formatAssetName(assetSymbol);
 
           const assetConfig: AssetConfig = {
             asset: apiAsset.id,
@@ -297,10 +268,9 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
             atomicSwapAddress,
             tokenAddress,
             decimals: apiAsset.decimals,
-            name: assetName,
+            name: apiAsset.name,
             symbol: assetSymbol,
             logo: apiAsset.icon,
-            disabled: false,
             price: apiAsset.price,
             chainData, // Include chain data in each asset
             minAmount: apiAsset.min_amount,
@@ -308,11 +278,8 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           };
 
           allAssets[tokenKey] = assetConfig;
-
-          if (!assetConfig.disabled && !chainData.disabled) {
-            assets[tokenKey] = assetConfig;
-            totalAssets++;
-          }
+          assets[tokenKey] = assetConfig;
+          totalAssets++;
         }
 
         if (totalAssets > 0) {
@@ -349,11 +316,14 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     }
   },
 
-  fetchAndSetEvmBalances: async (address: string, fetchOnlyAsset?: Asset) => {
+  fetchAndSetEvmBalances: async (
+    address: string,
+    fetchOnlyAsset?: AssetConfig
+  ) => {
     const { assets, workingRPCs } = get();
     if (!assets) return;
 
-    let tokensByChain: Partial<Record<Chain, Asset[]>> = {};
+    let tokensByChain: Partial<Record<Chain, AssetConfig[]>> = {};
     const targetAssets = fetchOnlyAsset
       ? [fetchOnlyAsset]
       : Object.values(assets);
@@ -418,7 +388,6 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
 
   fetchAndSetBitcoinBalance: async (
     provider: IInjectedBitcoinProvider,
-
     address: string
   ) => {
     const { assets } = get();
@@ -530,4 +499,60 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     set({
       balances: {},
     }),
+  isRouteValid: (from: AssetConfig, to: AssetConfig) => {
+    const { routeValidator } = get();
+
+    if (!routeValidator || !from || !to || !from.asset || !to.asset) {
+      console.log("Missing routeValidator, from, or to. Returning true.");
+      return true;
+    }
+
+    try {
+      const fromChainAsset = ChainAsset.from(from.asset);
+      const toChainAsset = ChainAsset.from(to.asset);
+
+      const isValid = routeValidator.isValidRoute(fromChainAsset, toChainAsset);
+      // console.log("Route validation result:", isValid);
+      return isValid;
+    } catch (error) {
+      console.error("Error in isRouteValid:", error);
+      return true;
+    }
+  },
+
+  getValidDestinations: (fromAsset: AssetConfig) => {
+    const { routeValidator, assets } = get();
+    if (!routeValidator || !assets || !fromAsset.asset) {
+      return Object.values(assets || {});
+    }
+
+    try {
+      const fromChainAsset = ChainAsset.from(fromAsset.asset);
+      const allChainAssets = Object.values(assets).map((asset) => {
+        const assetId = asset.asset;
+        return ChainAsset.from(assetId);
+      });
+
+      const validChainAssets = routeValidator.getValidDestinations(
+        fromChainAsset,
+        allChainAssets
+      );
+
+      // Convert back to Asset objects
+      return validChainAssets
+        .map((chainAsset) => {
+          const assetId = chainAsset.toString();
+          return Object.values(assets).find((asset) => {
+            const assetAssetId = asset.asset
+              ? asset.asset!
+              : `${asset.chain}:${asset.symbol.toLowerCase()}`;
+            return assetAssetId === assetId;
+          });
+        })
+        .filter(Boolean) as AssetConfig[];
+    } catch (error) {
+      console.error("Error in getValidDestinations:", error);
+      return Object.values(assets || {});
+    }
+  },
 }));
