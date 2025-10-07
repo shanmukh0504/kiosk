@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   calculateBitcoinNetworkFees,
   getSuiNetworkFee,
@@ -15,8 +15,6 @@ import {
 } from "../constants/constants";
 import logger from "../utils/logger";
 
-const DEFAULT_BASE_FEE = 0; //TODO: get from API
-
 export const useNetworkFees = () => {
   const { fiatData } = assetInfoStore();
   const {
@@ -25,80 +23,85 @@ export const useNetworkFees = () => {
     inputAsset,
     outputAsset,
     inputAmount,
+    fixedFee,
   } = swapStore();
 
+  const latestRef = useRef({ inputAsset, outputAsset, inputAmount, fiatData });
+
   useEffect(() => {
+    latestRef.current = { inputAsset, outputAsset, inputAmount, fiatData };
+  }, [inputAsset, outputAsset, inputAmount, fiatData]);
+
+  const hasLoadedOnceRef = useRef(false);
+  const fetchNetworkFees = async () => {
+    const { inputAsset, outputAsset, inputAmount, fiatData } =
+      latestRef.current;
     if (!inputAsset || !outputAsset) return;
 
-    const fetchNetworkFees = async () => {
-      setIsNetworkFeesLoading(true);
-      try {
-        const hasBitcoinInput = isBitcoin(inputAsset.chain);
-        const hasBitcoinOutput = isBitcoin(outputAsset.chain);
-        const hasSuiInput = isSui(inputAsset.chain);
+    if (!hasLoadedOnceRef.current) setIsNetworkFeesLoading(true);
+    try {
+      const hasBitcoinInput = isBitcoin(inputAsset.chain);
+      const hasBitcoinOutput = isBitcoin(outputAsset.chain);
+      const hasSuiInput = isSui(inputAsset.chain);
 
-        // Start with base fee (network/protocol fee)
-        let totalFees = DEFAULT_BASE_FEE;
+      let totalFees = fixedFee;
+      const feeCalculations: Array<Promise<number>> = [];
 
-        const feeCalculations = [];
-
-        // Calculate Bitcoin network fees if Bitcoin is involved
-        if (hasBitcoinInput || hasBitcoinOutput) {
-          feeCalculations.push(
-            calculateBitcoinNetworkFees(
-              network,
-              hasBitcoinInput ? inputAsset : outputAsset
-            ).catch((err) => {
-              logger.error(
-                "Bitcoin fee calculation failed, using default",
-                err
-              );
-              return BITCOIN_DEFAULT_NETWORK_FEE;
-            })
-          );
-        } else {
-          feeCalculations.push(Promise.resolve(0));
-        }
-
-        if (hasSuiInput) {
-          feeCalculations.push(
-            getSuiNetworkFee(
-              SUI_SOLVER_ADDRESS,
-              inputAsset,
-              inputAmount,
-              fiatData
-            ).catch((err) => {
-              logger.error("Sui fee calculation failed, using default", err);
-              return SUI_DEFAULT_NETWORK_FEE;
-            })
-          );
-        } else {
-          feeCalculations.push(Promise.resolve(0));
-        }
-
-        const [bitcoinFees, suiFees] = await Promise.all(feeCalculations);
-        totalFees += bitcoinFees + suiFees;
-        setNetworkFees(formatAmount(totalFees, 0));
-      } catch (error) {
-        logger.error("failed to fetch network fees ❌", error);
-        setNetworkFees(0);
-      } finally {
-        setIsNetworkFeesLoading(false);
+      if (hasBitcoinInput || hasBitcoinOutput) {
+        feeCalculations.push(
+          calculateBitcoinNetworkFees(
+            network,
+            hasBitcoinInput ? inputAsset : outputAsset
+          ).catch((err) => {
+            logger.error("Bitcoin fee calculation failed, using default", err);
+            return BITCOIN_DEFAULT_NETWORK_FEE;
+          })
+        );
+      } else {
+        feeCalculations.push(Promise.resolve(0));
       }
-    };
+
+      if (hasSuiInput) {
+        feeCalculations.push(
+          getSuiNetworkFee(
+            SUI_SOLVER_ADDRESS,
+            inputAsset,
+            inputAmount,
+            fiatData
+          ).catch((err) => {
+            logger.error("Sui fee calculation failed, using default", err);
+            return SUI_DEFAULT_NETWORK_FEE;
+          })
+        );
+      } else {
+        feeCalculations.push(Promise.resolve(0));
+      }
+
+      const [bitcoinFees, suiFees] = await Promise.all(feeCalculations);
+      totalFees += bitcoinFees + suiFees;
+      setNetworkFees(formatAmount(totalFees, 0));
+    } catch (error) {
+      logger.error("failed to fetch network fees ❌", error);
+      setNetworkFees(0);
+    } finally {
+      if (!hasLoadedOnceRef.current) {
+        setIsNetworkFeesLoading(false);
+        hasLoadedOnceRef.current = true;
+      }
+    }
+  };
+
+  // Debounce re-calculation when amount changes (avoid per-keystroke RPC calls)
+  useEffect(() => {
+    const handle = setTimeout(fetchNetworkFees, 500);
+    return () => clearTimeout(handle);
+  }, [inputAmount]);
+
+  // Poll periodically (independent of typing)
+  useEffect(() => {
+    if (!inputAsset || !outputAsset) return;
     fetchNetworkFees();
-
     const intervalId = setInterval(fetchNetworkFees, 15000);
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [
-    inputAsset,
-    outputAsset,
-    inputAmount,
-    fiatData,
-    setNetworkFees,
-    setIsNetworkFeesLoading,
-  ]);
+    return () => clearInterval(intervalId);
+  }, [inputAsset, outputAsset, fiatData, fixedFee]);
 };

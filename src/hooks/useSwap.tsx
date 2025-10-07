@@ -56,6 +56,7 @@ export const useSwap = () => {
     setAsset,
     setIsFetchingQuote,
     setFiatTokenPrices,
+    setFixedFee,
     isComparisonVisible,
     setIsValidBitcoinAddress,
     // setIsApproving,
@@ -224,9 +225,16 @@ export const useSwap = () => {
             return;
           }
 
+          const q = quote.val[0];
+          // Set fixed fee from quote if provided
+          if (q.fixed_fee != null) {
+            const asNumber = Number(q.fixed_fee);
+            if (!Number.isNaN(asNumber)) setFixedFee(asNumber);
+          }
+
           const quoteAmount = isExactOut
-            ? quote.val[0].source.amount
-            : quote.val[0].destination.amount;
+            ? q.source.amount
+            : q.destination.amount;
 
           const assetToChange = isExactOut ? fromAsset : toAsset;
           const quoteAmountInDecimals = new BigNumber(Number(quoteAmount)).div(
@@ -249,12 +257,12 @@ export const useSwap = () => {
           setIsFetchingQuote({ input: false, output: false });
 
           setFiatTokenPrices({
-            input: quote.val[0].source.value.toString(),
-            output: quote.val[0].destination.value.toString(),
+            input: q.source.value.toString(),
+            output: q.destination.value.toString(),
           });
           setTokenPrices({
-            input: quote.val[0].source.value.toString(),
-            output: quote.val[0].destination.value.toString(),
+            input: q.source.value.toString(),
+            output: q.destination.value.toString(),
           });
           setError({
             liquidityError: Errors.none,

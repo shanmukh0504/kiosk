@@ -23,6 +23,10 @@ export const ConstructOrdersUrl = (
 type TransactionHistoryStoreState = {
   transactions: Order[];
   isLoading: boolean;
+  fetchInFlight: Promise<void> | null;
+  lastFetchCompletedAt: number;
+  minFetchIntervalMs: number;
+  hasLoadedOnce: boolean;
   perPage: number;
   totalItems: number;
   fetchTransactions: (
@@ -38,12 +42,17 @@ type TransactionHistoryStoreState = {
       [key in BlockchainType]: string;
     }
   ) => Promise<void>;
+  resetTransactions: () => void;
 };
 
 const transactionHistoryStore = create<TransactionHistoryStoreState>(
   (set, get) => ({
     transactions: [],
     isLoading: false,
+    fetchInFlight: null,
+    lastFetchCompletedAt: 0,
+    minFetchIntervalMs: 5000,
+    hasLoadedOnce: false,
     perPage: 4,
     totalItems: 0,
 
@@ -51,10 +60,30 @@ const transactionHistoryStore = create<TransactionHistoryStoreState>(
       orderbookUrl: string,
       connectedWallets: {
         [key in BlockchainType]: string;
-      }
+      },
+      append?: boolean
     ) => {
-      set({ isLoading: true });
-      try {
+      // If a request is already in-flight, share it
+      const existing = get().fetchInFlight;
+      if (existing) {
+        await existing;
+        return;
+      }
+
+      const run = (async () => {
+        const now = Date.now();
+        const sinceLast = now - get().lastFetchCompletedAt;
+        const waitMs = append
+          ? 0
+          : Math.max(0, get().minFetchIntervalMs - sinceLast);
+        if (waitMs > 0) {
+          await new Promise((r) => setTimeout(r, waitMs));
+        }
+
+        // Only show loading skeleton for the very first load
+        const showLoading = !get().hasLoadedOnce;
+        if (showLoading) set({ isLoading: true });
+
         const perPage = get().perPage;
         const addresses = Object.values(connectedWallets).filter(
           (addr) => addr !== ""
@@ -97,15 +126,24 @@ const transactionHistoryStore = create<TransactionHistoryStoreState>(
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
 
-        set({
-          transactions: newTransactions,
-          totalItems,
+        set({ transactions: newTransactions, totalItems });
+      })()
+        .catch((err) => {
+          logger.error("Unexpected error in fetchTransactions", err);
+        })
+        .finally(() => {
+          const update: Partial<TransactionHistoryStoreState> = {
+            fetchInFlight: null,
+            lastFetchCompletedAt: Date.now(),
+            hasLoadedOnce: true,
+          };
+          // Only hide loading if it was shown in this run
+          if (get().isLoading) update.isLoading = false;
+          set(update as TransactionHistoryStoreState);
         });
-      } catch (err) {
-        logger.error("Unexpected error in fetchTransactions", err);
-      } finally {
-        set({ isLoading: false });
-      }
+
+      set({ fetchInFlight: run });
+      await run;
     },
 
     loadMore: async (
@@ -115,8 +153,17 @@ const transactionHistoryStore = create<TransactionHistoryStoreState>(
       }
     ) => {
       set((state) => ({ perPage: state.perPage + 4 }));
-      await get().fetchTransactions(orderbookUrl, connectedWallets);
+      await get().fetchTransactions(orderbookUrl, connectedWallets, true);
     },
+
+    resetTransactions: () =>
+      set({
+        transactions: [],
+        totalItems: 0,
+        perPage: 4,
+        hasLoadedOnce: false,
+        lastFetchCompletedAt: 0,
+      }),
   })
 );
 

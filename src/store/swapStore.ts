@@ -28,6 +28,7 @@ type SwapState = {
   outputAmount: string;
   rate: number;
   networkFees: number;
+  fixedFee: number;
   btcAddress: string;
   isSwapping: boolean;
   isApproving: boolean;
@@ -53,6 +54,7 @@ type SwapState = {
   setAmount: (ioType: IOType, amount: string) => void;
   setRate: (rate: number) => void;
   setNetworkFees: (networkFees: number) => void;
+  setFixedFee: (fixedFee: number) => void;
   setIsNetworkFeesLoading: (isNetworkFeesLoading: boolean) => void;
   setBtcAddress: (btcAddress: string) => void;
   swapAssets: () => void;
@@ -86,6 +88,7 @@ export const swapStore = create<SwapState>((set) => ({
   outputAmount: "",
   rate: 0,
   networkFees: 0,
+  fixedFee: 0,
   btcAddress: "",
   isApproving: false,
   isNetworkFeesLoading: false,
@@ -146,6 +149,12 @@ export const swapStore = create<SwapState>((set) => ({
     set((state) => ({
       ...state,
       networkFees,
+    }));
+  },
+  setFixedFee: (fixedFee) => {
+    set((state) => ({
+      ...state,
+      fixedFee,
     }));
   },
   setIsNetworkFeesLoading: (isNetworkFeesLoading) => {

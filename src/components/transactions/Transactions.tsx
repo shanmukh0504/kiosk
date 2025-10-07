@@ -55,19 +55,23 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   };
 
   useEffect(() => {
-    if (!garden || !isOpen) return;
+    if (!garden) return;
     if (garden) {
       setConnectedWallets({
         bitcoin: btcAddress ?? "",
         evm: address ?? "",
-        starknet: starknetAddressToXOnly(starknetAddress ?? ""),
+        starknet: starknetAddress
+          ? starknetAddressToXOnly(starknetAddress ?? "")
+          : "",
         solana: solanaAddress ?? "",
         sui: currentAccount?.address ?? "",
       });
       fetchTransactions(orderbookUrl, {
         bitcoin: btcAddress ?? "",
         evm: address ?? "",
-        starknet: starknetAddressToXOnly(starknetAddress ?? ""),
+        starknet: starknetAddress
+          ? starknetAddressToXOnly(starknetAddress ?? "")
+          : "",
         solana: solanaAddress ?? "",
         sui: currentAccount?.address ?? "",
       });

@@ -11,6 +11,7 @@ import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
 import { assetInfoStore } from "../../../store/assetInfoStore";
 import { useSuiWallet } from "../../../hooks/useSuiWallet";
+import transactionHistoryStore from "../../../store/transactionHistoryStore";
 
 type AddressMenuProps = {
   onClose: () => void;
@@ -23,6 +24,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const { solanaAddress, solanaDisconnect } = useSolanaWallet();
   const { suiConnected, currentAccount, suiDisconnect } = useSuiWallet();
   const { setOpenModal } = modalStore();
+  const { resetTransactions } = transactionHistoryStore();
   const { clear } = swapStore();
   const { clearBalances } = assetInfoStore();
   const addTooltipId = useId();
@@ -49,6 +51,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
     suiDisconnect();
     clearBalances();
     onClose();
+    resetTransactions();
     setTimeout(() => {
       clearBalances();
     }, 2000);
