@@ -4,6 +4,7 @@ import {
   getTimeEstimates,
   IOType,
   WALLET_SUPPORTED_CHAINS,
+  QUERY_PARAMS,
 } from "../../constants/constants";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useSwap } from "../../hooks/useSwap";
@@ -15,7 +16,6 @@ import {
   getAssetFromChainAndSymbol,
   getQueryParams,
 } from "../../utils/utils";
-import { QUERY_PARAMS } from "../../constants/constants";
 import { ecosystems } from "../navbar/connectWallet/constants";
 import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";

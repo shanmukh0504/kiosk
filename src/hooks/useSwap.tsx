@@ -10,6 +10,8 @@ import {
   isSolana,
   isSui,
   OrderStatus,
+  isStarknet,
+  isEVM,
 } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
@@ -18,7 +20,6 @@ import { useGarden } from "@gardenfi/react-hooks";
 import { useStarknetWallet } from "./useStarknetWallet";
 import { useEVMWallet } from "./useEVMWallet";
 import { modalNames, modalStore } from "../store/modalStore";
-import { isStarknet, isEVM } from "@gardenfi/orderbook";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { Environment } from "@gardenfi/utils";
 import { Errors } from "../constants/errors";

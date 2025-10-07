@@ -1,39 +1,21 @@
 import { BitcoinProvider } from "@gardenfi/core";
 import { BTC } from "../store/swapStore";
-import { isBitcoin, Asset } from "@gardenfi/orderbook";
+import axios from "axios";
+import { API } from "../constants/api";
+import { isBitcoin, Asset, ChainAsset } from "@gardenfi/orderbook";
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 import { network } from "../constants/constants";
 import { Transaction } from "@mysten/sui/transactions";
-import { getAssetChainHTLCAddressPair } from "./utils";
 import BigNumber from "bignumber.js";
 import { Network } from "@gardenfi/utils";
-import { assetInfoStore } from "../store/assetInfoStore";
 
 const getBTCPrice = async (): Promise<number> => {
-  try {
-    const { assets, allAssets } = assetInfoStore.getState();
-    const source = assets ?? allAssets;
-    if (source) {
-      const values = Object.values(source);
-      const btcNative = values.find(
-        (a) =>
-          isBitcoin(a.chain) &&
-          (a.symbol?.toUpperCase() === "BTC" ||
-            a.asset?.toLowerCase().endsWith(":btc"))
-      );
-      if (btcNative?.price && Number.isFinite(btcNative.price)) {
-        return btcNative.price;
-      }
-
-      const anyBtcOnBitcoin = values.find((a) => isBitcoin(a.chain) && a.price);
-      if (anyBtcOnBitcoin?.price && Number.isFinite(anyBtcOnBitcoin.price)) {
-        return anyBtcOnBitcoin.price;
-      }
-    }
-  } catch (err) {
-    console.log("Error in getBTCPrice:", err);
-  }
-  return 0;
+  const response = await axios.get(API().quote.fiatValues.toString(), {
+    timeout: 2000,
+  });
+  const result: Record<string, string> = response.data?.result || {};
+  const price = Number(result[BTC.asset]) || 0;
+  return Number.isFinite(price) ? price : 0;
 };
 
 export const calculateBitcoinNetworkFees = async (
@@ -71,7 +53,7 @@ export const getSuiNetworkFee = async (
       .toNumber();
 
     const tokenPriceUsd =
-      (fiatData && fiatData[getAssetChainHTLCAddressPair(asset)]) ?? 0;
+      (fiatData && fiatData[ChainAsset.from(asset).formatted]) ?? 0;
     return networkFee * tokenPriceUsd;
   } catch (error) {
     console.log(error);

@@ -72,6 +72,10 @@ export type ApiChainsResponse = {
   result: ApiChainData[];
 };
 
+export type Networks = {
+  [chain in Chain]: ChainData & { assetConfig: Omit<AssetConfig, "chain">[] };
+};
+
 // Internal Types
 export type ChainData = {
   chainId: number;
@@ -198,6 +202,29 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     }),
 
   fetchAndSetAssetsAndChains: async () => {
+    const maxRetries = 7;
+    const abortAfterMs = 3000;
+    let attempt = 0;
+
+    const fetchAssetsWithRetry = async (): Promise<Networks> => {
+      try {
+        const res = await axios.get<Networks>(API().data.assets().toString(), {
+          timeout: abortAfterMs,
+        });
+        return res.data;
+      } catch (error) {
+        attempt++;
+        if (attempt >= maxRetries) {
+          console.log("Failed to fetch assets data ❌", error);
+          return {} as Networks;
+        }
+
+        const delay = 100 * Math.pow(2, attempt - 1);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        return fetchAssetsWithRetry();
+      }
+    };
+
     try {
       set({ isLoading: true });
       // Initialize and load the route policy once

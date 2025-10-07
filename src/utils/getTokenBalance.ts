@@ -1,4 +1,4 @@
-import { evmToViemChainMap } from "@gardenfi/core";
+import { evmToViemChainMap, STARKNET_CONFIG } from "@gardenfi/core";
 import {
   Asset,
   isBitcoin,
@@ -17,7 +17,6 @@ import {
 } from "viem";
 import { formatAmount } from "./utils";
 import { RpcProvider, Contract } from "starknet";
-import { STARKNET_CONFIG } from "@gardenfi/core";
 import { network } from "../constants/constants";
 import { Connection, PublicKey } from "@solana/web3.js";
 import logger from "./logger";
