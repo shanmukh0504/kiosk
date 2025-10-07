@@ -1,16 +1,18 @@
-import { isBitcoin } from "@gardenfi/orderbook";
-import { API_URLS, RELAY_BTC_SWAP_TIME, SOLANA_MAINNET_CHAIN_ID, SOLANA_MAINNET_RECIPIENT } from "./constants";
-import { Asset } from "@gardenfi/orderbook";
-import { comparisonMetric } from "./constants";
+import { isBitcoin, Asset } from "@gardenfi/orderbook";
 import {
+  SOLANA_MAINNET_CHAIN_ID,
+  SOLANA_MAINNET_RECIPIENT,
+  API_URLS,
+  RELAY_BTC_SWAP_TIME,
+  comparisonMetric,
   BTC_MAINNET_RECIPIENT,
   BTC_TESTNET_CHAIN_ID,
   BTC_TESTNET_RECIPIENT,
   EVM_DEAD_ADDRESS,
+  SwapPlatform,
+  BTC_MAINNET_CHAIN_ID,
 } from "./constants";
-import { BTC_MAINNET_CHAIN_ID } from "./constants";
 import { getFormattedAsset } from "./utils";
-import { SwapPlatform } from "./constants";
 import axios from "axios";
 import BigNumber from "bignumber.js";
 
@@ -35,7 +37,9 @@ export const getRelayFee = async (
   const user =
     srcFormat.chainId !== BTC_MAINNET_CHAIN_ID &&
     srcFormat.chainId != BTC_TESTNET_CHAIN_ID
-      ? srcFormat.chainId !== SOLANA_MAINNET_CHAIN_ID ? EVM_DEAD_ADDRESS :SOLANA_MAINNET_RECIPIENT
+      ? srcFormat.chainId !== SOLANA_MAINNET_CHAIN_ID
+        ? EVM_DEAD_ADDRESS
+        : SOLANA_MAINNET_RECIPIENT
       : srcFormat.chainId === BTC_TESTNET_CHAIN_ID
         ? BTC_TESTNET_RECIPIENT
         : BTC_MAINNET_RECIPIENT;
@@ -43,7 +47,9 @@ export const getRelayFee = async (
   const recipient =
     destFormat.chainId !== BTC_MAINNET_CHAIN_ID &&
     destFormat.chainId != BTC_TESTNET_CHAIN_ID
-      ? destFormat.chainId !== SOLANA_MAINNET_CHAIN_ID ? EVM_DEAD_ADDRESS :SOLANA_MAINNET_RECIPIENT
+      ? destFormat.chainId !== SOLANA_MAINNET_CHAIN_ID
+        ? EVM_DEAD_ADDRESS
+        : SOLANA_MAINNET_RECIPIENT
       : destFormat.chainId === BTC_TESTNET_CHAIN_ID
         ? BTC_TESTNET_RECIPIENT
         : BTC_MAINNET_RECIPIENT;

@@ -18,17 +18,18 @@ export const Switch = <T extends string>({
   return (
     <div className="h-full w-fit items-center justify-end overflow-hidden rounded-full bg-white/50">
       {options.map((option) => (
-        <span
-          className={`inline-block cursor-pointer rounded-full px-3 pb-1.5 pt-1 transition-all duration-150 ease-in-out ${
+        <Typography
+          key={option.value}
+          weight="medium"
+          size="h5"
+          breakpoints={{ sm: "h4" }}
+          className={`inline-block cursor-pointer rounded-full px-3 py-1.5 transition-all duration-150 ease-in-out ${
             value === option.value ? "bg-white" : ""
           }`}
-          key={option.value}
           onClick={() => onChange(option.value)}
         >
-          <Typography weight="medium" size="h4">
-            {option.label}
-          </Typography>
-        </span>
+          {option.label}
+        </Typography>
       ))}
     </div>
   );

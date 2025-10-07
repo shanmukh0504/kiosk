@@ -1,5 +1,6 @@
 import {
   ArrowNorthEastIcon,
+  BottomSheet,
   Button,
   InfoIcon,
   Typography,
@@ -10,19 +11,24 @@ import { StakeInput } from "./StakeInput";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { stakeStore, StakeType } from "../../store/stakeStore";
-import { useEffect, useId, useMemo } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { Tooltip } from "../../common/Tooltip";
 import { MIN_STAKE_AMOUNT } from "../../constants/stake";
 import { GardenPassVotes, SEED_FOR_MINTING_NFT } from "./constants";
 import { motion, AnimatePresence } from "framer-motion";
-import { fadeAnimation, springTransition } from "../../animations/animations";
+import { fadeAnimation } from "../../animations/animations";
 import { useStake } from "../../hooks/useStake";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { formatAmount, getOrderPair } from "../../utils/utils";
-import { rpcStore } from "../../store/rpcStore";
-import { viewPortStore } from "../../store/viewPortStore";
+import { NftBottomSheet } from "./shared/NftBottomSheet";
 
 export const StakeComponent = () => {
+  const [isNftOpen, setIsNftOpen] = useState(false);
+
+  const handleNftOpenChange = (open: boolean) => {
+    setIsNftOpen(open);
+  };
+
   const { isConnected, address } = useEVMWallet();
   const { setOpenModal } = modalStore();
   const {
@@ -39,10 +45,8 @@ export const StakeComponent = () => {
     setStakeType,
   } = stakeStore();
   const { handleStake, loading } = useStake();
-  const { workingRPCs } = rpcStore();
   const { balances, fetchAndSetEvmBalances } = assetInfoStore();
   const tooltipId = useId();
-  const { isMobile, isSmallTab } = viewPortStore();
 
   const balance =
     balances &&
@@ -137,21 +141,23 @@ export const StakeComponent = () => {
 
   useEffect(() => {
     if (address && asset) {
-      fetchAndSetEvmBalances(address, workingRPCs, asset);
+      fetchAndSetEvmBalances(address);
 
       const interval = setInterval(() => {
-        fetchAndSetEvmBalances(address, workingRPCs, asset);
+        fetchAndSetEvmBalances(address);
       }, 5000);
 
       return () => clearInterval(interval);
     }
-  }, [address, fetchAndSetEvmBalances, workingRPCs, asset]);
+  }, [address, fetchAndSetEvmBalances, asset]);
 
   return (
-    <div className="z-10 flex w-full max-w-[328px] flex-col gap-6 rounded-2xl bg-white bg-opacity-50 p-4 pb-5 sm:max-w-[460px]">
+    <div
+      className={`z-10 flex w-full min-w-[328px] max-w-[328px] flex-col rounded-2xl bg-white bg-opacity-50 p-4 pb-5 sm:min-w-[460px] sm:max-w-[460px] ${stakeType === StakeType.GARDEN_PASS ? "gap-6" : "gap-12"}`}
+    >
       <div className="flex flex-col gap-6">
         <div className="flex w-full items-center justify-between">
-          <Typography size="h4" weight="medium">
+          <Typography size="h5" breakpoints={{ sm: "h4" }} weight="medium">
             Stake
           </Typography>
           <Switch<StakeType>
@@ -164,77 +170,76 @@ export const StakeComponent = () => {
           />
         </div>
         <div className="flex flex-col">
-          <Typography size="h4" weight="regular" className="mb-6">
+          <Typography
+            size="h5"
+            breakpoints={{ sm: "h4" }}
+            weight="regular"
+            className="mb-5 max-h-10 min-h-10"
+          >
             <AnimatePresence mode="wait">
               {stakeType === StakeType.CUSTOM ? (
                 <motion.span key="custom" {...fadeAnimation}>
                   Deposit SEED into Garden and unlock new opportunities like
-                  discounted fees. Stake in multiples of{" "}
+                  discounted fees. Stake in
+                  <br /> multiples of{" "}
                   <Typography className="!text-rose" weight="medium">
                     2100 SEED
                   </Typography>{" "}
                   to participate
                 </motion.span>
               ) : (
-                <motion.span key="garden-pass" {...fadeAnimation}>
-                  Stake 21,000 SEED to unlock a Gardener Pass. Max staking
-                  yield, full voting power.
+                <motion.span
+                  key="garden-pass"
+                  {...fadeAnimation}
+                  className="w-full !leading-[20px]"
+                >
+                  Stake{" "}
+                  <span className="!font-[570] text-rose">21,000 SEED</span> to
+                  unlock a{" "}
+                  <span className="hidden md:visible md:inline-flex">
+                    Gardener Pass.
+                  </span>{" "}
+                  <span
+                    onClick={() => {
+                      setIsNftOpen(true);
+                    }}
+                    className="inline-flex cursor-pointer items-center justify-start gap-1 text-rose md:hidden"
+                  >
+                    Gardener Pass.
+                    <ArrowNorthEastIcon className="h-3 w-3 p-0.5" />
+                  </span>{" "}
+                  <br /> Max staking yield, full voting power.
+                  <br />{" "}
                 </motion.span>
               )}
             </AnimatePresence>
           </Typography>
-          <AnimatePresence mode="wait">
-            {stakeType === StakeType.GARDEN_PASS &&
-              (isMobile || isSmallTab) && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0, marginBottom: 0 }}
-                  animate={{ height: "auto", opacity: 1, marginBottom: 24 }}
-                  exit={{ height: 0, opacity: 0, marginBottom: 0 }}
-                  transition={springTransition}
-                >
-                  <Typography
-                    size="h4"
-                    weight="regular"
-                    className="flex items-center gap-1"
-                  >
-                    check out the NFT at{" "}
-                    <span
-                      onClick={() => window.open("", "_blank")}
-                      className="flex cursor-pointer items-center gap-1 text-rose"
-                    >
-                      <span>OpenSea</span>
-                      <ArrowNorthEastIcon className="h-3 w-3 p-0.5" />
-                    </span>
-                  </Typography>
-                </motion.div>
-              )}
-          </AnimatePresence>
-          <div className="flex gap-10">
+          <div className={`flex gap-10 pl-1`}>
             <StakeStats
               title={
                 <div className="flex items-center gap-1">
                   APY
                   <div data-tooltip-id={tooltipId} className="cursor-pointer">
-                    <InfoIcon className="h-4 w-4" />
+                    <InfoIcon className="h-3 w-3 p-[0.5px]" />
                   </div>
                 </div>
               }
               value={`${stakingStats?.globalApy || 0} %`}
               size="sm"
             />
-            <StakeStats
-              title={"SEED locked"}
-              value={`${stakingStats?.seedLockedPercentage || 0} %`}
-              size="sm"
-            />
             <AnimatePresence mode="wait">
               {stakeType === StakeType.GARDEN_PASS ? (
-                <motion.div key="custom" {...fadeAnimation}>
+                <motion.div
+                  key="custom"
+                  {...fadeAnimation}
+                  className="flex gap-10"
+                >
                   <StakeStats
                     title={"Votes"}
                     value={`${GardenPassVotes}`}
                     size="sm"
                   />
+                  <StakeStats title={"Passes minted"} value={101} size="sm" />
                 </motion.div>
               ) : (
                 <motion.div
@@ -242,6 +247,11 @@ export const StakeComponent = () => {
                   {...fadeAnimation}
                   className="flex gap-10"
                 >
+                  <StakeStats
+                    title={"SEED locked"}
+                    value={`${stakingStats?.seedLockedPercentage || 0} %`}
+                    size="sm"
+                  />
                   <StakeStats
                     title={"Avg lock time"}
                     value={`${stakingStats?.averageLockTime || 0} days`}
@@ -254,8 +264,61 @@ export const StakeComponent = () => {
         </div>
       </div>
       <div>
-        <div className="flex flex-col gap-4">
-          <StakeInput balance={tokenBalance} />
+        <div
+          className={`flex flex-col ${stakeType === StakeType.GARDEN_PASS ? "gap-4 md:gap-10" : "gap-4"}`}
+        >
+          {stakeType === StakeType.GARDEN_PASS ? (
+            <motion.div
+              className="grid grid-cols-2 gap-3"
+              key="garden-pass-details"
+              {...fadeAnimation}
+            >
+              <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 md:flex-row md:items-center">
+                <InfoIcon className="h-4 !text-rose" />
+                <Typography
+                  size="h6"
+                  breakpoints={{ sm: "h5" }}
+                  weight="medium"
+                >
+                  First access to new features
+                </Typography>
+              </div>
+              <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 md:flex-row md:items-center">
+                <InfoIcon className="h-4 !text-rose" />
+                <Typography
+                  size="h6"
+                  breakpoints={{ sm: "h5" }}
+                  weight="medium"
+                >
+                  Highest staking yields
+                </Typography>
+              </div>
+              <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 md:flex-row md:items-center">
+                <InfoIcon className="h-4 !text-rose" />
+                <Typography
+                  size="h6"
+                  breakpoints={{ sm: "h5" }}
+                  weight="medium"
+                >
+                  Fully tradable ≈$11,787
+                </Typography>
+              </div>
+              <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 md:flex-row md:items-center">
+                <InfoIcon className="h-4 !text-rose" />
+                <Typography
+                  size="h6"
+                  breakpoints={{ sm: "h5" }}
+                  weight="medium"
+                >
+                  Maximum voting power
+                </Typography>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div key="custom-input" {...fadeAnimation}>
+              <StakeInput balance={tokenBalance} />
+            </motion.div>
+          )}
           <Button
             size="lg"
             variant={
@@ -280,6 +343,9 @@ export const StakeComponent = () => {
           multiline={true}
         />
       </div>
+      <BottomSheet open={isNftOpen} onOpenChange={handleNftOpenChange}>
+        <NftBottomSheet />
+      </BottomSheet>
     </div>
   );
 };

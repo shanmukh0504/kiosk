@@ -8,14 +8,7 @@ type RPCValidationResult = {
   responseTime?: number;
 };
 
-type WorkingRPCResult = {
-  [chainId: number]: string[];
-};
-
-export const testRPC = async (
-  rpcUrl: string,
-  timeoutMs: number = 1000
-): Promise<RPCValidationResult> => {
+export const testRPC = async (rpcUrl: string): Promise<RPCValidationResult> => {
   const startTime = Date.now();
 
   try {
@@ -28,7 +21,7 @@ export const testRPC = async (
         id: 1,
       },
       {
-        timeout: timeoutMs,
+        timeout: 1000,
         headers: {
           "Content-Type": "application/json",
         },
@@ -105,31 +98,33 @@ export const getWorkingRPCs = async (
   return workingRPCs;
 };
 
-export const getAllWorkingRPCs = async (
-  supportedChains: Chain[],
-  maxRPCsPerChain: number = 5
-): Promise<WorkingRPCResult> => {
-  const result: WorkingRPCResult = {};
+export const getRPCsForChain = async (
+  chain: Chain,
+  maxRPCsPerChain: number = 10
+): Promise<string[]> => {
   const rpcs = await getChainListRPCs();
+  console.log("rpcs", rpcs);
+  const reqRPCs = rpcs[chain.id];
+  if (!reqRPCs || reqRPCs.length === 0) return [chain.rpcUrls.default.http[0]];
+  return reqRPCs.slice(0, maxRPCsPerChain);
+};
 
-  const workingRPCsPromises = supportedChains.map(async (chain) => {
-    const reqRPCs = rpcs[chain.id];
-    let workingRPCs: string[];
+export const getAllWorkingRPCs = async (
+  chains: Chain[]
+): Promise<Record<number, string[]>> => {
+  const rpcs = await getChainListRPCs();
+  const results = await Promise.allSettled(
+    chains.map(async (chain) => {
+      const reqRpcs = rpcs[chain.id].slice(0, 10);
+      const working = await getWorkingRPCs(reqRpcs);
+      return { chainId: chain.id, working };
+    })
+  );
 
-    if (!reqRPCs || reqRPCs.length === 0) {
-      workingRPCs = [chain.rpcUrls.default.http[0]];
-    } else {
-      workingRPCs = await getWorkingRPCs(reqRPCs, maxRPCsPerChain);
+  return results.reduce<Record<number, string[]>>((acc, result) => {
+    if (result.status === "fulfilled") {
+      acc[result.value.chainId] = result.value.working;
     }
-
-    return { chainId: chain.id, workingRPCs };
-  });
-
-  const workingRPCsResults = await Promise.all(workingRPCsPromises);
-
-  for (const { chainId, workingRPCs } of workingRPCsResults) {
-    result[chainId] = workingRPCs;
-  }
-
-  return result;
+    return acc;
+  }, {});
 };

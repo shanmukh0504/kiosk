@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from "react";
 import { modalStore } from "../../../store/modalStore";
 import { CloseIcon, Typography } from "@gardenfi/garden-book";
 import { viewPortStore } from "../../../store/viewPortStore";
-import { StakeStats } from "../shared/StakeStats";
+import { RewardStats } from "../shared/RewardStats";
 import { DURATION, DURATION_MAP, SEED_DECIMALS } from "../constants";
 import { StakeSubmissionCard } from "./StakeSubmissionCard";
 import { ExtendStake } from "./ExtendStake";
@@ -84,13 +84,13 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
         the stake.
       </Typography>
       <div className="flex items-center gap-10 align-middle">
-        <StakeStats title={"SEED"} value={amount} size="md" />
-        <StakeStats
+        <RewardStats title={"SEED"} value={amount} size="md" />
+        <RewardStats
           title={"Multiplier"}
           value={`${DURATION_MAP[selectedDuration].votes}x`}
           size="md"
         />
-        <StakeStats
+        <RewardStats
           title={"APY"}
           value={`${stakingStats?.globalApy || 0} %`}
           isPink

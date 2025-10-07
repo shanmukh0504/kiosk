@@ -36,19 +36,19 @@ export const Navbar = () => {
   return (
     <div
       className={
-        "flex items-center justify-between gap-3 px-6 py-6 text-dark-grey sm:px-10"
+        "flex items-center justify-between gap-2 px-4 py-4 text-dark-grey sm:gap-3 sm:px-6 sm:py-6 lg:px-10"
       }
     >
-      <div className="flex items-center gap-16 py-2">
+      <div className="flex items-center gap-4 sm:gap-8 lg:gap-16">
         <GardenFullLogo
           onClick={handleHomeLogoClick}
           className="hidden cursor-pointer sm:block"
         />
         <GardenIcon
           onClick={handleHomeLogoClick}
-          className="h-8 w-8 cursor-pointer sm:hidden"
+          className="h-7 w-7 cursor-pointer sm:hidden sm:h-8 sm:w-8"
         />
-        <div className="hidden gap-12 sm:flex sm:items-center">
+        <div className="hidden gap-8 md:flex md:items-center md:gap-12">
           {routes.map(([, route]) => {
             const paths = route.path;
             const isActive = paths.some(isCurrentRoute);
@@ -68,11 +68,15 @@ export const Navbar = () => {
           })}
         </div>
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
         {!isMobile && isTestnet && (
-          <div className="flex items-center gap-2 rounded-3xl bg-white/25 px-4 py-3">
-            <CodeBlockIcon />
-            <Typography size="h3" weight="regular">
+          <div className="hidden items-center gap-2 rounded-3xl bg-white/25 px-3 py-2 sm:flex sm:px-4 sm:py-3">
+            <CodeBlockIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+            <Typography
+              size="h3"
+              weight="regular"
+              className="text-sm sm:text-base"
+            >
               Testnet
             </Typography>
           </div>
@@ -87,7 +91,7 @@ export const Navbar = () => {
           <Button
             variant="primary"
             onClick={handleConnectClick}
-            className="!rounded-3xl"
+            className="!rounded-3xl !px-4 !py-2 text-sm sm:!px-6 sm:!py-3 sm:text-base"
             size="sm"
             breakpoints={{ sm: "lg" }}
           >

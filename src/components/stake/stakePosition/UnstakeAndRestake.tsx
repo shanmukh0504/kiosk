@@ -1,15 +1,16 @@
 import { Button } from "@gardenfi/garden-book";
 import { FC, useState } from "react";
-import { useWriteContract } from "wagmi";
+import { useWriteContract, useSwitchChain } from "wagmi";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
-import { useSwitchChain } from "wagmi";
 import { simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { STAKING_CHAIN, STAKING_CONFIG } from "../constants";
 import { Address, Hex } from "viem";
-import { StakePositionStatus } from "../../../store/stakeStore";
+import {
+  StakePositionStatus,
+  StakingPosition,
+} from "../../../store/stakeStore";
 import { stakeABI } from "../abi/stake";
 import { config } from "../../../layout/wagmi/config";
-import { StakingPosition } from "../../../store/stakeStore";
 import { Toast } from "../../toast/Toast";
 import { modalNames, modalStore } from "../../../store/modalStore";
 import { scrollToTop } from "../../../utils/utils";

@@ -83,6 +83,16 @@ export const formatAmount = (
   return modulus && Number(temp) < 0 ? Number(temp) * -1 : Number(temp);
 };
 
+export const formatAmountUsd = (
+  amount: string | number | bigint,
+  decimals: number
+) => {
+  const num = formatAmount(amount, decimals);
+  return Number(num).toLocaleString("en-US", {
+    maximumFractionDigits: 2,
+  });
+};
+
 export const isCurrentRoute = (route: string) =>
   window.location.pathname === route;
 

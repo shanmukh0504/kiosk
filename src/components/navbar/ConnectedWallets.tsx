@@ -5,12 +5,11 @@ import { ecosystems } from "./connectWallet/constants";
 import { Opacity, Typography, WalletIcon } from "@gardenfi/garden-book";
 import { modalNames, modalStore } from "../../store/modalStore";
 import pendingOrdersStore from "../../store/pendingOrdersStore";
-import { OrderStatus } from "@gardenfi/core";
+import { OrderStatus, isOrderExpired } from "@gardenfi/core";
 import { useEffect } from "react";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { deletedOrdersStore } from "../../store/deletedOrdersStore";
-import { isOrderExpired } from "@gardenfi/core";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
 
 const ConnectedWallets = () => {

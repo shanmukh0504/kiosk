@@ -63,6 +63,9 @@ export const API = () => {
       epoch: new Url(REQUIRED_ENV_VARS.STAKING_URL)
         .endpoint("rewards")
         .endpoint("epochs"),
+      v2Asset: new Url(REQUIRED_ENV_VARS.ORDERBOOK_URL)
+        .endpoint("v2")
+        .endpoint("assets"),
     },
     explorer: (orderId: string) =>
       new Url("order", REQUIRED_ENV_VARS.EXPLORER).endpoint(orderId),

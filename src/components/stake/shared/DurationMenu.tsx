@@ -59,7 +59,7 @@ const DurationMenu: FC<DurationMenuProps> = ({
                 transition: {
                   type: "spring",
                   stiffness: 250,
-                  damping: 20,
+                  damping: 25,
                 },
               }}
               exit={{

@@ -4,6 +4,7 @@ import {
   getTimeEstimates,
   IOType,
   WALLET_SUPPORTED_CHAINS,
+  QUERY_PARAMS,
 } from "../../constants/constants";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useSwap } from "../../hooks/useSwap";
@@ -15,13 +16,11 @@ import {
   getAssetFromChainAndSymbol,
   getQueryParams,
 } from "../../utils/utils";
-import { QUERY_PARAMS } from "../../constants/constants";
 import { ecosystems } from "../navbar/connectWallet/constants";
 import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
-import { rpcStore } from "../../store/rpcStore";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
 import {
@@ -61,8 +60,6 @@ export const CreateSwap = () => {
     hideComparison,
     updateComparisonSavings,
   } = swapStore();
-
-  const { workingRPCs } = rpcStore();
 
   const {
     outputAmount,
@@ -163,7 +160,7 @@ export const CreateSwap = () => {
   const fetchAllBalances = useCallback(async () => {
     await fetchAndSetFiatValues();
     await Promise.allSettled([
-      address && fetchAndSetEvmBalances(address, workingRPCs),
+      address && fetchAndSetEvmBalances(address),
       btcAddress && provider && fetchAndSetBitcoinBalance(provider, btcAddress),
       starknetAddress && fetchAndSetStarknetBalance(starknetAddress),
       solanaAnchorProvider &&
@@ -183,14 +180,13 @@ export const CreateSwap = () => {
     fetchAndSetFiatValues,
     fetchAndSetStarknetBalance,
     fetchAndSetSolanaBalance,
-    workingRPCs,
   ]);
 
   const fetchInputAssetBalance = useCallback(async () => {
-    await fetchAndSetFiatValues();
     if (!inputAsset) return;
+    await fetchAndSetFiatValues();
     if (isEVM(inputAsset.chain) && address)
-      await fetchAndSetEvmBalances(address, workingRPCs, inputAsset);
+      await fetchAndSetEvmBalances(address, inputAsset);
     if (isBitcoin(inputAsset.chain) && provider && btcAddress)
       await fetchAndSetBitcoinBalance(provider, btcAddress);
     if (isStarknet(inputAsset.chain) && starknetAddress)
@@ -204,7 +200,6 @@ export const CreateSwap = () => {
     inputAsset,
     address,
     fetchAndSetEvmBalances,
-    workingRPCs,
     provider,
     btcAddress,
     fetchAndSetBitcoinBalance,

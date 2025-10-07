@@ -1,0 +1,91 @@
+/* Mini App specific styles for Coinbase Wallet Mini App environment */
+
+/* Ensure proper viewport handling in Mini App */
+.mini-app-container {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent horizontal scrolling in Mini App */
+.mini-app-container * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Optimize touch interactions for Mini App */
+.mini-app-container button,
+.mini-app-container [role="button"] {
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+}
+
+/* Ensure modals work properly in Mini App */
+.mini-app-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-app-modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  margin: 20px;
+}
+
+/* Optimize wallet connection UI for Mini App */
+.mini-app-wallet-connect {
+  padding: 16px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure proper font rendering in Mini App */
+.mini-app-container {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Optimize images for Mini App */
+.mini-app-container img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Ensure proper focus states for accessibility in Mini App */
+.mini-app-container button:focus,
+.mini-app-container [role="button"]:focus {
+  outline: 2px solid #0052ff;
+  outline-offset: 2px;
+}
+
+/* Prevent text selection issues in Mini App */
+.mini-app-container {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.mini-app-container input,
+.mini-app-container textarea {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}

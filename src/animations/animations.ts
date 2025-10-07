@@ -183,33 +183,3 @@ export const springTransition = {
   damping: 25,
   mass: 1,
 };
-
-export const stakePositionAnimation = (length: number) => ({
-  initial: {
-    opacity: 0,
-    height: 0,
-  },
-  animate: {
-    opacity: 1,
-    height: "auto",
-    transition: {
-      duration: Math.max(0.5, 0.09 * length),
-      ease: "easeOut",
-      opacity: {
-        duration: 0.2,
-        delay: 0.2,
-        ease: "easeOut",
-      },
-    },
-  },
-  exit: {
-    opacity: 0,
-    height: 0,
-    transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 20,
-      mass: 1,
-    },
-  },
-});

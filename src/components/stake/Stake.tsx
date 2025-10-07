@@ -3,7 +3,7 @@ import { stakeStore, StakeType } from "../../store/stakeStore";
 import { StakeOverview } from "./StakeOverview";
 import { ToastContainer } from "../toast/Toast";
 import { StakePositions } from "./stakePosition/StakePositions";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { StakeComponent } from "./StakeComponent";
 import { GardenPass } from "./shared/GardenPass";
 import { StakeRewards } from "./StakeRewards";
@@ -25,17 +25,21 @@ export const Stake: FC = () => {
       </div>
       <AnimatePresence mode="wait">
         {stakePosData && stakePosData.length > 0 && (
-          <div className="z-0 flex flex-col">
-            <StakeRewards key="stake-rewards" />
-            <StakeOverview
-              key="stake-overview"
+          <motion.div layout className="z-0 flex flex-col">
+            <StakeRewards
+              key="stake-rewards"
               showDetails={showDetails}
               setShowDetails={setShowDetails}
             />
             <AnimatePresence mode="wait">
-              {showDetails && <StakePositions key="stake-positions" />}
+              {showDetails && (
+                <motion.div layout>
+                  <StakeOverview key="stake-overview" />
+                  <StakePositions key="stake-positions" />
+                </motion.div>
+              )}
             </AnimatePresence>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

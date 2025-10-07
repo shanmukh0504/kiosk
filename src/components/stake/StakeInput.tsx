@@ -70,7 +70,7 @@ export const StakeInput = ({ balance }: { balance: number }) => {
   }, [amount, balance, stakeType, hideStaticToast]);
 
   return (
-    <div className="flex flex-col gap-3 overflow-hidden rounded-xl bg-white p-4">
+    <div className="flex flex-col gap-[7px] overflow-hidden rounded-xl bg-white p-4 pb-[11px]">
       <div className="flex justify-between">
         <Typography size="h5" weight="medium">
           Stake SEED

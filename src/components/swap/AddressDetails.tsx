@@ -1,9 +1,12 @@
 import { isBitcoin } from "@gardenfi/orderbook";
 import { getTrimmedAddress } from "../../utils/getTrimmedAddress";
-import { FC, useId, useMemo } from "react";
+import { useMemo, useId, FC } from "react";
 import { assetInfoStore } from "../../store/assetInfoStore";
-import { ArrowNorthEastIcon, EditIcon } from "@gardenfi/garden-book";
-import { Typography } from "@gardenfi/garden-book";
+import {
+  ArrowNorthEastIcon,
+  EditIcon,
+  Typography,
+} from "@gardenfi/garden-book";
 import { Tooltip } from "../../common/Tooltip";
 import { swapStore } from "../../store/swapStore";
 import { Url } from "@gardenfi/utils";

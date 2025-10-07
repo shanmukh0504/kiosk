@@ -13,6 +13,7 @@ import {
 import { config } from "./wagmi/config";
 import { STARKNET_CONFIG } from "@gardenfi/core";
 import { SuiProvider } from "./sui/SuiProvider.tsx";
+import { FrameProvider } from "./FrameProvider.tsx";
 
 interface WalletProviderProps {
   children: ReactNode;
@@ -29,7 +30,9 @@ export const WalletProviders: FC<WalletProviderProps> = ({ children }) => {
           autoConnect
         >
           <SolanaProvider>
-            <SuiProvider>{children}</SuiProvider>
+            <SuiProvider>
+              <FrameProvider>{children}</FrameProvider>
+            </SuiProvider>
           </SolanaProvider>
         </StarknetConfig>
       </BTCWalletProvider>

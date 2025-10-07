@@ -1,12 +1,13 @@
-import { ChainflipAssetAndChain, ChainflipPriceResponse } from "./constants";
-import { getChainId, getFormattedAsset } from "./utils";
-import { Asset } from "@gardenfi/orderbook";
 import {
+  ChainflipAssetAndChain,
+  ChainflipPriceResponse,
   API_URLS,
   ChainflipQuote,
   comparisonMetric,
   SwapPlatform,
 } from "./constants";
+import { getChainId, getFormattedAsset } from "./utils";
+import { Asset } from "@gardenfi/orderbook";
 import axios from "axios";
 
 export const getChainflipFee = async (

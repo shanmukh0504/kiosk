@@ -14,7 +14,7 @@ type LayoutProps = {
   children: ReactNode;
 };
 
-export const Layout: FC<LayoutProps> = ({ children }) => {
+const LayoutContent: FC<LayoutProps> = ({ children }) => {
   const { fetchAndSetAssetsAndChains } = assetInfoStore();
   const { isMobile } = viewPortStore();
   const theme = getCurrentTheme();
@@ -39,13 +39,15 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
           }}
         />
         <Modal />
-        <div className="min-h-[100vh]">
-          <Navbar />
-          {children}
-        </div>
+        <Navbar />
+        {children}
         {!isMobile && <Notification />}
-        <Footer className={"mt-auto"} network={network} />
+        <Footer network={network} />
       </div>
     </div>
   );
+};
+
+export const Layout: FC<LayoutProps> = ({ children }) => {
+  return <LayoutContent>{children}</LayoutContent>;
 };
