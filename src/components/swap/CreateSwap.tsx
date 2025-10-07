@@ -228,7 +228,8 @@ export const CreateSwap = () => {
   useEffect(() => {
     if (!assets) return;
     fetchAllBalances();
-  }, [assets, fetchAllBalances]);
+    fetchAndSetFiatValues();
+  }, [assets, fetchAllBalances, fetchAndSetFiatValues]);
 
   useEffect(() => {
     if (!assets) return;
@@ -239,6 +240,7 @@ export const CreateSwap = () => {
       } else {
         fetchInputAssetBalance();
       }
+      fetchAndSetFiatValues();
     }, 7000);
 
     return () => {
@@ -249,6 +251,7 @@ export const CreateSwap = () => {
     isAssetSelectorOpen.isOpen,
     fetchAllBalances,
     fetchInputAssetBalance,
+    fetchAndSetFiatValues,
   ]);
 
   useEffect(() => {

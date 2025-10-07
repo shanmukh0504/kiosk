@@ -72,7 +72,7 @@ export const FeesAndRateDetails = () => {
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
   const { address } = useEVMWallet();
-  const { assets, allAssets } = assetInfoStore();
+  const { assets, allAssets, fiatData } = assetInfoStore();
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
   const formattedRate = useMemo(
@@ -81,23 +81,19 @@ export const FeesAndRateDetails = () => {
   );
 
   const formattedTokenPrice = useMemo(() => {
-    let price = inputAsset?.price;
-    if (inputAsset && isBitcoin(inputAsset.chain)) {
-      const source = assets ?? allAssets;
-      if (source) {
-        const values = Object.values(source);
-        const btcNative = values.find(
-          (a) =>
-            isBitcoin(a.chain) &&
-            (a.symbol?.toUpperCase() === "BTC" ||
-              a.asset?.toLowerCase().endsWith(":btc"))
-        );
-        price = btcNative?.price ?? price;
+    if (!inputAsset) return "";
+    let price = fiatData?.[inputAsset.asset] ?? inputAsset.price;
+
+    if (isBitcoin(inputAsset.chain)) {
+      const btcAsset = Object.values(assets ?? allAssets ?? {}).find((a) =>
+        isBitcoin(a.chain)
+      );
+      if (btcAsset) {
+        price = fiatData?.[btcAsset.asset] ?? btcAsset.price ?? price;
       }
     }
     return formatAmountUsd(price, 0);
-  }, [assets, allAssets, inputAsset]);
-
+  }, [inputAsset, assets, allAssets, fiatData]);
   const refundAddress = useMemo(
     () =>
       inputAsset

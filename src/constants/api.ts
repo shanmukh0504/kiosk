@@ -1,8 +1,9 @@
-import { Network, Url } from "@gardenfi/utils";
+import { Url } from "@gardenfi/utils";
 
 const REQUIRED_ENV_VARS = {
   STAKING_URL: import.meta.env.VITE_STAKING_URL,
   INFO_URL: import.meta.env.VITE_INFO_URL,
+  QUOTE_URL: import.meta.env.VITE_QUOTE_URL,
   BASE_URL: import.meta.env.VITE_BASE_URL,
   REWARD: import.meta.env.VITE_REWARD_URL,
   EXPLORER: import.meta.env.VITE_EXPLORER_URL,
@@ -17,8 +18,7 @@ export const API = () => {
     home: new Url("https://garden.finance"),
     data: {
       info: new Url(REQUIRED_ENV_VARS.INFO_URL),
-      assets: (_network: Network) =>
-        new Url(REQUIRED_ENV_VARS.BASE_URL).endpoint("/v2/chains"),
+      assets: () => new Url(REQUIRED_ENV_VARS.BASE_URL).endpoint("/v2/chains"),
       blockNumbers: (network: "mainnet" | "testnet" | "localnet") =>
         new Url(REQUIRED_ENV_VARS.INFO_URL)
           .endpoint("blocknumbers")
@@ -30,9 +30,7 @@ export const API = () => {
     orderbook: new Url(REQUIRED_ENV_VARS.BASE_URL),
     quote: {
       quote: new Url(REQUIRED_ENV_VARS.BASE_URL),
-      fiatValues: new Url(REQUIRED_ENV_VARS.BASE_URL).endpoint(
-        "/v2/supported-assets"
-      ),
+      fiatValues: new Url(REQUIRED_ENV_VARS.QUOTE_URL).endpoint("/fiat"),
     },
     stake: {
       stakePosition: (userId: string) =>

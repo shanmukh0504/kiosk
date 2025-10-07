@@ -19,11 +19,7 @@ import { modalStore } from "../../store/modalStore";
 import { ChainsTooltip } from "./ChainsTooltip";
 import { AvailableChainsSidebar } from "./AvailableChainsSidebar";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  formatAmount,
-  getAssetChainHTLCAddressPair,
-  getOrderPair,
-} from "../../utils/utils";
+import { formatAmount, getOrderPair } from "../../utils/utils";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
@@ -147,7 +143,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           const network = chains?.[asset.chain];
           const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
           const balance = balances?.[orderPair];
-          const fiatRate = fiatData?.[getAssetChainHTLCAddressPair(asset)] ?? 0;
+          const fiatRate = fiatData?.[asset.asset] ?? 0;
           const formattedBalance =
             balance && asset && balance.toNumber() === 0
               ? ""

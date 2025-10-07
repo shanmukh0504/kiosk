@@ -33,7 +33,6 @@ import logger from "../utils/logger";
 import { getLegacyGasEstimate } from "../utils/getNativeTokenFee";
 import { SupportedChains } from "../layout/wagmi/config";
 import { getAllWorkingRPCs } from "../utils/rpcUtils";
-import { Network } from "@gardenfi/utils";
 
 // New API Response Types
 export type ApiAsset = {
@@ -95,15 +94,9 @@ export type AssetConfig = Asset & {
   maxAmount?: string;
 };
 
-export type FiatData = {
-  chain: Chain;
-  htlc_address: string;
-  token_price: number;
-};
-
 export type FiatResponse = {
   status: string;
-  result: FiatData[];
+  result: Record<string, string>;
 };
 
 export type Assets = Record<string, AssetConfig>;
@@ -215,7 +208,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       await validator.loadPolicy();
       set({ routeValidator: validator });
       const res = await axios.get<ApiChainsResponse>(
-        API().data.assets(network).toString()
+        API().data.assets().toString()
       );
 
       if (res.data.status !== "Ok") {
@@ -302,9 +295,9 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
         API().quote.fiatValues.toString()
       );
 
-      const fiatData = data.result.reduce(
-        (acc, { chain, htlc_address, token_price }) => {
-          acc[`${chain}_${htlc_address.toLowerCase()}`] = token_price;
+      const fiatData = Object.entries(data.result).reduce(
+        (acc, [key, value]) => {
+          acc[key] = typeof value === "string" ? Number(value) : value;
           return acc;
         },
         {} as Record<string, number>
@@ -399,9 +392,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
 
       const formattedBalance = new BigNumber(balance.val.confirmed);
 
-      const _provider = new BitcoinProvider(
-        network === "mainnet" ? Network.MAINNET : Network.TESTNET
-      );
+      const _provider = new BitcoinProvider(network);
 
       const feeRate = await _provider.getFeeRates();
       const utxos = await _provider.getUTXOs(address, Number(formattedBalance));
