@@ -10,6 +10,7 @@
 
 - Update toast for successful swap and add abort controller to fetch assets function.
 - Update the coinbase wallet id.
+- Fixed the link redirecting to staking docs.
 - Update title to "Swap completed" from "Swap in progress" when swap is completed.
 
 ## [1.1.7]
