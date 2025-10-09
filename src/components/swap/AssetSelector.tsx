@@ -254,7 +254,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
       results.filter(
         (asset) =>
           asset.name?.toLowerCase().includes(inputValue) ||
-          asset.symbol?.toLowerCase().includes(inputValue)
+          asset.symbol?.toLowerCase().includes(inputValue) ||
+          asset.chain?.toLowerCase().includes(inputValue)
       )
     );
   };
@@ -383,7 +384,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                   className="w-full bg-transparent outline-none placeholder:text-mid-grey focus:outline-none"
                   type="text"
                   value={input}
-                  placeholder="Search assets"
+                  placeholder="Search assets or chains"
                   onChange={handleSearch}
                 />
               </Typography>
