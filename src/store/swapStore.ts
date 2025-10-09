@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { Asset, Chains } from "@gardenfi/orderbook";
 import { IOType, network } from "../constants/constants";
 import { ErrorFormat, Errors } from "../constants/errors";
-import { AssetConfig } from "./assetInfoStore";
+import { AssetConfig, assetInfoStore } from "./assetInfoStore";
 
 export type TokenPrices = {
   input: string;
@@ -177,12 +177,29 @@ export const swapStore = create<SwapState>((set) => ({
         !state.inputAmount || state.inputAmount === "0"
           ? ""
           : state.outputAmount;
+
+      // Get the potentially swapped assets
+      const newInputAsset = state.outputAsset;
+      const newOutputAsset = state.inputAsset;
+
+      // Validate the route after swapping
+      const { isRouteValid } = assetInfoStore.getState();
+      let finalOutputAsset = newOutputAsset;
+
+      if (
+        newInputAsset &&
+        newOutputAsset &&
+        !isRouteValid(newInputAsset, newOutputAsset)
+      ) {
+        finalOutputAsset = undefined;
+      }
+
       return {
         ...state,
-        inputAsset: state.outputAsset,
-        outputAsset: state.inputAsset,
+        inputAsset: newInputAsset,
+        outputAsset: finalOutputAsset,
         inputAmount: newInputAmount,
-        outputAmount: newOutputAmount,
+        outputAmount: finalOutputAsset ? newOutputAmount : "",
         error: {
           ...state.error,
           inputError: Errors.none,
