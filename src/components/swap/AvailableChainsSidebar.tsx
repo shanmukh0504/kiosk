@@ -110,13 +110,13 @@ export const AvailableChainsSidebar = ({
                   filteredChains.map((c) => {
                     return (
                       <div
-                        key={c.identifier}
+                        key={c.chain}
                         className="flex w-full cursor-pointer items-center justify-between hover:bg-off-white"
                         onClick={() => onClick(c)}
                       >
                         <div className="flex w-full items-center gap-4 px-[14px] py-2">
                           <img
-                            src={c.networkLogo}
+                            src={c.icon}
                             alt={c.name}
                             className={`h-5 w-5 rounded-full`}
                           />

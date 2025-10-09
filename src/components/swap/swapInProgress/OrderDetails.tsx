@@ -83,7 +83,8 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
     allChains &&
     chain &&
     allChains[chain] &&
-    new Url("address", allChains[chain].explorer.toString());
+    allChains[chain].explorer_url &&
+    new Url("address", allChains[chain].explorer_url.toString());
 
   const link = baseUrl && btcAddress && baseUrl.endpoint(btcAddress);
 

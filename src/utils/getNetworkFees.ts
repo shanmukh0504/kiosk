@@ -14,8 +14,8 @@ const getBTCPrice = async (): Promise<number> => {
     timeout: 2000,
   });
   const result: Record<string, string> = response.data?.result || {};
-  if (!BTC.asset) return 0;
-  const price = Number(result[BTC.asset]) || 0;
+  if (!BTC.id) return 0;
+  const price = Number(result[BTC.id.toString()]) || 0;
   return Number.isFinite(price) ? price : 0;
 };
 

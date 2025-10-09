@@ -1,8 +1,8 @@
 import { create } from "zustand";
-import { Asset, Chains } from "@gardenfi/orderbook";
+import { Asset, ChainAsset, Chains } from "@gardenfi/orderbook";
 import { IOType, network } from "../constants/constants";
 import { ErrorFormat, Errors } from "../constants/errors";
-import { AssetConfig, assetInfoStore } from "./assetInfoStore";
+import { assetInfoStore } from "./assetInfoStore";
 
 export type TokenPrices = {
   input: string;
@@ -22,8 +22,8 @@ export type SwapErrors = {
 };
 
 type SwapState = {
-  inputAsset?: AssetConfig;
-  outputAsset?: AssetConfig;
+  inputAsset?: Asset;
+  outputAsset?: Asset;
   inputAmount: string;
   outputAmount: string;
   rate: number;
@@ -71,15 +71,17 @@ type SwapState = {
   clearSwapInputState: () => void;
 };
 
-export const BTC: AssetConfig = {
+export const BTC: Asset = {
   name: "Bitcoin",
   decimals: 8,
   symbol: "BTC",
-  logo: "https://garden.imgix.net/token-images/bitcoin.svg",
-  tokenAddress: "primary",
-  atomicSwapAddress: "primary",
+  icon: "https://garden.imgix.net/token-images/bitcoin.svg",
+  token: null,
+  htlc: null,
   chain: network === "mainnet" ? Chains.bitcoin : Chains.bitcoin_testnet,
-  asset: `${network === "mainnet" ? Chains.bitcoin : Chains.bitcoin_testnet}:btc`,
+  id: ChainAsset.from(
+    `${network === "mainnet" ? Chains.bitcoin : Chains.bitcoin_testnet}:btc`
+  ),
 };
 
 export const swapStore = create<SwapState>((set) => ({

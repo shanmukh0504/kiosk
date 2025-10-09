@@ -77,8 +77,8 @@ export const getSolanaTokenBalance = async (
 
     // Check if it's native SOL - when tokenAddress equals atomicSwapAddress, it's a native token
     const isNativeSOL =
-      asset.tokenAddress === asset.atomicSwapAddress ||
-      asset.tokenAddress === "primary";
+      asset.token?.address === asset.htlc?.address ||
+      asset.token?.address === "primary";
 
     if (isNativeSOL) {
       // Native SOL balance
@@ -88,10 +88,10 @@ export const getSolanaTokenBalance = async (
 
     let tokenMint: PublicKey;
     try {
-      tokenMint = new PublicKey(asset.tokenAddress);
+      tokenMint = new PublicKey(asset.token?.address || "");
     } catch (err) {
       logger.error("Invalid token mint address", {
-        address: asset.tokenAddress,
+        address: asset.token?.address,
         error: err,
       });
       return 0;
@@ -123,7 +123,11 @@ export const getStarknetTokenBalance = async (
       nodeUrl: STARKNET_CONFIG[network as keyof typeof STARKNET_CONFIG].nodeUrl,
     });
 
-    const erc20Contract = new Contract(erc20ABI, asset.tokenAddress, provider);
+    const erc20Contract = new Contract(
+      erc20ABI,
+      asset.token?.address || "",
+      provider
+    );
 
     const balance = await erc20Contract.balanceOf(address);
     if (!balance) return 0;
@@ -151,7 +155,7 @@ export const getStarknetTokenBalance = async (
 };
 
 export const getTokenBalance = async (address: string, asset: Asset) => {
-  if (isEvmNativeToken(asset.chain, asset.tokenAddress))
+  if (isEvmNativeToken(asset.chain, asset.token?.address || ""))
     return getNativeBalance(address, asset);
 
   const balanceOfABI = {
@@ -191,7 +195,7 @@ export const getTokenBalance = async (address: string, asset: Asset) => {
 
   try {
     const result = await publicClient.call({
-      to: with0x(asset.tokenAddress),
+      to: with0x(asset.token?.address || ""),
       data,
     });
     if (!result.data) return 0;
@@ -219,7 +223,8 @@ export const getNativeBalance = async (address: string, asset: Asset) => {
     if (
       isBitcoin(asset.chain) ||
       !isEVM(asset.chain) ||
-      !isEvmNativeToken(asset.chain, asset.tokenAddress)
+      !isEvmNativeToken(asset.chain, asset.token?.address || "") ||
+      !asset.token
     )
       return 0;
     const _chain = evmToViemChainMap[asset.chain];
@@ -270,9 +275,9 @@ export const getSuiTokenBalance = async (
   try {
     // Check if it's native SUI - when tokenAddress equals atomicSwapAddress, it's a native token
     const isNativeSUI =
-      asset.tokenAddress === asset.atomicSwapAddress ||
-      asset.tokenAddress === "primary" ||
-      asset.tokenAddress === "0x2::sui::SUI";
+      asset.token?.address === asset.htlc?.address ||
+      asset.token?.address === "primary" ||
+      asset.token?.address === "0x2::sui::SUI";
 
     if (isNativeSUI) {
       const BUFFER_FEE_IN_MIST = 5_000_000;
@@ -295,8 +300,8 @@ export const getSuiTokenBalance = async (
       const token = Array.isArray(result)
         ? result.find(
             (b: any) =>
-              b.coinType === asset.tokenAddress ||
-              b.coinType === asset.tokenAddress.replace(/^0x/, "0x")
+              b.coinType === asset.token?.address ||
+              b.coinType === asset.token?.address.replace(/^0x/, "0x")
           )
         : undefined;
       if (!token) return 0;

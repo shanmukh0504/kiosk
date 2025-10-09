@@ -35,12 +35,8 @@ export const SwapInfo: FC<SwapInfoProps> = ({
           {sendAmount}
         </Typography>
         <TokenNetworkLogos
-          tokenLogo={sendAsset.logo}
-          chainLogo={
-            sendChain?.networkLogo === sendAsset.logo
-              ? ""
-              : sendChain?.networkLogo
-          }
+          tokenLogo={sendAsset.icon}
+          chainLogo={sendChain?.icon === sendAsset.icon ? "" : sendChain?.icon}
         />
       </div>
       <ArrowRightIcon className={equalSplit ? "" : "h-5 w-9"} />
@@ -51,8 +47,8 @@ export const SwapInfo: FC<SwapInfoProps> = ({
           {receiveAmount}
         </Typography>
         <TokenNetworkLogos
-          tokenLogo={receiveAsset.logo}
-          chainLogo={receiveChain?.networkLogo}
+          tokenLogo={receiveAsset.icon}
+          chainLogo={receiveChain?.icon}
         />
       </div>
     </div>

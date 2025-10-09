@@ -7,19 +7,21 @@ import {
 } from "@gardenfi/garden-book";
 import BigNumber from "bignumber.js";
 import { FC, useState, ChangeEvent, useEffect, useMemo, useRef } from "react";
-import { isStarknet, isSolana, isSui } from "@gardenfi/orderbook";
 import {
-  AssetConfig,
-  assetInfoStore,
-  ChainData,
-} from "../../store/assetInfoStore";
+  isStarknet,
+  isSolana,
+  isSui,
+  Asset,
+  ChainAsset,
+} from "@gardenfi/orderbook";
+import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { BTC, swapStore } from "../../store/swapStore";
 import { IOType, network } from "../../constants/constants";
 import { modalStore } from "../../store/modalStore";
 import { ChainsTooltip } from "./ChainsTooltip";
 import { AvailableChainsSidebar } from "./AvailableChainsSidebar";
 import { AnimatePresence, motion } from "framer-motion";
-import { formatAmount, getOrderPair } from "../../utils/utils";
+import { formatAmount } from "../../utils/utils";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
@@ -27,6 +29,7 @@ import { viewPortStore } from "../../store/viewPortStore";
 import { Network } from "@gardenfi/utils";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
+import { balanceStore } from "../../store/balanceStore";
 
 type props = {
   onClose: () => void;
@@ -35,8 +38,8 @@ type props = {
 export const AssetSelector: FC<props> = ({ onClose }) => {
   const [chain, setChain] = useState<ChainData>();
   const [input, setInput] = useState<string>("");
-  const [results, setResults] = useState<AssetConfig[]>();
-  const [searchResults, setSearchResults] = useState<AssetConfig[]>();
+  const [results, setResults] = useState<Asset[]>();
+  const [searchResults, setSearchResults] = useState<Asset[]>();
   const [hoveredChain, setHoveredChain] = useState("");
   const [showAllChains, setShowAllChains] = useState(false);
   const [visibleChainsCount, setVisibleChainsCount] = useState<number>(7);
@@ -56,11 +59,11 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     CloseAssetSelector,
     assets,
     chains,
-    balances,
     fiatData,
     isRouteValid,
     getValidDestinations,
   } = assetInfoStore();
+  const { balances } = balanceStore();
   const { modalName } = modalStore();
   const { setAsset, inputAsset, outputAsset } = swapStore();
 
@@ -103,7 +106,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     if (!assetsToSort && orderedChains.length === 0) return [];
 
     // Get valid destinations if we're selecting output and have an input asset
-    let validDestinations: AssetConfig[] = [];
+    let validDestinations: Asset[] = [];
     if (isAssetSelectorOpen.type === IOType.output && inputAsset) {
       validDestinations = getValidDestinations(inputAsset);
     }
@@ -116,16 +119,16 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           const chainB = chains?.[b.chain];
           if (chainA && chainB) {
             const indexA = orderedChains.findIndex(
-              (c) => c.identifier === chainA.identifier
+              (c) => c.chain === chainA.chain
             );
             const indexB = orderedChains.findIndex(
-              (c) => c.identifier === chainB.identifier
+              (c) => c.chain === chainB.chain
             );
             return indexA - indexB;
           }
           return 0;
         })
-        .filter((asset) => !chain || asset.chain === chain.identifier)
+        .filter((asset) => !chain || asset.chain === chain.chain)
         .filter((asset) => {
           // If we're selecting output and have an input asset, use route validator
           if (isAssetSelectorOpen.type === IOType.output && inputAsset) {
@@ -133,18 +136,18 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             return validDestinations.some(
               (validAsset) =>
                 validAsset.chain === asset.chain &&
-                validAsset.atomicSwapAddress === asset.atomicSwapAddress &&
-                validAsset.tokenAddress === asset.tokenAddress
+                validAsset.htlc?.address === asset.htlc?.address &&
+                validAsset.token?.address === asset.token?.address
             );
           }
           return true;
         })
         .map((asset) => {
           const network = chains?.[asset.chain];
-          const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
-          const balance = balances?.[orderPair];
-          if (!asset.asset) return undefined;
-          const fiatRate = fiatData?.[asset.asset] ?? 0;
+          const balance = balances?.[asset.id.toString()];
+          if (!asset.id) return undefined;
+          const fiatRate =
+            fiatData?.[ChainAsset.from(asset.id).toString()] ?? 0;
           const formattedBalance =
             balance && asset && balance.toNumber() === 0
               ? ""
@@ -156,7 +159,6 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                     .dividedBy(10 ** asset.decimals)
                     .toNumber()
                 : balance?.toNumber();
-
           const fiatBalance =
             formattedBalance &&
             (Number(formattedBalance) * Number(fiatRate)).toFixed(5);
@@ -207,7 +209,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     if (!sidebarSelectedChain)
       return orderedChains.slice(0, visibleChainsCount);
     const selectedIdx = orderedChains.findIndex(
-      (c) => c.identifier === sidebarSelectedChain.identifier
+      (c) => c.chain === sidebarSelectedChain.chain
     );
     if (selectedIdx < visibleChainsCount && selectedIdx !== -1) {
       return orderedChains.slice(0, visibleChainsCount);
@@ -218,11 +220,11 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     ];
   }, [visibleChainsCount, orderedChains, sidebarSelectedChain]);
 
-  const handleClick = (asset?: AssetConfig) => {
+  const handleClick = (asset?: Asset) => {
     if (asset) {
       const isMatchingToken =
         asset.chain === comparisonToken?.chain &&
-        asset.atomicSwapAddress === comparisonToken?.atomicSwapAddress;
+        asset.htlc?.address === comparisonToken?.htlc?.address;
       // If selecting input and current output is invalid for the new input, clear output first
       if (
         isAssetSelectorOpen.type === IOType.input &&
@@ -330,9 +332,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                   <button
                     key={i}
                     className={`relative flex h-12 flex-1 items-center justify-center gap-2 overflow-visible rounded-xl outline-none duration-300 ease-in-out ${
-                      !chain || c.chainId !== chain.chainId
-                        ? "bg-white/50"
-                        : "bg-white"
+                      !chain || c.id !== chain.id ? "bg-white/50" : "bg-white"
                     }`}
                     onMouseEnter={() => setHoveredChain(c.name)}
                     onMouseLeave={() => setHoveredChain("")}
@@ -341,7 +341,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                     }
                   >
                     <img
-                      src={c.networkLogo}
+                      src={c.icon}
                       alt={c.name}
                       className={`h-full max-h-5 w-full max-w-5 rounded-full`}
                     />
@@ -402,15 +402,15 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                   .map(({ asset, network, formattedBalance }, index) => {
                     return (
                       <div
-                        key={`${asset?.chain}-${asset?.atomicSwapAddress}-${asset?.tokenAddress || "native"}-${index}`}
+                        key={`${asset?.chain}-${asset?.htlc?.address}-${asset?.token?.address || "native"}-${index}`}
                         className="flex w-full cursor-pointer items-center justify-between gap-2 px-4 py-1.5 hover:bg-off-white"
                         onClick={() => handleClick(asset)}
                       >
                         <div className="flex w-full items-center gap-2">
                           <div className={`w-10`}>
                             <TokenNetworkLogos
-                              tokenLogo={asset.logo}
-                              chainLogo={network?.networkLogo}
+                              tokenLogo={asset.icon}
+                              chainLogo={network?.icon}
                             />
                           </div>
                           <Typography

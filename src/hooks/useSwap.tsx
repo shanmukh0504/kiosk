@@ -12,9 +12,9 @@ import {
   OrderStatus,
   isStarknet,
   isEVM,
+  ChainAsset,
 } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
-import { assetInfoStore } from "../store/assetInfoStore";
 import { validateBTCAddress } from "@gardenfi/core";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useStarknetWallet } from "./useStarknetWallet";
@@ -28,10 +28,11 @@ import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import BigNumber from "bignumber.js";
 import { useSolanaWallet } from "./useSolanaWallet";
-import { formatAmount, getOrderPair } from "../utils/utils";
+import { formatAmount } from "../utils/utils";
 import { useNetworkFees } from "./useNetworkFees";
 import { useSuiWallet } from "./useSuiWallet";
 import logger from "../utils/logger";
+import { balanceStore } from "../store/balanceStore";
 
 export const useSwap = () => {
   const {
@@ -65,7 +66,7 @@ export const useSwap = () => {
     setBtcAddress,
     setIsComparisonVisible,
   } = swapStore();
-  const { balances } = assetInfoStore();
+  const { balances } = balanceStore();
   const { setOrder, setIsOpen } = orderInProgressStore();
   const { updateOrder } = pendingOrdersStore();
   const { disconnect } = useEVMWallet();
@@ -82,7 +83,7 @@ export const useSwap = () => {
 
   const inputBalance = useMemo(() => {
     if (!inputAsset || !balances) return;
-    return balances[getOrderPair(inputAsset.chain, inputAsset.tokenAddress)];
+    return balances[ChainAsset.from(inputAsset.id).toString()];
   }, [inputAsset, balances]);
 
   const inputTokenBalance = useMemo(
@@ -152,21 +153,21 @@ export const useSwap = () => {
     };
     if (!inputAsset || !outputAsset) return defaultLimits;
     if (
-      !inputAsset.minAmount ||
-      !inputAsset.maxAmount ||
-      !outputAsset.minAmount ||
-      !outputAsset.maxAmount
+      !inputAsset.min_amount ||
+      !inputAsset.max_amount ||
+      !outputAsset.min_amount ||
+      !outputAsset.max_amount
     )
       return defaultLimits;
     else
       return {
         minAmount: formatAmount(
-          inputAsset.minAmount,
+          inputAsset.min_amount,
           inputAsset.decimals,
           inputAsset.decimals
         ),
         maxAmount: formatAmount(
-          inputAsset.maxAmount,
+          inputAsset.max_amount,
           inputAsset.decimals,
           inputAsset.decimals
         ),

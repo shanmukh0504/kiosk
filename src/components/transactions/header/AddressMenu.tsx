@@ -9,10 +9,10 @@ import { swapStore } from "../../../store/swapStore";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
-import { assetInfoStore } from "../../../store/assetInfoStore";
 import { useSuiWallet } from "../../../hooks/useSuiWallet";
 import transactionHistoryStore from "../../../store/transactionHistoryStore";
 import orderInProgressStore from "../../../store/orderInProgressStore";
+import { balanceStore } from "../../../store/balanceStore";
 
 type AddressMenuProps = {
   onClose: () => void;
@@ -28,7 +28,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const { setOpenModal } = modalStore();
   const { resetTransactions } = transactionHistoryStore();
   const { clear } = swapStore();
-  const { clearBalances } = assetInfoStore();
+  const { clearBalances } = balanceStore();
   const addTooltipId = useId();
   const languageTooltipId = useId();
   const referralTooltipId = useId();
