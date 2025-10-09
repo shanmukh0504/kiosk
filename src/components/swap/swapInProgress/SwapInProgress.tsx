@@ -42,6 +42,10 @@ export const SwapInProgress = () => {
     };
   }, [allAssets, order]);
 
+  const isOrderCompleted = Object.entries(orderProgress || {}).every(
+    ([_, step]) => step.status === "completed"
+  );
+
   const goBack = useCallback(() => {
     setIsOpen(false);
   }, [setIsOpen]);
@@ -65,7 +69,7 @@ export const SwapInProgress = () => {
     <div className="animate-fade-out flex flex-col gap-3 p-3">
       <div className="flex items-center justify-between p-1">
         <Typography size="h4" weight="medium">
-          Swap in progress
+          {isOrderCompleted ? "Swap completed" : "Swap in progress"}
         </Typography>
         <div className="flex items-center justify-center gap-3">
           {showDeleteButton && (
@@ -128,6 +132,7 @@ export const SwapInProgress = () => {
           </div>
         )}
       <OrderStatus
+        order={order}
         orderProgress={orderProgress}
         viewableStatus={viewableStatus}
         confirmationString={confirmationsString}

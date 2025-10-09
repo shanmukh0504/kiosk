@@ -2,8 +2,15 @@
 
 ## [1.1.8]
 
+### Added
+
+- Redirect link to mempool transaction hash when deposit is not confirmed.
+
+### Fixed
+
 - Update toast for successful swap and add abort controller to fetch assets function.
 - Update the coinbase wallet id.
+- Update title to "Swap completed" from "Swap in progress" when swap is completed.
 
 ## [1.1.7]
 

@@ -59,5 +59,13 @@ export const API = () => {
       new Url(REQUIRED_ENV_VARS.REWARD).endpoint("rewards").endpoint(userId),
     explorer: (orderId: string) =>
       new Url("order", REQUIRED_ENV_VARS.EXPLORER).endpoint(orderId),
+    mempoolTxExplorer: (network: Network, txHash: string) =>
+      new Url(
+        network === Network.MAINNET
+          ? "https://mempool.space"
+          : "https://mempool.space/testnet4"
+      )
+        .endpoint("tx")
+        .endpoint(txHash),
   };
 };
