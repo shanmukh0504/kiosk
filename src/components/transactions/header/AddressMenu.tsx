@@ -1,17 +1,18 @@
 import { FC, useMemo, useId } from "react";
 import { AddIcon, LogoutIcon } from "@gardenfi/garden-book";
-import { Tooltip } from "../../../common/Tooltip";
-import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { Tooltip } from "../../../common/Tooltip";
 import { modalNames, modalStore } from "../../../store/modalStore";
 import { ecosystems } from "../../navbar/connectWallet/constants";
 import { Address } from "./Address";
 import { swapStore } from "../../../store/swapStore";
+import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
 import { assetInfoStore } from "../../../store/assetInfoStore";
 import { useSuiWallet } from "../../../hooks/useSuiWallet";
 import transactionHistoryStore from "../../../store/transactionHistoryStore";
+import orderInProgressStore from "../../../store/orderInProgressStore";
 
 type AddressMenuProps = {
   onClose: () => void;
@@ -23,6 +24,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const { account: btcAddress, disconnect: btcDisconnect } = useBitcoinWallet();
   const { solanaAddress, solanaDisconnect } = useSolanaWallet();
   const { suiConnected, currentAccount, suiDisconnect } = useSuiWallet();
+  const { setIsOpen } = orderInProgressStore();
   const { setOpenModal } = modalStore();
   const { resetTransactions } = transactionHistoryStore();
   const { clear } = swapStore();
@@ -50,6 +52,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
     solanaDisconnect();
     suiDisconnect();
     clearBalances();
+    setIsOpen(false);
     onClose();
     resetTransactions();
     setTimeout(() => {

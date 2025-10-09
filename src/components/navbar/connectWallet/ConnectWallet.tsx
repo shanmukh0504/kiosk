@@ -279,7 +279,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
               }}
             >
               <Typography size="h3" weight="regular">
-                {ecosystem.name}
+                {ecosystem.name === BlockchainType.evm ? "EVM" : ecosystem.name}
               </Typography>
               <RadioCheckedIcon
                 className={`${

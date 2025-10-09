@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { Asset } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
 import {
@@ -10,8 +9,9 @@ import {
 } from "../components/stake/constants";
 import { formatAmount } from "../utils/utils";
 import { CIRCULATING_SEED_SUPPLY } from "../constants/stake";
+import { AssetConfig } from "./assetInfoStore";
 
-const SEED: Asset = {
+const SEED: AssetConfig = {
   name: "Seed",
   decimals: 18,
   symbol: "SEED",
@@ -29,7 +29,7 @@ type StakingStats = {
 };
 
 type StakeStoreState = {
-  asset: Asset;
+  asset: AssetConfig;
   inputAmount: string;
   error: string | null;
   totalStakedAmount: number;

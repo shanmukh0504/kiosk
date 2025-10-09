@@ -91,7 +91,7 @@ export type ChainData = {
 };
 
 export type AssetConfig = Asset & {
-  asset: string;
+  asset?: string;
   chainData?: ChainData;
   price?: number;
   minAmount?: string;
@@ -202,29 +202,6 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     }),
 
   fetchAndSetAssetsAndChains: async () => {
-    const maxRetries = 7;
-    const abortAfterMs = 3000;
-    let attempt = 0;
-
-    const fetchAssetsWithRetry = async (): Promise<Networks> => {
-      try {
-        const res = await axios.get<Networks>(API().data.assets().toString(), {
-          timeout: abortAfterMs,
-        });
-        return res.data;
-      } catch (error) {
-        attempt++;
-        if (attempt >= maxRetries) {
-          console.log("Failed to fetch assets data ❌", error);
-          return {} as Networks;
-        }
-
-        const delay = 100 * Math.pow(2, attempt - 1);
-        await new Promise((resolve) => setTimeout(resolve, delay));
-        return fetchAssetsWithRetry();
-      }
-    };
-
     try {
       set({ isLoading: true });
       // Initialize and load the route policy once
@@ -351,7 +328,10 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     for (const asset of targetAssets) {
       if (!isEVM(asset.chain)) continue;
       if (!tokensByChain[asset.chain]) tokensByChain[asset.chain] = [];
-      tokensByChain[asset.chain]!.push(asset);
+      const chainAssets = tokensByChain[asset.chain];
+      if (chainAssets) {
+        chainAssets.push(asset);
+      }
     }
 
     try {
@@ -366,7 +346,9 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
 
           const updatedBalances: Record<string, BigNumber | undefined> = {};
 
-          for (const asset of assets!) {
+          if (!assets) return updatedBalances;
+
+          for (const asset of assets) {
             const orderKey = getOrderPair(chain, asset.tokenAddress);
             let balance = chainBalances[asset.tokenAddress];
 
@@ -547,7 +529,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     try {
       const fromChainAsset = ChainAsset.from(fromAsset.asset);
       const allChainAssets = Object.values(assets).map((asset) => {
-        const assetId = asset.asset;
+        const assetId = asset.asset ?? "";
         return ChainAsset.from(assetId);
       });
 
@@ -562,7 +544,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           const assetId = chainAsset.toString();
           return Object.values(assets).find((asset) => {
             const assetAssetId = asset.asset
-              ? asset.asset!
+              ? asset.asset
               : `${asset.chain}:${asset.symbol.toLowerCase()}`;
             return assetAssetId === assetId;
           });

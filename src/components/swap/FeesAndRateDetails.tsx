@@ -81,7 +81,7 @@ export const FeesAndRateDetails = () => {
   );
 
   const formattedTokenPrice = useMemo(() => {
-    if (!inputAsset) return "";
+    if (!inputAsset || !inputAsset.asset) return "";
     let price = fiatData?.[inputAsset.asset] ?? inputAsset.price;
 
     if (isBitcoin(inputAsset.chain)) {
@@ -89,7 +89,8 @@ export const FeesAndRateDetails = () => {
         isBitcoin(a.chain)
       );
       if (btcAsset) {
-        price = fiatData?.[btcAsset.asset] ?? btcAsset.price ?? price;
+        price =
+          fiatData?.[btcAsset.asset ?? ""] ?? btcAsset.price ?? price ?? 0;
       }
     }
     return formatAmountUsd(price, 0);

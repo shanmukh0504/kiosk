@@ -275,6 +275,7 @@ export const useSwap = () => {
       setIsFetchingQuote,
       setRate,
       setAmount,
+      setFixedFee,
       setTokenPrices,
       setFiatTokenPrices,
       setError,
@@ -551,15 +552,15 @@ export const useSwap = () => {
           return;
         }
         setIsSwapping(false);
-        setOrder({ ...order, status: OrderStatus.Created });
+        setOrder({ ...order, status: OrderStatus.Initiated });
         setIsOpen(true);
-        updateOrder({ ...order, status: OrderStatus.Created });
+        updateOrder({ ...order, status: OrderStatus.Initiated });
         clearSwapState();
         return;
       }
       setIsSwapping(false);
-      setOrder({ ...order, status: OrderStatus.InitiateDetected });
-      updateOrder({ ...order, status: OrderStatus.InitiateDetected });
+      setOrder({ ...order, status: OrderStatus.Initiated });
+      updateOrder({ ...order, status: OrderStatus.Initiated });
       setIsOpen(true);
       clearSwapState();
     } catch (error) {

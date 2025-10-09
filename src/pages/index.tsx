@@ -36,7 +36,6 @@ function App() {
             ? {
                 network: GardenEnvironment.TESTNET,
                 auth: import.meta.env.VITE_AUTH_URL,
-                info: import.meta.env.VITE_INFO_URL,
                 relayer: import.meta.env.VITE_RELAYER_URL,
                 baseurl: import.meta.env.VITE_BASE_URL,
               }

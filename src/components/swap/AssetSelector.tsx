@@ -143,6 +143,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           const network = chains?.[asset.chain];
           const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
           const balance = balances?.[orderPair];
+          if (!asset.asset) return undefined;
           const fiatRate = fiatData?.[asset.asset] ?? 0;
           const formattedBalance =
             balance && asset && balance.toNumber() === 0
@@ -194,6 +195,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     return (
       sortedResults &&
       [...sortedResults].sort((a, b) => {
+        if (!a || !b) return 0;
         const aFiat = a.fiatBalance ? Number(a.fiatBalance) : 0;
         const bFiat = b.fiatBalance ? Number(b.fiatBalance) : 0;
         return bFiat - aFiat;
@@ -395,11 +397,12 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
               onClose={!modalName.assetList}
             >
               {fiatBasedSortedResults && fiatBasedSortedResults.length > 0 ? (
-                fiatBasedSortedResults?.map(
-                  ({ asset, network, formattedBalance }, index) => {
+                fiatBasedSortedResults
+                  .filter((result) => result !== undefined)
+                  .map(({ asset, network, formattedBalance }, index) => {
                     return (
                       <div
-                        key={`${asset.chain}-${asset.atomicSwapAddress}-${asset.tokenAddress || "native"}-${index}`}
+                        key={`${asset?.chain}-${asset?.atomicSwapAddress}-${asset?.tokenAddress || "native"}-${index}`}
                         className="flex w-full cursor-pointer items-center justify-between gap-2 px-4 py-1.5 hover:bg-off-white"
                         onClick={() => handleClick(asset)}
                       >
@@ -449,8 +452,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                         </div>
                       </div>
                     );
-                  }
-                )
+                  })
               ) : (
                 <div className="flex min-h-[274px] w-full items-center justify-center">
                   <Typography size="h4" weight="regular">
