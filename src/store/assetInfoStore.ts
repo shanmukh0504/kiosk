@@ -15,7 +15,7 @@ import {
 import { API } from "../constants/api";
 import axios from "axios";
 import { BitcoinProvider } from "@gardenfi/core";
-import { RouteValidator } from "../utils/routeValidator";
+import { RouteValidator, buildRouteMatrix } from "../utils/routeValidator";
 import { generateTokenKey } from "../utils/generateTokenKey";
 import { PublicKey } from "@solana/web3.js";
 import BigNumber from "bignumber.js";
@@ -135,6 +135,7 @@ type AssetInfoState = {
   assets: Assets | null;
   chains: Chains | null;
   routeValidator: RouteValidator | null;
+  routeMatrix: Record<string, ChainAsset[]> | null;
   fiatData: Record<string, number | undefined>;
   balances: Record<string, BigNumber | undefined>;
   workingRPCs: Record<number, string[]>;
@@ -171,6 +172,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   allAssets: null,
   allChains: null,
   routeValidator: null,
+  routeMatrix: null,
   fiatData: {},
   balances: {},
   workingRPCs: {},
@@ -284,7 +286,21 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
         }
       }
 
-      set({ allAssets, allChains, assets, chains });
+      // Build route matrix for fast lookups
+      const allChainAssets = Object.values(allAssets)
+        .map((asset) => {
+          if (!asset.asset) return null;
+          try {
+            return ChainAsset.from(asset.asset);
+          } catch {
+            return null;
+          }
+        })
+        .filter((asset): asset is ChainAsset => asset !== null);
+
+      const routeMatrix = buildRouteMatrix(allChainAssets, validator);
+
+      set({ allAssets, allChains, assets, chains, routeMatrix });
     } catch (error) {
       logger.error("failed to fetch assets data ❌", error);
       set({ error: "Failed to fetch assets data" });
@@ -521,24 +537,23 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   },
 
   getValidDestinations: (fromAsset: AssetConfig) => {
-    const { routeValidator, assets } = get();
-    if (!routeValidator || !assets || !fromAsset.asset) {
+    const { routeMatrix, assets } = get();
+
+    // If no route matrix or assets, return all assets as fallback
+    if (!routeMatrix || !assets || !fromAsset.asset) {
       return Object.values(assets || {});
     }
 
     try {
-      const fromChainAsset = ChainAsset.from(fromAsset.asset);
-      const allChainAssets = Object.values(assets).map((asset) => {
-        const assetId = asset.asset ?? "";
-        return ChainAsset.from(assetId);
-      });
+      // Use cached route matrix for O(1) lookup instead of recalculating
+      const validChainAssets = routeMatrix[fromAsset.asset];
 
-      const validChainAssets = routeValidator.getValidDestinations(
-        fromChainAsset,
-        allChainAssets
-      );
+      if (!validChainAssets) {
+        // If asset not found in matrix, return all assets as fallback
+        return Object.values(assets);
+      }
 
-      // Convert back to Asset objects
+      // Convert ChainAsset array back to AssetConfig array
       return validChainAssets
         .map((chainAsset) => {
           const assetId = chainAsset.toString();

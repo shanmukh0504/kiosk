@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { IOType, network } from "../constants/constants";
 import { Asset, Chains } from "@gardenfi/orderbook";
+import { IOType, network } from "../constants/constants";
 import { ErrorFormat, Errors } from "../constants/errors";
 import { AssetConfig } from "./assetInfoStore";
 

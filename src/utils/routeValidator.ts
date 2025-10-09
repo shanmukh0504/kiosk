@@ -174,7 +174,11 @@ class RouteValidator {
     fromAsset: ChainAsset,
     toAsset: ChainAsset
   ): boolean {
-    return this.policy!.isolation_groups.some((group) => {
+    if (!this.policy) {
+      throw new Error("Policy not loaded. Call loadPolicy() first.");
+    }
+
+    return this.policy.isolation_groups.some((group) => {
       // For isolation groups, we check if either asset matches the pattern
       // This allows us to detect if we're dealing with an isolation group
       return (
@@ -188,7 +192,11 @@ class RouteValidator {
     fromAsset: ChainAsset,
     toAsset: ChainAsset
   ): boolean {
-    return this.policy!.isolation_groups.some((group) => {
+    if (!this.policy) {
+      throw new Error("Policy not loaded. Call loadPolicy() first.");
+    }
+
+    return this.policy.isolation_groups.some((group) => {
       // For isolation groups, both assets must be in the same group
       // This handles both -> and <-> patterns properly
       return (
@@ -202,13 +210,21 @@ class RouteValidator {
     fromAsset: ChainAsset,
     toAsset: ChainAsset
   ): boolean {
-    return this.policy!.whitelist_overrides.some((override) =>
+    if (!this.policy) {
+      throw new Error("Policy not loaded. Call loadPolicy() first.");
+    }
+
+    return this.policy.whitelist_overrides.some((override) =>
       this.matchesPattern(fromAsset, toAsset, override)
     );
   }
 
   private isBlacklisted(fromAsset: ChainAsset, toAsset: ChainAsset): boolean {
-    return this.policy!.blacklist_pairs.some((blacklist) =>
+    if (!this.policy) {
+      throw new Error("Policy not loaded. Call loadPolicy() first.");
+    }
+
+    return this.policy.blacklist_pairs.some((blacklist) =>
       this.matchesPattern(fromAsset, toAsset, blacklist)
     );
   }

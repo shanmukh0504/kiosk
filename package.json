@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "postinstall": "husky install",
     "lint": "eslint . --ext .js,.ts,.jsx,.tsx --fix",
     "preview": "vite preview",
     "build": "tsc -b && vite build --mode mainnet",

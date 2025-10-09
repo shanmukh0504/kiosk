@@ -35,8 +35,6 @@ function App() {
           environment === Environment.Staging
             ? {
                 network: GardenEnvironment.TESTNET,
-                auth: import.meta.env.VITE_AUTH_URL,
-                relayer: import.meta.env.VITE_RELAYER_URL,
                 baseurl: import.meta.env.VITE_BASE_URL,
               }
             : (network as unknown as GardenEnvironment),
