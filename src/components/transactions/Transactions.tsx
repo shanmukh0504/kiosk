@@ -83,6 +83,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
     fetchTransactions,
     isOpen,
     solanaAddress,
+    orderbookUrl,
     currentAccount,
     btcAddress,
   ]);

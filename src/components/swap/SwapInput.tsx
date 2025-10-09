@@ -133,7 +133,7 @@ export const SwapInput: FC<SwapInputProps> = ({
             <Typography
               size="h5"
               weight="medium"
-              onClick={() => inputRef.current!.focus()}
+              onClick={() => inputRef.current?.focus()}
             >
               {label}
             </Typography>

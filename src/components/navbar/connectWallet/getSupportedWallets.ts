@@ -233,7 +233,8 @@ function processBlockchainWallets(
       walletMap.set(walletId, createInitialWallet(value));
     }
 
-    const wallet = walletMap.get(walletId)!;
+    const wallet = walletMap.get(walletId);
+    if (!wallet) return;
     updateWalletWithBlockchain(wallet, foundWallet, isAvailable, blockchain);
   });
 }
@@ -291,7 +292,8 @@ function handleMultiChainWallets(
         walletMap.set(walletId, createInitialWallet(config));
       }
 
-      const wallet = walletMap.get(walletId)!;
+      const wallet = walletMap.get(walletId);
+      if (!wallet) return;
       wallet.wallet = {
         evmWallet,
         btcWallet,
