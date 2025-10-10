@@ -1,11 +1,43 @@
 # Changelog
 
+## [1.1.8]
+
+### Fixed
+
+- Update toast for successful swap and add abort controller to fetch assets function.
+- Update the coinbase wallet id.
+- Fixed the link redirecting to staking docs.
+- Disable Core chain in output-asset on Phantom, Keplr and Leap wallet.
+
+## [1.1.7]
+
+- Fixed USD value formatting and rate display.
+- Added Evm and Sui support for Backpack wallet.
+- Added Husky pre-commit hook to run ESLint with --fix, restage updated files, and block empty commits.
+
+## [1.1.6]
+
+### Fixed
+
+- Fixed missing Bitcoin chain in Phantom wallet's multi-chain connection modal.
+- Updated description in farcaster config.
+
+## [1.1.5]
+
+### Fixed
+
+- Updated balance retrieval function to use fallback RPC clients as default instead of default wallet RPCs.
+- Rate conversion and display estimated token price for inputAsset.
+- Fixed fiat token prices.
+
 ## [1.1.4]
 
 ### Fixed
 
-- Fixed fallback network fees handling
-- Disable Core chain in output-asset on Phantom, Keplr and Leap wallet.
+- Fixed fallback network fees handling.
+- Progress steps for refunded orders.
+- Reduced fallback rpc calls for balance fetching.
+- Fixed favicon in safari browser by updating the format to .png.
 
 ## [1.1.3]
 
@@ -39,6 +71,7 @@
 - Search functionality in AssetSelector component.
 - Updated network fees logic for Sui chain.
 - Updated GradientScroll height for UX.
+- Updated the script url
 
 ## [1.1.0]
 

@@ -6,7 +6,7 @@ import { useReadContract, useSwitchChain, useWriteContract } from "wagmi";
 import { useState, useMemo } from "react";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { Hex } from "viem";
-import { formatAmount } from "../../utils/utils";
+import { formatAmount, formatAmountUsd } from "../../utils/utils";
 import { REWARD_CHAIN, STAKE_REWARD } from "./constants";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../../layout/wagmi/config";
@@ -132,7 +132,7 @@ export const StakeOverview = () => {
               <AnimatePresence>
                 <OverviewStats
                   title={"Total rewards"}
-                  value={`~$${stakeRewards?.accumulatedRewardUSD.toFixed(2) || 0}`}
+                  value={`~$${stakeRewards?.accumulatedRewardUSD ? formatAmountUsd(stakeRewards.accumulatedRewardUSD, 0) : 0}`}
                   size="sm"
                   toolTip={
                     <TooltipWrapper

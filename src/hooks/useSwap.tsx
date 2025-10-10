@@ -1,7 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { BTC, swapStore } from "../store/swapStore";
 import { IOType, network } from "../constants/constants";
-import { Asset, Chain, isBitcoin, isSolana, isSui } from "@gardenfi/orderbook";
+import {
+  Asset,
+  Chain,
+  isBitcoin,
+  isSolana,
+  isStarknet,
+  isEVM,
+  isSui,
+} from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { assetInfoStore } from "../store/assetInfoStore";
 import {
@@ -13,7 +21,6 @@ import { useGarden } from "@gardenfi/react-hooks";
 import { useStarknetWallet } from "./useStarknetWallet";
 import { useEVMWallet } from "./useEVMWallet";
 import { modalNames, modalStore } from "../store/modalStore";
-import { isStarknet, isEVM } from "@gardenfi/orderbook";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { Environment } from "@gardenfi/utils";
 import { Errors } from "../constants/errors";
@@ -51,6 +58,7 @@ export const useSwap = () => {
     swapAssets,
     setAsset,
     setIsFetchingQuote,
+    setFiatTokenPrices,
     isComparisonVisible,
     setIsValidBitcoinAddress,
     // setIsApproving,
@@ -236,7 +244,7 @@ export const useSwap = () => {
           );
           // Add network fee to output amount before calculating rate
           let outputAmountWithFee = Number(quoteAmountInDecimals);
-          if (!isBitcoin(fromAsset.chain) && !isBitcoin(toAsset.chain)) {
+          if (fromAsset.symbol === "USDC" && toAsset.symbol === "USDC") {
             outputAmountWithFee = Number(quoteAmountInDecimals) + networkFees;
           }
           const rate = outputAmountWithFee / Number(amount);
@@ -262,7 +270,10 @@ export const useSwap = () => {
           const outputTokenPrice = outputAmount.multipliedBy(
             quote.val.output_token_price
           );
-
+          setFiatTokenPrices({
+            input: quote.val.input_token_price.toString(),
+            output: quote.val.output_token_price.toString(),
+          });
           setTokenPrices({
             input: inputTokenPrice.toString(),
             output: outputTokenPrice.toString(),
