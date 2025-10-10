@@ -2,6 +2,10 @@
 
 ## [1.1.8]
 
+### Added
+
+- Added starknet support for Xverse wallet. 
+
 ### Fixed
 
 - Update toast for successful swap and add abort controller to fetch assets function.
