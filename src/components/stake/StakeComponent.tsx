@@ -153,7 +153,7 @@ export const StakeComponent = () => {
 
   return (
     <div
-      className={`z-10 flex w-full min-w-[328px] max-w-[328px] flex-col rounded-2xl bg-white bg-opacity-50 p-4 pb-5 sm:min-w-[460px] sm:max-w-[460px] ${stakeType === StakeType.GARDEN_PASS ? "gap-6" : "gap-12"}`}
+      className={`z-10 flex w-full min-w-[328px] max-w-[328px] flex-col rounded-2xl bg-white bg-opacity-50 p-4 backdrop-blur-2xl sm:min-w-[460px] sm:max-w-[460px] sm:pb-5 ${stakeType === StakeType.GARDEN_PASS ? "gap-10 sm:gap-6" : "gap-12 sm:gap-10"}`}
     >
       <div className="flex flex-col gap-6">
         <div className="flex w-full items-center justify-between">
@@ -174,14 +174,14 @@ export const StakeComponent = () => {
             size="h5"
             breakpoints={{ sm: "h4" }}
             weight="regular"
-            className="mb-5 max-h-10 min-h-10"
+            className={`mb-5 ${stakeType === StakeType.CUSTOM ? "max-h-12 min-h-12 sm:max-h-10 sm:min-h-10" : "max-h-12 min-h-12 sm:max-h-10 sm:min-h-10"}`}
           >
             <AnimatePresence mode="wait">
               {stakeType === StakeType.CUSTOM ? (
                 <motion.span key="custom" {...fadeAnimation}>
                   Deposit SEED into Garden and unlock new opportunities like
                   discounted fees. Stake in
-                  <br /> multiples of{" "}
+                  <br className="sm:hidden" /> multiples of{" "}
                   <Typography className="!text-rose" weight="medium">
                     2100 SEED
                   </Typography>{" "}
@@ -265,7 +265,7 @@ export const StakeComponent = () => {
       </div>
       <div>
         <div
-          className={`flex flex-col ${stakeType === StakeType.GARDEN_PASS ? "gap-4 md:gap-10" : "gap-4"}`}
+          className={`flex flex-col ${stakeType === StakeType.GARDEN_PASS ? "gap-4 sm:gap-10" : "gap-4"}`}
         >
           {stakeType === StakeType.GARDEN_PASS ? (
             <motion.div
@@ -273,7 +273,7 @@ export const StakeComponent = () => {
               key="garden-pass-details"
               {...fadeAnimation}
             >
-              <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 md:flex-row md:items-center">
+              <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 py-1 sm:flex-row sm:py-2 md:items-center">
                 <InfoIcon className="h-4 !text-rose" />
                 <Typography
                   size="h6"
@@ -283,7 +283,7 @@ export const StakeComponent = () => {
                   First access to new features
                 </Typography>
               </div>
-              <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 md:flex-row md:items-center">
+              <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 py-1 sm:flex-row sm:py-2 md:items-center">
                 <InfoIcon className="h-4 !text-rose" />
                 <Typography
                   size="h6"
@@ -293,7 +293,7 @@ export const StakeComponent = () => {
                   Highest staking yields
                 </Typography>
               </div>
-              <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 md:flex-row md:items-center">
+              <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 py-1 sm:flex-row sm:py-2 md:items-center">
                 <InfoIcon className="h-4 !text-rose" />
                 <Typography
                   size="h6"
@@ -303,7 +303,7 @@ export const StakeComponent = () => {
                   Fully tradable ≈$11,787
                 </Typography>
               </div>
-              <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 md:flex-row md:items-center">
+              <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 py-1 sm:flex-row sm:py-2 md:items-center">
                 <InfoIcon className="h-4 !text-rose" />
                 <Typography
                   size="h6"

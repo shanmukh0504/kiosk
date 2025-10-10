@@ -6,6 +6,7 @@ type props = {
   title: ReactNode;
   value: ReactNode;
   size?: "xs" | "sm" | "md";
+  weight?: "regular" | "medium";
   isPink?: boolean;
   className?: string;
   toolTip?: ReactNode;
@@ -16,6 +17,7 @@ export const RewardStats: FC<props> = ({
   title,
   value,
   size = "sm",
+  weight = "regular",
   isPink = false,
   className,
   toolTip,
@@ -53,7 +55,7 @@ export const RewardStats: FC<props> = ({
       <Typography
         size={valueSize}
         breakpoints={valueBreakpoints}
-        weight="regular"
+        weight={weight}
         className={`${textColor} sm:!gf-leading-[20px] whitespace-nowrap`}
       >
         {value}

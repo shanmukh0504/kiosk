@@ -4,8 +4,9 @@ import {
   gardenPassContentVariants,
   springTransition,
 } from "../../../animations/animations";
-import { ArrowNorthEastIcon, Button } from "@gardenfi/garden-book";
+// import { ArrowNorthEastIcon, Button } from "@gardenfi/garden-book";
 import { viewPortStore } from "../../../store/viewPortStore";
+import { HoloCard } from "../../../common/HoloCard";
 
 export const GardenPass = () => {
   const { isMobile, isSmallTab } = viewPortStore();
@@ -19,16 +20,24 @@ export const GardenPass = () => {
         animate="animate"
         exit="exit"
         transition={springTransition}
-        className="relative z-0 flex max-h-[384px] min-h-[384px] items-center justify-start overflow-hidden rounded-xl"
+        className="relative z-0 flex max-h-[384px] min-h-[384px] items-center justify-start"
       >
         <motion.div
           variants={gardenPassContentVariants}
           initial="initial"
           animate="animate"
           exit="exit"
-          className="group absolute left-0 flex h-[384px] flex-col gap-3 rounded-2xl bg-white bg-opacity-50 p-3"
         >
-          <div className="h-[360px] w-[240px] rounded-xl transition-all duration-300 ease-in-out group-hover:h-[300px]">
+          <HoloCard
+            url={"/NewNft.png"}
+            overlay={"/NftOverlay.png"}
+            holoOverlay="/HoloOverlay.png"
+            height={384}
+            width={264}
+            showSparkles={false}
+          />
+        </motion.div>
+        {/* <div className="h-[360px] w-[240px] rounded-xl transition-all duration-300 ease-in-out group-hover:h-[300px]">
             <img
               src="https://garden-finance.imgix.net/garden_pass.png"
               alt="Garden Pass"
@@ -43,8 +52,7 @@ export const GardenPass = () => {
               <span>View at OpenSea</span>
               <ArrowNorthEastIcon className="h-3 w-3 fill-rose" />
             </Button>
-          </div>
-        </motion.div>
+          </div> */}
       </motion.div>
     )
   );

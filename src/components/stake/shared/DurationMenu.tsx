@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import {
   InfinityIcon,
   KeyboardDownIcon,
@@ -10,13 +10,21 @@ import { AnimatePresence, motion } from "framer-motion";
 type DurationMenuProps = {
   selectedDuration: DURATION;
   setSelectedDuration: (duration: DURATION) => void;
+  modalOpen?: boolean;
 };
 
 const DurationMenu: FC<DurationMenuProps> = ({
   selectedDuration,
   setSelectedDuration,
+  modalOpen = true,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (!modalOpen) {
+      setIsOpen(false);
+    }
+  }, [modalOpen]);
 
   const handleToggleDropdown = () => setIsOpen(!isOpen);
 

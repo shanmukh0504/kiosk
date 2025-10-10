@@ -19,7 +19,7 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
   const [selectedDuration, setSelectedDuration] = useState<DURATION>(6);
 
   const { setAmount, stakingStats } = stakeStore();
-  const { modalData } = modalStore();
+  const { modalData, modalName } = modalStore();
   const { isMobile } = viewPortStore();
 
   const isStake = !!modalData?.manageStake?.stake?.isStake;
@@ -84,21 +84,23 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
         the stake.
       </Typography>
       <div className="flex items-center gap-10 align-middle">
-        <RewardStats title={"SEED"} value={amount} size="md" />
+        <RewardStats title={"SEED"} weight="medium" value={amount} size="sm" />
         <RewardStats
           title={"Multiplier"}
           value={`${DURATION_MAP[selectedDuration].votes}x`}
-          size="md"
+          weight="medium"
+          size="sm"
         />
         <RewardStats
           title={"APY"}
           value={`${stakingStats?.globalApy || 0} %`}
+          weight="medium"
           isPink
-          size="md"
+          size="sm"
         />
       </div>
 
-      <div className="mb-5 flex flex-col gap-3 rounded-2xl bg-white bg-opacity-25 p-4 sm:mb-0">
+      <div className="mb-5 mt-4 flex flex-col gap-3 rounded-2xl bg-white bg-opacity-25 p-4 sm:mb-2">
         <Typography size="h5" weight="regular">
           Stake duration
         </Typography>
@@ -106,6 +108,7 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
           <DurationMenu
             selectedDuration={selectedDuration}
             setSelectedDuration={setSelectedDuration}
+            modalOpen={modalName.manageStake}
           />
           {isStake && (
             <StakeSubmissionCard
