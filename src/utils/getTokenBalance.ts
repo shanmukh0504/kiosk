@@ -236,7 +236,7 @@ export const getNativeBalance = async (address: string, asset: Asset) => {
     });
 
     const balance = await publicClient.getBalance({
-      address: address as `0x${string}`,
+      address: with0x(address),
     });
 
     const balanceInDecimals = formatAmount(balance, asset.decimals, 8);

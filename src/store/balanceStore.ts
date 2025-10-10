@@ -216,8 +216,8 @@ export const balanceStore = create<BalanceStoreState>((set, get) => ({
     const starknetBalance: Record<string, BigNumber | undefined> = {};
     const balance = await getStarknetTokenBalance(address, starknetAsset);
 
-    const orderPair = ChainAsset.from(starknetAsset.id).toString();
-    starknetBalance[orderPair] = new BigNumber(balance);
+    const assetKey = ChainAsset.from(starknetAsset.id).toString();
+    starknetBalance[assetKey] = new BigNumber(balance);
     set({ balances: { ...get().balances, ...starknetBalance } });
   },
 
@@ -234,17 +234,17 @@ export const balanceStore = create<BalanceStoreState>((set, get) => ({
 
     for (const asset of solanaAssets) {
       const balance = await getSolanaTokenBalance(address, asset);
-      const orderPair = ChainAsset.from(asset.id).toString();
+      const assetKey = ChainAsset.from(asset.id).toString();
 
       // Check if it's native SOL - when tokenAddress equals atomicSwapAddress, it's a native token
       const isNativeSOL = asset.token?.address === asset.htlc?.address;
 
       if (isNativeSOL) {
         const gas = 0.00380608;
-        solanaBalance[orderPair] = new BigNumber(
+        solanaBalance[assetKey] = new BigNumber(
           Math.max(0, Number((Number(balance) - gas).toFixed(8)))
         );
-      } else solanaBalance[orderPair] = new BigNumber(balance);
+      } else solanaBalance[assetKey] = new BigNumber(balance);
     }
     set({ balances: { ...get().balances, ...solanaBalance } });
   },
@@ -259,8 +259,8 @@ export const balanceStore = create<BalanceStoreState>((set, get) => ({
     const suiBalance: Record<string, BigNumber | undefined> = {};
 
     const balance = await getSuiTokenBalance(address, suiAsset);
-    const orderPair = ChainAsset.from(suiAsset.id).toString();
-    suiBalance[orderPair] = new BigNumber(balance);
+    const assetKey = ChainAsset.from(suiAsset.id).toString();
+    suiBalance[assetKey] = new BigNumber(balance);
     set({ balances: { ...get().balances, ...suiBalance } });
   },
 

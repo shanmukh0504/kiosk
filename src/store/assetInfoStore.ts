@@ -1,9 +1,14 @@
 import { create } from "zustand";
 import { IOType, SUPPORTED_CHAINS } from "../constants/constants";
-import { Asset, Chain, ChainAsset } from "@gardenfi/orderbook";
+import {
+  Asset,
+  Chain,
+  ChainAsset,
+  RouteValidator,
+  buildRouteMatrix,
+} from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
-import { RouteValidator, buildRouteMatrix } from "../utils/routeValidator";
 import { generateTokenKey } from "../utils/generateTokenKey";
 import logger from "../utils/logger";
 

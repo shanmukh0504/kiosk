@@ -95,13 +95,5 @@
   "packageManager": "yarn@4.5.1",
   "engines": {
     "node": ">=22.11.0"
-  },
-  "resolutions": {
-    "@gardenfi/core": "portal:/Users/adithya/catalog/garden.js/packages/core",
-    "@gardenfi/orderbook": "portal:/Users/adithya/catalog/garden.js/packages/orderbook",
-    "@gardenfi/react-hooks": "portal:/Users/adithya/catalog/garden.js/packages/react-hooks",
-    "@gardenfi/swap": "portal:/Users/adithya/catalog/garden.js/packages/swap",
-    "@gardenfi/utils": "portal:/Users/adithya/catalog/garden.js/packages/utils",
-    "@gardenfi/wallet-connectors": "portal:/Users/adithya/catalog/garden.js/packages/walletConnectors"
   }
 }
