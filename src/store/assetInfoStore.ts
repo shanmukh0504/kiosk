@@ -142,13 +142,13 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       set({ isLoading: true });
       // Initialize and load the route policy once
       const validator = new RouteValidator(
-        import.meta.env.VITE_BASE_URL,
+        API().quote.quote.origin,
         import.meta.env.VITE_API_KEY
       );
       await validator.loadPolicy();
       set({ routeValidator: validator });
       const res = await axios.get<ApiChainsResponse>(
-        API().data.assets().toString()
+        API().data.chains().toString()
       );
 
       if (res.data.status !== "Ok") {

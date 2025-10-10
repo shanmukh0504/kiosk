@@ -18,7 +18,7 @@ export const API = () => {
     home: new Url("https://garden.finance"),
     data: {
       info: new Url(REQUIRED_ENV_VARS.INFO_URL),
-      assets: () => new Url(REQUIRED_ENV_VARS.BASE_URL).endpoint("/v2/chains"),
+      chains: () => new Url(REQUIRED_ENV_VARS.BASE_URL).endpoint("/v2/chains"),
       blockNumbers: (network: "mainnet" | "testnet" | "localnet") =>
         new Url(REQUIRED_ENV_VARS.INFO_URL)
           .endpoint("blocknumbers")

@@ -11,7 +11,7 @@ import { StakePage } from "./stake";
 import { GardenProvider } from "@gardenfi/react-hooks";
 import { useWalletClient } from "wagmi";
 import { useAccount } from "@starknet-react/core";
-import { Network as GardenEnvironment } from "@gardenfi/utils";
+import { Network } from "@gardenfi/utils";
 import { useSolanaWallet } from "../hooks/useSolanaWallet";
 import { useSuiWallet } from "../hooks/useSuiWallet";
 import { useEffect } from "react";
@@ -34,10 +34,10 @@ function App() {
         environment:
           environment === Environment.Staging
             ? {
-                network: GardenEnvironment.TESTNET,
+                network: Network.TESTNET,
                 baseurl: import.meta.env.VITE_BASE_URL,
               }
-            : (network as unknown as GardenEnvironment),
+            : (network as unknown as Network),
         apiKey: import.meta.env.VITE_API_KEY,
         wallets: {
           evm: walletClient,
