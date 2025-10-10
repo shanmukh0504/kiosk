@@ -4,22 +4,23 @@ FROM node:22-bullseye AS builder
 WORKDIR /app
 
 # Install ALL build dependencies for native modules (cached layer)
-RUN apk add --no-cache \
-    make \
-    g++ \
+# Install all build dependencies for native modules (Debian-based)
+RUN apt-get update && apt-get install -y \
+    build-essential \
     python3 \
-    py3-pip \
+    python3-pip \
     libusb-dev \
-    libudev-zero-dev \
-    linux-headers \
-    pkgconfig \
-    git
+    libudev-dev \
+    pkg-config \
+    git \
+ && rm -rf /var/lib/apt/lists/*
 
 # Set environment variables for native builds
 ENV PYTHON=/usr/bin/python3
 ENV MAKE=/usr/bin/make
 ENV CC=gcc
 ENV CXX=g++
+
 
 # Enable corepack and set up yarn
 RUN corepack enable && corepack prepare yarn@4.5.1 --activate
