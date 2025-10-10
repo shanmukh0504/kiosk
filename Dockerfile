@@ -34,7 +34,7 @@ RUN yarn config set nodeLinker node-modules && \
 # Install dependencies with cache mount - this layer only rebuilds if package files change
 RUN --mount=type=cache,target=/usr/local/share/.cache/yarn \
     yarn config set cacheFolder /usr/local/share/.cache/yarn && \
-    yarn install --immutable --inline-builds
+    yarn install 
 
 # Set build args and env vars for Vite
 ARG SKIP_INSTALL_DEPS
