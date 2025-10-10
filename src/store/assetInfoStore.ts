@@ -148,7 +148,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       // Initialize and load the route policy once
       const validator = new RouteValidator(
         API().quote.quote.origin,
-        import.meta.env.VITE_API_KEY
+        API().api_key
       );
       await validator.loadPolicy();
       set({ routeValidator: validator });

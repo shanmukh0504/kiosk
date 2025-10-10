@@ -7,6 +7,7 @@ const REQUIRED_ENV_VARS = {
   BASE_URL: import.meta.env.VITE_BASE_URL,
   REWARD: import.meta.env.VITE_REWARD_URL,
   EXPLORER: import.meta.env.VITE_EXPLORER_URL,
+  API_KEY: import.meta.env.VITE_API_KEY,
 } as const;
 
 export const API = () => {
@@ -15,6 +16,7 @@ export const API = () => {
   });
 
   return {
+    api_key: REQUIRED_ENV_VARS.API_KEY,
     home: new Url("https://garden.finance"),
     data: {
       info: new Url(REQUIRED_ENV_VARS.INFO_URL),

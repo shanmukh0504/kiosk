@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import {
   calculateBitcoinNetworkFees,
   getSuiNetworkFee,
@@ -33,7 +33,7 @@ export const useNetworkFees = () => {
   }, [inputAsset, outputAsset, inputAmount, fiatData]);
 
   const hasLoadedOnceRef = useRef(false);
-  const fetchNetworkFees = async () => {
+  const fetchNetworkFees = useCallback(async () => {
     const { inputAsset, outputAsset, inputAmount, fiatData } =
       latestRef.current;
     if (!inputAsset || !outputAsset) return;
@@ -89,13 +89,13 @@ export const useNetworkFees = () => {
         hasLoadedOnceRef.current = true;
       }
     }
-  };
+  }, [setNetworkFees, setIsNetworkFeesLoading, fixedFee]);
 
   // Debounce re-calculation when amount changes (avoid per-keystroke RPC calls)
   useEffect(() => {
     const handle = setTimeout(fetchNetworkFees, 500);
     return () => clearTimeout(handle);
-  }, [inputAmount]);
+  }, [inputAmount, fetchNetworkFees]);
 
   // Poll periodically (independent of typing)
   useEffect(() => {
@@ -103,5 +103,5 @@ export const useNetworkFees = () => {
     fetchNetworkFees();
     const intervalId = setInterval(fetchNetworkFees, 15000);
     return () => clearInterval(intervalId);
-  }, [inputAsset, outputAsset, fiatData, fixedFee]);
+  }, [inputAsset, outputAsset, fiatData, fixedFee, fetchNetworkFees]);
 };
