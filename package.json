@@ -56,7 +56,7 @@
     "react-router-dom": "^6.26.0",
     "react-tooltip": "^5.28.0",
     "starknet": "7.6.4",
-    "starknetkit": "^2.10.4",
+    "starknetkit": "^3.2.0",
     "terser": "^5.39.2",
     "tw-colors": "^3.3.1",
     "vaul": "^1.1.0",
