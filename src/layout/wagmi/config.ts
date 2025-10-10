@@ -117,10 +117,11 @@ export const backpackConnector = injected({
     return {
       id: "backpack",
       name: "Backpack",
-      provider: typeof window !== "undefined" ? window.backpack?.ethereum : undefined,
-    }
+      provider:
+        typeof window !== "undefined" ? window.backpack?.ethereum : undefined,
+    };
   },
-})
+});
 
 export const KeplrConnector = injected({
   target() {

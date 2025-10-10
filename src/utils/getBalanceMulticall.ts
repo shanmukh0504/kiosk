@@ -93,7 +93,7 @@ export const getBalanceMulticall = async (
       transport: http(defaultRpcUrl),
       chain: viemChain,
     });
-    return await fetchBalances(defaultClient);  
+    return await fetchBalances(defaultClient);
   } catch {
     return {};
   }
