@@ -267,7 +267,7 @@ export const CreateSwap = () => {
     } = getQueryParams(searchParams);
 
     if (outputChain && !destinationChain) {
-      navigate(`/bridge/${outputChain}`);
+      navigate(`/bridge/${outputChain}?${searchParams.toString()}`);
       return;
     }
 

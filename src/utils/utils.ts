@@ -82,7 +82,6 @@ export const formatAmount = (
   return Number(temp);
 };
 
-
 export const isCurrentRoute = (route: string) => {
   if (route.includes(":")) {
     const routePattern = route.replace(/:[^/]+/g, "[^/]+");
