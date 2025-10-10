@@ -19,12 +19,10 @@ export function useFrame() {
       const context = await sdk.context;
       setContext(context);
       setIsSDKLoaded(true);
-      // console.log("Calling ready");
       sdk.actions.ready();
     };
 
     if (sdk && !isSDKLoaded) {
-      // console.log("Calling load");
       setIsSDKLoaded(true);
       load();
       return () => {
