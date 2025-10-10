@@ -27,7 +27,9 @@ export const useSuiWallet = () => {
       try {
         await suiDisconnect();
         await new Promise((resolve) => setTimeout(resolve, 500));
-      } catch {}
+      } catch {
+        // ignore
+      }
     }
 
     return new Promise<void>((resolve, reject) => {
@@ -46,7 +48,6 @@ export const useSuiWallet = () => {
   };
 
   const suiDisconnect = async () => {
-
     return new Promise<void>((resolve, reject) => {
       disconnect(undefined, {
         onSuccess: () => {

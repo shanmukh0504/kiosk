@@ -75,6 +75,7 @@ const blockchainConfigs = {
         argentX: () => window.starknet_argentX,
         braavos: () => window.starknet_braavos,
         keplr: () => window.starknet_keplr,
+        xverse: () => window.starknet_xverse,
       } as Record<string, () => unknown>;
       const manualCheck = checks[key];
       if (manualCheck) {
@@ -89,7 +90,12 @@ const blockchainConfigs = {
     flagKey: "isSolana" as const,
     inputKey: "solanaWallets" as const,
     finder: (wallets: SolanaWallet[], key: string) => {
-      const normalizedKey = key === "app.phantom" ? "phantom" : key === "app.backpack" ? "backpack" : key;
+      const normalizedKey =
+        key === "app.phantom"
+          ? "phantom"
+          : key === "app.backpack"
+            ? "backpack"
+            : key;
       return wallets?.find(
         (w) => w.adapter.name.toLowerCase() === normalizedKey.toLowerCase()
       );
@@ -141,7 +147,11 @@ const manualEVMChecks: Record<
   { check: () => boolean; connectorId: string }
 > = {
   "com.coinbase.wallet": {
-    check: () => !!(window.ethereum && window.ethereum.isCoinbaseWallet),
+    check: () =>
+      !!(
+        (window.ethereum && window.ethereum.isCoinbaseWallet) ||
+        window.coinbaseWalletExtension
+      ),
     connectorId: "injected",
   },
   keplr: {
@@ -237,7 +247,7 @@ const multiChainWallets = {
     bitcoinId: "phantom",
   },
   "app.backpack": {
-    solanaName: "backpack", 
+    solanaName: "backpack",
     suiName: "Backpack",
   },
 } as const;
@@ -254,9 +264,10 @@ function handleMultiChainWallets(
       ? walletInputs.evmWallets?.find((w) => w.id === walletId)
       : undefined;
 
-    const btcWallet = config.isBitcoinSupported && "bitcoinId" in multiChainConfig
-      ? walletInputs.bitcoinWallets?.[multiChainConfig.bitcoinId]
-      : undefined;
+    const btcWallet =
+      config.isBitcoinSupported && "bitcoinId" in multiChainConfig
+        ? walletInputs.bitcoinWallets?.[multiChainConfig.bitcoinId]
+        : undefined;
 
     const solanaWallet = config.isSolanaSupported
       ? walletInputs.solanaWallets?.find(
@@ -265,7 +276,9 @@ function handleMultiChainWallets(
       : undefined;
 
     const suiWallet = config.isSuiSupported
-      ? walletInputs.suiWallets?.find((w) => w.name === multiChainConfig.suiName)
+      ? walletInputs.suiWallets?.find(
+          (w) => w.name === multiChainConfig.suiName
+        )
       : undefined;
 
     const isEVM = !!evmWallet;

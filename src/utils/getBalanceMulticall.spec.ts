@@ -13,7 +13,6 @@ const mockWorkingRpcs = {
   ],
 };
 
-
 describe("getBalanceMulticall", () => {
   it("should return the balance of the tokens", async () => {
     const balance = await getBalanceMulticall(

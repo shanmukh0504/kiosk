@@ -1,9 +1,22 @@
 # Changelog
 
+## [1.1.8]
+
+### Added
+
+- Added starknet support for Xverse wallet. 
+
+### Fixed
+
+- Update toast for successful swap and add abort controller to fetch assets function.
+- Update the coinbase wallet id.
+- Fixed the link redirecting to staking docs.
+
 ## [1.1.7]
 
 - Fixed USD value formatting and rate display.
 - Added Evm and Sui support for Backpack wallet.
+- Added Husky pre-commit hook to run ESLint with --fix, restage updated files, and block empty commits.
 
 ## [1.1.6]
 
@@ -19,7 +32,6 @@
 - Updated balance retrieval function to use fallback RPC clients as default instead of default wallet RPCs.
 - Rate conversion and display estimated token price for inputAsset.
 - Fixed fiat token prices.
-
 
 ## [1.1.4]
 

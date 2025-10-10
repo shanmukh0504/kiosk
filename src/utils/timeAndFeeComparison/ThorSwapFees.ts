@@ -1,7 +1,12 @@
-import { ThorSwapAsset, ThorSwapResponse, ThorSwapRoute } from "./constants";
+import {
+  ThorSwapAsset,
+  ThorSwapResponse,
+  ThorSwapRoute,
+  comparisonMetric,
+  API_URLS,
+  SwapPlatform,
+} from "./constants";
 import { Asset } from "@gardenfi/orderbook";
-import { comparisonMetric } from "./constants";
-import { API_URLS, SwapPlatform } from "./constants";
 import { getFormattedAsset } from "./utils";
 import axios from "axios";
 import BigNumber from "bignumber.js";
