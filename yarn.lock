@@ -1126,13 +1126,37 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/core@portal:/Users/adithya/catalog/garden.js/packages/core::locator=garden-kiosk%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@gardenfi/core@portal:/Users/adithya/catalog/garden.js/packages/core::locator=garden-kiosk%40workspace%3A."
+"@gardenfi/core@npm:2.5.3":
+  version: 2.5.3
+  resolution: "@gardenfi/core@npm:2.5.3"
   dependencies:
     "@coral-xyz/anchor": "npm:^0.31.1"
-    "@gardenfi/orderbook": "workspace:*"
-    "@gardenfi/utils": "workspace:*"
+    "@gardenfi/orderbook": "npm:2.5.3"
+    "@gardenfi/utils": "npm:2.5.3"
+    "@mysten/signers": "npm:^0.3.4"
+    "@mysten/sui": "npm:^1.37.1"
+    "@mysten/wallet-standard": "npm:^0.16.9"
+    "@solana/spl-token": "npm:^0.4.13"
+    bignumber.js: "npm:^9.1.2"
+    bip32: "npm:^4.0.0"
+    bip39: "npm:^3.1.0"
+    bitcoinjs-lib: "npm:^6.1.5"
+    ecpair: "npm:^2.1.0"
+    starknet: "npm:7.6.4"
+    tiny-secp256k1: "npm:^2.2.3"
+    varuint-bitcoin: "npm:^1.1.2"
+    yup: "npm:^1.4.0"
+  checksum: 10c0/3f124dd758513c451f801a268b382da072c60809603b1054e5a1a4b2061b41f028df68e34baa7922afa2f1fdfe9e053033c334053d9b02092dc1648ac45a7cf7
+  languageName: node
+  linkType: hard
+
+"@gardenfi/core@npm:2.5.3-beta.5":
+  version: 2.5.3-beta.5
+  resolution: "@gardenfi/core@npm:2.5.3-beta.5"
+  dependencies:
+    "@coral-xyz/anchor": "npm:^0.31.1"
+    "@gardenfi/orderbook": "npm:2.5.3-beta.4"
+    "@gardenfi/utils": "npm:2.5.3-beta.3"
     "@mysten/signers": "npm:^0.3.4"
     "@mysten/sui": "npm:^1.37.1"
     "@mysten/wallet-standard": "npm:^0.16.9"
@@ -1147,8 +1171,9 @@ __metadata:
     tiny-secp256k1: "npm:^2.2.3"
     varuint-bitcoin: "npm:^1.1.2"
     yup: "npm:^1.4.0"
+  checksum: 10c0/f93d6ecdfedd2d0ed166d1017bbcb602c3800ba873db3a3fad2d9d07e98fd561f06e158a7f544ac061e58671d10b48f5ffe51551b507a24d6c15e8e4bc534be5
   languageName: node
-  linkType: soft
+  linkType: hard
 
 "@gardenfi/garden-book@npm:0.2.2":
   version: 0.2.2
@@ -1169,55 +1194,86 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/orderbook@portal:/Users/adithya/catalog/garden.js/packages/orderbook::locator=garden-kiosk%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@gardenfi/orderbook@portal:/Users/adithya/catalog/garden.js/packages/orderbook::locator=garden-kiosk%40workspace%3A."
+"@gardenfi/orderbook@npm:2.5.3":
+  version: 2.5.3
+  resolution: "@gardenfi/orderbook@npm:2.5.3"
   dependencies:
     "@coral-xyz/anchor": "npm:^0.31.1"
-    "@gardenfi/utils": "workspace:*"
+    "@gardenfi/utils": "npm:2.5.3"
     bufferutil: "npm:^4.0.8"
     siwe: "npm:^2.1.4"
     utf-8-validate: "npm:^6.0.3"
     ws: "npm:^8.14.2"
+  checksum: 10c0/455ca422d389ce472e7275a7495434b6e6c01c95995af15eb9b72e0ae642f076f1e5638480ec912723125acaa9fd9eee32d938e597f0f80f32e77e675a829ee3
   languageName: node
-  linkType: soft
+  linkType: hard
 
-"@gardenfi/react-hooks@portal:/Users/adithya/catalog/garden.js/packages/react-hooks::locator=garden-kiosk%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@gardenfi/react-hooks@portal:/Users/adithya/catalog/garden.js/packages/react-hooks::locator=garden-kiosk%40workspace%3A."
+"@gardenfi/orderbook@npm:2.5.3-beta.4":
+  version: 2.5.3-beta.4
+  resolution: "@gardenfi/orderbook@npm:2.5.3-beta.4"
   dependencies:
-    "@gardenfi/core": "workspace:*"
-    "@gardenfi/orderbook": "workspace:*"
-    "@gardenfi/utils": "workspace:*"
+    "@coral-xyz/anchor": "npm:^0.31.1"
+    "@gardenfi/utils": "npm:2.5.3-beta.3"
+    bufferutil: "npm:^4.0.8"
+    siwe: "npm:^2.1.4"
+    utf-8-validate: "npm:^6.0.3"
+    ws: "npm:^8.14.2"
+  checksum: 10c0/b7067672354686730a033ccacefa8f41bb5b4e544e73e149495558f7426ad3a7f67b7f2c4d6500b8d1fa35f8ad7c9b951c1e8667f972185347a37fd85b1ddc59
+  languageName: node
+  linkType: hard
+
+"@gardenfi/react-hooks@npm:2.5.3-beta.6":
+  version: 2.5.3-beta.6
+  resolution: "@gardenfi/react-hooks@npm:2.5.3-beta.6"
+  dependencies:
+    "@gardenfi/core": "npm:2.5.3-beta.5"
+    "@gardenfi/orderbook": "npm:2.5.3-beta.4"
+    "@gardenfi/utils": "npm:2.5.3-beta.3"
     react: "npm:^18.3.1"
     starknet: "npm:7.6.4"
+  checksum: 10c0/1abde4319b916b92517e1a2e24624e26df4eb8054789aa35844ded7e7045c6396b5249ea28b2e634a50d53e23985f37de3c2e94b62d82af805fbe9ae39352e20
   languageName: node
-  linkType: soft
+  linkType: hard
 
-"@gardenfi/utils@portal:/Users/adithya/catalog/garden.js/packages/utils::locator=garden-kiosk%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@gardenfi/utils@portal:/Users/adithya/catalog/garden.js/packages/utils::locator=garden-kiosk%40workspace%3A."
+"@gardenfi/utils@npm:2.5.3, @gardenfi/utils@npm:^2.5.3-beta.3":
+  version: 2.5.3
+  resolution: "@gardenfi/utils@npm:2.5.3"
   dependencies:
     "@peculiar/webcrypto": "npm:^1.5.0"
     "@simplewebauthn/browser": "npm:^13.1.0"
     fetch-cookie: "npm:^3.1.0"
     jwt-decode: "npm:^4.0.0"
     tough-cookie: "npm:^5.1.2"
+  checksum: 10c0/9e73f7aade43f2d38068bfc079558a57dda447b782ec23769cade264c9c35f9afc81980982e92355663d3da005816f51540b3592ff5a22621bbae4d83809d174
   languageName: node
-  linkType: soft
+  linkType: hard
 
-"@gardenfi/wallet-connectors@portal:/Users/adithya/catalog/garden.js/packages/walletConnectors::locator=garden-kiosk%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@gardenfi/wallet-connectors@portal:/Users/adithya/catalog/garden.js/packages/walletConnectors::locator=garden-kiosk%40workspace%3A."
+"@gardenfi/utils@npm:2.5.3-beta.3":
+  version: 2.5.3-beta.3
+  resolution: "@gardenfi/utils@npm:2.5.3-beta.3"
   dependencies:
-    "@gardenfi/core": "workspace:*"
-    "@gardenfi/utils": "workspace:*"
+    "@peculiar/webcrypto": "npm:^1.5.0"
+    "@simplewebauthn/browser": "npm:^13.1.0"
+    fetch-cookie: "npm:^3.1.0"
+    jwt-decode: "npm:^4.0.0"
+    tough-cookie: "npm:^5.1.2"
+  checksum: 10c0/9a56f7ccd8bc595c4802aa6b67096dcaba44aefd7be5da11115c83b77567c84197fc8753c5713ec3c198ee184e68d0265e7873fefd054adb9a35c5bc6155beeb
+  languageName: node
+  linkType: hard
+
+"@gardenfi/wallet-connectors@npm:^2.4.3":
+  version: 2.4.3
+  resolution: "@gardenfi/wallet-connectors@npm:2.4.3"
+  dependencies:
+    "@gardenfi/core": "npm:2.5.3"
+    "@gardenfi/utils": "npm:2.5.3"
     axios: "npm:^1.7.9"
     bitcoinjs-lib: "npm:^6.1.7"
     react: "npm:^18.3.1"
     tiny-secp256k1: "npm:^2.2.3"
+  checksum: 10c0/ec87ab8ab614f064698033c3ea57c7725770014c1826836034c4b93e18322946d0e4f12884ae32ec0841e64c51258c9928d234fdefa41aa33e561b35a860e2c2
   languageName: node
-  linkType: soft
+  linkType: hard
 
 "@gemini-wallet/core@npm:0.2.0":
   version: 0.2.0
