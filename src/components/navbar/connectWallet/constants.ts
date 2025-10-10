@@ -183,7 +183,7 @@ export const GardenSupportedWallets: Record<
     "Xverse",
     "wallets/xverse.svg",
     "https://www.xverse.app/download",
-    { Bitcoin: true }
+    { Bitcoin: true, Starknet: network === Network.MAINNET }
   ),
   solflare: createWallet(
     "solflare",

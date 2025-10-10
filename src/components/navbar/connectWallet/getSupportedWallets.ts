@@ -75,6 +75,7 @@ const blockchainConfigs = {
         argentX: () => window.starknet_argentX,
         braavos: () => window.starknet_braavos,
         keplr: () => window.starknet_keplr,
+        xverse: () => window.starknet_xverse,
       } as Record<string, () => unknown>;
       const manualCheck = checks[key];
       if (manualCheck) {
