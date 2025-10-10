@@ -82,6 +82,7 @@ export const formatAmount = (
   return Number(temp);
 };
 
+
 export const isCurrentRoute = (route: string) => {
   if (route.includes(":")) {
     const routePattern = route.replace(/:[^/]+/g, "[^/]+");
@@ -90,6 +91,16 @@ export const isCurrentRoute = (route: string) => {
   }
 
   return window.location.pathname === route;
+};
+
+export const formatAmountUsd = (
+  amount: string | number | bigint,
+  decimals: number
+) => {
+  const num = formatAmount(amount, decimals);
+  return Number(num).toLocaleString("en-US", {
+    maximumFractionDigits: 2,
+  });
 };
 
 export const clearLocalStorageExcept = (keysToKeep: string[]) => {

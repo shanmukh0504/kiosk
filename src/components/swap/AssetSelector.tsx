@@ -100,7 +100,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   );
 
   const sortedResults = useMemo(() => {
-    const assetsToSort = searchResults || results;
+    const assetsToSort = input ? searchResults : results;
     if (!assetsToSort && orderedChains.length === 0) return [];
     return (
       assetsToSort &&
@@ -157,6 +157,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     chain,
     balances,
     fiatData,
+    input,
   ]);
 
   const isAnyWalletConnected =
@@ -253,7 +254,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
       results.filter(
         (asset) =>
           asset.name?.toLowerCase().includes(inputValue) ||
-          asset.symbol?.toLowerCase().includes(inputValue)
+          asset.symbol?.toLowerCase().includes(inputValue) ||
+          asset.chain?.toLowerCase().includes(inputValue)
       )
     );
   };
@@ -382,7 +384,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                   className="w-full bg-transparent outline-none placeholder:text-mid-grey focus:outline-none"
                   type="text"
                   value={input}
-                  placeholder="Search assets"
+                  placeholder="Search assets or chains"
                   onChange={handleSearch}
                 />
               </Typography>
@@ -390,12 +392,16 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             <SearchIcon />
           </div>
           <div className="flex h-[316px] flex-col overflow-auto rounded-2xl bg-white">
-            <div className="px-4 pb-1.5 pt-3">
+            <div className="px-4 pb-2 pt-2">
               <Typography size="h5" weight="medium">
                 {chain ? "Assets on " + chain.name : "Assets"}
               </Typography>
             </div>
-            <GradientScroll height={272} onClose={!modalName.assetList}>
+            <GradientScroll
+              height={272}
+              gradientHeight={42}
+              onClose={!modalName.assetList}
+            >
               {fiatBasedSortedResults && fiatBasedSortedResults.length > 0 ? (
                 fiatBasedSortedResults?.map(
                   ({ asset, network, formattedBalance }) => {

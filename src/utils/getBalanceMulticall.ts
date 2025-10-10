@@ -63,30 +63,38 @@ export const getBalanceMulticall = async (
     );
   };
 
-  try {
-    const defaultClient = createPublicClient({
-      transport:
-        viemChain.id === 80094 || viemChain.id === 80084
-          ? http("https://rpc.berachain-apis.com")
-          : http(),
-      chain: viemChain,
-    });
-    return await fetchBalances(defaultClient);
-  } catch {
-    // fallback to working RPCs
-  }
-
-  const fallbacks = workingRPCs[viemChain.id] || [];
-  for (const rpcUrl of fallbacks) {
+  const getDefaultRpcUrl = (): string => {
+    switch (viemChain.id) {
+      case 80094:
+      case 80084:
+        return "https://rpc.berachain-apis.com";
+      case 1:
+        return "https://eth-mainnet.nodereal.io/v1/1659dfb40aa24bbb8153a677b98064d7";
+      default:
+        return viemChain.rpcUrls.default.http[0];
+    }
+  };
+  const chainRpcs = workingRPCs[viemChain.id];
+  for (const rpcUrl of chainRpcs) {
     try {
-      const fallbackClient = createPublicClient({
+      const defaultClient = createPublicClient({
         transport: http(rpcUrl),
         chain: viemChain,
       });
-      return await fetchBalances(fallbackClient);
+      return await fetchBalances(defaultClient);
     } catch {
       // continue to next fallback
     }
   }
-  return {};
+
+  try {
+    const defaultRpcUrl = getDefaultRpcUrl();
+    const defaultClient = createPublicClient({
+      transport: http(defaultRpcUrl),
+      chain: viemChain,
+    });
+    return await fetchBalances(defaultClient);
+  } catch {
+    return {};
+  }
 };

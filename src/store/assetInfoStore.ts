@@ -39,6 +39,8 @@ import { Hex } from "viem";
 import { getSpendableBalance } from "../utils/getmaxBtc";
 import logger from "../utils/logger";
 import { getLegacyGasEstimate } from "../utils/getNativeTokenFee";
+import { SupportedChains } from "../layout/wagmi/config";
+import { getAllWorkingRPCs } from "../utils/rpcUtils";
 
 export type Networks = {
   [chain in Chain]: ChainData & { assetConfig: Omit<AssetConfig, "chain">[] };
@@ -74,6 +76,7 @@ type AssetInfoState = {
   chains: Chains | null;
   fiatData: Record<string, number | undefined>;
   balances: Record<string, BigNumber | undefined>;
+  workingRPCs: Record<number, string[]>;
   isLoading: boolean;
   isAssetSelectorOpen: {
     isOpen: boolean;
@@ -87,12 +90,12 @@ type AssetInfoState = {
   };
   setOpenAssetSelector: (type: IOType) => void;
   CloseAssetSelector: () => void;
+  fetchAndSetRPCs: () => Promise<void>;
   fetchAndSetAssetsAndChains: () => Promise<void>;
   fetchAndSetStrategies: () => Promise<void>;
   fetchAndSetFiatValues: () => Promise<void>;
   fetchAndSetEvmBalances: (
     address: string,
-    workingRpcs: Record<number, string[]>,
     fetchOnlyAsset?: Asset
   ) => Promise<void>;
   fetchAndSetBitcoinBalance: (
@@ -112,6 +115,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   allChains: null,
   fiatData: {},
   balances: {},
+  workingRPCs: {},
   isAssetSelectorOpen: {
     isOpen: false,
     type: IOType.input,
@@ -123,7 +127,11 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     error: null,
     isLoading: false,
   },
-
+  fetchAndSetRPCs: async () => {
+    set({ isLoading: true });
+    const workingRPCs = await getAllWorkingRPCs([...SupportedChains]);
+    set({ workingRPCs, isLoading: false });
+  },
   setOpenAssetSelector: (type) =>
     set({
       isAssetSelectorOpen: {
@@ -141,12 +149,34 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     }),
 
   fetchAndSetAssetsAndChains: async () => {
+    const maxRetries = 7;
+    const abortAfterMs = 3000;
+    let attempt = 0;
+
+    const fetchAssetsWithRetry = async (): Promise<Networks> => {
+      try {
+        const res = await axios.get<Networks>(
+          API().data.assets(network).toString(),
+          { timeout: abortAfterMs }
+        );
+        return res.data;
+      } catch (error) {
+        attempt++;
+        if (attempt >= maxRetries) {
+          console.log("Failed to fetch assets data ❌", error);
+          return {} as Networks;
+        }
+
+        const delay = 100 * Math.pow(2, attempt - 1);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        return fetchAssetsWithRetry();
+      }
+    };
+
     try {
       set({ isLoading: true });
-      const res = await axios.get<Networks>(
-        API().data.assets(network).toString()
-      );
-      const assetsData = res.data;
+      const assetsData = await fetchAssetsWithRetry();
+
       const allChains: Chains = {};
       const allAssets: Assets = {};
       const assets: Assets = {};
@@ -233,12 +263,8 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     }
   },
 
-  fetchAndSetEvmBalances: async (
-    address: string,
-    workingRpcs: Record<number, string[]>,
-    fetchOnlyAsset?: Asset
-  ) => {
-    const { assets, balances } = get();
+  fetchAndSetEvmBalances: async (address: string, fetchOnlyAsset?: Asset) => {
+    const { assets, workingRPCs } = get();
     if (!assets) return;
 
     let tokensByChain: Partial<Record<Chain, Asset[]>> = {};
@@ -259,7 +285,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
             assets.map((asset) => asset.tokenAddress) as Hex[],
             address as Hex,
             chain as EvmChain,
-            workingRpcs
+            workingRPCs
           );
 
           const updatedBalances: Record<string, BigNumber | undefined> = {};
@@ -298,7 +324,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           : acc;
       }, {});
 
-      set({ balances: { ...balances, ...finalBalances } });
+      set({ balances: { ...get().balances, ...finalBalances } });
     } catch (err) {
       console.error("Failed to fetch balances", err);
     }

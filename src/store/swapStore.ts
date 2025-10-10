@@ -32,6 +32,7 @@ type SwapState = {
   isApproving: boolean;
   strategy: string;
   tokenPrices: TokenPrices;
+  fiatTokenPrices: TokenPrices;
   error: SwapErrors;
   isNetworkFeesLoading: boolean;
   isFetchingQuote: FetchingQuote;
@@ -44,6 +45,7 @@ type SwapState = {
   };
   maxTimeSaved: number;
   maxCostSaved: number;
+  setFiatTokenPrices: (fiatTokenPrices: TokenPrices) => void;
   setTokenPrices: (tokenPrices: TokenPrices) => void;
   setIsSwapping: (isSwapping: boolean) => void;
   setIsApproving: (isApproving: boolean) => void;
@@ -97,6 +99,10 @@ export const swapStore = create<SwapState>((set) => ({
     input: "0",
     output: "0",
   },
+  fiatTokenPrices: {
+    input: "0",
+    output: "0",
+  },
   error: {
     inputError: Errors.none,
     outputError: Errors.none,
@@ -121,6 +127,9 @@ export const swapStore = create<SwapState>((set) => ({
       ...state,
       [ioType === IOType.input ? "inputAsset" : "outputAsset"]: asset,
     }));
+  },
+  setFiatTokenPrices: (fiatTokenPrices) => {
+    set({ fiatTokenPrices });
   },
   setAmount: (ioType, amount) => {
     set((state) => ({
@@ -204,27 +213,27 @@ export const swapStore = create<SwapState>((set) => ({
     set({ isValidBitcoinAddress });
   },
   showComparisonHandler: (type) => {
-    set({ 
+    set({
       isComparisonVisible: true,
       showComparison: {
         isTime: type === "time",
         isFees: type === "fees",
-      }
+      },
     });
   },
   hideComparison: () => {
-    set({ 
+    set({
       isComparisonVisible: false,
       showComparison: {
         isTime: false,
         isFees: false,
-      }
+      },
     });
   },
   updateComparisonSavings: (time, cost) => {
-    set({ 
+    set({
       maxTimeSaved: time,
-      maxCostSaved: cost 
+      maxCostSaved: cost,
     });
   },
   clearSwapState: () => {
@@ -239,6 +248,10 @@ export const swapStore = create<SwapState>((set) => ({
       isSwapping: false,
       strategy: "",
       tokenPrices: {
+        input: "0",
+        output: "0",
+      },
+      fiatTokenPrices: {
         input: "0",
         output: "0",
       },
@@ -277,6 +290,10 @@ export const swapStore = create<SwapState>((set) => ({
         input: "0",
         output: "0",
       },
+      fiatTokenPrices: {
+        input: "0",
+        output: "0",
+      },
       error: {
         inputError: Errors.none,
         outputError: Errors.none,
@@ -303,6 +320,10 @@ export const swapStore = create<SwapState>((set) => ({
       outputAmount: "",
       rate: 0,
       tokenPrices: {
+        input: "0",
+        output: "0",
+      },
+      fiatTokenPrices: {
         input: "0",
         output: "0",
       },

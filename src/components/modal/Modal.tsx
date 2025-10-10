@@ -4,9 +4,7 @@ import { ConnectWallet } from "../navbar/connectWallet/ConnectWallet";
 import { TransactionsComponent } from "../transactions/TransactionsComponent";
 import { ResponsiveModal } from "./ResponsiveModal";
 import { AssetSelector } from "../swap/AssetSelector";
-import { Whitelist } from "../whitelist/WhiteList";
 import { StakeModal } from "../stake/modal/StakeModal";
-import { VersionUpdateModal } from "./VersionUpdateModal";
 
 export type ModalProps = {
   open: boolean;
@@ -46,12 +44,6 @@ export const Modal = () => {
         open={modalName.transactions}
         onClose={() => setCloseModal(modalNames.transactions)}
       />
-      <ResponsiveModal open={modalName.whiteList}>
-        <Whitelist
-          open={modalName.whiteList}
-          onClose={() => setCloseModal(modalNames.whiteList)}
-        />
-      </ResponsiveModal>
 
       <ResponsiveModal
         open={modalName.assetList}
@@ -62,16 +54,6 @@ export const Modal = () => {
 
       <ResponsiveModal open={modalName.manageStake}>
         <StakeModal onClose={() => setCloseModal(modalNames.manageStake)} />
-      </ResponsiveModal>
-
-      <ResponsiveModal
-        open={modalName.versionUpdate}
-        opacityLevel={"semi-dark"}
-        onClose={() => setCloseModal(modalNames.versionUpdate)}
-      >
-        <VersionUpdateModal
-          onClose={() => setCloseModal(modalNames.versionUpdate)}
-        />
       </ResponsiveModal>
     </>
   );

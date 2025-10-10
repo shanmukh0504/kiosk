@@ -3,6 +3,7 @@ import {
   GasStationIcon,
   InfoIcon,
   KeyboardDownIcon,
+  SwapHorizontalIcon,
   Typography,
 } from "@gardenfi/garden-book";
 import { BTC, swapStore } from "../../store/swapStore";
@@ -15,17 +16,19 @@ import { delayedFadeAnimation } from "../../animations/animations";
 import { SwapSavingsAndAddresses } from "./SwapSavingsAndAddresses";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { TooltipWrapper } from "../../common/ToolTipWrapper";
-import { formatAmount } from "../../utils/utils";
+import { formatAmount, formatAmountUsd } from "../../utils/utils";
 
 const RateDisplay = ({
   inputAsset,
   outputAsset,
   formattedRate,
+  formattedTokenPrice,
   className = "",
 }: {
   inputAsset?: Asset;
   outputAsset?: Asset;
-  formattedRate: number;
+  formattedRate?: string | number;
+  formattedTokenPrice?: string | number;
   className?: string;
 }) => (
   <div className={`flex min-w-fit items-center gap-1`}>
@@ -34,14 +37,26 @@ const RateDisplay = ({
       weight="regular"
       className={`!text-nowrap ${className}`}
     >
-      1 {inputAsset?.symbol} ≈
+      1 {inputAsset?.symbol}
     </Typography>
     <Typography
       size="h5"
       weight="regular"
       className={`!text-nowrap ${className}`}
     >
-      {formattedRate} {outputAsset?.symbol}
+      {formattedTokenPrice ? (
+        "≈"
+      ) : (
+        <SwapHorizontalIcon className="fill-dark-grey" />
+      )}
+    </Typography>
+    <Typography
+      size="h5"
+      weight="regular"
+      className={`!text-nowrap ${className}`}
+    >
+      {formattedRate && `${formattedRate} ${outputAsset?.symbol}`}
+      {formattedTokenPrice && `$${formattedTokenPrice}`}
     </Typography>
   </div>
 );
@@ -56,23 +71,22 @@ export const FeesAndRateDetails = () => {
     outputAsset,
     rate,
     networkFees,
-    isNetworkFeesLoading,
     showComparisonHandler,
+    fiatTokenPrices,
   } = swapStore();
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
   const { address } = useEVMWallet();
 
-  const fallbackNetworkFees = useMemo(() => {
-    return !isNetworkFeesLoading && networkFees !== undefined
-      ? networkFees
-      : 0.49;
-  }, [networkFees, isNetworkFeesLoading]);
-
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
   const formattedRate = useMemo(
     () => formatAmount(rate, 0, isBitcoinChains ? 7 : 3),
     [isBitcoinChains, rate]
+  );
+
+  const formattedTokenPrice = useMemo(
+    () => formatAmountUsd(fiatTokenPrices.input, 0),
+    [fiatTokenPrices.input]
   );
 
   const refundAddress = useMemo(
@@ -146,7 +160,7 @@ export const FeesAndRateDetails = () => {
                 <RateDisplay
                   inputAsset={inputAsset}
                   outputAsset={outputAsset}
-                  formattedRate={formattedRate}
+                  formattedTokenPrice={formattedTokenPrice}
                   className="!text-mid-grey"
                 />
               </motion.div>
@@ -164,7 +178,7 @@ export const FeesAndRateDetails = () => {
                 <RateDisplay
                   inputAsset={inputAsset}
                   outputAsset={outputAsset}
-                  formattedRate={formattedRate}
+                  formattedTokenPrice={formattedTokenPrice}
                 />
               </motion.div>
             ) : (
@@ -177,16 +191,16 @@ export const FeesAndRateDetails = () => {
                   <GasStationIcon className="h-3 w-3" />
                   <Typography
                     size="h5"
-                    weight="medium"
+                    weight="regular"
                     className="!text-nowrap"
                   >
-                    {fallbackNetworkFees === 0 ? (
-                        "Free"
-                      ) : (
-                        <span className="flex items-center">
-                          ${formatAmount(fallbackNetworkFees, 0, 2)}
-                        </span>
-                      )}
+                    {networkFees === 0 ? (
+                      "Free"
+                    ) : (
+                      <span className="flex items-center">
+                        ${formatAmountUsd(networkFees, 0)}
+                      </span>
+                    )}
                   </Typography>
                 </div>
               </motion.div>
@@ -215,7 +229,7 @@ export const FeesAndRateDetails = () => {
             refundAddress={refundAddress}
             receiveAddress={receiveAddress}
             showComparison={showComparisonHandler}
-            networkFeesValue={formatAmount(fallbackNetworkFees, 0, 2)}
+            networkFeesValue={Number(formatAmountUsd(networkFees, 0))}
           />
         )}
       </AnimatePresence>

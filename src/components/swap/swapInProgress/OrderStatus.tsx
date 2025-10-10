@@ -32,7 +32,10 @@ export const OrderStatus: FC<OrderStatusProps> = ({
   const completedSteps =
     orderProgress &&
     Object.values(orderProgress).filter(
-      (step) => step.status === "completed" || step.status === "inProgress"
+      (step) =>
+        step.status === "completed" ||
+        step.status === "inProgress" ||
+        step.status === "cancel"
     ).length;
 
   const currentStatus =
@@ -144,11 +147,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({
             <div className="mt-2 flex items-center justify-between">
               {currentStatus === SimplifiedOrderStatus.depositDetected ? (
                 <div className="flex gap-3">
-                  <Typography
-                    size="h3"
-                    weight="medium"
-                    className="!leading-5"
-                  >
+                  <Typography size="h3" weight="medium" className="!leading-5">
                     {currentStatus}
                   </Typography>
                   <Typography size="h3" weight="medium" className="my-auto">

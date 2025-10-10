@@ -132,7 +132,7 @@ RUN rm -rf /usr/share/nginx/html/*
 # Copy built assets from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Configure nginx for MPA with optimized caching
+# Configure nginx for SPA with optimized caching + embedding support
 RUN printf 'server {\n\
     listen 80;\n\
     server_name _;\n\
@@ -151,15 +151,16 @@ RUN printf 'server {\n\
     \n\
     # Cache static assets aggressively\n\
     location ~* \\.(?:ico|css|js|gif|jpe?g|png|woff2?|eot|ttf|svg|otf|wasm)$ {\n\
-    expires 1m;\n\
-    access_log off;\n\
-    add_header Cache-Control "public, immutable";\n\
+        expires 1m;\n\
+        access_log off;\n\
+        add_header Cache-Control "public, immutable";\n\
     }\n\
     \n\
     # Security headers\n\
-    add_header X-Frame-Options "SAMEORIGIN" always;\n\
     add_header X-Content-Type-Options "nosniff" always;\n\
+    add_header Content-Security-Policy "frame-ancestors *;" always;\n\
     }\n' > /etc/nginx/conf.d/default.conf
+
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

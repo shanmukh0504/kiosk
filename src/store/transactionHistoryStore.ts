@@ -1,6 +1,28 @@
-import { BlockchainType, IOrderbook, MatchedOrder } from "@gardenfi/orderbook";
+import {
+  BlockchainType,
+  MatchedOrder,
+  PaginatedData,
+} from "@gardenfi/orderbook";
 import { create } from "zustand";
 import logger from "../utils/logger";
+import { APIResponse, Fetcher } from "@gardenfi/utils";
+
+export const ConstructMatchedOrdersUrl = (
+  baseUrl: string,
+  params?: {
+    [key: string]: string | number | boolean | undefined;
+  }
+): URL => {
+  const url = new URL("/orders/matched", baseUrl);
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) {
+        url.searchParams.append(key, value.toString());
+      }
+    });
+  }
+  return url;
+};
 
 type TransactionHistoryStoreState = {
   transactions: MatchedOrder[];
@@ -8,14 +30,14 @@ type TransactionHistoryStoreState = {
   perPage: number;
   totalItems: number;
   fetchTransactions: (
-    orderBook: IOrderbook,
+    orderbookUrl: string,
     connectedWallets: {
       [key in BlockchainType]: string;
     },
     append?: boolean
   ) => Promise<void>;
   loadMore: (
-    orderBook: IOrderbook,
+    orderbookUrl: string,
     connectedWallets: {
       [key in BlockchainType]: string;
     }
@@ -30,46 +52,76 @@ const transactionHistoryStore = create<TransactionHistoryStoreState>(
     totalItems: 0,
 
     fetchTransactions: async (
-      orderBook: IOrderbook,
+      orderbookUrl: string,
       connectedWallets: {
         [key in BlockchainType]: string;
       }
     ) => {
-      const newTransactions: MatchedOrder[] = [];
-      let totalItems = 0;
+      set({ isLoading: true });
+      try {
+        const perPage = get().perPage;
+        const addresses = Object.values(connectedWallets).filter(
+          (addr) => addr !== ""
+        );
+        const urls = addresses.map((address) =>
+          ConstructMatchedOrdersUrl(orderbookUrl, {
+            address,
+            per_page: perPage,
+            status: "fulfilled",
+          })
+        );
+        const fetchPromises = urls.map((url) =>
+          Fetcher.get<APIResponse<PaginatedData<MatchedOrder>>>(url)
+        );
 
-      for (const [, address] of Object.entries(connectedWallets)) {
-        if (address === "") continue;
-        const txns = await orderBook.getMatchedOrders(address, "fulfilled", {
-          per_page: get().perPage,
-        });
-        if (!txns.ok) {
-          logger.error("failed to fetch transactions ❌", txns.error);
-          continue;
+        const results = await Promise.all(fetchPromises);
+
+        const newTransactions: MatchedOrder[] = [];
+        let totalItems = 0;
+        const seenOrderIds = new Set<string>();
+
+        for (const txns of results) {
+          if (txns.error) {
+            logger.error("failed to fetch transactions ❌", txns.error);
+            continue;
+          }
+          totalItems += txns.result?.total_items ?? 0;
+          for (const order of txns.result?.data ?? []) {
+            const uniqueId =
+              order.create_order.create_id ??
+              order.create_order.create_id ??
+              JSON.stringify(order);
+            if (!seenOrderIds.has(uniqueId)) {
+              seenOrderIds.add(uniqueId);
+              newTransactions.push(order);
+            }
+          }
         }
-        totalItems += txns.val.total_items;
-        newTransactions.push(...txns.val.data);
+
+        newTransactions.sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+
+        set({
+          transactions: newTransactions,
+          totalItems,
+        });
+      } catch (err) {
+        logger.error("Unexpected error in fetchTransactions", err);
+      } finally {
+        set({ isLoading: false });
       }
-
-      newTransactions.sort(
-        (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
-
-      set({
-        transactions: newTransactions,
-        totalItems,
-      });
     },
 
     loadMore: async (
-      orderBook: IOrderbook,
+      orderbookUrl: string,
       connectedWallets: {
         [key in BlockchainType]: string;
       }
     ) => {
       set((state) => ({ perPage: state.perPage + 4 }));
-      await get().fetchTransactions(orderBook, connectedWallets);
+      await get().fetchTransactions(orderbookUrl, connectedWallets);
     },
   })
 );
