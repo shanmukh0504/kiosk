@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { INTERNAL_ROUTES, QUERY_PARAMS, THEMES } from "../constants/constants";
-import { Asset, ChainAsset, Swap } from "@gardenfi/orderbook";
+import { ChainAsset, Swap } from "@gardenfi/orderbook";
 import { Assets } from "../store/assetInfoStore";
 
 export const isProduction = () => {
@@ -162,14 +162,6 @@ export const getFirstAssetFromChain = (
 
   return assetKey ? assets[assetKey] : undefined;
 };
-
-export const getOrderPair = (
-  chain: string | null,
-  tokenAddress: string | null
-) => (chain && tokenAddress ? `${chain}_${tokenAddress.toLowerCase()}` : "");
-
-export const getAssetChainHTLCAddressPair = (asset: Asset) =>
-  `${asset.chain}_${asset.htlc?.address.toLowerCase()}`;
 
 export const getProtocolFee = (fees: number) => {
   const protocolBips = 7;
