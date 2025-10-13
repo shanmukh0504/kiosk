@@ -11,6 +11,7 @@ import { getAssetFromSwap, formatAmount } from "../../../utils/utils";
 import { assetInfoStore } from "../../../store/assetInfoStore";
 import { CopyToClipboard } from "../../../common/CopyToClipboard";
 import { Url } from "@gardenfi/utils";
+import { BTC } from "../../../store/swapStore";
 
 type OrderDetailsProps = {
   order: Order;
@@ -88,6 +89,13 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
 
   const link = baseUrl && btcAddress && baseUrl.endpoint(btcAddress);
 
+  const getDecimalPlaces = (num: string) => {
+    if (num.includes(".")) {
+      return num.split(".")[1].length;
+    }
+    return 0;
+  };
+
   const { inputAmountPrice, outputAmountPrice, amountToFill, filledAmount } =
     useMemo(() => {
       return {
@@ -102,16 +110,26 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
               .multipliedBy(order.destination_swap.asset_price)
           : new BigNumber(0),
         amountToFill: order
-          ? formatAmount(order.source_swap.amount, inputAsset?.decimals ?? 0)
+          ? formatAmount(
+              order.source_swap.amount,
+              inputAsset?.decimals ?? 0,
+              isBitcoin(order.source_swap.chain) ? BTC.decimals : undefined
+            )
           : 0,
         filledAmount: order
           ? formatAmount(
               order.source_swap.filled_amount,
-              inputAsset?.decimals ?? 0
+              inputAsset?.decimals ?? 0,
+              isBitcoin(order.source_swap.chain) ? BTC.decimals : undefined
             )
           : 0,
       };
     }, [inputAsset, order, outputAsset]);
+
+  const formattedFilledAmount =
+    filledAmount === 0
+      ? filledAmount.toFixed(getDecimalPlaces(amountToFill.toString()))
+      : filledAmount;
 
   const fees = BigNumber.maximum(
     inputAmountPrice.minus(outputAmountPrice),
@@ -146,7 +164,7 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
           <OrderDetailsRow title="Fee" value={`$${fees}`} />
           <OrderDetailsRow
             title="Amount"
-            value={`${filledAmount} / ${amountToFill} ${inputAsset?.symbol}`}
+            value={`${formattedFilledAmount} / ${amountToFill} ${inputAsset?.symbol}`}
           />
           <OrderDetailsRow
             title="Order ID"

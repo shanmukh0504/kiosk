@@ -1,11 +1,12 @@
 import { useGarden } from "@gardenfi/react-hooks";
 import { useEffect, useMemo } from "react";
 import { assetInfoStore } from "../store/assetInfoStore";
-import { getAssetFromSwap } from "../utils/utils";
+import { formatAmount, getAssetFromSwap } from "../utils/utils";
 import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import { Toast } from "../components/toast/Toast";
 import { OrderStatus, ParseOrderStatus } from "@gardenfi/orderbook";
+import { BTC } from "../store/swapStore";
 
 export enum SimplifiedOrderStatus {
   orderCreated = "Order created",
@@ -230,10 +231,28 @@ export const useOrderStatus = () => {
       if (completedStatuses.includes(status)) {
         const inputAsset = getAssetFromSwap(o.source_swap, assets);
         const outputAsset = getAssetFromSwap(o.destination_swap, assets);
+        const inputAmount =
+          inputAsset &&
+          formatAmount(
+            o.source_swap.amount,
+            inputAsset.decimals,
+            inputAsset.symbol.includes(BTC.symbol)
+              ? inputAsset.decimals
+              : undefined
+          );
+        const outputAmount =
+          outputAsset &&
+          formatAmount(
+            o.destination_swap.amount,
+            outputAsset.decimals,
+            outputAsset.symbol.includes(BTC.symbol)
+              ? outputAsset.decimals
+              : undefined
+          );
         if (!inputAsset || !outputAsset) return;
 
         Toast.success(
-          `Successfully swapped ${inputAsset.symbol} to ${outputAsset.symbol}`
+          `${inputAmount} ${inputAsset.symbol} swapped for ${outputAmount} ${outputAsset.symbol}`
         );
       }
     };
