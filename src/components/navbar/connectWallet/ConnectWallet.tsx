@@ -360,7 +360,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                         (wallet.name === "Backpack" &&
                           suiSelectedWallet?.name === "Backpack") ||
                         (wallet.name === "OKX Wallet" &&
-                          suiSelectedWallet?.name === "OKX Wallet"))
+                          suiSelectedWallet?.name === "OKX Wallet") ||
+                        (wallet.name === "Tokeo" &&
+                          suiSelectedWallet?.name === "Tokeo"))
                     ),
                   }}
                   isAvailable={wallet.isAvailable}

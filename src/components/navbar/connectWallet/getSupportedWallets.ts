@@ -133,6 +133,8 @@ const blockchainConfigs = {
         return wallets?.find((w) => w.name === "OKX Wallet");
       } else if (key === "app.backpack") {
         return wallets?.find((w) => w.name === "Backpack");
+      } else if (key === "tokeo") {
+        return wallets?.find((w) => w.name === "Tokeo");
       } else {
         const walletId = walletNameMap[key] || key;
         return wallets?.find((w) => w.id === walletId);

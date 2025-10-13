@@ -210,4 +210,11 @@ export const GardenSupportedWallets: Record<
     "https://slushwallet.com/",
     { sui: true }
   ),
+  tokeo: createWallet(
+    "tokeo",
+    "Tokeo",
+    "wallets/TokeoLogo.webp",
+    "https://tokeo.io/",
+    { Sui: network === Network.MAINNET }
+  ),
 };
