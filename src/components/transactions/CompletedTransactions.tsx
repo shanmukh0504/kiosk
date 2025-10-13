@@ -2,7 +2,7 @@ import { Typography } from "@gardenfi/garden-book";
 import transactionHistoryStore from "../../store/transactionHistoryStore";
 import { TransactionsSkeleton } from "./TransactionsSkeleton";
 import { TransactionRow } from "./TransactionRow";
-import { OrderStatus } from "@gardenfi/core";
+import { ParseOrderStatus } from "@gardenfi/orderbook";
 import { useMemo } from "react";
 import { getAssetFromSwap } from "../../utils/utils";
 import { assetInfoStore } from "../../store/assetInfoStore";
@@ -30,16 +30,19 @@ export const CompletedTransactions = () => {
           No transactions found.
         </Typography>
       ) : (
-        filteredTransactions.map((order, index) => (
-          <div key={index} className="w-full">
-            <TransactionRow
-              order={order}
-              status={OrderStatus.Completed}
-              isLast={index === filteredTransactions.length - 1}
-              isFirst={index === 0}
-            />
-          </div>
-        ))
+        filteredTransactions.map((order, index) => {
+          const parsedStatus = ParseOrderStatus(order);
+          return (
+            <div key={index} className="w-full">
+              <TransactionRow
+                order={order}
+                status={parsedStatus}
+                isLast={index === filteredTransactions.length - 1}
+                isFirst={index === 0}
+              />
+            </div>
+          );
+        })
       )}
     </div>
   );

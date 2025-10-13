@@ -11,6 +11,7 @@ import { useSwap } from "../../hooks/useSwap";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
+import { balanceStore } from "../../store/balanceStore";
 import {
   capitalizeChain,
   getAssetFromChainAndSymbol,
@@ -49,16 +50,15 @@ export const CreateSwap = () => {
   const { starknetAddress } = useStarknetWallet();
   const { solanaAnchorProvider } = useSolanaWallet();
   const { currentAccount } = useSuiWallet();
+  const { isAssetSelectorOpen, assets, fetchAndSetFiatValues } =
+    assetInfoStore();
   const {
-    isAssetSelectorOpen,
-    assets,
     fetchAndSetBitcoinBalance,
     fetchAndSetEvmBalances,
-    fetchAndSetFiatValues,
     fetchAndSetStarknetBalance,
     fetchAndSetSolanaBalance,
     fetchAndSetSuiBalance,
-  } = assetInfoStore();
+  } = balanceStore();
   const {
     isComparisonVisible,
     showComparison,
@@ -93,6 +93,11 @@ export const CreateSwap = () => {
   const isChainSupported = useMemo(() => {
     if (!connector || !inputAsset || !outputAsset) return true;
     if (!WALLET_SUPPORTED_CHAINS[connector.id]) return true;
+
+    if (outputAsset.chain === "core") {
+      return WALLET_SUPPORTED_CHAINS[connector.id].includes(outputAsset.chain);
+    }
+
     if (
       isBitcoin(inputAsset.chain) ||
       isStarknet(inputAsset.chain) ||
@@ -302,14 +307,12 @@ export const CreateSwap = () => {
     if (fromAsset) {
       setAsset(IOType.input, fromAsset);
     } else {
-      if (!isBitcoin(destinationChain as Chain)) {
+      if (!destinationChain || !isBitcoin(destinationChain as Chain)) {
         const BTC = Object.values(assets).find((asset) =>
           isBitcoin(asset.chain)
         );
-        if (BTC && !BTC.disabled) {
-          if (!toAsset || !isBitcoin(toAsset.chain)) {
-            setAsset(IOType.input, BTC);
-          }
+        if (BTC && (!toAsset || !isBitcoin(toAsset.chain))) {
+          setAsset(IOType.input, BTC);
         }
       } else {
         setAsset(IOType.input, undefined);

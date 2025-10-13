@@ -1,16 +1,18 @@
 import { FC, useMemo, useId } from "react";
 import { AddIcon, LogoutIcon } from "@gardenfi/garden-book";
-import { Tooltip } from "../../../common/Tooltip";
-import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { Tooltip } from "../../../common/Tooltip";
 import { modalNames, modalStore } from "../../../store/modalStore";
 import { ecosystems } from "../../navbar/connectWallet/constants";
 import { Address } from "./Address";
 import { swapStore } from "../../../store/swapStore";
+import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
-import { assetInfoStore } from "../../../store/assetInfoStore";
 import { useSuiWallet } from "../../../hooks/useSuiWallet";
+import transactionHistoryStore from "../../../store/transactionHistoryStore";
+import orderInProgressStore from "../../../store/orderInProgressStore";
+import { balanceStore } from "../../../store/balanceStore";
 
 type AddressMenuProps = {
   onClose: () => void;
@@ -22,9 +24,11 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const { account: btcAddress, disconnect: btcDisconnect } = useBitcoinWallet();
   const { solanaAddress, solanaDisconnect } = useSolanaWallet();
   const { suiConnected, currentAccount, suiDisconnect } = useSuiWallet();
+  const { setIsOpen } = orderInProgressStore();
   const { setOpenModal } = modalStore();
+  const { resetTransactions } = transactionHistoryStore();
   const { clear } = swapStore();
-  const { clearBalances } = assetInfoStore();
+  const { clearBalances } = balanceStore();
   const addTooltipId = useId();
   const languageTooltipId = useId();
   const referralTooltipId = useId();
@@ -48,7 +52,9 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
     solanaDisconnect();
     suiDisconnect();
     clearBalances();
+    setIsOpen(false);
     onClose();
+    resetTransactions();
     setTimeout(() => {
       clearBalances();
     }, 2000);
@@ -63,23 +69,23 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
     <>
       <div className="flex justify-between">
         <div className="flex flex-wrap gap-3">
-          {address && <Address address={address} logo={ecosystems.EVM.icon} />}
+          {address && <Address address={address} logo={ecosystems.evm.icon} />}
           {btcAddress && (
-            <Address address={btcAddress} logo={ecosystems.Bitcoin.icon} />
+            <Address address={btcAddress} logo={ecosystems.bitcoin.icon} />
           )}
           {starknetAddress && (
             <Address
               address={starknetAddress}
-              logo={ecosystems.Starknet.icon}
+              logo={ecosystems.starknet.icon}
             />
           )}
           {solanaAddress && (
-            <Address address={solanaAddress} logo={ecosystems.Solana.icon} />
+            <Address address={solanaAddress} logo={ecosystems.solana.icon} />
           )}
           {suiConnected && (
             <Address
               address={currentAccount?.address ?? ""}
-              logo={ecosystems.Sui.icon}
+              logo={ecosystems.sui.icon}
             />
           )}
           {showConnectWallet && (

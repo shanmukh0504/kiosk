@@ -1,15 +1,13 @@
-import { OrderStatus, OrderWithStatus } from "@gardenfi/core";
+import { OrderWithStatus } from "@gardenfi/core";
+import { OrderStatus } from "@gardenfi/orderbook";
 
 export const priorityList: Partial<Record<OrderStatus, number>> = {
-  [OrderStatus.Matched]: 1,
+  [OrderStatus.Created]: 1,
   [OrderStatus.InitiateDetected]: 2,
   [OrderStatus.Initiated]: 3,
-  [OrderStatus.CounterPartyInitiateDetected]: 4,
-  [OrderStatus.CounterPartyInitiated]: 5,
-  [OrderStatus.RedeemDetected]: 6,
-  [OrderStatus.Redeemed]: 7,
-  [OrderStatus.CounterPartyRedeemDetected]: 8,
-  [OrderStatus.CounterPartyRedeemed]: 9,
+  [OrderStatus.AwaitingRedeem]: 4,
+  [OrderStatus.RedeemDetected]: 5,
+  [OrderStatus.Redeemed]: 6,
 };
 
 export const getLatestUpdatedOrder = (
@@ -33,9 +31,7 @@ export const getLatestUpdatedOrders = (
   return newOrders.map((newOrder) =>
     getLatestUpdatedOrder(
       newOrder,
-      oldOrders.find(
-        (o) => o.create_order.create_id === newOrder.create_order.create_id
-      ) ?? newOrder
+      oldOrders.find((o) => o.order_id === newOrder.order_id) ?? newOrder
     )
   );
 };

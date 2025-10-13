@@ -24,11 +24,11 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   const [connectedWallets, setConnectedWallets] = useState<
     Record<BlockchainType, string>
   >({
-    Bitcoin: "",
-    EVM: "",
-    Starknet: "",
-    Solana: "",
-    Sui: "",
+    bitcoin: "",
+    evm: "",
+    starknet: "",
+    solana: "",
+    sui: "",
   });
 
   const { garden } = useGarden();
@@ -44,7 +44,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
     () => activeTab === "completed" && transactions.length < totalItems,
     [transactions.length, totalItems, activeTab]
   );
-  const orderbookUrl = import.meta.env.VITE_ORDERBOOK_URL;
+  const orderbookUrl = import.meta.env.VITE_BASE_URL;
 
   const handleLoadMore = async () => {
     if (!garden) return;
@@ -55,21 +55,25 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   };
 
   useEffect(() => {
-    if (!garden || !isOpen) return;
+    if (!garden) return;
     if (garden) {
       setConnectedWallets({
-        Bitcoin: btcAddress ?? "",
-        EVM: address ?? "",
-        Starknet: starknetAddressToXOnly(starknetAddress ?? ""),
-        Solana: solanaAddress ?? "",
-        Sui: currentAccount?.address ?? "",
+        bitcoin: btcAddress ?? "",
+        evm: address ?? "",
+        starknet: starknetAddress
+          ? starknetAddressToXOnly(starknetAddress ?? "")
+          : "",
+        solana: solanaAddress ?? "",
+        sui: currentAccount?.address ?? "",
       });
       fetchTransactions(orderbookUrl, {
-        Bitcoin: btcAddress ?? "",
-        EVM: address ?? "",
-        Starknet: starknetAddressToXOnly(starknetAddress ?? ""),
-        Solana: solanaAddress ?? "",
-        Sui: currentAccount?.address ?? "",
+        bitcoin: btcAddress ?? "",
+        evm: address ?? "",
+        starknet: starknetAddress
+          ? starknetAddressToXOnly(starknetAddress ?? "")
+          : "",
+        solana: solanaAddress ?? "",
+        sui: currentAccount?.address ?? "",
       });
     }
   }, [
@@ -79,6 +83,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
     fetchTransactions,
     isOpen,
     solanaAddress,
+    orderbookUrl,
     currentAccount,
     btcAddress,
   ]);

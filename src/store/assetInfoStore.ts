@@ -1,111 +1,95 @@
 import { create } from "zustand";
-import { IOType, network, SUPPORTED_CHAINS } from "../constants/constants";
+import { IOType, SUPPORTED_CHAINS } from "../constants/constants";
 import {
   Asset,
   Chain,
-  EvmChain,
-  isBitcoin,
-  isEVM,
-  isEvmNativeToken,
-  isSolana,
-  isSolanaNativeToken,
-  isStarknet,
-  isSui,
+  ChainAsset,
+  RouteValidator,
+  buildRouteMatrix,
 } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
-import {
-  BitcoinNetwork,
-  BitcoinProvider,
-  Quote,
-  Strategies,
-} from "@gardenfi/core";
 import { generateTokenKey } from "../utils/generateTokenKey";
-import { PublicKey } from "@solana/web3.js";
-
-type AssetConfig = Asset & {
-  disabled?: boolean;
-};
-import BigNumber from "bignumber.js";
-import { getBalanceMulticall } from "../utils/getBalanceMulticall";
-import { IInjectedBitcoinProvider } from "@gardenfi/wallet-connectors";
-import { getOrderPair } from "../utils/utils";
-import {
-  getSolanaTokenBalance,
-  getStarknetTokenBalance,
-  getSuiTokenBalance,
-} from "../utils/getTokenBalance";
-import { Hex } from "viem";
-import { getSpendableBalance } from "../utils/getmaxBtc";
 import logger from "../utils/logger";
-import { getLegacyGasEstimate } from "../utils/getNativeTokenFee";
-import { SupportedChains } from "../layout/wagmi/config";
-import { getAllWorkingRPCs } from "../utils/rpcUtils";
 
-export type Networks = {
-  [chain in Chain]: ChainData & { assetConfig: Omit<AssetConfig, "chain">[] };
+// Internal Types
+type BaseChainData = {
+  id: string;
+  chain: string | Chain;
+  icon: string;
+  explorer_url: string;
+  confirmation_target: number;
+  source_timelock: string;
+  destination_timelock: string;
+  supported_htlc_schemas: string[];
+  supported_token_schemas: string[];
 };
 
-export type ChainData = {
-  chainId: number;
-  explorer: string;
-  networkLogo: string;
-  networkType: string;
-  name: string;
-  identifier: Chain;
-  disabled: boolean;
-};
-
-export type FiatData = {
+export type ChainData = BaseChainData & {
   chain: Chain;
-  htlc_address: string;
-  token_price: number;
+  name: string;
 };
+
+export type ApiChainData = BaseChainData & {
+  assets: Asset[];
+};
+
+export type ApiChainsResponse = {
+  status: string;
+  result: ApiChainData[];
+};
+
 export type FiatResponse = {
   status: string;
-  result: FiatData[];
+  result: Record<string, string>;
 };
 
-export type Assets = Record<string, AssetConfig>;
+export type Assets = Record<string, Asset>;
 export type Chains = Partial<Record<Chain, ChainData>>;
+
+function parseChainIdentifier(chainName: string): Chain | null {
+  return SUPPORTED_CHAINS.includes(chainName as Chain)
+    ? (chainName as Chain)
+    : null;
+}
+
+// function parseChainId(idString: string): number {
+//   const parts = idString.split(":");
+//   if (parts.length > 1) {
+//     const parsed = parseInt(parts[1], 10);
+//     return isNaN(parsed) ? 0 : parsed;
+//   }
+//   // For non-numeric chains like bitcoin, sui, return 0
+//   return 0;
+// }
+
+function formatChainName(chainName: string): string {
+  return chainName
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
 
 type AssetInfoState = {
   allChains: Chains | null;
   allAssets: Assets | null;
   assets: Assets | null;
   chains: Chains | null;
+  routeValidator: RouteValidator | null;
+  routeMatrix: Record<string, ChainAsset[]> | null;
   fiatData: Record<string, number | undefined>;
-  balances: Record<string, BigNumber | undefined>;
-  workingRPCs: Record<number, string[]>;
   isLoading: boolean;
   isAssetSelectorOpen: {
     isOpen: boolean;
     type: IOType;
   };
   error: string | null;
-  strategies: {
-    val: Strategies | null;
-    error: string | null;
-    isLoading: boolean;
-  };
   setOpenAssetSelector: (type: IOType) => void;
-  CloseAssetSelector: () => void;
-  fetchAndSetRPCs: () => Promise<void>;
-  fetchAndSetAssetsAndChains: () => Promise<void>;
-  fetchAndSetStrategies: () => Promise<void>;
   fetchAndSetFiatValues: () => Promise<void>;
-  fetchAndSetEvmBalances: (
-    address: string,
-    fetchOnlyAsset?: Asset
-  ) => Promise<void>;
-  fetchAndSetBitcoinBalance: (
-    provider: IInjectedBitcoinProvider,
-    address: string
-  ) => Promise<void>;
-  fetchAndSetStarknetBalance: (address: string) => Promise<void>;
-  fetchAndSetSolanaBalance: (address: PublicKey) => Promise<void>;
-  fetchAndSetSuiBalance: (address: string) => Promise<void>;
-  clearBalances: () => void;
+  CloseAssetSelector: () => void;
+  fetchAndSetAssetsAndChains: () => Promise<void>;
+  isRouteValid: (from: Asset, to: Asset) => boolean;
+  getValidDestinations: (fromAsset: Asset) => Asset[];
 };
 
 export const assetInfoStore = create<AssetInfoState>((set, get) => ({
@@ -113,25 +97,15 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   chains: null,
   allAssets: null,
   allChains: null,
+  routeValidator: null,
+  routeMatrix: null,
   fiatData: {},
-  balances: {},
-  workingRPCs: {},
   isAssetSelectorOpen: {
     isOpen: false,
     type: IOType.input,
   },
   isLoading: false,
   error: null,
-  strategies: {
-    val: null,
-    error: null,
-    isLoading: false,
-  },
-  fetchAndSetRPCs: async () => {
-    set({ isLoading: true });
-    const workingRPCs = await getAllWorkingRPCs([...SupportedChains]);
-    set({ workingRPCs, isLoading: false });
-  },
   setOpenAssetSelector: (type) =>
     set({
       isAssetSelectorOpen: {
@@ -148,110 +122,15 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       },
     }),
 
-  fetchAndSetAssetsAndChains: async () => {
-    const maxRetries = 7;
-    const abortAfterMs = 3000;
-    let attempt = 0;
-
-    const fetchAssetsWithRetry = async (): Promise<Networks> => {
-      try {
-        const res = await axios.get<Networks>(
-          API().data.assets(network).toString(),
-          { timeout: abortAfterMs }
-        );
-        return res.data;
-      } catch (error) {
-        attempt++;
-        if (attempt >= maxRetries) {
-          console.log("Failed to fetch assets data ❌", error);
-          return {} as Networks;
-        }
-
-        const delay = 100 * Math.pow(2, attempt - 1);
-        await new Promise((resolve) => setTimeout(resolve, delay));
-        return fetchAssetsWithRetry();
-      }
-    };
-
-    try {
-      set({ isLoading: true });
-      const assetsData = await fetchAssetsWithRetry();
-
-      const allChains: Chains = {};
-      const allAssets: Assets = {};
-      const assets: Assets = {};
-      const chains: Chains = {};
-
-      for (const chainInfo of Object.values(assetsData)) {
-        if (!SUPPORTED_CHAINS.includes(chainInfo.identifier)) continue;
-
-        allChains[chainInfo.identifier] = {
-          chainId: chainInfo.chainId,
-          explorer: chainInfo.explorer,
-          networkLogo: chainInfo.networkLogo,
-          networkType: chainInfo.networkType,
-          name: chainInfo.name,
-          identifier: chainInfo.identifier,
-          disabled: chainInfo.disabled,
-        };
-        let totalAssets = 0;
-
-        for (const asset of chainInfo.assetConfig) {
-          const tokenKey = generateTokenKey(
-            chainInfo.identifier,
-            asset.atomicSwapAddress
-          );
-          allAssets[tokenKey] = {
-            ...asset,
-            chain: chainInfo.identifier,
-          };
-          if (!asset.disabled && !chainInfo.disabled) {
-            assets[tokenKey] = allAssets[tokenKey];
-            totalAssets++;
-          }
-        }
-
-        if (totalAssets > 0) {
-          chains[chainInfo.identifier] = allChains[chainInfo.identifier];
-        }
-      }
-      set({ allAssets, allChains, assets, chains });
-    } catch (error) {
-      logger.error("failed to fetch assets data ❌", error);
-      set({ error: "Failed to fetch assets data" });
-    } finally {
-      set({ isLoading: false });
-    }
-  },
-
-  fetchAndSetStrategies: async () => {
-    try {
-      const quote = new Quote(API().quote.quote.toString());
-      set({ strategies: { ...get().strategies, isLoading: true } });
-      const res = await quote.getStrategies();
-      if (!res.ok) return;
-
-      set({ strategies: { val: res.val, isLoading: false, error: null } });
-    } catch {
-      set({
-        strategies: {
-          ...get().strategies,
-          error: "Failed to fetch strategies",
-          isLoading: false,
-        },
-      });
-    }
-  },
-
   fetchAndSetFiatValues: async () => {
     try {
       const { data } = await axios.get<FiatResponse>(
         API().quote.fiatValues.toString()
       );
 
-      const fiatData = data.result.reduce(
-        (acc, { chain, htlc_address, token_price }) => {
-          acc[`${chain}_${htlc_address.toLowerCase()}`] = token_price;
+      const fiatData = Object.entries(data.result).reduce(
+        (acc, [key, value]) => {
+          acc[key] = typeof value === "string" ? Number(value) : value;
           return acc;
         },
         {} as Record<string, number>
@@ -263,182 +142,165 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     }
   },
 
-  fetchAndSetEvmBalances: async (address: string, fetchOnlyAsset?: Asset) => {
-    const { assets, workingRPCs } = get();
-    if (!assets) return;
-
-    let tokensByChain: Partial<Record<Chain, Asset[]>> = {};
-    const targetAssets = fetchOnlyAsset
-      ? [fetchOnlyAsset]
-      : Object.values(assets);
-
-    for (const asset of targetAssets) {
-      if (!isEVM(asset.chain)) continue;
-      if (!tokensByChain[asset.chain]) tokensByChain[asset.chain] = [];
-      tokensByChain[asset.chain]!.push(asset);
-    }
-
+  fetchAndSetAssetsAndChains: async () => {
     try {
-      const balanceResults = await Promise.allSettled(
-        Object.entries(tokensByChain).map(async ([chain, assets]) => {
-          const chainBalances = await getBalanceMulticall(
-            assets.map((asset) => asset.tokenAddress) as Hex[],
-            address as Hex,
-            chain as EvmChain,
-            workingRPCs
-          );
+      set({ isLoading: true });
+      // Initialize and load the route policy once
+      const validator = new RouteValidator(
+        API().quote.quote.origin,
+        API().api_key
+      );
+      await validator.loadPolicy();
+      set({ routeValidator: validator });
+      const res = await axios.get<ApiChainsResponse>(
+        API().data.chains().toString()
+      );
 
-          const updatedBalances: Record<string, BigNumber | undefined> = {};
+      if (res.data.status !== "Ok") {
+        throw new Error("Failed to fetch chains data");
+      }
 
-          for (const asset of assets!) {
-            const orderKey = getOrderPair(chain, asset.tokenAddress);
-            let balance = chainBalances[asset.tokenAddress];
+      const allChains: Chains = {};
+      const allAssets: Assets = {};
+      const assets: Assets = {};
+      const chains: Chains = {};
 
-            if (
-              balance &&
-              balance.gt(0) &&
-              isEvmNativeToken(chain as EvmChain, asset.tokenAddress)
-            ) {
-              const fee = await getLegacyGasEstimate(
-                chain as EvmChain,
-                address as `0x${string}`,
-                asset.atomicSwapAddress as `0x${string}`
-              );
+      for (const apiChain of res.data.result) {
+        const chainIdentifier = parseChainIdentifier(apiChain.chain);
 
-              if (fee) {
-                const feeBN = new BigNumber(fee.gasCost);
-                balance = BigNumber.max(balance.minus(feeBN), 0);
-              }
-            }
+        if (!chainIdentifier || !SUPPORTED_CHAINS.includes(chainIdentifier)) {
+          continue;
+        }
 
-            updatedBalances[orderKey] = balance;
+        // Parse chain ID from the "id" field (e.g., "evm:84532" -> 84532, "solana:103" -> 103)
+        // const chainId = parseChainId(apiChain.id);
+
+        const chainData: ChainData = {
+          name: formatChainName(apiChain.chain),
+          chain: chainIdentifier,
+          id: apiChain.id,
+          explorer_url: apiChain.explorer_url,
+          icon: apiChain.icon,
+          confirmation_target: apiChain.confirmation_target,
+          source_timelock: apiChain.source_timelock,
+          destination_timelock: apiChain.destination_timelock,
+          supported_htlc_schemas: apiChain.supported_htlc_schemas,
+          supported_token_schemas: apiChain.supported_token_schemas,
+        };
+
+        allChains[chainIdentifier] = chainData;
+        let totalAssets = 0;
+
+        for (const apiAsset of apiChain.assets) {
+          const atomicSwapAddress = apiAsset.htlc?.address || "";
+          const tokenAddress = apiAsset.token?.address || atomicSwapAddress;
+
+          const tokenKey = generateTokenKey(chainIdentifier, tokenAddress);
+
+          const Asset: Asset = {
+            id: ChainAsset.from(apiAsset.id),
+            chain: chainIdentifier,
+            htlc: {
+              address: atomicSwapAddress,
+              schema: apiAsset.htlc?.schema || null,
+            },
+            token: {
+              address: tokenAddress,
+              schema: apiAsset.token?.schema || null,
+            },
+            decimals: apiAsset.decimals,
+            name: apiAsset.name,
+            symbol: ChainAsset.from(apiAsset.id).symbol.toUpperCase(), //TODO: apiAsset.symbol
+            icon: apiAsset.icon,
+            price: apiAsset.price,
+            min_amount: apiAsset.min_amount,
+            max_amount: apiAsset.max_amount,
+          };
+
+          allAssets[tokenKey] = Asset;
+          assets[tokenKey] = Asset;
+          totalAssets++;
+        }
+
+        if (totalAssets > 0) {
+          chains[chainIdentifier] = chainData;
+        }
+      }
+
+      // Build route matrix for fast lookups
+      const allChainAssets = Object.values(allAssets)
+        .map((asset) => {
+          if (!asset.id) return null;
+          try {
+            return ChainAsset.from(asset.id);
+          } catch {
+            return null;
           }
-
-          return updatedBalances;
         })
-      );
+        .filter((asset): asset is ChainAsset => asset !== null);
 
-      const finalBalances = balanceResults.reduce((acc, result) => {
-        return result.status === "fulfilled"
-          ? { ...acc, ...result.value }
-          : acc;
-      }, {});
+      const routeMatrix = buildRouteMatrix(allChainAssets, validator);
 
-      set({ balances: { ...get().balances, ...finalBalances } });
-    } catch (err) {
-      console.error("Failed to fetch balances", err);
+      set({ allAssets, allChains, assets, chains, routeMatrix });
+    } catch (error) {
+      logger.error("failed to fetch assets data ❌", error);
+      set({ error: "Failed to fetch assets data" });
+    } finally {
+      set({ isLoading: false });
     }
   },
 
-  fetchAndSetBitcoinBalance: async (
-    provider: IInjectedBitcoinProvider,
+  isRouteValid: (from: Asset, to: Asset) => {
+    const { routeValidator } = get();
 
-    address: string
-  ) => {
-    const { assets } = get();
-    if (!assets || !provider) return;
+    if (!routeValidator || !from || !to || !from.id || !to.id) {
+      console.log("Missing routeValidator, from, or to. Returning true.");
+      return true;
+    }
 
     try {
-      const balance = await provider.getBalance();
-      if (!balance?.val?.total) return;
+      const fromChainAsset = ChainAsset.from(from.id);
+      const toChainAsset = ChainAsset.from(to.id);
 
-      const formattedBalance = new BigNumber(balance.val.confirmed);
-
-      const _provider = new BitcoinProvider(
-        network === "mainnet" ? BitcoinNetwork.Mainnet : BitcoinNetwork.Testnet
-      );
-
-      const feeRate = await _provider.getFeeRates();
-      const utxos = await _provider.getUTXOs(address, Number(formattedBalance));
-      const spendable = await getSpendableBalance(
-        address,
-        Number(formattedBalance),
-        utxos.length,
-        feeRate.fastestFee
-      );
-      const maxSpendableBalance = spendable.ok ? spendable.val : 0;
-
-      const btcBalance = Object.values(assets)
-        .filter((asset) => isBitcoin(asset.chain))
-        .reduce(
-          (acc, asset) => {
-            acc[getOrderPair(asset.chain, asset.tokenAddress)] = new BigNumber(
-              maxSpendableBalance
-            );
-            return acc;
-          },
-          {} as Record<string, BigNumber | undefined>
-        );
-
-      set({ balances: { ...get().balances, ...btcBalance } });
-    } catch {
-      /*empty*/
+      const isValid = routeValidator.isValidRoute(fromChainAsset, toChainAsset);
+      // console.log("Route validation result:", isValid);
+      return isValid;
+    } catch (error) {
+      console.error("Error in isRouteValid:", error);
+      return true;
     }
   },
 
-  fetchAndSetStarknetBalance: async (address: string) => {
-    const { assets } = get();
-    if (!assets) return;
+  getValidDestinations: (fromAsset: Asset) => {
+    const { routeMatrix, assets } = get();
 
-    const starknetAsset = Object.values(assets).find((asset) =>
-      isStarknet(asset.chain)
-    );
-
-    if (!starknetAsset) return;
-
-    const starknetBalance: Record<string, BigNumber | undefined> = {};
-    const balance = await getStarknetTokenBalance(address, starknetAsset);
-
-    const orderPair = getOrderPair(
-      starknetAsset.chain,
-      starknetAsset.tokenAddress
-    );
-    starknetBalance[orderPair] = new BigNumber(balance);
-    set({ balances: { ...get().balances, ...starknetBalance } });
-  },
-
-  fetchAndSetSolanaBalance: async (address: PublicKey) => {
-    const { assets } = get();
-    if (!assets) return;
-
-    const solanaAssets = Object.values(assets).filter((asset) =>
-      isSolana(asset.chain)
-    );
-
-    if (!solanaAssets.length) return;
-    const solanaBalance: Record<string, BigNumber | undefined> = {};
-
-    for (const asset of solanaAssets) {
-      const balance = await getSolanaTokenBalance(address, asset);
-      const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
-
-      if (isSolanaNativeToken(asset.chain, asset.tokenAddress)) {
-        const gas = 0.00380608;
-        solanaBalance[orderPair] = new BigNumber(
-          Math.max(0, Number((Number(balance) - gas).toFixed(8)))
-        );
-      } else solanaBalance[orderPair] = new BigNumber(balance);
+    // If no route matrix or assets, return all assets as fallback
+    if (!routeMatrix || !assets || !fromAsset.id) {
+      return Object.values(assets || {});
     }
-    set({ balances: { ...get().balances, ...solanaBalance } });
+
+    try {
+      // Use cached route matrix for O(1) lookup instead of recalculating
+      const validChainAssets = routeMatrix[fromAsset.id.toString()];
+
+      if (!validChainAssets) {
+        // If asset not found in matrix, return all assets as fallback
+        return Object.values(assets);
+      }
+
+      // Convert ChainAsset array back to Asset array
+      return validChainAssets
+        .map((chainAsset) => {
+          const assetId = chainAsset.toString();
+          return Object.values(assets).find((asset) => {
+            const assetAssetId = ChainAsset.from(asset).toString();
+            return assetAssetId === assetId;
+          });
+        })
+        .filter(Boolean) as Asset[];
+    } catch (error) {
+      console.error("Error in getValidDestinations:", error);
+      return Object.values(assets || {});
+    }
   },
-
-  fetchAndSetSuiBalance: async (address: string) => {
-    const { assets } = get();
-    if (!assets) return;
-
-    const suiAsset = Object.values(assets).find((asset) => isSui(asset.chain));
-
-    if (!suiAsset) return;
-    const suiBalance: Record<string, BigNumber | undefined> = {};
-
-    const balance = await getSuiTokenBalance(address, suiAsset);
-    const orderPair = getOrderPair(suiAsset.chain, suiAsset.tokenAddress);
-    suiBalance[orderPair] = new BigNumber(balance);
-    set({ balances: { ...get().balances, ...suiBalance } });
-  },
-
-  clearBalances: () =>
-    set({
-      balances: {},
-    }),
 }));

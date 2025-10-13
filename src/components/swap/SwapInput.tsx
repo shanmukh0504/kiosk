@@ -133,7 +133,7 @@ export const SwapInput: FC<SwapInputProps> = ({
             <Typography
               size="h5"
               weight="medium"
-              onClick={() => inputRef.current!.focus()}
+              onClick={() => inputRef.current?.focus()}
             >
               {label}
             </Typography>
@@ -261,8 +261,8 @@ export const SwapInput: FC<SwapInputProps> = ({
           {asset ? (
             <TokenInfo
               symbol={asset.symbol}
-              tokenLogo={asset.logo || ""}
-              chainLogo={network?.networkLogo}
+              tokenLogo={asset.icon || ""}
+              chainLogo={network?.icon}
               onClick={handleOpenAssetSelector}
             />
           ) : (
