@@ -11,6 +11,7 @@ import { useSwap } from "../../hooks/useSwap";
 import { useSearchParams } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
+import { balanceStore } from "../../store/balanceStore";
 import {
   capitalizeChain,
   getAssetFromChainAndSymbol,
@@ -44,16 +45,15 @@ export const CreateSwap = () => {
   const { starknetAddress } = useStarknetWallet();
   const { solanaAnchorProvider } = useSolanaWallet();
   const { currentAccount } = useSuiWallet();
+  const { isAssetSelectorOpen, assets, fetchAndSetFiatValues } =
+    assetInfoStore();
   const {
-    isAssetSelectorOpen,
-    assets,
     fetchAndSetBitcoinBalance,
     fetchAndSetEvmBalances,
-    fetchAndSetFiatValues,
     fetchAndSetStarknetBalance,
     fetchAndSetSolanaBalance,
     fetchAndSetSuiBalance,
-  } = assetInfoStore();
+  } = balanceStore();
   const {
     isComparisonVisible,
     showComparison,
@@ -278,7 +278,7 @@ export const CreateSwap = () => {
       const BTC = Object.values(assets).find(
         (asset) => asset.name.toLowerCase() == "bitcoin"
       );
-      if (BTC && !BTC.disabled) {
+      if (BTC) {
         setAsset(IOType.input, BTC);
       }
     }

@@ -6,7 +6,7 @@ import { useGarden } from "@gardenfi/react-hooks";
 import { useEffect } from "react";
 import { Loader } from "../../common/Loader";
 import pendingOrdersStore from "../../store/pendingOrdersStore";
-import { OrderStatus } from "@gardenfi/core";
+import { OrderStatus } from "@gardenfi/orderbook";
 
 export const Address = () => {
   const { address } = useEVMWallet();
@@ -20,9 +20,6 @@ export const Address = () => {
     (order) =>
       order.status !== OrderStatus.RedeemDetected &&
       order.status !== OrderStatus.Redeemed &&
-      order.status !== OrderStatus.CounterPartyRedeemDetected &&
-      order.status !== OrderStatus.CounterPartyRedeemed &&
-      order.status !== OrderStatus.Completed &&
       order.status !== OrderStatus.Expired
   ).length;
 

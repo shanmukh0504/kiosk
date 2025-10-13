@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { getBalanceMulticall } from "./getBalanceMulticall";
-import { Chains } from "@gardenfi/orderbook";
+import { Chains, EVMChains } from "@gardenfi/orderbook";
 import { base } from "viem/chains";
 
 const mockWorkingRpcs = {
@@ -23,7 +23,7 @@ describe("getBalanceMulticall", () => {
         "0x3992B27dA26848C2b19CeA6Fd25ad5568B68AB98",
       ],
       "0xd53D4f100AaBA314bF033f99f86a312BfbdDF113",
-      Chains.base,
+      Chains.base as EVMChains,
       mockWorkingRpcs
     );
 
@@ -45,7 +45,7 @@ describe("getBalanceMulticall", () => {
     const balance = await getBalanceMulticall(
       [],
       "0xd53D4f100AaBA314bF033f99f86a312BfbdDF113",
-      Chains.base,
+      Chains.base as EVMChains,
       mockWorkingRpcs
     );
 

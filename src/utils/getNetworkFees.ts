@@ -1,33 +1,26 @@
-import { BitcoinProvider, BitcoinNetwork } from "@gardenfi/core";
+import { BitcoinProvider } from "@gardenfi/core";
 import { BTC } from "../store/swapStore";
 import axios from "axios";
 import { API } from "../constants/api";
-import { isBitcoin, Asset, Chains } from "@gardenfi/orderbook";
+import { isBitcoin, Asset, ChainAsset } from "@gardenfi/orderbook";
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 import { network } from "../constants/constants";
 import { Transaction } from "@mysten/sui/transactions";
-import { getAssetChainHTLCAddressPair } from "./utils";
 import BigNumber from "bignumber.js";
-
-type AssetEntry = {
-  chain: string;
-  htlc_address: string;
-  token_price: number;
-};
+import { Network } from "@gardenfi/utils";
 
 const getBTCPrice = async (): Promise<number> => {
   const response = await axios.get(API().quote.fiatValues.toString(), {
     timeout: 2000,
   });
-  const data = response.data;
-  const btcEntry = data.result.find((entry: AssetEntry) =>
-    entry.chain.includes(Chains.bitcoin)
-  );
-  return btcEntry?.token_price || 0;
+  const result: Record<string, string> = response.data?.result || {};
+  if (!BTC.id) return 0;
+  const price = Number(result[BTC.id.toString()]) || 0;
+  return Number.isFinite(price) ? price : 0;
 };
 
 export const calculateBitcoinNetworkFees = async (
-  network: BitcoinNetwork,
+  network: Network,
   asset?: Asset
 ): Promise<number> => {
   if (asset && !isBitcoin(asset.chain)) return 0;
@@ -61,7 +54,7 @@ export const getSuiNetworkFee = async (
       .toNumber();
 
     const tokenPriceUsd =
-      (fiatData && fiatData[getAssetChainHTLCAddressPair(asset)]) ?? 0;
+      (fiatData && fiatData[ChainAsset.from(asset).formatted]) ?? 0;
     return networkFee * tokenPriceUsd;
   } catch (error) {
     console.log(error);
