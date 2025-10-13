@@ -2,8 +2,15 @@
 
 ## [1.1.8]
 
+### Added
+
+- Added starknet support for Xverse wallet. 
+
+### Fixed
+
 - Update toast for successful swap and add abort controller to fetch assets function.
 - Update the coinbase wallet id.
+- Fixed the link redirecting to staking docs.
 
 ## [1.1.7]
 
