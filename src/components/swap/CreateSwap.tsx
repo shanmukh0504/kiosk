@@ -8,13 +8,14 @@ import {
 } from "../../constants/constants";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useSwap } from "../../hooks/useSwap";
-import { useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { balanceStore } from "../../store/balanceStore";
 import {
   capitalizeChain,
   getAssetFromChainAndSymbol,
+  getFirstAssetFromChain,
   getQueryParams,
 } from "../../utils/utils";
 import { ecosystems } from "../navbar/connectWallet/constants";
@@ -30,6 +31,7 @@ import {
   isStarknet,
   isSolana,
   isSui,
+  Chain,
 } from "@gardenfi/orderbook";
 import { swapStore } from "../../store/swapStore";
 import { AnimatePresence, motion } from "framer-motion";
@@ -40,6 +42,9 @@ export const CreateSwap = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [addParams, setAddParams] = useState(false);
+
+  const navigate = useNavigate();
+  const { destinationChain } = useParams();
   const { account: btcAddress, provider } = useBitcoinWallet();
   const { address } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
@@ -266,25 +271,51 @@ export const CreateSwap = () => {
       inputAmount: urlInputAmount = "",
     } = getQueryParams(searchParams);
 
+    if (outputChain && !destinationChain) {
+      navigate(`/bridge/${outputChain}?${searchParams.toString()}`);
+      return;
+    }
+
+    if (outputChain && !outputAssetSymbol) {
+      const outputChainAsset = getFirstAssetFromChain(assets, outputChain);
+      if (outputChainAsset) {
+        setAsset(IOType.output, outputChainAsset);
+      }
+    }
+
     const fromAsset = getAssetFromChainAndSymbol(
       assets,
       inputChain,
       inputAssetSymbol
     );
-    const toAsset = getAssetFromChainAndSymbol(
-      assets,
-      outputChain,
-      outputAssetSymbol
-    );
 
-    setAsset(IOType.input, fromAsset);
+    const toAsset =
+      (outputChain && outputAssetSymbol
+        ? getAssetFromChainAndSymbol(assets, outputChain, outputAssetSymbol)
+        : undefined) ||
+      getAssetFromChainAndSymbol(
+        assets,
+        destinationChain || "",
+        outputAssetSymbol
+      ) ||
+      (destinationChain && !outputAssetSymbol
+        ? getFirstAssetFromChain(assets, destinationChain)
+        : undefined);
+
     setAsset(IOType.output, toAsset);
-    if (!fromAsset && !toAsset) {
-      const BTC = Object.values(assets).find(
-        (asset) => asset.name.toLowerCase() == "bitcoin"
-      );
-      if (BTC) {
-        setAsset(IOType.input, BTC);
+
+    if (fromAsset) {
+      setAsset(IOType.input, fromAsset);
+    } else {
+      if (!destinationChain || !isBitcoin(destinationChain as Chain)) {
+        const BTC = Object.values(assets).find((asset) =>
+          isBitcoin(asset.chain)
+        );
+        if (BTC && (!toAsset || !isBitcoin(toAsset.chain))) {
+          setAsset(IOType.input, BTC);
+        }
+      } else {
+        setAsset(IOType.input, undefined);
       }
     }
 
@@ -301,7 +332,9 @@ export const CreateSwap = () => {
     searchParams,
     setAsset,
     inputAmount,
+    destinationChain,
     handleInputAmountChange,
+    navigate,
   ]);
 
   useEffect(() => {
@@ -318,9 +351,15 @@ export const CreateSwap = () => {
         prev.set(QUERY_PARAMS.inputChain, inputAsset.chain);
         prev.set(QUERY_PARAMS.inputAsset, inputAsset.symbol);
       }
+
+      if (inputAsset && outputAsset && inputAsset.chain === outputAsset.chain) {
+        prev.delete(QUERY_PARAMS.inputChain);
+        prev.delete(QUERY_PARAMS.inputAsset);
+      }
       if (outputAsset) {
-        prev.set(QUERY_PARAMS.outputChain, outputAsset.chain);
         prev.set(QUERY_PARAMS.outputAsset, outputAsset.symbol);
+      } else {
+        prev.delete(QUERY_PARAMS.outputAsset);
       }
       if (inputAmount) {
         prev.set(QUERY_PARAMS.inputAmount, inputAmount);
@@ -328,7 +367,21 @@ export const CreateSwap = () => {
 
       return prev;
     });
-  }, [addParams, inputAsset, outputAsset, inputAmount, setSearchParams]);
+
+    if (outputAsset && outputAsset.chain !== destinationChain) {
+      navigate(`/bridge/${outputAsset.chain}`);
+    } else if (!outputAsset && destinationChain) {
+      navigate("/");
+    }
+  }, [
+    addParams,
+    inputAsset,
+    outputAsset,
+    inputAmount,
+    setSearchParams,
+    navigate,
+    destinationChain,
+  ]);
 
   // Disable button when loading
   useEffect(() => {

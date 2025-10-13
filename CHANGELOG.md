@@ -4,7 +4,8 @@
 
 ### Added
 
-- Added starknet support for Xverse wallet. 
+- Added starknet support for Xverse wallet.
+- Implemented Swap bridge functionality.
 
 ### Fixed
 

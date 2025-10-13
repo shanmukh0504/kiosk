@@ -87,6 +87,16 @@ export const formatAmount = (
   return Number(temp);
 };
 
+export const isCurrentRoute = (route: string) => {
+  if (route.includes(":")) {
+    const routePattern = route.replace(/:[^/]+/g, "[^/]+");
+    const regex = new RegExp(`^${routePattern}$`);
+    return regex.test(window.location.pathname);
+  }
+
+  return window.location.pathname === route;
+};
+
 export const formatAmountUsd = (
   amount: string | number | bigint | undefined,
   decimals: number
@@ -97,9 +107,6 @@ export const formatAmountUsd = (
     maximumFractionDigits: 2,
   });
 };
-
-export const isCurrentRoute = (route: string) =>
-  window.location.pathname === route;
 
 export const clearLocalStorageExcept = (keysToKeep: string[]) => {
   const preservedData: Record<string, string | null> = {};
@@ -139,6 +146,20 @@ export const getAssetFromChainAndSymbol = (
     const asset = assets[key];
     return asset.chain === chain && asset.symbol === assetSymbol;
   });
+  return assetKey ? assets[assetKey] : undefined;
+};
+
+export const getFirstAssetFromChain = (
+  assets: Assets,
+  chain: string | null
+) => {
+  if (!chain) return undefined;
+
+  const assetKey = Object.keys(assets).find((key) => {
+    const asset = assets[key];
+    return asset.chain === chain;
+  });
+
   return assetKey ? assets[assetKey] : undefined;
 };
 
