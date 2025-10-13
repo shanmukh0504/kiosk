@@ -169,7 +169,7 @@ export const getOrderPair = (
 ) => (chain && tokenAddress ? `${chain}_${tokenAddress.toLowerCase()}` : "");
 
 export const getAssetChainHTLCAddressPair = (asset: Asset) =>
-  `${asset.chain}_${asset.atomicSwapAddress.toLowerCase()}`;
+  `${asset.chain}_${asset.htlc?.address.toLowerCase()}`;
 
 export const getProtocolFee = (fees: number) => {
   const protocolBips = 7;

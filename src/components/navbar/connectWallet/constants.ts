@@ -215,6 +215,6 @@ export const GardenSupportedWallets: Record<
     "Tokeo",
     "wallets/TokeoLogo.webp",
     "https://tokeo.io/",
-    { Sui: network === Network.MAINNET }
+    { sui: network === Network.MAINNET }
   ),
 };
