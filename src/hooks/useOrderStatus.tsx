@@ -1,12 +1,11 @@
-import { OrderStatus, ParseOrderStatus } from "@gardenfi/core";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useEffect, useMemo } from "react";
-import { blockNumberStore } from "../store/blockNumberStore";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { formatAmount, getAssetFromSwap } from "../utils/utils";
 import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import { Toast } from "../components/toast/Toast";
+import { OrderStatus, ParseOrderStatus } from "@gardenfi/orderbook";
 import { BTC } from "../store/swapStore";
 
 export enum SimplifiedOrderStatus {
@@ -14,19 +13,19 @@ export enum SimplifiedOrderStatus {
   detectingDeposit = "Detecting deposit",
   depositDetected = "Deposit detected",
   depositConfirmed = "Deposit confirmed",
+  awaitingRedeem = "Awaiting redeem",
   redeeming = "Redeeming ",
   redeemed = "Redeemed ",
   swapCompleted = "Swap completed",
-  Refunded = "Refund completed",
-  AwaitingRefund = "Awaiting refund",
-  Expired = "Expired",
+  refunded = "Refund completed",
+  expired = "Expired",
 }
 
 export const STATUS_MAPPING: Record<string, SimplifiedOrderStatus> = {
-  RefundDetected: SimplifiedOrderStatus.Refunded,
-  CounterPartyRefundDetected: SimplifiedOrderStatus.AwaitingRefund,
-  CounterPartyRefunded: SimplifiedOrderStatus.AwaitingRefund,
-  Refunded: SimplifiedOrderStatus.Refunded,
+  RefundDetected: SimplifiedOrderStatus.refunded,
+  Refunded: SimplifiedOrderStatus.refunded,
+  AwaitingRedeem: SimplifiedOrderStatus.awaitingRedeem,
+  Expired: SimplifiedOrderStatus.expired,
 };
 
 type Status = {
@@ -40,7 +39,6 @@ export type OrderProgress = {
 
 export const useOrderStatus = () => {
   const { orderBook } = useGarden();
-  const { fetchAndSetBlockNumbers } = blockNumberStore();
   const { assets } = assetInfoStore();
   const { order: orderInProgress, setOrder } = orderInProgressStore();
   const { pendingOrders } = pendingOrdersStore();
@@ -63,22 +61,6 @@ export const useOrderStatus = () => {
   const orderProgress: OrderProgress | undefined = useMemo(() => {
     switch (orderInProgress?.status) {
       case OrderStatus.Created:
-        return {
-          1: { title: SimplifiedOrderStatus.orderCreated, status: "completed" },
-          2: {
-            title: SimplifiedOrderStatus.detectingDeposit,
-            status: "pending",
-          },
-          3: {
-            title: SimplifiedOrderStatus.redeeming + outputAsset?.symbol,
-            status: "pending",
-          },
-          4: {
-            title: SimplifiedOrderStatus.swapCompleted,
-            status: "pending",
-          },
-        };
-      case OrderStatus.Matched:
         return {
           1: { title: SimplifiedOrderStatus.orderCreated, status: "completed" },
           2: {
@@ -114,6 +96,7 @@ export const useOrderStatus = () => {
           },
         };
       case OrderStatus.Initiated:
+      case OrderStatus.AwaitingRedeem:
         return {
           1: {
             title: SimplifiedOrderStatus.orderCreated,
@@ -130,73 +113,10 @@ export const useOrderStatus = () => {
           4: {
             title: SimplifiedOrderStatus.swapCompleted,
             status: "pending",
-          },
-        };
-      case OrderStatus.CounterPartyInitiateDetected:
-      case OrderStatus.CounterPartyInitiated:
-        return {
-          1: {
-            title: SimplifiedOrderStatus.orderCreated,
-            status: "completed",
-          },
-          2: {
-            title: SimplifiedOrderStatus.depositConfirmed,
-            status: "completed",
-          },
-          3: {
-            title: SimplifiedOrderStatus.redeeming + outputAsset?.symbol,
-            status: "inProgress",
-          },
-          4: {
-            title: SimplifiedOrderStatus.swapCompleted,
-            status: "pending",
-          },
-        };
-      case OrderStatus.CounterPartyRefundDetected:
-      case OrderStatus.CounterPartyRefunded:
-        return {
-          1: {
-            title: SimplifiedOrderStatus.orderCreated,
-            status: "completed",
-          },
-          2: {
-            title: SimplifiedOrderStatus.depositConfirmed,
-            status: "completed",
-          },
-          3: {
-            title: SimplifiedOrderStatus.AwaitingRefund,
-            status: "inProgress",
-          },
-          4: {
-            title: SimplifiedOrderStatus.Refunded,
-            status: "pending",
-          },
-        };
-      case OrderStatus.RefundDetected:
-      case OrderStatus.Refunded:
-        return {
-          1: {
-            title: SimplifiedOrderStatus.orderCreated,
-            status: "completed",
-          },
-          2: {
-            title: SimplifiedOrderStatus.depositConfirmed,
-            status: "completed",
-          },
-          3: {
-            title: SimplifiedOrderStatus.redeeming + outputAsset?.symbol,
-            status: "cancel",
-          },
-          4: {
-            title: SimplifiedOrderStatus.Refunded,
-            status: "completed",
           },
         };
       case OrderStatus.RedeemDetected:
       case OrderStatus.Redeemed:
-      case OrderStatus.CounterPartyRedeemDetected:
-      case OrderStatus.CounterPartyRedeemed:
-      case OrderStatus.Completed:
         if (!orderInProgress.source_swap.refund_tx_hash) {
           return {
             1: {
@@ -231,11 +151,31 @@ export const useOrderStatus = () => {
               status: "cancel",
             },
             4: {
-              title: SimplifiedOrderStatus.Refunded,
+              title: SimplifiedOrderStatus.refunded,
               status: "completed",
             },
           };
         }
+      case OrderStatus.RefundDetected:
+      case OrderStatus.Refunded:
+        return {
+          1: {
+            title: SimplifiedOrderStatus.orderCreated,
+            status: "completed",
+          },
+          2: {
+            title: SimplifiedOrderStatus.depositConfirmed,
+            status: "completed",
+          },
+          3: {
+            title: SimplifiedOrderStatus.redeeming + outputAsset?.symbol,
+            status: "cancel",
+          },
+          4: {
+            title: SimplifiedOrderStatus.refunded,
+            status: "completed",
+          },
+        };
       case OrderStatus.Expired:
         return {
           1: {
@@ -243,7 +183,7 @@ export const useOrderStatus = () => {
             status: "completed",
           },
           2: {
-            title: SimplifiedOrderStatus.Expired,
+            title: SimplifiedOrderStatus.expired,
             status: "cancel",
           },
         };
@@ -258,8 +198,7 @@ export const useOrderStatus = () => {
     // Check if order is in pending orders
     if (pendingOrders.length) {
       const orderFromPending = pendingOrders.find(
-        (o) =>
-          orderInProgress.create_order.create_id === o.create_order.create_id
+        (o) => orderInProgress.order_id === o.order_id
       );
       if (orderFromPending) {
         setOrder(orderFromPending);
@@ -271,9 +210,6 @@ export const useOrderStatus = () => {
     const completedStatuses = [
       OrderStatus.RedeemDetected,
       OrderStatus.Redeemed,
-      OrderStatus.CounterPartyRedeemDetected,
-      OrderStatus.CounterPartyRedeemed,
-      OrderStatus.Completed,
     ];
 
     if (completedStatuses.includes(orderInProgress.status)) return;
@@ -281,22 +217,14 @@ export const useOrderStatus = () => {
     // Fetch order from orderbook
     const fetchOrder = async () => {
       if (!orderBook) return;
-      const blockNumbers = await fetchAndSetBlockNumbers();
-      if (!blockNumbers) return;
-
       const orderFromOrderbook = await orderBook.getOrder(
-        orderInProgress.create_order.create_id,
-        true
+        orderInProgress.order_id
       );
 
       if (!orderFromOrderbook.ok) return;
 
       const o = orderFromOrderbook.val;
-      const status = ParseOrderStatus(
-        o,
-        blockNumbers[o.source_swap.chain],
-        blockNumbers[o.destination_swap.chain]
-      );
+      const status = ParseOrderStatus(o);
 
       setOrder({ ...o, status });
 
@@ -330,14 +258,7 @@ export const useOrderStatus = () => {
     };
 
     fetchOrder();
-  }, [
-    pendingOrders,
-    orderInProgress,
-    setOrder,
-    orderBook,
-    fetchAndSetBlockNumbers,
-    assets,
-  ]);
+  }, [pendingOrders, orderInProgress, setOrder, orderBook, assets]);
 
   return {
     orderProgress,

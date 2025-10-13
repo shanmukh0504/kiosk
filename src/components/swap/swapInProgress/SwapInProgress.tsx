@@ -12,10 +12,9 @@ import { assetInfoStore } from "../../../store/assetInfoStore";
 import QRCode from "react-qr-code";
 import { OrderStatus } from "./OrderStatus";
 import { OrderDetails } from "./OrderDetails";
-import { isBitcoin } from "@gardenfi/orderbook";
+import { isBitcoin, OrderStatus as OrderStatusEnum } from "@gardenfi/orderbook";
 import { CopyToClipboard } from "../../../common/CopyToClipboard";
 import { useOrderStatus } from "../../../hooks/useOrderStatus";
-import { OrderStatus as OrderStatusEnum } from "@gardenfi/core";
 import { API } from "../../../constants/api";
 import orderInProgressStore from "../../../store/orderInProgressStore";
 import { BTC } from "../../../store/swapStore";
@@ -36,9 +35,10 @@ export const SwapInProgress = () => {
           : "",
       inputAsset: order && getAssetFromSwap(order.source_swap, allAssets),
       outputAsset: order && getAssetFromSwap(order.destination_swap, allAssets),
-      btcAddress: order
-        ? order.create_order.additional_data.bitcoin_optional_recipient
-        : "",
+      btcAddress:
+        order && isBitcoin(order?.source_swap.chain)
+          ? order?.source_swap.initiator
+          : order?.destination_swap.redeemer,
     };
   }, [allAssets, order]);
 
@@ -52,17 +52,17 @@ export const SwapInProgress = () => {
 
   const handleClickTransaction = () => {
     if (!order) return;
-    window.open(API().explorer(order.create_order.create_id));
+    window.open(API().explorer(order.order_id));
   };
 
   const handleDeleteOrder = useCallback(() => {
     if (!order) return;
-    addDeletedOrder(order.create_order.create_id);
+    addDeletedOrder(order.order_id);
     goBack();
   }, [order, addDeletedOrder, goBack]);
 
   const showDeleteButton = useMemo(() => {
-    return order?.status === OrderStatusEnum.Matched;
+    return order?.status === OrderStatusEnum.Created;
   }, [order?.status]);
 
   return order ? (
@@ -114,8 +114,7 @@ export const SwapInProgress = () => {
       </div>
       {inputAsset &&
         isBitcoin(inputAsset.chain) &&
-        (order.status === OrderStatusEnum.Matched ||
-          order.status === OrderStatusEnum.Created) && (
+        order.status === OrderStatusEnum.Created && (
           <div className="flex justify-between rounded-2xl bg-white p-4">
             <div className="flex flex-col gap-2">
               <Typography size="h5" weight="medium">

@@ -1,4 +1,5 @@
 import {
+  injected,
   useAccount,
   useConnect,
   useDisconnect,
@@ -18,6 +19,8 @@ export const useStarknetWallet = () => {
   } = useConnect();
   const { disconnectAsync } = useDisconnect();
   const { address, status, account, chainId } = useAccount();
+
+  const xverseConnector = injected({ id: "xverse" });
 
   //for analytics tracking
   useEffect(() => {
@@ -44,7 +47,7 @@ export const useStarknetWallet = () => {
   return {
     starknetConnect,
     starknetConnectAsync,
-    starknetConnectors: connectors,
+    starknetConnectors: [...connectors, xverseConnector],
     starknetConnector: activeConnector,
     starknetDisconnect: disconnectAsync,
     starknetAddress: address,

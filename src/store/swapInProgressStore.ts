@@ -1,11 +1,11 @@
-import { MatchedOrder } from "@gardenfi/orderbook";
+import { Order } from "@gardenfi/orderbook";
 import { create } from "zustand";
 
 type SwapInProgressState = {
   isSwapInProgress: boolean;
-  order: MatchedOrder | null;
-  setSwapInProgress: (isSwapInProgress: boolean, order?: MatchedOrder) => void;
-  setOrder: (order: MatchedOrder) => void;
+  order: Order | null;
+  setSwapInProgress: (isSwapInProgress: boolean, order?: Order) => void;
+  setOrder: (order: Order) => void;
 };
 
 export const swapInProgressStore = create<SwapInProgressState>((set) => ({
