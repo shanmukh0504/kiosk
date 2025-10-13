@@ -66,7 +66,7 @@ export const formatAmount = (
   if (bigAmount.isZero()) return 0;
 
   const value = bigAmount.dividedBy(10 ** decimals);
-  const precision = toFixed ? toFixed : (Number(value) > 10000 ? 2 : 4);
+  const precision = toFixed ? toFixed : Number(value) > 10000 ? 2 : 4;
   let temp = value.toFixed(precision, BigNumber.ROUND_DOWN);
 
   while (
@@ -87,10 +87,10 @@ export const formatAmountUsd = (
   decimals: number
 ) => {
   const num = formatAmount(amount, decimals);
-  return Number(num).toLocaleString('en-US',{
-    maximumFractionDigits: 2
+  return Number(num).toLocaleString("en-US", {
+    maximumFractionDigits: 2,
   });
-}
+};
 
 export const isCurrentRoute = (route: string) =>
   window.location.pathname === route;

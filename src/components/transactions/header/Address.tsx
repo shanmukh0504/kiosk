@@ -1,7 +1,5 @@
-import { FC } from "react";
-import { useState } from "react";
+import { FC, useState, useId } from "react";
 import { Tooltip } from "../../../common/Tooltip";
-import { useId } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { getTrimmedAddress } from "../../../utils/getTrimmedAddress";
 

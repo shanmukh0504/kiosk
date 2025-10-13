@@ -1,14 +1,14 @@
 import { Err, Ok, Void } from "@gardenfi/utils";
 import { Config, Connector } from "wagmi";
-import { Connector as StarknetConnector } from "@starknet-react/core";
-import { ConnectMutateAsync } from "wagmi/query";
-import { STARKNET_CONFIG } from "@gardenfi/core";
-import { network } from "../../../constants/constants";
 import {
+  Connector as StarknetConnector,
   ConnectVariables,
   RequestResult,
   UseSwitchChainArgs,
 } from "@starknet-react/core";
+import { ConnectMutateAsync } from "wagmi/query";
+import { STARKNET_CONFIG } from "@gardenfi/core";
+import { network } from "../../../constants/constants";
 import { UseMutateAsyncFunction } from "@tanstack/react-query";
 
 export const handleEVMConnect = async (

@@ -8,10 +8,12 @@ import { Asset } from "@gardenfi/orderbook";
 import { swapStore } from "../store/swapStore";
 import { parseTime } from "../utils/timeAndFeeComparison/utils";
 import { getTimeEstimates } from "../constants/constants";
-import { ChainflipIcon } from "@gardenfi/garden-book";
-import { RelayLinkIcon } from "@gardenfi/garden-book";
-import { GardenLogo } from "@gardenfi/garden-book";
-import { ThorswapIcon } from "@gardenfi/garden-book";
+import {
+  ChainflipIcon,
+  RelayLinkIcon,
+  GardenLogo,
+  ThorswapIcon,
+} from "@gardenfi/garden-book";
 
 type UseCompetitorTimeFeesProps = {
   isTime: boolean;
@@ -91,7 +93,6 @@ export const useCompetitorTimeFees = ({
         }
       }
     }, 300); // debounce delay
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const gardenFee = useMemo(
