@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
 import { INTERNAL_ROUTES, QUERY_PARAMS, THEMES } from "../constants/constants";
+import { ChainAsset, Swap } from "@gardenfi/orderbook";
 import { Assets } from "../store/assetInfoStore";
-import { Asset, Swap } from "@gardenfi/orderbook";
 
 export const isProduction = () => {
   return import.meta.env.VITE_ENVIRONMENT === "production";
@@ -27,7 +27,12 @@ export const capitalizeChain = (chainKey: string) => {
  * @returns
  */
 export const getAssetFromSwap = (swap: Swap, assets: Assets | null) => {
-  return assets && assets[`${swap.chain}_${swap.asset.toLowerCase()}`];
+  if (!assets) return;
+  return Object.values(assets).find(
+    (asset) =>
+      ChainAsset.from(asset.id).toString() ===
+      ChainAsset.from(swap.asset).toString()
+  );
 };
 
 export const getQueryParams = (urlParams: URLSearchParams) => {
@@ -98,18 +103,26 @@ export const formatBalance = (
   return formatBigNumber(amount, decimals, toFixed);
 };
 
+export const isCurrentRoute = (route: string) => {
+  if (route.includes(":")) {
+    const routePattern = route.replace(/:[^/]+/g, "[^/]+");
+    const regex = new RegExp(`^${routePattern}$`);
+    return regex.test(window.location.pathname);
+  }
+
+  return window.location.pathname === route;
+};
+
 export const formatAmountUsd = (
-  amount: string | number | bigint,
+  amount: string | number | bigint | undefined,
   decimals: number
 ) => {
+  if (!amount) return 0;
   const num = formatAmount(amount, decimals);
   return num.toLocaleString("en-US", {
     maximumFractionDigits: 2,
   });
 };
-
-export const isCurrentRoute = (route: string) =>
-  window.location.pathname === route;
 
 export const clearLocalStorageExcept = (keysToKeep: string[]) => {
   const preservedData: Record<string, string | null> = {};
@@ -152,13 +165,19 @@ export const getAssetFromChainAndSymbol = (
   return assetKey ? assets[assetKey] : undefined;
 };
 
-export const getOrderPair = (
-  chain: string | null,
-  tokenAddress: string | null
-) => (chain && tokenAddress ? `${chain}_${tokenAddress.toLowerCase()}` : "");
+export const getFirstAssetFromChain = (
+  assets: Assets,
+  chain: string | null
+) => {
+  if (!chain) return undefined;
 
-export const getAssetChainHTLCAddressPair = (asset: Asset) =>
-  `${asset.chain}_${asset.atomicSwapAddress.toLowerCase()}`;
+  const assetKey = Object.keys(assets).find((key) => {
+    const asset = assets[key];
+    return asset.chain === chain;
+  });
+
+  return assetKey ? assets[assetKey] : undefined;
+};
 
 export const getProtocolFee = (fees: number) => {
   const protocolBips = 7;

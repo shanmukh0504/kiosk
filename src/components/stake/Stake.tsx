@@ -12,8 +12,9 @@ import { StakePositions } from "./stakePosition/StakePositions";
 import { AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Tooltip } from "../../common/Tooltip";
-import { assetInfoStore } from "../../store/assetInfoStore";
-import { formatAmount, getOrderPair } from "../../utils/utils";
+import { formatAmount } from "../../utils/utils";
+import { balanceStore } from "../../store/balanceStore";
+import { ChainAsset } from "@gardenfi/orderbook";
 
 export const Stake: FC = () => {
   const { isConnected, address } = useEVMWallet();
@@ -29,13 +30,11 @@ export const Stake: FC = () => {
     stakePosData,
     fetchAndSetRewards,
   } = stakeStore();
-  const { balances, fetchAndSetEvmBalances } = assetInfoStore();
+  const { balances, fetchAndSetEvmBalances } = balanceStore();
   const tooltipId = useId();
 
   const balance =
-    balances &&
-    asset &&
-    balances[getOrderPair(asset.chain, asset.tokenAddress)];
+    balances && asset && balances[ChainAsset.from(asset.id).toString()];
   const tokenBalance = useMemo(() => {
     if (balance && asset) {
       return formatAmount(Number(balance), asset.decimals);
@@ -122,7 +121,7 @@ export const Stake: FC = () => {
             </Typography>
             <Typography size="h4" weight="regular" className="!leading-5">
               <Link
-                to="https://docs.garden.finance/home/fundamentals/introduction/stakers"
+                to="https://docs.garden.finance/home/fundamentals/core-concepts/stakers"
                 className="font-medium text-rose"
               >
                 Stake

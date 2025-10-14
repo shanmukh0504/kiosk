@@ -1,25 +1,26 @@
 # syntax=docker/dockerfile:1
-FROM node:22-alpine AS builder
+FROM node:22-bullseye AS builder
 
 WORKDIR /app
 
 # Install ALL build dependencies for native modules (cached layer)
-RUN apk add --no-cache \
-    make \
-    g++ \
+# Install all build dependencies for native modules (Debian-based)
+RUN apt-get update && apt-get install -y \
+    build-essential \
     python3 \
-    py3-pip \
+    python3-pip \
     libusb-dev \
-    libudev-zero-dev \
-    linux-headers \
-    pkgconfig \
-    git
+    libudev-dev \
+    pkg-config \
+    git \
+ && rm -rf /var/lib/apt/lists/*
 
 # Set environment variables for native builds
 ENV PYTHON=/usr/bin/python3
 ENV MAKE=/usr/bin/make
 ENV CC=gcc
 ENV CXX=g++
+
 
 # Enable corepack and set up yarn
 RUN corepack enable && corepack prepare yarn@4.5.1 --activate
@@ -34,7 +35,7 @@ RUN yarn config set nodeLinker node-modules && \
 # Install dependencies with cache mount - this layer only rebuilds if package files change
 RUN --mount=type=cache,target=/usr/local/share/.cache/yarn \
     yarn config set cacheFolder /usr/local/share/.cache/yarn && \
-    yarn install --immutable --inline-builds
+    yarn install 
 
 # Set build args and env vars for Vite
 ARG SKIP_INSTALL_DEPS
@@ -146,12 +147,7 @@ RUN printf 'server {\n\
     gzip_types text/plain text/css application/json application/javascript text/xml application/xml text/javascript;\n\
     \n\
     location / {\n\
-        try_files $uri $uri.html $uri/ /index.html;\n\
-    }\n\
-    \n\
-    error_page 404 = @redirect_to_root;\n\
-    location @redirect_to_root {\n\
-        return 302 /;\n\
+    try_files $uri $uri/ /index.html;\n\
     }\n\
     \n\
     # Cache static assets aggressively\n\

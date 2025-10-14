@@ -1,7 +1,8 @@
 import { create } from "zustand";
+import { Asset, ChainAsset, Chains } from "@gardenfi/orderbook";
 import { IOType, network } from "../constants/constants";
-import { Asset, Chains } from "@gardenfi/orderbook";
 import { ErrorFormat, Errors } from "../constants/errors";
+import { assetInfoStore } from "./assetInfoStore";
 
 export type TokenPrices = {
   input: string;
@@ -27,10 +28,10 @@ type SwapState = {
   outputAmount: string;
   rate: number;
   networkFees: number;
+  fixedFee: number;
   btcAddress: string;
   isSwapping: boolean;
   isApproving: boolean;
-  strategy: string;
   tokenPrices: TokenPrices;
   fiatTokenPrices: TokenPrices;
   error: SwapErrors;
@@ -49,11 +50,11 @@ type SwapState = {
   setTokenPrices: (tokenPrices: TokenPrices) => void;
   setIsSwapping: (isSwapping: boolean) => void;
   setIsApproving: (isApproving: boolean) => void;
-  setStrategy: (strategy: string) => void;
   setAsset: (ioType: IOType, asset: Asset | undefined) => void;
   setAmount: (ioType: IOType, amount: string) => void;
   setRate: (rate: number) => void;
   setNetworkFees: (networkFees: number) => void;
+  setFixedFee: (fixedFee: number) => void;
   setIsNetworkFeesLoading: (isNetworkFeesLoading: boolean) => void;
   setBtcAddress: (btcAddress: string) => void;
   swapAssets: () => void;
@@ -70,14 +71,17 @@ type SwapState = {
   clearSwapInputState: () => void;
 };
 
-export const BTC = {
+export const BTC: Asset = {
   name: "Bitcoin",
   decimals: 8,
   symbol: "BTC",
-  logo: "https://garden.imgix.net/token-images/bitcoin.svg",
-  tokenAddress: "primary",
-  atomicSwapAddress: "primary",
+  icon: "https://garden.imgix.net/token-images/bitcoin.svg",
+  token: null,
+  htlc: null,
   chain: network === "mainnet" ? Chains.bitcoin : Chains.bitcoin_testnet,
+  id: ChainAsset.from(
+    `${network === "mainnet" ? Chains.bitcoin : Chains.bitcoin_testnet}:btc`
+  ),
 };
 
 export const swapStore = create<SwapState>((set) => ({
@@ -86,6 +90,7 @@ export const swapStore = create<SwapState>((set) => ({
   outputAmount: "",
   rate: 0,
   networkFees: 0,
+  fixedFee: 0,
   btcAddress: "",
   isApproving: false,
   isNetworkFeesLoading: false,
@@ -94,7 +99,6 @@ export const swapStore = create<SwapState>((set) => ({
     order: null,
   },
   isSwapping: false,
-  strategy: "",
   tokenPrices: {
     input: "0",
     output: "0",
@@ -149,6 +153,12 @@ export const swapStore = create<SwapState>((set) => ({
       networkFees,
     }));
   },
+  setFixedFee: (fixedFee) => {
+    set((state) => ({
+      ...state,
+      fixedFee,
+    }));
+  },
   setIsNetworkFeesLoading: (isNetworkFeesLoading) => {
     set({ isNetworkFeesLoading });
   },
@@ -169,12 +179,29 @@ export const swapStore = create<SwapState>((set) => ({
         !state.inputAmount || state.inputAmount === "0"
           ? ""
           : state.outputAmount;
+
+      // Get the potentially swapped assets
+      const newInputAsset = state.outputAsset;
+      const newOutputAsset = state.inputAsset;
+
+      // Validate the route after swapping
+      const { isRouteValid } = assetInfoStore.getState();
+      let finalOutputAsset = newOutputAsset;
+
+      if (
+        newInputAsset &&
+        newOutputAsset &&
+        !isRouteValid(newInputAsset, newOutputAsset)
+      ) {
+        finalOutputAsset = undefined;
+      }
+
       return {
         ...state,
-        inputAsset: state.outputAsset,
-        outputAsset: state.inputAsset,
+        inputAsset: newInputAsset,
+        outputAsset: finalOutputAsset,
         inputAmount: newInputAmount,
-        outputAmount: newOutputAmount,
+        outputAmount: finalOutputAsset ? newOutputAmount : "",
         error: {
           ...state.error,
           inputError: Errors.none,
@@ -190,9 +217,6 @@ export const swapStore = create<SwapState>((set) => ({
   },
   setIsEditBTCAddress: (isEditBTCAddress) => {
     set({ isEditBTCAddress });
-  },
-  setStrategy: (strategy) => {
-    set({ strategy });
   },
   setTokenPrices: (tokenPrices) => {
     set({ tokenPrices });
@@ -246,7 +270,6 @@ export const swapStore = create<SwapState>((set) => ({
       inputAsset: BTC,
       isApproving: false,
       isSwapping: false,
-      strategy: "",
       tokenPrices: {
         input: "0",
         output: "0",
@@ -285,7 +308,6 @@ export const swapStore = create<SwapState>((set) => ({
       inputAsset: BTC,
       isSwapping: false,
       isApproving: false,
-      strategy: "",
       tokenPrices: {
         input: "0",
         output: "0",
