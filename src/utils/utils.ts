@@ -187,7 +187,7 @@ export function parseAssetNameSymbol(
   }
 
   let derivedSymbol = "";
-  console.log("assetId", assetId);
+
   if (assetId) {
     try {
       const chainAsset =
