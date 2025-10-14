@@ -553,9 +553,9 @@ export const useSwap = () => {
           return;
         }
         setIsSwapping(false);
-        setOrder({ ...order, status: OrderStatus.Initiated });
+        setOrder({ ...order, status: OrderStatus.Created });
         setIsOpen(true);
-        updateOrder({ ...order, status: OrderStatus.Initiated });
+        updateOrder({ ...order, status: OrderStatus.Created });
         clearSwapState();
         return;
       }
