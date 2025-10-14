@@ -35,12 +35,11 @@ steps:
         from_secret: TESTNET_VITE_REWARD_URL
       VITE_STAKING_URL:
         from_secret: TESTNET_VITE_STAKING_URL
-    # Trigger pipeline on manual trigger on dev/testnet branches
     when:
       event: manual
       branch: [dev, testnet]
     commands:
-      - apk add --no-cache python3 make g++ linux-headers eudev-dev pkgconf
+      - apt-get update && apt-get install -y python3 make g++ pkg-config libudev-dev
       - corepack enable
       - yarn set version 4.5.1
       - yarn install
@@ -66,7 +65,6 @@ steps:
       - yarn dlx wrangler@latest pages publish dist --project-name $CF_PROJECT_NAME --branch $BRANCH
 
   ########### Mainnet Pipeline ###########
-  # Step 1: Build the Vite app (runs on all branches)
   - name: build
     image: node:22-bullseye
     environment:
@@ -92,12 +90,11 @@ steps:
         from_secret: MAINNET_VITE_REWARD_URL
       VITE_STAKING_URL:
         from_secret: MAINNET_VITE_STAKING_URL
-    # Trigger pipeline on manual trigger on main/mainnet branches
     when:
       event: manual
       branch: [main, mainnet]
     commands:
-      - apk add --no-cache python3 make g++ linux-headers eudev-dev pkgconf
+      - apt-get update && apt-get install -y python3 make g++ pkg-config libudev-dev
       - corepack enable
       - yarn set version 4.5.1
       - yarn install
