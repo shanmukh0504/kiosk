@@ -17,9 +17,7 @@
 - Disable Core chain in output-asset on Phantom, Keplr and Leap wallet.
 - Update title to "Swap completed" from "Swap in progress" when swap is completed.
 - Ensure chainRpcs defaults to an empty array if undefined
-- updated output error handling.
-- token balance to handle balance from being converted scientific notation.
-- added delay in balance fetching on mount.
+- Updated output error handling and fixed balance formatting.
 
 ## [1.1.7]
 
