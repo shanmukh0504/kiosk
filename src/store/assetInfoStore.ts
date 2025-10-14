@@ -9,8 +9,8 @@ import {
 } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
-import { generateTokenKey } from "../utils/generateTokenKey";
 import logger from "../utils/logger";
+import { parseAssetNameSymbol } from "../utils/utils";
 
 // Internal Types
 type BaseChainData = {
@@ -52,16 +52,6 @@ function parseChainIdentifier(chainName: string): Chain | null {
     ? (chainName as Chain)
     : null;
 }
-
-// function parseChainId(idString: string): number {
-//   const parts = idString.split(":");
-//   if (parts.length > 1) {
-//     const parsed = parseInt(parts[1], 10);
-//     return isNaN(parsed) ? 0 : parsed;
-//   }
-//   // For non-numeric chains like bitcoin, sui, return 0
-//   return 0;
-// }
 
 function formatChainName(chainName: string): string {
   return chainName
@@ -172,49 +162,29 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
           continue;
         }
 
-        // Parse chain ID from the "id" field (e.g., "evm:84532" -> 84532, "solana:103" -> 103)
-        // const chainId = parseChainId(apiChain.id);
-
         const chainData: ChainData = {
+          ...apiChain,
           name: formatChainName(apiChain.chain),
           chain: chainIdentifier,
-          id: apiChain.id,
-          explorer_url: apiChain.explorer_url,
-          icon: apiChain.icon,
-          confirmation_target: apiChain.confirmation_target,
-          source_timelock: apiChain.source_timelock,
-          destination_timelock: apiChain.destination_timelock,
-          supported_htlc_schemas: apiChain.supported_htlc_schemas,
-          supported_token_schemas: apiChain.supported_token_schemas,
         };
 
         allChains[chainIdentifier] = chainData;
         let totalAssets = 0;
 
         for (const apiAsset of apiChain.assets) {
-          const atomicSwapAddress = apiAsset.htlc?.address || "";
-          const tokenAddress = apiAsset.token?.address || atomicSwapAddress;
+          const tokenKey = ChainAsset.from(apiAsset.id).toString();
 
-          const tokenKey = generateTokenKey(chainIdentifier, tokenAddress);
+          const { name: assetName, symbol: assetSymbol } = parseAssetNameSymbol(
+            apiAsset.name,
+            apiAsset.id
+          );
 
           const Asset: Asset = {
+            ...apiAsset,
             id: ChainAsset.from(apiAsset.id),
             chain: chainIdentifier,
-            htlc: {
-              address: atomicSwapAddress,
-              schema: apiAsset.htlc?.schema || null,
-            },
-            token: {
-              address: tokenAddress,
-              schema: apiAsset.token?.schema || null,
-            },
-            decimals: apiAsset.decimals,
-            name: apiAsset.name,
-            symbol: ChainAsset.from(apiAsset.id).symbol.toUpperCase(), //TODO: apiAsset.symbol
-            icon: apiAsset.icon,
-            price: apiAsset.price,
-            min_amount: apiAsset.min_amount,
-            max_amount: apiAsset.max_amount,
+            name: assetName,
+            symbol: assetSymbol,
           };
 
           allAssets[tokenKey] = Asset;
