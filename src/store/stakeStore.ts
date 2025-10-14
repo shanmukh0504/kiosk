@@ -8,7 +8,7 @@ import {
   STAKING_CHAIN,
   STAKING_CONFIG,
 } from "../components/stake/constants";
-import { formatAmountInNumber } from "../utils/utils";
+import { formatAmount } from "../utils/utils";
 import { CIRCULATING_SEED_SUPPLY } from "../constants/stake";
 
 const SEED: Asset = {
@@ -135,7 +135,7 @@ export const stakeStore = create<StakeStoreState>((set) => ({
               stake.status !== StakePositionStatus.unStaked
             ) {
               acc.totalVotes += stake.votes;
-              acc.totalStakedAmount += formatAmountInNumber(
+              acc.totalStakedAmount += formatAmount(
                 stake.amount,
                 SEED_DECIMALS
               );
@@ -174,7 +174,7 @@ export const stakeStore = create<StakeStoreState>((set) => ({
       const avgLockTime = Math.floor(
         Number(response.data.data.ast) / ETH_BLOCKS_PER_DAY
       );
-      const seedInDecimals = formatAmountInNumber(
+      const seedInDecimals = formatAmount(
         response.data.data.totalStaked,
         SEED_DECIMALS
       );

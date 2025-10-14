@@ -17,7 +17,7 @@ import { ChainsTooltip } from "./ChainsTooltip";
 import { AvailableChainsSidebar } from "./AvailableChainsSidebar";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  formatAmount,
+  formatBalance,
   getAssetChainHTLCAddressPair,
   getOrderPair,
 } from "../../utils/utils";
@@ -435,7 +435,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                               weight="regular"
                               className={`!text-mid-grey`}
                             >
-                              {formatAmount(
+                              {formatBalance(
                                 formattedBalance,
                                 0,
                                 Math.min(asset.decimals, BTC.decimals)

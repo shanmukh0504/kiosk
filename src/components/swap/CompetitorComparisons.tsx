@@ -7,7 +7,7 @@ import {
   formatTimeDiff,
 } from "../../utils/timeAndFeeComparison/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { formatAmountInNumber, formatAmountUsd } from "../../utils/utils";
+import { formatAmount, formatAmountUsd } from "../../utils/utils";
 import BigNumber from "bignumber.js";
 import { useCompetitorTimeFees } from "../../hooks/useCompetitorTimeFees";
 
@@ -96,12 +96,12 @@ export const CompetitorComparisons: FC<CompetitorComparisonsProps> = ({
                 equalSplit={true}
                 sendAsset={inputAsset}
                 receiveAsset={outputAsset}
-                sendAmount={formatAmountInNumber(
+                sendAmount={formatAmount(
                   inputAmountInDecimals,
                   inputAsset.decimals,
                   Math.min(inputAsset.decimals, BTC.decimals)
                 )}
-                receiveAmount={formatAmountInNumber(
+                receiveAmount={formatAmount(
                   outputAmountInDecimals,
                   outputAsset.decimals,
                   Math.min(outputAsset.decimals, BTC.decimals)

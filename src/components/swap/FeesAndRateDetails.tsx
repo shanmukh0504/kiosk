@@ -16,7 +16,7 @@ import { delayedFadeAnimation } from "../../animations/animations";
 import { SwapSavingsAndAddresses } from "./SwapSavingsAndAddresses";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { TooltipWrapper } from "../../common/ToolTipWrapper";
-import { formatAmountInNumber, formatAmountUsd } from "../../utils/utils";
+import { formatAmount, formatAmountUsd } from "../../utils/utils";
 
 const RateDisplay = ({
   inputAsset,
@@ -101,7 +101,7 @@ export const FeesAndRateDetails = () => {
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
   const formattedRate = useMemo(
-    () => formatAmountInNumber(rate, 0, isBitcoinChains ? 7 : 3),
+    () => formatAmount(rate, 0, isBitcoinChains ? 7 : 3),
     [isBitcoinChains, rate]
   );
 

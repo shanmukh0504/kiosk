@@ -29,11 +29,7 @@ import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import BigNumber from "bignumber.js";
 import { useSolanaWallet } from "./useSolanaWallet";
-import {
-  formatAmount,
-  formatAmountInNumber,
-  getOrderPair,
-} from "../utils/utils";
+import { formatAmount, getOrderPair } from "../utils/utils";
 import { useNetworkFees } from "./useNetworkFees";
 import { useSuiWallet } from "./useSuiWallet";
 import logger from "../utils/logger";
@@ -173,12 +169,12 @@ export const useSwap = () => {
     if (!limits) return defaultLimits;
     else
       return {
-        minAmount: formatAmountInNumber(
+        minAmount: formatAmount(
           limits.minAmount,
           inputAsset.decimals,
           inputAsset.decimals
         ),
-        maxAmount: formatAmountInNumber(
+        maxAmount: formatAmount(
           limits.maxAmount,
           inputAsset.decimals,
           inputAsset.decimals

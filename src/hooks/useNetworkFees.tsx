@@ -4,7 +4,7 @@ import {
   calculateBitcoinNetworkFees,
   getSuiNetworkFee,
 } from "../utils/getNetworkFees";
-import { formatAmountInNumber } from "../utils/utils";
+import { formatAmount } from "../utils/utils";
 import { isBitcoin, isSui } from "@gardenfi/orderbook";
 import { assetInfoStore } from "../store/assetInfoStore";
 import { swapStore } from "../store/swapStore";
@@ -80,7 +80,7 @@ export const useNetworkFees = () => {
 
         const [bitcoinFees, suiFees] = await Promise.all(feeCalculations);
         totalFees += bitcoinFees + suiFees;
-        setNetworkFees(formatAmountInNumber(totalFees, 0));
+        setNetworkFees(formatAmount(totalFees, 0));
       } catch (error) {
         logger.error("failed to fetch network fees ❌", error);
         setNetworkFees(0);
