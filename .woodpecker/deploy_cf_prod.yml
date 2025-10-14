@@ -35,6 +35,10 @@ steps:
         from_secret: TESTNET_VITE_REWARD_URL
       VITE_STAKING_URL:
         from_secret: TESTNET_VITE_STAKING_URL
+      VITE_BASE_URL:
+        from_secret: TESTNET_VITE_BASE_URL
+      VITE_API_KEY:
+        from_secret: TESTNET_VITE_API_KEY
     when:
       event: manual
       branch: [dev, testnet]
