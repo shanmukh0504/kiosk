@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { SwapInProgress } from "./swapInProgress/SwapInProgress";
 import { CreateSwap } from "./CreateSwap";
 import { Toast, ToastContainer } from "../toast/Toast";
@@ -8,10 +9,10 @@ import { Order, OrderStatus } from "@gardenfi/orderbook";
 import { getAssetFromSwap } from "../../utils/utils";
 import orderInProgressStore from "../../store/orderInProgressStore";
 import pendingOrdersStore from "../../store/pendingOrdersStore";
-import { useSearchParams } from "react-router-dom";
 import logger from "../../utils/logger";
+
 export const Swap = () => {
-  const [, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const { assets } = assetInfoStore();
   const { garden } = useGarden();
@@ -26,9 +27,9 @@ export const Swap = () => {
 
   useEffect(() => {
     if (isOpen) {
-      setSearchParams({});
+      navigate("/", { replace: true });
     }
-  }, [isOpen, setSearchParams]);
+  }, [isOpen, navigate]);
 
   useEffect(() => {
     if (!garden) return;
