@@ -4,7 +4,7 @@
 
 ### Added
 
-- Added starknet support for Xverse wallet. 
+- Added starknet support for Xverse wallet.
 - Redirect link to mempool transaction hash when deposit is not confirmed.
 - Added starknet support for Xverse wallet.
 - Implemented Swap bridge functionality.
@@ -16,6 +16,7 @@
 - Fixed the link redirecting to staking docs.
 - Disable Core chain in output-asset on Phantom, Keplr and Leap wallet.
 - Update title to "Swap completed" from "Swap in progress" when swap is completed.
+- Ensure chainRpcs defaults to an empty array if undefined
 
 ## [1.1.7]
 
