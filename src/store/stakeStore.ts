@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { Asset } from "@gardenfi/orderbook";
 import { API } from "../constants/api";
 import axios from "axios";
 import {
@@ -10,14 +9,24 @@ import {
 } from "../components/stake/constants";
 import { formatAmount } from "../utils/utils";
 import { CIRCULATING_SEED_SUPPLY } from "../constants/stake";
+import { Asset, ChainAsset } from "@gardenfi/orderbook";
 
 const SEED: Asset = {
+  id: ChainAsset.from(
+    `${STAKING_CONFIG[STAKING_CHAIN].CHAIN}:${STAKING_CONFIG[STAKING_CHAIN].SEED_SYMBOL}`
+  ),
   name: "Seed",
   decimals: 18,
-  symbol: "SEED",
-  logo: "https://garden-finance.imgix.net/token-images/seed.svg",
-  tokenAddress: STAKING_CONFIG[STAKING_CHAIN].SEED_ADDRESS,
-  atomicSwapAddress: "",
+  symbol: STAKING_CONFIG[STAKING_CHAIN].SEED_SYMBOL,
+  icon: "https://garden-finance.imgix.net/token-images/seed.svg",
+  token: {
+    address: STAKING_CONFIG[STAKING_CHAIN].SEED_ADDRESS,
+    schema: "evm:htlc_erc20",
+  },
+  htlc: {
+    address: "",
+    schema: "evm:erc20",
+  },
   chain: STAKING_CONFIG[STAKING_CHAIN].CHAIN,
 };
 

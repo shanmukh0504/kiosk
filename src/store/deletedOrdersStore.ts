@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { OrderStatus, OrderWithStatus } from "@gardenfi/core";
+import { OrderWithStatus } from "@gardenfi/core";
+import { OrderStatus } from "@gardenfi/orderbook";
 
 type DeletedOrderEntry = {
   orderId: string;
@@ -35,14 +36,14 @@ export const deletedOrdersStore = create<DeletedOrdersState>()(
 
       cleanupDeletedOrders: (pendingOrders: OrderWithStatus[]) => {
         const pendingOrdersMap = new Map(
-          pendingOrders.map((order) => [order.create_order.create_id, order])
+          pendingOrders.map((order) => [order.order_id, order])
         );
 
         const validDeletedOrders = get().deletedOrders.filter((entry) => {
           const orderId = entry.orderId;
           const orderInPending = pendingOrdersMap.get(orderId.toLowerCase());
           return (
-            orderInPending && orderInPending.status === OrderStatus.Matched
+            orderInPending && orderInPending.status === OrderStatus.Created
           );
         });
 

@@ -5,15 +5,16 @@ import {
 } from "@gardenfi/garden-book";
 import { useState, FC, useMemo } from "react";
 import { getTrimmedAddress } from "../../../utils/getTrimmedAddress";
-import { isBitcoin, MatchedOrder } from "@gardenfi/orderbook";
+import { isBitcoin, Order } from "@gardenfi/orderbook";
 import BigNumber from "bignumber.js";
 import { getAssetFromSwap, formatAmount } from "../../../utils/utils";
 import { assetInfoStore } from "../../../store/assetInfoStore";
 import { CopyToClipboard } from "../../../common/CopyToClipboard";
 import { Url } from "@gardenfi/utils";
+import { BTC } from "../../../store/swapStore";
 
 type OrderDetailsProps = {
-  order: MatchedOrder;
+  order: Order;
 };
 
 type OrderDetailsRowProps = {
@@ -66,9 +67,10 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
           : "",
       inputAsset: order && getAssetFromSwap(order.source_swap, allAssets),
       outputAsset: order && getAssetFromSwap(order.destination_swap, allAssets),
-      btcAddress: order
-        ? order.create_order.additional_data.bitcoin_optional_recipient
-        : "",
+      btcAddress:
+        order && isBitcoin(order?.source_swap.chain)
+          ? order.source_swap.initiator
+          : order?.destination_swap.redeemer,
     };
   }, [allAssets, order]);
 
@@ -82,9 +84,17 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
     allChains &&
     chain &&
     allChains[chain] &&
-    new Url("address", allChains[chain].explorer.toString());
+    allChains[chain].explorer_url &&
+    new Url("address", allChains[chain].explorer_url.toString());
 
   const link = baseUrl && btcAddress && baseUrl.endpoint(btcAddress);
+
+  const getDecimalPlaces = (num: string) => {
+    if (num.includes(".")) {
+      return num.split(".")[1].length;
+    }
+    return 0;
+  };
 
   const { inputAmountPrice, outputAmountPrice, amountToFill, filledAmount } =
     useMemo(() => {
@@ -92,28 +102,34 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
         inputAmountPrice: order
           ? new BigNumber(order.source_swap.amount)
               .dividedBy(10 ** (inputAsset?.decimals ?? 0))
-              .multipliedBy(
-                order.create_order.additional_data.input_token_price
-              )
+              .multipliedBy(order.source_swap.asset_price)
           : new BigNumber(0),
         outputAmountPrice: order
           ? new BigNumber(order.destination_swap.amount)
               .dividedBy(10 ** (outputAsset?.decimals ?? 0))
-              .multipliedBy(
-                order.create_order.additional_data.output_token_price
-              )
+              .multipliedBy(order.destination_swap.asset_price)
           : new BigNumber(0),
         amountToFill: order
-          ? formatAmount(order.source_swap.amount, inputAsset?.decimals ?? 0)
+          ? formatAmount(
+              order.source_swap.amount,
+              inputAsset?.decimals ?? 0,
+              isBitcoin(order.source_swap.chain) ? BTC.decimals : undefined
+            )
           : 0,
         filledAmount: order
           ? formatAmount(
               order.source_swap.filled_amount,
-              inputAsset?.decimals ?? 0
+              inputAsset?.decimals ?? 0,
+              isBitcoin(order.source_swap.chain) ? BTC.decimals : undefined
             )
           : 0,
       };
     }, [inputAsset, order, outputAsset]);
+
+  const formattedFilledAmount =
+    filledAmount === 0
+      ? filledAmount.toFixed(getDecimalPlaces(amountToFill.toString()))
+      : filledAmount;
 
   const fees = BigNumber.maximum(
     inputAmountPrice.minus(outputAmountPrice),
@@ -148,12 +164,12 @@ export const OrderDetails: FC<OrderDetailsProps> = ({ order }) => {
           <OrderDetailsRow title="Fee" value={`$${fees}`} />
           <OrderDetailsRow
             title="Amount"
-            value={`${filledAmount} / ${amountToFill} ${inputAsset?.symbol}`}
+            value={`${formattedFilledAmount} / ${amountToFill} ${inputAsset?.symbol}`}
           />
           <OrderDetailsRow
             title="Order ID"
-            value={getTrimmedAddress(order.create_order.create_id)}
-            copyString={order.create_order.create_id}
+            value={getTrimmedAddress(order.order_id)}
+            copyString={order.order_id}
           />
           {inputAsset && btcAddress && link && (
             <OrderDetailsRow

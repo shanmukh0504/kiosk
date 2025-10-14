@@ -4,13 +4,20 @@
 
 ### Added
 
-- Added starknet support for Xverse wallet. 
+- Added starknet support for Xverse wallet.
+- Redirect link to mempool transaction hash when deposit is not confirmed.
+- Added starknet support for Xverse wallet.
+- Implemented Swap bridge functionality.
 
 ### Fixed
 
 - Update toast for successful swap and add abort controller to fetch assets function.
 - Update the coinbase wallet id.
 - Fixed the link redirecting to staking docs.
+- Disable Core chain in output-asset on Phantom, Keplr and Leap wallet.
+- Update title to "Swap completed" from "Swap in progress" when swap is completed.
+- Ensure chainRpcs defaults to an empty array if undefined.
+- Display mempool redirect on deposit detected only on initiate tx hash.
 
 ## [1.1.7]
 
@@ -32,6 +39,7 @@
 - Updated balance retrieval function to use fallback RPC clients as default instead of default wallet RPCs.
 - Rate conversion and display estimated token price for inputAsset.
 - Fixed fiat token prices.
+- Add Tokeo wallet support for SUI Mainnet
 
 ## [1.1.4]
 

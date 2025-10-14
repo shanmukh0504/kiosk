@@ -2,13 +2,14 @@ import { Typography } from "@gardenfi/garden-book";
 import pendingOrdersStore from "../../store/pendingOrdersStore";
 import { TransactionRow } from "./TransactionRow";
 import { useGarden } from "@gardenfi/react-hooks";
-import { OrderStatus, OrderWithStatus } from "@gardenfi/core";
+import { OrderWithStatus } from "@gardenfi/core";
 import {
   isBitcoin,
   isEVM,
   isSolana,
   isSui,
   isStarknet,
+  OrderStatus,
 } from "@gardenfi/orderbook";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import logger from "../../utils/logger";
@@ -19,11 +20,11 @@ export const PendingTransactions = () => {
   const { provider } = useBitcoinWallet();
 
   const handlePendingTransactionsClick = async (order: OrderWithStatus) => {
-    if (!garden || !garden.evmHTLC) return;
-    if (order.status !== OrderStatus.Matched) return;
+    if (!garden || !garden.htlcs.evm) return;
+    if (order.status !== OrderStatus.Created) return;
     let txHash;
     if (isEVM(order.source_swap.chain)) {
-      const tx = await garden.evmHTLC.initiate(order);
+      const tx = await garden.htlcs.evm.initiate(order);
       if (!tx.ok) {
         logger.error("failed to send evm ❌", tx.error);
         return;
@@ -40,33 +41,33 @@ export const PendingTransactions = () => {
       }
       txHash = bitcoinRes.val;
     } else if (isSolana(order.source_swap.chain)) {
-      if (!garden.solanaHTLC) {
+      if (!garden.htlcs.solana) {
         logger.error("Solana HTLC not available");
         return;
       }
-      const tx = await garden.solanaHTLC.initiate(order);
+      const tx = await garden.htlcs.solana.initiate(order);
       if (!tx.ok) {
         logger.error("failed to send solana ❌", tx.error);
         return;
       }
       txHash = tx.val;
     } else if (isSui(order.source_swap.chain)) {
-      if (!garden.suiHTLC) {
+      if (!garden.htlcs.sui) {
         console.error("Sui HTLC not available");
         return;
       }
-      const tx = await garden.suiHTLC.initiate(order);
+      const tx = await garden.htlcs.sui.initiate(order);
       if (!tx.ok) {
         console.error(tx.error);
         return;
       }
       txHash = tx.val;
     } else if (isStarknet(order.source_swap.chain)) {
-      if (!garden.starknetHTLC) {
+      if (!garden.htlcs.starknet) {
         console.error("Starknet HTLC not available");
         return;
       }
-      const tx = await garden.starknetHTLC.initiate(order);
+      const tx = await garden.htlcs.starknet.initiate(order);
       if (!tx.ok) {
         console.error(tx.error);
         return;
