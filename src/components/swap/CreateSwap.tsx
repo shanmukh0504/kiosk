@@ -237,12 +237,7 @@ export const CreateSwap = () => {
 
   useEffect(() => {
     if (!assets) return;
-    const timeout = setTimeout(() => {
-      fetchAllBalances();
-    }, 2000);
-    return () => {
-      clearTimeout(timeout);
-    };
+    fetchAllBalances();
   }, [assets, fetchAllBalances]);
 
   useEffect(() => {
