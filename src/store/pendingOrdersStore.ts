@@ -1,6 +1,7 @@
 import { OrderWithStatus } from "@gardenfi/core";
 import { create } from "zustand";
 import { getLatestUpdatedOrder } from "../utils/getLatestUpdatedOrder";
+import { sortPendingOrders } from "../utils/utils";
 
 type PendingOrdersStoreState = {
   pendingOrders: OrderWithStatus[];
@@ -17,11 +18,7 @@ const pendingOrdersStore = create<PendingOrdersStoreState>((set, get) => ({
       if (!order) return o;
       return getLatestUpdatedOrder(o, order);
     });
-    const sorted = [...newOrders].sort((a, b) => {
-      const aTime = new Date(a.created_at).getTime();
-      const bTime = new Date(b.created_at).getTime();
-      return bTime - aTime;
-    });
+    const sorted = sortPendingOrders([...newOrders]);
     set({ pendingOrders: sorted });
   },
   updateOrder: (order) => {
@@ -32,11 +29,7 @@ const pendingOrdersStore = create<PendingOrdersStoreState>((set, get) => ({
     const updated = pendingOrders.map((o) =>
       o.order_id === order.order_id ? newOrder : o
     );
-    const sorted = updated.sort((a, b) => {
-      const aTime = new Date(a.created_at).getTime();
-      const bTime = new Date(b.created_at).getTime();
-      return bTime - aTime;
-    });
+    const sorted = sortPendingOrders(updated);
     set({ pendingOrders: sorted });
   },
 }));

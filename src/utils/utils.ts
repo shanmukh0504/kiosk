@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { INTERNAL_ROUTES, QUERY_PARAMS, THEMES } from "../constants/constants";
-import { ChainAsset, Swap } from "@gardenfi/orderbook";
+import { ChainAsset, OrderWithStatus, Swap } from "@gardenfi/orderbook";
 import { Assets } from "../store/assetInfoStore";
 
 export const isProduction = () => {
@@ -199,4 +199,12 @@ export function parseAssetNameSymbol(
   }
 
   return { name: raw, symbol: derivedSymbol || fallbackSymbol?.trim() || "" };
+}
+
+export function sortPendingOrders(orders: OrderWithStatus[]) {
+  return orders.sort((a, b) => {
+    const aTime = new Date(a.created_at).getTime();
+    const bTime = new Date(b.created_at).getTime();
+    return bTime - aTime;
+  });
 }
