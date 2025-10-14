@@ -1,15 +1,15 @@
 import { FC, useState } from "react";
-import { stakeStore, StakeType } from "../../store/stakeStore";
+import { stakeStore } from "../../store/stakeStore";
 import { StakeOverview } from "./StakeOverview";
 import { ToastContainer } from "../toast/Toast";
 import { StakePositions } from "./stakePosition/StakePositions";
 import { AnimatePresence, motion } from "framer-motion";
 import { StakeComponent } from "./StakeComponent";
-import { GardenPass } from "./shared/GardenPass";
+// import { GardenPass } from "./shared/GardenPass";
 import { StakeRewards } from "./StakeRewards";
 
 export const Stake: FC = () => {
-  const { stakePosData, stakeType } = stakeStore();
+  const { stakePosData } = stakeStore();
   const [showDetails, setShowDetails] = useState(false);
 
   return (
@@ -17,9 +17,9 @@ export const Stake: FC = () => {
       <div className="mx-auto mt-10 flex flex-col gap-6">
         <ToastContainer className="sm:translate-y-0" />
         <div className="flex h-full w-full flex-col items-center md:flex-row">
-          <AnimatePresence mode="wait">
+          {/* <AnimatePresence mode="wait">
             {stakeType === StakeType.GARDEN_PASS && <GardenPass />}
-          </AnimatePresence>
+          </AnimatePresence> */}
           <StakeComponent />
         </div>
       </div>

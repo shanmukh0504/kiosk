@@ -1,59 +1,59 @@
-import { motion } from "framer-motion";
-import {
-  gardenPassContainerVariants,
-  gardenPassContentVariants,
-  springTransition,
-} from "../../../animations/animations";
-// import { ArrowNorthEastIcon, Button } from "@gardenfi/garden-book";
-import { viewPortStore } from "../../../store/viewPortStore";
-import { HoloCard } from "../../../common/HoloCard";
+// import { motion } from "framer-motion";
+// import {
+//   gardenPassContainerVariants,
+//   gardenPassContentVariants,
+//   springTransition,
+// } from "../../../animations/animations";
+// // import { ArrowNorthEastIcon, Button } from "@gardenfi/garden-book";
+// import { viewPortStore } from "../../../store/viewPortStore";
+// import { HoloCard } from "../../../common/HoloCard";
 
-export const GardenPass = () => {
-  const { isMobile, isSmallTab } = viewPortStore();
+// export const GardenPass = () => {
+//   const { isMobile, isSmallTab } = viewPortStore();
 
-  return (
-    !isMobile &&
-    !isSmallTab && (
-      <motion.div
-        variants={gardenPassContainerVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        transition={springTransition}
-        className="relative z-0 flex max-h-[384px] min-h-[384px] items-center justify-start"
-      >
-        <motion.div
-          variants={gardenPassContentVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-        >
-          <HoloCard
-            url={"/NewNft.png"}
-            overlay={"/NftOverlay.png"}
-            holoOverlay="/HoloOverlay.png"
-            height={384}
-            width={264}
-            showSparkles={false}
-          />
-        </motion.div>
-        {/* <div className="h-[360px] w-[240px] rounded-xl transition-all duration-300 ease-in-out group-hover:h-[300px]">
-            <img
-              src="https://garden-finance.imgix.net/garden_pass.png"
-              alt="Garden Pass"
-              className="h-full w-full rounded-xl object-cover object-top transition-all duration-300 ease-in-out"
-            />
-          </div>
-          <div className="w-full cursor-pointer opacity-0 transition-all duration-300 ease-in-out group-hover:opacity-100">
-            <Button
-              className="!font-regular w-full !bg-white !py-3 !text-rose"
-              size="lg"
-            >
-              <span>View at OpenSea</span>
-              <ArrowNorthEastIcon className="h-3 w-3 fill-rose" />
-            </Button>
-          </div> */}
-      </motion.div>
-    )
-  );
-};
+//   return (
+//     !isMobile &&
+//     !isSmallTab && (
+//       <motion.div
+//         variants={gardenPassContainerVariants}
+//         initial="initial"
+//         animate="animate"
+//         exit="exit"
+//         transition={springTransition}
+//         className="relative z-0 flex max-h-[384px] min-h-[384px] items-center justify-start"
+//       >
+//         <motion.div
+//           variants={gardenPassContentVariants}
+//           initial="initial"
+//           animate="animate"
+//           exit="exit"
+//         >
+//           <HoloCard
+//             url={"/NewNft.png"}
+//             overlay={"/NftOverlay.png"}
+//             holoOverlay="/HoloOverlay.png"
+//             height={384}
+//             width={264}
+//             showSparkles={false}
+//           />
+//         </motion.div>
+//         {/* <div className="h-[360px] w-[240px] rounded-xl transition-all duration-300 ease-in-out group-hover:h-[300px]">
+//             <img
+//               src="https://garden-finance.imgix.net/garden_pass.png"
+//               alt="Garden Pass"
+//               className="h-full w-full rounded-xl object-cover object-top transition-all duration-300 ease-in-out"
+//             />
+//           </div>
+//           <div className="w-full cursor-pointer opacity-0 transition-all duration-300 ease-in-out group-hover:opacity-100">
+//             <Button
+//               className="!font-regular w-full !bg-white !py-3 !text-rose"
+//               size="lg"
+//             >
+//               <span>View at OpenSea</span>
+//               <ArrowNorthEastIcon className="h-3 w-3 fill-rose" />
+//             </Button>
+//           </div> */}
+//       </motion.div>
+//     )
+//   );
+// };

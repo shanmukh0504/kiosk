@@ -36,7 +36,7 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
       >
         <div className="flex items-center gap-2">
           <div className="flex h-5 w-5 items-center justify-center">
-            <GardenIconOutline className="text-dark-grey" />
+            <GardenIconOutline className="fill-dark-grey" />
           </div>
           <Typography
             size="h4"

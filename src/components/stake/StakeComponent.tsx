@@ -1,8 +1,11 @@
 import {
   ArrowNorthEastIcon,
-  BottomSheet,
   Button,
+  DollarChipIcon,
+  GiftBoxIcon,
+  HorizontalSwap,
   InfoIcon,
+  RaiseHandIcon,
   Typography,
 } from "@gardenfi/garden-book";
 import { Switch } from "../../common/Switch";
@@ -11,7 +14,7 @@ import { StakeInput } from "./StakeInput";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { stakeStore, StakeType } from "../../store/stakeStore";
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo } from "react";
 import { Tooltip } from "../../common/Tooltip";
 import { MIN_STAKE_AMOUNT } from "../../constants/stake";
 import { GardenPassVotes, SEED_FOR_MINTING_NFT } from "./constants";
@@ -20,14 +23,13 @@ import { fadeAnimation } from "../../animations/animations";
 import { useStake } from "../../hooks/useStake";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { formatAmount, getOrderPair } from "../../utils/utils";
-import { NftBottomSheet } from "./shared/NftBottomSheet";
 
 export const StakeComponent = () => {
-  const [isNftOpen, setIsNftOpen] = useState(false);
+  // const [isNftOpen, setIsNftOpen] = useState(false);
 
-  const handleNftOpenChange = (open: boolean) => {
-    setIsNftOpen(open);
-  };
+  // const handleNftOpenChange = (open: boolean) => {
+  //   setIsNftOpen(open);
+  // };
 
   const { isConnected, address } = useEVMWallet();
   const { setOpenModal } = modalStore();
@@ -200,9 +202,9 @@ export const StakeComponent = () => {
                     Gardener Pass.
                   </span>{" "}
                   <span
-                    onClick={() => {
-                      setIsNftOpen(true);
-                    }}
+                    // onClick={() => {
+                    //   setIsNftOpen(true);
+                    // }}
                     className="inline-flex cursor-pointer items-center justify-start gap-1 text-rose md:hidden"
                   >
                     Gardener Pass.
@@ -274,7 +276,7 @@ export const StakeComponent = () => {
               {...fadeAnimation}
             >
               <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 py-1 sm:flex-row sm:py-2 md:items-center">
-                <InfoIcon className="h-4 !text-rose" />
+                <GiftBoxIcon className="h-4 !text-rose" />
                 <Typography
                   size="h6"
                   breakpoints={{ sm: "h5" }}
@@ -284,7 +286,7 @@ export const StakeComponent = () => {
                 </Typography>
               </div>
               <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 py-1 sm:flex-row sm:py-2 md:items-center">
-                <InfoIcon className="h-4 !text-rose" />
+                <DollarChipIcon className="h-4 !text-rose" />
                 <Typography
                   size="h6"
                   breakpoints={{ sm: "h5" }}
@@ -294,7 +296,7 @@ export const StakeComponent = () => {
                 </Typography>
               </div>
               <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 py-1 sm:flex-row sm:py-2 md:items-center">
-                <InfoIcon className="h-4 !text-rose" />
+                <HorizontalSwap className="h-4 !text-rose" />
                 <Typography
                   size="h6"
                   breakpoints={{ sm: "h5" }}
@@ -304,7 +306,7 @@ export const StakeComponent = () => {
                 </Typography>
               </div>
               <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 py-1 sm:flex-row sm:py-2 md:items-center">
-                <InfoIcon className="h-4 !text-rose" />
+                <RaiseHandIcon className="h-4 !text-rose" />
                 <Typography
                   size="h6"
                   breakpoints={{ sm: "h5" }}
@@ -343,9 +345,9 @@ export const StakeComponent = () => {
           multiline={true}
         />
       </div>
-      <BottomSheet open={isNftOpen} onOpenChange={handleNftOpenChange}>
+      {/* <BottomSheet open={isNftOpen} onOpenChange={handleNftOpenChange}>
         <NftBottomSheet />
-      </BottomSheet>
+      </BottomSheet> */}
     </div>
   );
 };

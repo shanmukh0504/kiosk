@@ -1,4 +1,9 @@
-import { Button, InfoIcon, NFTIcon, Typography } from "@gardenfi/garden-book";
+import {
+  Button,
+  NFTIcon,
+  RowInfoIcon,
+  Typography,
+} from "@gardenfi/garden-book";
 import { FC, useRef, useState, useEffect } from "react";
 import {
   StakePositionStatus,
@@ -304,7 +309,7 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
       >
         <div className="relative">
           <span ref={menuRef} className="inline-block cursor-pointer">
-            <InfoIcon className="h-4 w-4 p-[1px]" />
+            <RowInfoIcon className="h-4 w-4 p-[1px]" />
           </span>
           {isMenuOpen && (
             <TooltipWrapper
