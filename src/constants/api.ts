@@ -48,7 +48,7 @@ export const API = () => {
           .endpoint(address.toLowerCase()),
       stakingStats: new Url(REQUIRED_ENV_VARS.STAKING_URL)
         .endpoint("stake")
-        .endpoint("stakingStats"),
+        .endpoint("staking-stats"),
       accumulatedReward: (userId: string) =>
         new Url(REQUIRED_ENV_VARS.STAKING_URL)
           .endpoint("rewards")
