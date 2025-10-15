@@ -37,7 +37,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
 
   const handleAddressRedirect = (address: string) => {
     if (!redirect) return;
-    const url = new Url("address", redirect.explorer).endpoint(address);
+    const url = new Url("address", redirect.explorer_url).endpoint(address);
     window.open(url, "_blank");
   };
 

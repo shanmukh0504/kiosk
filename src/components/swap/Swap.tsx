@@ -1,54 +1,46 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { SwapInProgress } from "./swapInProgress/SwapInProgress";
 import { CreateSwap } from "./CreateSwap";
 import { Toast, ToastContainer } from "../toast/Toast";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { useGarden } from "@gardenfi/react-hooks";
-import { MatchedOrder } from "@gardenfi/orderbook";
+import { Order, OrderStatus } from "@gardenfi/orderbook";
 import { getAssetFromSwap } from "../../utils/utils";
-import { OrderActions, OrderStatus } from "@gardenfi/core";
 import orderInProgressStore from "../../store/orderInProgressStore";
 import pendingOrdersStore from "../../store/pendingOrdersStore";
-import { useSearchParams } from "react-router-dom";
 import logger from "../../utils/logger";
-export const Swap = () => {
-  const [, setSearchParams] = useSearchParams();
 
-  const { fetchAndSetStrategies, assets } = assetInfoStore();
+export const Swap = () => {
+  const navigate = useNavigate();
+
+  const { assets } = assetInfoStore();
   const { garden } = useGarden();
   const { order, isOpen } = orderInProgressStore();
   const { updateOrder } = pendingOrdersStore();
 
-  useEffect(() => {
-    fetchAndSetStrategies();
-  }, [fetchAndSetStrategies]);
-
-  const handleErrorLog = (order: MatchedOrder, error: string) =>
-    console.error("garden error", order.create_order.create_id, error);
+  const handleErrorLog = (order: Order, error: string) =>
+    console.error("garden error", order.order_id, error);
 
   const handleLog = (orderId: string, log: string) =>
     logger.log("garden log", { orderId, log });
 
   useEffect(() => {
     if (isOpen) {
-      setSearchParams({});
+      navigate("/", { replace: true });
     }
-  }, [isOpen, setSearchParams]);
+  }, [isOpen, navigate]);
 
   useEffect(() => {
     if (!garden) return;
 
-    const handleSuccess = (
-      order: MatchedOrder,
-      _: OrderActions,
-      result: string
-    ) => {
+    const handleSuccess = (order: Order, result: string) => {
       const { source_swap, destination_swap } = order;
       const inputAsset = getAssetFromSwap(source_swap, assets);
       const outputAsset = getAssetFromSwap(destination_swap, assets);
       if (!inputAsset || !outputAsset) return;
 
-      logger.log("order success ✅", order.create_order.create_id);
+      logger.log("order success ✅", order.order_id);
 
       const updatedOrder = {
         ...order,

@@ -8,6 +8,7 @@ import {
   RaiseHandIcon,
   Typography,
 } from "@gardenfi/garden-book";
+import { ChainAsset } from "@gardenfi/orderbook";
 import { Switch } from "../../common/Switch";
 import { StakeStats } from "./shared/StakeStats";
 import { StakeInput } from "./StakeInput";
@@ -21,8 +22,8 @@ import { GardenPassVotes, SEED_FOR_MINTING_NFT } from "./constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { fadeAnimation } from "../../animations/animations";
 import { useStake } from "../../hooks/useStake";
-import { assetInfoStore } from "../../store/assetInfoStore";
-import { formatAmount, getOrderPair } from "../../utils/utils";
+import { formatAmount } from "../../utils/utils";
+import { balanceStore } from "../../store/balanceStore";
 
 export const StakeComponent = () => {
   // const [isNftOpen, setIsNftOpen] = useState(false);
@@ -47,13 +48,11 @@ export const StakeComponent = () => {
     setStakeType,
   } = stakeStore();
   const { handleStake, loading } = useStake();
-  const { balances, fetchAndSetEvmBalances } = assetInfoStore();
+  const { balances, fetchAndSetEvmBalances } = balanceStore();
   const tooltipId = useId();
 
   const balance =
-    balances &&
-    asset &&
-    balances[getOrderPair(asset.chain, asset.tokenAddress)];
+    balances && asset && balances[ChainAsset.from(asset.id).toString()];
 
   const tokenBalance = useMemo(() => {
     if (balance && asset) {

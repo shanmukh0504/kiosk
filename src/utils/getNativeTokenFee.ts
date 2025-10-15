@@ -1,9 +1,9 @@
 import { createPublicClient, http } from "viem";
-import { EvmChain } from "@gardenfi/orderbook";
+import { EVMChains } from "@gardenfi/orderbook";
 import { evmToViemChainMap } from "@gardenfi/core";
 
 export const getLegacyGasEstimate = async (
-  chain: EvmChain,
+  chain: EVMChains,
   address: `0x${string}`,
   contractAddress: `0x${string}`
 ): Promise<{ gasLimit: bigint; gasPrice: bigint; gasCost: bigint } | null> => {

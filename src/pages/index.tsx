@@ -11,18 +11,18 @@ import { StakePage } from "./stake";
 import { GardenProvider } from "@gardenfi/react-hooks";
 import { useWalletClient } from "wagmi";
 import { useAccount } from "@starknet-react/core";
-import { Environment as GardenEnvironment } from "@gardenfi/utils";
+import { Network } from "@gardenfi/utils";
 import { useSolanaWallet } from "../hooks/useSolanaWallet";
 import { useSuiWallet } from "../hooks/useSuiWallet";
 import { useEffect } from "react";
-import { assetInfoStore } from "../store/assetInfoStore";
+import { balanceStore } from "../store/balanceStore";
 
 function App() {
   const { data: walletClient } = useWalletClient();
   const { account: starknetWallet } = useAccount();
   const { solanaAnchorProvider } = useSolanaWallet();
   const { suiSelectedWallet } = useSuiWallet();
-  const { fetchAndSetRPCs } = assetInfoStore();
+  const { fetchAndSetRPCs } = balanceStore();
 
   useEffect(() => {
     fetchAndSetRPCs();
@@ -34,17 +34,11 @@ function App() {
         environment:
           environment === Environment.Staging
             ? {
-                environment: GardenEnvironment.TESTNET,
-                orderbook: import.meta.env.VITE_ORDERBOOK_URL,
-                auth: import.meta.env.VITE_AUTH_URL,
-                quote: import.meta.env.VITE_QUOTE_URL,
-                info: import.meta.env.VITE_INFO_URL,
-                evmRelay: import.meta.env.VITE_RELAYER_URL,
-                starknetRelay: import.meta.env.VITE_STARKNET_URL,
-                solanaRelay: import.meta.env.VITE_SOLANA_URL,
-                suiRelay: import.meta.env.VITE_SUI_RELAY_URL,
+                network: Network.TESTNET,
+                baseurl: import.meta.env.VITE_BASE_URL,
               }
-            : (network as unknown as GardenEnvironment),
+            : (network as unknown as Network),
+        apiKey: import.meta.env.VITE_API_KEY,
         wallets: {
           evm: walletClient,
           starknet: starknetWallet,
@@ -56,7 +50,8 @@ function App() {
           spl: import.meta.env.VITE_SOLANA_PROGRAM_ADDRESS_SPL,
         },
       }}
-      handleSecretManagement={false}
+      setRedeemServiceEnabled={true}
+      store={localStorage}
     >
       <Layout>
         <Routes>

@@ -3,24 +3,24 @@ import { network } from "../../../constants/constants";
 import { BlockchainType } from "@gardenfi/orderbook";
 
 export const ecosystems = {
-  [BlockchainType.Bitcoin]: {
-    name: "Bitcoin",
+  [BlockchainType.bitcoin]: {
+    name: "bitcoin",
     icon: "https://garden-finance.imgix.net/token-images/bitcoin.svg",
   },
-  [BlockchainType.EVM]: {
-    name: "EVM",
+  [BlockchainType.evm]: {
+    name: "evm",
     icon: "https://garden-finance.imgix.net/token-images/ethereum.svg",
   },
-  [BlockchainType.Starknet]: {
-    name: "Starknet",
+  [BlockchainType.starknet]: {
+    name: "starknet",
     icon: "https://garden-finance.imgix.net/starknet-logo.svg",
   },
-  [BlockchainType.Solana]: {
-    name: "Solana",
+  [BlockchainType.solana]: {
+    name: "solana",
     icon: "https://garden-finance.imgix.net/chain_images/solana.png",
   },
-  [BlockchainType.Sui]: {
-    name: "Sui",
+  [BlockchainType.sui]: {
+    name: "sui",
     icon: "https://garden-finance.imgix.net/chain_images/sui.svg",
   },
 } as const;
@@ -54,11 +54,11 @@ interface BaseWallet {
 
 // Wallet capabilities interface
 interface WalletCapabilities {
-  [BlockchainType.Bitcoin]?: boolean;
-  [BlockchainType.EVM]?: boolean;
-  [BlockchainType.Starknet]?: boolean;
-  [BlockchainType.Solana]?: boolean;
-  [BlockchainType.Sui]?: boolean;
+  [BlockchainType.bitcoin]?: boolean;
+  [BlockchainType.evm]?: boolean;
+  [BlockchainType.starknet]?: boolean;
+  [BlockchainType.solana]?: boolean;
+  [BlockchainType.sui]?: boolean;
 }
 
 type GardenSupportedWalletsType = BaseWallet & WalletCapabilities;
@@ -74,11 +74,11 @@ const createWallet = (
   name,
   logo: `https://garden-finance.imgix.net/${logoPath}`,
   installLink,
-  isBitcoinSupported: capabilities[BlockchainType.Bitcoin] ?? false,
-  isEVMSupported: capabilities[BlockchainType.EVM] ?? false,
-  isStarknetSupported: capabilities[BlockchainType.Starknet] ?? false,
-  isSolanaSupported: capabilities[BlockchainType.Solana] ?? false,
-  isSuiSupported: capabilities[BlockchainType.Sui] ?? false,
+  isBitcoinSupported: capabilities[BlockchainType.bitcoin] ?? false,
+  isEVMSupported: capabilities[BlockchainType.evm] ?? false,
+  isStarknetSupported: capabilities[BlockchainType.starknet] ?? false,
+  isSolanaSupported: capabilities[BlockchainType.solana] ?? false,
+  isSuiSupported: capabilities[BlockchainType.sui] ?? false,
 });
 
 export const GardenSupportedWallets: Record<
@@ -90,21 +90,21 @@ export const GardenSupportedWallets: Record<
     "Injected",
     "wallets/injected.svg",
     "https://metamask.io/download/",
-    { EVM: true }
+    { evm: true }
   ),
   metaMaskSDK: createWallet(
     "metaMaskSDK",
     "Metamask",
     "wallets/metamask.svg",
     "https://metamask.io/download/",
-    { EVM: true }
+    { evm: true }
   ),
   "com.brave.wallet": createWallet(
     "com.brave.wallet",
     "Brave Wallet",
     "wallets/brave.svg",
     "https://brave.com/en-in/wallet/",
-    { EVM: true }
+    { evm: true }
   ),
   "app.phantom": createWallet(
     "app.phantom",
@@ -112,10 +112,10 @@ export const GardenSupportedWallets: Record<
     "wallets/phantomDark.svg",
     "https://chromewebstore.google.com/detail/phantom/bfnaelmomeimhlpmgjnjophhpkkoljpa?hl=en",
     {
-      EVM: network === Network.MAINNET,
-      Bitcoin: true,
-      Solana: true,
-      Sui: true,
+      evm: network === Network.MAINNET,
+      bitcoin: true,
+      solana: true,
+      sui: true,
     }
   ),
   "com.coinbase.wallet": createWallet(
@@ -123,7 +123,7 @@ export const GardenSupportedWallets: Record<
     "Coinbase Wallet",
     "wallets/coinbase.svg",
     "https://www.coinbase.com/wallet/downloads",
-    { EVM: true }
+    { evm: true }
   ),
   "com.okex.wallet": createWallet(
     "com.okex.wallet",
@@ -131,9 +131,9 @@ export const GardenSupportedWallets: Record<
     "wallets/okx.svg",
     "https://www.okx.com/download",
     {
-      Bitcoin: network === Network.MAINNET,
-      EVM: true,
-      Sui: network === Network.MAINNET,
+      bitcoin: network === Network.MAINNET,
+      evm: true,
+      sui: network === Network.MAINNET,
     }
   ),
   unisat: createWallet(
@@ -141,33 +141,33 @@ export const GardenSupportedWallets: Record<
     "Unisat",
     "wallets/unisat.svg",
     "https://unisat.io/",
-    { Bitcoin: true }
+    { bitcoin: true }
   ),
   "io.rabby": createWallet(
     "io.rabby",
     "Rabby Wallet",
     "wallets/rabby.svg",
     "https://rabby.io/",
-    { EVM: true }
+    { evm: true }
   ),
   braavos: createWallet(
     "braavos",
     "Braavos",
     "wallet/braavos.svg",
     "https://braavos.app/",
-    { Starknet: true }
+    { starknet: true }
   ),
   argentX: createWallet(
     "argentX",
     "Ready Wallet (formerly Argent)",
     "wallet/argent.svg",
     "https://www.argent.xyz/argent-x",
-    { Starknet: true }
+    { starknet: true }
   ),
   keplr: createWallet("keplr", "Keplr", "wallets/keplr.svg", "tallLink:", {
-    EVM: network === Network.MAINNET,
-    Starknet: true,
-    Bitcoin: network === Network.MAINNET,
+    evm: network === Network.MAINNET,
+    starknet: true,
+    bitcoin: network === Network.MAINNET,
   }),
   leap: createWallet(
     "leap",
@@ -175,7 +175,7 @@ export const GardenSupportedWallets: Record<
     "wallets/LeapLight.svg",
     "https://www.leapwallet.io/",
     {
-      EVM: network === Network.MAINNET,
+      evm: network === Network.MAINNET,
     }
   ),
   xverse: createWallet(
@@ -183,14 +183,14 @@ export const GardenSupportedWallets: Record<
     "Xverse",
     "wallets/xverse.svg",
     "https://www.xverse.app/download",
-    { Bitcoin: true }
+    { bitcoin: true }
   ),
   solflare: createWallet(
     "solflare",
     "Solflare",
     "wallets/Solflare.svg",
     "https://www.solflare.com/",
-    { Solana: true }
+    { solana: true }
   ),
   "app.backpack": createWallet(
     "app.backpack",
@@ -198,9 +198,9 @@ export const GardenSupportedWallets: Record<
     "wallets/Backpack.svg",
     "https://backpack.app/",
     {
-      Solana: network === Network.MAINNET,
-      EVM: network === Network.MAINNET,
-      Sui: network === Network.MAINNET,
+      solana: network === Network.MAINNET,
+      evm: network === Network.MAINNET,
+      sui: network === Network.MAINNET,
     }
   ),
   slush: createWallet(
@@ -208,6 +208,13 @@ export const GardenSupportedWallets: Record<
     "Slush Wallet",
     "wallets/SlushLogo.png",
     "https://slushwallet.com/",
-    { Sui: true }
+    { sui: true }
+  ),
+  tokeo: createWallet(
+    "tokeo",
+    "Tokeo",
+    "wallets/TokeoLogo.webp",
+    "https://tokeo.io/",
+    { sui: network === Network.MAINNET }
   ),
 };

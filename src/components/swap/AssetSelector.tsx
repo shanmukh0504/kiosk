@@ -7,20 +7,21 @@ import {
 } from "@gardenfi/garden-book";
 import BigNumber from "bignumber.js";
 import { FC, useState, ChangeEvent, useEffect, useMemo, useRef } from "react";
-import { Asset, isStarknet, isSolana, isSui } from "@gardenfi/orderbook";
+import {
+  isStarknet,
+  isSolana,
+  isSui,
+  Asset,
+  ChainAsset,
+} from "@gardenfi/orderbook";
 import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
 import { BTC, swapStore } from "../../store/swapStore";
 import { IOType, network } from "../../constants/constants";
-import { constructOrderPair } from "@gardenfi/core";
 import { modalStore } from "../../store/modalStore";
 import { ChainsTooltip } from "./ChainsTooltip";
 import { AvailableChainsSidebar } from "./AvailableChainsSidebar";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  formatAmount,
-  getAssetChainHTLCAddressPair,
-  getOrderPair,
-} from "../../utils/utils";
+import { formatAmount } from "../../utils/utils";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
@@ -28,6 +29,7 @@ import { viewPortStore } from "../../store/viewPortStore";
 import { Network } from "@gardenfi/utils";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
+import { balanceStore } from "../../store/balanceStore";
 
 type props = {
   onClose: () => void;
@@ -57,13 +59,13 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     CloseAssetSelector,
     assets,
     chains,
-    strategies,
-    balances,
     fiatData,
+    isRouteValid,
+    getValidDestinations,
   } = assetInfoStore();
+  const { balances } = balanceStore();
   const { modalName } = modalStore();
-  const { setAsset, inputAsset, outputAsset, clearSwapInputState } =
-    swapStore();
+  const { setAsset, inputAsset, outputAsset } = swapStore();
 
   const orderedChains = useMemo(() => {
     // TODO: remove hyperevm once we have a proper types (hyperliquid is not in the types)
@@ -102,6 +104,13 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const sortedResults = useMemo(() => {
     const assetsToSort = input ? searchResults : results;
     if (!assetsToSort && orderedChains.length === 0) return [];
+
+    // Get valid destinations if we're selecting output and have an input asset
+    let validDestinations: Asset[] = [];
+    if (isAssetSelectorOpen.type === IOType.output && inputAsset) {
+      validDestinations = getValidDestinations(inputAsset);
+    }
+
     return (
       assetsToSort &&
       assetsToSort
@@ -110,21 +119,35 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           const chainB = chains?.[b.chain];
           if (chainA && chainB) {
             const indexA = orderedChains.findIndex(
-              (c) => c.identifier === chainA.identifier
+              (c) => c.chain === chainA.chain
             );
             const indexB = orderedChains.findIndex(
-              (c) => c.identifier === chainB.identifier
+              (c) => c.chain === chainB.chain
             );
             return indexA - indexB;
           }
           return 0;
         })
-        .filter((asset) => !chain || asset.chain === chain.identifier)
+        .filter((asset) => !chain || asset.chain === chain.chain)
+        .filter((asset) => {
+          // If we're selecting output and have an input asset, use route validator
+          if (isAssetSelectorOpen.type === IOType.output && inputAsset) {
+            // Check if this asset is in the valid destinations
+            return validDestinations.some(
+              (validAsset) =>
+                validAsset.chain === asset.chain &&
+                validAsset.htlc?.address === asset.htlc?.address &&
+                validAsset.token?.address === asset.token?.address
+            );
+          }
+          return true;
+        })
         .map((asset) => {
           const network = chains?.[asset.chain];
-          const orderPair = getOrderPair(asset.chain, asset.tokenAddress);
-          const balance = balances?.[orderPair];
-          const fiatRate = fiatData?.[getAssetChainHTLCAddressPair(asset)] ?? 0;
+          const balance = balances?.[asset.id.toString()];
+          if (!asset.id) return undefined;
+          const fiatRate =
+            fiatData?.[ChainAsset.from(asset.id).toString()] ?? 0;
           const formattedBalance =
             balance && asset && balance.toNumber() === 0
               ? ""
@@ -136,7 +159,6 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                     .dividedBy(10 ** asset.decimals)
                     .toNumber()
                 : balance?.toNumber();
-
           const fiatBalance =
             formattedBalance &&
             (Number(formattedBalance) * Number(fiatRate)).toFixed(5);
@@ -151,6 +173,8 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     );
   }, [
     searchResults,
+    getValidDestinations,
+    inputAsset,
     results,
     orderedChains,
     chains,
@@ -158,6 +182,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     balances,
     fiatData,
     input,
+    isAssetSelectorOpen.type,
   ]);
 
   const isAnyWalletConnected =
@@ -166,11 +191,13 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     !!starknetAccount ||
     !!solanaAddress ||
     !!currentAccount;
+
   const fiatBasedSortedResults = useMemo(() => {
     if (!isAnyWalletConnected) return sortedResults;
     return (
       sortedResults &&
       [...sortedResults].sort((a, b) => {
+        if (!a || !b) return 0;
         const aFiat = a.fiatBalance ? Number(a.fiatBalance) : 0;
         const bFiat = b.fiatBalance ? Number(b.fiatBalance) : 0;
         return bFiat - aFiat;
@@ -182,7 +209,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     if (!sidebarSelectedChain)
       return orderedChains.slice(0, visibleChainsCount);
     const selectedIdx = orderedChains.findIndex(
-      (c) => c.identifier === sidebarSelectedChain.identifier
+      (c) => c.chain === sidebarSelectedChain.chain
     );
     if (selectedIdx < visibleChainsCount && selectedIdx !== -1) {
       return orderedChains.slice(0, visibleChainsCount);
@@ -197,7 +224,15 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     if (asset) {
       const isMatchingToken =
         asset.chain === comparisonToken?.chain &&
-        asset.atomicSwapAddress === comparisonToken?.atomicSwapAddress;
+        asset.htlc?.address === comparisonToken?.htlc?.address;
+      // If selecting input and current output is invalid for the new input, clear output first
+      if (
+        isAssetSelectorOpen.type === IOType.input &&
+        outputAsset &&
+        !isRouteValid(asset, outputAsset)
+      ) {
+        setAsset(IOType.output, undefined);
+      }
       setAsset(isAssetSelectorOpen.type, asset);
       if (isMatchingToken) {
         setAsset(
@@ -206,23 +241,6 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             : IOType.input,
           isAssetSelectorOpen.type === IOType.input ? inputAsset : outputAsset
         );
-      }
-      // if input asset is selected, check if the output asset is supported
-      if (
-        isAssetSelectorOpen.type === IOType.input &&
-        outputAsset &&
-        strategies.val
-      ) {
-        const op = constructOrderPair(
-          asset.chain,
-          asset.atomicSwapAddress,
-          outputAsset.chain,
-          outputAsset.atomicSwapAddress
-        );
-        if (!strategies.val[op]) {
-          setAsset(IOType.output, undefined);
-          clearSwapInputState();
-        }
       }
     }
     CloseAssetSelector();
@@ -254,36 +272,16 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
       results.filter(
         (asset) =>
           asset.name?.toLowerCase().includes(inputValue) ||
-          asset.symbol?.toLowerCase().includes(inputValue)
+          asset.symbol?.toLowerCase().includes(inputValue) ||
+          asset.chain?.toLowerCase().includes(inputValue)
       )
     );
   };
 
   useEffect(() => {
-    if (!assets || !strategies.val) return;
-    if (!comparisonToken || isAssetSelectorOpen.type === IOType.input) {
-      setResults(Object.values(assets));
-    } else {
-      const supportedTokens = Object.values(assets).filter((asset) => {
-        const op =
-          isAssetSelectorOpen.type === IOType.input
-            ? constructOrderPair(
-                asset.chain,
-                asset.atomicSwapAddress,
-                comparisonToken.chain,
-                comparisonToken.atomicSwapAddress
-              )
-            : constructOrderPair(
-                comparisonToken.chain,
-                comparisonToken.atomicSwapAddress,
-                asset.chain,
-                asset.atomicSwapAddress
-              );
-        return strategies.val && strategies.val[op] !== undefined;
-      });
-      setResults([...supportedTokens, comparisonToken]);
-    }
-  }, [assets, comparisonToken, isAssetSelectorOpen.type, strategies.val]);
+    if (!assets) return;
+    setResults(Object.values(assets));
+  }, [assets]);
 
   useEffect(() => {
     setVisibleChainsCount(isMobile ? 5 : 7);
@@ -335,9 +333,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                   <button
                     key={i}
                     className={`relative flex h-12 flex-1 items-center justify-center gap-2 overflow-visible rounded-xl outline-none duration-300 ease-in-out ${
-                      !chain || c.chainId !== chain.chainId
-                        ? "bg-white/50"
-                        : "bg-white"
+                      !chain || c.id !== chain.id ? "bg-white/50" : "bg-white"
                     }`}
                     onMouseEnter={() => setHoveredChain(c.name)}
                     onMouseLeave={() => setHoveredChain("")}
@@ -346,7 +342,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                     }
                   >
                     <img
-                      src={c.networkLogo}
+                      src={c.icon}
                       alt={c.name}
                       className={`h-full max-h-5 w-full max-w-5 rounded-full`}
                     />
@@ -383,7 +379,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                   className="w-full bg-transparent outline-none placeholder:text-mid-grey focus:outline-none"
                   type="text"
                   value={input}
-                  placeholder="Search assets"
+                  placeholder="Search assets or chains"
                   onChange={handleSearch}
                 />
               </Typography>
@@ -402,19 +398,20 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
               onClose={!modalName.assetList}
             >
               {fiatBasedSortedResults && fiatBasedSortedResults.length > 0 ? (
-                fiatBasedSortedResults?.map(
-                  ({ asset, network, formattedBalance }) => {
+                fiatBasedSortedResults
+                  .filter((result) => result !== undefined)
+                  .map(({ asset, network, formattedBalance }, index) => {
                     return (
                       <div
-                        key={`${asset.chain}-${asset.atomicSwapAddress}`}
+                        key={`${asset?.chain}-${asset?.htlc?.address}-${asset?.token?.address || "native"}-${index}`}
                         className="flex w-full cursor-pointer items-center justify-between gap-2 px-4 py-1.5 hover:bg-off-white"
                         onClick={() => handleClick(asset)}
                       >
                         <div className="flex w-full items-center gap-2">
                           <div className={`w-10`}>
                             <TokenNetworkLogos
-                              tokenLogo={asset.logo}
-                              chainLogo={network?.networkLogo}
+                              tokenLogo={asset.icon}
+                              chainLogo={network?.icon}
                             />
                           </div>
                           <Typography
@@ -456,8 +453,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                         </div>
                       </div>
                     );
-                  }
-                )
+                  })
               ) : (
                 <div className="flex min-h-[274px] w-full items-center justify-center">
                   <Typography size="h4" weight="regular">
