@@ -13,8 +13,9 @@ import {
   isSui,
   Asset,
   ChainAsset,
+  ChainData,
 } from "@gardenfi/orderbook";
-import { assetInfoStore, ChainData } from "../../store/assetInfoStore";
+import { assetInfoStore } from "../../store/assetInfoStore";
 import { BTC, swapStore } from "../../store/swapStore";
 import { IOType, network } from "../../constants/constants";
 import { modalStore } from "../../store/modalStore";
@@ -57,7 +58,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const {
     isAssetSelectorOpen,
     CloseAssetSelector,
-    assets,
+    allAssets: assets,
     chains,
     fiatData,
     isRouteValid,
