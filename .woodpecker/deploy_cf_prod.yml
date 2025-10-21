@@ -13,41 +13,27 @@ steps:
   - name: build
     image: node:22-bullseye
     environment:
-      NODE_OPTIONS:
-        from_secret: NODE_OPTIONS
-      NODE_VERSION:
-        from_secret: NODE_VERSION
-      SKIP_INSTALL_DEPS:
-        from_secret: SKIP_INSTALL_DEPS
-      VITE_ENVIRONMENT:
-        from_secret: TESTNET_VITE_ENVIRONMENT
-      VITE_EXPLORER_URL:
-        from_secret: TESTNET_VITE_EXPLORER_URL
-      VITE_INFO_URL:
-        from_secret: TESTNET_VITE_INFO_URL
-      VITE_NETWORK:
-        from_secret: TESTNET_VITE_NETWORK
-      VITE_ORDERBOOK_URL:
-        from_secret: TESTNET_VITE_ORDERBOOK_URL
-      VITE_QUOTE_URL:
-        from_secret: TESTNET_VITE_QUOTE_URL
-      VITE_REWARD_URL:
-        from_secret: TESTNET_VITE_REWARD_URL
-      VITE_STAKING_URL:
-        from_secret: TESTNET_VITE_STAKING_URL
-      VITE_BASE_URL:
-        from_secret: TESTNET_VITE_BASE_URL
-      VITE_API_KEY:
-        from_secret: TESTNET_VITE_API_KEY
+      INFISICAL_API_URL:
+        from_secret: INFISICAL_API_URL
+      INFISICAL_TOKEN:
+        from_secret: INFISICAL_TOKEN
+      INFISICAL_PROJECT_ID:
+        from_secret: INFISICAL_PROJECT_ID
+      INFISICAL_ENV:
+        from_secret: TESTNET_INFISICAL_ENV
+      INFISICAL_FOLDER:
+        from_secret: INFISICAL_FOLDER
     when:
       event: manual
       branch: [dev, testnet]
     commands:
-      - apt-get update && apt-get install -y python3 make g++ pkg-config libudev-dev
+      - curl -1sLf 'https://artifacts-cli.infisical.com/setup.deb.sh' | bash
+      - apt-get update && apt-get install -y python3 make g++ pkg-config libudev-dev infisical
       - corepack enable
       - yarn set version 4.5.1
       - yarn install
-      - yarn build
+      - infisical run --projectId $INFISICAL_PROJECT_ID --env $INFISICAL_ENV --path $INFISICAL_FOLDER --token $INFISICAL_TOKEN --domain $INFISICAL_API_URL -- yarn build
+
 
   # Step 2: Deploy to Cloudflare Pages (runs only when manually triggered)
   - name: deploy
@@ -72,37 +58,26 @@ steps:
   - name: build
     image: node:22-bullseye
     environment:
-      NODE_OPTIONS:
-        from_secret: NODE_OPTIONS
-      NODE_VERSION:
-        from_secret: NODE_VERSION
-      SKIP_INSTALL_DEPS:
-        from_secret: SKIP_INSTALL_DEPS
-      VITE_ENVIRONMENT:
-        from_secret: MAINNET_VITE_ENVIRONMENT
-      VITE_EXPLORER_URL:
-        from_secret: MAINNET_VITE_EXPLORER_URL
-      VITE_INFO_URL:
-        from_secret: MAINNET_VITE_INFO_URL
-      VITE_NETWORK:
-        from_secret: MAINNET_VITE_NETWORK
-      VITE_ORDERBOOK_URL:
-        from_secret: MAINNET_VITE_ORDERBOOK_URL
-      VITE_QUOTE_URL:
-        from_secret: MAINNET_VITE_QUOTE_URL
-      VITE_REWARD_URL:
-        from_secret: MAINNET_VITE_REWARD_URL
-      VITE_STAKING_URL:
-        from_secret: MAINNET_VITE_STAKING_URL
+      INFISICAL_API_URL:
+        from_secret: INFISICAL_API_URL
+      INFISICAL_TOKEN:
+        from_secret: INFISICAL_TOKEN
+      INFISICAL_PROJECT_ID:
+        from_secret: INFISICAL_PROJECT_ID
+      INFISICAL_ENV:
+        from_secret: MAINNET_INFISICAL_ENV
+      INFISICAL_FOLDER:
+        from_secret: INFISICAL_FOLDER
     when:
       event: manual
       branch: [main, mainnet]
     commands:
-      - apt-get update && apt-get install -y python3 make g++ pkg-config libudev-dev
+      - curl -1sLf 'https://artifacts-cli.infisical.com/setup.deb.sh' | bash
+      - apt-get update && apt-get install -y python3 make g++ pkg-config libudev-dev infisical
       - corepack enable
       - yarn set version 4.5.1
       - yarn install
-      - yarn build
+      - infisical run --projectId $INFISICAL_PROJECT_ID --env $INFISICAL_ENV --path $INFISICAL_FOLDER --token $INFISICAL_TOKEN --domain $INFISICAL_API_URL -- yarn build
 
   # Step 2: Deploy to Cloudflare Pages (runs only when manually triggered)
   - name: deploy
