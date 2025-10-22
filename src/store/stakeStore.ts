@@ -40,6 +40,7 @@ type StakingStats = {
   averageLockTime: string;
   totalVotes: number;
   seedLockedPercentage: string;
+  gardenerPassCount: number;
 };
 
 type EpochResponse = {
@@ -223,6 +224,7 @@ export const stakeStore = create<StakeStoreState>((set) => ({
       const response = await axios.get<{
         data: {
           globalApy: number;
+          gardenerPassCount: number;
           ast: string;
           totalVotes: number;
           totalStaked: string;
@@ -247,6 +249,7 @@ export const stakeStore = create<StakeStoreState>((set) => ({
           averageLockTime: avgLockTime.toString(),
           totalVotes: response.data.data.totalVotes,
           seedLockedPercentage: seedLockedPercentage,
+          gardenerPassCount: response.data.data.gardenerPassCount,
         },
       });
     } catch (error) {

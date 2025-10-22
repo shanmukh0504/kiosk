@@ -240,7 +240,11 @@ export const StakeComponent = () => {
                     value={`${GardenPassVotes}`}
                     size="sm"
                   />
-                  <StakeStats title={"Passes minted"} value={101} size="sm" />
+                  <StakeStats
+                    title={"Passes minted"}
+                    value={stakingStats?.gardenerPassCount}
+                    size="sm"
+                  />
                 </motion.div>
               ) : (
                 <motion.div
