@@ -323,7 +323,6 @@ export const stakeStore = create<StakeStoreState>((set) => ({
       const response = await axios.get<{ data: EpochResponse[] }>(
         API().stake.epoch.toString()
       );
-      console.log("epochData", response.data.data);
       set({ epochData: response.data.data });
     } catch (error) {
       console.error("Error fetching current epoch :", error);
