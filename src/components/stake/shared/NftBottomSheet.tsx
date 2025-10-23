@@ -8,7 +8,7 @@ export const NftBottomSheet = () => {
       </Typography>
       <div className="flex max-w-[296px] flex-col gap-8">
         <img
-          src="https://garden-finance.imgix.net/garden_pass.png"
+          src="https://garden.imgix.net/nft/GardenPass.png"
           alt="Garden Pass"
           className="w-full rounded-xl object-cover transition-all duration-300 ease-in-out"
         />

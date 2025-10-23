@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { StyledHoloCard, Overlay, HoloOverlay } from "./HoloCard.styles";
-import Tilt from "react-parallax-tilt";
+// import Tilt from "react-parallax-tilt";
 
 interface Props {
   children?: React.ReactNode;
@@ -21,8 +21,8 @@ export const HoloCard = ({
   width,
   showSparkles,
 }: Props) => {
-  const [hover, setHover] = useState(false);
-  const [animated, setAnimated] = useState(true);
+  // const [hover, setHover] = useState(false);
+  // const [animated, setAnimated] = useState(true);
   const [activeBackgroundPosition, setActiveBackgroundPosition] = useState({
     tp: 0,
     lp: 0,
@@ -34,8 +34,8 @@ export const HoloCard = ({
   const ref = useRef<HTMLInputElement>(null);
 
   const handleOnMouseOver = (event: any) => {
-    setAnimated(false);
-    setHover(true);
+    // setAnimated( false);
+    // setHover(true);
 
     const card = ref.current;
 
@@ -62,37 +62,37 @@ export const HoloCard = ({
   };
 
   const handleOnMouseOut = () => {
-    setHover(false);
-    setAnimated(true);
+    // setHover(false);
+    // setAnimated(true);
     setActiveRotation({ x: 0, y: 0 });
   };
 
   return (
-    <Tilt>
-      <StyledHoloCard
-        url={url}
-        ref={ref}
-        active={hover}
-        animated={animated}
-        activeRotation={activeRotation}
-        activeBackgroundPosition={activeBackgroundPosition}
-        onMouseMove={handleOnMouseOver}
-        onTouchMove={handleOnMouseOver}
-        onMouseOut={handleOnMouseOut}
-        height={height ?? 446}
-        width={width ?? 320}
-        showSparkles={showSparkles ?? true}
-      >
-        <Overlay overlay={overlay} />
-        {holoOverlay && (
-          <HoloOverlay
-            holoOverlay={holoOverlay}
-            active={hover}
-            activeBackgroundPosition={activeBackgroundPosition}
-          />
-        )}
-        {children}
-      </StyledHoloCard>
-    </Tilt>
+    // <Tilt>
+    <StyledHoloCard
+      url={url}
+      ref={ref}
+      active={false}
+      animated={false}
+      activeRotation={activeRotation}
+      activeBackgroundPosition={activeBackgroundPosition}
+      onMouseMove={handleOnMouseOver}
+      onTouchMove={handleOnMouseOver}
+      onMouseOut={handleOnMouseOut}
+      height={height ?? 446}
+      width={width ?? 320}
+      showSparkles={showSparkles ?? true}
+    >
+      <Overlay overlay={overlay} />
+      {holoOverlay && (
+        <HoloOverlay
+          holoOverlay={holoOverlay}
+          active={false}
+          activeBackgroundPosition={activeBackgroundPosition}
+        />
+      )}
+      {children}
+    </StyledHoloCard>
+    // </Tilt>
   );
 };

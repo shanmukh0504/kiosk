@@ -135,7 +135,7 @@ export const gardenPassContainerVariants: Variants = {
     width: 0,
   },
   animate: {
-    width: 280,
+    width: 288,
   },
   exit: {
     width: 0,

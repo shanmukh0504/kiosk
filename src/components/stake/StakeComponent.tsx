@@ -15,7 +15,7 @@ import { StakeInput } from "./StakeInput";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { stakeStore, StakeType } from "../../store/stakeStore";
-import { useEffect, useId, useMemo } from "react";
+import React, { useEffect, useId, useMemo } from "react";
 import { Tooltip } from "../../common/Tooltip";
 import { MIN_STAKE_AMOUNT } from "../../constants/stake";
 import { GardenPassVotes, SEED_FOR_MINTING_NFT } from "./constants";
@@ -25,13 +25,13 @@ import { useStake } from "../../hooks/useStake";
 import { formatAmount } from "../../utils/utils";
 import { balanceStore } from "../../store/balanceStore";
 
-export const StakeComponent = () => {
-  // const [isNftOpen, setIsNftOpen] = useState(false);
+type StakeComponentProps = {
+  setIsNftOpen: (open: boolean) => void;
+};
 
-  // const handleNftOpenChange = (open: boolean) => {
-  //   setIsNftOpen(open);
-  // };
-
+export const StakeComponent: React.FC<StakeComponentProps> = ({
+  setIsNftOpen,
+}) => {
   const { isConnected, address } = useEVMWallet();
   const { setOpenModal } = modalStore();
   const {
@@ -201,9 +201,9 @@ export const StakeComponent = () => {
                     Gardener Pass.
                   </span>{" "}
                   <span
-                    // onClick={() => {
-                    //   setIsNftOpen(true);
-                    // }}
+                    onClick={() => {
+                      setIsNftOpen(true);
+                    }}
                     className="inline-flex cursor-pointer items-center justify-start gap-1 text-rose md:hidden"
                   >
                     Gardener Pass.
@@ -348,9 +348,6 @@ export const StakeComponent = () => {
           multiline={true}
         />
       </div>
-      {/* <BottomSheet open={isNftOpen} onOpenChange={handleNftOpenChange}>
-        <NftBottomSheet />
-      </BottomSheet> */}
     </div>
   );
 };
