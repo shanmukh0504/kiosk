@@ -327,18 +327,29 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
           <Button
             size="lg"
             variant={
-              (isStakeable && !loading) || shouldBuySeed
+              ((isStakeable && !loading) || shouldBuySeed || !address) &&
+              tokenBalance
                 ? "primary"
                 : "disabled"
             }
-            onClick={shouldBuySeed ? handleBuySeedClick : handleStakeClick}
+            onClick={
+              !address
+                ? () => setOpenModal(modalNames.connectWallet)
+                : shouldBuySeed
+                  ? handleBuySeedClick
+                  : handleStakeClick
+            }
             loading={loading}
           >
-            {shouldBuySeed
-              ? "Buy SEED"
-              : stakeType === StakeType.GARDEN_PASS
-                ? "Buy Garden Pass"
-                : "Stake"}
+            {!address
+              ? "Connect Wallet"
+              : !tokenBalance
+                ? "Stake"
+                : shouldBuySeed
+                  ? "Buy SEED"
+                  : stakeType === StakeType.GARDEN_PASS
+                    ? "Buy Garden Pass"
+                    : "Stake"}
           </Button>
         </div>
         <Tooltip

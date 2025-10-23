@@ -8,6 +8,7 @@
 - Redirect link to mempool transaction hash when deposit is not confirmed.
 - Added starknet support for Xverse wallet.
 - Implemented Swap bridge functionality.
+- New Stake page with GardenPass and refreshed UI.
 
 ### Fixed
 
@@ -69,7 +70,6 @@
 - Updated @gardenfi version to latest version.
 - Remove unused Code.
 - Change XIcon from solid to outline.
-- New Stake page with GardenPass and refreshed UI.
 
 ## [1.1.1]
 

@@ -144,7 +144,8 @@ export const StakeRewards = ({
       style={{ transformOrigin: "top" }}
     >
       <motion.div
-        className={`ease- -in-out mx-auto flex w-[328px] flex-col gap-4 rounded-2xl bg-white p-6 pb-5 transition-all duration-300 sm:w-[460px] md:w-[740px] ${showDetails && "rounded-b-none"}`}
+        onClick={() => setShowDetails(!showDetails)}
+        className={`ease- -in-out mx-auto flex w-[328px] cursor-pointer flex-col gap-4 rounded-2xl bg-white p-6 pb-5 transition-all duration-300 sm:w-[460px] md:w-[740px] ${showDetails && "rounded-b-none"}`}
       >
         <div className="flex items-center justify-between">
           <Typography size="h5" weight="medium">
@@ -152,7 +153,6 @@ export const StakeRewards = ({
           </Typography>
           <KeyboardDownIcon
             className={`${showDetails && "rotate-180"} cursor-pointer transition-all duration-200 ease-in-out`}
-            onClick={() => setShowDetails(!showDetails)}
           />
         </div>
         <div className="flex flex-col items-end justify-between gap-4 md:flex-row md:items-center">
@@ -177,7 +177,11 @@ export const StakeRewards = ({
                   ? "flex items-center justify-center self-center transition-colors duration-500"
                   : ""
               }`}
-              onClick={handleRewardClick}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleRewardClick();
+              }}
               disabled={isClaimLoading || !availableReward}
               loading={isClaimLoading}
             >
