@@ -8,6 +8,7 @@
 - Redirect link to mempool transaction hash when deposit is not confirmed.
 - Added starknet support for Xverse wallet.
 - Implemented Swap bridge functionality.
+- Added Alpen Testnet support.
 
 ### Fixed
 
