@@ -78,7 +78,7 @@ type AssetInfoState = {
   fetchAndSetFiatValues: () => Promise<void>;
   CloseAssetSelector: () => void;
   fetchAndSetAssetsAndChains: () => Promise<void>;
-  isRouteValid: (from: Asset, to: Asset) => boolean;
+  isRouteValid: (from: Asset, to: Asset) => Promise<boolean>;
   getValidDestinations: (fromAsset: Asset) => Asset[];
 };
 
@@ -209,7 +209,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
         })
         .filter((asset): asset is ChainAsset => asset !== null);
 
-      const routeMatrix = buildRouteMatrix(allChainAssets, validator);
+      const routeMatrix = await buildRouteMatrix(allChainAssets, validator);
 
       set({ allAssets, allChains, assets, chains, routeMatrix });
     } catch (error) {
@@ -220,7 +220,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
     }
   },
 
-  isRouteValid: (from: Asset, to: Asset) => {
+  isRouteValid: async (from: Asset, to: Asset) => {
     const { routeValidator } = get();
 
     if (!routeValidator || !from || !to || !from.id || !to.id) {
@@ -232,7 +232,10 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       const fromChainAsset = ChainAsset.from(from.id);
       const toChainAsset = ChainAsset.from(to.id);
 
-      const isValid = routeValidator.isValidRoute(fromChainAsset, toChainAsset);
+      const isValid = await routeValidator.isValidRoute(
+        fromChainAsset,
+        toChainAsset
+      );
       // console.log("Route validation result:", isValid);
       return isValid;
     } catch (error) {

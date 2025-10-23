@@ -9,6 +9,7 @@
 - Added starknet support for Xverse wallet.
 - Implemented Swap bridge functionality.
 - New Stake page with GardenPass and refreshed UI.
+- Added Alpen Testnet support.
 
 ### Fixed
 
