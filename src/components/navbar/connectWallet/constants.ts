@@ -72,7 +72,7 @@ const createWallet = (
 ): GardenSupportedWalletsType => ({
   id,
   name,
-  logo: `https://garden-finance.imgix.net/${logoPath}`,
+  logo: logoPath,
   installLink,
   isBitcoinSupported: capabilities[BlockchainType.bitcoin] ?? false,
   isEVMSupported: capabilities[BlockchainType.evm] ?? false,
@@ -88,28 +88,28 @@ export const GardenSupportedWallets: Record<
   injected: createWallet(
     "injected",
     "Injected",
-    "wallets/injected.svg",
+    "https://garden-finance.imgix.net/wallets/injected.svg",
     "https://metamask.io/download/",
     { evm: true }
   ),
   metaMaskSDK: createWallet(
     "metaMaskSDK",
     "Metamask",
-    "wallets/metamask.svg",
+    "https://garden-finance.imgix.net/wallets/metamask.svg",
     "https://metamask.io/download/",
     { evm: true }
   ),
   "com.brave.wallet": createWallet(
     "com.brave.wallet",
     "Brave Wallet",
-    "wallets/brave.svg",
+    "https://garden-finance.imgix.net/wallets/brave.svg",
     "https://brave.com/en-in/wallet/",
     { evm: true }
   ),
   "app.phantom": createWallet(
     "app.phantom",
     "Phantom",
-    "wallets/phantomDark.svg",
+    "https://garden-finance.imgix.net/wallets/phantomDark.svg",
     "https://chromewebstore.google.com/detail/phantom/bfnaelmomeimhlpmgjnjophhpkkoljpa?hl=en",
     {
       evm: network === Network.MAINNET,
@@ -121,14 +121,14 @@ export const GardenSupportedWallets: Record<
   "com.coinbase.wallet": createWallet(
     "com.coinbase.wallet",
     "Coinbase Wallet",
-    "wallets/coinbase.svg",
+    "https://garden-finance.imgix.net/wallets/coinbase.svg",
     "https://www.coinbase.com/wallet/downloads",
     { evm: true }
   ),
   "com.okex.wallet": createWallet(
     "com.okex.wallet",
     "OKX Wallet",
-    "wallets/okx.svg",
+    "https://garden-finance.imgix.net/wallets/okx.svg",
     "https://www.okx.com/download",
     {
       bitcoin: network === Network.MAINNET,
@@ -139,40 +139,46 @@ export const GardenSupportedWallets: Record<
   unisat: createWallet(
     "unisat",
     "Unisat",
-    "wallets/unisat.svg",
+    "https://garden-finance.imgix.net/wallets/unisat.svg",
     "https://unisat.io/",
     { bitcoin: true }
   ),
   "io.rabby": createWallet(
     "io.rabby",
     "Rabby Wallet",
-    "wallets/rabby.svg",
+    "https://garden-finance.imgix.net/wallets/rabby.svg",
     "https://rabby.io/",
     { evm: true }
   ),
   braavos: createWallet(
     "braavos",
     "Braavos",
-    "wallet/braavos.svg",
+    "https://garden-finance.imgix.net/wallets/braavos.svg",
     "https://braavos.app/",
     { starknet: true }
   ),
   argentX: createWallet(
     "argentX",
     "Ready Wallet (formerly Argent)",
-    "wallet/argent.svg",
+    "https://garden-finance.imgix.net/wallets/argent.svg",
     "https://www.argent.xyz/argent-x",
     { starknet: true }
   ),
-  keplr: createWallet("keplr", "Keplr", "wallets/keplr.svg", "tallLink:", {
-    evm: network === Network.MAINNET,
-    starknet: true,
-    bitcoin: network === Network.MAINNET,
-  }),
+  keplr: createWallet(
+    "keplr",
+    "Keplr",
+    "https://garden-finance.imgix.net/wallets/keplr.svg",
+    "tallLink:",
+    {
+      evm: network === Network.MAINNET,
+      starknet: true,
+      bitcoin: network === Network.MAINNET,
+    }
+  ),
   leap: createWallet(
     "leap",
     "Leap Wallet",
-    "wallets/LeapLight.svg",
+    "https://garden-finance.imgix.net/wallets/LeapLight.svg",
     "https://www.leapwallet.io/",
     {
       evm: network === Network.MAINNET,
@@ -181,21 +187,21 @@ export const GardenSupportedWallets: Record<
   xverse: createWallet(
     "xverse",
     "Xverse",
-    "wallets/xverse.svg",
+    "https://garden-finance.imgix.net/wallets/xverse.svg",
     "https://www.xverse.app/download",
     { bitcoin: true }
   ),
   solflare: createWallet(
     "solflare",
     "Solflare",
-    "wallets/Solflare.svg",
+    "https://garden-finance.imgix.net/wallets/Solflare.svg",
     "https://www.solflare.com/",
     { solana: true }
   ),
   "app.backpack": createWallet(
     "app.backpack",
     "Backpack",
-    "wallets/Backpack.svg",
+    "https://garden-finance.imgix.net/wallets/Backpack.svg",
     "https://backpack.app/",
     {
       solana: network === Network.MAINNET,
@@ -206,15 +212,22 @@ export const GardenSupportedWallets: Record<
   slush: createWallet(
     "slush",
     "Slush Wallet",
-    "wallets/SlushLogo.png",
+    "https://garden-finance.imgix.net/wallets/SlushLogo.png",
     "https://slushwallet.com/",
     { sui: true }
   ),
   tokeo: createWallet(
     "tokeo",
     "Tokeo",
-    "wallets/TokeoLogo.webp",
+    "https://garden-finance.imgix.net/wallets/TokeoLogo.webp",
     "https://tokeo.io/",
     { sui: network === Network.MAINNET }
+  ),
+  tronlink: createWallet(
+    "tronlink",
+    "Tron Link",
+    "https://garden.imgix.net/wallets/TronLinkIcon.svg",
+    "https://www.tronlink.org/",
+    { evm: true }
   ),
 };
