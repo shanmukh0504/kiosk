@@ -61,9 +61,9 @@ export function metadataPlugin(): Plugin {
     closeBundle() {
       // Only run in build mode
       if (config.command === "build") {
-        // Read the template from the source directory
+        // Read the template
         const template = fs.readFileSync(
-          path.join(config.root, "index.html"),
+          path.join(config.build.outDir, "index.html"),
           "utf-8"
         );
         const isTestnet = config.env.VITE_NETWORK === "testnet";
