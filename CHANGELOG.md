@@ -5,6 +5,7 @@
 ### Fixed
 
 - Fixed chain and wallet logos.
+- Fixed Icon rounded issue in assets and chain, added new footer.
 
 ## [1.1.8]
 
