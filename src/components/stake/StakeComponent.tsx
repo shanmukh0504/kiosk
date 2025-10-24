@@ -327,8 +327,9 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
           <Button
             size="lg"
             variant={
-              ((isStakeable && !loading) || shouldBuySeed || !address) &&
-              tokenBalance
+              (isStakeable && !loading) ||
+              shouldBuySeed ||
+              (!address && tokenBalance)
                 ? "primary"
                 : "disabled"
             }
