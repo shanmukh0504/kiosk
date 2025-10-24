@@ -340,7 +340,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                     <img
                       src={c.icon}
                       alt={c.name}
-                      className={`h-full max-h-5 w-full max-w-5 rounded-full`}
+                      className={`h-full max-h-5 w-full max-w-5`}
                     />
                     {hoveredChain === c.name && (
                       <ChainsTooltip
