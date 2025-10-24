@@ -18,7 +18,7 @@ const SEED: Asset = {
   name: "Seed",
   decimals: 18,
   symbol: STAKING_CONFIG[STAKING_CHAIN].SEED_SYMBOL,
-  icon: "https://garden-finance.imgix.net/token-images/seed.svg",
+  icon: "https://garden.imgix.net/token-images/SEED.svg",
   token: {
     address: STAKING_CONFIG[STAKING_CHAIN].SEED_ADDRESS,
     schema: "evm:htlc_erc20",
