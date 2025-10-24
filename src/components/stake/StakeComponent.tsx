@@ -24,6 +24,8 @@ import { fadeAnimation } from "../../animations/animations";
 import { useStake } from "../../hooks/useStake";
 import { formatAmount } from "../../utils/utils";
 import { balanceStore } from "../../store/balanceStore";
+import { Toast } from "../toast/Toast";
+import { useToastStore } from "../../store/toastStore";
 
 type StakeComponentProps = {
   setIsNftOpen: (open: boolean) => void;
@@ -48,7 +50,8 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
     setStakeType,
   } = stakeStore();
   const { handleStake, loading } = useStake();
-  const { balances, fetchAndSetEvmBalances } = balanceStore();
+  const { hideStaticToast } = useToastStore();
+  const { balances, balanceFetched, fetchAndSetEvmBalances } = balanceStore();
   const tooltipId = useId();
 
   const balance =
@@ -151,6 +154,26 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
       return () => clearInterval(interval);
     }
   }, [address, fetchAndSetEvmBalances, asset]);
+
+  useEffect(() => {
+    hideStaticToast();
+
+    if (tokenBalance) {
+      const needsMoreSeed =
+        stakeType === StakeType.CUSTOM
+          ? Number(amount) > Number(tokenBalance)
+          : stakeType === StakeType.GARDEN_PASS
+            ? Number(tokenBalance) < SEED_FOR_MINTING_NFT
+            : false;
+
+      if (needsMoreSeed) {
+        Toast.needSeed(
+          "Don't have SEED tokens?",
+          "https://app.garden.finance/?output-chain=arbitrum&output-asset=SEED"
+        );
+      }
+    }
+  }, [amount, tokenBalance, stakeType, hideStaticToast]);
 
   return (
     <div
@@ -327,9 +350,12 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
           <Button
             size="lg"
             variant={
-              (isStakeable && !loading) ||
-              shouldBuySeed ||
-              (!address && tokenBalance)
+              !address ||
+              (address &&
+                balanceFetched &&
+                ((isStakeable && !loading) ||
+                  shouldBuySeed ||
+                  (address && balanceFetched && tokenBalance === 0)))
                 ? "primary"
                 : "disabled"
             }
@@ -344,7 +370,7 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
           >
             {!address
               ? "Connect Wallet"
-              : !tokenBalance
+              : !tokenBalance && !balanceFetched
                 ? "Stake"
                 : shouldBuySeed
                   ? "Buy SEED"
