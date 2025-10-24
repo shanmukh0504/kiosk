@@ -142,7 +142,7 @@ export const config = createConfig({
     metaMask(),
     coinbaseWallet({
       appName: "Garden Finance",
-      appLogoUrl: "https://garden-finance.imgix.net/token-images/seed.svg",
+      appLogoUrl: "https://garden.imgix.net/token-images/SEED.svg",
     }),
     leapConnector,
     KeplrConnector,
