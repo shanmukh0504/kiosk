@@ -3,7 +3,14 @@ import { FC } from "react";
 import { Loader } from "../../../common/Loader";
 import { ecosystems } from "./constants";
 import { motion } from "framer-motion";
-import { BlockchainType } from "@gardenfi/orderbook";
+enum BlockchainType {
+  bitcoin = "bitcoin",
+  evm = "evm",
+  solana = "solana",
+  starknet = "starknet",
+  sui = "sui",
+  tron = "tron",
+}
 
 type WalletRowProps = {
   name: string;

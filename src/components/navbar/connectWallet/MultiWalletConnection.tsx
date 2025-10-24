@@ -13,7 +13,15 @@ import { Wallet as SolanaWallet } from "@solana/wallet-adapter-react";
 import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { WalletWithRequiredFeatures as SuiWallet } from "@mysten/wallet-standard";
-import { BlockchainType } from "@gardenfi/orderbook";
+enum BlockchainType {
+  bitcoin = "bitcoin",
+  evm = "evm",
+  solana = "solana",
+  starknet = "starknet",
+  sui = "sui",
+  tron = "tron",
+}
+
 import { useSuiWallet } from "../../../hooks/useSuiWallet";
 type Checked = Record<BlockchainType, boolean>;
 

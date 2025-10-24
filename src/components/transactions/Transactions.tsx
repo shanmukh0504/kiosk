@@ -5,7 +5,15 @@ import { useEVMWallet } from "../../hooks/useEVMWallet";
 import transactionHistoryStore from "../../store/transactionHistoryStore";
 import { PendingTransactions } from "./PendingTransactions";
 import { CompletedTransactions } from "./CompletedTransactions";
-import { BlockchainType } from "@gardenfi/orderbook";
+enum BlockchainType {
+  bitcoin = "bitcoin",
+  evm = "evm",
+  solana = "solana",
+  starknet = "starknet",
+  sui = "sui",
+  tron = "tron",
+}
+
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { starknetAddressToXOnly } from "../../utils/utils";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";

@@ -8,7 +8,15 @@ import { evmToBTCid, GardenSupportedWallets } from "./constants";
 import { Connector as StarknetConnector } from "@starknet-react/core";
 import { Wallet as SolanaWallet } from "@solana/wallet-adapter-react";
 import { WalletWithRequiredFeatures as SuiWallet } from "@mysten/wallet-standard";
-import { BlockchainType } from "@gardenfi/orderbook";
+import { Wallet as TronWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
+enum BlockchainType {
+  bitcoin = "bitcoin",
+  evm = "evm",
+  solana = "solana",
+  starknet = "starknet",
+  sui = "sui",
+  tron = "tron",
+}
 
 export type Wallet = {
   id: string;
@@ -20,6 +28,7 @@ export type Wallet = {
     starknetWallet?: StarknetConnector;
     solanaWallet?: SolanaWallet;
     suiWallet?: SuiWallet;
+    tronWallet?: TronWallet;
   };
   isAvailable: boolean;
   installLink?: string;
@@ -28,6 +37,7 @@ export type Wallet = {
   isStarknet?: boolean;
   isSolana?: boolean;
   isSui?: boolean;
+  isTron?: boolean;
 };
 
 type WalletInputs = {
@@ -36,6 +46,7 @@ type WalletInputs = {
   starknetWallets?: StarknetConnector[];
   solanaWallets?: SolanaWallet[];
   suiWallets?: SuiWallet[];
+  tronWallets?: TronWallet[];
 };
 const blockchainConfigs = {
   [BlockchainType.evm]: {
@@ -142,6 +153,15 @@ const blockchainConfigs = {
     },
     availabilityChecker: (wallet: any) => !!wallet,
   },
+  [BlockchainType.tron]: {
+    supportKey: "isTronSupported" as const,
+    walletKey: "tronWallet" as const,
+    flagKey: "isTron" as const,
+    inputKey: "tronWallets" as const,
+    finder: (wallets: TronWallet[], key: string) =>
+      wallets?.find((w) => w.adapter.name.toLowerCase() === key.toLowerCase()),
+    availabilityChecker: (wallet: any) => !!wallet,
+  },
 };
 
 const manualEVMChecks: Record<
@@ -189,6 +209,7 @@ function createInitialWallet(config: any): Wallet {
     isStarknet: false,
     isSolana: false,
     isSui: false,
+    isTron: false,
   };
 }
 
@@ -220,6 +241,7 @@ function processBlockchainWallets(
     | StarknetConnector[]
     | SolanaWallet[]
     | SuiWallet[]
+    | TronWallet[]
     | undefined;
 
   if (!inputWallets && blockchain !== BlockchainType.bitcoin) return;
@@ -317,7 +339,8 @@ export const getAvailableWallets = (
   evmWallets?: GetConnectorsReturnType,
   starknetWallets?: StarknetConnector[],
   solanaWallets?: SolanaWallet[],
-  suiWallets?: SuiWallet[]
+  suiWallets?: SuiWallet[],
+  tronWallets?: TronWallet[]
 ): Wallet[] => {
   const walletInputs: WalletInputs = {
     bitcoinWallets,
@@ -325,6 +348,7 @@ export const getAvailableWallets = (
     starknetWallets,
     solanaWallets,
     suiWallets,
+    tronWallets,
   };
 
   const walletMap = new Map<string, Wallet>();

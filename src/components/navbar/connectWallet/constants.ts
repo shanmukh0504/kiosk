@@ -1,6 +1,13 @@
 import { Network } from "@gardenfi/utils";
 import { network } from "../../../constants/constants";
-import { BlockchainType } from "@gardenfi/orderbook";
+enum BlockchainType {
+  bitcoin = "bitcoin",
+  evm = "evm",
+  solana = "solana",
+  starknet = "starknet",
+  sui = "sui",
+  tron = "tron",
+}
 
 export const ecosystems = {
   [BlockchainType.bitcoin]: {
@@ -22,6 +29,10 @@ export const ecosystems = {
   [BlockchainType.sui]: {
     name: "sui",
     icon: "https://garden-finance.imgix.net/chain_images/sui.svg",
+  },
+  [BlockchainType.tron]: {
+    name: "tron",
+    icon: "https://garden-finance.imgix.net/chain_images/tron.svg",
   },
 } as const;
 
@@ -50,6 +61,7 @@ interface BaseWallet {
   isStarknetSupported: boolean;
   isSolanaSupported: boolean;
   isSuiSupported: boolean;
+  isTronSupported: boolean;
 }
 
 // Wallet capabilities interface
@@ -59,6 +71,7 @@ interface WalletCapabilities {
   [BlockchainType.starknet]?: boolean;
   [BlockchainType.solana]?: boolean;
   [BlockchainType.sui]?: boolean;
+  [BlockchainType.tron]?: boolean;
 }
 
 type GardenSupportedWalletsType = BaseWallet & WalletCapabilities;
@@ -79,6 +92,7 @@ const createWallet = (
   isStarknetSupported: capabilities[BlockchainType.starknet] ?? false,
   isSolanaSupported: capabilities[BlockchainType.solana] ?? false,
   isSuiSupported: capabilities[BlockchainType.sui] ?? false,
+  isTronSupported: capabilities[BlockchainType.tron] ?? false,
 });
 
 export const GardenSupportedWallets: Record<
@@ -228,6 +242,6 @@ export const GardenSupportedWallets: Record<
     "Tron Link",
     "https://garden.imgix.net/wallets/TronLinkIcon.svg",
     "https://www.tronlink.org/",
-    { evm: true }
+    { tron: true }
   ),
 };
