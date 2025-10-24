@@ -5,6 +5,7 @@
 ### Fixed
 
 - Fixed chain and wallet logos.
+- Fixed Native assets balances fetching.
 
 ## [1.1.8]
 
@@ -25,7 +26,6 @@
 - Update title to "Swap completed" from "Swap in progress" when swap is completed.
 - Ensure chainRpcs defaults to an empty array if undefined.
 - Display mempool redirect on deposit detected only on initiate tx hash.
-- Fixed Native assets balances fetching.
 
 ## [1.1.7]
 
