@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.9]
+
+### Fixed
+
+- Fixed chain and wallet logos.
+
 ## [1.1.8]
 
 ### Added

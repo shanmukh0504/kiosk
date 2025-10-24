@@ -4,24 +4,24 @@ import { BlockchainType } from "@gardenfi/orderbook";
 
 export const ecosystems = {
   [BlockchainType.bitcoin]: {
-    name: "bitcoin",
-    icon: "https://garden-finance.imgix.net/token-images/bitcoin.svg",
+    name: "Bitcoin",
+    icon: "https://garden.imgix.net/token-images/bitcoin.svg",
   },
   [BlockchainType.evm]: {
-    name: "evm",
-    icon: "https://garden-finance.imgix.net/token-images/ethereum.svg",
+    name: "EVM",
+    icon: "https://garden.imgix.net/token-images/ethereum.svg",
   },
   [BlockchainType.starknet]: {
-    name: "starknet",
-    icon: "https://garden-finance.imgix.net/starknet-logo.svg",
+    name: "Starknet",
+    icon: "https://garden.imgix.net/starknet-logo.svg",
   },
   [BlockchainType.solana]: {
-    name: "solana",
-    icon: "https://garden-finance.imgix.net/chain_images/solana.png",
+    name: "Solana",
+    icon: "https://garden.imgix.net/chain_images/solana.png",
   },
   [BlockchainType.sui]: {
-    name: "sui",
-    icon: "https://garden-finance.imgix.net/chain_images/sui.svg",
+    name: "Sui",
+    icon: "https://garden.imgix.net/chain_images/sui.svg",
   },
 } as const;
 
@@ -72,7 +72,7 @@ const createWallet = (
 ): GardenSupportedWalletsType => ({
   id,
   name,
-  logo: `https://garden-finance.imgix.net/${logoPath}`,
+  logo: `https://garden.imgix.net/${logoPath}`,
   installLink,
   isBitcoinSupported: capabilities[BlockchainType.bitcoin] ?? false,
   isEVMSupported: capabilities[BlockchainType.evm] ?? false,
