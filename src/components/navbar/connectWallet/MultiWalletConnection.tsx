@@ -51,15 +51,12 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   } = useStarknetWallet();
   const { handleSuiConnect, suiSelectedWallet } = useSuiWallet();
   const availableEcosystems = Object.entries(ecosystems).filter(
-    ([, value]) =>
-      (value.name.toLowerCase() === BlockchainType.evm && connectors.evm) ||
-      (value.name.toLowerCase() === BlockchainType.bitcoin &&
-        connectors.bitcoin) ||
-      (value.name.toLowerCase() === BlockchainType.starknet &&
-        connectors.starknet) ||
-      (value.name.toLowerCase() === BlockchainType.solana &&
-        connectors.solana) ||
-      (value.name.toLowerCase() === BlockchainType.sui && connectors.sui)
+    ([key]) =>
+      (key === BlockchainType.evm && connectors.evm) ||
+      (key === BlockchainType.bitcoin && connectors.bitcoin) ||
+      (key === BlockchainType.starknet && connectors.starknet) ||
+      (key === BlockchainType.solana && connectors.solana) ||
+      (key === BlockchainType.sui && connectors.sui)
   );
 
   const connectionStatus: Record<BlockchainType, boolean> = {
