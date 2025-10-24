@@ -32,6 +32,7 @@ import {
   isSolana,
   isSui,
   Chain,
+  BlockchainType,
 } from "@gardenfi/orderbook";
 import { swapStore } from "../../store/swapStore";
 import { AnimatePresence, motion } from "framer-motion";
@@ -224,12 +225,13 @@ export const CreateSwap = () => {
   const handleConnectWallet = () => {
     if (!needsWalletConnection) return;
 
-    const modalState = Object.values(ecosystems).reduce(
-      (acc, { name }) => {
-        acc[name] = name.toLowerCase() === needsWalletConnection;
+    const modalState = Object.entries(ecosystems).reduce(
+      (acc, [key, { name }]) => {
+        acc[key as BlockchainType] =
+          name.toLowerCase() === needsWalletConnection;
         return acc;
       },
-      {} as Record<string, boolean>
+      {} as Record<BlockchainType, boolean>
     );
 
     setOpenModal(modalNames.connectWallet, modalState);
