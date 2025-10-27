@@ -169,7 +169,7 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
       if (needsMoreSeed) {
         Toast.needSeed(
           "Don't have SEED tokens?",
-          "https://app.garden.finance/?output-chain=arbitrum&output-asset=SEED"
+          "https://app.uniswap.org/explore/tokens/arbitrum/0x86f65121804d2cdbef79f9f072d4e0c2eebabc08"
         );
       }
     }

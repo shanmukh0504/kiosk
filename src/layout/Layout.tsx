@@ -42,7 +42,10 @@ const LayoutContent: FC<LayoutProps> = ({ children }) => {
         <Navbar />
         {children}
         {!isMobile && <Notification />}
-        <Footer network={network} />
+        <Footer
+          maskUrl="https://garden.imgix.net/footer/maskRect.svg"
+          network={network}
+        />
       </div>
     </div>
   );
