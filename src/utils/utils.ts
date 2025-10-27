@@ -191,20 +191,17 @@ export const getDaysUntilNextEpoch = (
       return 7;
     }
 
+    if (diffDays < 0 || currentDay === 0) {
+      return 7;
+    }
+
     return diffDays;
-  }
-
-  if (currentDay === 0 && currentHour === 0 && currentMinutes === 0) {
-    return 7;
-  }
-
-  if (currentDay === 0) {
-    return 7;
   }
 
   const daysUntilNextSunday = (7 - currentDay) % 7;
   return daysUntilNextSunday;
 };
+
 export function parseAssetNameSymbol(
   input: string | undefined,
   assetId?: string | ChainAsset,

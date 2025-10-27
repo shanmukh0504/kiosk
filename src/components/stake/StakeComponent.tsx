@@ -238,7 +238,7 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
               )}
             </AnimatePresence>
           </Typography>
-          <div className={`flex gap-10 pl-1`}>
+          <div className={`flex gap-6 pl-1`}>
             <StakeStats
               title={
                 <div className="flex items-center gap-1">
@@ -256,7 +256,7 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
                 <motion.div
                   key="custom"
                   {...fadeAnimation}
-                  className="flex gap-10"
+                  className="flex gap-6"
                 >
                   <StakeStats
                     title={"Votes"}
@@ -273,7 +273,7 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
                 <motion.div
                   key="garden-pass"
                   {...fadeAnimation}
-                  className="flex gap-10"
+                  className="flex gap-6"
                 >
                   <StakeStats
                     title={"SEED locked"}
@@ -328,7 +328,7 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
                   breakpoints={{ sm: "h5" }}
                   weight="medium"
                 >
-                  Fully tradable ≈$11,787
+                  Tradable
                 </Typography>
               </div>
               <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 py-1 sm:flex-row sm:py-2 md:items-center">
