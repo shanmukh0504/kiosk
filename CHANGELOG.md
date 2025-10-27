@@ -7,6 +7,7 @@
 - Fixed chain and wallet logos.
 - Fixed Icon rounded issue in assets and chain, added new footer.
 - Fixed Native assets balances fetching.
+- Fixed X Link URL
 
 ## [1.1.8]
 
