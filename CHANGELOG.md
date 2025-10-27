@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.9]
+
+### Fixed
+
+- Fixed chain and wallet logos.
+- Fixed Icon rounded issue in assets and chain, added new footer.
+- Fixed Native assets balances fetching.
+
 ## [1.1.8]
 
 ### Added
@@ -8,6 +16,7 @@
 - Redirect link to mempool transaction hash when deposit is not confirmed.
 - Added starknet support for Xverse wallet.
 - Implemented Swap bridge functionality.
+- Added Alpen Testnet support.
 
 ### Fixed
 

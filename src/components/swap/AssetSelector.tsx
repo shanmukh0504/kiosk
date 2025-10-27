@@ -221,19 +221,15 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     ];
   }, [visibleChainsCount, orderedChains, sidebarSelectedChain]);
 
-  const handleClick = (asset?: Asset) => {
+  const handleClick = async (asset?: Asset) => {
     if (asset) {
       const isMatchingToken =
         asset.chain === comparisonToken?.chain &&
         asset.htlc?.address === comparisonToken?.htlc?.address;
       // If selecting input and current output is invalid for the new input, clear output first
-      if (
-        isAssetSelectorOpen.type === IOType.input &&
-        outputAsset &&
-        !isRouteValid(asset, outputAsset)
-      ) {
+      const isValid = outputAsset && (await isRouteValid(asset, outputAsset));
+      if (isAssetSelectorOpen.type === IOType.input && !isValid)
         setAsset(IOType.output, undefined);
-      }
       setAsset(isAssetSelectorOpen.type, asset);
       if (isMatchingToken) {
         setAsset(
@@ -345,7 +341,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                     <img
                       src={c.icon}
                       alt={c.name}
-                      className={`h-full max-h-5 w-full max-w-5 rounded-full`}
+                      className={`h-full max-h-5 w-full max-w-5`}
                     />
                     {hoveredChain === c.name && (
                       <ChainsTooltip

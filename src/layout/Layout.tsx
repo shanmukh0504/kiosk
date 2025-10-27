@@ -26,7 +26,7 @@ const LayoutContent: FC<LayoutProps> = ({ children }) => {
   }, [fetchAndSetAssetsAndChains, fetchNotification]);
 
   return (
-    <div className={`${theme} overflow-hidden text-dark-grey`}>
+    <div className={`${theme} overflow-hidden overscroll-none text-dark-grey`}>
       <ViewPortListener />
       <div className="relative z-10 bg-primary">
         <div
@@ -44,7 +44,11 @@ const LayoutContent: FC<LayoutProps> = ({ children }) => {
           {children}
         </div>
         {!isMobile && <Notification />}
-        <Footer className={"mt-auto"} network={network} />
+        <Footer
+          className={"mt-auto"}
+          maskUrl="https://garden.imgix.net/footer/maskRect.svg"
+          network={network}
+        />
       </div>
     </div>
   );
