@@ -22,7 +22,7 @@ export const useTronWallet = () => {
     tronConnected: connected,
     tronDisconnect: disconnect,
     wallets,
-    address,
+    tronAddress: address,
     wallet,
   };
 };

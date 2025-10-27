@@ -77,7 +77,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     useSuiWallet();
   const {
     wallets: tronWallets,
-    address: tronAddress,
+    tronAddress,
     wallet: tronWallet,
     handleTronConnect,
   } = useTronWallet();

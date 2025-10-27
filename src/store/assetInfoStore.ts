@@ -105,8 +105,8 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
         assetManager: manager,
         routeValidator: manager.routeValidator,
         routeMatrix: manager.routeMatrix,
-        allAssets: manager.allAssets,
-        allChains: manager.allChains,
+        allAssets: manager.assets,
+        allChains: manager.chains,
         assets: manager.assets,
         chains: manager.chains,
       });
