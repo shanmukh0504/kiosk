@@ -87,6 +87,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   const showOnlyEVMWallets = !!modalData.connectWallet?.evm;
   const showOnlySolanaWallets = !!modalData.connectWallet?.solana;
   const showOnlySuiWallets = !!modalData.connectWallet?.sui;
+  const showOnlyTronWallets = !!modalData.connectWallet?.tron;
 
   useEffect(() => {
     const selected = showOnlyStarknetWallets
@@ -99,7 +100,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
             ? BlockchainType.solana
             : showOnlySuiWallets
               ? BlockchainType.sui
-              : null;
+              : showOnlyTronWallets
+                ? BlockchainType.tron
+                : null;
 
     if (selected) setSelectedEcosystem(selected);
   }, [
@@ -108,6 +111,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     showOnlyBTCWallets,
     showOnlySolanaWallets,
     showOnlySuiWallets,
+    showOnlyTronWallets,
   ]);
 
   const allAvailableWallets = useMemo(() => {

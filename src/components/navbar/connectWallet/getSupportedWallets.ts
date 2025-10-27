@@ -160,7 +160,13 @@ const blockchainConfigs = {
     inputKey: "tronWallets" as const,
     finder: (wallets: TronWallet[], key: string) =>
       wallets?.find((w) => w.adapter.name.toLowerCase() === key.toLowerCase()),
-    availabilityChecker: (wallet: any) => !!wallet,
+    availabilityChecker: (wallet: any, key: string) => {
+      const manualCheck = manualTronChecks[key];
+      if (manualCheck) {
+        return manualCheck();
+      }
+      return !!wallet;
+    },
   },
 };
 
@@ -196,6 +202,13 @@ const manualEVMChecks: Record<
       typeof window.backpack === "object" &&
       "ethereum" in window.backpack,
     connectorId: "app.backpack",
+  },
+};
+
+const manualTronChecks: Record<string, () => boolean> = {
+  tronlink: () => {
+    if (typeof window === "undefined") return false;
+    return !!(window.tronWeb || window.tronLink);
   },
 };
 
@@ -360,6 +373,7 @@ export const getAvailableWallets = (
       BlockchainType.starknet,
       BlockchainType.solana,
       BlockchainType.sui,
+      BlockchainType.tron,
     ] as const
   ).forEach((blockchain) => {
     processBlockchainWallets(walletMap, walletInputs, blockchain);

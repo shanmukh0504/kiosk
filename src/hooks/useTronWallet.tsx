@@ -8,10 +8,8 @@ export const useTronWallet = () => {
     wallet,
     select,
     // autoConnect,
-    // connected,
-    // connecting,
-    // signMessage,
-    // signTransaction,
+    connected,
+    disconnect,
   } = useWallet();
 
   async function handleTronConnect(wallet: Wallet): Promise<void> {
@@ -19,29 +17,10 @@ export const useTronWallet = () => {
     await tronConnect();
   }
 
-  // useEffect(() => {
-  //   if (status === "connected" && address && activeConnector) {
-  //     localStorage.setItem(
-  //       "starknetWalletStore",
-  //       JSON.stringify({
-  //         address: address,
-  //         connector: activeConnector.name,
-  //       })
-  //     );
-  //   }
-  // }, [status, address, activeConnector]);
-
-  // const { switchChainAsync, error } = useSwitchChain({
-  //   params: {
-  //     chainId:
-  //       network === Network.MAINNET
-  //         ? constants.StarknetChainId.SN_SEPOLIA
-  //         : constants.StarknetChainId.SN_MAIN,
-  //   },
-  // });
-
   return {
     handleTronConnect,
+    tronConnected: connected,
+    tronDisconnect: disconnect,
     wallets,
     address,
     wallet,

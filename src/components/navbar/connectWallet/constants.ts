@@ -32,7 +32,7 @@ export const ecosystems = {
   },
   [BlockchainType.tron]: {
     name: "tron",
-    icon: "https://garden-finance.imgix.net/chain_images/tron.svg",
+    icon: "https://garden.imgix.net/chain_images/TronIcon.svg",
   },
 } as const;
 
@@ -135,14 +135,14 @@ export const GardenSupportedWallets: Record<
   "com.coinbase.wallet": createWallet(
     "com.coinbase.wallet",
     "Coinbase Wallet",
-    "https://garden-finance.imgix.net/wallets/coinbase.svg",
+    "https://garden.imgix.net/wallets/coinbase.svg",
     "https://www.coinbase.com/wallet/downloads",
     { evm: true }
   ),
   "com.okex.wallet": createWallet(
     "com.okex.wallet",
     "OKX Wallet",
-    "https://garden-finance.imgix.net/wallets/okx.svg",
+    "https://garden.imgix.net/wallets/okx.svg",
     "https://www.okx.com/download",
     {
       bitcoin: network === Network.MAINNET,
@@ -174,7 +174,7 @@ export const GardenSupportedWallets: Record<
   argentX: createWallet(
     "argentX",
     "Ready Wallet (formerly Argent)",
-    "https://garden-finance.imgix.net/wallets/argent.svg",
+    "https://garden.imgix.net/wallet/argent.svg",
     "https://www.argent.xyz/argent-x",
     { starknet: true }
   ),
