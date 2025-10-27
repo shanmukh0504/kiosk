@@ -1194,9 +1194,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/garden-book@npm:0.2.5":
-  version: 0.2.5
-  resolution: "@gardenfi/garden-book@npm:0.2.5"
+"@gardenfi/garden-book@npm:0.2.6":
+  version: 0.2.6
+  resolution: "@gardenfi/garden-book@npm:0.2.6"
   dependencies:
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^2.1.1"
@@ -1209,7 +1209,7 @@ __metadata:
   peerDependencies:
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 10c0/0924a10436bc4c9416d7aa5051ed6543eaa268ec34c79f4a62a2cd720ac55b41d0425d0a2e1c12c542099d716380826ea6a8e048840c35bcd5b0eaad828ad70c
+  checksum: 10c0/2788d7ffef2737a8f74e69a35f0f5c0ce66248745bf146709978275944c6cc833bb48988c4c34ec17d1df957597c0242b19a83d077c0f3e9a5eb75fd3ef8c6e4
   languageName: node
   linkType: hard
 
@@ -11665,7 +11665,7 @@ __metadata:
     "@farcaster/miniapp-sdk": "npm:^0.1.9"
     "@farcaster/miniapp-wagmi-connector": "npm:^1.0.0"
     "@gardenfi/core": "npm:2.5.3-beta.11"
-    "@gardenfi/garden-book": "npm:0.2.5"
+    "@gardenfi/garden-book": "npm:0.2.6"
     "@gardenfi/orderbook": "npm:2.5.3-beta.11"
     "@gardenfi/react-hooks": "npm:2.5.3-beta.12"
     "@gardenfi/utils": "npm:^2.5.3-beta.5"
