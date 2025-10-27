@@ -56,7 +56,7 @@ export const StakeOverview = () => {
     >
       <div className="mx-auto flex w-[328px] flex-col gap-5 bg-white/25 p-4 backdrop-blur-[20] sm:w-[460px] md:w-[740px]">
         <div className="flex items-start justify-between gap-4 sm:items-center">
-          <div className="grid w-[310px] grid-cols-3 gap-5">
+          <div className="grid w-[310px] grid-cols-3 gap-5 px-2">
             <OverviewStats title={"Total SEED"} value={formattedAmount} />
             {/* <OverviewStats
                   title={"Garden pass"}
