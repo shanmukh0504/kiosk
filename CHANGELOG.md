@@ -34,6 +34,7 @@
 
 - Fixed USD value formatting and rate display.
 - Added Evm and Sui support for Backpack wallet.
+- Fixed broken base chain logo in staking constants.
 - Added Husky pre-commit hook to run ESLint with --fix, restage updated files, and block empty commits.
 
 ## [1.1.6]
