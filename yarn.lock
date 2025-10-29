@@ -1169,13 +1169,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/core@npm:2.5.3-beta.11":
-  version: 2.5.3-beta.11
-  resolution: "@gardenfi/core@npm:2.5.3-beta.11"
+"@gardenfi/core@npm:2.5.3-beta.14":
+  version: 2.5.3-beta.14
+  resolution: "@gardenfi/core@npm:2.5.3-beta.14"
   dependencies:
     "@coral-xyz/anchor": "npm:^0.31.1"
-    "@gardenfi/orderbook": "npm:2.5.3-beta.11"
-    "@gardenfi/utils": "npm:2.5.3-beta.5"
+    "@gardenfi/orderbook": "npm:2.5.3-beta.14"
+    "@gardenfi/utils": "npm:2.5.3-beta.7"
     "@mysten/signers": "npm:^0.3.4"
     "@mysten/sui": "npm:^1.37.1"
     "@mysten/wallet-standard": "npm:^0.16.9"
@@ -1190,13 +1190,13 @@ __metadata:
     tiny-secp256k1: "npm:^2.2.3"
     varuint-bitcoin: "npm:^1.1.2"
     yup: "npm:^1.4.0"
-  checksum: 10c0/ec076f69a1169facbadacf2c72508ffe5b5aa15caaf9663d0d55cd09100d0a622cbaa91a9b72e1d6a73727c172daf3379c39e0ae3645cd61c09625f50264d597
+  checksum: 10c0/329077697c860e563958e715758183207f96d4dfb6a0aee5a4758b459c1f06895a008bfa21eb6f81f147735ee61377b437435d8796f333b5658a9475680f3e98
   languageName: node
   linkType: hard
 
-"@gardenfi/garden-book@npm:0.2.2":
-  version: 0.2.2
-  resolution: "@gardenfi/garden-book@npm:0.2.2"
+"@gardenfi/garden-book@npm:0.2.6":
+  version: 0.2.6
+  resolution: "@gardenfi/garden-book@npm:0.2.6"
   dependencies:
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^2.1.1"
@@ -1209,7 +1209,7 @@ __metadata:
   peerDependencies:
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 10c0/0f692020f8a9f2c74190c812afd3b1bfe183a19b296bbb5cca56d3a927e045841165303da4f17b82be01a643b0419952fa65dac13ce246e4ff482f04f2930428
+  checksum: 10c0/2788d7ffef2737a8f74e69a35f0f5c0ce66248745bf146709978275944c6cc833bb48988c4c34ec17d1df957597c0242b19a83d077c0f3e9a5eb75fd3ef8c6e4
   languageName: node
   linkType: hard
 
@@ -1227,35 +1227,35 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/orderbook@npm:2.5.3-beta.11":
-  version: 2.5.3-beta.11
-  resolution: "@gardenfi/orderbook@npm:2.5.3-beta.11"
+"@gardenfi/orderbook@npm:2.5.3-beta.14":
+  version: 2.5.3-beta.14
+  resolution: "@gardenfi/orderbook@npm:2.5.3-beta.14"
   dependencies:
     "@coral-xyz/anchor": "npm:^0.31.1"
-    "@gardenfi/utils": "npm:2.5.3-beta.5"
+    "@gardenfi/utils": "npm:2.5.3-beta.7"
     bufferutil: "npm:^4.0.8"
     node-cache: "npm:^5.1.2"
     siwe: "npm:^2.1.4"
     utf-8-validate: "npm:^6.0.3"
     ws: "npm:^8.14.2"
-  checksum: 10c0/d23ffbd937aed64879787fcd454584106b33f019228e5235d2348247ba3a0260e9b2e007f7b42fbc9a8c79fa5316dc73c763181fdfd7bcd220aa30bbf1f5ce01
+  checksum: 10c0/961d96349392d3cd46a375c058d8d31d50b3fee80d3856f2d4afdf1eb9ffe5102960d5b31fe650b0276d71173f3aafdc00f27db77c3edea762124d66ca9884a9
   languageName: node
   linkType: hard
 
-"@gardenfi/react-hooks@npm:2.5.3-beta.12":
-  version: 2.5.3-beta.12
-  resolution: "@gardenfi/react-hooks@npm:2.5.3-beta.12"
+"@gardenfi/react-hooks@npm:2.5.3-beta.15":
+  version: 2.5.3-beta.15
+  resolution: "@gardenfi/react-hooks@npm:2.5.3-beta.15"
   dependencies:
-    "@gardenfi/core": "npm:2.5.3-beta.11"
-    "@gardenfi/orderbook": "npm:2.5.3-beta.11"
-    "@gardenfi/utils": "npm:2.5.3-beta.5"
+    "@gardenfi/core": "npm:2.5.3-beta.14"
+    "@gardenfi/orderbook": "npm:2.5.3-beta.14"
+    "@gardenfi/utils": "npm:2.5.3-beta.7"
     react: "npm:^18.3.1"
     starknet: "npm:7.6.4"
-  checksum: 10c0/ffce543670a96c7df17322285fd9bc5d710e0cab93d2e5aff9f1d4c005172f335340f6b79d59097490a83be69665764d355c69dc23e3c11af643aafbb891778c
+  checksum: 10c0/c4c4a76dd1a60be954c4bc586744cf74a3499f0a97ee1fb76fbbbd1220014d1064b3aaed067c832a2362e27db90dfa01b0a9b96fa451d59ab1e5e3755caa7d70
   languageName: node
   linkType: hard
 
-"@gardenfi/utils@npm:2.5.3, @gardenfi/utils@npm:^2.5.3-beta.5":
+"@gardenfi/utils@npm:2.5.3, @gardenfi/utils@npm:^2.5.3-beta.7":
   version: 2.5.3
   resolution: "@gardenfi/utils@npm:2.5.3"
   dependencies:
@@ -1268,16 +1268,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/utils@npm:2.5.3-beta.5":
-  version: 2.5.3-beta.5
-  resolution: "@gardenfi/utils@npm:2.5.3-beta.5"
+"@gardenfi/utils@npm:2.5.3-beta.7":
+  version: 2.5.3-beta.7
+  resolution: "@gardenfi/utils@npm:2.5.3-beta.7"
   dependencies:
     "@peculiar/webcrypto": "npm:^1.5.0"
     "@simplewebauthn/browser": "npm:^13.1.0"
     fetch-cookie: "npm:^3.1.0"
     jwt-decode: "npm:^4.0.0"
     tough-cookie: "npm:^5.1.2"
-  checksum: 10c0/fcce7321943028abeb8489fdcee1de066ca37e39e4ab0edec99020e46fa79d68d45038e616170a62c2a9955e6a568c8b4a4d7f4a05fb06eb48d17ae72080a1c3
+  checksum: 10c0/87cfc43b33c1370c7886fe8ac9edc5fda964dd0dc433b09cdf320c763960141886b64bbf109ac78f464807e8b0a79a1ea904214958f38855cdefededf33091eb
   languageName: node
   linkType: hard
 
@@ -11664,11 +11664,11 @@ __metadata:
     "@farcaster/frame-sdk": "npm:^0.1.8"
     "@farcaster/miniapp-sdk": "npm:^0.1.9"
     "@farcaster/miniapp-wagmi-connector": "npm:^1.0.0"
-    "@gardenfi/core": "npm:2.5.3-beta.11"
-    "@gardenfi/garden-book": "npm:0.2.2"
-    "@gardenfi/orderbook": "npm:2.5.3-beta.11"
-    "@gardenfi/react-hooks": "npm:2.5.3-beta.12"
-    "@gardenfi/utils": "npm:^2.5.3-beta.5"
+    "@gardenfi/core": "npm:2.5.3-beta.14"
+    "@gardenfi/garden-book": "npm:0.2.6"
+    "@gardenfi/orderbook": "npm:2.5.3-beta.14"
+    "@gardenfi/react-hooks": "npm:2.5.3-beta.15"
+    "@gardenfi/utils": "npm:^2.5.3-beta.7"
     "@gardenfi/wallet-connectors": "npm:^2.4.3"
     "@mysten/dapp-kit": "npm:^0.17.2"
     "@mysten/sui": "npm:^1.37.2"

@@ -22,7 +22,7 @@ import { deletedOrdersStore } from "../../../store/deletedOrdersStore";
 
 export const SwapInProgress = () => {
   const { order, setIsOpen } = orderInProgressStore();
-  const { allAssets } = assetInfoStore();
+  const { assets } = assetInfoStore();
   const { addDeletedOrder } = deletedOrdersStore();
   const { orderProgress, viewableStatus, confirmationsString } =
     useOrderStatus();
@@ -33,14 +33,14 @@ export const SwapInProgress = () => {
         order && isBitcoin(order?.source_swap.chain)
           ? order.source_swap.swap_id
           : "",
-      inputAsset: order && getAssetFromSwap(order.source_swap, allAssets),
-      outputAsset: order && getAssetFromSwap(order.destination_swap, allAssets),
+      inputAsset: order && getAssetFromSwap(order.source_swap, assets),
+      outputAsset: order && getAssetFromSwap(order.destination_swap, assets),
       btcAddress:
         order && isBitcoin(order?.source_swap.chain)
           ? order?.source_swap.initiator
           : order?.destination_swap.redeemer,
     };
-  }, [allAssets, order]);
+  }, [assets, order]);
 
   const isOrderCompleted = Object.entries(orderProgress || {}).every(
     ([_, step]) => step.status === "completed"

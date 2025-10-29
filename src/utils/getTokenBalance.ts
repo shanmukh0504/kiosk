@@ -4,6 +4,7 @@ import {
   isBitcoin,
   isEVM,
   isEvmNativeToken,
+  isSolanaNativeToken,
   isStarknet,
   isSui,
 } from "@gardenfi/orderbook";
@@ -76,9 +77,7 @@ export const getSolanaTokenBalance = async (
       typeof address === "string" ? new PublicKey(address) : address;
 
     // Check if it's native SOL - when tokenAddress equals atomicSwapAddress, it's a native token
-    const isNativeSOL =
-      asset.token?.address === asset.htlc?.address ||
-      asset.token?.address === "primary";
+    const isNativeSOL = isSolanaNativeToken(asset.chain, asset.symbol);
 
     if (isNativeSOL) {
       // Native SOL balance
