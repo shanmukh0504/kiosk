@@ -1,9 +1,10 @@
 # Changelog
 
-## [1.1.9]
+## [2.0.0]
 
 ### Fixed
 
+- Migrated to v2 routes.
 - Fixed chain and wallet logos.
 - Fixed Icon rounded issue in assets and chain, added new footer.
 - Fixed Native assets balances fetching.
