@@ -3,10 +3,11 @@ import { Network, Url } from "@gardenfi/utils";
 const REQUIRED_ENV_VARS = {
   STAKING_URL: import.meta.env.VITE_STAKING_URL,
   INFO_URL: import.meta.env.VITE_INFO_URL,
-  ORDERBOOK_URL: import.meta.env.VITE_ORDERBOOK_URL,
   QUOTE_URL: import.meta.env.VITE_QUOTE_URL,
+  BASE_URL: import.meta.env.VITE_BASE_URL,
   REWARD: import.meta.env.VITE_REWARD_URL,
   EXPLORER: import.meta.env.VITE_EXPLORER_URL,
+  API_KEY: import.meta.env.VITE_API_KEY,
 } as const;
 
 export const API = () => {
@@ -15,13 +16,10 @@ export const API = () => {
   });
 
   return {
+    api_key: REQUIRED_ENV_VARS.API_KEY,
     home: new Url("https://garden.finance"),
     data: {
-      info: new Url(REQUIRED_ENV_VARS.INFO_URL),
-      assets: (network: Network) =>
-        new Url(REQUIRED_ENV_VARS.INFO_URL)
-          .endpoint("assets")
-          .endpoint(network),
+      chains: () => new Url(REQUIRED_ENV_VARS.BASE_URL).endpoint("/v2/chains"),
       blockNumbers: (network: "mainnet" | "testnet" | "localnet") =>
         new Url(REQUIRED_ENV_VARS.INFO_URL)
           .endpoint("blocknumbers")
@@ -30,12 +28,10 @@ export const API = () => {
         new Url(REQUIRED_ENV_VARS.INFO_URL).endpoint("notification"),
     },
     buildId: "/build-id.json",
-    orderbook: new Url(REQUIRED_ENV_VARS.ORDERBOOK_URL),
+    baseUrl: new Url(REQUIRED_ENV_VARS.BASE_URL),
     quote: {
-      quote: new Url(REQUIRED_ENV_VARS.QUOTE_URL),
-      fiatValues: new Url(REQUIRED_ENV_VARS.QUOTE_URL).endpoint(
-        "supported-assets"
-      ),
+      quote: new Url(REQUIRED_ENV_VARS.BASE_URL),
+      fiatValues: new Url(REQUIRED_ENV_VARS.QUOTE_URL).endpoint("/fiat"),
     },
     stake: {
       stakePosition: (userId: string) =>
@@ -59,5 +55,13 @@ export const API = () => {
       new Url(REQUIRED_ENV_VARS.REWARD).endpoint("rewards").endpoint(userId),
     explorer: (orderId: string) =>
       new Url("order", REQUIRED_ENV_VARS.EXPLORER).endpoint(orderId),
+    mempoolTxExplorer: (network: Network, txHash: string) =>
+      new Url(
+        network === Network.MAINNET
+          ? "https://mempool.space"
+          : "https://mempool.space/testnet4"
+      )
+        .endpoint("tx")
+        .endpoint(txHash),
   };
 };

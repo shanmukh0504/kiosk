@@ -25,6 +25,7 @@ export const ETH_BLOCKS_PER_DAY = 7200;
 export const STAKING_CONFIG = {
   11155111: {
     SEED_ADDRESS: "0x5eedb3f5bbA7Da86b0bBa2c6450C52E27e105eeD",
+    SEED_SYMBOL: "SEED",
     STAKING_CONTRACT_ADDRESS: "0xC09E6996459D2E9E2bb5F7727341486aDEE325Bf",
     GARDEN_FILLER_ADDRESS: "0x1b7119fe340ff9fFb99492DdE9C9044389BfE387",
     STAKING_CHAIN: 11155111,
@@ -34,6 +35,7 @@ export const STAKING_CONFIG = {
   },
   42161: {
     SEED_ADDRESS: "0x86f65121804D2Cdbef79F9f072D4e0c2eEbABC08",
+    SEED_SYMBOL: "SEED",
     STAKING_CONTRACT_ADDRESS: "0xe2239938ce088148b3ab398b2b77eedfcd9d1afc",
     GARDEN_FILLER_ADDRESS: "0x9dd9c2d208b07bf9a4ef9ca311f36d7185749635",
     STAKING_CHAIN: 42161,
@@ -51,9 +53,8 @@ export const REWARD_CONFIG = {
       REWARD_TOKEN_ADDRESS: "0x868D08C137ff590BF70D368408B72f748eFbe483",
       REWARD_TOKEN_DECIMALS: 8,
       EXPLORER: new Url("https://sepolia.basescan.org"),
-      TOKEN_LOGO: "https://garden-finance.imgix.net/token-images/cbBTC.svg",
-      CHAIN_LOGO:
-        "https://garden-finance.imgix.net/chain_images/base-white.svg",
+      TOKEN_LOGO: "https://garden.imgix.net/token-images/cbBTC.svg",
+      CHAIN_LOGO: "https://garden.imgix.net/chain_images/BaseIcon.svg",
     },
     //base
     8453: {
@@ -61,9 +62,8 @@ export const REWARD_CONFIG = {
       REWARD_TOKEN_ADDRESS: "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
       REWARD_TOKEN_DECIMALS: 8,
       EXPLORER: new Url("https://basescan.org"),
-      TOKEN_LOGO: "https://garden-finance.imgix.net/token-images/cbBTC.svg",
-      CHAIN_LOGO:
-        "https://garden-finance.imgix.net/chain_images/base-white.svg",
+      TOKEN_LOGO: "https://garden.imgix.net/token-images/cbBTC.svg",
+      CHAIN_LOGO: "https://garden.imgix.net/chain_images/BaseIcon.svg",
     },
   },
   SEED: {
@@ -71,15 +71,15 @@ export const REWARD_CONFIG = {
     11155111: {
       REWARD_TOKEN_ADDRESS: "0x5eedb3f5bbA7Da86b0bBa2c6450C52E27e105eeD",
       EXPLORER: new Url("https://sepolia.etherscan.io"),
-      TOKEN_LOGO: "https://garden-finance.imgix.net/token-images/seed.svg",
-      CHAIN_LOGO: "https://garden-finance.imgix.net/chain_images/sepolia.svg",
+      TOKEN_LOGO: "https://garden.imgix.net/token-images/SEED.svg",
+      CHAIN_LOGO: "https://garden.imgix.net/chain_images/sepolia.svg",
     },
     //arbitrum
     42161: {
       REWARD_TOKEN_ADDRESS: "0x86f65121804D2Cdbef79F9f072D4e0c2eEbABC08",
       EXPLORER: new Url("https://arbiscan.io"),
-      TOKEN_LOGO: "https://garden-finance.imgix.net/token-images/seed.svg",
-      CHAIN_LOGO: "https://garden-finance.imgix.net/chain_images/arbitrum.svg",
+      TOKEN_LOGO: "https://garden.imgix.net/token-images/SEED.svg",
+      CHAIN_LOGO: "https://garden.imgix.net/chain_images/arbitrum.svg",
     },
   },
 } as const;

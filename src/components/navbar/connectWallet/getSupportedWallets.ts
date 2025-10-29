@@ -38,7 +38,7 @@ type WalletInputs = {
   suiWallets?: SuiWallet[];
 };
 const blockchainConfigs = {
-  [BlockchainType.EVM]: {
+  [BlockchainType.evm]: {
     supportKey: "isEVMSupported" as const,
     walletKey: "evmWallet" as const,
     flagKey: "isEVM" as const,
@@ -53,7 +53,7 @@ const blockchainConfigs = {
       return !!wallet;
     },
   },
-  [BlockchainType.Bitcoin]: {
+  [BlockchainType.bitcoin]: {
     supportKey: "isBitcoinSupported" as const,
     walletKey: "btcWallet" as const,
     flagKey: "isBitcoin" as const,
@@ -62,7 +62,7 @@ const blockchainConfigs = {
       wallets?.[key] ?? wallets?.[evmToBTCid[key]],
     availabilityChecker: (wallet: any) => !!wallet,
   },
-  [BlockchainType.Starknet]: {
+  [BlockchainType.starknet]: {
     supportKey: "isStarknetSupported" as const,
     walletKey: "starknetWallet" as const,
     flagKey: "isStarknet" as const,
@@ -84,7 +84,7 @@ const blockchainConfigs = {
       return !!wallet;
     },
   },
-  [BlockchainType.Solana]: {
+  [BlockchainType.solana]: {
     supportKey: "isSolanaSupported" as const,
     walletKey: "solanaWallet" as const,
     flagKey: "isSolana" as const,
@@ -114,7 +114,7 @@ const blockchainConfigs = {
       return !!wallet;
     },
   },
-  [BlockchainType.Sui]: {
+  [BlockchainType.sui]: {
     supportKey: "isSuiSupported" as const,
     walletKey: "suiWallet" as const,
     flagKey: "isSui" as const,
@@ -133,6 +133,8 @@ const blockchainConfigs = {
         return wallets?.find((w) => w.name === "OKX Wallet");
       } else if (key === "app.backpack") {
         return wallets?.find((w) => w.name === "Backpack");
+      } else if (key === "tokeo") {
+        return wallets?.find((w) => w.name === "Tokeo");
       } else {
         const walletId = walletNameMap[key] || key;
         return wallets?.find((w) => w.id === walletId);
@@ -220,11 +222,11 @@ function processBlockchainWallets(
     | SuiWallet[]
     | undefined;
 
-  if (!inputWallets && blockchain !== BlockchainType.Bitcoin) return;
+  if (!inputWallets && blockchain !== BlockchainType.bitcoin) return;
 
   Object.entries(GardenSupportedWallets).forEach(([key, value]) => {
     if (!value[config.supportKey]) return;
-    if (blockchain === BlockchainType.EVM && key === "app.phantom") return;
+    if (blockchain === BlockchainType.evm && key === "app.phantom") return;
 
     let foundWallet = config.finder(inputWallets as any, key);
     let isAvailable = config.availabilityChecker(foundWallet, key);
@@ -234,7 +236,8 @@ function processBlockchainWallets(
       walletMap.set(walletId, createInitialWallet(value));
     }
 
-    const wallet = walletMap.get(walletId)!;
+    const wallet = walletMap.get(walletId);
+    if (!wallet) return;
     updateWalletWithBlockchain(wallet, foundWallet, isAvailable, blockchain);
   });
 }
@@ -292,7 +295,8 @@ function handleMultiChainWallets(
         walletMap.set(walletId, createInitialWallet(config));
       }
 
-      const wallet = walletMap.get(walletId)!;
+      const wallet = walletMap.get(walletId);
+      if (!wallet) return;
       wallet.wallet = {
         evmWallet,
         btcWallet,
@@ -327,11 +331,11 @@ export const getAvailableWallets = (
 
   (
     [
-      BlockchainType.EVM,
-      BlockchainType.Bitcoin,
-      BlockchainType.Starknet,
-      BlockchainType.Solana,
-      BlockchainType.Sui,
+      BlockchainType.evm,
+      BlockchainType.bitcoin,
+      BlockchainType.starknet,
+      BlockchainType.solana,
+      BlockchainType.sui,
     ] as const
   ).forEach((blockchain) => {
     processBlockchainWallets(walletMap, walletInputs, blockchain);

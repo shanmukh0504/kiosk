@@ -1,4 +1,5 @@
 import {
+  ArrowNorthEastIcon,
   CancelIcon,
   KeyboardDownIcon,
   RadioCheckedIcon,
@@ -9,14 +10,20 @@ import {
   OrderProgress,
   SimplifiedOrderStatus,
 } from "../../../hooks/useOrderStatus";
+import { OrderWithStatus } from "@gardenfi/core";
+import { isBitcoin } from "@gardenfi/orderbook";
+import { API } from "../../../constants/api";
+import { network } from "../../../constants/constants";
 
 type OrderStatusProps = {
+  order: OrderWithStatus;
   orderProgress: OrderProgress | undefined;
   viewableStatus?: string | null;
   confirmationString: string;
 };
 
 export const OrderStatus: FC<OrderStatusProps> = ({
+  order,
   orderProgress,
   viewableStatus,
   confirmationString,
@@ -45,6 +52,10 @@ export const OrderStatus: FC<OrderStatusProps> = ({
           index === array.length - 1 || array[index + 1].status === "pending"
       )?.title) ||
     "";
+
+  const handleTransactionRedirect = (txHash: string) => {
+    window.open(API().mempoolTxExplorer(network, txHash), "_blank");
+  };
 
   return (
     <div className="flex flex-col justify-between rounded-2xl bg-white p-4">
@@ -116,18 +127,35 @@ export const OrderStatus: FC<OrderStatusProps> = ({
                       </span>
                     )}
                     <div className="flex w-full items-center justify-between">
-                      <Typography
-                        size="h4"
-                        weight={
-                          currentStatus === step.title ? "medium" : "regular"
-                        }
-                      >
-                        {step.title}
-                      </Typography>
-                      {index === 1 && step.status === "inProgress" && (
-                        <Typography size="h5" weight="regular">
-                          {confirmationString}
+                      <div className="flex items-center gap-2">
+                        <Typography
+                          size="h4"
+                          weight={
+                            currentStatus === step.title ? "medium" : "regular"
+                          }
+                        >
+                          {step.title}
                         </Typography>
+                        {isBitcoin(order.source_swap.chain) &&
+                          order.source_swap.initiate_tx_hash !== "" &&
+                          index === 1 &&
+                          step.status === "inProgress" && (
+                            <ArrowNorthEastIcon
+                              onClick={() =>
+                                handleTransactionRedirect(
+                                  order.source_swap.initiate_tx_hash
+                                )
+                              }
+                              className="h-[10px] w-[10px] cursor-pointer"
+                            />
+                          )}
+                      </div>
+                      {index === 1 && step.status === "inProgress" && (
+                        <>
+                          <Typography size="h5" weight="regular">
+                            {confirmationString}
+                          </Typography>
+                        </>
                       )}
                     </div>
                   </li>

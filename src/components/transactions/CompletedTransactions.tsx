@@ -2,23 +2,23 @@ import { Typography } from "@gardenfi/garden-book";
 import transactionHistoryStore from "../../store/transactionHistoryStore";
 import { TransactionsSkeleton } from "./TransactionsSkeleton";
 import { TransactionRow } from "./TransactionRow";
-import { OrderStatus } from "@gardenfi/core";
+import { ParseOrderStatus } from "@gardenfi/orderbook";
 import { useMemo } from "react";
 import { getAssetFromSwap } from "../../utils/utils";
 import { assetInfoStore } from "../../store/assetInfoStore";
 
 export const CompletedTransactions = () => {
   const { transactions, isLoading } = transactionHistoryStore();
-  const { allAssets } = assetInfoStore();
+  const { assets } = assetInfoStore();
 
   const filteredTransactions = useMemo(
     () =>
       transactions.filter(
         (order) =>
-          getAssetFromSwap(order.source_swap, allAssets) &&
-          getAssetFromSwap(order.destination_swap, allAssets)
+          getAssetFromSwap(order.source_swap, assets) &&
+          getAssetFromSwap(order.destination_swap, assets)
       ),
-    [transactions, allAssets]
+    [transactions, assets]
   );
 
   return (
@@ -30,16 +30,19 @@ export const CompletedTransactions = () => {
           No transactions found.
         </Typography>
       ) : (
-        filteredTransactions.map((order, index) => (
-          <div key={index} className="w-full">
-            <TransactionRow
-              order={order}
-              status={OrderStatus.Completed}
-              isLast={index === filteredTransactions.length - 1}
-              isFirst={index === 0}
-            />
-          </div>
-        ))
+        filteredTransactions.map((order, index) => {
+          const parsedStatus = ParseOrderStatus(order);
+          return (
+            <div key={index} className="w-full">
+              <TransactionRow
+                order={order}
+                status={parsedStatus}
+                isLast={index === filteredTransactions.length - 1}
+                isFirst={index === 0}
+              />
+            </div>
+          );
+        })
       )}
     </div>
   );

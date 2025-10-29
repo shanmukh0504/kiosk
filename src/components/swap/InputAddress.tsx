@@ -37,7 +37,7 @@ export const InputAddress = () => {
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value;
-    if (!/^[a-zA-Z0-9]$/.test(input.at(-1)!)) {
+    if (!/^[a-zA-Z0-9]$/.test(input.at(-1) || "")) {
       input = input.slice(0, -1);
     }
     setBtcAddress(input);
@@ -60,7 +60,7 @@ export const InputAddress = () => {
               data-tooltip-id={isRecoveryAddress ? tooltipId : ""}
               size="h5"
               weight="medium"
-              onClick={() => inputRef.current!.focus()}
+              onClick={() => inputRef.current?.focus()}
               className="w-fit"
             >
               {isRecoveryAddress ? "Refund" : "Receive"} address

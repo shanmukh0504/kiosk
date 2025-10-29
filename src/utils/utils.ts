@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
 import { INTERNAL_ROUTES, QUERY_PARAMS, THEMES } from "../constants/constants";
+import { ChainAsset, OrderWithStatus, Swap } from "@gardenfi/orderbook";
 import { Assets } from "../store/assetInfoStore";
-import { Asset, Swap } from "@gardenfi/orderbook";
 
 export const isProduction = () => {
   return import.meta.env.VITE_ENVIRONMENT === "production";
@@ -27,7 +27,12 @@ export const capitalizeChain = (chainKey: string) => {
  * @returns
  */
 export const getAssetFromSwap = (swap: Swap, assets: Assets | null) => {
-  return assets && assets[`${swap.chain}_${swap.asset.toLowerCase()}`];
+  if (!assets) return;
+  return Object.values(assets).find(
+    (asset) =>
+      ChainAsset.from(asset.id).toString() ===
+      ChainAsset.from(swap.asset).toString()
+  );
 };
 
 export const getQueryParams = (urlParams: URLSearchParams) => {
@@ -82,18 +87,26 @@ export const formatAmount = (
   return Number(temp);
 };
 
+export const isCurrentRoute = (route: string) => {
+  if (route.includes(":")) {
+    const routePattern = route.replace(/:[^/]+/g, "[^/]+");
+    const regex = new RegExp(`^${routePattern}$`);
+    return regex.test(window.location.pathname);
+  }
+
+  return window.location.pathname === route;
+};
+
 export const formatAmountUsd = (
-  amount: string | number | bigint,
+  amount: string | number | bigint | undefined,
   decimals: number
 ) => {
+  if (!amount) return 0;
   const num = formatAmount(amount, decimals);
   return Number(num).toLocaleString("en-US", {
     maximumFractionDigits: 2,
   });
 };
-
-export const isCurrentRoute = (route: string) =>
-  window.location.pathname === route;
 
 export const clearLocalStorageExcept = (keysToKeep: string[]) => {
   const preservedData: Record<string, string | null> = {};
@@ -136,13 +149,19 @@ export const getAssetFromChainAndSymbol = (
   return assetKey ? assets[assetKey] : undefined;
 };
 
-export const getOrderPair = (
-  chain: string | null,
-  tokenAddress: string | null
-) => (chain && tokenAddress ? `${chain}_${tokenAddress.toLowerCase()}` : "");
+export const getFirstAssetFromChain = (
+  assets: Assets,
+  chain: string | null
+) => {
+  if (!chain) return undefined;
 
-export const getAssetChainHTLCAddressPair = (asset: Asset) =>
-  `${asset.chain}_${asset.atomicSwapAddress.toLowerCase()}`;
+  const assetKey = Object.keys(assets).find((key) => {
+    const asset = assets[key];
+    return asset.chain === chain;
+  });
+
+  return assetKey ? assets[assetKey] : undefined;
+};
 
 export const getProtocolFee = (fees: number) => {
   const protocolBips = 7;
@@ -150,3 +169,42 @@ export const getProtocolFee = (fees: number) => {
   const protocolFee = fees * (protocolBips / totalBips);
   return protocolFee;
 };
+
+export function parseAssetNameSymbol(
+  input: string | undefined,
+  assetId?: string | ChainAsset,
+  fallbackSymbol?: string
+): { name: string; symbol: string } {
+  const raw = (input ?? "").trim();
+  if (!raw) return { name: "", symbol: fallbackSymbol?.trim() || "" };
+
+  const parts = raw.split(":");
+  if (parts.length >= 2) {
+    const name = parts[0]?.trim() || "";
+    const symbol =
+      parts.slice(1).join(":").trim() || fallbackSymbol?.trim() || "";
+    return { name, symbol };
+  }
+
+  let derivedSymbol = "";
+
+  if (assetId) {
+    try {
+      const chainAsset =
+        typeof assetId === "string" ? ChainAsset.from(assetId) : assetId;
+      derivedSymbol = chainAsset.symbol.toUpperCase();
+    } catch {
+      /* empty */
+    }
+  }
+
+  return { name: raw, symbol: derivedSymbol || fallbackSymbol?.trim() || "" };
+}
+
+export function sortPendingOrders(orders: OrderWithStatus[]) {
+  return orders.sort((a, b) => {
+    const aTime = new Date(a.created_at).getTime();
+    const bTime = new Date(b.created_at).getTime();
+    return bTime - aTime;
+  });
+}

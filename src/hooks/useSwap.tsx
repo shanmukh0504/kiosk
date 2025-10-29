@@ -3,20 +3,19 @@ import { BTC, swapStore } from "../store/swapStore";
 import { IOType, network } from "../constants/constants";
 import {
   Asset,
+  BitcoinOrderResponse,
+  BlockchainType,
   Chain,
   isBitcoin,
   isSolana,
+  isSui,
+  OrderStatus,
   isStarknet,
   isEVM,
-  isSui,
+  ChainAsset,
 } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
-import { assetInfoStore } from "../store/assetInfoStore";
-import {
-  constructOrderPair,
-  OrderStatus,
-  validateBTCAddress,
-} from "@gardenfi/core";
+import { validateBTCAddress } from "@gardenfi/core";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useStarknetWallet } from "./useStarknetWallet";
 import { useEVMWallet } from "./useEVMWallet";
@@ -29,10 +28,11 @@ import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import BigNumber from "bignumber.js";
 import { useSolanaWallet } from "./useSolanaWallet";
-import { formatAmount, getOrderPair } from "../utils/utils";
+import { formatAmount } from "../utils/utils";
 import { useNetworkFees } from "./useNetworkFees";
 import { useSuiWallet } from "./useSuiWallet";
 import logger from "../utils/logger";
+import { balanceStore } from "../store/balanceStore";
 
 export const useSwap = () => {
   const {
@@ -42,7 +42,6 @@ export const useSwap = () => {
     outputAsset,
     isSwapping,
     isApproving,
-    strategy,
     rate,
     error,
     btcAddress,
@@ -50,7 +49,6 @@ export const useSwap = () => {
     isFetchingQuote,
     isEditBTCAddress,
     networkFees,
-    setStrategy,
     setIsSwapping,
     setAmount,
     setRate,
@@ -59,6 +57,7 @@ export const useSwap = () => {
     setAsset,
     setIsFetchingQuote,
     setFiatTokenPrices,
+    setFixedFee,
     isComparisonVisible,
     setIsValidBitcoinAddress,
     // setIsApproving,
@@ -66,12 +65,14 @@ export const useSwap = () => {
     clearSwapState,
     setBtcAddress,
     setIsComparisonVisible,
+    solverId,
+    setSolverId,
   } = swapStore();
-  const { strategies, balances } = assetInfoStore();
+  const { balances } = balanceStore();
   const { setOrder, setIsOpen } = orderInProgressStore();
   const { updateOrder } = pendingOrdersStore();
   const { disconnect } = useEVMWallet();
-  const { swapAndInitiate, getQuote } = useGarden();
+  const { swap, getQuote, garden } = useGarden();
   const { provider, account } = useBitcoinWallet();
   const controller = useRef<AbortController | null>(null);
   const { setConnectingWallet } = ConnectingWalletStore();
@@ -84,7 +85,7 @@ export const useSwap = () => {
 
   const inputBalance = useMemo(() => {
     if (!inputAsset || !balances) return;
-    return balances[getOrderPair(inputAsset.chain, inputAsset.tokenAddress)];
+    return balances[ChainAsset.from(inputAsset.id).toString()];
   }, [inputAsset, balances]);
 
   const inputTokenBalance = useMemo(
@@ -128,7 +129,6 @@ export const useSwap = () => {
       outputAmount &&
       inputAmount &&
       outputAsset &&
-      strategy &&
       isValidBitcoinAddress &&
       !error.inputError &&
       !error.outputError &&
@@ -140,7 +140,6 @@ export const useSwap = () => {
     outputAmount,
     inputAmount,
     outputAsset,
-    strategy,
     error,
     isValidBitcoinAddress,
   ]);
@@ -154,33 +153,28 @@ export const useSwap = () => {
       minAmount: 0,
       maxAmount: 0,
     };
-    if (!inputAsset || !outputAsset || !strategies.val) return defaultLimits;
-
-    const limits =
-      strategies.val[
-        constructOrderPair(
-          inputAsset.chain,
-          inputAsset.atomicSwapAddress,
-          outputAsset.chain,
-          outputAsset.atomicSwapAddress
-        )
-      ];
-
-    if (!limits) return defaultLimits;
+    if (!inputAsset || !outputAsset) return defaultLimits;
+    if (
+      !inputAsset.min_amount ||
+      !inputAsset.max_amount ||
+      !outputAsset.min_amount ||
+      !outputAsset.max_amount
+    )
+      return defaultLimits;
     else
       return {
         minAmount: formatAmount(
-          limits.minAmount,
+          inputAsset.min_amount,
           inputAsset.decimals,
           inputAsset.decimals
         ),
         maxAmount: formatAmount(
-          limits.maxAmount,
+          inputAsset.max_amount,
           inputAsset.decimals,
           inputAsset.decimals
         ),
       };
-  }, [inputAsset, outputAsset, strategies.val]);
+  }, [inputAsset, outputAsset]);
 
   const debouncedFetchQuote = useMemo(
     () =>
@@ -216,7 +210,6 @@ export const useSwap = () => {
             if (quote?.error?.includes("AbortError")) {
               setError({ liquidityError: Errors.none });
               setIsFetchingQuote({ input: false, output: false });
-              setStrategy("");
               return;
             } else if (quote?.error?.includes("insufficient liquidity")) {
               setError({ liquidityError: Errors.insufficientLiquidity });
@@ -231,13 +224,23 @@ export const useSwap = () => {
               setAmount(isExactOut ? IOType.input : IOType.output, "");
             }
             setIsFetchingQuote({ input: false, output: false });
-            setStrategy("");
             setTokenPrices({ input: "0", output: "0" });
             return;
           }
 
-          const [_strategy, quoteAmount] = Object.entries(quote.val.quotes)[0];
-          setStrategy(_strategy);
+          const q = quote.val[0];
+          // Set fixed fee from quote if provided
+          if (q.fixed_fee != null) {
+            const asNumber = Number(q.fixed_fee);
+            if (!Number.isNaN(asNumber)) setFixedFee(asNumber);
+          }
+
+          setSolverId(q.solver_id);
+
+          const quoteAmount = isExactOut
+            ? q.source.amount
+            : q.destination.amount;
+
           const assetToChange = isExactOut ? fromAsset : toAsset;
           const quoteAmountInDecimals = new BigNumber(Number(quoteAmount)).div(
             Math.pow(10, assetToChange.decimals)
@@ -258,25 +261,13 @@ export const useSwap = () => {
           );
           setIsFetchingQuote({ input: false, output: false });
 
-          const inputAmount = isExactOut
-            ? quoteAmountInDecimals
-            : new BigNumber(amount);
-          const outputAmount = isExactOut
-            ? new BigNumber(amount)
-            : quoteAmountInDecimals;
-          const inputTokenPrice = inputAmount.multipliedBy(
-            quote.val.input_token_price
-          );
-          const outputTokenPrice = outputAmount.multipliedBy(
-            quote.val.output_token_price
-          );
           setFiatTokenPrices({
-            input: quote.val.input_token_price.toString(),
-            output: quote.val.output_token_price.toString(),
+            input: q.source.value.toString(),
+            output: q.destination.value.toString(),
           });
           setTokenPrices({
-            input: inputTokenPrice.toString(),
-            output: outputTokenPrice.toString(),
+            input: q.source.value.toString(),
+            output: q.destination.value.toString(),
           });
           setError({
             liquidityError: Errors.none,
@@ -287,10 +278,11 @@ export const useSwap = () => {
     [
       getQuote,
       setIsFetchingQuote,
-      setStrategy,
       setRate,
       setAmount,
+      setFixedFee,
       setTokenPrices,
+      setFiatTokenPrices,
       setError,
       isSwapping,
       networkFees,
@@ -449,14 +441,7 @@ export const useSwap = () => {
       });
       return;
     }
-    if (
-      !validSwap ||
-      !swapAndInitiate ||
-      !inputAsset ||
-      !outputAsset ||
-      !strategy
-    )
-      return;
+    if (!validSwap || !swap || !inputAsset || !outputAsset) return;
     setIsSwapping(true);
 
     const inputAmountInDecimals = new BigNumber(inputAmount)
@@ -466,14 +451,11 @@ export const useSwap = () => {
       .multipliedBy(10 ** outputAsset.decimals)
       .toFixed();
 
-    const additionalData = isBitcoinSwap
+    const addresses: Partial<Record<BlockchainType, string>> = isBitcoinSwap
       ? {
-          strategyId: strategy,
-          btcAddress,
+          bitcoin: btcAddress,
         }
-      : {
-          strategyId: strategy,
-        };
+      : {};
 
     try {
       // if (!wallet) return;
@@ -508,12 +490,13 @@ export const useSwap = () => {
       //   setIsApproving(false);
       // }
 
-      const res = await swapAndInitiate({
+      const res = await swap({
         fromAsset: inputAsset,
         toAsset: outputAsset,
         sendAmount: inputAmountInDecimals,
         receiveAmount: outputAmountInDecimals,
-        additionalData,
+        solverId,
+        addresses,
       });
       if (!res.ok) {
         if (
@@ -535,12 +518,24 @@ export const useSwap = () => {
 
       logger.log("orderCreated ✅", res.val);
 
-      if (isBitcoin(res.val.source_swap.chain)) {
+      // Extract order ID from response - could be string or BitcoinOrderResponse
+      const orderId = typeof res.val === "string" ? res.val : res.val.order_id;
+      const orderResult = await garden?.getOrder(orderId);
+
+      if (!orderResult || !orderResult.ok) {
+        logger.error("failed to fetch order ❌", orderResult?.error);
+        setIsSwapping(false);
+        return;
+      }
+
+      const order = orderResult.val;
+
+      if (isBitcoin(inputAsset.chain)) {
+        const orderResponse = res.val as BitcoinOrderResponse;
         if (provider) {
-          const order = res.val;
           const bitcoinRes = await provider.sendBitcoin(
-            order.source_swap.swap_id,
-            Number(order.source_swap.amount)
+            orderResponse.to,
+            Number(orderResponse.amount)
           );
           if (bitcoinRes.error) {
             logger.error("failed to send bitcoin ❌", bitcoinRes.error);
@@ -554,7 +549,7 @@ export const useSwap = () => {
             },
             status: bitcoinRes.val
               ? OrderStatus.InitiateDetected
-              : OrderStatus.Matched,
+              : OrderStatus.Created,
           };
           setOrder(updatedOrder);
           setIsOpen(true);
@@ -563,15 +558,15 @@ export const useSwap = () => {
           return;
         }
         setIsSwapping(false);
-        setOrder({ ...res.val, status: OrderStatus.Matched });
+        setOrder({ ...order, status: OrderStatus.Created });
         setIsOpen(true);
-        updateOrder({ ...res.val, status: OrderStatus.Matched });
+        updateOrder({ ...order, status: OrderStatus.Created });
         clearSwapState();
         return;
       }
       setIsSwapping(false);
-      setOrder({ ...res.val, status: OrderStatus.InitiateDetected });
-      updateOrder({ ...res.val, status: OrderStatus.InitiateDetected });
+      setOrder({ ...order, status: OrderStatus.Initiated });
+      updateOrder({ ...order, status: OrderStatus.Initiated });
       setIsOpen(true);
       clearSwapState();
     } catch (error) {
@@ -693,7 +688,6 @@ export const useSwap = () => {
     inputAsset,
     outputAsset,
     tokenPrices,
-    strategy,
     rate,
     error,
     isEditBTCAddress,

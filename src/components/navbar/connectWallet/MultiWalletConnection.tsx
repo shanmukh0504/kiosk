@@ -19,11 +19,11 @@ type Checked = Record<BlockchainType, boolean>;
 
 type MultiWalletConnectionProps = {
   connectors: {
-    [BlockchainType.EVM]?: Connector;
-    [BlockchainType.Bitcoin]?: IInjectedBitcoinProvider;
-    [BlockchainType.Starknet]?: StarknetConnector;
-    [BlockchainType.Solana]?: SolanaWallet;
-    [BlockchainType.Sui]?: SuiWallet;
+    [BlockchainType.evm]?: Connector;
+    [BlockchainType.bitcoin]?: IInjectedBitcoinProvider;
+    [BlockchainType.starknet]?: StarknetConnector;
+    [BlockchainType.solana]?: SolanaWallet;
+    [BlockchainType.sui]?: SuiWallet;
   };
   handleClose: () => void;
 };
@@ -51,22 +51,22 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   } = useStarknetWallet();
   const { handleSuiConnect, suiSelectedWallet } = useSuiWallet();
   const availableEcosystems = Object.entries(ecosystems).filter(
-    ([, value]) =>
-      (value.name === BlockchainType.EVM && connectors.EVM) ||
-      (value.name === BlockchainType.Bitcoin && connectors.Bitcoin) ||
-      (value.name === BlockchainType.Starknet && connectors.Starknet) ||
-      (value.name === BlockchainType.Solana && connectors.Solana) ||
-      (value.name === BlockchainType.Sui && connectors.Sui)
+    ([key]) =>
+      (key === BlockchainType.evm && connectors.evm) ||
+      (key === BlockchainType.bitcoin && connectors.bitcoin) ||
+      (key === BlockchainType.starknet && connectors.starknet) ||
+      (key === BlockchainType.solana && connectors.solana) ||
+      (key === BlockchainType.sui && connectors.sui)
   );
 
   const connectionStatus: Record<BlockchainType, boolean> = {
-    [BlockchainType.EVM]: evmConnector?.name === connectors.EVM?.name,
-    [BlockchainType.Solana]:
-      solanaSelectedWallet?.adapter.name === connectors.Solana?.adapter.name,
-    [BlockchainType.Starknet]:
-      starknetConnector?.id === connectors.Starknet?.id,
-    [BlockchainType.Sui]: suiSelectedWallet?.name === connectors.Sui?.name,
-    [BlockchainType.Bitcoin]: provider?.name === connectors.Bitcoin?.name,
+    [BlockchainType.evm]: evmConnector?.name === connectors.evm?.name,
+    [BlockchainType.solana]:
+      solanaSelectedWallet?.adapter.name === connectors.solana?.adapter.name,
+    [BlockchainType.starknet]:
+      starknetConnector?.id === connectors.starknet?.id,
+    [BlockchainType.sui]: suiSelectedWallet?.name === connectors.sui?.name,
+    [BlockchainType.bitcoin]: provider?.name === connectors.bitcoin?.name,
   };
 
   const handleCheck = (ecosystem: BlockchainType) => {
@@ -79,9 +79,9 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   const handleConnect = async () => {
     setLoading(true);
 
-    if (checked[BlockchainType.EVM]) {
-      if (connectors.EVM) {
-        const res = await handleEVMConnect(connectors.EVM, connectAsync);
+    if (checked[BlockchainType.evm]) {
+      if (connectors.evm) {
+        const res = await handleEVMConnect(connectors.evm, connectAsync);
         if (res.error) {
           setLoading(false);
           return;
@@ -89,26 +89,26 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
       }
     }
 
-    if (checked[BlockchainType.Bitcoin]) {
-      if (!connectors.Bitcoin) {
+    if (checked[BlockchainType.bitcoin]) {
+      if (!connectors.bitcoin) {
         setLoading(false);
         return;
       }
 
-      const bitcoinConnectRes = await connect(connectors.Bitcoin);
+      const bitcoinConnectRes = await connect(connectors.bitcoin);
       if (bitcoinConnectRes.error) {
         setLoading(false);
         return;
       }
     }
 
-    if (checked[BlockchainType.Starknet]) {
-      if (!connectors.Starknet) {
+    if (checked[BlockchainType.starknet]) {
+      if (!connectors.starknet) {
         setLoading(false);
         return;
       }
       const starknetConnectRes = await handleStarknetConnect(
-        connectors.Starknet,
+        connectors.starknet,
         starknetConnectAsync,
         starknetSwitchChain,
         starknetDisconnect
@@ -119,21 +119,21 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
       }
     }
 
-    if (checked[BlockchainType.Sui]) {
-      if (!connectors.Sui) {
+    if (checked[BlockchainType.sui]) {
+      if (!connectors.sui) {
         setLoading(false);
         return;
       }
-      await handleSuiConnect(connectors.Sui);
+      await handleSuiConnect(connectors.sui);
       await new Promise((r) => setTimeout(r, 1000));
     }
 
-    if (checked[BlockchainType.Solana]) {
-      if (!connectors.Solana) {
+    if (checked[BlockchainType.solana]) {
+      if (!connectors.solana) {
         setLoading(false);
         return;
       }
-      await solanaConnect(connectors.Solana.adapter.name);
+      await solanaConnect(connectors.solana.adapter.name);
     }
 
     setLoading(false);
@@ -147,18 +147,18 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
       <div className="flex w-fit items-center gap-2 rounded-full bg-white px-3 py-1">
         <img
           src={
-            connectors[BlockchainType.Bitcoin]?.icon ??
-            connectors[BlockchainType.Solana]?.adapter.icon ??
-            connectors[BlockchainType.Starknet]?.icon.toString() ??
+            connectors[BlockchainType.bitcoin]?.icon ??
+            connectors[BlockchainType.solana]?.adapter.icon ??
+            connectors[BlockchainType.starknet]?.icon.toString() ??
             ""
           }
           alt="icon"
           className="h-5 w-5"
         />
         <Typography size="h3" weight="regular">
-          {connectors[BlockchainType.Bitcoin]?.name ??
-            connectors[BlockchainType.Solana]?.adapter.name ??
-            connectors[BlockchainType.Starknet]?.name ??
+          {connectors[BlockchainType.bitcoin]?.name ??
+            connectors[BlockchainType.solana]?.adapter.name ??
+            connectors[BlockchainType.starknet]?.name ??
             ""}
         </Typography>
       </div>

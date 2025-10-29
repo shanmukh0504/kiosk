@@ -1,4 +1,4 @@
-import { ChainData } from "../../store/assetInfoStore";
+import { ChainData } from "@gardenfi/orderbook";
 import {
   ArrowLeftIcon,
   GradientScroll,
@@ -110,15 +110,15 @@ export const AvailableChainsSidebar = ({
                   filteredChains.map((c) => {
                     return (
                       <div
-                        key={c.chainId}
+                        key={c.chain}
                         className="flex w-full cursor-pointer items-center justify-between hover:bg-off-white"
                         onClick={() => onClick(c)}
                       >
                         <div className="flex w-full items-center gap-4 px-[14px] py-2">
                           <img
-                            src={c.networkLogo}
+                            src={c.icon}
                             alt={c.name}
-                            className={`h-5 w-5 rounded-full`}
+                            className={`h-5 w-5`}
                           />
                           <Typography
                             size={"h5"}

@@ -1,4 +1,4 @@
-import { hyperliquid } from "@gardenfi/core";
+import { alpenTestnet, hyperliquid } from "@gardenfi/core";
 import {
   Asset,
   Chain,
@@ -23,7 +23,7 @@ export const INTERNAL_ROUTES: Record<
 > = {
   swap: {
     name: "Swap",
-    path: ["/", "/swap"],
+    path: ["/", "/swap", "/bridge/:destinationChain", "/bridge"],
     enabled: true,
     isExternal: false,
   },
@@ -147,6 +147,7 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "solana_testnet",
   "unichain",
   "corn",
+  "alpen_testnet",
   "solana",
   "botanix",
   "bnbchain",
@@ -157,6 +158,7 @@ export const SUPPORTED_CHAINS: Chain[] = [
 ] as const;
 
 export const MULTICALL_CONTRACT_ADDRESSES: Record<number, string> = {
+  [alpenTestnet.id]: "0x9307a5F4627e7b6392e0d0DA83875bdBfbBD41ed",
   [hyperliquid.id]: "0xcA11bde05977b3631167028862bE2a173976CA11",
   [citreaTestnet.id]: "0x8470Ee1FCD47e7F9B90486bB5D142430e5C1f409",
   [botanix.id]: "0xeaE7721d779276eb0f5837e2fE260118724a2Ba4",
@@ -211,7 +213,7 @@ export const WALLET_SUPPORTED_CHAINS: Record<string, Chain[]> = {
 
 export const SOCIAL_LINKS = {
   discord: "https://discord.com/invite/dZwSjh9922",
-  x: "https://x.com/garden_finance",
+  x: "https://x.com/gardenfi",
 };
 
 export const SUI_SOLVER_ADDRESS =
