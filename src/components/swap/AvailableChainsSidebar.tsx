@@ -1,4 +1,4 @@
-import { ChainData } from "../../store/assetInfoStore";
+import { ChainData } from "@gardenfi/orderbook";
 import {
   ArrowLeftIcon,
   GradientScroll,

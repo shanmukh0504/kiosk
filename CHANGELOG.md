@@ -18,6 +18,7 @@
 - Added starknet support for Xverse wallet.
 - Implemented Swap bridge functionality.
 - Added Alpen Testnet support.
+- Add solver_id in Create Order Request.
 
 ### Fixed
 

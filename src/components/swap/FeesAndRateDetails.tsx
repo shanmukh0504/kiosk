@@ -72,7 +72,7 @@ export const FeesAndRateDetails = () => {
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
   const { address } = useEVMWallet();
-  const { assets, allAssets, fiatData } = assetInfoStore();
+  const { assets, fiatData } = assetInfoStore();
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
   const formattedRate = useMemo(
@@ -85,7 +85,7 @@ export const FeesAndRateDetails = () => {
     let price = fiatData?.[inputAsset.id.toString()] ?? inputAsset.price;
 
     if (isBitcoin(inputAsset.chain)) {
-      const btcAsset = Object.values(assets ?? allAssets ?? {}).find((a) =>
+      const btcAsset = Object.values(assets ?? assets ?? {}).find((a) =>
         isBitcoin(a.chain)
       );
       if (btcAsset) {
@@ -94,7 +94,7 @@ export const FeesAndRateDetails = () => {
       }
     }
     return formatAmountUsd(price, 0);
-  }, [inputAsset, assets, allAssets, fiatData]);
+  }, [inputAsset, assets, assets, fiatData]);
   const refundAddress = useMemo(
     () =>
       inputAsset

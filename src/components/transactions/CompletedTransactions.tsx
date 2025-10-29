@@ -9,16 +9,16 @@ import { assetInfoStore } from "../../store/assetInfoStore";
 
 export const CompletedTransactions = () => {
   const { transactions, isLoading } = transactionHistoryStore();
-  const { allAssets } = assetInfoStore();
+  const { assets } = assetInfoStore();
 
   const filteredTransactions = useMemo(
     () =>
       transactions.filter(
         (order) =>
-          getAssetFromSwap(order.source_swap, allAssets) &&
-          getAssetFromSwap(order.destination_swap, allAssets)
+          getAssetFromSwap(order.source_swap, assets) &&
+          getAssetFromSwap(order.destination_swap, assets)
       ),
-    [transactions, allAssets]
+    [transactions, assets]
   );
 
   return (

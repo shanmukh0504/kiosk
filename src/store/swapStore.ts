@@ -24,6 +24,7 @@ export type SwapErrors = {
 type SwapState = {
   inputAsset?: Asset;
   outputAsset?: Asset;
+  solverId: string;
   inputAmount: string;
   outputAmount: string;
   rate: number;
@@ -48,6 +49,7 @@ type SwapState = {
   maxCostSaved: number;
   setFiatTokenPrices: (fiatTokenPrices: TokenPrices) => void;
   setTokenPrices: (tokenPrices: TokenPrices) => void;
+  setSolverId: (solverId: string) => void;
   setIsSwapping: (isSwapping: boolean) => void;
   setIsApproving: (isApproving: boolean) => void;
   setAsset: (ioType: IOType, asset: Asset | undefined) => void;
@@ -88,6 +90,7 @@ export const swapStore = create<SwapState>((set) => ({
   inputAsset: BTC,
   inputAmount: "",
   outputAmount: "",
+  solverId: "",
   rate: 0,
   networkFees: 0,
   fixedFee: 0,
@@ -126,6 +129,9 @@ export const swapStore = create<SwapState>((set) => ({
   },
   maxTimeSaved: 0,
   maxCostSaved: 0,
+  setSolverId: (solverId) => {
+    set({ solverId });
+  },
   setAsset: (ioType, asset) => {
     set((state) => ({
       ...state,
