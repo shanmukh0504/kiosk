@@ -8,7 +8,7 @@ import {
   RaiseHandIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { ChainAsset } from "@gardenfi/orderbook";
+import { BlockchainType, ChainAsset } from "@gardenfi/orderbook";
 import { Switch } from "../../common/Switch";
 import { StakeStats } from "./shared/StakeStats";
 import { StakeInput } from "./StakeInput";
@@ -26,6 +26,8 @@ import { formatAmount } from "../../utils/utils";
 import { balanceStore } from "../../store/balanceStore";
 import { Toast } from "../toast/Toast";
 import { useToastStore } from "../../store/toastStore";
+import { network } from "../../constants/constants";
+import { Network } from "@gardenfi/utils";
 
 type StakeComponentProps = {
   setIsNftOpen: (open: boolean) => void;
@@ -100,7 +102,9 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
 
   const handleBuySeedClick = () => {
     window.open(
-      "https://app.garden.finance/?output-chain=arbitrum&output-asset=SEED",
+      network === Network.MAINNET
+        ? "https://app.uniswap.org/explore/tokens/arbitrum/0x86f65121804d2cdbef79f9f072d4e0c2eebabc08"
+        : "http://testnet.garden.finance/bridge/arbitrum_sepolia?input-chain=bitcoin_testnet&input-asset=BTC&output-asset=SEED",
       "_blank"
     );
   };
@@ -169,7 +173,9 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
       if (needsMoreSeed) {
         Toast.needSeed(
           "Don't have SEED tokens?",
-          "https://app.uniswap.org/explore/tokens/arbitrum/0x86f65121804d2cdbef79f9f072d4e0c2eebabc08"
+          network === Network.MAINNET
+            ? "https://app.uniswap.org/explore/tokens/arbitrum/0x86f65121804d2cdbef79f9f072d4e0c2eebabc08"
+            : "http://testnet.garden.finance/bridge/arbitrum_sepolia?input-chain=bitcoin_testnet&input-asset=BTC&output-asset=SEED"
         );
       }
     }
@@ -361,7 +367,10 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
             }
             onClick={
               !address
-                ? () => setOpenModal(modalNames.connectWallet)
+                ? () =>
+                    setOpenModal(modalNames.connectWallet, {
+                      [BlockchainType.evm]: true,
+                    })
                 : shouldBuySeed
                   ? handleBuySeedClick
                   : handleStakeClick
@@ -369,7 +378,7 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
             loading={loading}
           >
             {!address
-              ? "Connect Wallet"
+              ? "Connect EVM Wallet"
               : !tokenBalance && !balanceFetched
                 ? "Stake"
                 : shouldBuySeed
