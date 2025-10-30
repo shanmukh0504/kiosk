@@ -13,6 +13,7 @@ import {
   isStarknet,
   isEVM,
   ChainAsset,
+  isTron,
 } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { validateBTCAddress } from "@gardenfi/core";
@@ -92,6 +93,7 @@ export const useSwap = () => {
       inputAsset &&
       (!isStarknet(inputAsset.chain) &&
       !isSolana(inputAsset.chain) &&
+      !isTron(inputAsset.chain) &&
       !isSui(inputAsset.chain)
         ? formatAmount(
             Number(inputBalance),

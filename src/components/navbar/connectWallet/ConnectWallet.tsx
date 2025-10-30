@@ -80,6 +80,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     tronAddress,
     wallet: tronWallet,
     handleTronConnect,
+    tronConnected,
   } = useTronWallet();
   const { modalData } = modalStore();
   const showOnlyBTCWallets = !!modalData.connectWallet?.bitcoin;
@@ -397,6 +398,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                     [BlockchainType.tron]: !!(
                       wallet.isTron &&
                       tronAddress &&
+                      tronConnected &&
                       tronWallet?.adapter.name.toLowerCase() ===
                         wallet.id.toLowerCase()
                     ),

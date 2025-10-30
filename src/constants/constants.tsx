@@ -229,11 +229,17 @@ export const BITCOIN_DEFAULT_NETWORK_FEE = 0.49;
 export const TronConfig = {
   [Network.MAINNET]: {
     nodeUrl: "https://api.trongrid.io",
+    hostUrl: "https://api.trongrid.io",
+    chainId: "728126428",
   },
   [Network.TESTNET]: {
     nodeUrl: "https://api.shasta.trongrid.io",
+    hostUrl: "https://api.shasta.trongrid.io",
+    chainId: "0x94a9059e",
   },
   [Network.LOCALNET]: {
     nodeUrl: "",
+    hostUrl: "",
+    chainId: "",
   },
 };

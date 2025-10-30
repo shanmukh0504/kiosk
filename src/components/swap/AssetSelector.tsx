@@ -11,6 +11,7 @@ import {
   isStarknet,
   isSolana,
   isSui,
+  isTron,
   Asset,
   ChainAsset,
   ChainData,
@@ -154,6 +155,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
               ? ""
               : balance &&
                   !isStarknet(asset.chain) &&
+                  !isTron(asset.chain) &&
                   !isSolana(asset.chain) &&
                   !isSui(asset.chain)
                 ? new BigNumber(balance)

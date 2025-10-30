@@ -24,6 +24,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import logger from "./logger";
 import { getFullnodeUrl } from "@mysten/sui/client";
 import { getSuiTotalGasFee } from "./getNetworkFees";
+import { TronWeb } from "tronweb";
 
 const erc20ABI = [
   {
@@ -320,49 +321,18 @@ export async function getTronTokenBalance(
   if (!isTron(asset.chain)) return 0;
   if (!address || !asset.token?.address) return 0;
 
-  const tronRpcUrl = TronConfig[network].nodeUrl;
+  const tronWeb = new TronWeb({
+    fullHost: TronConfig[network].hostUrl,
+  });
+
+  tronWeb.setAddress(address);
 
   try {
-    // // 🔹 Helper: convert base58 → hex safely
-    const toHex = async (addr: string) => {
-      // If already hex (starts with 41), just return it
-      if (/^41[0-9A-Fa-f]{40}$/.test(addr)) return addr;
-      const res = await fetch(`${tronRpcUrl}/wallet/validateaddress`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address: addr }),
-      });
-      const data = await res.json();
-      if (data?.result && data?.hexAddress) return data.hexAddress;
-      console.error("Invalid Tron address:", addr, data);
-      return null;
-    };
-    const [ownerHex, contractHex] = await Promise.all([
-      toHex(address),
-      toHex(asset.token.address),
-    ]);
-    if (!ownerHex || !contractHex)
-      throw new Error("Invalid address conversion");
-    const parameter = ownerHex.replace(/^41/i, "").padStart(64, "0");
-    const res = await fetch(
-      `${tronRpcUrl}/walletsolidity/triggerconstantcontract`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          owner_address: ownerHex,
-          contract_address: contractHex,
-          function_selector: "balanceOf(address)",
-          parameter,
-          visible: true,
-        }),
-      }
-    );
-    const data = await res.json();
-    const hex = data?.constant_result?.[0];
-    if (!hex) return 0;
-    const raw = BigInt(`0x${hex}`);
-    return Number(raw) / 10 ** asset.decimals;
+    const contract = await tronWeb.contract().at(asset.token.address);
+    const balance = await contract.balanceOf(address).call();
+
+    const formattedBalance = formatAmount(balance, asset.decimals, 8);
+    return formattedBalance;
   } catch (err) {
     console.error("getTronTokenBalance error:", err);
     return 0;
