@@ -15,14 +15,7 @@ import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { WalletWithRequiredFeatures as SuiWallet } from "@mysten/wallet-standard";
 import { Wallet as TronWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
 import { useTronWallet } from "../../../hooks/useTronWallet";
-enum BlockchainType {
-  bitcoin = "bitcoin",
-  evm = "evm",
-  solana = "solana",
-  starknet = "starknet",
-  sui = "sui",
-  tron = "tron",
-}
+import { BlockchainType } from "@gardenfi/orderbook";
 
 import { useSuiWallet } from "../../../hooks/useSuiWallet";
 type Checked = Record<BlockchainType, boolean>;

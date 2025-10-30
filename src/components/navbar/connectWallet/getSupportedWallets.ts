@@ -9,14 +9,7 @@ import { Connector as StarknetConnector } from "@starknet-react/core";
 import { Wallet as SolanaWallet } from "@solana/wallet-adapter-react";
 import { WalletWithRequiredFeatures as SuiWallet } from "@mysten/wallet-standard";
 import { Wallet as TronWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
-enum BlockchainType {
-  bitcoin = "bitcoin",
-  evm = "evm",
-  solana = "solana",
-  starknet = "starknet",
-  sui = "sui",
-  tron = "tron",
-}
+import { BlockchainType } from "@gardenfi/orderbook";
 
 export type Wallet = {
   id: string;

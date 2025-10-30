@@ -1,13 +1,6 @@
 import { Network } from "@gardenfi/utils";
 import { network } from "../../../constants/constants";
-enum BlockchainType {
-  bitcoin = "bitcoin",
-  evm = "evm",
-  solana = "solana",
-  starknet = "starknet",
-  sui = "sui",
-  tron = "tron",
-}
+import { BlockchainType } from "@gardenfi/orderbook";
 
 export const ecosystems = {
   [BlockchainType.bitcoin]: {

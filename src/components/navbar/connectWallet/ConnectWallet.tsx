@@ -8,6 +8,7 @@ import {
   RadioCheckedIcon,
   Typography,
 } from "@gardenfi/garden-book";
+import { BlockchainType } from "@gardenfi/orderbook";
 import { getAvailableWallets, Wallet } from "./getSupportedWallets";
 import {
   IInjectedBitcoinProvider,
@@ -28,14 +29,6 @@ import { Wallet as TronWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
 import { Connector as StarknetConnector } from "@starknet-react/core";
 import { useSuiWallet } from "../../../hooks/useSuiWallet";
 import { useTronWallet } from "../../../hooks/useTronWallet";
-enum BlockchainType {
-  bitcoin = "bitcoin",
-  evm = "evm",
-  solana = "solana",
-  starknet = "starknet",
-  sui = "sui",
-  tron = "tron",
-}
 
 import logger from "../../../utils/logger";
 

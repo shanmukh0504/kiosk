@@ -230,7 +230,7 @@ export const TronConfig = {
   [Network.MAINNET]: {
     nodeUrl: "https://api.trongrid.io",
     hostUrl: "https://api.trongrid.io",
-    chainId: "728126428",
+    chainId: "0x2b6653dc",
   },
   [Network.TESTNET]: {
     nodeUrl: "https://api.shasta.trongrid.io",

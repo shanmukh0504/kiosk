@@ -410,6 +410,10 @@ export const useSwap = () => {
         check: (chain: Chain) => isSui(chain),
         address: currentAccount?.address,
       },
+      tron: {
+        check: (chain: Chain) => isTron(chain),
+        address: garden?.htlcs.tron?.htlcActorAddress,
+      },
     };
 
     for (const [chainKey, { check, address }] of Object.entries(

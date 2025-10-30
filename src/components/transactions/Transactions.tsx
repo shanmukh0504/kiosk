@@ -5,15 +5,7 @@ import { useEVMWallet } from "../../hooks/useEVMWallet";
 import transactionHistoryStore from "../../store/transactionHistoryStore";
 import { PendingTransactions } from "./PendingTransactions";
 import { CompletedTransactions } from "./CompletedTransactions";
-enum BlockchainType {
-  bitcoin = "bitcoin",
-  evm = "evm",
-  solana = "solana",
-  starknet = "starknet",
-  sui = "sui",
-  tron = "tron",
-}
-
+import { BlockchainType } from "@gardenfi/orderbook";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { starknetAddressToXOnly } from "../../utils/utils";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
@@ -86,6 +78,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
           : "",
         solana: solanaAddress ?? "",
         sui: currentAccount?.address ?? "",
+        tron: tronAddress ?? "",
       });
     }
   }, [

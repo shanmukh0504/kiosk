@@ -1,13 +1,6 @@
 import { create } from "zustand";
 import { StakingPosition } from "./stakeStore";
-enum BlockchainType {
-  bitcoin = "bitcoin",
-  evm = "evm",
-  solana = "solana",
-  starknet = "starknet",
-  sui = "sui",
-  tron = "tron",
-}
+import { BlockchainType } from "@gardenfi/orderbook";
 
 export const modalNames = {
   connectWallet: "connectWallet",

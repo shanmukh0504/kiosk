@@ -1,6 +1,6 @@
 import { useWallet, Wallet } from "@tronweb3/tronwallet-adapter-react-hooks";
 import { network, TronConfig } from "../constants/constants";
-import { useEffect, useCallback } from "react";
+import { useCallback } from "react";
 
 export const useTronWallet = () => {
   const {
@@ -16,73 +16,46 @@ export const useTronWallet = () => {
   const expectedChainId = TronConfig[network].chainId;
 
   /**
-   * Connect + validate network
+   * Safely disconnect wallet
+   */
+  const handleDisconnect = useCallback(async () => {
+    try {
+      await disconnect();
+    } catch (error) {
+      console.error("Tron disconnect error:", error);
+    }
+  }, [disconnect]);
+
+  /**
+   * Connect or switch network logic
    */
   const handleTronConnect = useCallback(
     async (selectedWallet: Wallet): Promise<void> => {
       try {
-        select(selectedWallet.adapter.name);
+        if (!wallet || wallet.adapter.name !== selectedWallet.adapter.name) {
+          select(selectedWallet.adapter.name);
+        }
+
         await tronConnect();
 
-        const adapter: any = selectedWallet.adapter;
-        if (adapter.network) {
-          const net = await adapter.network();
-          const currentChainId = net?.chainId;
-
-          if (currentChainId && currentChainId !== expectedChainId) {
-            console.warn(
-              `⚠️ Wrong network. Expected ${expectedChainId}, got ${currentChainId}. Disconnecting...`
-            );
-            await disconnect();
-            return;
-          }
+        if (wallet?.adapter?.switchChain) {
+          await wallet.adapter.switchChain(expectedChainId);
+        } else {
+          console.log(
+            `Wallet adapter ${wallet?.adapter?.name} does not support switchChain()`
+          );
         }
-
-        // Attempt chain switch if supported
-        if (adapter.switchChain) {
-          await adapter.switchChain(expectedChainId);
-        }
-      } catch (err) {
-        console.error("Tron connect failed:", err);
-        await disconnect();
+      } catch (error) {
+        console.error("Tron connect/switch error:", error);
       }
     },
-    [select, tronConnect, disconnect, expectedChainId]
+    [wallet, connected, tronConnect, expectedChainId, select]
   );
-
-  /**
-   * React to network/chain changes
-   */
-  useEffect(() => {
-    if (!wallet?.adapter) return;
-
-    const adapter: any = wallet.adapter;
-
-    const handleChainChanged = async (chainData: any) => {
-      console.log("🔄 Chain changed:", chainData);
-
-      const newChainId =
-        typeof chainData === "string" ? chainData : chainData?.chainId;
-
-      if (newChainId && newChainId !== expectedChainId) {
-        console.warn(
-          `⚠️ Network changed to ${newChainId}, expected ${expectedChainId}. Disconnecting...`
-        );
-        await disconnect();
-      }
-    };
-
-    adapter.on("chainChanged", handleChainChanged);
-
-    return () => {
-      adapter.off("chainChanged", handleChainChanged);
-    };
-  }, [wallet, expectedChainId, disconnect]);
 
   return {
     handleTronConnect,
     tronConnected: connected,
-    tronDisconnect: disconnect,
+    tronDisconnect: handleDisconnect,
     wallets,
     tronAddress: address,
     wallet,

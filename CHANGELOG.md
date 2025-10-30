@@ -17,6 +17,7 @@
 - Added starknet support for Xverse wallet.
 - Implemented Swap bridge functionality.
 - Added Alpen Testnet support.
+- Added Tron Chain Support.
 
 ### Fixed
 
