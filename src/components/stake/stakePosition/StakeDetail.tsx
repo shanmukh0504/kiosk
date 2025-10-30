@@ -4,7 +4,7 @@ import {
   RowInfoIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { FC, useRef, useState, useEffect, useMemo } from "react";
+import { FC, useRef, useState, useEffect } from "react";
 import {
   StakePositionStatus,
   stakeStore,
@@ -30,8 +30,6 @@ import { Toast } from "../../toast/Toast";
 import { simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../../../layout/wagmi/config";
 import { viewPortStore } from "../../../store/viewPortStore";
-import { isTestnet } from "../../../constants/constants";
-import { assetInfoStore } from "../../../store/assetInfoStore";
 
 type props = {
   index: number;
@@ -46,7 +44,6 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
   const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
   const { isMobile, isSmallTab } = viewPortStore();
-  const { allAssets } = assetInfoStore();
 
   const [hovered, setHovered] = useState(false);
   const targetRef = useRef<HTMLDivElement>(null);
@@ -60,59 +57,17 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
   const isUnstakeable = stakePos.status === StakePositionStatus.expired;
 
   const cbbtcReward = formatAmount(
-    stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedCBBTCRewardsUSD ||
+    stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedCBBTCRewardsUSD ??
       0,
-    8,
-    8
+    0,
+    5
   );
-
-  const cbbtcAsset = useMemo(() => {
-    if (!allAssets) return null;
-    const targetChain = isTestnet ? "base_sepolia" : "base";
-
-    let asset = Object.values(allAssets).find(
-      (asset) => asset.chain === targetChain && asset.symbol === "cbBTC"
-    );
-
-    if (!asset) {
-      asset = Object.values(allAssets).find(
-        (asset) => asset.symbol === "cbBTC"
-      );
-    }
-
-    return asset;
-  }, [allAssets]);
-
-  const seedAsset = useMemo(() => {
-    if (!allAssets) return null;
-    const targetChain = isTestnet ? "arbitrum_sepolia" : "arbitrum";
-
-    let asset = Object.values(allAssets).find(
-      (asset) => asset.chain === targetChain && asset.symbol === "seed"
-    );
-
-    return asset;
-  }, [allAssets]);
-
-  const cbbtcPrice = useMemo(() => {
-    if (!cbbtcAsset) return 0;
-    return cbbtcAsset.price ?? 0;
-  }, [cbbtcAsset]);
-
-  const seedPrice = useMemo(() => {
-    if (!seedAsset) return 0;
-    return seedAsset.price ?? 0;
-  }, [seedAsset]);
-
   const seedReward = formatAmount(
     stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedSeedRewardsUSD ??
       0,
-    SEED_DECIMALS,
+    0,
     5
   );
-
-  const cbbtcRewardsInUSDC = cbbtcReward * cbbtcPrice;
-  const seedRewardsInUSDC = seedReward * seedPrice;
 
   const stakeAmount = formatAmount(stakePos.amount, SEED_DECIMALS, 0);
   const formattedAmount = stakeAmount
@@ -268,7 +223,7 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
             </TooltipWrapper>
           )}
           <Typography size="h4" weight="regular">
-            ${(seedRewardsInUSDC + cbbtcRewardsInUSDC).toFixed(4)}
+            ${cbbtcReward + seedReward}
           </Typography>
         </span>
       </td>
