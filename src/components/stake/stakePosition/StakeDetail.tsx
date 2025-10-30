@@ -4,7 +4,7 @@ import {
   RowInfoIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { FC, useRef, useState, useEffect } from "react";
+import { FC, useRef, useState, useEffect, useMemo } from "react";
 import {
   StakePositionStatus,
   stakeStore,
@@ -17,7 +17,6 @@ import {
   STAKING_CHAIN,
   STAKING_CONFIG,
 } from "../constants";
-import { getMultiplier } from "../../../utils/stakingUtils";
 import { TooltipWrapper } from "../shared/ToolTipWrapper";
 import { UnitRewardTooltip } from "../shared/UnitRewardTooltip";
 import { motion } from "framer-motion";
@@ -31,6 +30,8 @@ import { Toast } from "../../toast/Toast";
 import { simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../../../layout/wagmi/config";
 import { viewPortStore } from "../../../store/viewPortStore";
+import { isTestnet } from "../../../constants/constants";
+import { assetInfoStore } from "../../../store/assetInfoStore";
 
 type props = {
   index: number;
@@ -38,13 +39,14 @@ type props = {
 };
 
 export const StakeDetails: FC<props> = ({ index, stakePos }) => {
-  const { stakeRewards } = stakeStore();
+  const { stakeRewards, stakeApys } = stakeStore();
   const { setOpenModal } = modalStore();
   const { openMenuId, setOpenMenu, closeMenu } = menuStore();
   const { chainId, address } = useEVMWallet();
   const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
   const { isMobile, isSmallTab } = viewPortStore();
+  const { allAssets } = assetInfoStore();
 
   const [hovered, setHovered] = useState(false);
   const targetRef = useRef<HTMLDivElement>(null);
@@ -57,19 +59,62 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
   const hasExpired = stakePos.status === StakePositionStatus.expired;
   const isUnstakeable = stakePos.status === StakePositionStatus.expired;
 
-  const stakeReward = formatAmount(
+  const cbbtcReward = formatAmount(
     stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedCBBTCRewardsUSD ||
       0,
     8,
     8
   );
-  const stakeAmount = formatAmount(stakePos.amount, SEED_DECIMALS, 0);
+
+  const cbbtcAsset = useMemo(() => {
+    if (!allAssets) return null;
+    const targetChain = isTestnet ? "base_sepolia" : "base";
+
+    let asset = Object.values(allAssets).find(
+      (asset) => asset.chain === targetChain && asset.symbol === "cbBTC"
+    );
+
+    if (!asset) {
+      asset = Object.values(allAssets).find(
+        (asset) => asset.symbol === "cbBTC"
+      );
+    }
+
+    return asset;
+  }, [allAssets]);
+
+  const seedAsset = useMemo(() => {
+    if (!allAssets) return null;
+    const targetChain = isTestnet ? "arbitrum_sepolia" : "arbitrum";
+
+    let asset = Object.values(allAssets).find(
+      (asset) => asset.chain === targetChain && asset.symbol === "seed"
+    );
+
+    return asset;
+  }, [allAssets]);
+
+  const cbbtcPrice = useMemo(() => {
+    if (!cbbtcAsset) return 0;
+    return cbbtcAsset.price ?? 0;
+  }, [cbbtcAsset]);
+
+  const seedPrice = useMemo(() => {
+    if (!seedAsset) return 0;
+    return seedAsset.price ?? 0;
+  }, [seedAsset]);
+
   const seedReward = formatAmount(
     stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedSeedRewardsUSD ??
-      "0",
+      0,
     SEED_DECIMALS,
     5
   );
+
+  const cbbtcRewardsInUSDC = cbbtcReward * cbbtcPrice;
+  const seedRewardsInUSDC = seedReward * seedPrice;
+
+  const stakeAmount = formatAmount(stakePos.amount, SEED_DECIMALS, 0);
   const formattedAmount = stakeAmount
     .toString()
     .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -85,20 +130,13 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
   stakeEndDate.setDate(
     stakeEndDate.getDate() + (expiryInDays - daysPassedSinceStake)
   );
-  const stakeEndDateString = isPermaStake ? (
-    <Typography size="h4" weight="regular">
-      -
-    </Typography>
-  ) : (
-    stakeEndDate.toISOString().split("T")[0].replaceAll("-", "/")
-  );
+  const stakeEndDateString = isPermaStake
+    ? ""
+    : stakeEndDate.toISOString().split("T")[0].replaceAll("-", "/");
 
-  const multiplier = getMultiplier(stakePos);
-  const reward = formatAmount(
-    stakeRewards?.stakewiseRewards[stakePos.id]?.accumulatedRewardsUSD || 0,
-    0,
-    2
-  );
+  // Get APY for this stake position
+  const stakeApy = stakeApys[stakePos.id] ?? 0;
+  const formattedApy = stakeApy > 0 ? `${stakeApy.toFixed(2)}%` : "0%";
 
   const handleRestake = () => {
     setOpenModal(modalNames.manageStake, {
@@ -202,7 +240,7 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
       }}
       className={`origin-top ${index % 2 !== 0 && "bg-white/50"}`}
     >
-      <td className="py-2 pl-6 pr-2 text-left">
+      <td className="w-[90px] py-2 pl-6 text-left">
         <Typography
           size="h4"
           weight="regular"
@@ -212,142 +250,118 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
           {stakePos.isGardenerPass && <NFTIcon className="h-4" />}
         </Typography>
       </td>
-      <td className="px-4 py-2 text-left sm:px-2 sm:pl-2">
-        <Typography size="h4" weight="regular">
-          {stakePos.votes}
-        </Typography>
-      </td>
-      <td className="px-4 py-2 text-left sm:px-2">
+
+      <td className="w-[156px] py-2 pl-5 text-left sm:pl-[66px]">
         <span
           ref={targetRef}
           className="inline-block cursor-pointer"
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
         >
-          {hovered && (!!seedReward || !!stakeReward) && (
+          {hovered && (!!seedReward || !!cbbtcReward) && (
             <TooltipWrapper
               offsetX={isMobile || isSmallTab ? 5 : 10}
               offsetY={isMobile || isSmallTab ? 20 : 9}
               targetRef={targetRef}
             >
-              <UnitRewardTooltip seed={seedReward} cbBtc={stakeReward} />
+              <UnitRewardTooltip seed={seedReward} cbBtc={cbbtcReward} />
             </TooltipWrapper>
           )}
           <Typography size="h4" weight="regular">
-            ${reward}
+            ${(seedRewardsInUSDC + cbbtcRewardsInUSDC).toFixed(4)}
           </Typography>
         </span>
       </td>
-      <td className="px-4 py-2 text-left sm:px-2">
+      <td className="w-[130px] py-2 pl-5 text-left sm:pl-[66px]">
         <Typography size="h4" weight="regular">
-          {multiplier}x
+          {stakePos.votes}
         </Typography>
       </td>
-      <td className="px-4 py-2 text-left sm:px-2">
-        {hasExpired ? (
-          <Typography size="h4" weight="regular">
-            Expired
-          </Typography>
-        ) : (
-          <div className="flex items-center text-nowrap">
-            {isPermaStake ? (
-              <>
-                <Typography size="h4" weight="regular">
-                  ∞ months
-                </Typography>
-              </>
-            ) : (
-              <Typography
-                size="h4"
-                weight="regular"
-                className="flex items-center"
-              >
-                {daysPassedSinceStake} / {expiryInDays} days
-              </Typography>
-            )}
-          </div>
-        )}
+      <td className="w-[130px] py-2 pl-5 text-left sm:pl-[66px]">
+        <Typography size="h4" weight="regular">
+          {formattedApy}
+        </Typography>
       </td>
-      <td className="flex items-center pr-8 pt-3 text-left sm:pr-0 sm:pt-0">
+      <td className="flex w-[140px] items-center pl-5 pt-3 text-left sm:w-[186px] sm:pl-[66px] sm:pt-0">
         <div
-          className={`mb-2.5 flex max-h-7 w-full max-w-20 items-center overflow-hidden sm:mb-0 sm:mt-1.5 ${hasExpired ? "justify-center rounded-lg" : "justify-start"}`}
+          className={`mb-2.5 flex max-h-7 w-full items-center gap-3 overflow-hidden sm:mb-0 sm:mt-1.5 ${hasExpired ? "justify-center" : "justify-start"}`}
         >
           {hasExpired ? (
             <Button
               variant="primary"
               size="sm"
               onClick={handleRestake}
-              className="w-fit border border-green-500 !px-5"
+              className="!h-7 w-fit !min-w-20 !rounded-lg border border-green-500"
             >
               Restake
             </Button>
           ) : (
-            <Typography size="h4" weight="regular" className="sm:mt-1">
+            <Typography size="h4" weight="regular">
               {stakeEndDateString}
             </Typography>
           )}
         </div>
-      </td>
-      <td
-        onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          if (clickTimeoutRef.current) {
-            clearTimeout(clickTimeoutRef.current);
-            clickTimeoutRef.current = null;
-          }
-          if (isMenuOpen) {
-            closeMenu();
-          } else {
-            setOpenMenu(menuId);
-          }
-          clickTimeoutRef.current = setTimeout(() => {
-            clickTimeoutRef.current = null;
-          }, 150);
-        }}
-        className={`mx-1 w-8 cursor-pointer p-1 pr-6 ${isPermaStake && "pointer-events-none opacity-0"}`}
-      >
-        <div className="relative">
-          <span ref={menuRef} className="inline-block cursor-pointer">
-            <RowInfoIcon className="h-4 w-4 p-[1px]" />
-          </span>
-          {isMenuOpen && (
-            <TooltipWrapper
-              targetRef={menuRef}
-              offsetX={isMobile || isSmallTab ? 7 : -115}
-              offsetY={isMobile || isSmallTab ? 18 : -20}
-            >
-              <div className="flex flex-col gap-2">
-                {hasExpired && !isPermaStake ? (
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleUnstake();
-                      closeMenu();
-                    }}
-                    className="z-[9999] !bg-white !text-dark-grey"
-                  >
-                    Unstake
-                  </Button>
-                ) : (
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleExtend();
-                      closeMenu();
-                    }}
-                    className="!bg-white !text-dark-grey"
-                  >
-                    Extend
-                  </Button>
-                )}
-              </div>
-            </TooltipWrapper>
-          )}
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            if (clickTimeoutRef.current) {
+              clearTimeout(clickTimeoutRef.current);
+              clickTimeoutRef.current = null;
+            }
+            if (isMenuOpen) {
+              closeMenu();
+            } else {
+              setOpenMenu(menuId);
+            }
+            clickTimeoutRef.current = setTimeout(() => {
+              clickTimeoutRef.current = null;
+            }, 150);
+          }}
+          className={`mx-1 -mt-1 flex w-8 cursor-pointer items-center sm:mb-0 sm:mt-2.5 ${isPermaStake && "pointer-events-none opacity-0"}`}
+        >
+          <div className="relative">
+            <span ref={menuRef} className="inline-block cursor-pointer">
+              <RowInfoIcon className="h-4 w-4 p-[1px]" />
+            </span>
+            {isMenuOpen && (
+              <TooltipWrapper
+                targetRef={menuRef}
+                offsetX={isMobile || isSmallTab ? 3.6 : -76}
+                offsetY={isMobile || isSmallTab ? 16 : -20}
+              >
+                <div className="flex flex-col gap-2">
+                  {hasExpired && !isPermaStake ? (
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleUnstake();
+                        closeMenu();
+                      }}
+                      className="z-[9999] !min-w-20 !bg-white !px-0 !text-dark-grey"
+                    >
+                      Unstake
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleExtend();
+                        closeMenu();
+                      }}
+                      className="!min-w-20 !bg-white !px-0 !text-dark-grey"
+                    >
+                      Extend
+                    </Button>
+                  )}
+                </div>
+              </TooltipWrapper>
+            )}
+          </div>
         </div>
       </td>
     </motion.tr>

@@ -22,13 +22,19 @@ export const Stake: FC = () => {
   return (
     <div className="mt-10 flex flex-col gap-6 pb-8 sm:pb-16">
       <div className="mx-auto mt-10 flex flex-col gap-6">
-        <ToastContainer className="sm:translate-y-0" />
-        <div className="flex h-full w-full flex-col items-center md:flex-row">
+        <ToastContainer className="max-w-[740px] sm:translate-y-0" />
+        <motion.div
+          animate={{
+            translateX: stakeType === StakeType.GARDEN_PASS ? "-8px" : "0px",
+          }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          className={`flex h-full w-full flex-col items-center md:flex-row`}
+        >
           <AnimatePresence mode="wait">
             {stakeType === StakeType.GARDEN_PASS && <GardenPass />}
           </AnimatePresence>
           <StakeComponent setIsNftOpen={setIsNftOpen} />
-        </div>
+        </motion.div>
       </div>
       <AnimatePresence mode="wait">
         {stakePosData && stakePosData.length > 0 && (

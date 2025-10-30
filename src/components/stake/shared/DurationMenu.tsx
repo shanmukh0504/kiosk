@@ -1,9 +1,5 @@
 import { FC, useState, useEffect } from "react";
-import {
-  InfinityIcon,
-  KeyboardDownIcon,
-  Typography,
-} from "@gardenfi/garden-book";
+import { KeyboardDownIcon, Typography } from "@gardenfi/garden-book";
 import { DURATION, DURATION_MAP, INFINITE } from "../constants";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -41,14 +37,9 @@ const DurationMenu: FC<DurationMenuProps> = ({
       >
         <div className="flex items-center gap-4">
           <Typography size="h2" weight="regular">
-            {selectedDuration === INFINITE ? (
-              <InfinityIcon className="h-6" />
-            ) : (
-              `${selectedDuration} months`
-            )}
-          </Typography>
-          <Typography size="h4" weight="regular" className="mt-1">
-            {DURATION_MAP[selectedDuration].votes}x Multiplier
+            {selectedDuration === INFINITE
+              ? "♾️ months"
+              : `${selectedDuration} months`}
           </Typography>
         </div>
         <KeyboardDownIcon
@@ -78,11 +69,9 @@ const DurationMenu: FC<DurationMenuProps> = ({
                   damping: 25,
                 },
               }}
-              className="absolute z-10 flex w-full -translate-y-full flex-col-reverse overflow-hidden rounded-2xl bg-white shadow-2xl sm:-mt-[44px] sm:-translate-y-0 sm:flex-col"
+              className="absolute z-10 flex w-full -translate-y-full flex-col-reverse overflow-hidden rounded-2xl bg-white shadow-2xl sm:-mt-[40px] sm:-translate-y-0 sm:flex-col"
             >
               {Object.keys(DURATION_MAP).map((item) => {
-                const multiplier = DURATION_MAP[item as DURATION].votes;
-
                 return (
                   <div
                     key={item}
@@ -92,19 +81,7 @@ const DurationMenu: FC<DurationMenuProps> = ({
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <Typography size="h2" weight="regular">
-                          {item === INFINITE ? (
-                            <InfinityIcon className="h-6" />
-                          ) : (
-                            `${item} months`
-                          )}
-                        </Typography>
-
-                        <Typography
-                          size="h4"
-                          weight="regular"
-                          className="mt-1 !text-mid-grey"
-                        >
-                          {multiplier}x Multiplier
+                          {item === INFINITE ? "♾️ months" : `${item} months`}
                         </Typography>
                       </div>
                     </div>

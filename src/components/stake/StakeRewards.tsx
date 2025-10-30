@@ -12,6 +12,8 @@ import { config } from "../../layout/wagmi/config";
 import { Toast } from "../toast/Toast";
 import { motion } from "framer-motion";
 import { RewardStats } from "./shared/RewardStats";
+import { assetInfoStore } from "../../store/assetInfoStore";
+import { isTestnet } from "../../constants/constants";
 
 type StakeRewardsProps = {
   showDetails: boolean;
@@ -29,7 +31,8 @@ export const StakeRewards = ({
   const { writeContractAsync } = useWriteContract();
   const { address, chainId } = useEVMWallet();
   const { switchChainAsync } = useSwitchChain();
-  // get claimed amount
+  const { allAssets } = assetInfoStore();
+
   const { data: claimedAmount, refetch: refetchClaimedAmount } =
     useReadContract({
       abi: distributerABI,
@@ -43,6 +46,28 @@ export const StakeRewards = ({
       },
     });
 
+  const cbbtcAsset = useMemo(() => {
+    if (!allAssets) return null;
+    const targetChain = isTestnet ? "base_sepolia" : "base";
+
+    let asset = Object.values(allAssets).find(
+      (asset) => asset.chain === targetChain && asset.symbol === "cbBTC"
+    );
+
+    if (!asset) {
+      asset = Object.values(allAssets).find(
+        (asset) => asset.symbol === "cbBTC"
+      );
+    }
+
+    return asset;
+  }, [allAssets]);
+
+  const cbbtcPrice = useMemo(() => {
+    if (!cbbtcAsset) return 0;
+    return cbbtcAsset.price ?? 0;
+  }, [cbbtcAsset]);
+
   const availableReward = useMemo(() => {
     return stakeRewards
       ? formatAmount(
@@ -52,6 +77,10 @@ export const StakeRewards = ({
         )
       : 0;
   }, [stakeRewards, claimedAmount]);
+
+  const availableRewardUsd = useMemo(() => {
+    return availableReward * cbbtcPrice;
+  }, [availableReward, cbbtcPrice]);
 
   const daysUntilNextEpoch = useMemo(
     () => getDaysUntilNextEpoch(epochData),
@@ -156,14 +185,15 @@ export const StakeRewards = ({
           />
         </div>
         <div className="flex flex-col items-end justify-between gap-4 md:flex-row md:items-center">
-          <div className="grid w-full grid-cols-2 md:w-[210px] md:gap-10">
+          <div className="grid w-full grid-cols-2 md:w-[210px] md:grid-cols-[90px_90px] md:gap-[66px]">
             <RewardStats
               title={"Next payout"}
               value={`${daysUntilNextEpoch} days`}
             />
             <RewardStats
-              title={"Available to claim"}
-              value={`${availableReward || 0} cbBTC`}
+              title={"Rewards"}
+              value={`$${availableRewardUsd.toFixed(2) || "0.00"}`}
+              textColor={availableRewardUsd > 0 ? "#2CC994" : ""}
             />
           </div>
           <div className="flex w-full flex-col items-center justify-center gap-4 sm:w-fit md:flex-row">

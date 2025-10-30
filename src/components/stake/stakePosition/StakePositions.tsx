@@ -60,37 +60,35 @@ export const StakePositions = () => {
           <table className="w-full table-fixed">
             <thead className="bg-white/50">
               <tr>
-                <th className="w-24 pb-3 pl-6 pr-2 pt-3 text-left">
-                  <Typography size="h5" weight="regular">
+                <th className="w-[114px] pb-3 pl-6 pt-3 text-left">
+                  <Typography
+                    size="h5"
+                    weight="regular"
+                    className="text-nowrap"
+                  >
                     Staked SEED
                   </Typography>
                 </th>
-                <th className="w-20 px-4 pb-3 pt-3 text-left sm:px-2 sm:pl-2">
-                  <Typography size="h5" weight="regular">
-                    Votes
-                  </Typography>
-                </th>
-                <th className="w-28 px-4 pb-3 pt-3 text-left sm:px-2">
+                <th className="w-[110px] pb-3 pl-5 pt-3 text-left sm:w-[156px] sm:pl-[66px]">
                   <Typography size="h5" weight="regular">
                     Rewards
                   </Typography>
                 </th>
-                <th className="w-24 px-4 pb-3 pt-3 text-left sm:px-2">
+                <th className="w-[84px] pb-3 pl-5 pt-3 text-left sm:w-[130px] sm:pl-[66px]">
                   <Typography size="h5" weight="regular">
-                    Multiplier
+                    Votes
                   </Typography>
                 </th>
-                <th className="w-32 px-4 pb-3 pt-3 text-left sm:px-2 md:w-28">
+                <th className="w-[84px] pb-3 pl-5 pt-3 text-left sm:w-[130px] sm:pl-[66px]">
                   <Typography size="h5" weight="regular">
-                    Duration
+                    APY
                   </Typography>
                 </th>
-                <th className="w-28 pb-3 pr-8 pt-3 text-left sm:pr-0">
+                <th className="w-[140px] pb-3 pl-5 pt-3 text-left sm:w-[186px] sm:pl-[66px]">
                   <Typography size="h5" weight="regular">
                     End date
                   </Typography>
                 </th>
-                <th className="w-8 pr-6 pt-3"></th>
               </tr>
             </thead>
             <tbody>

@@ -56,7 +56,7 @@ export const StakeOverview = () => {
     >
       <div className="mx-auto flex w-[328px] flex-col gap-5 bg-white/25 p-4 backdrop-blur-[20] sm:w-[460px] md:w-[740px]">
         <div className="flex items-start justify-between gap-4 sm:items-center">
-          <div className="grid w-[310px] grid-cols-3 gap-5 px-2">
+          <div className="grid grid-cols-[90px_90px_90px] gap-5 px-2 sm:gap-[66px]">
             <OverviewStats title={"Total SEED"} value={formattedAmount} />
             {/* <OverviewStats
                   title={"Garden pass"}
@@ -66,7 +66,7 @@ export const StakeOverview = () => {
             <AnimatePresence>
               <OverviewStats
                 title={"Total rewards"}
-                value={`~$${stakeRewards?.accumulatedRewardUSD.toFixed(2) || 0}`}
+                value={`$${stakeRewards?.accumulatedRewardUSD.toFixed(2) || 0}`}
                 info
                 toolTip={
                   <RewardsToolTip
@@ -85,11 +85,11 @@ export const StakeOverview = () => {
                   />
                 }
                 targetRef={statRef}
-                className="sm:w-fit md:mr-5 md:w-[100px]"
+                className="sm:w-fit"
               />
             </AnimatePresence>
             <OverviewStats
-              title={"Votes"}
+              title={"Total Votes"}
               value={totalVotes !== undefined ? totalVotes : 0}
             />
           </div>

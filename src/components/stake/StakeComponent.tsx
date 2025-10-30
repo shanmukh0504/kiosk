@@ -28,6 +28,7 @@ import { Toast } from "../toast/Toast";
 import { useToastStore } from "../../store/toastStore";
 import { network } from "../../constants/constants";
 import { Network } from "@gardenfi/utils";
+import { viewPortStore } from "../../store/viewPortStore";
 
 type StakeComponentProps = {
   setIsNftOpen: (open: boolean) => void;
@@ -55,6 +56,7 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
   const { hideStaticToast } = useToastStore();
   const { balances, balanceFetched, fetchAndSetEvmBalances } = balanceStore();
   const tooltipId = useId();
+  const { isMobile } = viewPortStore();
 
   const balance =
     balances && asset && balances[ChainAsset.from(asset.id).toString()];
@@ -181,24 +183,46 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
     }
   }, [amount, tokenBalance, stakeType, hideStaticToast]);
 
+  const delays = [0.15, 0.3, 0.4, 0.55, 0.7];
+
   return (
     <div
-      className={`z-10 flex w-full min-w-[328px] max-w-[328px] flex-col rounded-2xl bg-white bg-opacity-50 p-4 backdrop-blur-2xl sm:min-w-[460px] sm:max-w-[460px] sm:pb-5 ${stakeType === StakeType.GARDEN_PASS ? "gap-10 sm:gap-6" : "gap-12 sm:gap-10"}`}
+      className={`relative z-10 flex w-full min-w-[328px] max-w-[328px] flex-col p-4 sm:min-w-[460px] sm:max-w-[460px] sm:pb-5 ${stakeType === StakeType.GARDEN_PASS ? "gap-10 sm:gap-6" : "gap-12 sm:gap-10"}`}
     >
+      <motion.div
+        initial={{ height: 0 }}
+        animate={{ height: isMobile ? 392 : 384 }}
+        transition={{
+          type: "spring" as const,
+          stiffness: 100,
+          damping: 15,
+        }}
+        className="absolute inset-0 -z-10 min-w-[328px] max-w-[328px] rounded-2xl bg-white bg-opacity-50 backdrop-blur-2xl sm:min-w-[460px] sm:max-w-[460px]"
+      ></motion.div>
       <div className="flex flex-col gap-6">
-        <div className="flex w-full items-center justify-between">
+        <motion.div
+          initial={{ opacity: 0, y: -14, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{
+            type: "spring" as const,
+            stiffness: 150,
+            damping: 15,
+            delay: delays[0],
+          }}
+          className="flex w-full items-center justify-between"
+        >
           <Typography size="h5" breakpoints={{ sm: "h4" }} weight="medium">
             Stake
           </Typography>
           <Switch<StakeType>
             options={[
-              { label: "Garden pass", value: StakeType.GARDEN_PASS },
+              { label: "Garden Pass", value: StakeType.GARDEN_PASS },
               { label: "Custom", value: StakeType.CUSTOM, default: true },
             ]}
             value={stakeType}
             onChange={setStakeType}
           />
-        </div>
+        </motion.div>
         <div className="flex flex-col">
           <Typography
             size="h5"
@@ -207,44 +231,65 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
             className={`mb-5 ${stakeType === StakeType.CUSTOM ? "max-h-12 min-h-12 sm:max-h-10 sm:min-h-10" : "max-h-12 min-h-12 sm:max-h-10 sm:min-h-10"}`}
           >
             <AnimatePresence mode="wait">
-              {stakeType === StakeType.CUSTOM ? (
-                <motion.span key="custom" {...fadeAnimation}>
-                  Deposit SEED into Garden and unlock new opportunities like
-                  discounted fees. Stake in
-                  <br className="sm:hidden" /> multiples of{" "}
-                  <Typography className="!text-rose" weight="medium">
-                    2100 SEED
-                  </Typography>{" "}
-                  to participate
-                </motion.span>
-              ) : (
-                <motion.span
-                  key="garden-pass"
-                  {...fadeAnimation}
-                  className="w-full !leading-[20px]"
-                >
-                  Stake{" "}
-                  <span className="!font-[570] text-rose">21,000 SEED</span> to
-                  unlock a{" "}
-                  <span className="hidden md:visible md:inline-flex">
-                    Gardener Pass.
-                  </span>{" "}
-                  <span
-                    onClick={() => {
-                      setIsNftOpen(true);
-                    }}
-                    className="inline-flex cursor-pointer items-center justify-start gap-1 text-rose md:hidden"
+              <motion.div
+                initial={{ opacity: 0, y: -25, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{
+                  type: "spring" as const,
+                  stiffness: 150,
+                  damping: 15,
+                  delay: delays[1],
+                }}
+              >
+                {stakeType === StakeType.CUSTOM ? (
+                  <motion.span key="custom" {...fadeAnimation}>
+                    Deposit SEED into Garden and unlock new opportunities like
+                    discounted fees. Stake in
+                    <br className="sm:hidden" /> multiples of{" "}
+                    <Typography className="!text-rose" weight="medium">
+                      2,100 SEED
+                    </Typography>{" "}
+                    to participate
+                  </motion.span>
+                ) : (
+                  <motion.span
+                    key="garden-pass"
+                    {...fadeAnimation}
+                    className="w-full !leading-[20px]"
                   >
-                    Gardener Pass.
-                    <ArrowNorthEastIcon className="h-3 w-3 p-0.5" />
-                  </span>{" "}
-                  <br /> Max staking yield, full voting power.
-                  <br />{" "}
-                </motion.span>
-              )}
+                    Stake{" "}
+                    <span className="!font-[570] text-rose">21,000 SEED</span>{" "}
+                    to unlock a{" "}
+                    <span className="hidden md:visible md:inline-flex">
+                      Gardener Pass.
+                    </span>{" "}
+                    <span
+                      onClick={() => {
+                        setIsNftOpen(true);
+                      }}
+                      className="inline-flex cursor-pointer items-center justify-start gap-1 text-rose md:hidden"
+                    >
+                      Gardener Pass.
+                      <ArrowNorthEastIcon className="h-3 w-3 p-0.5" />
+                    </span>{" "}
+                    <br /> Max staking yield, full voting power.
+                    <br />{" "}
+                  </motion.span>
+                )}
+              </motion.div>
             </AnimatePresence>
           </Typography>
-          <div className={`flex gap-6 pl-1`}>
+          <motion.div
+            initial={{ opacity: 0, y: -25, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{
+              type: "spring" as const,
+              stiffness: 150,
+              damping: 15,
+              delay: delays[2],
+            }}
+            className={`flex gap-6 pl-1`}
+          >
             <StakeStats
               title={
                 <div className="flex items-center gap-1">
@@ -254,7 +299,7 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
                   </div>
                 </div>
               }
-              value={`${stakingStats?.globalApy || 0} %`}
+              value={`${stakingStats?.globalApy || 0}%`}
               size="sm"
             />
             <AnimatePresence mode="wait">
@@ -283,7 +328,7 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
                 >
                   <StakeStats
                     title={"SEED locked"}
-                    value={`${stakingStats?.seedLockedPercentage || 0} %`}
+                    value={`${stakingStats?.seedLockedPercentage || 0}%`}
                     size="sm"
                   />
                   <StakeStats
@@ -294,99 +339,123 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
+          </motion.div>
         </div>
       </div>
       <div>
         <div
           className={`flex flex-col ${stakeType === StakeType.GARDEN_PASS ? "gap-4 sm:gap-10" : "gap-4"}`}
         >
-          {stakeType === StakeType.GARDEN_PASS ? (
-            <motion.div
-              className="grid grid-cols-2 gap-3"
-              key="garden-pass-details"
-              {...fadeAnimation}
-            >
-              <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 py-1 sm:flex-row sm:py-2 md:items-center">
-                <GiftBoxIcon className="h-4 !text-rose" />
-                <Typography
-                  size="h6"
-                  breakpoints={{ sm: "h5" }}
-                  weight="medium"
-                >
-                  First access to new features
-                </Typography>
-              </div>
-              <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 py-1 sm:flex-row sm:py-2 md:items-center">
-                <DollarChipIcon className="h-4 !text-rose" />
-                <Typography
-                  size="h6"
-                  breakpoints={{ sm: "h5" }}
-                  weight="medium"
-                >
-                  Highest staking yields
-                </Typography>
-              </div>
-              <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 py-1 sm:flex-row sm:py-2 md:items-center">
-                <HorizontalSwap className="h-4 !text-rose" />
-                <Typography
-                  size="h6"
-                  breakpoints={{ sm: "h5" }}
-                  weight="medium"
-                >
-                  Tradable
-                </Typography>
-              </div>
-              <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 py-1 sm:flex-row sm:py-2 md:items-center">
-                <RaiseHandIcon className="h-4 !text-rose" />
-                <Typography
-                  size="h6"
-                  breakpoints={{ sm: "h5" }}
-                  weight="medium"
-                >
-                  Maximum voting power
-                </Typography>
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div key="custom-input" {...fadeAnimation}>
-              <StakeInput balance={tokenBalance} />
-            </motion.div>
-          )}
-          <Button
-            size="lg"
-            variant={
-              !address ||
-              (address &&
-                balanceFetched &&
-                ((isStakeable && !loading) ||
-                  shouldBuySeed ||
-                  (address && balanceFetched && tokenBalance === 0)))
-                ? "primary"
-                : "disabled"
-            }
-            onClick={
-              !address
-                ? () =>
-                    setOpenModal(modalNames.connectWallet, {
-                      [BlockchainType.evm]: true,
-                    })
-                : shouldBuySeed
-                  ? handleBuySeedClick
-                  : handleStakeClick
-            }
-            loading={loading}
+          <motion.div
+            initial={{ opacity: 0, y: -25, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{
+              type: "spring" as const,
+              stiffness: 150,
+              damping: 15,
+              delay: delays[3],
+            }}
           >
-            {!address
-              ? "Connect EVM Wallet"
-              : !tokenBalance && !balanceFetched
-                ? "Stake"
-                : shouldBuySeed
-                  ? "Buy SEED"
-                  : stakeType === StakeType.GARDEN_PASS
-                    ? "Buy Garden Pass"
-                    : "Stake"}
-          </Button>
+            {stakeType === StakeType.GARDEN_PASS ? (
+              <motion.div
+                className="grid grid-cols-2 gap-3"
+                key="garden-pass-details"
+                {...fadeAnimation}
+              >
+                <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 py-1 sm:flex-row sm:py-2 md:items-center">
+                  <GiftBoxIcon className="h-4 !text-rose" />
+                  <Typography
+                    size="h6"
+                    breakpoints={{ sm: "h5" }}
+                    weight="medium"
+                  >
+                    First access to new features
+                  </Typography>
+                </div>
+                <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 py-1 sm:flex-row sm:py-2 md:items-center">
+                  <DollarChipIcon className="h-4 !text-rose" />
+                  <Typography
+                    size="h6"
+                    breakpoints={{ sm: "h5" }}
+                    weight="medium"
+                  >
+                    Highest staking yields
+                  </Typography>
+                </div>
+                <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 py-1 sm:flex-row sm:py-2 md:items-center">
+                  <HorizontalSwap className="h-4 !text-rose" />
+                  <Typography
+                    size="h6"
+                    breakpoints={{ sm: "h5" }}
+                    weight="medium"
+                  >
+                    Tradable
+                  </Typography>
+                </div>
+                <div className="flex w-full flex-col items-start justify-start gap-1 rounded-lg bg-white/50 p-2 py-1 sm:flex-row sm:py-2 md:items-center">
+                  <RaiseHandIcon className="h-4 !text-rose" />
+                  <Typography
+                    size="h6"
+                    breakpoints={{ sm: "h5" }}
+                    weight="medium"
+                  >
+                    Maximum voting power
+                  </Typography>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div key="custom-input" {...fadeAnimation}>
+                <StakeInput balance={tokenBalance} />
+              </motion.div>
+            )}
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: -25, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{
+              type: "spring" as const,
+              stiffness: 150,
+              damping: 15,
+              delay: delays[4],
+            }}
+            className="w-full"
+          >
+            <Button
+              size="lg"
+              variant={
+                !address ||
+                (address &&
+                  balanceFetched &&
+                  ((isStakeable && !loading) ||
+                    shouldBuySeed ||
+                    (address && balanceFetched && tokenBalance === 0)))
+                  ? "primary"
+                  : "disabled"
+              }
+              onClick={
+                !address
+                  ? () =>
+                      setOpenModal(modalNames.connectWallet, {
+                        [BlockchainType.evm]: true,
+                      })
+                  : shouldBuySeed
+                    ? handleBuySeedClick
+                    : handleStakeClick
+              }
+              loading={loading}
+              className="w-full"
+            >
+              {!address
+                ? "Connect EVM Wallet"
+                : !tokenBalance && !balanceFetched
+                  ? "Stake"
+                  : shouldBuySeed
+                    ? "Buy SEED"
+                    : stakeType === StakeType.GARDEN_PASS
+                      ? "Buy Garden Pass"
+                      : "Stake"}
+            </Button>
+          </motion.div>
         </div>
         <Tooltip
           id={tooltipId}

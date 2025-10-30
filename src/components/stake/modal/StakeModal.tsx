@@ -3,7 +3,12 @@ import { modalStore } from "../../../store/modalStore";
 import { CloseIcon, Typography } from "@gardenfi/garden-book";
 import { viewPortStore } from "../../../store/viewPortStore";
 import { RewardStats } from "../shared/RewardStats";
-import { DURATION, DURATION_MAP, SEED_DECIMALS } from "../constants";
+import {
+  DURATION,
+  DURATION_MAP,
+  MIN_STAKE_AMOUNT,
+  SEED_DECIMALS,
+} from "../constants";
 import { StakeSubmissionCard } from "./StakeSubmissionCard";
 import { ExtendStake } from "./ExtendStake";
 import { stakeStore } from "../../../store/stakeStore";
@@ -39,6 +44,8 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
             SEED_DECIMALS
           )
         : 0;
+
+  const numberOfStakeUnits = amount / MIN_STAKE_AMOUNT;
 
   const getDurationFromVotes = (votes: number | undefined): DURATION => {
     if (!votes) return 6;
@@ -86,8 +93,8 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
       <div className="flex items-center gap-10 align-middle">
         <RewardStats title={"SEED"} weight="medium" value={amount} size="sm" />
         <RewardStats
-          title={"Multiplier"}
-          value={`${DURATION_MAP[selectedDuration].votes}x`}
+          title={"Votes"}
+          value={`${DURATION_MAP[selectedDuration].votes * numberOfStakeUnits}`}
           weight="medium"
           size="sm"
         />

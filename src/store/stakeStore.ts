@@ -259,14 +259,19 @@ export const stakeStore = create<StakeStoreState>((set) => ({
   fetchAndSetStakeApy: async (address: string) => {
     try {
       const response = await axios.get<{
+        status: string;
         data: {
-          stakeApys: {
-            [stakeId: string]: number;
-          };
-          userApy: number;
+          stakeApys: Record<string, string>;
+          avgApy: string;
         };
       }>(API().stake.stakeApy(address.toLowerCase()).toString());
-      set({ stakeApys: response.data.data.stakeApys });
+      if (response.data.status === "Ok") {
+        const apys: Record<string, number> = {};
+        Object.entries(response.data.data.stakeApys).forEach(([key, value]) => {
+          apys[key] = parseFloat(value);
+        });
+        set({ stakeApys: apys });
+      }
     } catch (error) {
       console.error(error);
     }
