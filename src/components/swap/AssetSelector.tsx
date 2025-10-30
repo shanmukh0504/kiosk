@@ -59,7 +59,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
   const {
     isAssetSelectorOpen,
     CloseAssetSelector,
-    allAssets: assets,
+    assets,
     chains,
     fiatData,
     isRouteValid,

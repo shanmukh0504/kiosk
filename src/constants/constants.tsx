@@ -157,7 +157,6 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "sui",
   "sui_testnet",
   "core",
-  "tron",
   "tron_shasta",
 ] as const;
 
