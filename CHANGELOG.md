@@ -9,6 +9,7 @@
 - Fixed Icon rounded issue in assets and chain, added new footer.
 - Fixed Native assets balances fetching.
 - Fixed X Link URL
+- Add dry run to all staking and distributor contract calls
 
 ## [1.1.8]
 
