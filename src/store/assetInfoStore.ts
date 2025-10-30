@@ -21,8 +21,6 @@ export type Assets = Record<string, Asset>;
 export type Chains = Partial<Record<Chain, ChainData>>;
 
 type AssetInfoState = {
-  allChains: Chains | null;
-  allAssets: Assets | null;
   assets: Assets | null;
   chains: Chains | null;
   routeValidator: RouteValidator | null;
@@ -46,8 +44,6 @@ type AssetInfoState = {
 export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   assets: null,
   chains: null,
-  allAssets: null,
-  allChains: null,
   routeValidator: null,
   routeMatrix: null,
   assetManager: null,
@@ -97,16 +93,15 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   fetchAndSetAssetsAndChains: async () => {
     try {
       set({ isLoading: true });
-      // Use AssetManager from garden.js to fetch and manage assets/chains
-      const manager = new AssetManager(API().quote.quote.origin, API().api_key);
+      const manager = new AssetManager(API().baseUrl.toString(), API().api_key);
       await manager.initialize();
+
+      await manager.buildRouteMatrix();
 
       set({
         assetManager: manager,
         routeValidator: manager.routeValidator,
         routeMatrix: manager.routeMatrix,
-        allAssets: manager.assets,
-        allChains: manager.chains,
         assets: manager.assets,
         chains: manager.chains,
       });
@@ -127,6 +122,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   getValidDestinations: (fromAsset: Asset) => {
     const { assetManager, assets } = get();
     if (!assetManager) return Object.values(assets || {});
+
     return assetManager.getValidDestinations(fromAsset);
   },
 }));

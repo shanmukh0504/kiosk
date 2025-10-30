@@ -66,6 +66,8 @@ export const useSwap = () => {
     clearSwapState,
     setBtcAddress,
     setIsComparisonVisible,
+    solverId,
+    setSolverId,
   } = swapStore();
   const { balances } = balanceStore();
   const { setOrder, setIsOpen } = orderInProgressStore();
@@ -234,6 +236,8 @@ export const useSwap = () => {
             const asNumber = Number(q.fixed_fee);
             if (!Number.isNaN(asNumber)) setFixedFee(asNumber);
           }
+
+          setSolverId(q.solver_id);
 
           const quoteAmount = isExactOut
             ? q.source.amount
@@ -497,6 +501,7 @@ export const useSwap = () => {
         toAsset: outputAsset,
         sendAmount: inputAmountInDecimals,
         receiveAmount: outputAmountInDecimals,
+        solverId,
         addresses,
       });
       if (!res.ok) {

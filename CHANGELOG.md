@@ -7,6 +7,7 @@
 - Fixed chain and wallet logos.
 - Fixed Icon rounded issue in assets and chain, added new footer.
 - Fixed Native assets balances fetching.
+- Fixed X Link URL
 
 ## [1.1.8]
 
@@ -18,6 +19,7 @@
 - Implemented Swap bridge functionality.
 - Added Alpen Testnet support.
 - Added Tron Chain Support.
+- Add solver_id in Create Order Request.
 
 ### Fixed
 
@@ -33,6 +35,7 @@
 
 - Fixed USD value formatting and rate display.
 - Added Evm and Sui support for Backpack wallet.
+- Fixed broken base chain logo in staking constants.
 - Added Husky pre-commit hook to run ESLint with --fix, restage updated files, and block empty commits.
 
 ## [1.1.6]

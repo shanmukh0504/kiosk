@@ -20,7 +20,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
   isRefund,
   address,
 }) => {
-  const { allChains } = assetInfoStore();
+  const { chains } = assetInfoStore();
   const tooltipId = useId();
   const { inputAsset, outputAsset, isEditBTCAddress } = swapStore();
   const { setIsEditBTCAddress } = swapStore();
@@ -32,8 +32,8 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
   }, [inputAsset, outputAsset, isRefund]);
 
   const redirect = useMemo(() => {
-    return allChains && chain ? allChains[chain] : null;
-  }, [allChains, chain]);
+    return chains && chain ? chains[chain] : null;
+  }, [chains, chain]);
 
   const handleAddressRedirect = (address: string) => {
     if (!redirect) return;
