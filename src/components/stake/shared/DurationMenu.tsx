@@ -33,7 +33,7 @@ const DurationMenu: FC<DurationMenuProps> = ({
     <div className="relative w-full">
       <button
         onClick={handleToggleDropdown}
-        className="flex w-full cursor-pointer items-center justify-between rounded-2xl bg-white px-3 py-[10px] text-2xl text-dark-grey outline-none"
+        className="flex w-full cursor-pointer items-center justify-between rounded-2xl bg-white px-3 py-3 text-2xl text-dark-grey outline-none"
       >
         <div className="flex items-center gap-4">
           <Typography size="h2" weight="regular">
