@@ -114,12 +114,12 @@ export const GardenSupportedWallets: Record<
     {
       evm: network === Network.MAINNET,
       bitcoin: true,
-      solana: true,
-      sui: true,
+      // solana: true,
+      // sui: true,
     }
   ),
-  "com.coinbase.wallet": createWallet(
-    "com.coinbase.wallet",
+  coinbaseWalletSDK: createWallet(
+    "coinbaseWalletSDK",
     "Coinbase Wallet",
     "wallets/coinbase.svg",
     "https://www.coinbase.com/wallet/downloads",
@@ -133,7 +133,7 @@ export const GardenSupportedWallets: Record<
     {
       bitcoin: network === Network.MAINNET,
       evm: true,
-      sui: network === Network.MAINNET,
+      // sui: network === Network.MAINNET,
     }
   ),
   unisat: createWallet(
@@ -150,23 +150,23 @@ export const GardenSupportedWallets: Record<
     "https://rabby.io/",
     { evm: true }
   ),
-  braavos: createWallet(
-    "braavos",
-    "Braavos",
-    "wallet/braavos.svg",
-    "https://braavos.app/",
-    { starknet: true }
-  ),
-  argentX: createWallet(
-    "argentX",
-    "Ready Wallet (formerly Argent)",
-    "wallet/argent.svg",
-    "https://www.argent.xyz/argent-x",
-    { starknet: true }
-  ),
+  // braavos: createWallet(
+  //   "braavos",
+  //   "Braavos",
+  //   "wallet/braavos.svg",
+  //   "https://braavos.app/",
+  //   { starknet: true }
+  // ),
+  // argentX: createWallet(
+  //   "argentX",
+  //   "Ready Wallet (formerly Argent)",
+  //   "wallet/argent.svg",
+  //   "https://www.argent.xyz/argent-x",
+  //   { starknet: true }
+  // ),
   keplr: createWallet("keplr", "Keplr", "wallets/keplr.svg", "tallLink:", {
     evm: network === Network.MAINNET,
-    starknet: true,
+    // starknet: true,
     bitcoin: network === Network.MAINNET,
   }),
   leap: createWallet(
@@ -185,36 +185,36 @@ export const GardenSupportedWallets: Record<
     "https://www.xverse.app/download",
     { bitcoin: true }
   ),
-  solflare: createWallet(
-    "solflare",
-    "Solflare",
-    "wallets/Solflare.svg",
-    "https://www.solflare.com/",
-    { solana: true }
-  ),
+  // solflare: createWallet(
+  //   "solflare",
+  //   "Solflare",
+  //   "wallets/Solflare.svg",
+  //   "https://www.solflare.com/",
+  //   { solana: true }
+  // ),
   "app.backpack": createWallet(
     "app.backpack",
     "Backpack",
     "wallets/Backpack.svg",
     "https://backpack.app/",
     {
-      solana: network === Network.MAINNET,
+      // solana: network === Network.MAINNET,
       evm: network === Network.MAINNET,
-      sui: network === Network.MAINNET,
+      // sui: network === Network.MAINNET,
     }
   ),
-  slush: createWallet(
-    "slush",
-    "Slush Wallet",
-    "wallets/SlushLogo.png",
-    "https://slushwallet.com/",
-    { sui: true }
-  ),
-  tokeo: createWallet(
-    "tokeo",
-    "Tokeo",
-    "wallets/TokeoLogo.webp",
-    "https://tokeo.io/",
-    { sui: network === Network.MAINNET }
-  ),
+  // slush: createWallet(
+  //   "slush",
+  //   "Slush Wallet",
+  //   "wallets/SlushLogo.png",
+  //   "https://slushwallet.com/",
+  //   { sui: true }
+  // ),
+  // tokeo: createWallet(
+  //   "tokeo",
+  //   "Tokeo",
+  //   "wallets/TokeoLogo.webp",
+  //   "https://tokeo.io/",
+  //   { sui: network === Network.MAINNET }
+  // ),
 };

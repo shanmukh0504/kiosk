@@ -14,7 +14,7 @@ import {
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { useSwitchChain, useWriteContract } from "wagmi";
 import { Hex, maxUint256 } from "viem";
-import { waitForTransactionReceipt } from "wagmi/actions";
+import { simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../../../layout/wagmi/config";
 import { Toast } from "../../toast/Toast";
 import { stakeABI } from "../abi/stake";
@@ -56,12 +56,13 @@ export const ExtendStake: FC<ExtendStakeProps> = ({
               DURATION_MAP[selectedDuration].lockDuration * ETH_BLOCKS_PER_DAY
             );
 
-      const tx = await writeContractAsync({
-        address: stakingConfig.STAKING_CONTRACT_ADDRESS as Hex,
+      const { request } = await simulateContract(config, {
         abi: stakeABI,
+        address: stakingConfig.STAKING_CONTRACT_ADDRESS as Hex,
         functionName: "extend",
         args: [stakePos.id as Hex, lockDuration],
       });
+      const tx = await writeContractAsync(request);
       await waitForTransactionReceipt(config, {
         hash: tx,
       });

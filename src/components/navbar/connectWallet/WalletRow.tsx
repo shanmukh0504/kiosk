@@ -85,7 +85,10 @@ export const WalletRow: FC<WalletRowProps> = ({
                     isConnected && (
                       <img
                         key={ecosystem}
-                        src={ecosystems[ecosystem as BlockchainType].icon ?? ""}
+                        src={
+                          ecosystems?.[ecosystem as keyof typeof ecosystems]
+                            ?.icon ?? ""
+                        }
                         alt={`${ecosystem} icon`}
                         className="rounded-full object-contain"
                         style={{
