@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.1]
+
+### Fixed
+
+- Updated coinbase wallet connection logic and hid unsupported ecosystems in connect wallet modal.
+
 ## [2.0.0]
 
 ### Fixed
