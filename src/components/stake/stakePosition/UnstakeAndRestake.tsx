@@ -2,7 +2,7 @@ import { Button } from "@gardenfi/garden-book";
 import { FC, useState } from "react";
 import { useWriteContract, useSwitchChain } from "wagmi";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
-import { waitForTransactionReceipt } from "wagmi/actions";
+import { simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { STAKING_CHAIN, STAKING_CONFIG } from "../constants";
 import { Hex } from "viem";
 import {
@@ -40,12 +40,13 @@ export const UnstakeAndRestake: FC<UnstakeAndRestakeProps> = ({ stakePos }) => {
 
       const stakingConfig = STAKING_CONFIG[STAKING_CHAIN];
 
-      const tx = await writeContractAsync({
+      const { request } = await simulateContract(config, {
         address: stakingConfig.STAKING_CONTRACT_ADDRESS as Hex,
         abi: stakeABI,
         functionName: "refund",
         args: [stakePos.id as Hex],
       });
+      const tx = await writeContractAsync(request);
       await waitForTransactionReceipt(config, {
         hash: tx,
       });

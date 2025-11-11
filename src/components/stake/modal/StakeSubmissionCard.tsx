@@ -10,7 +10,7 @@ import { Button } from "@gardenfi/garden-book";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { useReadContract, useSwitchChain, useWriteContract } from "wagmi";
 import { erc20Abi, Hex, maxUint256 } from "viem";
-import { waitForTransactionReceipt } from "wagmi/actions";
+import { simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../../../layout/wagmi/config";
 import { stakeABI } from "../abi/stake";
 import { MIN_STAKE_AMOUNT } from "../../../constants/stake";
@@ -73,7 +73,7 @@ export const StakeSubmissionCard: FC<StakeSubmissionCardProps> = ({
         return;
       }
       if (allowance.data === 0n || allowance.data < _amount) {
-        const res = await writeContractAsync({
+        const { request } = await simulateContract(config, {
           abi: erc20Abi,
           functionName: "approve",
           address: stakingConfig.SEED_ADDRESS as Hex,
@@ -84,6 +84,7 @@ export const StakeSubmissionCard: FC<StakeSubmissionCardProps> = ({
             maxUint256,
           ],
         });
+        const res = await writeContractAsync(request);
         await waitForTransactionReceipt(config, {
           hash: res,
         });
@@ -92,12 +93,13 @@ export const StakeSubmissionCard: FC<StakeSubmissionCardProps> = ({
 
       let hash;
       if (shouldMintNFT) {
-        const mintRes = await writeContractAsync({
+        const { request } = await simulateContract(config, {
           abi: flowerABI,
           functionName: "mint",
           address: stakingConfig.FLOWER_CONTRACT_ADDRESS as Hex,
           args: [stakingConfig.GARDEN_FILLER_ADDRESS as Hex],
         });
+        const mintRes = await writeContractAsync(request);
 
         hash = mintRes;
       } else {
@@ -108,7 +110,7 @@ export const StakeSubmissionCard: FC<StakeSubmissionCardProps> = ({
                 DURATION_MAP[selectedDuration].lockDuration * ETH_BLOCKS_PER_DAY
               );
 
-        const stakeRes = await writeContractAsync({
+        const { request } = await simulateContract(config, {
           abi: stakeABI,
           functionName: "vote",
           address: stakingConfig.STAKING_CONTRACT_ADDRESS as Hex,
@@ -118,6 +120,7 @@ export const StakeSubmissionCard: FC<StakeSubmissionCardProps> = ({
             lockDuration,
           ],
         });
+        const stakeRes = await writeContractAsync(request);
         hash = stakeRes;
       }
       await waitForTransactionReceipt(config, {

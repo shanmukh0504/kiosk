@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.1]
+
+### Fixed
+
+- Updated coinbase wallet connection logic and hid unsupported ecosystems in connect wallet modal.
+
 ## [2.0.0]
 
 ### Fixed
@@ -9,6 +15,7 @@
 - Fixed Icon rounded issue in assets and chain, added new footer.
 - Fixed Native assets balances fetching.
 - Fixed X Link URL
+- Add dry run to all staking and distributor contract calls
 
 ## [1.1.8]
 
