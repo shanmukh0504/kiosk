@@ -137,6 +137,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({
                           {step.title}
                         </Typography>
                         {isBitcoin(order.source_swap.chain) &&
+                          order.source_swap.initiate_tx_hash !== "" &&
                           index === 1 &&
                           step.status === "inProgress" && (
                             <ArrowNorthEastIcon

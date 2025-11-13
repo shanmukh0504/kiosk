@@ -8,7 +8,7 @@ import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { Hex } from "viem";
 import { formatAmount, formatAmountUsd } from "../../utils/utils";
 import { REWARD_CHAIN, STAKE_REWARD } from "./constants";
-import { waitForTransactionReceipt } from "wagmi/actions";
+import { simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../../layout/wagmi/config";
 import { Toast } from "../toast/Toast";
 import { AnimatePresence, motion } from "framer-motion";
@@ -66,7 +66,7 @@ export const StakeOverview = () => {
         await new Promise((resolve) => setTimeout(resolve, 2000));
       }
 
-      const tx = await writeContractAsync({
+      const { request } = await simulateContract(config, {
         abi: distributerABI,
         functionName: "claim",
         address: rewardConfig.DISTRIBUTER_CONTRACT as Hex,
@@ -78,6 +78,7 @@ export const StakeOverview = () => {
         ],
         chainId: REWARD_CHAIN,
       });
+      const tx = await writeContractAsync(request);
       await waitForTransactionReceipt(config, {
         hash: tx,
       });

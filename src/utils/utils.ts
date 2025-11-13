@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { INTERNAL_ROUTES, QUERY_PARAMS, THEMES } from "../constants/constants";
-import { ChainAsset, Swap } from "@gardenfi/orderbook";
+import { ChainAsset, OrderWithStatus, Swap } from "@gardenfi/orderbook";
 import { Assets } from "../store/assetInfoStore";
 
 export const isProduction = () => {
@@ -185,3 +185,42 @@ export const getProtocolFee = (fees: number) => {
   const protocolFee = fees * (protocolBips / totalBips);
   return protocolFee;
 };
+
+export function parseAssetNameSymbol(
+  input: string | undefined,
+  assetId?: string | ChainAsset,
+  fallbackSymbol?: string
+): { name: string; symbol: string } {
+  const raw = (input ?? "").trim();
+  if (!raw) return { name: "", symbol: fallbackSymbol?.trim() || "" };
+
+  const parts = raw.split(":");
+  if (parts.length >= 2) {
+    const name = parts[0]?.trim() || "";
+    const symbol =
+      parts.slice(1).join(":").trim() || fallbackSymbol?.trim() || "";
+    return { name, symbol };
+  }
+
+  let derivedSymbol = "";
+
+  if (assetId) {
+    try {
+      const chainAsset =
+        typeof assetId === "string" ? ChainAsset.from(assetId) : assetId;
+      derivedSymbol = chainAsset.symbol.toUpperCase();
+    } catch {
+      /* empty */
+    }
+  }
+
+  return { name: raw, symbol: derivedSymbol || fallbackSymbol?.trim() || "" };
+}
+
+export function sortPendingOrders(orders: OrderWithStatus[]) {
+  return orders.sort((a, b) => {
+    const aTime = new Date(a.created_at).getTime();
+    const bTime = new Date(b.created_at).getTime();
+    return bTime - aTime;
+  });
+}

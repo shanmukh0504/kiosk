@@ -263,34 +263,31 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
 
       {!multiWalletConnector && (
         <div className="flex flex-wrap gap-3">
-          {Object.values(ecosystems).map((ecosystem, i) => (
-            <Chip
-              key={i}
-              className={`cursor-pointer !bg-opacity-50 py-1.5 pl-3 pr-1 capitalize transition-colors ease-cubic-in-out hover:!bg-opacity-100`}
-              onClick={() => {
-                setSelectedEcosystem((prev) =>
-                  prev ===
-                  BlockchainType[ecosystem.name as keyof typeof BlockchainType]
-                    ? null
-                    : BlockchainType[
-                        ecosystem.name as keyof typeof BlockchainType
-                      ]
-                );
-              }}
-            >
-              <Typography size="h3" weight="regular">
-                {ecosystem.name === BlockchainType.evm ? "EVM" : ecosystem.name}
-              </Typography>
-              <RadioCheckedIcon
-                className={`${
-                  selectedEcosystem ===
-                  BlockchainType[ecosystem.name as keyof typeof BlockchainType]
-                    ? "mr-1 w-4"
-                    : "w-0"
-                } fill-rose transition-all`}
-              />
-            </Chip>
-          ))}
+          {Object.entries(ecosystems)
+            .filter(
+              ([key]) =>
+                key === BlockchainType.evm || key === BlockchainType.bitcoin
+            )
+            .map(([key, ecosystem]) => (
+              <Chip
+                key={key}
+                className={`cursor-pointer !bg-opacity-50 py-1.5 pl-3 pr-1 capitalize transition-colors ease-cubic-in-out hover:!bg-opacity-100`}
+                onClick={() => {
+                  setSelectedEcosystem((prev) =>
+                    prev === key ? null : (key as BlockchainType)
+                  );
+                }}
+              >
+                <Typography size="h3" weight="regular">
+                  {ecosystem.name === "EVM" ? "EVM" : ecosystem.name}
+                </Typography>
+                <RadioCheckedIcon
+                  className={`${
+                    selectedEcosystem === key ? "mr-1 w-4" : "w-0"
+                  } fill-rose transition-all`}
+                />
+              </Chip>
+            ))}
         </div>
       )}
 
@@ -324,12 +321,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                         wallet.isEVM &&
                         (connector.id === wallet.id ||
                           (wallet.id === "app.backpack" &&
-                            connector.id === "backpack") ||
-                          (typeof window !== "undefined" &&
-                            window.ethereum &&
-                            window.ethereum.isCoinbaseWallet &&
-                            connector.id === "injected" &&
-                            wallet.id === "com.coinbase.wallet"))
+                            connector.id === "backpack"))
                       ))(),
                     [BlockchainType.starknet]: !!(
                       starknetConnector &&
@@ -388,7 +380,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           </a>
           and{" "}
           <a
-            href="https://garden.finance/GardenFinancePrivacyPolicy.pdf"
+            href="https://garden.finance/privacy.pdf"
             target="_blank"
             rel="noreferrer"
             className="font-bold"

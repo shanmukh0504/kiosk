@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.0.1]
+
+### Fixed
+
+- Updated coinbase wallet connection logic and hid unsupported ecosystems in connect wallet modal.
+
+## [2.0.0]
+
+### Fixed
+
+- Migrated to v2 routes.
+- Fixed chain and wallet logos.
+- Fixed Icon rounded issue in assets and chain, added new footer.
+- Fixed Native assets balances fetching.
+- Fixed X Link URL
+- Add dry run to all staking and distributor contract calls
+
 ## [1.1.8]
 
 ### Added
@@ -8,6 +25,8 @@
 - Redirect link to mempool transaction hash when deposit is not confirmed.
 - Added starknet support for Xverse wallet.
 - Implemented Swap bridge functionality.
+- Added Alpen Testnet support.
+- Add solver_id in Create Order Request.
 
 ### Fixed
 
@@ -16,13 +35,14 @@
 - Fixed the link redirecting to staking docs.
 - Disable Core chain in output-asset on Phantom, Keplr and Leap wallet.
 - Update title to "Swap completed" from "Swap in progress" when swap is completed.
-- Ensure chainRpcs defaults to an empty array if undefined
-- Updated output error handling and fixed balance formatting.
+- Ensure chainRpcs defaults to an empty array if undefined.
+- Display mempool redirect on deposit detected only on initiate tx hash.
 
 ## [1.1.7]
 
 - Fixed USD value formatting and rate display.
 - Added Evm and Sui support for Backpack wallet.
+- Fixed broken base chain logo in staking constants.
 - Added Husky pre-commit hook to run ESLint with --fix, restage updated files, and block empty commits.
 
 ## [1.1.6]
