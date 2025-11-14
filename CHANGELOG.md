@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.2]
+
+### Fixed
+
+- Updated output error handling and fixed balance formatting.
+
 ## [2.0.1]
 
 ### Fixed
