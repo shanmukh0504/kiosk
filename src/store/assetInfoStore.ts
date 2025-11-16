@@ -93,10 +93,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   fetchAndSetAssetsAndChains: async () => {
     try {
       set({ isLoading: true });
-      const manager = new AssetManager(
-        { baseUrl: API().baseUrl.toString() },
-        API().api_key
-      );
+      const manager = new AssetManager(API().baseUrl.toString(), API().api_key);
       await manager.initialize();
 
       await manager.buildRouteMatrix();
