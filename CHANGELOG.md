@@ -8,6 +8,10 @@
 
 ## [2.0.1]
 
+### Added
+
+- Added API key requirement for quote fetching.
+
 ### Fixed
 
 - Updated coinbase wallet connection logic and hid unsupported ecosystems in connect wallet modal.

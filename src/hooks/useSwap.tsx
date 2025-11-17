@@ -284,6 +284,7 @@ export const useSwap = () => {
       setTokenPrices,
       setFiatTokenPrices,
       setError,
+      setSolverId,
       isSwapping,
       networkFees,
     ]

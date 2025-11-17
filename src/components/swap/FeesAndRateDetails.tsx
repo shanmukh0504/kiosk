@@ -120,7 +120,7 @@ export const FeesAndRateDetails = () => {
       }
     }
     return formatAmountUsd(price, 0);
-  }, [inputAsset, assets, assets, fiatData]);
+  }, [inputAsset, assets, fiatData]);
   const refundAddress = useMemo(
     () =>
       inputAsset
