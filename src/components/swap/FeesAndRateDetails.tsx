@@ -3,7 +3,6 @@ import {
   GasStationIcon,
   InfoIcon,
   KeyboardDownIcon,
-  SwapHorizontalIcon,
   Typography,
 } from "@gardenfi/garden-book";
 import { BTC, swapStore } from "../../store/swapStore";
@@ -18,69 +17,12 @@ import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { TooltipWrapper } from "../../common/ToolTipWrapper";
 import { formatAmount, formatAmountUsd } from "../../utils/utils";
 import { assetInfoStore } from "../../store/assetInfoStore";
-
-const RateDisplay = ({
-  inputAsset,
-  outputAsset,
-  formattedRate,
-  formattedTokenPrice,
-  className = "",
-  isFetchingQuote = false,
-}: {
-  inputAsset?: Asset;
-  outputAsset?: Asset;
-  formattedRate?: string | number;
-  formattedTokenPrice?: string | number;
-  isFetchingQuote?: boolean;
-  className?: string;
-}) => (
-  <div className={`flex min-w-fit items-center gap-1`}>
-    <Typography
-      size="h5"
-      weight="regular"
-      className={`!text-nowrap ${className}`}
-    >
-      1 {inputAsset?.symbol}
-    </Typography>
-    <Typography
-      size="h5"
-      weight="regular"
-      className={`!text-nowrap ${className}`}
-    >
-      {formattedTokenPrice ? (
-        "≈"
-      ) : (
-        <SwapHorizontalIcon className="fill-dark-grey" />
-      )}
-    </Typography>
-    {isFetchingQuote ? (
-      <div className="h-4 w-11 animate-[pulse_1.5s_ease-in-out_infinite] rounded bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 bg-[length:200%_100%]"></div>
-    ) : (
-      <Typography
-        size="h5"
-        weight="regular"
-        className={`!text-nowrap ${className}`}
-      >
-        {formattedRate && `${formattedRate}`}
-        {formattedTokenPrice && `$${formattedTokenPrice}`}
-      </Typography>
-    )}
-    {formattedRate && (
-      <Typography
-        size="h5"
-        weight="regular"
-        className={`!text-nowrap ${className}`}
-      >
-        {outputAsset?.symbol}
-      </Typography>
-    )}
-  </div>
-);
+import { RateAndPriceDisplay } from "./RateAndPriceDisplay";
 
 export const FeesAndRateDetails = () => {
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [isAssetLoading, setIsAssetLoading] = useState(false);
+  const [isRateLoading, setIsRateLoading] = useState(false);
   const previousAssets = useRef<{
     inputAsset?: Asset;
     outputAsset?: Asset;
@@ -147,17 +89,15 @@ export const FeesAndRateDetails = () => {
 
   useEffect(() => {
     const assetChanged =
-      previousAssets.current.inputAsset?.symbol !== inputAsset?.symbol ||
-      previousAssets.current.inputAsset?.chain !== inputAsset?.chain ||
-      previousAssets.current.outputAsset?.symbol !== outputAsset?.symbol ||
-      previousAssets.current.outputAsset?.chain !== outputAsset?.chain;
+      previousAssets.current.inputAsset !== inputAsset ||
+      previousAssets.current.outputAsset !== outputAsset;
 
     if (assetChanged && inputAsset && outputAsset) {
-      setIsAssetLoading(true);
+      setIsRateLoading(true);
       previousAssets.current = { inputAsset, outputAsset };
     }
     if (!isFetchingQuote.input && !isFetchingQuote.output && !assetChanged) {
-      setIsAssetLoading(false);
+      setIsRateLoading(false);
     }
   }, [inputAsset, outputAsset, isFetchingQuote.input, isFetchingQuote.output]);
 
@@ -189,11 +129,11 @@ export const FeesAndRateDetails = () => {
                     <InfoIcon className="h-3 w-3 !fill-mid-grey" />
                     {isHovered && inputAsset && outputAsset && (
                       <TooltipWrapper targetRef={targetRef}>
-                        <RateDisplay
-                          inputAsset={inputAsset}
-                          outputAsset={outputAsset}
-                          formattedRate={formattedRate}
-                          isFetchingQuote={isAssetLoading}
+                        <RateAndPriceDisplay
+                          inputToken={inputAsset?.symbol}
+                          outputToken={outputAsset?.symbol}
+                          rate={formattedRate}
+                          isLoading={isRateLoading}
                         />
                       </TooltipWrapper>
                     )}
@@ -206,12 +146,12 @@ export const FeesAndRateDetails = () => {
                 className="w-fit"
                 {...delayedFadeAnimation}
               >
-                <RateDisplay
-                  inputAsset={inputAsset}
-                  outputAsset={outputAsset}
-                  formattedTokenPrice={formattedTokenPrice}
+                <RateAndPriceDisplay
+                  inputToken={inputAsset?.symbol}
+                  outputToken={outputAsset?.symbol}
+                  tokenPrice={formattedTokenPrice}
                   className="!text-mid-grey"
-                  isFetchingQuote={isAssetLoading}
+                  isLoading={isRateLoading}
                 />
               </motion.div>
             )}
@@ -225,11 +165,10 @@ export const FeesAndRateDetails = () => {
                 className="w-fit"
                 {...delayedFadeAnimation}
               >
-                <RateDisplay
-                  inputAsset={inputAsset}
-                  outputAsset={outputAsset}
-                  formattedTokenPrice={formattedTokenPrice}
-                  isFetchingQuote={isAssetLoading}
+                <RateAndPriceDisplay
+                  inputToken={inputAsset?.symbol}
+                  tokenPrice={formattedTokenPrice}
+                  isLoading={isRateLoading}
                 />
               </motion.div>
             ) : (
