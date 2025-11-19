@@ -62,15 +62,12 @@ export const getDayDifference = (date: string) => {
   return "Just now";
 };
 
-export const formatAmount = (
+export const formatBigNumber = (
   amount: string | number | bigint,
   decimals: number,
   toFixed?: number
 ) => {
-  const bigAmount = new BigNumber(amount);
-  if (bigAmount.isZero()) return 0;
-
-  const value = bigAmount.dividedBy(10 ** decimals);
+  const value = new BigNumber(amount).dividedBy(10 ** decimals);
   const precision = toFixed ? toFixed : Number(value) > 10000 ? 2 : 4;
   let temp = value.toFixed(precision, BigNumber.ROUND_DOWN);
 
@@ -83,8 +80,27 @@ export const formatAmount = (
   ) {
     temp = value.toFixed(temp.split(".")[1].length + 2, BigNumber.ROUND_DOWN);
   }
+  return temp;
+};
 
-  return Number(temp);
+export const formatAmount = (
+  amount: string | number | bigint,
+  decimals: number,
+  toFixed?: number
+) => {
+  const bigAmount = new BigNumber(amount);
+  if (bigAmount.isZero()) return 0;
+  return Number(formatBigNumber(amount, decimals, toFixed));
+};
+
+export const formatBalance = (
+  amount: string | number | bigint,
+  decimals: number,
+  toFixed?: number
+) => {
+  const bigAmount = new BigNumber(amount);
+  if (bigAmount.isZero()) return "0";
+  return formatBigNumber(amount, decimals, toFixed);
 };
 
 export const isCurrentRoute = (route: string) => {
@@ -103,7 +119,7 @@ export const formatAmountUsd = (
 ) => {
   if (!amount) return 0;
   const num = formatAmount(amount, decimals);
-  return Number(num).toLocaleString("en-US", {
+  return num.toLocaleString("en-US", {
     maximumFractionDigits: 2,
   });
 };
