@@ -43,6 +43,9 @@ export const useOrderStatus = () => {
   const { order: orderInProgress, setOrder } = orderInProgressStore();
   const { pendingOrders } = pendingOrdersStore();
 
+  const orderId = orderInProgress?.order_id;
+  const orderStatus = orderInProgress?.status;
+
   const outputAsset =
     orderInProgress &&
     getAssetFromSwap(orderInProgress.destination_swap, assets);
@@ -193,12 +196,10 @@ export const useOrderStatus = () => {
   }, [orderInProgress, outputAsset?.symbol]);
 
   useEffect(() => {
-    if (!orderInProgress) return;
-
     // Check if order is in pending orders
     if (pendingOrders.length) {
       const orderFromPending = pendingOrders.find(
-        (o) => orderInProgress.order_id === o.order_id
+        (o) => orderId === o.order_id
       );
       if (orderFromPending) {
         setOrder(orderFromPending);
@@ -212,14 +213,12 @@ export const useOrderStatus = () => {
       OrderStatus.Redeemed,
     ];
 
-    if (completedStatuses.includes(orderInProgress.status)) return;
+    if (orderStatus && completedStatuses.includes(orderStatus)) return;
 
     // Fetch order from orderbook
     const fetchOrder = async () => {
-      if (!orderBook) return;
-      const orderFromOrderbook = await orderBook.getOrder(
-        orderInProgress.order_id
-      );
+      if (!orderBook || !orderId) return;
+      const orderFromOrderbook = await orderBook.getOrder(orderId);
 
       if (!orderFromOrderbook.ok) return;
 
@@ -258,7 +257,7 @@ export const useOrderStatus = () => {
     };
 
     fetchOrder();
-  }, [pendingOrders, orderInProgress, setOrder, orderBook, assets]);
+  }, [pendingOrders, orderId, orderStatus, setOrder, orderBook, assets]);
 
   return {
     orderProgress,
