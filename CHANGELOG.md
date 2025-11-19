@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.2]
+
+### Fixed
+
+- Reduced unnecessary GET requests triggered by reactive useEffect dependencies in useOrderStatus hook.
+
 ## [2.0.1]
 
 ### Added
