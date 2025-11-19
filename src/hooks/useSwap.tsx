@@ -28,7 +28,7 @@ import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import BigNumber from "bignumber.js";
 import { useSolanaWallet } from "./useSolanaWallet";
-import { formatAmount } from "../utils/utils";
+import { formatAmount, formatBalance } from "../utils/utils";
 import { useNetworkFees } from "./useNetworkFees";
 import { useSuiWallet } from "./useSuiWallet";
 import logger from "../utils/logger";
@@ -95,12 +95,12 @@ export const useSwap = () => {
       (!isStarknet(inputAsset.chain) &&
       !isSolana(inputAsset.chain) &&
       !isSui(inputAsset.chain)
-        ? formatAmount(
+        ? formatBalance(
             Number(inputBalance),
             inputAsset.decimals,
             Math.min(inputAsset.decimals, BTC.decimals)
           )
-        : Number(inputBalance)),
+        : inputBalance.toString()),
     [inputBalance, inputAsset]
   );
 
@@ -344,7 +344,7 @@ export const useSwap = () => {
         return;
       }
 
-      setError({ inputError: Errors.none });
+      setError({ inputError: Errors.none, outputError: Errors.none });
 
       if (!inputAsset || !outputAsset || !Number(amount)) return;
 
@@ -377,7 +377,7 @@ export const useSwap = () => {
       return;
     }
 
-    setError({ outputError: Errors.none });
+    setError({ inputError: Errors.none, outputError: Errors.none });
 
     if (!inputAsset || !outputAsset || !amountInNumber) return;
 

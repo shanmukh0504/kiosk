@@ -23,7 +23,7 @@ type SwapInputProps = {
   loading: boolean;
   price: string;
   error?: ErrorFormat;
-  balance?: number;
+  balance?: string;
   timeEstimate?: string;
 };
 
@@ -96,8 +96,7 @@ export const SwapInput: FC<SwapInputProps> = ({
 
   const handleBalanceClick = () => {
     if (type === IOType.input && balance && asset) {
-      const balanceStr = balance.toString();
-      onChange(balanceStr);
+      onChange(balance);
     }
   };
 
