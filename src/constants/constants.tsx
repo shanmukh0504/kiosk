@@ -11,7 +11,7 @@ import {
 import { BitcoinNetwork } from "@gardenfi/react-hooks";
 import { Network } from "@gardenfi/utils";
 import { citreaTestnet } from "viem/chains";
-import { botanix } from "../layout/wagmi/config";
+import { botanix, monadMainnet } from "../layout/wagmi/config";
 
 export const network: Network = import.meta.env.VITE_NETWORK;
 export const environment: Environment = import.meta.env.VITE_ENVIRONMENT;
@@ -139,6 +139,7 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "arbitrum_sepolia",
   "bera_testnet",
   "citrea_testnet",
+  "monad",
   "monad_testnet",
   "hyperliquid_testnet",
   "starknet_sepolia",
@@ -162,6 +163,7 @@ export const MULTICALL_CONTRACT_ADDRESSES: Record<number, string> = {
   [hyperliquid.id]: "0xcA11bde05977b3631167028862bE2a173976CA11",
   [citreaTestnet.id]: "0x8470Ee1FCD47e7F9B90486bB5D142430e5C1f409",
   [botanix.id]: "0xeaE7721d779276eb0f5837e2fE260118724a2Ba4",
+  [monadMainnet.id]: "0xcA11bde05977b3631167028862bE2a173976CA11",
 };
 
 export const QUERY_PARAMS = {

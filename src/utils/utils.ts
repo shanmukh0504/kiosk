@@ -1,6 +1,12 @@
 import BigNumber from "bignumber.js";
 import { INTERNAL_ROUTES, QUERY_PARAMS, THEMES } from "../constants/constants";
-import { ChainAsset, OrderWithStatus, Swap } from "@gardenfi/orderbook";
+import {
+  Asset,
+  Chain,
+  ChainAsset,
+  OrderWithStatus,
+  Swap,
+} from "@gardenfi/orderbook";
 import { Assets } from "../store/assetInfoStore";
 
 export const isProduction = () => {
@@ -224,6 +230,22 @@ export function sortPendingOrders(orders: OrderWithStatus[]) {
     return bTime - aTime;
   });
 }
+
+export const isAsset = (
+  asset: Asset | null | undefined,
+  chain: Chain,
+  symbol?: string
+) => {
+  if (!asset?.chain) return false;
+
+  const chainMatches =
+    asset.chain.toLowerCase() === chain.toString().toLowerCase();
+
+  if (!chainMatches) return false;
+  if (!symbol) return true;
+
+  return asset?.symbol?.toUpperCase() === symbol.toUpperCase();
+};
 
 export const warningMessage = () => {
   if (typeof window !== "undefined") {
