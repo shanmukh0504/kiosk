@@ -224,3 +224,40 @@ export function sortPendingOrders(orders: OrderWithStatus[]) {
     return bTime - aTime;
   });
 }
+
+export const warningMessage = () => {
+  if (typeof window !== "undefined") {
+    const logo = `
+  ░██████╗░░█████╗░██████╗░██████╗░███████╗███╗░░██╗
+  ██╔════╝░██╔══██╗██╔══██╗██╔══██╗██╔════╝████╗░██║
+  ██║░░██╗░███████║██████╔╝██║░░██║█████╗░░██╔██╗██║
+  ██║░░╚██╗██╔══██║██╔══██╗██║░░██║██╔══╝░░██║╚████║
+  ╚██████╔╝██║░░██║██║░░██║██████╔╝███████╗██║░╚███║
+  ░╚═════╝░╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░╚══════╝╚═╝░░╚══╝
+  `;
+
+    const title = "𝐖𝐀𝐑𝐍𝐈𝐍𝐆!";
+    const firstLine = `
+You opened the browser’s developer console, a tool intended only for developers. Keep your private keys and seed phrase strictly to yourself. Executing unfamiliar code in this console may compromise your account
+and result in irreversible loss of access and tokens.
+`;
+
+    const support = `
+To learn more about Garden, refer to our documentation: https://docs.garden.finance/ and join our community:  https://discord.gg/B7RczEFuJ5
+`;
+
+    console.log("%c" + logo, "color: #eb8daf;");
+    console.log(
+      "%c" + title,
+      "color: #ff6e6e; font-size: 32px; font-weight: bold;"
+    );
+    console.log(
+      "%c" + firstLine,
+      "color: #fff; font-weight: bold; font-size: 12px;"
+    );
+    console.log(
+      "%c" + support,
+      "color: #eb8daf; font-weight: bold; font-size: 12px;"
+    );
+  }
+};
