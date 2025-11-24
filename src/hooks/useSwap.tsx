@@ -13,6 +13,7 @@ import {
   isStarknet,
   isEVM,
   ChainAsset,
+  Chains,
 } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { validateBTCAddress } from "@gardenfi/core";
@@ -28,7 +29,7 @@ import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import BigNumber from "bignumber.js";
 import { useSolanaWallet } from "./useSolanaWallet";
-import { formatAmount, formatBalance } from "../utils/utils";
+import { formatAmount, formatBalance, isAsset } from "../utils/utils";
 import { useNetworkFees } from "./useNetworkFees";
 import { useSuiWallet } from "./useSuiWallet";
 import logger from "../utils/logger";
@@ -161,10 +162,28 @@ export const useSwap = () => {
       !outputAsset.max_amount
     )
       return defaultLimits;
-    else
+    else {
+      let minAmountRaw = inputAsset.min_amount;
+
+      if (
+        isAsset(inputAsset, Chains.arbitrum) &&
+        isAsset(outputAsset, Chains.monad)
+      ) {
+        minAmountRaw = "2200";
+      } else if (
+        isAsset(inputAsset, Chains.monad) &&
+        isAsset(outputAsset, Chains.arbitrum, "WBTC")
+      ) {
+        if (isAsset(inputAsset, Chains.monad, "USDC")) {
+          minAmountRaw = "2000000";
+        } else if (isAsset(inputAsset, Chains.monad, "MON")) {
+          minAmountRaw = "51000000000000000000";
+        }
+      }
+
       return {
         minAmount: formatAmount(
-          inputAsset.min_amount,
+          minAmountRaw,
           inputAsset.decimals,
           inputAsset.decimals
         ),
@@ -174,6 +193,7 @@ export const useSwap = () => {
           inputAsset.decimals
         ),
       };
+    }
   }, [inputAsset, outputAsset]);
 
   const debouncedFetchQuote = useMemo(
@@ -282,9 +302,9 @@ export const useSwap = () => {
       setAmount,
       setFixedFee,
       setTokenPrices,
+      setSolverId,
       setFiatTokenPrices,
       setError,
-      setSolverId,
       isSwapping,
       networkFees,
     ]
@@ -344,7 +364,7 @@ export const useSwap = () => {
         return;
       }
 
-      setError({ inputError: Errors.none, outputError: Errors.none });
+      setError({ inputError: Errors.none });
 
       if (!inputAsset || !outputAsset || !Number(amount)) return;
 
@@ -377,7 +397,7 @@ export const useSwap = () => {
       return;
     }
 
-    setError({ inputError: Errors.none, outputError: Errors.none });
+    setError({ outputError: Errors.none });
 
     if (!inputAsset || !outputAsset || !amountInNumber) return;
 

@@ -5,6 +5,7 @@
 ### Added
 
 - Warning message in console.
+- Added Monad Mainnet Support.
 
 ### Fixed
 

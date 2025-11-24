@@ -79,6 +79,27 @@ export const botanix: Chain = {
   },
 };
 
+export const monadMainnet: Chain = {
+  id: 143,
+  name: "Monad",
+  nativeCurrency: {
+    name: "Monad",
+    symbol: "MON",
+    decimals: 18,
+  },
+  blockExplorers: {
+    default: {
+      name: "Monad Explorer",
+      url: "https://monadvision.com/",
+    },
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc1.monad.xyz"],
+    },
+  },
+};
+
 export const SupportedChains = [
   mainnet,
   arbitrum,
@@ -89,6 +110,7 @@ export const SupportedChains = [
   arbitrumSepolia,
   sepolia,
   baseSepolia,
+  monadMainnet,
   base,
   berachainTestnetbArtio,
   berachain,
@@ -160,6 +182,7 @@ export const config = createConfig({
     [sepolia.id]: http(),
     [baseSepolia.id]: http(),
     [base.id]: http(),
+    [monadMainnet.id]: http(),
     [berachainTestnetbArtio.id]: http(),
     [berachain.id]: http(),
     [citreaTestnet.id]: http(),
