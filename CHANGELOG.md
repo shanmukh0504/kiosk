@@ -2,6 +2,10 @@
 
 ## [2.0.2]
 
+### Added
+
+- Warning message in console.
+
 ### Fixed
 
 - Updated output error handling and fixed balance formatting.
