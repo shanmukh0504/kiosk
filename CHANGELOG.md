@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.0.2]
+
+### Added
+
+- Warning message in console.
+- Added Monad Mainnet Support.
+
+### Fixed
+
+- Updated output error handling and fixed balance formatting.
+- Reduced unnecessary GET requests triggered by reactive useEffect dependencies in useOrderStatus hook.
+
 ## [2.0.1]
 
 ### Added

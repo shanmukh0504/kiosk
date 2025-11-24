@@ -1,6 +1,12 @@
 import BigNumber from "bignumber.js";
 import { INTERNAL_ROUTES, QUERY_PARAMS, THEMES } from "../constants/constants";
-import { ChainAsset, OrderWithStatus, Swap } from "@gardenfi/orderbook";
+import {
+  Asset,
+  Chain,
+  ChainAsset,
+  OrderWithStatus,
+  Swap,
+} from "@gardenfi/orderbook";
 import { Assets } from "../store/assetInfoStore";
 
 export const isProduction = () => {
@@ -62,15 +68,12 @@ export const getDayDifference = (date: string) => {
   return "Just now";
 };
 
-export const formatAmount = (
+export const formatBigNumber = (
   amount: string | number | bigint,
   decimals: number,
   toFixed?: number
 ) => {
-  const bigAmount = new BigNumber(amount);
-  if (bigAmount.isZero()) return 0;
-
-  const value = bigAmount.dividedBy(10 ** decimals);
+  const value = new BigNumber(amount).dividedBy(10 ** decimals);
   const precision = toFixed ? toFixed : Number(value) > 10000 ? 2 : 4;
   let temp = value.toFixed(precision, BigNumber.ROUND_DOWN);
 
@@ -83,8 +86,27 @@ export const formatAmount = (
   ) {
     temp = value.toFixed(temp.split(".")[1].length + 2, BigNumber.ROUND_DOWN);
   }
+  return temp;
+};
 
-  return Number(temp);
+export const formatAmount = (
+  amount: string | number | bigint,
+  decimals: number,
+  toFixed?: number
+) => {
+  const bigAmount = new BigNumber(amount);
+  if (bigAmount.isZero()) return 0;
+  return Number(formatBigNumber(amount, decimals, toFixed));
+};
+
+export const formatBalance = (
+  amount: string | number | bigint,
+  decimals: number,
+  toFixed?: number
+) => {
+  const bigAmount = new BigNumber(amount);
+  if (bigAmount.isZero()) return "0";
+  return formatBigNumber(amount, decimals, toFixed);
 };
 
 export const isCurrentRoute = (route: string) => {
@@ -103,7 +125,7 @@ export const formatAmountUsd = (
 ) => {
   if (!amount) return 0;
   const num = formatAmount(amount, decimals);
-  return Number(num).toLocaleString("en-US", {
+  return num.toLocaleString("en-US", {
     maximumFractionDigits: 2,
   });
 };
@@ -208,3 +230,56 @@ export function sortPendingOrders(orders: OrderWithStatus[]) {
     return bTime - aTime;
   });
 }
+
+export const isAsset = (
+  asset: Asset | null | undefined,
+  chain: Chain,
+  symbol?: string
+) => {
+  if (!asset?.chain) return false;
+
+  const chainMatches =
+    asset.chain.toLowerCase() === chain.toString().toLowerCase();
+
+  if (!chainMatches) return false;
+  if (!symbol) return true;
+
+  return asset?.symbol?.toUpperCase() === symbol.toUpperCase();
+};
+
+export const warningMessage = () => {
+  if (typeof window !== "undefined") {
+    const logo = `
+  ░██████╗░░█████╗░██████╗░██████╗░███████╗███╗░░██╗
+  ██╔════╝░██╔══██╗██╔══██╗██╔══██╗██╔════╝████╗░██║
+  ██║░░██╗░███████║██████╔╝██║░░██║█████╗░░██╔██╗██║
+  ██║░░╚██╗██╔══██║██╔══██╗██║░░██║██╔══╝░░██║╚████║
+  ╚██████╔╝██║░░██║██║░░██║██████╔╝███████╗██║░╚███║
+  ░╚═════╝░╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░╚══════╝╚═╝░░╚══╝
+  `;
+
+    const title = "𝐖𝐀𝐑𝐍𝐈𝐍𝐆!";
+    const firstLine = `
+You opened the browser’s developer console, a tool intended only for developers. Keep your private keys and seed phrase strictly to yourself. Executing unfamiliar code in this console may compromise your account
+and result in irreversible loss of access and tokens.
+`;
+
+    const support = `
+To learn more about Garden, refer to our documentation: https://docs.garden.finance/ and join our community:  https://discord.gg/B7RczEFuJ5
+`;
+
+    console.log("%c" + logo, "color: #eb8daf;");
+    console.log(
+      "%c" + title,
+      "color: #ff6e6e; font-size: 32px; font-weight: bold;"
+    );
+    console.log(
+      "%c" + firstLine,
+      "color: #fff; font-weight: bold; font-size: 12px;"
+    );
+    console.log(
+      "%c" + support,
+      "color: #eb8daf; font-weight: bold; font-size: 12px;"
+    );
+  }
+};
