@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.3]
+
+### Fixed
+
+- enable starknet for wallet connection.
+
 ## [2.0.2]
 
 ### Added
