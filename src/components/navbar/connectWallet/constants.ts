@@ -150,23 +150,23 @@ export const GardenSupportedWallets: Record<
     "https://rabby.io/",
     { evm: true }
   ),
-  // braavos: createWallet(
-  //   "braavos",
-  //   "Braavos",
-  //   "wallet/braavos.svg",
-  //   "https://braavos.app/",
-  //   { starknet: true }
-  // ),
-  // argentX: createWallet(
-  //   "argentX",
-  //   "Ready Wallet (formerly Argent)",
-  //   "wallet/argent.svg",
-  //   "https://www.argent.xyz/argent-x",
-  //   { starknet: true }
-  // ),
+  braavos: createWallet(
+    "braavos",
+    "Braavos",
+    "wallet/braavos.svg",
+    "https://braavos.app/",
+    { starknet: true }
+  ),
+  argentX: createWallet(
+    "argentX",
+    "Ready Wallet (formerly Argent)",
+    "wallet/argent.svg",
+    "https://www.argent.xyz/argent-x",
+    { starknet: true }
+  ),
   keplr: createWallet("keplr", "Keplr", "wallets/keplr.svg", "tallLink:", {
     evm: network === Network.MAINNET,
-    // starknet: true,
+    starknet: true,
     bitcoin: network === Network.MAINNET,
   }),
   leap: createWallet(
