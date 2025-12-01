@@ -1,5 +1,10 @@
 import BigNumber from "bignumber.js";
-import { INTERNAL_ROUTES, QUERY_PARAMS, THEMES } from "../constants/constants";
+import {
+  CHAIN_NAME_MAP,
+  INTERNAL_ROUTES,
+  QUERY_PARAMS,
+  THEMES,
+} from "../constants/constants";
 import {
   Asset,
   Chain,
@@ -30,14 +35,8 @@ export const capitalizeChain = (chainKey: string) => {
 export const formatChainDisplayName = (chainName: string): string => {
   if (!chainName) return "";
 
-  const normalizedName = chainName.toLowerCase().trim();
-
-  const chainNameMap: Record<string, string> = {
-    bnbchain: "BNB Chain",
-  };
-
-  if (chainNameMap[normalizedName]) {
-    return chainNameMap[normalizedName];
+  if (CHAIN_NAME_MAP[chainName.toLowerCase()]) {
+    return CHAIN_NAME_MAP[chainName.toLowerCase()];
   }
 
   return chainName;
