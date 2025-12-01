@@ -27,6 +27,22 @@ export const capitalizeChain = (chainKey: string) => {
   return chainKey.charAt(0).toUpperCase() + chainKey.slice(1);
 };
 
+export const formatChainDisplayName = (chainName: string): string => {
+  if (!chainName) return "";
+
+  const normalizedName = chainName.toLowerCase().trim();
+
+  const chainNameMap: Record<string, string> = {
+    bnbchain: "BNB Chain",
+  };
+
+  if (chainNameMap[normalizedName]) {
+    return chainNameMap[normalizedName];
+  }
+
+  return chainName;
+};
+
 /**
  * Gets the {Asset} from assets in store using the swap object
  * @param {Swap} swap
