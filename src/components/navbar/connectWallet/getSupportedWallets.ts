@@ -54,7 +54,7 @@ const checkManualWalletAvailability = (
       return !!window.leap;
     case "braavos":
       return !!window.starknet_braavos;
-    case "argentX":
+    case "ready":
       return !!window.starknet_argentX;
     default:
       return undefined;
@@ -77,6 +77,7 @@ export const getAvailableWallets = (
   suiWallets?: SuiWallet[]
 ): Wallet[] => {
   const walletMap = new Map<string, Wallet>();
+  console.log({ starknetWallets });
 
   for (const [key, config] of Object.entries(GardenSupportedWallets)) {
     walletMap.set(key, {
