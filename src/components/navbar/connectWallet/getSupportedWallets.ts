@@ -174,29 +174,33 @@ export const isWalletConnected = (
       return getWalletKey(connectionState.evmConnector.name) === wallet.id;
 
     case BlockchainType.starknet:
-      if (!connectionState.starknetConnector || !wallet.wallet.starknetWallet)
+      if (
+        !connectionState.starknetConnector ||
+        !wallet.wallet.starknetWallet ||
+        connectionState.starknetStatus !== "connected"
+      )
         return false;
-      if (connectionState.starknetStatus !== "connected") return false;
-      return (
-        getWalletKey(
-          connectionState.starknetConnector.name ||
-            connectionState.starknetConnector.id
-        ) === wallet.id
-      );
+      return getWalletKey(connectionState.starknetConnector.name) === wallet.id;
 
     case BlockchainType.solana:
-      if (!connectionState.solanaConnected || !wallet.wallet.solanaWallet)
+      if (
+        !connectionState.solanaConnected ||
+        !wallet.wallet.solanaWallet ||
+        !connectionState.solanaSelectedWallet
+      )
         return false;
-      if (!connectionState.solanaSelectedWallet) return false;
       return (
         getWalletKey(connectionState.solanaSelectedWallet.adapter.name) ===
         wallet.id
       );
 
     case BlockchainType.sui:
-      if (!connectionState.suiConnected || !wallet.wallet.suiWallet)
+      if (
+        !connectionState.suiConnected ||
+        !wallet.wallet.suiWallet ||
+        !connectionState.suiSelectedWallet
+      )
         return false;
-      if (!connectionState.suiSelectedWallet) return false;
       return getWalletKey(connectionState.suiSelectedWallet.name) === wallet.id;
 
     default:
