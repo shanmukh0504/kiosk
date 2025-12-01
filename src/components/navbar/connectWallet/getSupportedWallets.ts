@@ -77,7 +77,6 @@ export const getAvailableWallets = (
   suiWallets?: SuiWallet[]
 ): Wallet[] => {
   const walletMap = new Map<string, Wallet>();
-  console.log({ starknetWallets });
 
   for (const [key, config] of Object.entries(GardenSupportedWallets)) {
     walletMap.set(key, {
