@@ -13,6 +13,7 @@ import {
   isStarknet,
   isEVM,
   ChainAsset,
+  Chains,
 } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { validateBTCAddress } from "@gardenfi/core";
@@ -28,7 +29,7 @@ import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import BigNumber from "bignumber.js";
 import { useSolanaWallet } from "./useSolanaWallet";
-import { formatAmount } from "../utils/utils";
+import { formatAmount, formatBalance, isAsset } from "../utils/utils";
 import { useNetworkFees } from "./useNetworkFees";
 import { useSuiWallet } from "./useSuiWallet";
 import logger from "../utils/logger";
@@ -65,6 +66,8 @@ export const useSwap = () => {
     clearSwapState,
     setBtcAddress,
     setIsComparisonVisible,
+    solverId,
+    setSolverId,
   } = swapStore();
   const { balances } = balanceStore();
   const { setOrder, setIsOpen } = orderInProgressStore();
@@ -93,12 +96,12 @@ export const useSwap = () => {
       (!isStarknet(inputAsset.chain) &&
       !isSolana(inputAsset.chain) &&
       !isSui(inputAsset.chain)
-        ? formatAmount(
+        ? formatBalance(
             Number(inputBalance),
             inputAsset.decimals,
             Math.min(inputAsset.decimals, BTC.decimals)
           )
-        : Number(inputBalance)),
+        : inputBalance.toString()),
     [inputBalance, inputAsset]
   );
 
@@ -159,10 +162,28 @@ export const useSwap = () => {
       !outputAsset.max_amount
     )
       return defaultLimits;
-    else
+    else {
+      let minAmountRaw = inputAsset.min_amount;
+
+      if (
+        isAsset(inputAsset, Chains.arbitrum) &&
+        isAsset(outputAsset, Chains.monad)
+      ) {
+        minAmountRaw = "2200";
+      } else if (
+        isAsset(inputAsset, Chains.monad) &&
+        isAsset(outputAsset, Chains.arbitrum, "WBTC")
+      ) {
+        if (isAsset(inputAsset, Chains.monad, "USDC")) {
+          minAmountRaw = "2000000";
+        } else if (isAsset(inputAsset, Chains.monad, "MON")) {
+          minAmountRaw = "51000000000000000000";
+        }
+      }
+
       return {
         minAmount: formatAmount(
-          inputAsset.min_amount,
+          minAmountRaw,
           inputAsset.decimals,
           inputAsset.decimals
         ),
@@ -172,6 +193,7 @@ export const useSwap = () => {
           inputAsset.decimals
         ),
       };
+    }
   }, [inputAsset, outputAsset]);
 
   const debouncedFetchQuote = useMemo(
@@ -233,6 +255,8 @@ export const useSwap = () => {
             if (!Number.isNaN(asNumber)) setFixedFee(asNumber);
           }
 
+          setSolverId(q.solver_id);
+
           const quoteAmount = isExactOut
             ? q.source.amount
             : q.destination.amount;
@@ -278,6 +302,7 @@ export const useSwap = () => {
       setAmount,
       setFixedFee,
       setTokenPrices,
+      setSolverId,
       setFiatTokenPrices,
       setError,
       isSwapping,
@@ -491,6 +516,7 @@ export const useSwap = () => {
         toAsset: outputAsset,
         sendAmount: inputAmountInDecimals,
         receiveAmount: outputAmountInDecimals,
+        solverId,
         addresses,
       });
       if (!res.ok) {

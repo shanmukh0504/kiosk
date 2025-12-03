@@ -7,7 +7,6 @@ import {
   EVMChains,
   isBitcoin,
   isEVM,
-  isEvmNativeToken,
   isSolana,
   isStarknet,
   isSui,
@@ -109,11 +108,18 @@ export const balanceStore = create<BalanceStoreState>((set, get) => ({
     try {
       const balanceResults = await Promise.allSettled(
         Object.entries(tokensByChain).map(async ([chain, assets]) => {
+          const tokenAddresses = (assets ?? []).map(
+            (asset) => asset?.token?.address
+          ) as Hex[];
+          const assetKeys = (assets ?? []).map((asset) =>
+            ChainAsset.from(asset.id).toString()
+          );
           const chainBalances = await getBalanceMulticall(
-            assets.map((asset) => asset?.token?.address) as Hex[],
+            tokenAddresses,
             address as Hex,
             chain as EVMChains,
-            workingRPCs
+            workingRPCs,
+            assetKeys
           );
 
           const updatedBalances: Record<string, BigNumber | undefined> = {};
@@ -121,14 +127,14 @@ export const balanceStore = create<BalanceStoreState>((set, get) => ({
           if (!assets) return updatedBalances;
 
           for (const asset of assets) {
-            if (!asset?.token?.address) continue;
             const orderKey = ChainAsset.from(asset.id).toString();
-            let balance = chainBalances[asset?.token?.address];
+            let balance = chainBalances[orderKey];
 
             if (
               balance &&
               balance.gt(0) &&
-              isEvmNativeToken(chain as EVMChains, asset?.token?.address)
+              isEVM(asset.chain) &&
+              asset.token === null
             ) {
               const fee = await getLegacyGasEstimate(
                 chain as EVMChains,

@@ -1,5 +1,44 @@
 # Changelog
 
+## [2.0.3]
+
+### Fixed
+
+- enable starknet for wallet connection.
+
+## [2.0.2]
+
+### Added
+
+- Warning message in console.
+- Added Monad Mainnet Support.
+
+### Fixed
+
+- Updated output error handling and fixed balance formatting.
+- Reduced unnecessary GET requests triggered by reactive useEffect dependencies in useOrderStatus hook.
+
+## [2.0.1]
+
+### Added
+
+- Added API key requirement for quote fetching.
+
+### Fixed
+
+- Updated coinbase wallet connection logic and hid unsupported ecosystems in connect wallet modal.
+
+## [2.0.0]
+
+### Fixed
+
+- Migrated to v2 routes.
+- Fixed chain and wallet logos.
+- Fixed Icon rounded issue in assets and chain, added new footer.
+- Fixed Native assets balances fetching.
+- Fixed X Link URL
+- Add dry run to all staking and distributor contract calls
+
 ## [1.1.8]
 
 ### Added
@@ -10,6 +49,7 @@
 - Implemented Swap bridge functionality.
 - New Stake page with GardenPass and refreshed UI.
 - Added Alpen Testnet support.
+- Add solver_id in Create Order Request.
 
 ### Fixed
 
@@ -25,6 +65,7 @@
 
 - Fixed USD value formatting and rate display.
 - Added Evm and Sui support for Backpack wallet.
+- Fixed broken base chain logo in staking constants.
 - Added Husky pre-commit hook to run ESLint with --fix, restage updated files, and block empty commits.
 
 ## [1.1.6]

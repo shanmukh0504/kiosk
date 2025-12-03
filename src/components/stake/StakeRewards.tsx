@@ -31,7 +31,7 @@ export const StakeRewards = ({
   const { writeContractAsync } = useWriteContract();
   const { address, chainId } = useEVMWallet();
   const { switchChainAsync } = useSwitchChain();
-  const { allAssets } = assetInfoStore();
+  const { assets } = assetInfoStore();
 
   const { data: claimedAmount, refetch: refetchClaimedAmount } =
     useReadContract({
@@ -47,21 +47,19 @@ export const StakeRewards = ({
     });
 
   const cbbtcAsset = useMemo(() => {
-    if (!allAssets) return null;
+    if (!assets) return null;
     const targetChain = isTestnet ? "base_sepolia" : "base";
 
-    let asset = Object.values(allAssets).find(
+    let asset = Object.values(assets).find(
       (asset) => asset.chain === targetChain && asset.symbol === "cbBTC"
     );
 
     if (!asset) {
-      asset = Object.values(allAssets).find(
-        (asset) => asset.symbol === "cbBTC"
-      );
+      asset = Object.values(assets).find((asset) => asset.symbol === "cbBTC");
     }
 
     return asset;
-  }, [allAssets]);
+  }, [assets]);
 
   const cbbtcPrice = useMemo(() => {
     if (!cbbtcAsset) return 0;

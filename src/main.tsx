@@ -6,9 +6,12 @@ import App from "./pages/index.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 import "@gardenfi/garden-book/style.css";
+import { warningMessage } from "./utils/utils.ts";
 
 import { WalletProviders } from "./layout/WalletProviders.tsx";
 // import { WalletMonitor } from "./SentryInit.tsx";
+
+warningMessage();
 
 const queryClient = new QueryClient();
 

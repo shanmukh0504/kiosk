@@ -1,4 +1,4 @@
-import { Typography } from "@gardenfi/garden-book";
+import { ArrowRightIcon, Typography } from "@gardenfi/garden-book";
 import React, { FC, ReactNode, useState } from "react";
 import { TooltipWrapper } from "./ToolTipWrapper";
 
@@ -12,6 +12,9 @@ type props = {
   toolTip?: ReactNode;
   targetRef?: React.RefObject<HTMLDivElement>;
   textColor?: string;
+  valueSize?: "h1" | "h2" | "h3" | "h4" | "h5";
+  extend?: boolean;
+  previousValue?: ReactNode;
 };
 
 export const RewardStats: FC<props> = ({
@@ -23,6 +26,9 @@ export const RewardStats: FC<props> = ({
   toolTip,
   targetRef,
   textColor,
+  valueSize = "h3",
+  extend = false,
+  previousValue,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const titleSize = size === "xs" ? "h5" : size === "sm" ? "h5" : "h4";
@@ -44,14 +50,38 @@ export const RewardStats: FC<props> = ({
       >
         {title}
       </Typography>
-      <Typography
-        size={"h3"}
-        weight={weight}
-        className={`sm:!gf-leading-[20px] whitespace-nowrap`}
-        style={{ color: textColor }}
-      >
-        {value}
-      </Typography>
+      {!extend ? (
+        <Typography
+          size={valueSize}
+          weight={weight}
+          className={`sm:!gf-leading-[20px] whitespace-nowrap`}
+          style={{ color: textColor }}
+        >
+          {value}
+        </Typography>
+      ) : (
+        <div className="flex items-center justify-center gap-2">
+          <Typography
+            size={valueSize}
+            weight={weight}
+            className={`sm:!gf-leading-[20px] whitespace-nowrap`}
+            style={{ color: textColor }}
+          >
+            {previousValue ?? value}
+          </Typography>
+          <ArrowRightIcon className="h-4 w-4" />
+          <Typography
+            size={valueSize}
+            weight={weight}
+            className={`sm:!gf-leading-[20px] whitespace-nowrap`}
+            style={{ color: textColor }}
+          >
+            {previousValue && Number(previousValue) > Number(value)
+              ? previousValue
+              : value}
+          </Typography>
+        </div>
+      )}
       {isHovered && targetRef && (
         <TooltipWrapper offsetX={10} offsetY={12} targetRef={targetRef}>
           {toolTip}

@@ -19,7 +19,6 @@ export const API = () => {
     api_key: REQUIRED_ENV_VARS.API_KEY,
     home: new Url("https://garden.finance"),
     data: {
-      info: new Url(REQUIRED_ENV_VARS.INFO_URL),
       chains: () => new Url(REQUIRED_ENV_VARS.BASE_URL).endpoint("/v2/chains"),
       blockNumbers: (network: "mainnet" | "testnet" | "localnet") =>
         new Url(REQUIRED_ENV_VARS.INFO_URL)
@@ -29,7 +28,7 @@ export const API = () => {
         new Url(REQUIRED_ENV_VARS.INFO_URL).endpoint("notification"),
     },
     buildId: "/build-id.json",
-    orderbook: new Url(REQUIRED_ENV_VARS.BASE_URL),
+    baseUrl: new Url(REQUIRED_ENV_VARS.BASE_URL),
     quote: {
       quote: new Url(REQUIRED_ENV_VARS.BASE_URL),
       fiatValues: new Url(REQUIRED_ENV_VARS.QUOTE_URL).endpoint("/fiat"),

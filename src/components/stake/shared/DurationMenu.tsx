@@ -33,7 +33,7 @@ const DurationMenu: FC<DurationMenuProps> = ({
     <div className="relative w-full">
       <button
         onClick={handleToggleDropdown}
-        className="flex w-full cursor-pointer items-center justify-between rounded-2xl bg-white px-3 py-3 text-2xl text-dark-grey outline-none"
+        className="flex w-full cursor-pointer items-center justify-between rounded-2xl bg-white px-3 py-3.5 text-2xl text-dark-grey outline-none"
       >
         <div className="flex items-center gap-4">
           <Typography size="h2" weight="regular">
@@ -69,14 +69,14 @@ const DurationMenu: FC<DurationMenuProps> = ({
                   damping: 25,
                 },
               }}
-              className="absolute z-10 flex w-full -translate-y-full flex-col-reverse overflow-hidden rounded-2xl bg-white shadow-2xl sm:-mt-[40px] sm:-translate-y-0 sm:flex-col"
+              className="absolute z-10 flex w-full -translate-y-full flex-col-reverse overflow-hidden rounded-2xl bg-white shadow-2xl sm:-mt-[48px] sm:-translate-y-0 sm:flex-col"
             >
               {Object.keys(DURATION_MAP).map((item) => {
                 return (
                   <div
                     key={item}
                     onClick={() => handleSelectDuration(item as DURATION)}
-                    className="origin-bottom cursor-pointer px-3 py-[10px] text-2xl transition-colors hover:bg-off-white"
+                    className="origin-bottom cursor-pointer px-3 py-3.5 text-2xl transition-colors hover:bg-off-white"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">

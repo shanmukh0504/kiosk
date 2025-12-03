@@ -22,9 +22,9 @@ export const SwapInfo: FC<SwapInfoProps> = ({
   receiveAmount,
   equalSplit = false,
 }) => {
-  const { allChains } = assetInfoStore();
-  const sendChain = allChains ? allChains[sendAsset.chain] : undefined;
-  const receiveChain = allChains ? allChains[receiveAsset.chain] : undefined;
+  const { chains } = assetInfoStore();
+  const sendChain = chains ? chains[sendAsset.chain] : undefined;
+  const receiveChain = chains ? chains[receiveAsset.chain] : undefined;
 
   return (
     <div className="flex items-center justify-between">

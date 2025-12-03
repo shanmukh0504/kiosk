@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { modalStore } from "../../../store/modalStore";
 import { CloseIcon, Typography } from "@gardenfi/garden-book";
 import { viewPortStore } from "../../../store/viewPortStore";
@@ -47,6 +47,14 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
 
   const numberOfStakeUnits = amount / MIN_STAKE_AMOUNT;
 
+  // Capture the initial votes value when modal opens (for extend mode)
+  const initialVotes = useMemo(() => {
+    if (isExtend && modalData.manageStake?.extend?.stakingPosition?.votes) {
+      return modalData.manageStake.extend.stakingPosition.votes;
+    }
+    return undefined;
+  }, [isExtend, modalData.manageStake?.extend?.stakingPosition?.votes]);
+
   const getDurationFromVotes = (votes: number | undefined): DURATION => {
     if (!votes) return 6;
     for (const [key, value] of Object.entries(DURATION_MAP)) {
@@ -91,19 +99,29 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
         the stake.
       </Typography>
       <div className="flex items-center gap-10 align-middle">
-        <RewardStats title={"SEED"} weight="medium" value={amount} size="sm" />
+        <RewardStats
+          title={"SEED"}
+          weight="medium"
+          value={amount}
+          size="md"
+          valueSize="h2"
+        />
         <RewardStats
           title={"Votes"}
           value={`${DURATION_MAP[selectedDuration].votes * numberOfStakeUnits}`}
           weight="medium"
-          size="sm"
+          size="md"
+          valueSize="h2"
+          extend={modalData.manageStake?.extend?.isExtend}
+          previousValue={initialVotes}
         />
         <RewardStats
           title={"APY"}
           value={`${stakingStats?.globalApy || 0} %`}
           weight="medium"
           isPink
-          size="sm"
+          size="md"
+          valueSize="h2"
         />
       </div>
 

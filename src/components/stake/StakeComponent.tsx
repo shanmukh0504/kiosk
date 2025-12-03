@@ -216,7 +216,7 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
           </Typography>
           <Switch<StakeType>
             options={[
-              { label: "Garden Pass", value: StakeType.GARDEN_PASS },
+              { label: "Garden pass", value: StakeType.GARDEN_PASS },
               { label: "Custom", value: StakeType.CUSTOM, default: true },
             ]}
             value={stakeType}
@@ -243,8 +243,8 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
               >
                 {stakeType === StakeType.CUSTOM ? (
                   <motion.span key="custom" {...fadeAnimation}>
-                    Deposit SEED into Garden and unlock new opportunities like
-                    discounted fees. Stake in
+                    Deposit SEED into Garden and unlock new opportunities.
+                    <br /> Stake in
                     <br className="sm:hidden" /> multiples of{" "}
                     <Typography className="!text-rose" weight="medium">
                       2,100 SEED

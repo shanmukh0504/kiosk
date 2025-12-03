@@ -9,9 +9,11 @@ import { GardenPass } from "./shared/GardenPass";
 import { StakeRewards } from "./StakeRewards";
 import { BottomSheet } from "@gardenfi/garden-book";
 import { NftBottomSheet } from "./shared/NftBottomSheet";
+import { viewPortStore } from "../../store/viewPortStore";
 
 export const Stake: FC = () => {
   const { stakePosData, stakeType } = stakeStore();
+  const { isMobile, isSmallTab } = viewPortStore();
   const [showDetails, setShowDetails] = useState(false);
 
   const [isNftOpen, setIsNftOpen] = useState(false);
@@ -25,7 +27,12 @@ export const Stake: FC = () => {
         <ToastContainer className="max-w-[740px] sm:translate-y-0" />
         <motion.div
           animate={{
-            translateX: stakeType === StakeType.GARDEN_PASS ? "-8px" : "0px",
+            translateX:
+              isMobile || isSmallTab
+                ? "0px"
+                : stakeType === StakeType.GARDEN_PASS
+                  ? "-8px"
+                  : "0px",
           }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
           className={`flex h-full w-full flex-col items-center md:flex-row`}
