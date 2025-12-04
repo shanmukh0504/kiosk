@@ -56,17 +56,29 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
   const hasExpired = stakePos.status === StakePositionStatus.expired;
   const isUnstakeable = stakePos.status === StakePositionStatus.expired;
 
-  const cbbtcReward = formatAmount(
+  const cbbtcRewardUSD = formatAmount(
     stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedCBBTCRewardsUSD ??
       0,
     0,
     5
   );
-  const seedReward = formatAmount(
+  const seedRewardUSD = formatAmount(
     stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedSeedRewardsUSD ??
       0,
     0,
     5
+  );
+
+  const seedReward = formatAmount(
+    stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedSeedRewards ?? 0,
+    18,
+    8
+  );
+
+  const cbbtcReward = formatAmount(
+    stakeRewards?.stakewiseRewards?.[stakePos.id]?.accumulatedCbbtcRewards ?? 0,
+    8,
+    8
   );
 
   const stakeAmount = formatAmount(stakePos.amount, SEED_DECIMALS, 0);
@@ -144,8 +156,12 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
+      const isInsideTooltip = (target as Element)?.closest(".tooltip-wrapper");
+
       if (hovered && targetRef.current && !targetRef.current.contains(target)) {
-        setHovered(false);
+        if (!isInsideTooltip) {
+          setHovered(false);
+        }
       }
       // Don't close the menu if clicking inside the tooltip content
       if (isMenuOpen && menuRef.current && !menuRef.current.contains(target)) {
@@ -223,7 +239,7 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
             </TooltipWrapper>
           )}
           <Typography size="h4" weight="regular">
-            ${cbbtcReward + seedReward}
+            ${cbbtcRewardUSD + seedRewardUSD}
           </Typography>
         </span>
       </td>

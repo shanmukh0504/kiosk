@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { STAKE_REWARD } from "../constants";
 import { Url } from "@gardenfi/utils";
 import { formatAmount } from "../../../utils/utils";
+import React from "react";
 
 type UnitRewardTooltipProps = {
   seed: number | null;
@@ -34,12 +35,17 @@ export const UnitRewardTooltip = ({ seed, cbBtc }: UnitRewardTooltipProps) => {
                 size="h4"
                 weight="regular"
                 className={`relative cursor-pointer before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
-                onClick={() =>
+                onClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  console.log("clicked");
                   handleRedirect(
                     STAKE_REWARD.CBBTC.EXPLORER,
                     STAKE_REWARD.CBBTC.REWARD_TOKEN_ADDRESS
-                  )
-                }
+                  );
+                }}
+                onMouseDown={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                }}
               >
                 cbBTC
               </Typography>
@@ -59,16 +65,26 @@ export const UnitRewardTooltip = ({ seed, cbBtc }: UnitRewardTooltipProps) => {
                 size="h4"
                 weight="regular"
                 className={`relative cursor-pointer before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
+                onClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  handleRedirect(
+                    STAKE_REWARD.SEED.EXPLORER,
+                    STAKE_REWARD.SEED.REWARD_TOKEN_ADDRESS
+                  );
+                }}
+                onMouseDown={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                }}
+              >
+                SEED
+              </Typography>
+              <TokenNetworkLogos
                 onClick={() =>
                   handleRedirect(
                     STAKE_REWARD.SEED.EXPLORER,
                     STAKE_REWARD.SEED.REWARD_TOKEN_ADDRESS
                   )
                 }
-              >
-                SEED
-              </Typography>
-              <TokenNetworkLogos
                 tokenLogo={STAKE_REWARD.SEED.TOKEN_LOGO}
                 chainLogo={STAKE_REWARD.SEED.CHAIN_LOGO}
                 className="scale-[0.8054]"

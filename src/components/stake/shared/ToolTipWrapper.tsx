@@ -88,7 +88,7 @@ export const TooltipWrapper: FC<TooltipWrapperProps> = ({
             zIndex: 9999,
             pointerEvents: "auto",
           }}
-          className="before:absolute before:-top-10 before:right-14 before:h-12 before:w-8 before:cursor-pointer before:sm:-left-7 before:sm:top-2"
+          className="tooltip-wrapper before:absolute before:-top-10 before:right-14 before:h-12 before:w-8 before:cursor-pointer before:sm:-left-7 before:sm:top-2"
         >
           {children}
         </motion.div>

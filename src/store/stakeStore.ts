@@ -124,7 +124,7 @@ export type StakingReward = {
 export type AccumulatedReward = {
   accumulatedSeedRewards: string;
   accumulatedSeedRewardsUSD: string;
-  accumulatedCBBTCRewards: string;
+  accumulatedCbbtcRewards: string;
   accumulatedCBBTCRewardsUSD: string;
   accumulatedRewardsUSD: string;
 };
@@ -298,7 +298,13 @@ export const stakeStore = create<StakeStoreState>((set) => ({
         Object.entries(accResp.data.data.stakeRewards).forEach(
           ([address, reward]) => {
             stakewiseRewards[address] = {
-              ...reward,
+              accumulatedSeedRewards: reward.accumulatedSeedRewards,
+              accumulatedSeedRewardsUSD: reward.accumulatedSeedRewardsUSD,
+              accumulatedCbbtcRewards: reward.accumulatedCbbtcRewards
+                ? reward.accumulatedCbbtcRewards
+                : "0",
+              accumulatedCBBTCRewardsUSD: reward.accumulatedCBBTCRewardsUSD,
+              accumulatedRewardsUSD: reward.accumulatedRewardsUSD,
             };
           }
         );
