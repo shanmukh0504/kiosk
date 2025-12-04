@@ -1289,7 +1289,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/utils@npm:3.0.0, @gardenfi/utils@npm:^3.0.0-beta.1":
+"@gardenfi/utils@npm:3.0.0, @gardenfi/utils@npm:^3.0.0":
   version: 3.0.0
   resolution: "@gardenfi/utils@npm:3.0.0"
   dependencies:
@@ -12421,7 +12421,7 @@ __metadata:
     "@gardenfi/garden-book": "npm:0.2.6"
     "@gardenfi/orderbook": "npm:3.0.2"
     "@gardenfi/react-hooks": "npm:3.0.2"
-    "@gardenfi/utils": "npm:^3.0.0-beta.1"
+    "@gardenfi/utils": "npm:^3.0.0"
     "@gardenfi/wallet-connectors": "npm:^2.4.3"
     "@mysten/dapp-kit": "npm:^0.17.2"
     "@mysten/sui": "npm:^1.37.2"
