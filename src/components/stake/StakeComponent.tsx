@@ -30,13 +30,7 @@ import { network } from "../../constants/constants";
 import { Network } from "@gardenfi/utils";
 import { viewPortStore } from "../../store/viewPortStore";
 
-type StakeComponentProps = {
-  setIsNftOpen: (open: boolean) => void;
-};
-
-export const StakeComponent: React.FC<StakeComponentProps> = ({
-  setIsNftOpen,
-}) => {
+export const StakeComponent: React.FC = () => {
   const { isConnected, address } = useEVMWallet();
   const { setOpenModal } = modalStore();
   const {
@@ -264,9 +258,9 @@ export const StakeComponent: React.FC<StakeComponentProps> = ({
                       Gardener Pass.
                     </span>{" "}
                     <span
-                      onClick={() => {
-                        setIsNftOpen(true);
-                      }}
+                      // onClick={() => {
+                      //   setIsNftOpen(true);
+                      // }}
                       className="inline-flex cursor-pointer items-center justify-start gap-1 text-rose md:hidden"
                     >
                       Gardener Pass.

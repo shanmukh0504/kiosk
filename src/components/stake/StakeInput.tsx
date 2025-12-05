@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useState } from "react";
 import { MinusIcon, PlusIcon, Typography } from "@gardenfi/garden-book";
 import { stakeStore } from "../../store/stakeStore";
 import { MIN_STAKE_AMOUNT } from "../../constants/stake";
@@ -12,7 +12,7 @@ export const StakeInput = ({ balance }: { balance: number }) => {
 
   const [animated] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [wiggleKey, setWiggleKey] = useState(0);
 
   const stakeableBalance = useMemo(
     () => Math.floor(balance / MIN_STAKE_AMOUNT) * MIN_STAKE_AMOUNT,
@@ -74,15 +74,14 @@ export const StakeInput = ({ balance }: { balance: number }) => {
               <div className="relative flex w-full items-center">
                 <div
                   className={clsx(
-                    "relative flex w-full items-center",
+                    "relative flex w-full cursor-pointer items-center",
                     isAnimating && "pointer-events-none"
                   )}
                   onClick={(e) => {
                     if (isAnimating) return;
                     e.preventDefault();
-                    setTimeout(() => {
-                      inputRef.current?.focus();
-                    }, 0);
+                    // Trigger wiggle animation on + and - icons
+                    setWiggleKey((prev) => prev + 1);
                   }}
                 >
                   <NumberFlow
@@ -125,10 +124,25 @@ export const StakeInput = ({ balance }: { balance: number }) => {
                 damping: 25,
               }}
             >
-              <MinusIcon
-                onClick={handleMinusClick}
-                className="cursor-pointer"
-              />
+              <motion.div
+                animate={
+                  wiggleKey > 0
+                    ? {
+                        x: [0, -2, 2, -2, 2, 0],
+                      }
+                    : {}
+                }
+                transition={{
+                  duration: 0.4,
+                  ease: "easeInOut",
+                }}
+                key={wiggleKey}
+              >
+                <MinusIcon
+                  onClick={handleMinusClick}
+                  className="cursor-pointer"
+                />
+              </motion.div>
             </motion.div>
             <motion.div
               key="plus"
@@ -145,7 +159,25 @@ export const StakeInput = ({ balance }: { balance: number }) => {
                 damping: 20,
               }}
             >
-              <PlusIcon onClick={handlePlusClick} className="cursor-pointer" />
+              <motion.div
+                animate={
+                  wiggleKey > 0
+                    ? {
+                        x: [0, -2, 2, -2, 2, 0],
+                      }
+                    : {}
+                }
+                transition={{
+                  duration: 0.4,
+                  ease: "easeInOut",
+                }}
+                key={wiggleKey}
+              >
+                <PlusIcon
+                  onClick={handlePlusClick}
+                  className="cursor-pointer"
+                />
+              </motion.div>
             </motion.div>
           </div>
         </AnimatePresence>

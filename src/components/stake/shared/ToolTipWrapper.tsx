@@ -68,6 +68,7 @@ export const TooltipWrapper: FC<TooltipWrapperProps> = ({
       window.removeEventListener("scroll", handleScroll, true);
       resizeObserver.disconnect();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetRef]); // Only depend on targetRef
 
   if (!isVisible) return null;
