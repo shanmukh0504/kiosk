@@ -58,15 +58,10 @@ export const StakeOverview = () => {
         <div className="flex items-start justify-between gap-4 sm:items-center">
           <div className="grid grid-cols-[90px_90px_90px] gap-5 px-2 sm:gap-[66px]">
             <OverviewStats title={"Total SEED"} value={formattedAmount} />
-            {/* <OverviewStats
-                  title={"Garden pass"}
-                  value={totalGardenerPasses}
-                  className="w-[90px] sm:w-fit md:w-[80px] xl:w-[90px]"
-                  /> */}
             <AnimatePresence>
               <OverviewStats
                 title={"Total rewards"}
-                value={`$${stakeRewards?.accumulatedRewardUSD.toFixed(2) || 0}`}
+                value={`$${formatAmount(Number(stakeRewards?.accumulatedRewardUSD), 0, 2) || 0}`}
                 info
                 toolTip={
                   <RewardsToolTip

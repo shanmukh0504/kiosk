@@ -240,7 +240,7 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
             </TooltipWrapper>
           )}
           <Typography size="h4" weight="regular">
-            ${cbbtcRewardUSD + seedRewardUSD}
+            ${formatAmount(cbbtcRewardUSD + seedRewardUSD, 0, 2)}
           </Typography>
         </span>
       </td>
