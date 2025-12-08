@@ -5,6 +5,7 @@ type ViewPortStore = {
   width: number;
   height: number;
   isMobile: boolean;
+  isSmallTab: boolean;
   isTab: boolean;
   updateViewport: () => void;
 };
@@ -17,6 +18,11 @@ export const viewPortStore = create<ViewPortStore>()((set) => ({
       ? /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
         window.innerWidth < BREAKPOINTS.sm
       : false,
+  isSmallTab:
+    typeof window !== "undefined"
+      ? window.innerWidth >= BREAKPOINTS.sm &&
+        window.innerWidth < BREAKPOINTS.md
+      : false,
   isTab:
     typeof window !== "undefined" ? window.innerWidth >= BREAKPOINTS.md : false,
   updateViewport: () => {
@@ -27,6 +33,9 @@ export const viewPortStore = create<ViewPortStore>()((set) => ({
         isMobile:
           /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
           window.innerWidth < BREAKPOINTS.sm,
+        isSmallTab:
+          window.innerWidth >= BREAKPOINTS.sm &&
+          window.innerWidth < BREAKPOINTS.md,
         isTab: window.innerWidth >= BREAKPOINTS.md,
       });
     }

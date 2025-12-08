@@ -39,10 +39,8 @@ const LayoutContent: FC<LayoutProps> = ({ children }) => {
           }}
         />
         <Modal />
-        <div className="min-h-[100vh]">
-          <Navbar />
-          {children}
-        </div>
+        <Navbar />
+        {children}
         {!isMobile && <Notification />}
         <Footer
           className={"mt-auto"}

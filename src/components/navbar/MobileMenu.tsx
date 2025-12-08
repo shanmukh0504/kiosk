@@ -31,7 +31,7 @@ export const MobileMenu = () => {
   return (
     <>
       <div
-        className={`z-[999] flex min-h-8 min-w-8 cursor-pointer items-center justify-center rounded-full transition-all duration-500 sm:hidden ${isSidebarOpen ? "bg-white" : "bg-white/50"}`}
+        className={`flex min-h-8 min-w-8 cursor-pointer items-center justify-center rounded-full transition-all duration-500 sm:min-h-11 sm:min-w-11 md:hidden ${isSidebarOpen ? "z-[99] bg-white" : "bg-white/50"}`}
         onClick={handleSidebar}
       >
         <HamburgerIcon isSidebarOpen={isSidebarOpen} />

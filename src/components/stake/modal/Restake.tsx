@@ -12,7 +12,7 @@ import {
 } from "../constants";
 import { useWriteContract, useSwitchChain } from "wagmi";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
-import { Hex, maxUint256 } from "viem";
+import { Address, Hex, maxUint256 } from "viem";
 import { stakeABI } from "../abi/stake";
 import { simulateContract, waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../../../layout/wagmi/config";
@@ -57,11 +57,14 @@ export const Restake: FC<RestakeProps> = ({
             );
 
       const { request } = await simulateContract(config, {
-        address: stakingConfig.STAKING_CONTRACT_ADDRESS as Hex,
         abi: stakeABI,
+        address: stakingConfig.STAKING_CONTRACT_ADDRESS as Hex,
         functionName: "renew",
         args: [stakePos.id as Hex, lockDuration],
+        account: address as Address,
+        chainId: STAKING_CHAIN,
       });
+
       const tx = await writeContractAsync(request);
 
       await waitForTransactionReceipt(config, {

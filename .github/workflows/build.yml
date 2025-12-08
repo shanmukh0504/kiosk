@@ -1,12 +1,10 @@
 name: Node.js Package
-
 on:
   push:
     branches:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
-
 jobs:
   build:
     runs-on: self-hosted-amd64
@@ -17,7 +15,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 20
-
       - name: Install dependencies
         run: |
           corepack enable
@@ -34,7 +31,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0 
+          fetch-depth: 0
 
       - name: Check if CHANGELOG.md was modified
         run: |
@@ -49,10 +46,10 @@ jobs:
             changed_files=$(git diff --name-only HEAD~1..HEAD)
             context="push"
           fi
-          
+
           echo "Changed files in this $context:"
           echo "$changed_files"
-          
+
           # Check if CHANGELOG.md is in the changed files
           if echo "$changed_files" | grep -q "CHANGELOG.md"; then
             echo "✅ CHANGELOG.md has been updated."

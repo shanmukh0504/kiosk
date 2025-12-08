@@ -44,6 +44,7 @@ type BalanceStoreState = {
     address: string,
     fetchOnlyAsset?: Asset
   ) => Promise<void>;
+  balanceFetched: boolean;
   fetchAndSetBitcoinBalance: (
     provider: IInjectedBitcoinProvider,
     address: string
@@ -55,6 +56,7 @@ type BalanceStoreState = {
 };
 
 export const balanceStore = create<BalanceStoreState>((set, get) => ({
+  balanceFetched: false,
   fiatData: {},
   balances: {},
   workingRPCs: {},
@@ -84,7 +86,6 @@ export const balanceStore = create<BalanceStoreState>((set, get) => ({
         isOpen: false,
       },
     }),
-
   fetchAndSetEvmBalances: async (address: string, fetchOnlyAsset?: Asset) => {
     const { workingRPCs } = get();
     const assets = assetInfoStore.getState().assets;
@@ -159,6 +160,8 @@ export const balanceStore = create<BalanceStoreState>((set, get) => ({
           ? { ...acc, ...result.value }
           : acc;
       }, {});
+
+      set({ balanceFetched: true });
 
       set({ balances: { ...get().balances, ...finalBalances } });
     } catch (err) {

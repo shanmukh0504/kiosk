@@ -103,7 +103,6 @@ export const getRPCsForChain = async (
   maxRPCsPerChain: number = 10
 ): Promise<string[]> => {
   const rpcs = await getChainListRPCs();
-  console.log("rpcs", rpcs);
   const reqRPCs = rpcs[chain.id];
   if (!reqRPCs || reqRPCs.length === 0) return [chain.rpcUrls.default.http[0]];
   return reqRPCs.slice(0, maxRPCsPerChain);

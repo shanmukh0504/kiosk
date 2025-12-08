@@ -51,7 +51,6 @@ export const Swap = () => {
         status: OrderStatus.RedeemDetected,
       };
       updateOrder(updatedOrder);
-
       Toast.success(
         `Swap success ${inputAsset.symbol} to ${outputAsset.symbol}`
       );
