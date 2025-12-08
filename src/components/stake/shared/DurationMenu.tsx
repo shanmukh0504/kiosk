@@ -1,5 +1,9 @@
 import { FC, useState, useEffect } from "react";
-import { KeyboardDownIcon, Typography } from "@gardenfi/garden-book";
+import {
+  InfinityIcon,
+  KeyboardDownIcon,
+  Typography,
+} from "@gardenfi/garden-book";
 import { DURATION, DURATION_MAP, INFINITE } from "../constants";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -35,11 +39,20 @@ const DurationMenu: FC<DurationMenuProps> = ({
         onClick={handleToggleDropdown}
         className="flex w-full cursor-pointer items-center justify-between rounded-2xl bg-white px-3 py-3.5 text-2xl text-dark-grey outline-none"
       >
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-start gap-4">
           <Typography size="h2" weight="regular">
-            {selectedDuration === INFINITE
-              ? "♾️ months"
-              : `${selectedDuration} months`}
+            {selectedDuration === INFINITE ? (
+              <div className="flex items-center gap-2">
+                <InfinityIcon className="mr-1 mt-0.5 h-5 w-5" /> months
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="mr-1 flex h-5 w-5 self-start">
+                  {selectedDuration}
+                </span>{" "}
+                months
+              </div>
+            )}
           </Typography>
         </div>
         <KeyboardDownIcon
@@ -81,7 +94,19 @@ const DurationMenu: FC<DurationMenuProps> = ({
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <Typography size="h2" weight="regular">
-                          {item === INFINITE ? "♾️ months" : `${item} months`}
+                          {item === INFINITE ? (
+                            <div className="flex items-center gap-2">
+                              <InfinityIcon className="mr-1 mt-0.5 h-5 w-5" />{" "}
+                              months
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <span className="mr-1 flex h-5 w-5 self-start">
+                                {item}
+                              </span>{" "}
+                              months
+                            </div>
+                          )}
                         </Typography>
                       </div>
                     </div>

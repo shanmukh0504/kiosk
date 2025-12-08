@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@gardenfi/garden-book";
 import { BlockchainType, ChainAsset } from "@gardenfi/orderbook";
-import { Switch } from "../../common/Switch";
+// import { Switch } from "../../common/Switch";
 import { StakeStats } from "./shared/StakeStats";
 import { StakeInput } from "./StakeInput";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
@@ -44,9 +44,9 @@ export const StakeComponent: React.FC = () => {
     fetchAndSetRewards,
     fetchAndSetEpoch,
     stakeType,
-    setStakeType,
+    // setStakeType,
   } = stakeStore();
-  const { handleStake, loading } = useStake();
+  const { loading } = useStake();
   const { hideStaticToast } = useToastStore();
   const { balances, balanceFetched, fetchAndSetEvmBalances } = balanceStore();
   const tooltipId = useId();
@@ -81,19 +81,19 @@ export const StakeComponent: React.FC = () => {
 
   const handleStakeClick = () => {
     if (!isStakeable || loading) return;
-    if (stakeType === StakeType.CUSTOM) {
-      setOpenModal(modalNames.manageStake, {
-        stake: {
-          isStake: true,
-          amount:
-            stakeType === StakeType.CUSTOM
-              ? amount.toString()
-              : SEED_FOR_MINTING_NFT.toString(),
-        },
-      });
-    } else {
-      handleStake(Number(SEED_FOR_MINTING_NFT), true, "INFINITE");
-    }
+    // if (stakeType === StakeType.CUSTOM) {
+    setOpenModal(modalNames.manageStake, {
+      stake: {
+        isStake: true,
+        amount:
+          stakeType === StakeType.CUSTOM
+            ? amount.toString()
+            : SEED_FOR_MINTING_NFT.toString(),
+      },
+    });
+    // } else {
+    //   handleStake(Number(SEED_FOR_MINTING_NFT), true, "INFINITE");
+    // }
   };
 
   const handleBuySeedClick = () => {
@@ -181,11 +181,11 @@ export const StakeComponent: React.FC = () => {
 
   return (
     <div
-      className={`relative z-10 flex w-full min-w-[328px] max-w-[328px] flex-col p-4 sm:min-w-[460px] sm:max-w-[460px] sm:pb-5 ${stakeType === StakeType.GARDEN_PASS ? "gap-10 sm:gap-6" : "gap-12 sm:gap-10"}`}
+      className={`relative z-10 flex w-full min-w-[328px] max-w-[328px] flex-col p-4 sm:min-w-[460px] sm:max-w-[460px] sm:pb-5 ${stakeType === StakeType.GARDEN_PASS ? "gap-10 sm:gap-6" : "gap-8"}`}
     >
       <motion.div
         initial={{ height: 0 }}
-        animate={{ height: isMobile ? 392 : 384 }}
+        animate={{ height: isMobile ? 372 : 360 }}
         transition={{
           type: "spring" as const,
           stiffness: 100,
@@ -193,7 +193,7 @@ export const StakeComponent: React.FC = () => {
         }}
         className="absolute inset-0 -z-10 min-w-[328px] max-w-[328px] rounded-2xl bg-white bg-opacity-50 backdrop-blur-2xl sm:min-w-[460px] sm:max-w-[460px]"
       ></motion.div>
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
         <motion.div
           initial={{ opacity: 0, y: -14, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -208,21 +208,21 @@ export const StakeComponent: React.FC = () => {
           <Typography size="h5" breakpoints={{ sm: "h4" }} weight="medium">
             Stake
           </Typography>
-          <Switch<StakeType>
+          {/* <Switch<StakeType>
             options={[
               { label: "Garden pass", value: StakeType.GARDEN_PASS },
               { label: "Custom", value: StakeType.CUSTOM, default: true },
             ]}
             value={stakeType}
             onChange={setStakeType}
-          />
+          /> */}
         </motion.div>
         <div className="flex flex-col">
           <Typography
-            size="h5"
+            size="h4"
             breakpoints={{ sm: "h4" }}
             weight="regular"
-            className={`mb-5 ${stakeType === StakeType.CUSTOM ? "max-h-12 min-h-12 sm:max-h-10 sm:min-h-10" : "max-h-12 min-h-12 sm:max-h-10 sm:min-h-10"}`}
+            className={`mb-8 ${stakeType === StakeType.CUSTOM ? "max-h-[60px] min-h-[60px] sm:max-h-10 sm:min-h-10" : "max-h-12 min-h-12 sm:max-h-10 sm:min-h-10"}`}
           >
             <AnimatePresence mode="wait">
               <motion.div
@@ -237,9 +237,8 @@ export const StakeComponent: React.FC = () => {
               >
                 {stakeType === StakeType.CUSTOM ? (
                   <motion.span key="custom" {...fadeAnimation}>
-                    Deposit SEED into Garden and unlock new opportunities.
-                    <br /> Stake in
-                    <br className="sm:hidden" /> multiples of{" "}
+                    Deposit SEED into Garden and unlock new opportunities like
+                    discounted fees. Stake multiples of{" "}
                     <Typography className="!text-rose" weight="medium">
                       2,100 SEED
                     </Typography>{" "}

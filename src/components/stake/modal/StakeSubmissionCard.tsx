@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { DURATION } from "../constants";
+import { DURATION, SEED_FOR_MINTING_NFT } from "../constants";
 import { Button } from "@gardenfi/garden-book";
 import { useStake } from "../../../hooks/useStake";
 
@@ -13,12 +13,18 @@ export const StakeSubmissionCard: FC<StakeSubmissionCardProps> = ({
   amount,
 }) => {
   const { handleStake, loading } = useStake();
+  const shouldMintNft =
+    selectedDuration === "INFINITE" && amount === SEED_FOR_MINTING_NFT;
+
+  const handleStakeClick = () => {
+    handleStake(amount, shouldMintNft, selectedDuration);
+  };
 
   return (
     <Button
       variant={loading ? "disabled" : "primary"}
       size="lg"
-      onClick={() => handleStake(amount, false, selectedDuration)}
+      onClick={handleStakeClick}
       loading={loading}
       className="w-full sm:w-fit"
     >
