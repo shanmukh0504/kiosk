@@ -38,7 +38,24 @@ const animation = {
 
 export const StakeOverview = () => {
   const statRef = useRef<HTMLDivElement>(null);
-  const { totalStakedAmount, totalVotes, stakeRewards } = stakeStore();
+  const { totalStakedAmount, totalVotes, stakeRewards, stakePosData } =
+    stakeStore();
+
+  const calculatedRewardsUSD = stakePosData?.reduce((total, stakePos) => {
+    const cbbtcRewardUSD = formatAmount(
+      stakeRewards?.stakewiseRewards?.[stakePos.id]
+        ?.accumulatedCBBTCRewardsUSD ?? 0,
+      0,
+      5
+    );
+    const seedRewardUSD = formatAmount(
+      stakeRewards?.stakewiseRewards?.[stakePos.id]
+        ?.accumulatedSeedRewardsUSD ?? 0,
+      0,
+      5
+    );
+    return total + Number(cbbtcRewardUSD) + Number(seedRewardUSD);
+  }, 0);
 
   const formattedAmount =
     totalStakedAmount === undefined
@@ -61,7 +78,7 @@ export const StakeOverview = () => {
             <AnimatePresence>
               <OverviewStats
                 title={"Total rewards"}
-                value={`$${formatAmount(Number(stakeRewards?.accumulatedRewardUSD), 0, 2) || 0}`}
+                value={`$${formatAmount(Number(calculatedRewardsUSD), 0, 2) || 0}`}
                 info
                 toolTip={
                   <RewardsToolTip

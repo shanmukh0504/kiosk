@@ -83,7 +83,6 @@ type StakeStoreState = {
     };
     totalcbBtcReward: number;
     totalSeedReward: number;
-    accumulatedRewardUSD: number;
   } | null;
   setAmount: (value: number) => void;
   setStakeType: (type: StakeType) => void;
@@ -126,7 +125,6 @@ export type AccumulatedReward = {
   accumulatedSeedRewardsUSD: string;
   accumulatedCbbtcRewards: string;
   accumulatedCBBTCRewardsUSD: string;
-  accumulatedRewardsUSD: string;
 };
 
 export type StakingAccumulatedRewards = {
@@ -304,7 +302,6 @@ export const stakeStore = create<StakeStoreState>((set) => ({
                 ? reward.accumulatedCbbtcRewards
                 : "0",
               accumulatedCBBTCRewardsUSD: reward.accumulatedCBBTCRewardsUSD,
-              accumulatedRewardsUSD: reward.accumulatedRewardsUSD,
             };
           }
         );
@@ -318,10 +315,6 @@ export const stakeStore = create<StakeStoreState>((set) => ({
           totalSeedReward: Object.values(stakewiseRewards).reduce(
             (total, reward) =>
               total + parseFloat(reward.accumulatedSeedRewards),
-            0
-          ),
-          accumulatedRewardUSD: Object.values(stakewiseRewards).reduce(
-            (total, reward) => total + parseFloat(reward.accumulatedRewardsUSD),
             0
           ),
         },

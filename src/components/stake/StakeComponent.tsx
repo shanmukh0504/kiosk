@@ -237,8 +237,8 @@ export const StakeComponent: React.FC = () => {
               >
                 {stakeType === StakeType.CUSTOM ? (
                   <motion.span key="custom" {...fadeAnimation}>
-                    Deposit SEED into Garden and unlock new opportunities like
-                    discounted fees. Stake multiples of{" "}
+                    Deposit SEED into Garden and unlock new opportunities. Stake
+                    multiples of{" "}
                     <Typography className="!text-rose" weight="medium">
                       2,100 SEED
                     </Typography>{" "}
