@@ -30,7 +30,7 @@ export const INTERNAL_ROUTES: Record<
   stake: {
     name: "Stake",
     path: ["/stake"],
-    enabled: network !== Network.TESTNET,
+    enabled: true,
     isExternal: false,
   },
   faucet: {

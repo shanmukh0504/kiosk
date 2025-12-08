@@ -6,10 +6,21 @@ import pluginReact from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import eslintPluginPrettier from "eslint-plugin-prettier";
 import importPlugin from "eslint-plugin-import";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default [
   {
-    ignores: ["dist/**", "node_modules/**", "*.config.js", "*.config.ts", "vite-*.ts"],
+    ignores: [
+      "dist/**",
+      "node_modules/**",
+      "*.config.js",
+      "*.config.ts",
+      "vite-*.ts",
+    ],
   },
 
   {
@@ -45,11 +56,14 @@ export default [
       "react-hooks/rules-of-hooks": "error", // Checks rules of Hooks
       "react-hooks/exhaustive-deps": "warn", // Checks effect dependencies
       "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-unused-vars": ["error", {
-        "argsIgnorePattern": "^_",
-        "varsIgnorePattern": "^_",
-        "caughtErrorsIgnorePattern": "^_"
-      }],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
       "no-undef": "error",
       "no-unreachable": "error",
       "no-constant-condition": "error",

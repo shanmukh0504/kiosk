@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import {
   InfinityIcon,
   KeyboardDownIcon,
@@ -10,13 +10,21 @@ import { AnimatePresence, motion } from "framer-motion";
 type DurationMenuProps = {
   selectedDuration: DURATION;
   setSelectedDuration: (duration: DURATION) => void;
+  modalOpen?: boolean;
 };
 
 const DurationMenu: FC<DurationMenuProps> = ({
   selectedDuration,
   setSelectedDuration,
+  modalOpen = true,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (!modalOpen) {
+      setIsOpen(false);
+    }
+  }, [modalOpen]);
 
   const handleToggleDropdown = () => setIsOpen(!isOpen);
 
@@ -29,18 +37,22 @@ const DurationMenu: FC<DurationMenuProps> = ({
     <div className="relative w-full">
       <button
         onClick={handleToggleDropdown}
-        className="flex w-full cursor-pointer items-center justify-between rounded-2xl bg-white px-3 py-[10px] text-2xl text-dark-grey outline-none"
+        className="flex w-full cursor-pointer items-center justify-between rounded-2xl bg-white px-3 py-3.5 text-2xl text-dark-grey outline-none"
       >
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-start gap-4">
           <Typography size="h2" weight="regular">
             {selectedDuration === INFINITE ? (
-              <InfinityIcon />
+              <div className="flex items-center gap-2">
+                <InfinityIcon className="mr-1 h-5 w-5 pt-0.5" /> months
+              </div>
             ) : (
-              `${selectedDuration} months`
+              <div className="flex items-center gap-2">
+                <span className="mr-1 flex h-5 w-5 self-start">
+                  {selectedDuration}
+                </span>{" "}
+                months
+              </div>
             )}
-          </Typography>
-          <Typography size="h4" weight="regular" className="mt-1">
-            {DURATION_MAP[selectedDuration].votes}x Multiplier
           </Typography>
         </div>
         <KeyboardDownIcon
@@ -57,46 +69,44 @@ const DurationMenu: FC<DurationMenuProps> = ({
               animate={{
                 height: ["100%", "500%"],
                 transition: {
-                  duration: 0.1,
-                  ease: "easeInOut",
-                  once: true,
+                  type: "spring",
+                  stiffness: 250,
+                  damping: 25,
                 },
               }}
               exit={{
                 height: ["500%", "100%"],
                 transition: {
-                  duration: 0.1,
-                  ease: "easeOut",
-                  once: true,
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 25,
                 },
               }}
-              className="absolute z-10 flex w-full translate-y-[-100%] flex-col-reverse overflow-hidden rounded-2xl bg-white shadow-2xl sm:-mt-[40px] sm:-translate-y-0 sm:flex-col"
+              className="absolute z-10 flex w-full -translate-y-full flex-col-reverse overflow-hidden rounded-2xl bg-white shadow-2xl sm:-mt-[48px] sm:-translate-y-0 sm:flex-col"
             >
               {Object.keys(DURATION_MAP).map((item) => {
-                const multiplier = DURATION_MAP[item as DURATION].votes;
-
                 return (
                   <div
                     key={item}
                     onClick={() => handleSelectDuration(item as DURATION)}
-                    className="origin-bottom cursor-pointer px-3 py-[10px] text-2xl transition-colors hover:bg-off-white"
+                    className="origin-bottom cursor-pointer px-3 py-3.5 text-2xl transition-colors hover:bg-off-white"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <Typography size="h2" weight="regular">
                           {item === INFINITE ? (
-                            <InfinityIcon />
+                            <div className="flex items-center gap-2">
+                              <InfinityIcon className="mr-1 h-5 w-5 pt-0.5" />{" "}
+                              months
+                            </div>
                           ) : (
-                            `${item} months`
+                            <div className="flex items-center gap-2">
+                              <span className="mr-1 flex h-5 w-5 self-start">
+                                {item}
+                              </span>{" "}
+                              months
+                            </div>
                           )}
-                        </Typography>
-
-                        <Typography
-                          size="h4"
-                          weight="regular"
-                          className="text-grey mt-1"
-                        >
-                          {multiplier}x Multiplier
                         </Typography>
                       </div>
                     </div>

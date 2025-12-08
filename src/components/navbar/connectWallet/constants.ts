@@ -26,22 +26,7 @@ export const ecosystems = {
 } as const;
 
 export type EcosystemKeys = keyof typeof ecosystems;
-
-export const evmToBTCid: Record<string, string> = {
-  "com.okex.wallet": "okx",
-  "app.phantom": "phantom",
-} as const;
-
-export const btcToEVMid: Record<string, string> = {
-  okx: "com.okex.wallet",
-  phantom: "app.phantom",
-} as const;
-
-export const MAX_VISIBLE_WALLETS = 3;
-
-// Base wallet interface
 interface BaseWallet {
-  id: string;
   name: string;
   logo: string;
   installLink: string;
@@ -64,13 +49,11 @@ interface WalletCapabilities {
 type GardenSupportedWalletsType = BaseWallet & WalletCapabilities;
 
 const createWallet = (
-  id: string,
   name: string,
   logoPath: string,
   installLink: string,
   capabilities: WalletCapabilities
 ): GardenSupportedWalletsType => ({
-  id,
   name,
   logo: `https://garden.imgix.net/${logoPath}`,
   installLink,
@@ -86,28 +69,27 @@ export const GardenSupportedWallets: Record<
   GardenSupportedWalletsType
 > = {
   injected: createWallet(
-    "injected",
     "Injected",
     "wallets/injected.svg",
     "https://metamask.io/download/",
     { evm: true }
   ),
-  metaMaskSDK: createWallet(
-    "metaMaskSDK",
+  metamask: createWallet(
     "Metamask",
     "wallets/metamask.svg",
     "https://metamask.io/download/",
-    { evm: true }
+    {
+      evm: true,
+      // solana: true
+    }
   ),
-  "com.brave.wallet": createWallet(
-    "com.brave.wallet",
+  brave: createWallet(
     "Brave Wallet",
     "wallets/brave.svg",
     "https://brave.com/en-in/wallet/",
     { evm: true }
   ),
-  "app.phantom": createWallet(
-    "app.phantom",
+  phantom: createWallet(
     "Phantom",
     "wallets/phantomDark.svg",
     "https://chromewebstore.google.com/detail/phantom/bfnaelmomeimhlpmgjnjophhpkkoljpa?hl=en",
@@ -118,59 +100,51 @@ export const GardenSupportedWallets: Record<
       // sui: true,
     }
   ),
-  coinbaseWalletSDK: createWallet(
-    "coinbaseWalletSDK",
+  coinbase: createWallet(
     "Coinbase Wallet",
     "wallets/coinbase.svg",
     "https://www.coinbase.com/wallet/downloads",
     { evm: true }
   ),
-  "com.okex.wallet": createWallet(
-    "com.okex.wallet",
+  okx: createWallet(
     "OKX Wallet",
     "wallets/okx.svg",
     "https://www.okx.com/download",
     {
       bitcoin: network === Network.MAINNET,
       evm: true,
+      starknet: true,
+      // solana: true,
       // sui: network === Network.MAINNET,
     }
   ),
-  unisat: createWallet(
-    "unisat",
-    "Unisat",
-    "wallets/unisat.svg",
-    "https://unisat.io/",
-    { bitcoin: true }
-  ),
-  "io.rabby": createWallet(
-    "io.rabby",
+  unisat: createWallet("Unisat", "wallets/unisat.svg", "https://unisat.io/", {
+    bitcoin: true,
+  }),
+  rabby: createWallet(
     "Rabby Wallet",
     "wallets/rabby.svg",
     "https://rabby.io/",
     { evm: true }
   ),
   braavos: createWallet(
-    "braavos",
     "Braavos",
     "wallet/braavos.svg",
     "https://braavos.app/",
     { starknet: true }
   ),
-  argentX: createWallet(
-    "argentX",
+  ready: createWallet(
     "Ready Wallet (formerly Argent)",
     "wallet/argent.svg",
     "https://www.argent.xyz/argent-x",
     { starknet: true }
   ),
-  keplr: createWallet("keplr", "Keplr", "wallets/keplr.svg", "tallLink:", {
+  keplr: createWallet("Keplr", "wallets/keplr.svg", "tallLink:", {
     evm: network === Network.MAINNET,
     starknet: true,
     bitcoin: network === Network.MAINNET,
   }),
   leap: createWallet(
-    "leap",
     "Leap Wallet",
     "wallets/LeapLight.svg",
     "https://www.leapwallet.io/",
@@ -179,21 +153,18 @@ export const GardenSupportedWallets: Record<
     }
   ),
   xverse: createWallet(
-    "xverse",
     "Xverse",
     "wallets/xverse.svg",
     "https://www.xverse.app/download",
     { bitcoin: true }
   ),
   // solflare: createWallet(
-  //   "solflare",
   //   "Solflare",
   //   "wallets/Solflare.svg",
   //   "https://www.solflare.com/",
   //   { solana: true }
   // ),
-  "app.backpack": createWallet(
-    "app.backpack",
+  backpack: createWallet(
     "Backpack",
     "wallets/Backpack.svg",
     "https://backpack.app/",
@@ -204,14 +175,12 @@ export const GardenSupportedWallets: Record<
     }
   ),
   // slush: createWallet(
-  //   "slush",
   //   "Slush Wallet",
   //   "wallets/SlushLogo.png",
   //   "https://slushwallet.com/",
   //   { sui: true }
   // ),
   // tokeo: createWallet(
-  //   "tokeo",
   //   "Tokeo",
   //   "wallets/TokeoLogo.webp",
   //   "https://tokeo.io/",

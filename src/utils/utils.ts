@@ -69,10 +69,14 @@ export const getDayDifference = (date: string) => {
 };
 
 export const formatBigNumber = (
-  amount: string | number | bigint,
+  amount: BigNumber,
   decimals: number,
-  toFixed?: number
+  toFixed?: number,
+  modulus: boolean = false
 ) => {
+  const bigAmount = new BigNumber(amount).abs();
+  if (bigAmount.isZero()) return 0;
+
   const value = new BigNumber(amount).dividedBy(10 ** decimals);
   const precision = toFixed ? toFixed : Number(value) > 10000 ? 2 : 4;
   let temp = value.toFixed(precision, BigNumber.ROUND_DOWN);
@@ -86,7 +90,7 @@ export const formatBigNumber = (
   ) {
     temp = value.toFixed(temp.split(".")[1].length + 2, BigNumber.ROUND_DOWN);
   }
-  return temp;
+  return modulus && Number(temp) < 0 ? Number(temp) * -1 : Number(temp);
 };
 
 export const formatAmount = (
@@ -96,7 +100,7 @@ export const formatAmount = (
 ) => {
   const bigAmount = new BigNumber(amount);
   if (bigAmount.isZero()) return 0;
-  return Number(formatBigNumber(amount, decimals, toFixed));
+  return Number(formatBigNumber(bigAmount, decimals, toFixed));
 };
 
 export const formatBalance = (
@@ -106,7 +110,10 @@ export const formatBalance = (
 ) => {
   const bigAmount = new BigNumber(amount);
   if (bigAmount.isZero()) return "0";
-  return formatBigNumber(amount, decimals, toFixed);
+  const balance = formatBigNumber(bigAmount, decimals, toFixed);
+  return Number(balance) < 1 && /\.0{6,}/.test(balance)
+    ? balance
+    : Number(balance);
 };
 
 export const isCurrentRoute = (route: string) => {
@@ -190,6 +197,37 @@ export const getProtocolFee = (fees: number) => {
   const totalBips = 30;
   const protocolFee = fees * (protocolBips / totalBips);
   return protocolFee;
+};
+
+export const getDaysUntilNextEpoch = (
+  epochData: { epoch: string }[] | null
+) => {
+  const now = new Date();
+  const currentDay = now.getUTCDay();
+  const currentHour = now.getUTCHours();
+  const currentMinutes = now.getUTCMinutes();
+
+  if (epochData && epochData.length > 0) {
+    const lastEpoch = new Date(epochData[0].epoch);
+    const nextEpoch = new Date(lastEpoch);
+    nextEpoch.setDate(nextEpoch.getDate() + 7);
+
+    const diffTime = nextEpoch.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (currentDay === 0 && currentHour === 0 && currentMinutes === 0) {
+      return 7;
+    }
+
+    if (diffDays < 0 || currentDay === 0) {
+      return 7;
+    }
+
+    return diffDays;
+  }
+
+  const daysUntilNextSunday = (7 - currentDay) % 7;
+  return daysUntilNextSunday;
 };
 
 export function parseAssetNameSymbol(

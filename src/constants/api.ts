@@ -35,24 +35,32 @@ export const API = () => {
     },
     stake: {
       stakePosition: (userId: string) =>
-        new Url("stakes", REQUIRED_ENV_VARS.STAKING_URL).addSearchParams({
-          userId: userId.toLowerCase(),
-        }),
+        new Url("stake", REQUIRED_ENV_VARS.STAKING_URL)
+          .endpoint("stakes")
+          .addSearchParams({
+            userId: userId.toLowerCase(),
+          }),
       globalApy: new Url(REQUIRED_ENV_VARS.STAKING_URL).endpoint("apy"),
       stakeApy: (address: string) =>
         new Url(REQUIRED_ENV_VARS.STAKING_URL)
           .endpoint("apy")
           .endpoint(address.toLowerCase()),
-      stakingStats: new Url(REQUIRED_ENV_VARS.STAKING_URL).endpoint(
-        "stakingStats"
-      ),
+      stakingStats: new Url(REQUIRED_ENV_VARS.STAKING_URL)
+        .endpoint("stake")
+        .endpoint("staking-stats"),
       accumulatedReward: (userId: string) =>
         new Url(REQUIRED_ENV_VARS.STAKING_URL)
           .endpoint("rewards")
+          .endpoint("accumulated")
           .endpoint(userId),
+      reward: (userId: string) =>
+        new Url(REQUIRED_ENV_VARS.STAKING_URL)
+          .endpoint("rewards")
+          .endpoint(userId),
+      epoch: new Url(REQUIRED_ENV_VARS.STAKING_URL)
+        .endpoint("rewards")
+        .endpoint("epochs"),
     },
-    reward: (userId: string) =>
-      new Url(REQUIRED_ENV_VARS.REWARD).endpoint("rewards").endpoint(userId),
     explorer: (orderId: string) =>
       new Url("order", REQUIRED_ENV_VARS.EXPLORER).endpoint(orderId),
     mempoolTxExplorer: (network: Network, txHash: string) =>

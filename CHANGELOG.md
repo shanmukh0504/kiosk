@@ -2,6 +2,10 @@
 
 ## [2.0.3]
 
+### Added
+
+- Added Starknet and Solana support to OKX, and added Solana support to MetaMask.
+
 ### Fixed
 
 - enable starknet for wallet connection.
@@ -48,6 +52,7 @@
 - Redirect link to mempool transaction hash when deposit is not confirmed.
 - Added starknet support for Xverse wallet.
 - Implemented Swap bridge functionality.
+- New Stake page with GardenPass and refreshed UI.
 - Added Alpen Testnet support.
 - Add solver_id in Create Order Request.
 

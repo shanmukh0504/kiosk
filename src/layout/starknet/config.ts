@@ -21,9 +21,12 @@ export const availableConnectors = () => {
     return [braavos()];
   }
 
-  return [ready(), braavos(), injected({ id: "keplr" })].filter(
-    (connector) => connector !== null
-  );
+  return [
+    ready(),
+    braavos(),
+    injected({ id: "keplr" }),
+    injected({ id: "okxwallet" }),
+  ].filter((connector) => connector !== null);
 };
 
 export const connectors = availableConnectors();
