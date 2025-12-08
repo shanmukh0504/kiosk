@@ -111,7 +111,7 @@ export const formatBalance = (
   const bigAmount = new BigNumber(amount);
   if (bigAmount.isZero()) return "0";
   const balance = formatBigNumber(bigAmount, decimals, toFixed);
-  return Number(balance) < 1 && /\.0{6,}/.test(balance)
+  return Number(balance) < 1 && /\.0{6,}/.test(balance.toString())
     ? balance
     : Number(balance);
 };
