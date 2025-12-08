@@ -2,6 +2,10 @@
 
 ## [2.0.3]
 
+### Added
+
+- Added Starknet and Solana support to OKX, and added Solana support to MetaMask.
+
 ### Fixed
 
 - enable starknet for wallet connection.

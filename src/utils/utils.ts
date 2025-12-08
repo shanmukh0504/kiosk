@@ -69,11 +69,11 @@ export const getDayDifference = (date: string) => {
 };
 
 export const formatBigNumber = (
-  amount: string | number | bigint,
+  amount: BigNumber,
   decimals: number,
   toFixed?: number
 ) => {
-  const value = new BigNumber(amount).dividedBy(10 ** decimals);
+  const value = amount.dividedBy(10 ** decimals);
   const precision = toFixed ? toFixed : Number(value) > 10000 ? 2 : 4;
   let temp = value.toFixed(precision, BigNumber.ROUND_DOWN);
 
@@ -96,7 +96,7 @@ export const formatAmount = (
 ) => {
   const bigAmount = new BigNumber(amount);
   if (bigAmount.isZero()) return 0;
-  return Number(formatBigNumber(amount, decimals, toFixed));
+  return Number(formatBigNumber(bigAmount, decimals, toFixed));
 };
 
 export const formatBalance = (
@@ -106,7 +106,10 @@ export const formatBalance = (
 ) => {
   const bigAmount = new BigNumber(amount);
   if (bigAmount.isZero()) return "0";
-  return formatBigNumber(amount, decimals, toFixed);
+  const balance = formatBigNumber(bigAmount, decimals, toFixed);
+  return Number(balance) < 1 && /\.0{6,}/.test(balance)
+    ? balance
+    : Number(balance);
 };
 
 export const isCurrentRoute = (route: string) => {
