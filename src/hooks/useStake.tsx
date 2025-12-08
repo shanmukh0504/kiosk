@@ -22,7 +22,7 @@ import { modalNames, modalStore } from "../store/modalStore";
 export const useStake = () => {
   const [loading, setLoading] = useState(false);
 
-  const { stakeType } = stakeStore();
+  const { stakeType, setAmount } = stakeStore();
   const { chainId, address } = useEVMWallet();
   const { switchChainAsync } = useSwitchChain();
   const { setCloseModal } = modalStore();
@@ -126,6 +126,7 @@ export const useStake = () => {
       Toast.success(
         `Staked ${amount} SEED for ${selectedDuration} months successfully`
       );
+      setAmount(0);
       setCloseModal(modalNames.manageStake);
     } catch (e) {
       logger.error("error :", { e });

@@ -43,7 +43,7 @@ const DurationMenu: FC<DurationMenuProps> = ({
           <Typography size="h2" weight="regular">
             {selectedDuration === INFINITE ? (
               <div className="flex items-center gap-2">
-                <InfinityIcon className="mr-1 mt-0.5 h-5 w-5" /> months
+                <InfinityIcon className="mr-1 h-5 w-5 pt-0.5" /> months
               </div>
             ) : (
               <div className="flex items-center gap-2">
@@ -96,7 +96,7 @@ const DurationMenu: FC<DurationMenuProps> = ({
                         <Typography size="h2" weight="regular">
                           {item === INFINITE ? (
                             <div className="flex items-center gap-2">
-                              <InfinityIcon className="mr-1 mt-0.5 h-5 w-5" />{" "}
+                              <InfinityIcon className="mr-1 h-5 w-5 pt-0.5" />{" "}
                               months
                             </div>
                           ) : (

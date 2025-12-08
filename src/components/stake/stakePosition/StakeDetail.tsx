@@ -1,5 +1,6 @@
 import {
   Button,
+  InfinityIcon,
   NFTIcon,
   RowInfoIcon,
   Typography,
@@ -266,10 +267,12 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
             >
               Restake
             </Button>
-          ) : (
+          ) : stakeEndDateString ? (
             <Typography size="h4" weight="regular">
               {stakeEndDateString}
             </Typography>
+          ) : (
+            <InfinityIcon className="h-4 w-4" />
           )}
         </div>
         <div
