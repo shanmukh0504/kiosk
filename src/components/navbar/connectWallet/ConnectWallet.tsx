@@ -8,7 +8,11 @@ import {
   RadioCheckedIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { getAvailableWallets, Wallet } from "./getSupportedWallets";
+import {
+  getAvailableWallets,
+  getWalletConnectionStatus,
+  Wallet,
+} from "./getSupportedWallets";
 import {
   IInjectedBitcoinProvider,
   useBitcoinWallet,
@@ -17,7 +21,7 @@ import { WalletRow } from "./WalletRow";
 import { MultiWalletConnection } from "./MultiWalletConnection";
 import { handleEVMConnect, handleStarknetConnect } from "./handleConnect";
 import { modalStore } from "../../../store/modalStore";
-import { ecosystems, evmToBTCid } from "./constants";
+import { ecosystems } from "./constants";
 import { AnimatePresence } from "framer-motion";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { ConnectingWalletStore } from "../../../store/connectWalletStore";
@@ -311,54 +315,16 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                     await handleConnect(wallet);
                   }}
                   isConnecting={connectingWallet === wallet.id.toLowerCase()}
-                  isConnected={{
-                    [BlockchainType.bitcoin]: !!(
-                      provider &&
-                      (provider.id === wallet.id ||
-                        provider.id === evmToBTCid[wallet.id])
-                    ),
-                    [BlockchainType.evm]: (() =>
-                      !!(
-                        connector &&
-                        wallet.isEVM &&
-                        (connector.id === wallet.id ||
-                          (wallet.id === "app.backpack" &&
-                            connector.id === "backpack"))
-                      ))(),
-                    [BlockchainType.starknet]: !!(
-                      starknetConnector &&
-                      wallet.isStarknet &&
-                      starknetConnector.id === wallet.id &&
-                      starknetStatus === "connected"
-                    ),
-                    [BlockchainType.solana]: !!(
-                      wallet.isSolana &&
-                      solanaConnected &&
-                      ((wallet.id === "app.phantom" &&
-                        solanaSelectedWallet?.adapter.name === "Phantom") ||
-                        (wallet.id === "app.backpack" &&
-                          solanaSelectedWallet?.adapter.name === "Backpack") ||
-                        (wallet.id !== "app.phantom" &&
-                          wallet.id !== "app.backpack" &&
-                          solanaSelectedWallet?.adapter.name.toLowerCase() ===
-                            wallet.id.toLowerCase()))
-                    ),
-                    [BlockchainType.sui]: !!(
-                      wallet.isSui &&
-                      suiConnected &&
-                      ((wallet.id === "app.phantom" &&
-                        suiSelectedWallet?.name === "Phantom") ||
-                        (wallet.name === "Slush Wallet" &&
-                          suiSelectedWallet?.id ===
-                            "com.mystenlabs.suiwallet") ||
-                        (wallet.name === "Backpack" &&
-                          suiSelectedWallet?.name === "Backpack") ||
-                        (wallet.name === "OKX Wallet" &&
-                          suiSelectedWallet?.name === "OKX Wallet") ||
-                        (wallet.name === "Tokeo" &&
-                          suiSelectedWallet?.name === "Tokeo"))
-                    ),
-                  }}
+                  isConnected={getWalletConnectionStatus(wallet, {
+                    btcProvider: provider,
+                    evmConnector: connector,
+                    starknetConnector,
+                    starknetStatus,
+                    solanaConnected,
+                    solanaSelectedWallet,
+                    suiConnected,
+                    suiSelectedWallet,
+                  })}
                   isAvailable={wallet.isAvailable}
                 />
               ))}
