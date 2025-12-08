@@ -2,9 +2,14 @@
 
 ## [2.0.3]
 
+### Added
+
+- Added Starknet and Solana support to OKX, and added Solana support to MetaMask.
+
 ### Fixed
 
 - enable starknet for wallet connection.
+- Update Packages to support BNB, Botanix to Starknet routes.
 
 ## [2.0.2]
 

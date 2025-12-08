@@ -558,8 +558,8 @@ __metadata:
   linkType: hard
 
 "@coinbase/cdp-sdk@npm:^1.0.0":
-  version: 1.38.6
-  resolution: "@coinbase/cdp-sdk@npm:1.38.6"
+  version: 1.39.0
+  resolution: "@coinbase/cdp-sdk@npm:1.39.0"
   dependencies:
     "@solana-program/system": "npm:^0.8.0"
     "@solana-program/token": "npm:^0.6.0"
@@ -573,7 +573,7 @@ __metadata:
     uncrypto: "npm:^0.1.3"
     viem: "npm:^2.21.26"
     zod: "npm:^3.24.4"
-  checksum: 10c0/8e0e9f36a7963e267668ef8536bb991eabe37d09e8049bafcc09c18f558baf85442c1d20374c535d19e6c3455cbf5b048b7b74602c76611828df037fa6552be9
+  checksum: 10c0/94d9878303928c34f10690549b02496977b27f737c379bb2753dec3584e7f72f986c9ca27bde0dcdf8c2de66e2afcaea229ef2e223b1f38d37725f1bc3a91bcc
   languageName: node
   linkType: hard
 
@@ -1239,30 +1239,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/core@npm:2.5.3":
-  version: 2.5.3
-  resolution: "@gardenfi/core@npm:2.5.3"
-  dependencies:
-    "@coral-xyz/anchor": "npm:^0.31.1"
-    "@gardenfi/orderbook": "npm:2.5.3"
-    "@gardenfi/utils": "npm:2.5.3"
-    "@mysten/signers": "npm:^0.3.4"
-    "@mysten/sui": "npm:^1.37.1"
-    "@mysten/wallet-standard": "npm:^0.16.9"
-    "@solana/spl-token": "npm:^0.4.13"
-    bignumber.js: "npm:^9.1.2"
-    bip32: "npm:^4.0.0"
-    bip39: "npm:^3.1.0"
-    bitcoinjs-lib: "npm:^6.1.5"
-    ecpair: "npm:^2.1.0"
-    starknet: "npm:7.6.4"
-    tiny-secp256k1: "npm:^2.2.3"
-    varuint-bitcoin: "npm:^1.1.2"
-    yup: "npm:^1.4.0"
-  checksum: 10c0/3f124dd758513c451f801a268b382da072c60809603b1054e5a1a4b2061b41f028df68e34baa7922afa2f1fdfe9e053033c334053d9b02092dc1648ac45a7cf7
-  languageName: node
-  linkType: hard
-
 "@gardenfi/core@npm:3.0.1":
   version: 3.0.1
   resolution: "@gardenfi/core@npm:3.0.1"
@@ -1288,6 +1264,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@gardenfi/core@npm:3.0.2":
+  version: 3.0.2
+  resolution: "@gardenfi/core@npm:3.0.2"
+  dependencies:
+    "@coral-xyz/anchor": "npm:^0.31.1"
+    "@gardenfi/orderbook": "npm:3.0.2"
+    "@gardenfi/utils": "npm:3.0.0"
+    "@mysten/signers": "npm:^0.3.4"
+    "@mysten/sui": "npm:^1.37.1"
+    "@mysten/wallet-standard": "npm:^0.16.9"
+    "@solana/spl-token": "npm:^0.4.13"
+    bignumber.js: "npm:^9.1.2"
+    bip32: "npm:^4.0.0"
+    bip39: "npm:^3.1.0"
+    bitcoinjs-lib: "npm:^6.1.5"
+    ecpair: "npm:^2.1.0"
+    node-cache: "npm:^5.1.2"
+    starknet: "npm:7.6.4"
+    tiny-secp256k1: "npm:^2.2.3"
+    varuint-bitcoin: "npm:^1.1.2"
+    yup: "npm:^1.4.0"
+  checksum: 10c0/b5c50925925ca9fc9390db19714926ed5e67113400b43e008ccdf05dbfe2aa2b56713f1937cedfaa8b78b1bd8c08be11a03aa7027eef8de734820fa39eb10788
+  languageName: node
+  linkType: hard
+
 "@gardenfi/garden-book@npm:0.2.6":
   version: 0.2.6
   resolution: "@gardenfi/garden-book@npm:0.2.6"
@@ -1307,20 +1308,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/orderbook@npm:2.5.3":
-  version: 2.5.3
-  resolution: "@gardenfi/orderbook@npm:2.5.3"
-  dependencies:
-    "@coral-xyz/anchor": "npm:^0.31.1"
-    "@gardenfi/utils": "npm:2.5.3"
-    bufferutil: "npm:^4.0.8"
-    siwe: "npm:^2.1.4"
-    utf-8-validate: "npm:^6.0.3"
-    ws: "npm:^8.14.2"
-  checksum: 10c0/455ca422d389ce472e7275a7495434b6e6c01c95995af15eb9b72e0ae642f076f1e5638480ec912723125acaa9fd9eee32d938e597f0f80f32e77e675a829ee3
-  languageName: node
-  linkType: hard
-
 "@gardenfi/orderbook@npm:3.0.1":
   version: 3.0.1
   resolution: "@gardenfi/orderbook@npm:3.0.1"
@@ -1336,29 +1323,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/react-hooks@npm:3.0.1":
-  version: 3.0.1
-  resolution: "@gardenfi/react-hooks@npm:3.0.1"
+"@gardenfi/orderbook@npm:3.0.2":
+  version: 3.0.2
+  resolution: "@gardenfi/orderbook@npm:3.0.2"
   dependencies:
-    "@gardenfi/core": "npm:3.0.1"
-    "@gardenfi/orderbook": "npm:3.0.1"
+    "@coral-xyz/anchor": "npm:^0.31.1"
     "@gardenfi/utils": "npm:3.0.0"
-    react: "npm:^18.3.1"
-    starknet: "npm:7.6.4"
-  checksum: 10c0/33e438624c7feab76a44c8edc82a0e4db88d75909d3089975a0f1e3b60294c839006958970d715fb46577d000914683165dfeca4d9469dc3a65f33b20e374790
+    bufferutil: "npm:^4.0.8"
+    node-cache: "npm:^5.1.2"
+    siwe: "npm:^2.1.4"
+    utf-8-validate: "npm:^6.0.3"
+    ws: "npm:^8.14.2"
+  checksum: 10c0/f5667c4d8d326631c60cdc32600b695f8d6a0443284b5ba7fb9e80eb81bb6d7c3f7999869bfbab75d5f4fee5fa73170e6fd60c608a2c9f68dbd364f7eb950add
   languageName: node
   linkType: hard
 
-"@gardenfi/utils@npm:2.5.3":
-  version: 2.5.3
-  resolution: "@gardenfi/utils@npm:2.5.3"
+"@gardenfi/react-hooks@npm:3.0.2":
+  version: 3.0.2
+  resolution: "@gardenfi/react-hooks@npm:3.0.2"
   dependencies:
-    "@peculiar/webcrypto": "npm:^1.5.0"
-    "@simplewebauthn/browser": "npm:^13.1.0"
-    fetch-cookie: "npm:^3.1.0"
-    jwt-decode: "npm:^4.0.0"
-    tough-cookie: "npm:^5.1.2"
-  checksum: 10c0/9e73f7aade43f2d38068bfc079558a57dda447b782ec23769cade264c9c35f9afc81980982e92355663d3da005816f51540b3592ff5a22621bbae4d83809d174
+    "@gardenfi/core": "npm:3.0.2"
+    "@gardenfi/orderbook": "npm:3.0.2"
+    "@gardenfi/utils": "npm:3.0.0"
+    react: "npm:^18.3.1"
+    starknet: "npm:7.6.4"
+  checksum: 10c0/581f8538432fe435d6d42b4297d0de37e9f911c795e1dce6d956eeda60f6a9ba85afd91ba0fdaeb254a7aeb17bfdfe6412421bc89e1774c50d957613725d14e4
   languageName: node
   linkType: hard
 
@@ -1375,17 +1364,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/wallet-connectors@npm:^2.4.3":
-  version: 2.4.3
-  resolution: "@gardenfi/wallet-connectors@npm:2.4.3"
+"@gardenfi/wallet-connectors@npm:^2.4.4":
+  version: 2.4.4
+  resolution: "@gardenfi/wallet-connectors@npm:2.4.4"
   dependencies:
-    "@gardenfi/core": "npm:2.5.3"
-    "@gardenfi/utils": "npm:2.5.3"
+    "@gardenfi/core": "npm:3.0.1"
+    "@gardenfi/utils": "npm:3.0.0"
     axios: "npm:^1.7.9"
     bitcoinjs-lib: "npm:^6.1.7"
     react: "npm:^18.3.1"
     tiny-secp256k1: "npm:^2.2.3"
-  checksum: 10c0/ec87ab8ab614f064698033c3ea57c7725770014c1826836034c4b93e18322946d0e4f12884ae32ec0841e64c51258c9928d234fdefa41aa33e561b35a860e2c2
+  checksum: 10c0/2ea37b39feeca61740ff7630ce41ffd7444dc08f73d0d6203e4ae38d23dc910880720803fbfba560cb8e4ba7edf9aaefa79cf0877563c22b8fa574a76e423879
   languageName: node
   linkType: hard
 
@@ -6528,21 +6517,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:5.90.11":
-  version: 5.90.11
-  resolution: "@tanstack/query-core@npm:5.90.11"
-  checksum: 10c0/c2e44f36cec8957ec382ebcacb955bbb2112d03d475414f041194d05b7256d9ea1cc813eca7095033d36af0ba02c397aa646d976b428ff15b897b025ac53b3e9
+"@tanstack/query-core@npm:5.90.12":
+  version: 5.90.12
+  resolution: "@tanstack/query-core@npm:5.90.12"
+  checksum: 10c0/60d5dd23d7801118d6ef84a3d76e798aaf6eb851ee5227629a1dc798fa01ac9560580553413208fcc8a003fb12a89e83d6dd1f38ebc3bd9b6e8838cfaaa45fef
   languageName: node
   linkType: hard
 
 "@tanstack/react-query@npm:^5.25.0, @tanstack/react-query@npm:^5.51.23":
-  version: 5.90.11
-  resolution: "@tanstack/react-query@npm:5.90.11"
+  version: 5.90.12
+  resolution: "@tanstack/react-query@npm:5.90.12"
   dependencies:
-    "@tanstack/query-core": "npm:5.90.11"
+    "@tanstack/query-core": "npm:5.90.12"
   peerDependencies:
     react: ^18 || ^19
-  checksum: 10c0/2e4b73903c2445672996cfeca69985e92055870594a8b64cc8b960d756d199a023b6cceb9548525ea8cf3f3a1986b5bc3e3ec8d0722615c6ac9ed1478c604b02
+  checksum: 10c0/da01ec2819d301e4be89731e82d3f091fa4f1ab2745be324e5166f9df77e2aaf1c362b0fa61aab226bb01634873f1a00562f7d7f405867fe23bdd47fe4d00fda
   languageName: node
   linkType: hard
 
@@ -8850,8 +8839,8 @@ __metadata:
   linkType: hard
 
 "abitype@npm:^1.0.6, abitype@npm:^1.0.9":
-  version: 1.2.0
-  resolution: "abitype@npm:1.2.0"
+  version: 1.2.1
+  resolution: "abitype@npm:1.2.1"
   peerDependencies:
     typescript: ">=5.0.4"
     zod: ^3.22.0 || ^4.0.0
@@ -8860,7 +8849,7 @@ __metadata:
       optional: true
     zod:
       optional: true
-  checksum: 10c0/c599b2ef365d9ae891cfc34ac104d1f6760904d730906d55bfbb146fc19215713bdad982992fc2573df726b9ba19b70ce3fdaa75903c3d402dc644ad8b6b38b9
+  checksum: 10c0/764f0d75a74283f7ab77080645c905c8a126b7bbe03b6e5b66ad80b638f12d9039a1032061f0858ce9934dee639e3405cb5ce05dc037cb628fdb6a24942e4bc4
   languageName: node
   linkType: hard
 
@@ -9479,12 +9468,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"baseline-browser-mapping@npm:^2.8.25":
-  version: 2.8.32
-  resolution: "baseline-browser-mapping@npm:2.8.32"
+"baseline-browser-mapping@npm:^2.9.0":
+  version: 2.9.4
+  resolution: "baseline-browser-mapping@npm:2.9.4"
   bin:
     baseline-browser-mapping: dist/cli.js
-  checksum: 10c0/6c4aa0338ad177e946a27412de11769fb6474389a59cc03e13e0538d7285a94052a11525d46bb605ddb913a0c8a1180292d6f05cd4d6bc05bbf597c26bf5ce66
+  checksum: 10c0/5f33f2505130a234d70b332e3dbedf79655fa2be8287c4f4ea2dd0caca9e1c0c2598d8f5c3798e632382404a414de2b47710ec06b6741deb5e1236eb0b62803b
   languageName: node
   linkType: hard
 
@@ -9836,17 +9825,17 @@ __metadata:
   linkType: hard
 
 "browserslist@npm:^4.24.0, browserslist@npm:^4.27.0":
-  version: 4.28.0
-  resolution: "browserslist@npm:4.28.0"
+  version: 4.28.1
+  resolution: "browserslist@npm:4.28.1"
   dependencies:
-    baseline-browser-mapping: "npm:^2.8.25"
-    caniuse-lite: "npm:^1.0.30001754"
-    electron-to-chromium: "npm:^1.5.249"
+    baseline-browser-mapping: "npm:^2.9.0"
+    caniuse-lite: "npm:^1.0.30001759"
+    electron-to-chromium: "npm:^1.5.263"
     node-releases: "npm:^2.0.27"
-    update-browserslist-db: "npm:^1.1.4"
+    update-browserslist-db: "npm:^1.2.0"
   bin:
     browserslist: cli.js
-  checksum: 10c0/4284fd568f7d40a496963083860d488cb2a89fb055b6affd316bebc59441fec938e090b3e62c0ee065eb0bc88cd1bc145f4300a16c75f3f565621c5823715ae1
+  checksum: 10c0/545a5fa9d7234e3777a7177ec1e9134bb2ba60a69e6b95683f6982b1473aad347c77c1264ccf2ac5dea609a9731fbfbda6b85782bdca70f80f86e28a402504bd
   languageName: node
   linkType: hard
 
@@ -10089,7 +10078,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.30001754":
+"caniuse-lite@npm:^1.0.30001754, caniuse-lite@npm:^1.0.30001759":
   version: 1.0.30001759
   resolution: "caniuse-lite@npm:1.0.30001759"
   checksum: 10c0/b0f415960ba34995cda18e0d25c4e602f6917b9179290a76bdd0311423505b78cc93e558a90c98a22a1cc6b1781ab720ef6beea24ec7e29a1c1164ca72eac3a2
@@ -11388,10 +11377,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-to-chromium@npm:^1.5.249":
-  version: 1.5.263
-  resolution: "electron-to-chromium@npm:1.5.263"
-  checksum: 10c0/d9ba38c5e87f4f1c78e64c7dcc2a32f764664cdbab3c576f23cb3d66a1c3ca1836ecfa00768ab4cd921a0832d09f65555f86eadb926f2cfd3fe93d6c57b8f583
+"electron-to-chromium@npm:^1.5.263":
+  version: 1.5.266
+  resolution: "electron-to-chromium@npm:1.5.266"
+  checksum: 10c0/74ada92ada1ace76ec5b7da8a9cc2d7f03db122a64ac8e12ae30eba3e358ffec443c0c5265bc6edcdeebfa73f449b21c361080c064eb1eec437db2d71fc03248
   languageName: node
   linkType: hard
 
@@ -12744,12 +12733,12 @@ __metadata:
     "@farcaster/frame-sdk": "npm:^0.1.8"
     "@farcaster/miniapp-sdk": "npm:^0.1.9"
     "@farcaster/miniapp-wagmi-connector": "npm:^1.0.0"
-    "@gardenfi/core": "npm:3.0.1"
+    "@gardenfi/core": "npm:3.0.2"
     "@gardenfi/garden-book": "npm:0.2.6"
-    "@gardenfi/orderbook": "npm:3.0.1"
-    "@gardenfi/react-hooks": "npm:3.0.1"
+    "@gardenfi/orderbook": "npm:3.0.2"
+    "@gardenfi/react-hooks": "npm:3.0.2"
     "@gardenfi/utils": "npm:^3.0.0"
-    "@gardenfi/wallet-connectors": "npm:^2.4.3"
+    "@gardenfi/wallet-connectors": "npm:^2.4.4"
     "@mysten/dapp-kit": "npm:^0.17.2"
     "@mysten/sui": "npm:^1.37.2"
     "@mysten/wallet-standard": "npm:^0.16.9"
@@ -14190,7 +14179,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jwa@npm:^1.4.1":
+"jwa@npm:^1.4.2":
   version: 1.4.2
   resolution: "jwa@npm:1.4.2"
   dependencies:
@@ -14201,7 +14190,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jwa@npm:^2.0.0":
+"jwa@npm:^2.0.1":
   version: 2.0.1
   resolution: "jwa@npm:2.0.1"
   dependencies:
@@ -14213,22 +14202,22 @@ __metadata:
   linkType: hard
 
 "jws@npm:^3.2.1":
-  version: 3.2.2
-  resolution: "jws@npm:3.2.2"
+  version: 3.2.3
+  resolution: "jws@npm:3.2.3"
   dependencies:
-    jwa: "npm:^1.4.1"
+    jwa: "npm:^1.4.2"
     safe-buffer: "npm:^5.0.1"
-  checksum: 10c0/e770704533d92df358adad7d1261fdecad4d7b66fa153ba80d047e03ca0f1f73007ce5ed3fbc04d2eba09ba6e7e6e645f351e08e5ab51614df1b0aa4f384dfff
+  checksum: 10c0/9fdf9d6783b1892ef413ef373cd351eacc847ba01deec6fbfea96830e93241863ccbee66f3b749fc2310c59b6db2209d3f4b52931c0c259b52b17de20715917f
   languageName: node
   linkType: hard
 
 "jws@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "jws@npm:4.0.0"
+  version: 4.0.1
+  resolution: "jws@npm:4.0.1"
   dependencies:
-    jwa: "npm:^2.0.0"
+    jwa: "npm:^2.0.1"
     safe-buffer: "npm:^5.0.1"
-  checksum: 10c0/f1ca77ea5451e8dc5ee219cb7053b8a4f1254a79cb22417a2e1043c1eb8a569ae118c68f24d72a589e8a3dd1824697f47d6bd4fb4bebb93a3bdf53545e721661
+  checksum: 10c0/6be1ed93023aef570ccc5ea8d162b065840f3ef12f0d1bb3114cade844de7a357d5dc558201d9a65101e70885a6fa56b17462f520e6b0d426195510618a154d0
   languageName: node
   linkType: hard
 
@@ -15017,11 +15006,11 @@ __metadata:
   linkType: hard
 
 "nan@npm:^2.13.2":
-  version: 2.23.1
-  resolution: "nan@npm:2.23.1"
+  version: 2.24.0
+  resolution: "nan@npm:2.24.0"
   dependencies:
     node-gyp: "npm:latest"
-  checksum: 10c0/bda21d2eeea65d49d673d0ec63030212264a55b4a7e6546a73b5a1540dcfa3c3f3cc0e7f23940d2e8edd4dc58525e97941d533d3be55a2da2158489150de32b9
+  checksum: 10c0/6f9828a15464999ccefcae61b0f94f1f37067048a56363966e892cc6a194e3500966ae6964dd5a6a8acc5e1a849d60d620b120a84bc66c60445379a930c5b0f8
   languageName: node
   linkType: hard
 
@@ -15164,9 +15153,9 @@ __metadata:
   linkType: hard
 
 "node-mock-http@npm:^1.0.2":
-  version: 1.0.3
-  resolution: "node-mock-http@npm:1.0.3"
-  checksum: 10c0/663f2a13518fc89b0dc69f96ba4442b5d1ecbbf20a833283725c8d2d92286af1b634803822432985be5999317fd5f23edbf2a62335fe6dd38d6b19dd7b107559
+  version: 1.0.4
+  resolution: "node-mock-http@npm:1.0.4"
+  checksum: 10c0/86e3f7453cf07ad6b8bd17cf89ff91d45f486a861cf6d891618cf29647d559cbcde1d1f90c9cc02e014ff9f7900b2fb21c96b03ea4b4a415dbe2d65badadceba
   languageName: node
   linkType: hard
 
@@ -16696,12 +16685,12 @@ __metadata:
   linkType: hard
 
 "react-parallax-tilt@npm:^1.7.98":
-  version: 1.7.314
-  resolution: "react-parallax-tilt@npm:1.7.314"
+  version: 1.7.315
+  resolution: "react-parallax-tilt@npm:1.7.315"
   peerDependencies:
     react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
     react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/fada9b00811c7e6a9c8aa757e1d57863f504388be7279878ada497e22f349187895654b4f06592e7e89f4956784b28e848cdc9f5bdbf74e20ad809031d9ec94c
+  checksum: 10c0/10ea58b28d32ac28839b5fde9782eefe213e99e1387cf04392c2cd5376c9b83c2e1aeffb39900d26e0bfee73e7eaf6cfc025bd8251753546b6d979064b505c24
   languageName: node
   linkType: hard
 
@@ -19139,9 +19128,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"update-browserslist-db@npm:^1.1.4":
-  version: 1.1.4
-  resolution: "update-browserslist-db@npm:1.1.4"
+"update-browserslist-db@npm:^1.2.0":
+  version: 1.2.2
+  resolution: "update-browserslist-db@npm:1.2.2"
   dependencies:
     escalade: "npm:^3.2.0"
     picocolors: "npm:^1.1.1"
@@ -19149,7 +19138,7 @@ __metadata:
     browserslist: ">= 4.21.0"
   bin:
     update-browserslist-db: cli.js
-  checksum: 10c0/db0c9aaecf1258a6acda5e937fc27a7996ccca7a7580a1b4aa8bba6a9b0e283e5e65c49ebbd74ec29288ef083f1b88d4da13e3d4d326c1e5fc55bf72d7390702
+  checksum: 10c0/39c3ea08b397ffc8dc3a1c517f5c6ed5cc4179b5e185383dab9bf745879623c12062a2e6bf4f9427cc59389c7bfa0010e86858b923c1e349e32fdddd9b043bb2
   languageName: node
   linkType: hard
 
