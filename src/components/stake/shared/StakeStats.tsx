@@ -1,5 +1,6 @@
 import { Typography } from "@gardenfi/garden-book";
-import { FC, ReactNode, useState } from "react";
+import React, { FC, ReactNode, useState } from "react";
+import { TooltipWrapper } from "./ToolTipWrapper";
 
 type props = {
   title: ReactNode;
@@ -8,6 +9,7 @@ type props = {
   isPink?: boolean;
   className?: string;
   toolTip?: ReactNode;
+  targetRef?: React.RefObject<HTMLDivElement>;
 };
 
 export const StakeStats: FC<props> = ({
@@ -17,22 +19,23 @@ export const StakeStats: FC<props> = ({
   isPink = false,
   className,
   toolTip,
+  targetRef,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const textColor = isPink ? "!text-rose" : "!text-dark-grey";
   const titleSize = size === "xs" ? "h5" : size === "sm" ? "h5" : "h4";
-  const valueSize = "h4";
+  const valueSize = "h2";
   const valueBreakpoints =
     size === "md"
       ? ({ xs: "h2", sm: "h1" } as const)
       : size === "sm"
-        ? ({ xs: "h3", sm: "h2" } as const)
+        ? ({ xs: "h2", sm: "h2" } as const)
         : ({ xs: "h4", sm: "h3" } as const);
 
   return (
     <div
-      className={`relative flex cursor-pointer flex-col items-start justify-center gap-y-1 ${className}`}
+      className={`relative flex flex-col items-start justify-center ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -50,14 +53,16 @@ export const StakeStats: FC<props> = ({
       <Typography
         size={valueSize}
         breakpoints={valueBreakpoints}
-        weight={
-          size === "xs" ? "regular" : size === "sm" ? "regular" : "medium"
-        }
-        className={textColor}
+        weight="regular"
+        className={`${textColor} sm:!gf-leading-[20px] whitespace-nowrap`}
       >
         {value}
       </Typography>
-      {isHovered && toolTip}
+      {isHovered && targetRef && (
+        <TooltipWrapper offsetX={10} offsetY={12} targetRef={targetRef}>
+          {toolTip}
+        </TooltipWrapper>
+      )}
     </div>
   );
 };

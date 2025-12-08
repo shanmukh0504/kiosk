@@ -1,9 +1,14 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { modalStore } from "../../../store/modalStore";
 import { CloseIcon, Typography } from "@gardenfi/garden-book";
 import { viewPortStore } from "../../../store/viewPortStore";
-import { StakeStats } from "../shared/StakeStats";
-import { DURATION, DURATION_MAP, SEED_DECIMALS } from "../constants";
+import { RewardStats } from "../shared/RewardStats";
+import {
+  DURATION,
+  DURATION_MAP,
+  MIN_STAKE_AMOUNT,
+  SEED_DECIMALS,
+} from "../constants";
 import { StakeSubmissionCard } from "./StakeSubmissionCard";
 import { ExtendStake } from "./ExtendStake";
 import { stakeStore } from "../../../store/stakeStore";
@@ -18,8 +23,8 @@ type StakeModalProps = {
 export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
   const [selectedDuration, setSelectedDuration] = useState<DURATION>(6);
 
-  const { setInputAmount, stakingStats } = stakeStore();
-  const { modalData } = modalStore();
+  const { stakingStats } = stakeStore();
+  const { modalData, modalName } = modalStore();
   const { isMobile } = viewPortStore();
 
   const isStake = !!modalData?.manageStake?.stake?.isStake;
@@ -40,14 +45,42 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
           )
         : 0;
 
+  const numberOfStakeUnits = amount / MIN_STAKE_AMOUNT;
+
+  // Capture the initial votes value when modal opens (for extend mode)
+  const initialVotes = useMemo(() => {
+    if (isExtend && modalData.manageStake?.extend?.stakingPosition?.votes) {
+      return modalData.manageStake.extend.stakingPosition.votes;
+    }
+    return undefined;
+  }, [isExtend, modalData.manageStake?.extend?.stakingPosition?.votes]);
+
+  const getDurationFromVotes = (votes: number | undefined): DURATION => {
+    if (!votes) return 6;
+    for (const [key, value] of Object.entries(DURATION_MAP)) {
+      if (value.votes === votes) {
+        return Number(key) as DURATION;
+      }
+    }
+    return 6;
+  };
+
   const handleClose = () => {
     setSelectedDuration(6);
-    setInputAmount("0");
+    // setAmount(0);
     onClose();
   };
 
+  useEffect(() => {
+    setSelectedDuration(
+      getDurationFromVotes(
+        modalData.manageStake?.extend?.stakingPosition?.votes
+      )
+    );
+  }, [modalData.manageStake?.extend?.stakingPosition.votes]);
+
   return (
-    <div className="transition-left left-auto top-60 z-40 flex flex-col gap-4 rounded-[20px] p-3 duration-700 ease-cubic-in-out">
+    <div className="transition-left left-auto top-60 z-50 flex flex-col gap-4 rounded-[20px] p-3 duration-700 ease-cubic-in-out md:min-w-[576px]">
       <div className="flex justify-between">
         <Typography size="h4" weight="medium">
           Set duration
@@ -66,21 +99,33 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
         the stake.
       </Typography>
       <div className="flex items-center gap-10 align-middle">
-        <StakeStats title={"SEED"} value={amount} size="md" />
-        <StakeStats
-          title={"Multiplier"}
-          value={`${DURATION_MAP[selectedDuration].votes}x`}
+        <RewardStats
+          title={"SEED"}
+          weight="medium"
+          value={amount}
           size="md"
+          valueSize="h2"
         />
-        <StakeStats
+        <RewardStats
+          title={"Votes"}
+          value={`${DURATION_MAP[selectedDuration].votes * numberOfStakeUnits}`}
+          weight="medium"
+          size="md"
+          valueSize="h2"
+          extend={modalData.manageStake?.extend?.isExtend}
+          previousValue={initialVotes}
+        />
+        <RewardStats
           title={"APY"}
-          value={`${stakingStats?.apy || 0} %`}
+          value={`${stakingStats?.globalApy || 0} %`}
+          weight="medium"
           isPink
           size="md"
+          valueSize="h2"
         />
       </div>
 
-      <div className="mb-5 flex flex-col gap-3 rounded-2xl bg-white bg-opacity-25 p-4 sm:mb-0">
+      <div className="mb-5 mt-4 flex flex-col gap-3 rounded-2xl bg-white bg-opacity-25 p-4 sm:mb-2">
         <Typography size="h5" weight="regular">
           Stake duration
         </Typography>
@@ -88,12 +133,12 @@ export const StakeModal: FC<StakeModalProps> = ({ onClose }) => {
           <DurationMenu
             selectedDuration={selectedDuration}
             setSelectedDuration={setSelectedDuration}
+            modalOpen={modalName.manageStake}
           />
           {isStake && (
             <StakeSubmissionCard
               selectedDuration={selectedDuration}
               amount={amount}
-              onClose={handleClose}
             />
           )}
           {isExtend && modalData.manageStake?.extend?.stakingPosition && (

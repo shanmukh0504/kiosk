@@ -52,6 +52,7 @@
 - Redirect link to mempool transaction hash when deposit is not confirmed.
 - Added starknet support for Xverse wallet.
 - Implemented Swap bridge functionality.
+- New Stake page with GardenPass and refreshed UI.
 - Added Alpen Testnet support.
 - Add solver_id in Create Order Request.
 
