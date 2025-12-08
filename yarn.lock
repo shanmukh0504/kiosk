@@ -1166,30 +1166,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/core@npm:2.5.3":
-  version: 2.5.3
-  resolution: "@gardenfi/core@npm:2.5.3"
-  dependencies:
-    "@coral-xyz/anchor": "npm:^0.31.1"
-    "@gardenfi/orderbook": "npm:2.5.3"
-    "@gardenfi/utils": "npm:2.5.3"
-    "@mysten/signers": "npm:^0.3.4"
-    "@mysten/sui": "npm:^1.37.1"
-    "@mysten/wallet-standard": "npm:^0.16.9"
-    "@solana/spl-token": "npm:^0.4.13"
-    bignumber.js: "npm:^9.1.2"
-    bip32: "npm:^4.0.0"
-    bip39: "npm:^3.1.0"
-    bitcoinjs-lib: "npm:^6.1.5"
-    ecpair: "npm:^2.1.0"
-    starknet: "npm:7.6.4"
-    tiny-secp256k1: "npm:^2.2.3"
-    varuint-bitcoin: "npm:^1.1.2"
-    yup: "npm:^1.4.0"
-  checksum: 10c0/3f124dd758513c451f801a268b382da072c60809603b1054e5a1a4b2061b41f028df68e34baa7922afa2f1fdfe9e053033c334053d9b02092dc1648ac45a7cf7
-  languageName: node
-  linkType: hard
-
 "@gardenfi/core@npm:3.0.1":
   version: 3.0.1
   resolution: "@gardenfi/core@npm:3.0.1"
@@ -1234,20 +1210,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/orderbook@npm:2.5.3":
-  version: 2.5.3
-  resolution: "@gardenfi/orderbook@npm:2.5.3"
-  dependencies:
-    "@coral-xyz/anchor": "npm:^0.31.1"
-    "@gardenfi/utils": "npm:2.5.3"
-    bufferutil: "npm:^4.0.8"
-    siwe: "npm:^2.1.4"
-    utf-8-validate: "npm:^6.0.3"
-    ws: "npm:^8.14.2"
-  checksum: 10c0/455ca422d389ce472e7275a7495434b6e6c01c95995af15eb9b72e0ae642f076f1e5638480ec912723125acaa9fd9eee32d938e597f0f80f32e77e675a829ee3
-  languageName: node
-  linkType: hard
-
 "@gardenfi/orderbook@npm:3.0.1":
   version: 3.0.1
   resolution: "@gardenfi/orderbook@npm:3.0.1"
@@ -1276,19 +1238,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/utils@npm:2.5.3":
-  version: 2.5.3
-  resolution: "@gardenfi/utils@npm:2.5.3"
-  dependencies:
-    "@peculiar/webcrypto": "npm:^1.5.0"
-    "@simplewebauthn/browser": "npm:^13.1.0"
-    fetch-cookie: "npm:^3.1.0"
-    jwt-decode: "npm:^4.0.0"
-    tough-cookie: "npm:^5.1.2"
-  checksum: 10c0/9e73f7aade43f2d38068bfc079558a57dda447b782ec23769cade264c9c35f9afc81980982e92355663d3da005816f51540b3592ff5a22621bbae4d83809d174
-  languageName: node
-  linkType: hard
-
 "@gardenfi/utils@npm:3.0.0, @gardenfi/utils@npm:^3.0.0":
   version: 3.0.0
   resolution: "@gardenfi/utils@npm:3.0.0"
@@ -1302,17 +1251,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/wallet-connectors@npm:^2.4.3":
-  version: 2.4.3
-  resolution: "@gardenfi/wallet-connectors@npm:2.4.3"
+"@gardenfi/wallet-connectors@npm:^2.4.4":
+  version: 2.4.4
+  resolution: "@gardenfi/wallet-connectors@npm:2.4.4"
   dependencies:
-    "@gardenfi/core": "npm:2.5.3"
-    "@gardenfi/utils": "npm:2.5.3"
+    "@gardenfi/core": "npm:3.0.1"
+    "@gardenfi/utils": "npm:3.0.0"
     axios: "npm:^1.7.9"
     bitcoinjs-lib: "npm:^6.1.7"
     react: "npm:^18.3.1"
     tiny-secp256k1: "npm:^2.2.3"
-  checksum: 10c0/ec87ab8ab614f064698033c3ea57c7725770014c1826836034c4b93e18322946d0e4f12884ae32ec0841e64c51258c9928d234fdefa41aa33e561b35a860e2c2
+  checksum: 10c0/2ea37b39feeca61740ff7630ce41ffd7444dc08f73d0d6203e4ae38d23dc910880720803fbfba560cb8e4ba7edf9aaefa79cf0877563c22b8fa574a76e423879
   languageName: node
   linkType: hard
 
@@ -12422,7 +12371,7 @@ __metadata:
     "@gardenfi/orderbook": "npm:3.0.1"
     "@gardenfi/react-hooks": "npm:3.0.1"
     "@gardenfi/utils": "npm:^3.0.0"
-    "@gardenfi/wallet-connectors": "npm:^2.4.3"
+    "@gardenfi/wallet-connectors": "npm:^2.4.4"
     "@mysten/dapp-kit": "npm:^0.17.2"
     "@mysten/sui": "npm:^1.37.2"
     "@mysten/wallet-standard": "npm:^0.16.9"

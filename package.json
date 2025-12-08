@@ -26,7 +26,7 @@
     "@gardenfi/orderbook": "3.0.1",
     "@gardenfi/react-hooks": "3.0.1",
     "@gardenfi/utils": "^3.0.0",
-    "@gardenfi/wallet-connectors": "^2.4.3",
+    "@gardenfi/wallet-connectors": "^2.4.4",
     "@mysten/dapp-kit": "^0.17.2",
     "@mysten/sui": "^1.37.2",
     "@mysten/wallet-standard": "^0.16.9",
