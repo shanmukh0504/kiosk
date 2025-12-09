@@ -1,4 +1,4 @@
-import { useId, useRef, ChangeEvent, useMemo, useState } from "react";
+import { useId, useRef, ChangeEvent, useMemo } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { Tooltip } from "../../common/Tooltip";
 import { isBitcoin } from "@gardenfi/orderbook";
@@ -19,10 +19,11 @@ export const InputAddress = () => {
     setBtcAddress,
     btcAddress: storedBtcAddress,
     isValidBitcoinAddress,
+    setAlpenAddress,
+    alpenAddress,
   } = swapStore();
 
   const { account: walletBtcAddress } = useBitcoinWallet();
-  const [walletAlpenAddress, setWalletAlpenAddress] = useState("");
 
   const isRecoveryAddress = useMemo(
     () => !!(inputAsset && isBitcoin(inputAsset.chain)),
@@ -48,9 +49,9 @@ export const InputAddress = () => {
       (outputAsset?.chain && isAlpenChain(outputAsset.chain)) ||
       (inputAsset?.chain && isAlpenChain(inputAsset.chain))
     ) {
-      setWalletAlpenAddress(input);
+      setAlpenAddress(input);
     } else {
-      setWalletAlpenAddress("");
+      setAlpenAddress("");
     }
     setBtcAddress(input);
   };
@@ -87,7 +88,7 @@ export const InputAddress = () => {
                 value={
                   (outputAsset?.chain && isAlpenChain(outputAsset.chain)) ||
                   (inputAsset?.chain && isAlpenChain(inputAsset.chain))
-                    ? walletAlpenAddress
+                    ? alpenAddress
                     : displayAddress
                 }
                 placeholder="Your Bitcoin address"
