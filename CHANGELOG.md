@@ -10,6 +10,7 @@
 
 - enable starknet for wallet connection.
 - Update Packages to support BNB, Botanix to Starknet routes.
+- Balance display logic in AssetSelector and fix formatBigNumber function for precision.
 
 ## [2.0.2]
 
