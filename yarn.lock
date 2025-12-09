@@ -1239,13 +1239,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/core@npm:3.0.1":
-  version: 3.0.1
-  resolution: "@gardenfi/core@npm:3.0.1"
+"@gardenfi/core@portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/core::locator=garden-kiosk%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@gardenfi/core@portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/core::locator=garden-kiosk%40workspace%3A."
   dependencies:
     "@coral-xyz/anchor": "npm:^0.31.1"
-    "@gardenfi/orderbook": "npm:3.0.1"
-    "@gardenfi/utils": "npm:3.0.0"
+    "@gardenfi/orderbook": "workspace:*"
+    "@gardenfi/utils": "workspace:*"
     "@mysten/signers": "npm:^0.3.4"
     "@mysten/sui": "npm:^1.37.1"
     "@mysten/wallet-standard": "npm:^0.16.9"
@@ -1260,34 +1260,8 @@ __metadata:
     tiny-secp256k1: "npm:^2.2.3"
     varuint-bitcoin: "npm:^1.1.2"
     yup: "npm:^1.4.0"
-  checksum: 10c0/420f2b934e5b99785e1b96129d6cf4b9658cd53fe55200575da3e3dd80c43bc9064ac5dddad27845e152b34e52b64f8bb241399d229b4f72254e0025d42d3a7f
   languageName: node
-  linkType: hard
-
-"@gardenfi/core@npm:3.0.2":
-  version: 3.0.2
-  resolution: "@gardenfi/core@npm:3.0.2"
-  dependencies:
-    "@coral-xyz/anchor": "npm:^0.31.1"
-    "@gardenfi/orderbook": "npm:3.0.2"
-    "@gardenfi/utils": "npm:3.0.0"
-    "@mysten/signers": "npm:^0.3.4"
-    "@mysten/sui": "npm:^1.37.1"
-    "@mysten/wallet-standard": "npm:^0.16.9"
-    "@solana/spl-token": "npm:^0.4.13"
-    bignumber.js: "npm:^9.1.2"
-    bip32: "npm:^4.0.0"
-    bip39: "npm:^3.1.0"
-    bitcoinjs-lib: "npm:^6.1.5"
-    ecpair: "npm:^2.1.0"
-    node-cache: "npm:^5.1.2"
-    starknet: "npm:7.6.4"
-    tiny-secp256k1: "npm:^2.2.3"
-    varuint-bitcoin: "npm:^1.1.2"
-    yup: "npm:^1.4.0"
-  checksum: 10c0/b5c50925925ca9fc9390db19714926ed5e67113400b43e008ccdf05dbfe2aa2b56713f1937cedfaa8b78b1bd8c08be11a03aa7027eef8de734820fa39eb10788
-  languageName: node
-  linkType: hard
+  linkType: soft
 
 "@gardenfi/garden-book@npm:0.2.6":
   version: 0.2.6
@@ -1308,75 +1282,56 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gardenfi/orderbook@npm:3.0.1":
-  version: 3.0.1
-  resolution: "@gardenfi/orderbook@npm:3.0.1"
+"@gardenfi/orderbook@portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/orderbook::locator=garden-kiosk%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@gardenfi/orderbook@portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/orderbook::locator=garden-kiosk%40workspace%3A."
   dependencies:
     "@coral-xyz/anchor": "npm:^0.31.1"
-    "@gardenfi/utils": "npm:3.0.0"
+    "@gardenfi/utils": "workspace:*"
     bufferutil: "npm:^4.0.8"
     node-cache: "npm:^5.1.2"
     siwe: "npm:^2.1.4"
     utf-8-validate: "npm:^6.0.3"
     ws: "npm:^8.14.2"
-  checksum: 10c0/ccec7ba524b1f90156860368a4bccc40fac85480aac14083497760beb29c23fb46973f50222a2240ac39ff850b522c9f9e07ce614f4c123d5b83e504ee7d2e46
   languageName: node
-  linkType: hard
+  linkType: soft
 
-"@gardenfi/orderbook@npm:3.0.2":
-  version: 3.0.2
-  resolution: "@gardenfi/orderbook@npm:3.0.2"
+"@gardenfi/react-hooks@portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/react-hooks::locator=garden-kiosk%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@gardenfi/react-hooks@portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/react-hooks::locator=garden-kiosk%40workspace%3A."
   dependencies:
-    "@coral-xyz/anchor": "npm:^0.31.1"
-    "@gardenfi/utils": "npm:3.0.0"
-    bufferutil: "npm:^4.0.8"
-    node-cache: "npm:^5.1.2"
-    siwe: "npm:^2.1.4"
-    utf-8-validate: "npm:^6.0.3"
-    ws: "npm:^8.14.2"
-  checksum: 10c0/f5667c4d8d326631c60cdc32600b695f8d6a0443284b5ba7fb9e80eb81bb6d7c3f7999869bfbab75d5f4fee5fa73170e6fd60c608a2c9f68dbd364f7eb950add
-  languageName: node
-  linkType: hard
-
-"@gardenfi/react-hooks@npm:3.0.2":
-  version: 3.0.2
-  resolution: "@gardenfi/react-hooks@npm:3.0.2"
-  dependencies:
-    "@gardenfi/core": "npm:3.0.2"
-    "@gardenfi/orderbook": "npm:3.0.2"
-    "@gardenfi/utils": "npm:3.0.0"
+    "@gardenfi/core": "workspace:*"
+    "@gardenfi/orderbook": "workspace:*"
+    "@gardenfi/utils": "workspace:*"
     react: "npm:^18.3.1"
     starknet: "npm:7.6.4"
-  checksum: 10c0/581f8538432fe435d6d42b4297d0de37e9f911c795e1dce6d956eeda60f6a9ba85afd91ba0fdaeb254a7aeb17bfdfe6412421bc89e1774c50d957613725d14e4
   languageName: node
-  linkType: hard
+  linkType: soft
 
-"@gardenfi/utils@npm:3.0.0, @gardenfi/utils@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@gardenfi/utils@npm:3.0.0"
+"@gardenfi/utils@portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/utils::locator=garden-kiosk%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@gardenfi/utils@portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/utils::locator=garden-kiosk%40workspace%3A."
   dependencies:
     "@peculiar/webcrypto": "npm:^1.5.0"
     "@simplewebauthn/browser": "npm:^13.1.0"
     fetch-cookie: "npm:^3.1.0"
     jwt-decode: "npm:^4.0.0"
     tough-cookie: "npm:^5.1.2"
-  checksum: 10c0/c3aae84d7687ab5e4e7a7547b169b2f928afa1cc34a8210a26b4e2fc3fc5d402de88ba4174fa579bcf7809c306ed1f67220f61a9d04e064c3466a4f969db230f
   languageName: node
-  linkType: hard
+  linkType: soft
 
-"@gardenfi/wallet-connectors@npm:^2.4.4":
-  version: 2.4.4
-  resolution: "@gardenfi/wallet-connectors@npm:2.4.4"
+"@gardenfi/wallet-connectors@portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/walletConnectors::locator=garden-kiosk%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@gardenfi/wallet-connectors@portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/walletConnectors::locator=garden-kiosk%40workspace%3A."
   dependencies:
-    "@gardenfi/core": "npm:3.0.1"
-    "@gardenfi/utils": "npm:3.0.0"
+    "@gardenfi/core": "workspace:*"
+    "@gardenfi/utils": "workspace:*"
     axios: "npm:^1.7.9"
     bitcoinjs-lib: "npm:^6.1.7"
     react: "npm:^18.3.1"
     tiny-secp256k1: "npm:^2.2.3"
-  checksum: 10c0/2ea37b39feeca61740ff7630ce41ffd7444dc08f73d0d6203e4ae38d23dc910880720803fbfba560cb8e4ba7edf9aaefa79cf0877563c22b8fa574a76e423879
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "@gemini-wallet/core@npm:0.3.2":
   version: 0.3.2

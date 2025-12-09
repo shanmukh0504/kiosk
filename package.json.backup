@@ -101,13 +101,5 @@
   "packageManager": "yarn@4.5.1",
   "engines": {
     "node": ">=22.11.0"
-  },
-  "resolutions": {
-    "@gardenfi/core": "portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/core",
-    "@gardenfi/orderbook": "portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/orderbook",
-    "@gardenfi/react-hooks": "portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/react-hooks",
-    "@gardenfi/swap": "portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/swap",
-    "@gardenfi/utils": "portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/utils",
-    "@gardenfi/wallet-connectors": "portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/walletConnectors"
   }
 }
