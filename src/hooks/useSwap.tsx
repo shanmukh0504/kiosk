@@ -691,10 +691,18 @@ export const useSwap = () => {
 
   //set btc address if bitcoin wallet is connected
   useEffect(() => {
-    if (account) {
-      setBtcAddress(account);
+    if (
+      inputAsset &&
+      outputAsset &&
+      account &&
+      !isAlpenChain(inputAsset.chain) &&
+      !isAlpenChain(outputAsset.chain)
+    ) {
+      setBtcAddress(account ? account : "");
+    } else {
+      setBtcAddress("");
     }
-  }, [account, setBtcAddress]);
+  }, [account, setBtcAddress, inputAsset, outputAsset]);
 
   // Update isValidBitcoinAddress state in an effect
   useEffect(() => {

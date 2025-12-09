@@ -4,7 +4,6 @@ import { Tooltip } from "../../common/Tooltip";
 import { isBitcoin } from "@gardenfi/orderbook";
 import { AnimatePresence, motion } from "framer-motion";
 import { addressExpandAnimation } from "../../animations/animations";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { swapStore } from "../../store/swapStore";
 import { isAlpenChain } from "../../utils/utils";
 
@@ -16,14 +15,11 @@ export const InputAddress = () => {
     inputAsset,
     isEditBTCAddress,
     outputAsset,
+    btcAddress,
     setBtcAddress,
     btcAddress: storedBtcAddress,
     isValidBitcoinAddress,
-    setAlpenAddress,
-    alpenAddress,
   } = swapStore();
-
-  const { account: walletBtcAddress } = useBitcoinWallet();
 
   const isRecoveryAddress = useMemo(
     () => !!(inputAsset && isBitcoin(inputAsset.chain)),
@@ -32,32 +28,25 @@ export const InputAddress = () => {
 
   const shouldShowAddress = useMemo(() => {
     return (
-      ((isEditBTCAddress || !walletBtcAddress) &&
+      ((isEditBTCAddress || !btcAddress) &&
         ((inputAsset?.chain && isBitcoin(inputAsset.chain)) ||
           (outputAsset?.chain && isBitcoin(outputAsset.chain)))) ||
       (outputAsset?.chain && isAlpenChain(outputAsset.chain)) ||
       (inputAsset?.chain && isAlpenChain(inputAsset.chain))
     );
-  }, [isEditBTCAddress, walletBtcAddress, inputAsset, outputAsset]);
+  }, [isEditBTCAddress, btcAddress, inputAsset, outputAsset]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value;
     if (!/^[a-zA-Z0-9]$/.test(input.at(-1) || "")) {
       input = input.slice(0, -1);
     }
-    if (
-      (outputAsset?.chain && isAlpenChain(outputAsset.chain)) ||
-      (inputAsset?.chain && isAlpenChain(inputAsset.chain))
-    ) {
-      setAlpenAddress(input);
-    } else {
-      setAlpenAddress("");
-    }
+
     setBtcAddress(input);
   };
 
   // Use stored address if available, otherwise use wallet address
-  const displayAddress = storedBtcAddress || walletBtcAddress || "";
+  const displayAddress = storedBtcAddress || btcAddress || "";
 
   return (
     <AnimatePresence mode="wait">
@@ -85,12 +74,7 @@ export const InputAddress = () => {
                   !isValidBitcoinAddress ? "text-error-red" : ""
                 }`}
                 type="text"
-                value={
-                  (outputAsset?.chain && isAlpenChain(outputAsset.chain)) ||
-                  (inputAsset?.chain && isAlpenChain(inputAsset.chain))
-                    ? alpenAddress
-                    : displayAddress
-                }
+                value={displayAddress}
                 placeholder="Your Bitcoin address"
                 onChange={handleChange}
               />
