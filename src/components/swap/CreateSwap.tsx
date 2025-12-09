@@ -26,7 +26,6 @@ import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
 import {
-  isEVM,
   isBitcoin,
   isStarknet,
   isSolana,
@@ -46,20 +45,13 @@ export const CreateSwap = () => {
 
   const navigate = useNavigate();
   const { destinationChain } = useParams();
-  const { account: btcAddress, provider } = useBitcoinWallet();
+  const { account: btcAddress } = useBitcoinWallet();
   const { address } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { solanaAnchorProvider } = useSolanaWallet();
   const { currentAccount } = useSuiWallet();
-  const { isAssetSelectorOpen, assets, fetchAndSetFiatValues } =
-    assetInfoStore();
-  const {
-    fetchAndSetBitcoinBalance,
-    fetchAndSetEvmBalances,
-    fetchAndSetStarknetBalance,
-    fetchAndSetSolanaBalance,
-    fetchAndSetSuiBalance,
-  } = balanceStore();
+  const { assets, fetchAndSetFiatValues } = assetInfoStore();
+  const { connectBalanceStream, disconnectBalanceStream } = balanceStore();
   const {
     isComparisonVisible,
     showComparison,
@@ -168,58 +160,19 @@ export const CreateSwap = () => {
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
 
-  const fetchAllBalances = useCallback(async () => {
-    await fetchAndSetFiatValues();
-    await Promise.allSettled([
-      address && fetchAndSetEvmBalances(address),
-      btcAddress && provider && fetchAndSetBitcoinBalance(provider, btcAddress),
-      starknetAddress && fetchAndSetStarknetBalance(starknetAddress),
-      solanaAnchorProvider &&
-        fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey),
-      currentAccount && fetchAndSetSuiBalance(currentAccount.address),
-    ]);
+  const setupBalanceStreams = useCallback(() => {
+    address && connectBalanceStream("evm", address);
+    btcAddress && connectBalanceStream("bitcoin", btcAddress);
+    starknetAddress && connectBalanceStream("starknet", starknetAddress);
+    solanaAnchorProvider && connectBalanceStream("solana", solanaAnchorProvider.publicKey.toString());
+    currentAccount && connectBalanceStream("sui", currentAccount.address);
   }, [
     address,
-    provider,
     btcAddress,
     currentAccount,
-    fetchAndSetEvmBalances,
-    fetchAndSetBitcoinBalance,
-    fetchAndSetSuiBalance,
     starknetAddress,
     solanaAnchorProvider,
-    fetchAndSetFiatValues,
-    fetchAndSetStarknetBalance,
-    fetchAndSetSolanaBalance,
-  ]);
-
-  const fetchInputAssetBalance = useCallback(async () => {
-    if (!inputAsset) return;
-    await fetchAndSetFiatValues();
-    if (isEVM(inputAsset.chain) && address)
-      await fetchAndSetEvmBalances(address, inputAsset);
-    if (isBitcoin(inputAsset.chain) && provider && btcAddress)
-      await fetchAndSetBitcoinBalance(provider, btcAddress);
-    if (isStarknet(inputAsset.chain) && starknetAddress)
-      await fetchAndSetStarknetBalance(starknetAddress);
-    if (isSolana(inputAsset.chain) && solanaAnchorProvider)
-      await fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey);
-    if (isSui(inputAsset.chain) && currentAccount)
-      await fetchAndSetSuiBalance(currentAccount.address);
-  }, [
-    fetchAndSetFiatValues,
-    inputAsset,
-    address,
-    fetchAndSetEvmBalances,
-    provider,
-    btcAddress,
-    fetchAndSetBitcoinBalance,
-    starknetAddress,
-    fetchAndSetStarknetBalance,
-    solanaAnchorProvider,
-    fetchAndSetSolanaBalance,
-    currentAccount,
-    fetchAndSetSuiBalance,
+    connectBalanceStream,
   ]);
 
   const handleConnectWallet = () => {
@@ -239,28 +192,28 @@ export const CreateSwap = () => {
 
   useEffect(() => {
     if (!assets) return;
-    fetchAllBalances();
-  }, [assets, fetchAllBalances]);
 
-  useEffect(() => {
-    if (!assets) return;
+    fetchAndSetFiatValues();
 
-    const interval = setInterval(() => {
-      if (isAssetSelectorOpen.isOpen) {
-        fetchAllBalances();
-      } else {
-        fetchInputAssetBalance();
-      }
-    }, 7000);
+    setupBalanceStreams();
 
     return () => {
-      clearInterval(interval);
+      address && disconnectBalanceStream("evm", address);
+      btcAddress && disconnectBalanceStream("bitcoin", btcAddress);
+      starknetAddress && disconnectBalanceStream("starknet", starknetAddress);
+      solanaAnchorProvider && disconnectBalanceStream("solana", solanaAnchorProvider.publicKey.toString());
+      currentAccount && disconnectBalanceStream("sui", currentAccount.address);
     };
   }, [
     assets,
-    isAssetSelectorOpen.isOpen,
-    fetchAllBalances,
-    fetchInputAssetBalance,
+    address,
+    btcAddress,
+    starknetAddress,
+    solanaAnchorProvider,
+    currentAccount,
+    setupBalanceStreams,
+    disconnectBalanceStream,
+    fetchAndSetFiatValues,
   ]);
 
   useEffect(() => {
