@@ -30,7 +30,11 @@ export const PendingTransactions = () => {
         return;
       }
       txHash = tx.val;
-    } else if (provider && isBitcoin(order.source_swap.chain)) {
+    } else if (
+      provider &&
+      isBitcoin(order.source_swap.chain) &&
+      !order.source_swap.chain.toLowerCase().includes("alpen")
+    ) {
       const bitcoinRes = await provider.sendBitcoin(
         order.source_swap.swap_id,
         Number(order.source_swap.amount)
