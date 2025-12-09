@@ -195,7 +195,11 @@ export const balanceStore = create<BalanceStoreState>((set, get) => ({
       const maxSpendableBalance = spendable.ok ? spendable.val : 0;
 
       const btcBalance = Object.values(assets)
-        .filter((asset) => isBitcoin(asset.chain))
+        .filter(
+          (asset) =>
+            isBitcoin(asset.chain) &&
+            !asset.chain.toLowerCase().includes("alpen")
+        )
         .reduce(
           (acc, asset) => {
             acc[ChainAsset.from(asset.id).toString()] = new BigNumber(
