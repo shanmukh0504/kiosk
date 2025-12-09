@@ -8,6 +8,7 @@ const REQUIRED_ENV_VARS = {
   REWARD: import.meta.env.VITE_REWARD_URL,
   EXPLORER: import.meta.env.VITE_EXPLORER_URL,
   API_KEY: import.meta.env.VITE_API_KEY,
+  BALANCE_URL: import.meta.env.VITE_BALANCE_URL,
 } as const;
 
 export const API = () => {
@@ -32,6 +33,33 @@ export const API = () => {
     quote: {
       quote: new Url(REQUIRED_ENV_VARS.BASE_URL),
       fiatValues: new Url(REQUIRED_ENV_VARS.QUOTE_URL).endpoint("/fiat"),
+    },
+    balance: {
+      bitcoin: (address: string) =>
+        new Url(REQUIRED_ENV_VARS.BALANCE_URL)
+          .endpoint("balances")
+          .endpoint("bitcoin")
+          .endpoint(address),
+      evm: (address: string) =>
+        new Url(REQUIRED_ENV_VARS.BALANCE_URL)
+          .endpoint("balances")
+          .endpoint("evm")
+          .endpoint(address),
+      starknet: (address: string) =>
+        new Url(REQUIRED_ENV_VARS.BALANCE_URL)
+          .endpoint("balances")
+          .endpoint("starknet")
+          .endpoint(address),
+      solana: (address: string) =>
+        new Url(REQUIRED_ENV_VARS.BALANCE_URL)
+          .endpoint("balances")
+          .endpoint("solana")
+          .endpoint(address),
+      sui: (address: string) =>
+        new Url(REQUIRED_ENV_VARS.BALANCE_URL)
+          .endpoint("balances")
+          .endpoint("sui")
+          .endpoint(address),
     },
     stake: {
       stakePosition: (userId: string) =>
