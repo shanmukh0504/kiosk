@@ -4,8 +4,8 @@ import { Tooltip } from "../../common/Tooltip";
 import { isBitcoin } from "@gardenfi/orderbook";
 import { AnimatePresence, motion } from "framer-motion";
 import { addressExpandAnimation } from "../../animations/animations";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { swapStore } from "../../store/swapStore";
+import { isAlpenChain } from "../../utils/utils";
 
 export const InputAddress = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -15,12 +15,11 @@ export const InputAddress = () => {
     inputAsset,
     isEditBTCAddress,
     outputAsset,
+    btcAddress,
     setBtcAddress,
     btcAddress: storedBtcAddress,
     isValidBitcoinAddress,
   } = swapStore();
-
-  const { account: walletBtcAddress } = useBitcoinWallet();
 
   const isRecoveryAddress = useMemo(
     () => !!(inputAsset && isBitcoin(inputAsset.chain)),
@@ -29,22 +28,25 @@ export const InputAddress = () => {
 
   const shouldShowAddress = useMemo(() => {
     return (
-      (isEditBTCAddress || !walletBtcAddress) &&
-      ((inputAsset?.chain && isBitcoin(inputAsset.chain)) ||
-        (outputAsset?.chain && isBitcoin(outputAsset.chain)))
+      ((isEditBTCAddress || !btcAddress) &&
+        ((inputAsset?.chain && isBitcoin(inputAsset.chain)) ||
+          (outputAsset?.chain && isBitcoin(outputAsset.chain)))) ||
+      (outputAsset?.chain && isAlpenChain(outputAsset.chain)) ||
+      (inputAsset?.chain && isAlpenChain(inputAsset.chain))
     );
-  }, [isEditBTCAddress, walletBtcAddress, inputAsset, outputAsset]);
+  }, [isEditBTCAddress, btcAddress, inputAsset, outputAsset]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value;
     if (!/^[a-zA-Z0-9]$/.test(input.at(-1) || "")) {
       input = input.slice(0, -1);
     }
+
     setBtcAddress(input);
   };
 
   // Use stored address if available, otherwise use wallet address
-  const displayAddress = storedBtcAddress || walletBtcAddress || "";
+  const displayAddress = storedBtcAddress || btcAddress || "";
 
   return (
     <AnimatePresence mode="wait">

@@ -15,7 +15,7 @@ import { delayedFadeAnimation } from "../../animations/animations";
 import { SwapSavingsAndAddresses } from "./SwapSavingsAndAddresses";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { TooltipWrapper } from "../../common/ToolTipWrapper";
-import { formatAmount, formatAmountUsd } from "../../utils/utils";
+import { formatAmount, formatAmountUsd, isAlpenChain } from "../../utils/utils";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { RateAndPriceDisplay } from "./RateAndPriceDisplay";
 
@@ -216,8 +216,16 @@ export const FeesAndRateDetails = () => {
       <AnimatePresence>
         {isDetailsExpanded && (
           <SwapSavingsAndAddresses
-            refundAddress={refundAddress}
-            receiveAddress={receiveAddress}
+            refundAddress={
+              inputAsset?.chain && isAlpenChain(inputAsset?.chain)
+                ? undefined
+                : refundAddress
+            }
+            receiveAddress={
+              outputAsset?.chain && isAlpenChain(outputAsset?.chain)
+                ? undefined
+                : receiveAddress
+            }
             showComparison={showComparisonHandler}
             networkFeesValue={Number(formatAmountUsd(networkFees, 0))}
           />
