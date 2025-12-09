@@ -13,6 +13,7 @@ import {
 } from "@gardenfi/orderbook";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import logger from "../../utils/logger";
+import { isAlpenChain } from "../../utils/utils";
 
 export const PendingTransactions = () => {
   const { pendingOrders, updateOrder } = pendingOrdersStore();
@@ -33,7 +34,7 @@ export const PendingTransactions = () => {
     } else if (
       provider &&
       isBitcoin(order.source_swap.chain) &&
-      !order.source_swap.chain.toLowerCase().includes("alpen")
+      !isAlpenChain(order.source_swap.chain)
     ) {
       const bitcoinRes = await provider.sendBitcoin(
         order.source_swap.swap_id,

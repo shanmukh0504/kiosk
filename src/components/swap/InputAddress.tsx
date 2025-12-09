@@ -1,4 +1,4 @@
-import { useId, useRef, ChangeEvent, useMemo } from "react";
+import { useId, useRef, ChangeEvent, useMemo, useState } from "react";
 import { Typography } from "@gardenfi/garden-book";
 import { Tooltip } from "../../common/Tooltip";
 import { isBitcoin } from "@gardenfi/orderbook";
@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { addressExpandAnimation } from "../../animations/animations";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { swapStore } from "../../store/swapStore";
+import { isAlpenChain } from "../../utils/utils";
 
 export const InputAddress = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -21,6 +22,7 @@ export const InputAddress = () => {
   } = swapStore();
 
   const { account: walletBtcAddress } = useBitcoinWallet();
+  const [walletAlpenAddress, setWalletAlpenAddress] = useState("");
 
   const isRecoveryAddress = useMemo(
     () => !!(inputAsset && isBitcoin(inputAsset.chain)),
@@ -29,9 +31,11 @@ export const InputAddress = () => {
 
   const shouldShowAddress = useMemo(() => {
     return (
-      (isEditBTCAddress || !walletBtcAddress) &&
-      ((inputAsset?.chain && isBitcoin(inputAsset.chain)) ||
-        (outputAsset?.chain && isBitcoin(outputAsset.chain)))
+      ((isEditBTCAddress || !walletBtcAddress) &&
+        ((inputAsset?.chain && isBitcoin(inputAsset.chain)) ||
+          (outputAsset?.chain && isBitcoin(outputAsset.chain)))) ||
+      (outputAsset?.chain && isAlpenChain(outputAsset.chain)) ||
+      (inputAsset?.chain && isAlpenChain(inputAsset.chain))
     );
   }, [isEditBTCAddress, walletBtcAddress, inputAsset, outputAsset]);
 
@@ -39,6 +43,14 @@ export const InputAddress = () => {
     let input = e.target.value;
     if (!/^[a-zA-Z0-9]$/.test(input.at(-1) || "")) {
       input = input.slice(0, -1);
+    }
+    if (
+      (outputAsset?.chain && isAlpenChain(outputAsset.chain)) ||
+      (inputAsset?.chain && isAlpenChain(inputAsset.chain))
+    ) {
+      setWalletAlpenAddress(input);
+    } else {
+      setWalletAlpenAddress("");
     }
     setBtcAddress(input);
   };
@@ -72,7 +84,12 @@ export const InputAddress = () => {
                   !isValidBitcoinAddress ? "text-error-red" : ""
                 }`}
                 type="text"
-                value={displayAddress}
+                value={
+                  (outputAsset?.chain && isAlpenChain(outputAsset.chain)) ||
+                  (inputAsset?.chain && isAlpenChain(inputAsset.chain))
+                    ? walletAlpenAddress
+                    : displayAddress
+                }
                 placeholder="Your Bitcoin address"
                 onChange={handleChange}
               />

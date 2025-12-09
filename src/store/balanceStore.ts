@@ -27,6 +27,7 @@ import { getLegacyGasEstimate } from "../utils/getNativeTokenFee";
 import { SupportedChains } from "../layout/wagmi/config";
 import { getAllWorkingRPCs } from "../utils/rpcUtils";
 import { assetInfoStore } from "./assetInfoStore";
+import { isAlpenChain } from "../utils/utils";
 
 type BalanceStoreState = {
   balances: Record<string, BigNumber | undefined>;
@@ -195,11 +196,7 @@ export const balanceStore = create<BalanceStoreState>((set, get) => ({
       const maxSpendableBalance = spendable.ok ? spendable.val : 0;
 
       const btcBalance = Object.values(assets)
-        .filter(
-          (asset) =>
-            isBitcoin(asset.chain) &&
-            !asset.chain.toLowerCase().includes("alpen")
-        )
+        .filter((asset) => isBitcoin(asset.chain) && !isAlpenChain(asset.chain))
         .reduce(
           (acc, asset) => {
             acc[ChainAsset.from(asset.id).toString()] = new BigNumber(

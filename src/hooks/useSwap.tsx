@@ -29,7 +29,12 @@ import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import BigNumber from "bignumber.js";
 import { useSolanaWallet } from "./useSolanaWallet";
-import { formatAmount, formatBalance, isAsset } from "../utils/utils";
+import {
+  formatAmount,
+  formatBalance,
+  isAsset,
+  isAlpenChain,
+} from "../utils/utils";
 import { useNetworkFees } from "./useNetworkFees";
 import { useSuiWallet } from "./useSuiWallet";
 import logger from "../utils/logger";
@@ -553,7 +558,7 @@ export const useSwap = () => {
 
       if (isBitcoin(inputAsset.chain)) {
         const orderResponse = res.val as BitcoinOrderResponse;
-        if (provider && !inputAsset.chain.toLowerCase().includes("alpen")) {
+        if (provider && !isAlpenChain(inputAsset.chain)) {
           const bitcoinRes = await provider.sendBitcoin(
             orderResponse.to,
             Number(orderResponse.amount)

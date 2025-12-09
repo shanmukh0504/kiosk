@@ -326,3 +326,7 @@ To learn more about Garden, refer to our documentation: https://docs.garden.fina
     );
   }
 };
+
+export const isAlpenChain = (chain: string) => {
+  return chain.toLowerCase().includes("alpen");
+};
