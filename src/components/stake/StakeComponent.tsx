@@ -145,10 +145,10 @@ export const StakeComponent: React.FC = () => {
 
   useEffect(() => {
     if (address && asset) {
-      fetchAndSetEvmBalances(address);
+      fetchAndSetEvmBalances(address, asset);
 
       const interval = setInterval(() => {
-        fetchAndSetEvmBalances(address);
+        fetchAndSetEvmBalances(address, asset);
       }, 5000);
 
       return () => clearInterval(interval);
