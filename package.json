@@ -21,10 +21,10 @@
     "@farcaster/frame-sdk": "^0.1.8",
     "@farcaster/miniapp-sdk": "^0.1.9",
     "@farcaster/miniapp-wagmi-connector": "^1.0.0",
-    "@gardenfi/core": "3.0.2",
+    "@gardenfi/core": "3.0.3",
     "@gardenfi/garden-book": "0.2.6",
-    "@gardenfi/orderbook": "3.0.2",
-    "@gardenfi/react-hooks": "3.0.2",
+    "@gardenfi/orderbook": "3.0.3",
+    "@gardenfi/react-hooks": "3.0.3",
     "@gardenfi/utils": "^3.0.0",
     "@gardenfi/wallet-connectors": "^2.4.4",
     "@mysten/dapp-kit": "^0.17.2",
@@ -101,13 +101,5 @@
   "packageManager": "yarn@4.5.1",
   "engines": {
     "node": ">=22.11.0"
-  },
-  "resolutions": {
-    "@gardenfi/core": "portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/core",
-    "@gardenfi/orderbook": "portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/orderbook",
-    "@gardenfi/react-hooks": "portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/react-hooks",
-    "@gardenfi/swap": "portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/swap",
-    "@gardenfi/utils": "portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/utils",
-    "@gardenfi/wallet-connectors": "portal:/Users/svssathvik/Desktop/sathvik/projects/garden-js/packages/walletConnectors"
   }
 }
