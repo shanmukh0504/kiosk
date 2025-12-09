@@ -29,7 +29,12 @@ import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import BigNumber from "bignumber.js";
 import { useSolanaWallet } from "./useSolanaWallet";
-import { formatAmount, formatBalance, isAsset } from "../utils/utils";
+import {
+  formatAmount,
+  formatBalance,
+  isAsset,
+  isAlpenChain,
+} from "../utils/utils";
 import { useNetworkFees } from "./useNetworkFees";
 import { useSuiWallet } from "./useSuiWallet";
 import logger from "../utils/logger";
@@ -553,7 +558,7 @@ export const useSwap = () => {
 
       if (isBitcoin(inputAsset.chain)) {
         const orderResponse = res.val as BitcoinOrderResponse;
-        if (provider && !inputAsset.chain.toLowerCase().includes("alpen")) {
+        if (provider && !isAlpenChain(inputAsset.chain)) {
           const bitcoinRes = await provider.sendBitcoin(
             orderResponse.to,
             Number(orderResponse.amount)
@@ -686,10 +691,18 @@ export const useSwap = () => {
 
   //set btc address if bitcoin wallet is connected
   useEffect(() => {
-    if (account) {
-      setBtcAddress(account);
+    if (
+      inputAsset &&
+      outputAsset &&
+      account &&
+      !isAlpenChain(inputAsset.chain) &&
+      !isAlpenChain(outputAsset.chain)
+    ) {
+      setBtcAddress(account ? account : "");
+    } else {
+      setBtcAddress("");
     }
-  }, [account, setBtcAddress]);
+  }, [account, setBtcAddress, inputAsset, outputAsset]);
 
   // Update isValidBitcoinAddress state in an effect
   useEffect(() => {
