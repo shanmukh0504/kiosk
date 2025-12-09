@@ -68,11 +68,11 @@ export const getDayDifference = (date: string) => {
   return "Just now";
 };
 
+// Intentionally returns a string here to avoid browsers showing tiny balances in scientific notation.
 export const formatBigNumber = (
   amount: BigNumber,
   decimals: number,
-  toFixed?: number,
-  modulus: boolean = false
+  toFixed?: number
 ) => {
   const bigAmount = new BigNumber(amount).abs();
   if (bigAmount.isZero()) return 0;
@@ -90,7 +90,7 @@ export const formatBigNumber = (
   ) {
     temp = value.toFixed(temp.split(".")[1].length + 2, BigNumber.ROUND_DOWN);
   }
-  return modulus && Number(temp) < 0 ? Number(temp) * -1 : Number(temp);
+  return temp;
 };
 
 export const formatAmount = (
@@ -111,9 +111,14 @@ export const formatBalance = (
   const bigAmount = new BigNumber(amount);
   if (bigAmount.isZero()) return "0";
   const balance = formatBigNumber(bigAmount, decimals, toFixed);
-  return Number(balance) < 1 && /\.0{6,}/.test(balance.toString())
-    ? balance
-    : Number(balance);
+
+  // Preserve very small values as strings (not scientific notation) when they are <1
+  // and effectively just a run of leading zeros after the decimal.
+  return Number(balance) < 1 && /\.0{8,}/.test(balance.toString())
+    ? Number(balance)
+    : /\.0{6,}/.test(balance.toString())
+      ? balance
+      : Number(balance);
 };
 
 export const isCurrentRoute = (route: string) => {
