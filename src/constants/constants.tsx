@@ -149,6 +149,7 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "unichain",
   "corn",
   "alpen_testnet",
+  "alpen_signet",
   "solana",
   "botanix",
   "bnbchain",
@@ -159,7 +160,7 @@ export const SUPPORTED_CHAINS: Chain[] = [
 ] as const;
 
 export const MULTICALL_CONTRACT_ADDRESSES: Record<number, string> = {
-  [alpenTestnet.id]: "0x9307a5F4627e7b6392e0d0DA83875bdBfbBD41ed",
+  [alpenTestnet.id]: "0x6c8f9d333964328F7AE2f0ea35389730D88f3d29",
   [hyperliquid.id]: "0xcA11bde05977b3631167028862bE2a173976CA11",
   [citreaTestnet.id]: "0x8470Ee1FCD47e7F9B90486bB5D142430e5C1f409",
   [botanix.id]: "0xeaE7721d779276eb0f5837e2fE260118724a2Ba4",

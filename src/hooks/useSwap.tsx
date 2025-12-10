@@ -33,7 +33,7 @@ import {
   formatAmount,
   formatBalance,
   isAsset,
-  isAlpenChain,
+  isAlpenSignetChain,
 } from "../utils/utils";
 import { useNetworkFees } from "./useNetworkFees";
 import { useSuiWallet } from "./useSuiWallet";
@@ -558,7 +558,7 @@ export const useSwap = () => {
 
       if (isBitcoin(inputAsset.chain)) {
         const orderResponse = res.val as BitcoinOrderResponse;
-        if (provider && !isAlpenChain(inputAsset.chain)) {
+        if (provider && !isAlpenSignetChain(inputAsset.chain)) {
           const bitcoinRes = await provider.sendBitcoin(
             orderResponse.to,
             Number(orderResponse.amount)
@@ -695,8 +695,8 @@ export const useSwap = () => {
       inputAsset &&
       outputAsset &&
       account &&
-      !isAlpenChain(inputAsset.chain) &&
-      !isAlpenChain(outputAsset.chain)
+      !isAlpenSignetChain(inputAsset.chain) &&
+      !isAlpenSignetChain(outputAsset.chain)
     ) {
       setBtcAddress(account ? account : "");
     } else {

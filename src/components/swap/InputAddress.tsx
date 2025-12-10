@@ -5,7 +5,7 @@ import { isBitcoin } from "@gardenfi/orderbook";
 import { AnimatePresence, motion } from "framer-motion";
 import { addressExpandAnimation } from "../../animations/animations";
 import { swapStore } from "../../store/swapStore";
-import { isAlpenChain } from "../../utils/utils";
+import { isAlpenSignetChain } from "../../utils/utils";
 
 export const InputAddress = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -31,8 +31,8 @@ export const InputAddress = () => {
       ((isEditBTCAddress || !btcAddress) &&
         ((inputAsset?.chain && isBitcoin(inputAsset.chain)) ||
           (outputAsset?.chain && isBitcoin(outputAsset.chain)))) ||
-      (outputAsset?.chain && isAlpenChain(outputAsset.chain)) ||
-      (inputAsset?.chain && isAlpenChain(inputAsset.chain))
+      (outputAsset?.chain && isAlpenSignetChain(outputAsset.chain)) ||
+      (inputAsset?.chain && isAlpenSignetChain(inputAsset.chain))
     );
   }, [isEditBTCAddress, btcAddress, inputAsset, outputAsset]);
 
