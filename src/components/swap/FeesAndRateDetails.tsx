@@ -15,7 +15,11 @@ import { delayedFadeAnimation } from "../../animations/animations";
 import { SwapSavingsAndAddresses } from "./SwapSavingsAndAddresses";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { TooltipWrapper } from "../../common/ToolTipWrapper";
-import { formatAmount, formatAmountUsd, isAlpenChain } from "../../utils/utils";
+import {
+  formatAmount,
+  formatAmountUsd,
+  isAlpenSignetChain,
+} from "../../utils/utils";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { RateAndPriceDisplay } from "./RateAndPriceDisplay";
 
@@ -217,12 +221,12 @@ export const FeesAndRateDetails = () => {
         {isDetailsExpanded && (
           <SwapSavingsAndAddresses
             refundAddress={
-              inputAsset?.chain && isAlpenChain(inputAsset?.chain)
+              inputAsset?.chain && isAlpenSignetChain(inputAsset.chain)
                 ? undefined
                 : refundAddress
             }
             receiveAddress={
-              outputAsset?.chain && isAlpenChain(outputAsset?.chain)
+              outputAsset?.chain && isAlpenSignetChain(outputAsset.chain)
                 ? undefined
                 : receiveAddress
             }
