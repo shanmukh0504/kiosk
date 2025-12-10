@@ -5,6 +5,7 @@ import { isBitcoin } from "@gardenfi/orderbook";
 import { AnimatePresence, motion } from "framer-motion";
 import { addressExpandAnimation } from "../../animations/animations";
 import { swapStore } from "../../store/swapStore";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { isAlpenSignetChain } from "../../utils/utils";
 
 export const InputAddress = () => {
@@ -21,20 +22,29 @@ export const InputAddress = () => {
     isValidBitcoinAddress,
   } = swapStore();
 
+  const { account: walletBtcAddress } = useBitcoinWallet();
+
   const isRecoveryAddress = useMemo(
     () => !!(inputAsset && isBitcoin(inputAsset.chain)),
     [inputAsset]
   );
 
-  const shouldShowAddress = useMemo(() => {
-    return (
-      ((isEditBTCAddress || !btcAddress) &&
-        ((inputAsset?.chain && isBitcoin(inputAsset.chain)) ||
-          (outputAsset?.chain && isBitcoin(outputAsset.chain)))) ||
-      (outputAsset?.chain && isAlpenSignetChain(outputAsset.chain)) ||
-      (inputAsset?.chain && isAlpenSignetChain(inputAsset.chain))
-    );
-  }, [isEditBTCAddress, btcAddress, inputAsset, outputAsset]);
+  const shouldShowAddress = () => {
+    const isAlpenAddressNeeded =
+      inputAsset &&
+      (isAlpenSignetChain(inputAsset.chain) ||
+        (outputAsset && isAlpenSignetChain(outputAsset.chain)));
+
+    const isBitcoinAddressNeeded =
+      inputAsset &&
+      (isBitcoin(inputAsset.chain) ||
+        (outputAsset && isBitcoin(outputAsset.chain)));
+
+    if (isAlpenAddressNeeded) return true;
+    if (isBitcoinAddressNeeded && (isEditBTCAddress || !walletBtcAddress))
+      return true;
+    return false;
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value;
@@ -50,7 +60,7 @@ export const InputAddress = () => {
 
   return (
     <AnimatePresence mode="wait">
-      {shouldShowAddress && (
+      {shouldShowAddress() && (
         <motion.div
           variants={addressExpandAnimation}
           initial="hidden"
