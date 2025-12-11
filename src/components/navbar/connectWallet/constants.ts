@@ -113,7 +113,7 @@ export const GardenSupportedWallets: Record<
     {
       bitcoin: network === Network.MAINNET,
       evm: true,
-      starknet: true,
+      starknet: network === Network.MAINNET,
       // solana: true,
       // sui: network === Network.MAINNET,
     }
