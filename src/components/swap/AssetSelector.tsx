@@ -8,7 +8,7 @@ import {
 import BigNumber from "bignumber.js";
 import { FC, useState, ChangeEvent, useEffect, useMemo, useRef } from "react";
 import {
-  isStarknet,
+  // isStarknet,
   isSolana,
   isSui,
   Asset,
@@ -153,7 +153,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             balance && asset && balance.toNumber() === 0
               ? ""
               : balance &&
-                  !isStarknet(asset.chain) &&
+                  // !isStarknet(asset.chain) &&
                   !isSolana(asset.chain) &&
                   !isSui(asset.chain)
                 ? new BigNumber(balance)

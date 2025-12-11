@@ -93,7 +93,8 @@ export const useSwap = () => {
     () =>
       inputBalance &&
       inputAsset &&
-      (!isStarknet(inputAsset.chain) &&
+      (
+        // !isStarknet(inputAsset.chain) &&
       !isSolana(inputAsset.chain) &&
       !isSui(inputAsset.chain)
         ? formatBalance(
