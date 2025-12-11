@@ -48,6 +48,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
     starknetDisconnect,
     starknetSwitchChain,
     starknetConnector,
+    starknetStatus,
   } = useStarknetWallet();
   const { handleSuiConnect, suiSelectedWallet } = useSuiWallet();
   const availableEcosystems = Object.entries(ecosystems).filter(
@@ -64,6 +65,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
     [BlockchainType.solana]:
       solanaSelectedWallet?.adapter.name === connectors.solana?.adapter.name,
     [BlockchainType.starknet]:
+      starknetStatus === "connected" &&
       starknetConnector?.id === connectors.starknet?.id,
     [BlockchainType.sui]: suiSelectedWallet?.name === connectors.sui?.name,
     [BlockchainType.bitcoin]: provider?.name === connectors.bitcoin?.name,
