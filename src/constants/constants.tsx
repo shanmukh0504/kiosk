@@ -224,3 +224,24 @@ export const SUI_SOLVER_ADDRESS =
 
 export const SUI_DEFAULT_NETWORK_FEE = 0.03;
 export const BITCOIN_DEFAULT_NETWORK_FEE = 0.49;
+
+export const STARKNET_CONFIG: Record<
+  Network,
+  {
+    chainId: string;
+    nodeUrl: string;
+  }
+> = {
+  [Network.MAINNET]: {
+    chainId: "0x534e5f4d41494e",
+    nodeUrl: "https://starknet-rpc.publicnode.com",
+  },
+  [Network.TESTNET]: {
+    chainId: "0x534e5f5345504f4c4941",
+    nodeUrl: "https://starknet-sepolia-rpc.publicnode.com",
+  },
+  [Network.LOCALNET]: {
+    chainId: "",
+    nodeUrl: "",
+  },
+};
