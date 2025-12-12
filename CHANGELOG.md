@@ -11,6 +11,11 @@
 - enable starknet for wallet connection.
 - Update Packages to support BNB, Botanix to Starknet routes.
 - Balance display logic in AssetSelector and fix formatBigNumber function for precision.
+- Fix Alpen Signet Bitcoin Address show.
+- Update Alpen testnet multicall address
+- Update max spendable sbtc in alpen testnet
+- Update okx wallet connector from injected connector to legacyInjected in starknet config.
+- Update starknet config
 
 ## [2.0.2]
 

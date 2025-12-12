@@ -7,8 +7,7 @@ import {
   UseSwitchChainArgs,
 } from "@starknet-react/core";
 import { ConnectMutateAsync } from "wagmi/query";
-import { STARKNET_CONFIG } from "@gardenfi/core";
-import { network } from "../../../constants/constants";
+import { STARKNET_CONFIG, network } from "../../../constants/constants";
 import { UseMutateAsyncFunction } from "@tanstack/react-query";
 
 export const handleEVMConnect = async (
