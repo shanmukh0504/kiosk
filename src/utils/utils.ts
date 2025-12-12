@@ -330,3 +330,10 @@ To learn more about Garden, refer to our documentation: https://docs.garden.fina
 export const isAlpenSignetChain = (chain: string) => {
   return chain.toLowerCase().includes("alpen_signet");
 };
+
+export const isStableCoinOrSeed = (asset: Asset) => {
+  return (
+    asset.symbol.toLowerCase().includes("usd") ||
+    asset.symbol.toLowerCase().includes("seed")
+  );
+};
