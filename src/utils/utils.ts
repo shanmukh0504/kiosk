@@ -4,6 +4,8 @@ import {
   Asset,
   Chain,
   ChainAsset,
+  isBitcoin,
+  isEVM,
   OrderWithStatus,
   Swap,
 } from "@gardenfi/orderbook";
@@ -329,4 +331,41 @@ To learn more about Garden, refer to our documentation: https://docs.garden.fina
 
 export const isAlpenSignetChain = (chain: string) => {
   return chain.toLowerCase().includes("alpen_signet");
+};
+
+export const isBitcoinSwap = (inputAsset?: Asset, outputAsset?: Asset) => {
+  return !!(
+    inputAsset &&
+    outputAsset &&
+    (isBitcoin(inputAsset.chain) || isBitcoin(outputAsset.chain))
+  );
+};
+
+export const decideAddressVisibility = (
+  inputAsset?: Asset,
+  outputAsset?: Asset,
+  address?: { source: string; destination: string },
+  isEditAddress?: { source: boolean; destination: boolean }
+) => {
+  // Show input box if:
+  // 1. Not EVM chain (EVM addresses are auto-populated)
+  // 2. Address is missing OR user is editing
+  // 3. For Alpen chains, always show
+  const isSourceNeeded =
+    inputAsset &&
+    outputAsset &&
+    !isEVM(inputAsset.chain) &&
+    (isAlpenSignetChain(inputAsset.chain) ||
+      isEditAddress?.source ||
+      !address?.source);
+
+  const isDestinationNeeded =
+    inputAsset &&
+    outputAsset &&
+    !isEVM(outputAsset.chain) &&
+    (isAlpenSignetChain(outputAsset.chain) ||
+      isEditAddress?.destination ||
+      !address?.destination);
+
+  return { isSourceNeeded, isDestinationNeeded };
 };

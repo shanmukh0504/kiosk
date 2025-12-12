@@ -25,6 +25,7 @@ import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
+import { useWalletAddressManager } from "../../hooks/useWallet";
 import {
   isEVM,
   isBitcoin,
@@ -60,6 +61,9 @@ export const CreateSwap = () => {
     fetchAndSetSolanaBalance,
     fetchAndSetSuiBalance,
   } = balanceStore();
+
+  // Initialize wallet address manager (only called once, manages auto-population)
+  useWalletAddressManager();
   const {
     isComparisonVisible,
     showComparison,
@@ -311,7 +315,7 @@ export const CreateSwap = () => {
     } else {
       if (!destinationChain || !isBitcoin(destinationChain as Chain)) {
         const BTC = Object.values(assets).find((asset) =>
-          isBitcoin(asset.chain)
+          asset.chain.startsWith("bitcoin")
         );
         if (BTC && (!toAsset || !isBitcoin(toAsset.chain))) {
           setAsset(IOType.input, BTC);

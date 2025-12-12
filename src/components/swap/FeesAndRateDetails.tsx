@@ -7,13 +7,10 @@ import {
 } from "@gardenfi/garden-book";
 import { BTC, swapStore } from "../../store/swapStore";
 
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { Asset, isBitcoin, isSolana } from "@gardenfi/orderbook";
+import { Asset, isBitcoin } from "@gardenfi/orderbook";
 import { motion, AnimatePresence } from "framer-motion";
 import { delayedFadeAnimation } from "../../animations/animations";
 import { SwapSavingsAndAddresses } from "./SwapSavingsAndAddresses";
-import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { TooltipWrapper } from "../../common/ToolTipWrapper";
 import {
   formatAmount,
@@ -22,6 +19,7 @@ import {
 } from "../../utils/utils";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { RateAndPriceDisplay } from "./RateAndPriceDisplay";
+import { useWallet } from "../../hooks/useWallet";
 
 export const FeesAndRateDetails = () => {
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
@@ -41,9 +39,7 @@ export const FeesAndRateDetails = () => {
     showComparisonHandler,
     isFetchingQuote,
   } = swapStore();
-  const { account: btcAddress } = useBitcoinWallet();
-  const { solanaAddress } = useSolanaWallet();
-  const { address } = useEVMWallet();
+  const { address } = useWallet();
   const { assets, fiatData } = assetInfoStore();
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
@@ -68,27 +64,13 @@ export const FeesAndRateDetails = () => {
     return formatAmountUsd(price, 0);
   }, [inputAsset, assets, fiatData]);
   const refundAddress = useMemo(
-    () =>
-      inputAsset
-        ? isBitcoin(inputAsset.chain)
-          ? btcAddress
-          : isSolana(inputAsset.chain)
-            ? solanaAddress
-            : address
-        : undefined,
-    [inputAsset, btcAddress, solanaAddress, address]
+    () => (inputAsset ? address.source : undefined),
+    [inputAsset, address.source]
   );
 
   const receiveAddress = useMemo(
-    () =>
-      outputAsset
-        ? isBitcoin(outputAsset.chain)
-          ? btcAddress
-          : isSolana(outputAsset.chain)
-            ? solanaAddress
-            : address
-        : undefined,
-    [outputAsset, btcAddress, solanaAddress, address]
+    () => (outputAsset ? address.destination : undefined),
+    [outputAsset, address.destination]
   );
 
   useEffect(() => {

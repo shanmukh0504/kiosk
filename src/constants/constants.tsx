@@ -13,6 +13,11 @@ import { Network } from "@gardenfi/utils";
 import { citreaTestnet } from "viem/chains";
 import { botanix, monadMainnet } from "../layout/wagmi/config";
 
+export enum AddressType {
+  RECEIVE = "receive",
+  REFUND = "refund",
+}
+
 export const network: Network = import.meta.env.VITE_NETWORK;
 export const environment: Environment = import.meta.env.VITE_ENVIRONMENT;
 export const isTestnet = network === Network.TESTNET;

@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { BTC, swapStore } from "../store/swapStore";
-import { IOType, network } from "../constants/constants";
+import { IOType } from "../constants/constants";
 import {
   Asset,
   BitcoinOrderResponse,
-  BlockchainType,
   Chain,
   isBitcoin,
   isSolana,
@@ -16,13 +15,11 @@ import {
   Chains,
 } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
-import { validateBTCAddress } from "@gardenfi/core";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useStarknetWallet } from "./useStarknetWallet";
 import { useEVMWallet } from "./useEVMWallet";
 import { modalNames, modalStore } from "../store/modalStore";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { Environment } from "@gardenfi/utils";
 import { Errors } from "../constants/errors";
 import { ConnectingWalletStore } from "../store/connectWalletStore";
 import orderInProgressStore from "../store/orderInProgressStore";
@@ -34,11 +31,13 @@ import {
   formatBalance,
   isAsset,
   isAlpenSignetChain,
+  isBitcoinSwap,
 } from "../utils/utils";
 import { useNetworkFees } from "./useNetworkFees";
 import { useSuiWallet } from "./useSuiWallet";
 import logger from "../utils/logger";
 import { balanceStore } from "../store/balanceStore";
+import { useWallet } from "./useWallet";
 
 export const useSwap = () => {
   const {
@@ -50,10 +49,9 @@ export const useSwap = () => {
     isApproving,
     rate,
     error,
-    btcAddress,
     tokenPrices,
     isFetchingQuote,
-    isEditBTCAddress,
+    isEditAddress,
     networkFees,
     setIsSwapping,
     setAmount,
@@ -65,21 +63,21 @@ export const useSwap = () => {
     setFiatTokenPrices,
     setFixedFee,
     isComparisonVisible,
-    setIsValidBitcoinAddress,
     // setIsApproving,
     setTokenPrices,
     clearSwapState,
-    setBtcAddress,
     setIsComparisonVisible,
     solverId,
     setSolverId,
+    validAddress,
   } = swapStore();
+  const { address } = useWallet();
   const { balances } = balanceStore();
   const { setOrder, setIsOpen } = orderInProgressStore();
   const { updateOrder } = pendingOrdersStore();
   const { disconnect } = useEVMWallet();
   const { swap, getQuote, garden } = useGarden();
-  const { provider, account } = useBitcoinWallet();
+  const { provider } = useBitcoinWallet();
   const controller = useRef<AbortController | null>(null);
   const { setConnectingWallet } = ConnectingWalletStore();
   const { address: evmAddress } = useEVMWallet();
@@ -115,27 +113,14 @@ export const useSwap = () => {
     return BigNumber(inputAmount).gt(inputTokenBalance);
   }, [inputAmount, inputTokenBalance]);
 
-  const isBitcoinSwap = useMemo(() => {
-    return !!(
-      inputAsset &&
-      outputAsset &&
-      (isBitcoin(inputAsset.chain) || isBitcoin(outputAsset.chain))
-    );
-  }, [inputAsset, outputAsset]);
-  const isValidBitcoinAddress = useMemo(() => {
-    if (!isBitcoinSwap) return true;
-    return btcAddress
-      ? validateBTCAddress(btcAddress, network as unknown as Environment)
-      : false;
-  }, [btcAddress, isBitcoinSwap]);
-
   const _validSwap = useMemo(() => {
     return !!(
       inputAsset &&
       outputAmount &&
       inputAmount &&
       outputAsset &&
-      isValidBitcoinAddress &&
+      validAddress.source &&
+      validAddress.destination &&
       !error.inputError &&
       !error.outputError &&
       !error.liquidityError &&
@@ -147,12 +132,20 @@ export const useSwap = () => {
     inputAmount,
     outputAsset,
     error,
-    isValidBitcoinAddress,
+    validAddress.source,
+    validAddress.destination,
   ]);
 
   const validSwap = useMemo(() => {
-    return isBitcoinSwap ? !!(_validSwap && btcAddress) : _validSwap;
-  }, [_validSwap, isBitcoinSwap, btcAddress]);
+    if (!_validSwap) return false;
+
+    // Simply check if both addresses are present
+    if (!address.source || !address.destination) return false;
+
+    return true;
+  }, [_validSwap, address.source, address.destination]);
+
+  console.log(validSwap);
 
   const { minAmount, maxAmount } = useMemo(() => {
     const defaultLimits = {
@@ -477,12 +470,6 @@ export const useSwap = () => {
       .multipliedBy(10 ** outputAsset.decimals)
       .toFixed();
 
-    const addresses: Partial<Record<BlockchainType, string>> = isBitcoinSwap
-      ? {
-          bitcoin: btcAddress,
-        }
-      : {};
-
     try {
       // if (!wallet) return;
 
@@ -522,8 +509,10 @@ export const useSwap = () => {
         sendAmount: inputAmountInDecimals,
         receiveAmount: outputAmountInDecimals,
         solverId,
-        addresses,
+        sourceAddress: address.source,
+        destinationAddress: address.destination,
       });
+
       if (!res.ok) {
         if (
           res.error.includes(
@@ -689,33 +678,6 @@ export const useSwap = () => {
     setError({ insufficientBalanceError: Errors.none });
   }, [isInsufficientBalance, setError, inputAsset, outputAsset, inputAmount]);
 
-  //set btc address if bitcoin wallet is connected
-  useEffect(() => {
-    if (
-      inputAsset &&
-      outputAsset &&
-      account &&
-      !isAlpenSignetChain(inputAsset.chain) &&
-      !isAlpenSignetChain(outputAsset.chain)
-    ) {
-      setBtcAddress(account ? account : "");
-    } else {
-      setBtcAddress("");
-    }
-  }, [account, setBtcAddress, inputAsset, outputAsset]);
-
-  // Update isValidBitcoinAddress state in an effect
-  useEffect(() => {
-    if (!isBitcoinSwap) {
-      setIsValidBitcoinAddress(true);
-      return;
-    }
-    const isValid = btcAddress
-      ? validateBTCAddress(btcAddress, network as unknown as Environment)
-      : false;
-    setIsValidBitcoinAddress(isValid);
-  }, [btcAddress, isBitcoinSwap, setIsValidBitcoinAddress]);
-
   return {
     inputAmount,
     outputAmount,
@@ -724,7 +686,7 @@ export const useSwap = () => {
     tokenPrices,
     rate,
     error,
-    isEditBTCAddress,
+    isEditAddress,
     loading: isFetchingQuote,
     validSwap,
     isSwapping,
@@ -732,10 +694,8 @@ export const useSwap = () => {
     isBitcoinSwap,
     inputTokenBalance,
     needsWalletConnection,
-    btcAddress,
     controller,
     isComparisonVisible,
-    setBtcAddress,
     swapAssets,
     handleInputAmountChange,
     handleOutputAmountChange,
