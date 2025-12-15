@@ -9,7 +9,7 @@ import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { AddressType } from "../../constants/constants";
 import { validateAddress } from "../../utils/addressValidation";
 import { isBitcoin, isEVM } from "@gardenfi/orderbook";
-import { useWallet } from "../../hooks/useWallet";
+import { walletAddressStore } from "../../store/walletAddressStore";
 
 type InputAddressProps = {
   addressType: AddressType | undefined;
@@ -29,8 +29,9 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
     outputAsset,
     validAddress,
     setValidAddress,
+    setIsEditAddress,
   } = swapStore();
-  const { address, setAddress } = useWallet();
+  const { address, setAddress } = walletAddressStore();
 
   const { account: walletBtcAddress } = useBitcoinWallet();
   const { address: walletEvmAddress } = useEVMWallet();
@@ -83,10 +84,20 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
       input = input.slice(0, -1);
     }
 
+    // Ensure edit mode stays open when user is typing
     if (isRefund) {
       setAddress({ source: input });
+      if (!isEditAddress.source) {
+        setIsEditAddress({
+          source: true,
+          destination: isEditAddress.destination,
+        });
+      }
     } else {
       setAddress({ destination: input });
+      if (!isEditAddress.destination) {
+        setIsEditAddress({ source: isEditAddress.source, destination: true });
+      }
     }
   };
 

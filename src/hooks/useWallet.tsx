@@ -17,8 +17,10 @@ import {
 
 // Hook to manage wallet address auto-population (should only be called once)
 export const useWalletAddressManager = () => {
-  const { inputAsset, outputAsset, isEditAddress } = swapStore();
+  const { inputAsset, outputAsset, isEditAddress, setIsEditAddress } =
+    swapStore();
   const setAddress = walletAddressStore((state) => state.setAddress);
+  const { address } = walletAddressStore();
   const { address: evmAddress } = useEVMWallet();
   const { account: btcAddress } = useBitcoinWallet();
   const { starknetAddress } = useStarknetWallet();
@@ -177,11 +179,51 @@ export const useWalletAddressManager = () => {
     currentAccount,
     setAddress,
   ]);
-};
 
-// Simple hook to access the store (components should use this)
-export const useWallet = () => {
-  const address = walletAddressStore((state) => state.address);
-  const setAddress = walletAddressStore((state) => state.setAddress);
-  return { address, setAddress };
+  // Auto-manage isEditAddress: open if no BTC address, close if matches wallet
+  useEffect(() => {
+    if (!inputAsset || !outputAsset) return;
+
+    const getEditState = (
+      addr: string,
+      walletAddr: string | undefined,
+      isBtc: boolean,
+      current: boolean
+    ) => {
+      if (!isBtc) return current;
+      if (!addr) return true;
+      return addr === walletAddr ? false : current;
+    };
+
+    const sourceIsBtc = isBitcoin(inputAsset.chain);
+    const destIsBtc = isBitcoin(outputAsset.chain);
+    const newSource = getEditState(
+      address.source,
+      getWalletAddressForChain(inputAsset.chain),
+      sourceIsBtc,
+      isEditAddress.source
+    );
+    const newDest = getEditState(
+      address.destination,
+      getWalletAddressForChain(outputAsset.chain),
+      destIsBtc,
+      isEditAddress.destination
+    );
+
+    if (
+      newSource !== isEditAddress.source ||
+      newDest !== isEditAddress.destination
+    ) {
+      setIsEditAddress({ source: newSource, destination: newDest });
+    }
+  }, [
+    inputAsset,
+    outputAsset,
+    address.source,
+    address.destination,
+    getWalletAddressForChain,
+    btcAddress,
+    isEditAddress,
+    setIsEditAddress,
+  ]);
 };

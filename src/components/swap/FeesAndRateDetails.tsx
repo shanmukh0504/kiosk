@@ -19,7 +19,7 @@ import {
 } from "../../utils/utils";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { RateAndPriceDisplay } from "./RateAndPriceDisplay";
-import { useWallet } from "../../hooks/useWallet";
+import { walletAddressStore } from "../../store/walletAddressStore";
 
 export const FeesAndRateDetails = () => {
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
@@ -39,7 +39,7 @@ export const FeesAndRateDetails = () => {
     showComparisonHandler,
     isFetchingQuote,
   } = swapStore();
-  const { address } = useWallet();
+  const { address } = walletAddressStore();
   const { assets, fiatData } = assetInfoStore();
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);

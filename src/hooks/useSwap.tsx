@@ -37,7 +37,7 @@ import { useNetworkFees } from "./useNetworkFees";
 import { useSuiWallet } from "./useSuiWallet";
 import logger from "../utils/logger";
 import { balanceStore } from "../store/balanceStore";
-import { useWallet } from "./useWallet";
+import { walletAddressStore } from "../store/walletAddressStore";
 
 export const useSwap = () => {
   const {
@@ -71,7 +71,7 @@ export const useSwap = () => {
     setSolverId,
     validAddress,
   } = swapStore();
-  const { address } = useWallet();
+  const { address } = walletAddressStore();
   const { balances } = balanceStore();
   const { setOrder, setIsOpen } = orderInProgressStore();
   const { updateOrder } = pendingOrdersStore();
