@@ -8,8 +8,9 @@ import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { AddressType } from "../../constants/constants";
 import { validateAddress } from "../../utils/addressValidation";
-import { isBitcoin, isEVM } from "@gardenfi/orderbook";
+import { isEVM } from "@gardenfi/orderbook";
 import { walletAddressStore } from "../../store/walletAddressStore";
+import { isPureBitcoin, isAlpenSignetChain } from "../../utils/utils";
 
 type InputAddressProps = {
   addressType: AddressType | undefined;
@@ -40,21 +41,51 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
 
   useEffect(() => {
     if (isEditing) {
-      const isBitcoinInInput = inputAsset && isBitcoin(inputAsset.chain);
-      const isBitcoinInOutput = outputAsset && isBitcoin(outputAsset.chain);
-      const isEvmInInput = inputAsset && isEVM(inputAsset.chain);
-      const isEvmInOutput = outputAsset && isEVM(outputAsset.chain);
+      const sourceChain = inputAsset?.chain;
+      const destChain = outputAsset?.chain;
 
       if (isRefund) {
-        if (isBitcoinInInput && walletBtcAddress && !address.source) {
+        // Alpen Signet must NEVER auto-populate
+        if (sourceChain && isAlpenSignetChain(sourceChain)) {
+          // Do nothing - keep empty or user input
+          return;
+        }
+        // Pure Bitcoin: auto-populate only if wallet is connected and address is empty
+        if (
+          sourceChain &&
+          isPureBitcoin(sourceChain) &&
+          walletBtcAddress &&
+          !address.source
+        ) {
           setAddress({ source: walletBtcAddress });
-        } else if (isEvmInInput && walletEvmAddress && !address.source) {
+        } else if (
+          sourceChain &&
+          isEVM(sourceChain) &&
+          walletEvmAddress &&
+          !address.source
+        ) {
           setAddress({ source: walletEvmAddress });
         }
       } else {
-        if (isBitcoinInOutput && walletBtcAddress && !address.destination) {
+        // Alpen Signet must NEVER auto-populate
+        if (destChain && isAlpenSignetChain(destChain)) {
+          // Do nothing - keep empty or user input
+          return;
+        }
+        // Pure Bitcoin: auto-populate only if wallet is connected and address is empty
+        if (
+          destChain &&
+          isPureBitcoin(destChain) &&
+          walletBtcAddress &&
+          !address.destination
+        ) {
           setAddress({ destination: walletBtcAddress });
-        } else if (isEvmInOutput && walletEvmAddress && !address.destination) {
+        } else if (
+          destChain &&
+          isEVM(destChain) &&
+          walletEvmAddress &&
+          !address.destination
+        ) {
           setAddress({ destination: walletEvmAddress });
         }
       }

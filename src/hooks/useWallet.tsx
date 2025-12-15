@@ -14,12 +14,13 @@ import {
   isSui,
   Asset,
 } from "@gardenfi/orderbook";
+import { isAlpenSignetChain, isPureBitcoin } from "../utils/utils";
 
 // Hook to manage wallet address auto-population (should only be called once)
 export const useWalletAddressManager = () => {
   const { inputAsset, outputAsset, isEditAddress, setIsEditAddress } =
     swapStore();
-  const setAddress = walletAddressStore((state) => state.setAddress);
+  const { setAddress } = walletAddressStore();
   const { address } = walletAddressStore();
   const { address: evmAddress } = useEVMWallet();
   const { account: btcAddress } = useBitcoinWallet();
@@ -46,6 +47,37 @@ export const useWalletAddressManager = () => {
     [evmAddress, btcAddress, starknetAddress, solanaAddress, currentAccount]
   );
 
+  // Centralized helper: determines if an address should be auto-populated for a chain
+  // Note: isEditing is only relevant for pure Bitcoin (other chains don't have edit option)
+  const shouldAutoPopulateAddress = useCallback(
+    (
+      chain: Asset["chain"],
+      walletAddress: string | undefined,
+      isEditing: boolean
+    ): string | undefined => {
+      // Alpen Signet must NEVER auto-populate - always require manual input
+      if (isAlpenSignetChain(chain)) {
+        return undefined;
+      }
+
+      // Pure Bitcoin: auto-populate only if wallet is connected and not editing
+      // (Bitcoin is the only chain with edit option)
+      if (isPureBitcoin(chain)) {
+        return walletAddress && !isEditing ? walletAddress : undefined;
+      }
+
+      // EVM: always auto-populate if wallet is connected (no edit option, must connect wallet)
+      if (isEVM(chain)) {
+        return walletAddress || undefined;
+      }
+
+      // Other chains (Starknet, Solana, Sui): auto-populate if wallet is connected
+      // (no edit option, must connect wallet)
+      return walletAddress || undefined;
+    },
+    []
+  );
+
   // Auto-populate addresses from wallet providers
   useEffect(() => {
     if (!inputAsset || !outputAsset) {
@@ -54,6 +86,7 @@ export const useWalletAddressManager = () => {
       return;
     }
 
+    // Get wallet addresses for each chain
     const sourceWalletAddress = getWalletAddressForChain(inputAsset.chain);
     const destinationWalletAddress = getWalletAddressForChain(
       outputAsset.chain
@@ -68,92 +101,111 @@ export const useWalletAddressManager = () => {
     setAddress((prev) => {
       const newAddress: WalletAddress = { ...prev };
 
-      // If input chain changed, clear and repopulate source address
+      // Handle source address
       if (inputChainChanged) {
-        newAddress.source = "";
-        // For EVM chains: always set if wallet is connected
-        if (isEVM(inputAsset.chain) && sourceWalletAddress) {
-          newAddress.source = sourceWalletAddress;
-        }
-        // For Bitcoin: set if wallet is connected and not editing
-        else if (isBitcoin(inputAsset.chain)) {
-          if (!isEditAddress.source && sourceWalletAddress) {
-            newAddress.source = sourceWalletAddress;
-          }
-        }
-        // For other chains (Starknet, Solana, Sui): set if wallet is connected
-        else if (sourceWalletAddress) {
-          newAddress.source = sourceWalletAddress;
+        // Chain changed: clear and repopulate
+        // Alpen Signet must always start with empty address
+        if (isAlpenSignetChain(inputAsset.chain)) {
+          newAddress.source = "";
+        } else {
+          const autoAddress = shouldAutoPopulateAddress(
+            inputAsset.chain,
+            sourceWalletAddress,
+            isEditAddress.source
+          );
+          newAddress.source = autoAddress || "";
         }
       } else {
-        // Chain didn't change, only update if needed and not manually edited
-        // For EVM chains: always set if wallet is connected (unless user is editing)
-        if (isEVM(inputAsset.chain) && sourceWalletAddress) {
-          if (!isEditAddress.source || !prev.source) {
-            newAddress.source = sourceWalletAddress;
+        // Chain didn't change: preserve user input, only update if appropriate
+        // Alpen Signet: never auto-populate, preserve user input
+        if (isAlpenSignetChain(inputAsset.chain)) {
+          // Keep existing address (user input) or empty string
+          newAddress.source = prev.source || "";
+        } else if (isPureBitcoin(inputAsset.chain)) {
+          // Pure Bitcoin: only respect edit mode (user can edit Bitcoin addresses)
+          // Check if user has manually entered an address (different from wallet)
+          const isManuallyEntered =
+            prev.source &&
+            prev.source !== sourceWalletAddress &&
+            prev.source.length > 0;
+
+          // Only auto-populate if not manually entered and not editing
+          if (!isManuallyEntered && !isEditAddress.source) {
+            const autoAddress = shouldAutoPopulateAddress(
+              inputAsset.chain,
+              sourceWalletAddress,
+              isEditAddress.source
+            );
+            if (autoAddress) {
+              newAddress.source = autoAddress;
+            } else if (!prev.source) {
+              newAddress.source = "";
+            }
           }
-        }
-        // For Bitcoin: only set if not in edit mode
-        else if (isBitcoin(inputAsset.chain)) {
-          if (!isEditAddress.source && sourceWalletAddress) {
-            newAddress.source = sourceWalletAddress;
-          }
-          // If editing, keep user's input
-        }
-        // For other chains: set if wallet is connected (unless user is editing)
-        else if (sourceWalletAddress) {
-          if (!isEditAddress.source || !prev.source) {
-            newAddress.source = sourceWalletAddress;
+        } else {
+          // Other chains (EVM, Starknet, Solana, Sui): no edit option, always use wallet if connected
+          const autoAddress = shouldAutoPopulateAddress(
+            inputAsset.chain,
+            sourceWalletAddress,
+            false // isEditing not relevant for non-Bitcoin chains
+          );
+          if (autoAddress) {
+            newAddress.source = autoAddress;
+          } else if (!prev.source) {
+            // Clear if no wallet address
+            newAddress.source = "";
           }
         }
       }
 
-      // If output chain changed, clear and repopulate destination address
+      // Handle destination address
       if (outputChainChanged) {
-        newAddress.destination = "";
-        if (isEVM(outputAsset.chain) && destinationWalletAddress) {
-          newAddress.destination = destinationWalletAddress;
-        } else if (isBitcoin(outputAsset.chain)) {
-          if (!isEditAddress.destination && destinationWalletAddress) {
-            newAddress.destination = destinationWalletAddress;
-          }
-        } else if (destinationWalletAddress) {
-          newAddress.destination = destinationWalletAddress;
+        // Chain changed: clear and repopulate
+        // Alpen Signet must always start with empty address
+        if (isAlpenSignetChain(outputAsset.chain)) {
+          newAddress.destination = "";
+        } else {
+          const autoAddress = shouldAutoPopulateAddress(
+            outputAsset.chain,
+            destinationWalletAddress,
+            isEditAddress.destination
+          );
+          newAddress.destination = autoAddress || "";
         }
       } else {
-        // Chain didn't change, only update if needed and not manually edited
-        // IMPORTANT: Don't overwrite if user has manually entered an address
-        // Check if the current address is a manually entered one (not from wallet)
-        const isManuallyEntered =
-          prev.destination &&
-          prev.destination !== destinationWalletAddress &&
-          prev.destination.length > 0;
+        // Chain didn't change: preserve user input, only update if appropriate
+        // Alpen Signet: never auto-populate, preserve user input
+        if (isAlpenSignetChain(outputAsset.chain)) {
+          // Keep existing address (user input) or empty string
+          newAddress.destination = prev.destination || "";
+        } else if (isPureBitcoin(outputAsset.chain)) {
+          // Pure Bitcoin: only respect edit mode (user can edit Bitcoin addresses)
+          // Check if user has manually entered an address (different from wallet)
+          const isManuallyEntered =
+            prev.destination &&
+            prev.destination !== destinationWalletAddress &&
+            prev.destination.length > 0;
 
-        if (isEVM(outputAsset.chain) && destinationWalletAddress) {
-          // Only set if not manually entered and not editing
-          if (
-            !isManuallyEntered &&
-            (!isEditAddress.destination || !prev.destination)
-          ) {
-            newAddress.destination = destinationWalletAddress;
+          // Only auto-populate if not manually entered and not editing
+          if (!isManuallyEntered && !isEditAddress.destination) {
+            const autoAddress = shouldAutoPopulateAddress(
+              outputAsset.chain,
+              destinationWalletAddress,
+              isEditAddress.destination
+            );
+            if (autoAddress) {
+              newAddress.destination = autoAddress;
+            }
           }
-        } else if (isBitcoin(outputAsset.chain)) {
-          // For Bitcoin, only auto-populate if not editing and address is empty
-          // NEVER overwrite if user has manually entered something
-          if (
-            !isManuallyEntered &&
-            !isEditAddress.destination &&
-            destinationWalletAddress
-          ) {
-            newAddress.destination = destinationWalletAddress;
-          }
-          // If user has typed something, keep it (don't change)
-        } else if (destinationWalletAddress) {
-          if (
-            !isManuallyEntered &&
-            (!isEditAddress.destination || !prev.destination)
-          ) {
-            newAddress.destination = destinationWalletAddress;
+        } else {
+          // Other chains (EVM, Starknet, Solana, Sui): no edit option, always use wallet if connected
+          const autoAddress = shouldAutoPopulateAddress(
+            outputAsset.chain,
+            destinationWalletAddress,
+            false // isEditing not relevant for non-Bitcoin chains
+          );
+          if (autoAddress) {
+            newAddress.destination = autoAddress;
           }
         }
       }
@@ -172,6 +224,7 @@ export const useWalletAddressManager = () => {
     isEditAddress.source,
     isEditAddress.destination,
     getWalletAddressForChain,
+    shouldAutoPopulateAddress,
     evmAddress,
     btcAddress,
     starknetAddress,
@@ -180,39 +233,68 @@ export const useWalletAddressManager = () => {
     setAddress,
   ]);
 
-  // Auto-manage isEditAddress: open if no BTC address, close if matches wallet
+  // Track if user manually clicked edit (to prevent auto-closing)
+  const manualEditRef = useRef<{
+    source: boolean;
+    destination: boolean;
+  }>({ source: false, destination: false });
+
+  // Auto-manage isEditAddress for Bitcoin addresses only
+  // Simple logic:
+  // - If BTC address exists from wallet → isEditAddress = false (show in bottom)
+  // - If no address → isEditAddress = true (show input on top)
+  // - If user clicked edit → isEditAddress = true (show input on top, respect manual edit)
   useEffect(() => {
     if (!inputAsset || !outputAsset) return;
+
+    const currentEditState = swapStore.getState().isEditAddress;
 
     const getEditState = (
       addr: string,
       walletAddr: string | undefined,
       isBtc: boolean,
-      current: boolean
+      current: boolean,
+      isManuallySet: boolean
     ) => {
-      if (!isBtc) return current;
+      // Only manage edit state for Bitcoin chains
+      if (!isBtc) return false;
+
+      // If user manually set edit mode, keep it true
+      if (isManuallySet && current) return true;
+
+      // If no address exists, show input (true)
       if (!addr) return true;
-      return addr === walletAddr ? false : current;
+
+      // If address exists and matches wallet, don't show edit (false - show in bottom)
+      // If address exists but doesn't match wallet, show edit (true - show input)
+      return addr === walletAddr ? false : true;
     };
 
-    const sourceIsBtc = isBitcoin(inputAsset.chain);
-    const destIsBtc = isBitcoin(outputAsset.chain);
+    const sourceIsPureBtc = isPureBitcoin(inputAsset.chain);
+    const destIsPureBtc = isPureBitcoin(outputAsset.chain);
+    const sourceWalletAddr = getWalletAddressForChain(inputAsset.chain);
+    const destWalletAddr = getWalletAddressForChain(outputAsset.chain);
+
     const newSource = getEditState(
       address.source,
-      getWalletAddressForChain(inputAsset.chain),
-      sourceIsBtc,
-      isEditAddress.source
-    );
-    const newDest = getEditState(
-      address.destination,
-      getWalletAddressForChain(outputAsset.chain),
-      destIsBtc,
-      isEditAddress.destination
+      sourceIsPureBtc ? sourceWalletAddr : undefined,
+      sourceIsPureBtc,
+      currentEditState.source,
+      manualEditRef.current.source
     );
 
+    const newDest = getEditState(
+      address.destination,
+      destIsPureBtc ? destWalletAddr : undefined,
+      destIsPureBtc,
+      currentEditState.destination,
+      manualEditRef.current.destination
+    );
+
+    // Only update if state actually changed
     if (
-      newSource !== isEditAddress.source ||
-      newDest !== isEditAddress.destination
+      newSource !== currentEditState.source ||
+      newDest !== currentEditState.destination
     ) {
       setIsEditAddress({ source: newSource, destination: newDest });
     }
@@ -223,7 +305,33 @@ export const useWalletAddressManager = () => {
     address.destination,
     getWalletAddressForChain,
     btcAddress,
-    isEditAddress,
     setIsEditAddress,
   ]);
+
+  // Track previous state to detect manual edits
+  const prevEditStateRef = useRef(swapStore.getState().isEditAddress);
+
+  // Detect manual edit clicks (transition from false to true)
+  useEffect(() => {
+    const currentState = swapStore.getState().isEditAddress;
+    const prevState = prevEditStateRef.current;
+
+    // If user manually opened edit (false -> true), mark as manual
+    if (!prevState.source && currentState.source) {
+      manualEditRef.current.source = true;
+    }
+    if (!prevState.destination && currentState.destination) {
+      manualEditRef.current.destination = true;
+    }
+
+    // Clear manual flag if set back to false
+    if (!currentState.source) {
+      manualEditRef.current.source = false;
+    }
+    if (!currentState.destination) {
+      manualEditRef.current.destination = false;
+    }
+
+    prevEditStateRef.current = currentState;
+  }, [isEditAddress.source, isEditAddress.destination]);
 };

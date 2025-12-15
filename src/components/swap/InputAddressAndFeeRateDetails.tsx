@@ -119,11 +119,11 @@ export const InputAddressAndFeeRateDetails = () => {
           exit="exit"
           className="flex flex-col overflow-hidden"
         >
-          {shouldShowReceiveInput && (
-            <InputAddress addressType={AddressType.RECEIVE} />
-          )}
           {shouldShowRefundInput && (
             <InputAddress addressType={AddressType.REFUND} />
+          )}
+          {shouldShowReceiveInput && (
+            <InputAddress addressType={AddressType.RECEIVE} />
           )}
           <FeesAndRateDetails />
         </motion.div>

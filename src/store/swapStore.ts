@@ -3,6 +3,7 @@ import { Asset, ChainAsset, Chains } from "@gardenfi/orderbook";
 import { IOType, network } from "../constants/constants";
 import { ErrorFormat, Errors } from "../constants/errors";
 import { assetInfoStore } from "./assetInfoStore";
+import { walletAddressStore } from "./walletAddressStore";
 
 export type TokenPrices = {
   input: string;
@@ -208,6 +209,20 @@ export const swapStore = create<SwapState>((set) => ({
         source: state.isEditAddress.destination,
         destination: state.isEditAddress.source,
       };
+
+      // Handle address swapping: always swap addresses (useWallet will handle clearing/repopulating based on chain type)
+      const currentAddresses = walletAddressStore.getState().address;
+
+      if (newInputAsset && finalOutputAsset) {
+        // Always swap addresses - useWallet will handle clearing/repopulating if chain types changed
+        walletAddressStore.getState().setAddress({
+          source: currentAddresses.destination,
+          destination: currentAddresses.source,
+        });
+      } else {
+        // If assets are undefined, clear addresses
+        walletAddressStore.getState().clearAddresses();
+      }
 
       return {
         ...state,

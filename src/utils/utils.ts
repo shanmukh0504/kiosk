@@ -6,6 +6,9 @@ import {
   ChainAsset,
   isBitcoin,
   isEVM,
+  isStarknet,
+  isSolana,
+  isSui,
   OrderWithStatus,
   Swap,
 } from "@gardenfi/orderbook";
@@ -331,6 +334,27 @@ To learn more about Garden, refer to our documentation: https://docs.garden.fina
 
 export const isAlpenSignetChain = (chain: string) => {
   return chain.toLowerCase().includes("alpen_signet");
+};
+
+/**
+ * Checks if a chain is pure Bitcoin (not a fork like Alpen Signet)
+ * Pure Bitcoin chain = isBitcoin(chain) && !isAlpenSignetChain(chain)
+ */
+export const isPureBitcoin = (chain: Chain): boolean => {
+  return isBitcoin(chain) && !isAlpenSignetChain(chain);
+};
+
+/**
+ * Checks if two chains are of the same type (both EVM, both Bitcoin, both Solana, etc.)
+ */
+export const isSameChainType = (chain1: Chain, chain2: Chain): boolean => {
+  if (isPureBitcoin(chain1) && isPureBitcoin(chain2)) return true;
+  if (isAlpenSignetChain(chain1) && isAlpenSignetChain(chain2)) return true;
+  if (isEVM(chain1) && isEVM(chain2)) return true;
+  if (isStarknet(chain1) && isStarknet(chain2)) return true;
+  if (isSolana(chain1) && isSolana(chain2)) return true;
+  if (isSui(chain1) && isSui(chain2)) return true;
+  return false;
 };
 
 export const isBitcoinSwap = (inputAsset?: Asset, outputAsset?: Asset) => {
