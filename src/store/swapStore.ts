@@ -210,17 +210,14 @@ export const swapStore = create<SwapState>((set) => ({
         destination: state.isEditAddress.source,
       };
 
-      // Handle address swapping: always swap addresses (useWallet will handle clearing/repopulating based on chain type)
       const currentAddresses = walletAddressStore.getState().address;
 
       if (newInputAsset && finalOutputAsset) {
-        // Always swap addresses - useWallet will handle clearing/repopulating if chain types changed
         walletAddressStore.getState().setAddress({
           source: currentAddresses.destination,
           destination: currentAddresses.source,
         });
       } else {
-        // If assets are undefined, clear addresses
         walletAddressStore.getState().clearAddresses();
       }
 

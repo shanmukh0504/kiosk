@@ -336,17 +336,10 @@ export const isAlpenSignetChain = (chain: string) => {
   return chain.toLowerCase().includes("alpen_signet");
 };
 
-/**
- * Checks if a chain is pure Bitcoin (not a fork like Alpen Signet)
- * Pure Bitcoin chain = isBitcoin(chain) && !isAlpenSignetChain(chain)
- */
 export const isPureBitcoin = (chain: Chain): boolean => {
   return isBitcoin(chain) && !isAlpenSignetChain(chain);
 };
 
-/**
- * Checks if two chains are of the same type (both EVM, both Bitcoin, both Solana, etc.)
- */
 export const isSameChainType = (chain1: Chain, chain2: Chain): boolean => {
   if (isPureBitcoin(chain1) && isPureBitcoin(chain2)) return true;
   if (isAlpenSignetChain(chain1) && isAlpenSignetChain(chain2)) return true;
@@ -371,10 +364,6 @@ export const decideAddressVisibility = (
   address?: { source: string; destination: string },
   isEditAddress?: { source: boolean; destination: boolean }
 ) => {
-  // Show input box if:
-  // 1. Not EVM chain (EVM addresses are auto-populated)
-  // 2. Address is missing OR user is editing
-  // 3. For Alpen chains, always show
   const isSourceNeeded =
     inputAsset &&
     outputAsset &&

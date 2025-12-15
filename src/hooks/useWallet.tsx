@@ -12,7 +12,7 @@ import {
   isStarknet,
   isSolana,
   isSui,
-  Asset,
+  Chain,
 } from "@gardenfi/orderbook";
 import { isAlpenSignetChain, isPureBitcoin } from "../utils/utils";
 
@@ -20,8 +20,7 @@ import { isAlpenSignetChain, isPureBitcoin } from "../utils/utils";
 export const useWalletAddressManager = () => {
   const { inputAsset, outputAsset, isEditAddress, setIsEditAddress } =
     swapStore();
-  const { setAddress } = walletAddressStore();
-  const { address } = walletAddressStore();
+  const { address, setAddress } = walletAddressStore();
   const { address: evmAddress } = useEVMWallet();
   const { account: btcAddress } = useBitcoinWallet();
   const { starknetAddress } = useStarknetWallet();
@@ -30,13 +29,13 @@ export const useWalletAddressManager = () => {
 
   // Track previous asset chains to detect changes
   const prevChainsRef = useRef<{
-    inputChain?: Asset["chain"];
-    outputChain?: Asset["chain"];
+    inputChain?: Chain;
+    outputChain?: Chain;
   }>({});
 
   // Get wallet address for a given chain
   const getWalletAddressForChain = useCallback(
-    (chain: Asset["chain"]): string | undefined => {
+    (chain: Chain): string | undefined => {
       if (isEVM(chain)) return evmAddress || undefined;
       if (isBitcoin(chain)) return btcAddress || undefined;
       if (isStarknet(chain)) return starknetAddress || undefined;
@@ -51,7 +50,7 @@ export const useWalletAddressManager = () => {
   // Note: isEditing is only relevant for pure Bitcoin (other chains don't have edit option)
   const shouldAutoPopulateAddress = useCallback(
     (
-      chain: Asset["chain"],
+      chain: Chain,
       walletAddress: string | undefined,
       isEditing: boolean
     ): string | undefined => {

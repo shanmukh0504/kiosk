@@ -1,11 +1,4 @@
-import {
-  Chain,
-  isBitcoin,
-  isEVM,
-  isSolana,
-  isStarknet,
-  isSui,
-} from "@gardenfi/orderbook";
+import { Chain, isBitcoin } from "@gardenfi/orderbook";
 import { validateBTCAddress } from "@gardenfi/core";
 import { Environment } from "@gardenfi/utils";
 import { network } from "../constants/constants";
@@ -22,43 +15,6 @@ const validateBitcoinAddress: AddressValidator = (address: string) => {
 };
 
 /**
- * Validates an EVM address (Ethereum, Base, Arbitrum, etc.)
- */
-const validateEVMAddress: AddressValidator = (address: string) => {
-  if (!address) return false;
-  // EVM addresses are 42 characters (0x + 40 hex chars)
-  return /^0x[a-fA-F0-9]{40}$/.test(address);
-};
-
-/**
- * Validates a Solana address
- */
-const validateSolanaAddress: AddressValidator = (address: string) => {
-  if (!address) return false;
-  // Solana addresses are base58 encoded, typically 32-44 characters
-  // Basic validation: base58 characters, reasonable length
-  return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address);
-};
-
-/**
- * Validates a Starknet address
- */
-const validateStarknetAddress: AddressValidator = (address: string) => {
-  if (!address) return false;
-  // Starknet addresses are hex strings, typically 66 characters (0x + 64 hex chars)
-  return /^0x[a-fA-F0-9]{63,64}$/.test(address);
-};
-
-/**
- * Validates a Sui address
- */
-const validateSuiAddress: AddressValidator = (address: string) => {
-  if (!address) return false;
-  // Sui addresses are base58 encoded, typically 32-44 characters
-  return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address);
-};
-
-/**
  * Hash map of chain type checkers to their respective validation functions
  */
 const chainValidatorMap: Array<{
@@ -68,22 +24,6 @@ const chainValidatorMap: Array<{
   {
     check: (chain: Chain) => isBitcoin(chain) || isAlpenSignetChain(chain),
     validator: validateBitcoinAddress,
-  },
-  {
-    check: (chain: Chain) => isEVM(chain),
-    validator: validateEVMAddress,
-  },
-  {
-    check: (chain: Chain) => isSolana(chain),
-    validator: validateSolanaAddress,
-  },
-  {
-    check: (chain: Chain) => isStarknet(chain),
-    validator: validateStarknetAddress,
-  },
-  {
-    check: (chain: Chain) => isSui(chain),
-    validator: validateSuiAddress,
   },
 ];
 
