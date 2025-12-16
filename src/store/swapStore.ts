@@ -4,7 +4,6 @@ import { IOType, network } from "../constants/constants";
 import { ErrorFormat, Errors } from "../constants/errors";
 import { assetInfoStore } from "./assetInfoStore";
 import { walletAddressStore } from "./walletAddressStore";
-import { userProvidedAddressStore } from "./userProvidedAddressStore";
 
 export type TokenPrices = {
   input: string;
@@ -212,29 +211,18 @@ export const swapStore = create<SwapState>((set) => ({
       };
 
       const walletStore = walletAddressStore.getState();
-      const userProvidedStore = userProvidedAddressStore.getState();
 
       // Always swap addresses when both assets exist, even if route is invalid
-      // This ensures addresses are properly swapped before clearing
       if (newInputAsset && newOutputAsset) {
         // Swap wallet addresses
         walletStore.setAddress({
           source: walletStore.destination,
           destination: walletStore.source,
         });
-        // Swap user-provided addresses: source -> destination, destination -> source
-        const currentSource = userProvidedStore.source;
-        const currentDestination = userProvidedStore.destination;
-        userProvidedStore.setAddress({
-          source: currentDestination,
-          destination: currentSource,
-        });
       }
 
-      // Only clear if route becomes invalid
       if (!finalOutputAsset) {
         walletStore.clearAddresses();
-        userProvidedStore.clearAddresses();
       }
 
       return {

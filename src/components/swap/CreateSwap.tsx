@@ -25,7 +25,7 @@ import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
-import { useWalletAddressManager } from "../../hooks/useWallet";
+import { useAddressFillers } from "../../hooks/useAddressFillers";
 import {
   isEVM,
   isBitcoin,
@@ -63,7 +63,7 @@ export const CreateSwap = () => {
   } = balanceStore();
 
   // Initialize wallet address manager (only called once, manages auto-population)
-  useWalletAddressManager();
+  useAddressFillers();
   const {
     isComparisonVisible,
     showComparison,

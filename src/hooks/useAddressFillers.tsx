@@ -12,7 +12,7 @@ import { isPureBitcoin } from "../utils/utils";
 
 // Hook to manage wallet address storage (should only be called once)
 // Only stores addresses from connected wallet providers
-export const useWalletAddressManager = () => {
+export const useAddressFillers = () => {
   const { inputAsset, outputAsset } = swapStore();
   const { setSource, setDestination, clearAddresses } = walletAddressStore();
   const { address: evmAddress } = useEVMWallet();
@@ -66,29 +66,10 @@ export const useWalletAddressManager = () => {
     const outputChainChanged =
       prevChainsRef.current.outputChain !== outputAsset.chain;
 
-    // Check if chain type changed from Bitcoin to non-Bitcoin (or vice versa)
-    const prevInputWasBitcoin = prevChainsRef.current.inputChain
-      ? isPureBitcoin(prevChainsRef.current.inputChain)
-      : false;
-    const currentInputIsBitcoin = isPureBitcoin(inputAsset.chain);
-    const inputTypeChanged = prevInputWasBitcoin !== currentInputIsBitcoin;
-
-    const prevOutputWasBitcoin = prevChainsRef.current.outputChain
-      ? isPureBitcoin(prevChainsRef.current.outputChain)
-      : false;
-    const currentOutputIsBitcoin = isPureBitcoin(outputAsset.chain);
-    const outputTypeChanged = prevOutputWasBitcoin !== currentOutputIsBitcoin;
-
     // Clear user-provided addresses when chains change
     // Also clear if asset type changed from Bitcoin to non-Bitcoin
-    if (inputChainChanged || inputTypeChanged) {
-      // If changing to non-Bitcoin type, clear user-provided address
-      if (!currentInputIsBitcoin) {
-        setUserSource(undefined);
-      } else if (inputChainChanged) {
-        // If still Bitcoin but chain changed, clear it
-        setUserSource(undefined);
-      }
+    if (inputChainChanged) {
+      setUserSource(undefined);
       setSource(sourceWalletAddress);
     } else {
       // Only update if wallet address is available (don't overwrite with undefined if already set)
@@ -97,14 +78,8 @@ export const useWalletAddressManager = () => {
       }
     }
 
-    if (outputChainChanged || outputTypeChanged) {
-      // If changing to non-Bitcoin type, clear user-provided address
-      if (!currentOutputIsBitcoin) {
-        setUserDestination(undefined);
-      } else if (outputChainChanged) {
-        // If still Bitcoin but chain changed, clear it
-        setUserDestination(undefined);
-      }
+    if (outputChainChanged) {
+      setUserDestination(undefined);
       setDestination(destinationWalletAddress);
     } else {
       // Only update if wallet address is available (don't overwrite with undefined if already set)
