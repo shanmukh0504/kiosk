@@ -38,6 +38,7 @@ import { useSuiWallet } from "./useSuiWallet";
 import logger from "../utils/logger";
 import { balanceStore } from "../store/balanceStore";
 import { walletAddressStore } from "../store/walletAddressStore";
+import { userProvidedAddressStore } from "../store/userProvidedAddressStore";
 
 export const useSwap = () => {
   const {
@@ -71,8 +72,15 @@ export const useSwap = () => {
     setSolverId,
     validAddress,
   } = swapStore();
-  const { address } = walletAddressStore();
+  const { source: walletSource, destination: walletDestination } =
+    walletAddressStore();
+  const { source: userSource, destination: userDestination } =
+    userProvidedAddressStore();
   const { balances } = balanceStore();
+
+  // Resolve addresses: userProvidedAddress first, then walletAddress
+  const sourceAddress = userSource || walletSource;
+  const destinationAddress = userDestination || walletDestination;
   const { setOrder, setIsOpen } = orderInProgressStore();
   const { updateOrder } = pendingOrdersStore();
   const { disconnect } = useEVMWallet();
@@ -139,11 +147,11 @@ export const useSwap = () => {
   const validSwap = useMemo(() => {
     if (!_validSwap) return false;
 
-    // Simply check if both addresses are present
-    if (!address.source || !address.destination) return false;
+    // Simply check if both addresses are present (using resolved addresses)
+    if (!sourceAddress || !destinationAddress) return false;
 
     return true;
-  }, [_validSwap, address.source, address.destination]);
+  }, [_validSwap, sourceAddress, destinationAddress]);
 
   console.log(validSwap);
 
@@ -509,8 +517,8 @@ export const useSwap = () => {
         sendAmount: inputAmountInDecimals,
         receiveAmount: outputAmountInDecimals,
         solverId,
-        sourceAddress: address.source,
-        destinationAddress: address.destination,
+        sourceAddress: sourceAddress!,
+        destinationAddress: destinationAddress!,
       });
 
       if (!res.ok) {

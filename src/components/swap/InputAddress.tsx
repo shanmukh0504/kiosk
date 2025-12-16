@@ -4,13 +4,12 @@ import { Tooltip } from "../../common/Tooltip";
 import { AnimatePresence, motion } from "framer-motion";
 import { addressExpandAnimation } from "../../animations/animations";
 import { swapStore } from "../../store/swapStore";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { AddressType } from "../../constants/constants";
 import { validateAddress } from "../../utils/addressValidation";
-import { isEVM } from "@gardenfi/orderbook";
 import { walletAddressStore } from "../../store/walletAddressStore";
-import { isPureBitcoin, isAlpenSignetChain } from "../../utils/utils";
+import { userProvidedAddressStore } from "../../store/userProvidedAddressStore";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { isPureBitcoin } from "../../utils/utils";
 
 type InputAddressProps = {
   addressType: AddressType | undefined;
@@ -32,75 +31,67 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
     setValidAddress,
     setIsEditAddress,
   } = swapStore();
-  const { address, setAddress } = walletAddressStore();
-
-  const { account: walletBtcAddress } = useBitcoinWallet();
-  const { address: walletEvmAddress } = useEVMWallet();
+  const { source: walletSource, destination: walletDestination } =
+    walletAddressStore();
+  const {
+    source: userSource,
+    destination: userDestination,
+    setSource: setUserSource,
+    setDestination: setUserDestination,
+  } = userProvidedAddressStore();
+  const { account: btcAccount } = useBitcoinWallet();
 
   const isEditing = isRefund ? isEditAddress.source : isEditAddress.destination;
 
-  useEffect(() => {
-    if (isEditing) {
-      const sourceChain = inputAsset?.chain;
-      const destChain = outputAsset?.chain;
+  const relevantAsset = isRefund ? inputAsset : outputAsset;
+  const relevantChain = relevantAsset?.chain;
+  const isBitcoinAsset = relevantChain ? isPureBitcoin(relevantChain) : false;
+  const isWalletConnected = isBitcoinAsset ? !!btcAccount : false;
 
+  // Track previous editing state to detect when edit mode is first activated
+  const prevIsEditingRef = useRef(isEditing);
+
+  // When edit mode is activated (transitions from false to true), populate userProvidedAddress
+  // ONLY for Bitcoin assets when wallet is connected
+  // Only runs once when isEditing becomes true, not on subsequent changes
+  useEffect(() => {
+    const justEnteredEditMode = !prevIsEditingRef.current && isEditing;
+
+    if (justEnteredEditMode && isBitcoinAsset && isWalletConnected) {
       if (isRefund) {
-        // Alpen Signet must NEVER auto-populate
-        if (sourceChain && isAlpenSignetChain(sourceChain)) {
-          // Do nothing - keep empty or user input
-          return;
-        }
-        // Pure Bitcoin: auto-populate only if wallet is connected and address is empty
-        if (
-          sourceChain &&
-          isPureBitcoin(sourceChain) &&
-          walletBtcAddress &&
-          !address.source
-        ) {
-          setAddress({ source: walletBtcAddress });
-        } else if (
-          sourceChain &&
-          isEVM(sourceChain) &&
-          walletEvmAddress &&
-          !address.source
-        ) {
-          setAddress({ source: walletEvmAddress });
+        if (walletSource && !userSource) {
+          setUserSource(walletSource);
         }
       } else {
-        // Alpen Signet must NEVER auto-populate
-        if (destChain && isAlpenSignetChain(destChain)) {
-          // Do nothing - keep empty or user input
-          return;
-        }
-        // Pure Bitcoin: auto-populate only if wallet is connected and address is empty
-        if (
-          destChain &&
-          isPureBitcoin(destChain) &&
-          walletBtcAddress &&
-          !address.destination
-        ) {
-          setAddress({ destination: walletBtcAddress });
-        } else if (
-          destChain &&
-          isEVM(destChain) &&
-          walletEvmAddress &&
-          !address.destination
-        ) {
-          setAddress({ destination: walletEvmAddress });
+        if (walletDestination && !userDestination) {
+          setUserDestination(walletDestination);
         }
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    // Update the previous editing state
+    prevIsEditingRef.current = isEditing;
   }, [
     isEditing,
-    walletBtcAddress,
-    walletEvmAddress,
-    inputAsset,
-    outputAsset,
     isRefund,
+    isBitcoinAsset,
+    isWalletConnected,
+    walletSource,
+    walletDestination,
+    userSource,
+    userDestination,
+    setUserSource,
+    setUserDestination,
   ]);
 
-  const displayAddress = isRefund ? address.source : address.destination;
+  // Display address: use userProvidedAddress when editing, otherwise use walletAddress
+  const displayAddress = isRefund
+    ? isEditing
+      ? userSource || ""
+      : walletSource || ""
+    : isEditing
+      ? userDestination || ""
+      : walletDestination || "";
   const currentValidAddress = isRefund
     ? validAddress.source
     : validAddress.destination;
@@ -115,31 +106,39 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
       input = input.slice(0, -1);
     }
 
-    // Ensure edit mode stays open when user is typing
+    // Ensure edit mode is enabled when user types
+    if (isRefund && !isEditAddress.source) {
+      setIsEditAddress({
+        source: true,
+        destination: isEditAddress.destination,
+      });
+    } else if (!isRefund && !isEditAddress.destination) {
+      setIsEditAddress({
+        source: isEditAddress.source,
+        destination: true,
+      });
+    }
+
+    // Update userProvidedAddressStore when user types
     if (isRefund) {
-      setAddress({ source: input });
-      if (!isEditAddress.source) {
-        setIsEditAddress({
-          source: true,
-          destination: isEditAddress.destination,
-        });
-      }
+      setUserSource(input || undefined);
     } else {
-      setAddress({ destination: input });
-      if (!isEditAddress.destination) {
-        setIsEditAddress({ source: isEditAddress.source, destination: true });
-      }
+      setUserDestination(input || undefined);
     }
   };
 
   // Update validAddress state in an effect
+  // Use userProvidedAddress if available, otherwise use walletAddress
   useEffect(() => {
     const sourceChain = inputAsset?.chain;
     const destinationChain = outputAsset?.chain;
 
-    const sourceValid = validateAddress(address.source, sourceChain);
+    const sourceAddress = userSource || walletSource;
+    const destinationAddress = userDestination || walletDestination;
+
+    const sourceValid = validateAddress(sourceAddress, sourceChain);
     const destinationValid = validateAddress(
-      address.destination,
+      destinationAddress,
       destinationChain
     );
 
@@ -150,9 +149,11 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
   }, [
     inputAsset,
     outputAsset,
+    userSource,
+    userDestination,
+    walletSource,
+    walletDestination,
     setValidAddress,
-    address.source,
-    address.destination,
   ]);
 
   return (

@@ -39,7 +39,8 @@ export const FeesAndRateDetails = () => {
     showComparisonHandler,
     isFetchingQuote,
   } = swapStore();
-  const { address } = walletAddressStore();
+  const { source: walletSource, destination: walletDestination } =
+    walletAddressStore();
   const { assets, fiatData } = assetInfoStore();
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
@@ -63,14 +64,16 @@ export const FeesAndRateDetails = () => {
     }
     return formatAmountUsd(price, 0);
   }, [inputAsset, assets, fiatData]);
+
+  // Only show wallet addresses in bottom section (source of truth)
   const refundAddress = useMemo(
-    () => (inputAsset ? address.source : undefined),
-    [inputAsset, address.source]
+    () => (inputAsset ? walletSource : undefined),
+    [inputAsset, walletSource]
   );
 
   const receiveAddress = useMemo(
-    () => (outputAsset ? address.destination : undefined),
-    [outputAsset, address.destination]
+    () => (outputAsset ? walletDestination : undefined),
+    [outputAsset, walletDestination]
   );
 
   useEffect(() => {

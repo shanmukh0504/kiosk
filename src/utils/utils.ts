@@ -361,13 +361,23 @@ export const isBitcoinSwap = (inputAsset?: Asset, outputAsset?: Asset) => {
 export const decideAddressVisibility = (
   inputAsset?: Asset,
   outputAsset?: Asset,
-  address?: { source: string; destination: string },
+  address?: { source: string | undefined; destination: string | undefined },
   isEditAddress?: { source: boolean; destination: boolean }
 ) => {
+  // Only show address input for Bitcoin-type assets (Bitcoin or Alpen Signet)
+  // For other chains (Starknet, Solana, etc.), addresses come from wallet connection
+  const isSourceBitcoinType =
+    inputAsset &&
+    (isBitcoin(inputAsset.chain) || isAlpenSignetChain(inputAsset.chain));
+
+  const isDestinationBitcoinType =
+    outputAsset &&
+    (isBitcoin(outputAsset.chain) || isAlpenSignetChain(outputAsset.chain));
+
   const isSourceNeeded =
     inputAsset &&
     outputAsset &&
-    !isEVM(inputAsset.chain) &&
+    isSourceBitcoinType &&
     (isAlpenSignetChain(inputAsset.chain) ||
       isEditAddress?.source ||
       !address?.source);
@@ -375,7 +385,7 @@ export const decideAddressVisibility = (
   const isDestinationNeeded =
     inputAsset &&
     outputAsset &&
-    !isEVM(outputAsset.chain) &&
+    isDestinationBitcoinType &&
     (isAlpenSignetChain(outputAsset.chain) ||
       isEditAddress?.destination ||
       !address?.destination);

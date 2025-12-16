@@ -20,9 +20,19 @@ export const InputAddressAndFeeRateDetails = () => {
     outputAmount,
     isEditAddress,
   } = swapStore();
-  const { address } = walletAddressStore();
+  const { source: walletSource, destination: walletDestination } =
+    walletAddressStore();
   const { account } = useBitcoinWallet();
   const { address: walletEvmAddress } = useEVMWallet();
+
+  // For decideAddressVisibility, use wallet addresses only (source of truth)
+  const walletAddress = useMemo(
+    () => ({
+      source: walletSource,
+      destination: walletDestination,
+    }),
+    [walletSource, walletDestination]
+  );
 
   const shouldShowDetails = useMemo(() => {
     return !!(
@@ -48,8 +58,13 @@ export const InputAddressAndFeeRateDetails = () => {
 
   const { isSourceNeeded, isDestinationNeeded } = useMemo(
     () =>
-      decideAddressVisibility(inputAsset, outputAsset, address, isEditAddress),
-    [inputAsset, outputAsset, address, isEditAddress]
+      decideAddressVisibility(
+        inputAsset,
+        outputAsset,
+        walletAddress,
+        isEditAddress
+      ),
+    [inputAsset, outputAsset, walletAddress, isEditAddress]
   );
 
   // Check if addresses are shown in bottom section (from wallet)
@@ -65,7 +80,7 @@ export const InputAddressAndFeeRateDetails = () => {
     return !!(
       inputAsset &&
       !isEditAddress.source &&
-      address.source &&
+      walletSource &&
       ((isBitcoinChain && account) || (isEvmChain && walletEvmAddress))
     );
   }, [
@@ -73,7 +88,7 @@ export const InputAddressAndFeeRateDetails = () => {
     walletEvmAddress,
     inputAsset,
     isEditAddress.source,
-    address.source,
+    walletSource,
   ]);
 
   const hasReceiveAddressInBottom = useMemo(() => {
@@ -87,7 +102,7 @@ export const InputAddressAndFeeRateDetails = () => {
     return !!(
       outputAsset &&
       !isEditAddress.destination &&
-      address.destination &&
+      walletDestination &&
       ((isBitcoinChain && account) || (isEvmChain && walletEvmAddress))
     );
   }, [
@@ -95,7 +110,7 @@ export const InputAddressAndFeeRateDetails = () => {
     walletEvmAddress,
     outputAsset,
     isEditAddress.destination,
-    address.destination,
+    walletDestination,
   ]);
 
   // Simple logic: Show input if needed AND not already in bottom

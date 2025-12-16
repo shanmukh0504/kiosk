@@ -33,7 +33,10 @@ const chainValidatorMap: Array<{
  * @param chain - The chain type to validate against
  * @returns true if the address is valid for the given chain, false otherwise
  */
-export const validateAddress = (address: string, chain?: Chain): boolean => {
+export const validateAddress = (
+  address: string | undefined,
+  chain?: Chain
+): boolean => {
   if (!chain || !address) return true; // If no chain or address, consider valid (no validation needed)
 
   // Find the appropriate validator for the chain

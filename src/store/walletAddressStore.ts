@@ -1,44 +1,38 @@
 import { create } from "zustand";
 
-export type WalletAddress = {
-  source: string;
-  destination: string;
-};
-
 type WalletAddressState = {
-  address: WalletAddress;
+  source: string | undefined;
+  destination: string | undefined;
+  setSource: (address: string | undefined) => void;
+  setDestination: (address: string | undefined) => void;
   setAddress: (
-    updates: Partial<WalletAddress> | ((prev: WalletAddress) => WalletAddress)
+    updates: Partial<{
+      source: string | undefined;
+      destination: string | undefined;
+    }>
   ) => void;
   clearAddresses: () => void;
 };
 
 export const walletAddressStore = create<WalletAddressState>((set) => ({
-  address: {
-    source: "",
-    destination: "",
+  source: undefined,
+  destination: undefined,
+  setSource: (address) => {
+    set({ source: address });
+  },
+  setDestination: (address) => {
+    set({ destination: address });
   },
   setAddress: (updates) => {
-    set((state) => {
-      if (typeof updates === "function") {
-        return {
-          address: updates(state.address),
-        };
-      }
-      return {
-        address: {
-          ...state.address,
-          ...updates,
-        },
-      };
-    });
+    set((state) => ({
+      ...state,
+      ...updates,
+    }));
   },
   clearAddresses: () => {
     set({
-      address: {
-        source: "",
-        destination: "",
-      },
+      source: undefined,
+      destination: undefined,
     });
   },
 }));

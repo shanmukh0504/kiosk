@@ -9,6 +9,7 @@ import {
 } from "@gardenfi/garden-book";
 import { Tooltip } from "../../common/Tooltip";
 import { swapStore } from "../../store/swapStore";
+import { userProvidedAddressStore } from "../../store/userProvidedAddressStore";
 import { Url } from "@gardenfi/utils";
 
 type AddressDetailsProps = {
@@ -24,6 +25,8 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
   const tooltipId = useId();
   const { inputAsset, outputAsset, isEditAddress } = swapStore();
   const { setIsEditAddress } = swapStore();
+  const { setSource: setUserSource, setDestination: setUserDestination } =
+    userProvidedAddressStore();
 
   const chain = useMemo(() => {
     return isRefund
@@ -79,10 +82,20 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
                   }`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    setIsEditAddress({
-                      source: isRefund ? true : isEditAddress.source,
-                      destination: isRefund ? isEditAddress.destination : true,
-                    });
+                    // Populate userProvidedAddress with wallet address when edit is clicked
+                    if (isRefund) {
+                      setUserSource(address);
+                      setIsEditAddress({
+                        source: true,
+                        destination: isEditAddress.destination,
+                      });
+                    } else {
+                      setUserDestination(address);
+                      setIsEditAddress({
+                        source: isEditAddress.source,
+                        destination: true,
+                      });
+                    }
                   }}
                 />
               )}
