@@ -7,7 +7,7 @@ import {
   UseSwitchChainArgs,
 } from "@starknet-react/core";
 import { ConnectMutateAsync } from "wagmi/query";
-import { STARKNET_CONFIG, network } from "../../../constants/constants";
+import { STARKNET_CONFIG, isTestnet } from "../../../constants/constants";
 import { UseMutateAsyncFunction } from "@tanstack/react-query";
 
 export const handleEVMConnect = async (
@@ -37,10 +37,14 @@ export const handleStarknetConnect = async (
       connector: WalletConnector,
     });
     const chainId = WalletConnector && (await WalletConnector.chainId());
-    const targetChainId = STARKNET_CONFIG[network].chainId;
+    const targetChainId = isTestnet
+      ? STARKNET_CONFIG["starknet_sepolia"].chainId
+      : STARKNET_CONFIG["starknet"].chainId;
+
     const currentChainIdHex = chainId && "0x" + chainId.toString(16);
     if (
       currentChainIdHex &&
+      targetChainId &&
       currentChainIdHex.toLowerCase() !== targetChainId.toLowerCase()
     ) {
       try {

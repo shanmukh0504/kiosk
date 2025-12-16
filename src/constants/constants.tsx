@@ -225,23 +225,34 @@ export const SUI_SOLVER_ADDRESS =
 export const SUI_DEFAULT_NETWORK_FEE = 0.03;
 export const BITCOIN_DEFAULT_NETWORK_FEE = 0.49;
 
+export type StarknetChain = "starknet" | "starknet_sepolia" | "starknet_devnet";
+
 export const STARKNET_CONFIG: Record<
-  Network,
+  StarknetChain,
   {
     chainId: string;
-    nodeUrl: string;
+    nodeUrl: string[];
   }
 > = {
-  [Network.MAINNET]: {
+  starknet: {
     chainId: "0x534e5f4d41494e",
-    nodeUrl: "https://starknet-rpc.publicnode.com",
+    nodeUrl: [
+      "https://starknet.api.onfinality.io/public",
+      "https://starknet.drpc.org",
+      "https://1rpc.io/starknet",
+      "https://rpc.starknet.lava.build",
+    ],
   },
-  [Network.TESTNET]: {
+  starknet_sepolia: {
     chainId: "0x534e5f5345504f4c4941",
-    nodeUrl: "https://starknet-sepolia-rpc.publicnode.com",
+    nodeUrl: [
+      "https://starknet-sepolia-rpc.publicnode.com",
+      "https://starknet-sepolia.drpc.org",
+      "https://starknet.api.onfinality.io/public/sepolia",
+    ],
   },
-  [Network.LOCALNET]: {
+  starknet_devnet: {
     chainId: "",
-    nodeUrl: "",
+    nodeUrl: [""],
   },
 };
