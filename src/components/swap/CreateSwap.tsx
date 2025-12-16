@@ -62,7 +62,9 @@ export const CreateSwap = () => {
     fetchAndSetSuiBalance,
   } = balanceStore();
 
-  // Initialize wallet address manager (only called once, manages auto-population)
+  // Initialize address fillers
+  // This hook is used to fill the input and output addresses with the wallet addresses
+  // when the user selects an asset
   useAddressFillers();
   const {
     isComparisonVisible,

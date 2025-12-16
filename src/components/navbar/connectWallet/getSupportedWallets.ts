@@ -64,7 +64,7 @@ const checkManualWalletAvailability = (
 const getWalletKey = (connectorName: string): string => {
   return connectorName
     .toLowerCase()
-    .replace(/\s+wallet$/i, "")
+    .replace(/\s*wallet$/i, "")
     .trim()
     .split(/\s+/)[0];
 };

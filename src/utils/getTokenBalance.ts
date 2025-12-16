@@ -1,4 +1,4 @@
-import { evmToViemChainMap, STARKNET_CONFIG } from "@gardenfi/core";
+import { evmToViemChainMap } from "@gardenfi/core";
 import {
   Asset,
   isBitcoin,
@@ -18,7 +18,7 @@ import {
 } from "viem";
 import { formatAmount } from "./utils";
 import { RpcProvider, Contract } from "starknet";
-import { network } from "../constants/constants";
+import { network, STARKNET_CONFIG } from "../constants/constants";
 import { Connection, PublicKey } from "@solana/web3.js";
 import logger from "./logger";
 import { getFullnodeUrl } from "@mysten/sui/client";
@@ -115,42 +115,39 @@ export const getStarknetTokenBalance = async (
   address: string,
   asset: Asset
 ) => {
-  if (!isStarknet(asset.chain)) return 0;
-
-  try {
-    const provider = new RpcProvider({
-      nodeUrl: STARKNET_CONFIG[network as keyof typeof STARKNET_CONFIG].nodeUrl,
-    });
-
-    const erc20Contract = new Contract(
-      erc20ABI,
-      asset.token?.address || "",
-      provider
-    );
-
-    const balance = await erc20Contract.balanceOf(address);
-    if (!balance) return 0;
-    const lowValue = balance.balance.low.toString();
-    const highValue = balance.balance.high.toString();
-
-    // Convert hex strings to BigNumber
-    const low = new BigNumber(lowValue);
-    const high = new BigNumber(highValue);
-
-    // Calculate total value: low + (high << 128)
-    const shift128 = new BigNumber(2).pow(128);
-    const totalBalance = low.plus(high.multipliedBy(shift128));
-
-    const balanceInDecimals = formatAmount(
-      Number(totalBalance),
-      asset.decimals,
-      8
-    );
-    return balanceInDecimals;
-  } catch (error) {
-    logger.error("Error fetching Starknet balance:", error);
+  if (!isStarknet(asset.chain) || !asset.token || !asset.token.address)
     return 0;
+
+  const nodeUrls = STARKNET_CONFIG[asset.chain].nodeUrl;
+
+  // Try each RPC node in sequence until one succeeds
+  for (const nodeUrl of nodeUrls) {
+    try {
+      const provider = new RpcProvider({ nodeUrl });
+      const erc20Contract = new Contract(
+        erc20ABI,
+        asset.token.address,
+        provider
+      );
+
+      const balance = await erc20Contract.balanceOf(address);
+      if (!balance) continue;
+
+      // Convert hex strings to BigNumber and calculate total value: low + (high << 128)
+      const low = new BigNumber(balance.balance.low.toString());
+      const high = new BigNumber(balance.balance.high.toString());
+      const totalBalance = low.plus(
+        high.multipliedBy(new BigNumber(2).pow(128))
+      );
+
+      return formatAmount(Number(totalBalance), asset.decimals, 8);
+    } catch (error) {
+      logger.error(`Error fetching Starknet balance from ${nodeUrl}:`, error);
+    }
   }
+
+  logger.error("All Starknet RPC nodes failed");
+  return 0;
 };
 
 export const getTokenBalance = async (address: string, asset: Asset) => {

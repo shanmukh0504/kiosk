@@ -392,3 +392,9 @@ export const decideAddressVisibility = (
 
   return { isSourceNeeded, isDestinationNeeded };
 };
+export const isStableCoinOrSeed = (asset: Asset) => {
+  return (
+    asset.symbol.toLowerCase().includes("usd") ||
+    asset.symbol.toLowerCase().includes("seed")
+  );
+};

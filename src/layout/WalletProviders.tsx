@@ -13,6 +13,7 @@ import {
 import { config } from "./wagmi/config";
 import { SuiProvider } from "./sui/SuiProvider.tsx";
 import { FrameProvider } from "./FrameProvider.tsx";
+import { constants as starknetConstants } from "starknet";
 
 interface WalletProviderProps {
   children: ReactNode;
@@ -22,7 +23,11 @@ export const WalletProviders: FC<WalletProviderProps> = ({ children }) => {
     <WagmiProvider config={config}>
       <BTCWalletProvider network={network as Network} store={localStorage}>
         <StarknetConfig
-          defaultChainId={BigInt("0x534e5f5345504f4c4941")}
+          defaultChainId={
+            network === Network.MAINNET
+              ? BigInt(starknetConstants.StarknetChainId.SN_MAIN)
+              : BigInt(starknetConstants.StarknetChainId.SN_SEPOLIA)
+          }
           chains={starknetChains}
           provider={starknetProviders}
           connectors={starknetConnectors}

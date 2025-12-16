@@ -153,8 +153,6 @@ export const useSwap = () => {
     return true;
   }, [_validSwap, sourceAddress, destinationAddress]);
 
-  console.log(validSwap);
-
   const { minAmount, maxAmount } = useMemo(() => {
     const defaultLimits = {
       minAmount: 0,
@@ -468,7 +466,15 @@ export const useSwap = () => {
       });
       return;
     }
-    if (!validSwap || !swap || !inputAsset || !outputAsset) return;
+    if (
+      !validSwap ||
+      !swap ||
+      !inputAsset ||
+      !outputAsset ||
+      !sourceAddress ||
+      !destinationAddress
+    )
+      return;
     setIsSwapping(true);
 
     const inputAmountInDecimals = new BigNumber(inputAmount)
@@ -517,8 +523,8 @@ export const useSwap = () => {
         sendAmount: inputAmountInDecimals,
         receiveAmount: outputAmountInDecimals,
         solverId,
-        sourceAddress: sourceAddress!,
-        destinationAddress: destinationAddress!,
+        sourceAddress: sourceAddress,
+        destinationAddress: destinationAddress,
       });
 
       if (!res.ok) {

@@ -38,15 +38,15 @@ export const useAddressFillers = () => {
     [evmAddress, btcAddress, starknetAddress, solanaAddress, currentAccount]
   );
 
+  const {
+    setSource: setUserSource,
+    setDestination: setUserDestination,
+    clearAddresses: clearUserAddresses,
+  } = userProvidedAddressStore();
+
   // Store wallet addresses when available
   // Also clear user-provided addresses when chains change
   useEffect(() => {
-    const {
-      setSource: setUserSource,
-      setDestination: setUserDestination,
-      clearAddresses: clearUserAddresses,
-    } = userProvidedAddressStore.getState();
-
     if (!inputAsset || !outputAsset) {
       clearAddresses();
       clearUserAddresses();
@@ -97,13 +97,11 @@ export const useAddressFillers = () => {
     inputAsset,
     outputAsset,
     getWalletAddressForChain,
-    evmAddress,
-    btcAddress,
-    starknetAddress,
-    solanaAddress,
-    currentAccount,
     setSource,
     setDestination,
     clearAddresses,
+    setUserSource,
+    setUserDestination,
+    clearUserAddresses,
   ]);
 };

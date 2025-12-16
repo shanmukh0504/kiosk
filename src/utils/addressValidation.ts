@@ -37,7 +37,7 @@ export const validateAddress = (
   address: string | undefined,
   chain?: Chain
 ): boolean => {
-  if (!chain || !address) return true; // If no chain or address, consider valid (no validation needed)
+  if (!chain || !address) return false;
 
   // Find the appropriate validator for the chain
   const validatorEntry = chainValidatorMap.find((entry) => entry.check(chain));
