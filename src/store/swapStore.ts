@@ -210,19 +210,18 @@ export const swapStore = create<SwapState>((set) => ({
         destination: state.isEditAddress.source,
       };
 
-      const walletStore = walletAddressStore.getState();
+      const { setSource, setDestination, source, destination, clearAddresses } =
+        walletAddressStore();
 
       // Always swap addresses when both assets exist, even if route is invalid
       if (newInputAsset && newOutputAsset) {
         // Swap wallet addresses
-        walletStore.setAddress({
-          source: walletStore.destination,
-          destination: walletStore.source,
-        });
+        setSource(destination);
+        setDestination(source);
       }
 
       if (!finalOutputAsset) {
-        walletStore.clearAddresses();
+        clearAddresses();
       }
 
       return {
