@@ -16,6 +16,7 @@
 - Update max spendable sbtc in alpen testnet
 - Update okx wallet connector from injected connector to legacyInjected in starknet config.
 - Update starknet config
+- Update Starknet balance fetching with multiple rpc nodes
 
 ## [2.0.2]
 
