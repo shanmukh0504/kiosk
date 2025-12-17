@@ -19,7 +19,6 @@ import {
 } from "../../utils/utils";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { RateAndPriceDisplay } from "./RateAndPriceDisplay";
-import { walletAddressStore } from "../../store/walletAddressStore";
 
 export const FeesAndRateDetails = () => {
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
@@ -38,9 +37,9 @@ export const FeesAndRateDetails = () => {
     networkFees,
     showComparisonHandler,
     isFetchingQuote,
+    sourceAddress: walletSource,
+    destinationAddress: walletDestination,
   } = swapStore();
-  const { source: walletSource, destination: walletDestination } =
-    walletAddressStore();
   const { assets, fiatData } = assetInfoStore();
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);

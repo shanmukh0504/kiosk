@@ -9,7 +9,6 @@ import { decideAddressVisibility, isAlpenSignetChain } from "../../utils/utils";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { Chains, isEVM } from "@gardenfi/orderbook";
-import { walletAddressStore } from "../../store/walletAddressStore";
 
 export const InputAddressAndFeeRateDetails = () => {
   const {
@@ -19,9 +18,9 @@ export const InputAddressAndFeeRateDetails = () => {
     inputAmount,
     outputAmount,
     isEditAddress,
+    sourceAddress: walletSource,
+    destinationAddress: walletDestination,
   } = swapStore();
-  const { source: walletSource, destination: walletDestination } =
-    walletAddressStore();
   const { account } = useBitcoinWallet();
   const { address: walletEvmAddress } = useEVMWallet();
 

@@ -37,8 +37,6 @@ import { useNetworkFees } from "./useNetworkFees";
 import { useSuiWallet } from "./useSuiWallet";
 import logger from "../utils/logger";
 import { balanceStore } from "../store/balanceStore";
-import { walletAddressStore } from "../store/walletAddressStore";
-import { userProvidedAddressStore } from "../store/userProvidedAddressStore";
 
 export const useSwap = () => {
   const {
@@ -71,16 +69,16 @@ export const useSwap = () => {
     solverId,
     setSolverId,
     validAddress,
+    sourceAddress: walletSource,
+    destinationAddress: walletDestination,
+    userProvidedAddress,
   } = swapStore();
-  const { source: walletSource, destination: walletDestination } =
-    walletAddressStore();
-  const { source: userSource, destination: userDestination } =
-    userProvidedAddressStore();
   const { balances } = balanceStore();
 
   // Resolve addresses: userProvidedAddress first, then walletAddress
-  const sourceAddress = userSource || walletSource;
-  const destinationAddress = userDestination || walletDestination;
+  const sourceAddress = userProvidedAddress.source || walletSource;
+  const destinationAddress =
+    userProvidedAddress.destination || walletDestination;
   const { setOrder, setIsOpen } = orderInProgressStore();
   const { updateOrder } = pendingOrdersStore();
   const { disconnect } = useEVMWallet();

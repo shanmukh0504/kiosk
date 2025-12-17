@@ -3,7 +3,6 @@ import { Asset, ChainAsset, Chains } from "@gardenfi/orderbook";
 import { IOType, network } from "../constants/constants";
 import { ErrorFormat, Errors } from "../constants/errors";
 import { assetInfoStore } from "./assetInfoStore";
-import { walletAddressStore } from "./walletAddressStore";
 
 export type TokenPrices = {
   input: string;
@@ -28,6 +27,12 @@ type SwapState = {
   solverId: string;
   inputAmount: string;
   outputAmount: string;
+  sourceAddress: string | undefined;
+  destinationAddress: string | undefined;
+  userProvidedAddress: {
+    source?: string | undefined;
+    destination?: string | undefined;
+  };
   rate: number;
   networkFees: number;
   fixedFee: number;
@@ -59,7 +64,13 @@ type SwapState = {
   setFixedFee: (fixedFee: number) => void;
   setIsNetworkFeesLoading: (isNetworkFeesLoading: boolean) => void;
   swapAssets: () => void;
+  setUserProvidedAddress: (userProvidedAddress: {
+    source?: string | undefined;
+    destination?: string | undefined;
+  }) => void;
   setError: (error: SwapErrors) => void;
+  setSourceAddress: (sourceAddress: string | undefined) => void;
+  setDestinationAddress: (destinationAddress: string | undefined) => void;
   setIsFetchingQuote: (isFetchingQuote: FetchingQuote) => void;
   setIsEditAddress: (isEditAddress: {
     source: boolean;
@@ -73,6 +84,8 @@ type SwapState = {
   showComparisonHandler: (type: "time" | "fees") => void;
   hideComparison: () => void;
   updateComparisonSavings: (time: number, cost: number) => void;
+  clearAddresses: () => void;
+  clearUserProvidedAddress: () => void;
   clearSwapState: () => void;
   clear: () => void;
   clearSwapInputState: () => void;
@@ -95,6 +108,12 @@ export const swapStore = create<SwapState>((set) => ({
   inputAsset: BTC,
   inputAmount: "",
   outputAmount: "",
+  sourceAddress: undefined,
+  destinationAddress: undefined,
+  userProvidedAddress: {
+    source: undefined,
+    destination: undefined,
+  },
   solverId: "",
   rate: 0,
   networkFees: 0,
@@ -169,6 +188,26 @@ export const swapStore = create<SwapState>((set) => ({
       fixedFee,
     }));
   },
+  setUserProvidedAddress: (userProvidedAddress) => {
+    set((state) => ({
+      userProvidedAddress: {
+        ...state.userProvidedAddress,
+        ...userProvidedAddress,
+      },
+    }));
+  },
+  setSourceAddress: (sourceAddress) => {
+    set({ sourceAddress });
+  },
+  setDestinationAddress: (destinationAddress) => {
+    set({ destinationAddress });
+  },
+  clearSourceAddress: () => {
+    set({ sourceAddress: undefined });
+  },
+  clearDestinationAddress: () => {
+    set({ destinationAddress: undefined });
+  },
   setIsNetworkFeesLoading: (isNetworkFeesLoading) => {
     set({ isNetworkFeesLoading });
   },
@@ -210,14 +249,13 @@ export const swapStore = create<SwapState>((set) => ({
         destination: state.isEditAddress.source,
       };
 
-      const { setSource, setDestination, source, destination, clearAddresses } =
-        walletAddressStore();
+      const { clearAddresses, setSourceAddress, setDestinationAddress } =
+        swapStore.getState();
 
-      // Always swap addresses when both assets exist, even if route is invalid
       if (newInputAsset && newOutputAsset) {
         // Swap wallet addresses
-        setSource(destination);
-        setDestination(source);
+        setSourceAddress(state.destinationAddress);
+        setDestinationAddress(state.sourceAddress);
       }
 
       if (!finalOutputAsset) {
@@ -288,6 +326,20 @@ export const swapStore = create<SwapState>((set) => ({
     set({
       maxTimeSaved: time,
       maxCostSaved: cost,
+    });
+  },
+  clearAddresses: () => {
+    set({
+      sourceAddress: undefined,
+      destinationAddress: undefined,
+    });
+  },
+  clearUserProvidedAddress: () => {
+    set({
+      userProvidedAddress: {
+        source: undefined,
+        destination: undefined,
+      },
     });
   },
   clearSwapState: () => {

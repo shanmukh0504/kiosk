@@ -6,8 +6,6 @@ import { addressExpandAnimation } from "../../animations/animations";
 import { swapStore } from "../../store/swapStore";
 import { AddressType } from "../../constants/constants";
 import { validateAddress } from "../../utils/addressValidation";
-import { walletAddressStore } from "../../store/walletAddressStore";
-import { userProvidedAddressStore } from "../../store/userProvidedAddressStore";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { isPureBitcoin } from "../../utils/utils";
 
@@ -28,17 +26,13 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
     isEditAddress,
     outputAsset,
     validAddress,
+    sourceAddress: walletSource,
+    destinationAddress: walletDestination,
+    userProvidedAddress,
+    setUserProvidedAddress,
     setValidAddress,
     setIsEditAddress,
   } = swapStore();
-  const { source: walletSource, destination: walletDestination } =
-    walletAddressStore();
-  const {
-    source: userSource,
-    destination: userDestination,
-    setSource: setUserSource,
-    setDestination: setUserDestination,
-  } = userProvidedAddressStore();
   const { account: btcAccount } = useBitcoinWallet();
 
   const isEditing = isRefund ? isEditAddress.source : isEditAddress.destination;
@@ -59,12 +53,12 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
 
     if (justEnteredEditMode && isBitcoinAsset && isWalletConnected) {
       if (isRefund) {
-        if (walletSource && !userSource) {
-          setUserSource(walletSource);
+        if (walletSource && !userProvidedAddress.source) {
+          setUserProvidedAddress({ source: walletSource });
         }
       } else {
-        if (walletDestination && !userDestination) {
-          setUserDestination(walletDestination);
+        if (walletDestination && !userProvidedAddress.destination) {
+          setUserProvidedAddress({ destination: walletDestination });
         }
       }
     }
@@ -78,19 +72,17 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
     isWalletConnected,
     walletSource,
     walletDestination,
-    userSource,
-    userDestination,
-    setUserSource,
-    setUserDestination,
+    userProvidedAddress,
+    setUserProvidedAddress,
   ]);
 
   // Display address: use userProvidedAddress when editing, otherwise use walletAddress
   const displayAddress = isRefund
     ? isEditing
-      ? userSource || ""
+      ? userProvidedAddress.source || ""
       : walletSource || ""
     : isEditing
-      ? userDestination || ""
+      ? userProvidedAddress.destination || ""
       : walletDestination || "";
   const currentValidAddress = isRefund
     ? validAddress.source
@@ -119,11 +111,10 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
       });
     }
 
-    // Update userProvidedAddressStore when user types
     if (isRefund) {
-      setUserSource(input || undefined);
+      setUserProvidedAddress({ source: input });
     } else {
-      setUserDestination(input || undefined);
+      setUserProvidedAddress({ destination: input });
     }
   };
 
@@ -133,8 +124,9 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
     const sourceChain = inputAsset?.chain;
     const destinationChain = outputAsset?.chain;
 
-    const sourceAddress = userSource || walletSource;
-    const destinationAddress = userDestination || walletDestination;
+    const sourceAddress = userProvidedAddress.source || walletSource;
+    const destinationAddress =
+      userProvidedAddress.destination || walletDestination;
 
     const sourceValid = validateAddress(sourceAddress, sourceChain);
     const destinationValid = validateAddress(
@@ -149,10 +141,10 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
   }, [
     inputAsset,
     outputAsset,
-    userSource,
-    userDestination,
+    userProvidedAddress,
     walletSource,
     walletDestination,
+    validAddress,
     setValidAddress,
   ]);
 

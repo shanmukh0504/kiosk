@@ -5,16 +5,21 @@ import { useStarknetWallet } from "./useStarknetWallet";
 import { useSolanaWallet } from "./useSolanaWallet";
 import { useSuiWallet } from "./useSuiWallet";
 import { swapStore } from "../store/swapStore";
-import { walletAddressStore } from "../store/walletAddressStore";
-import { userProvidedAddressStore } from "../store/userProvidedAddressStore";
 import { isEVM, isStarknet, isSolana, isSui, Chain } from "@gardenfi/orderbook";
 import { isPureBitcoin } from "../utils/utils";
 
 // Hook to manage wallet address storage (should only be called once)
 // Only stores addresses from connected wallet providers
 export const useAddressFillers = () => {
-  const { inputAsset, outputAsset } = swapStore();
-  const { setSource, setDestination, clearAddresses } = walletAddressStore();
+  const {
+    inputAsset,
+    outputAsset,
+    setSourceAddress,
+    setDestinationAddress,
+    clearAddresses,
+    setUserProvidedAddress,
+    clearUserProvidedAddress,
+  } = swapStore();
   const { address: evmAddress } = useEVMWallet();
   const { account: btcAddress } = useBitcoinWallet();
   const { starknetAddress } = useStarknetWallet();
@@ -38,18 +43,12 @@ export const useAddressFillers = () => {
     [evmAddress, btcAddress, starknetAddress, solanaAddress, currentAccount]
   );
 
-  const {
-    setSource: setUserSource,
-    setDestination: setUserDestination,
-    clearAddresses: clearUserAddresses,
-  } = userProvidedAddressStore();
-
   // Store wallet addresses when available
   // Also clear user-provided addresses when chains change
   useEffect(() => {
     if (!inputAsset || !outputAsset) {
       clearAddresses();
-      clearUserAddresses();
+      clearUserProvidedAddress();
       prevChainsRef.current = {};
       return;
     }
@@ -69,22 +68,22 @@ export const useAddressFillers = () => {
     // Clear user-provided addresses when chains change
     // Also clear if asset type changed from Bitcoin to non-Bitcoin
     if (inputChainChanged) {
-      setUserSource(undefined);
-      setSource(sourceWalletAddress);
+      setUserProvidedAddress({ source: undefined });
+      setSourceAddress(sourceWalletAddress);
     } else {
       // Only update if wallet address is available (don't overwrite with undefined if already set)
       if (sourceWalletAddress !== undefined) {
-        setSource(sourceWalletAddress);
+        setSourceAddress(sourceWalletAddress);
       }
     }
 
     if (outputChainChanged) {
-      setUserDestination(undefined);
-      setDestination(destinationWalletAddress);
+      setUserProvidedAddress({ destination: undefined });
+      setDestinationAddress(destinationWalletAddress);
     } else {
       // Only update if wallet address is available (don't overwrite with undefined if already set)
       if (destinationWalletAddress !== undefined) {
-        setDestination(destinationWalletAddress);
+        setDestinationAddress(destinationWalletAddress);
       }
     }
 
@@ -97,11 +96,10 @@ export const useAddressFillers = () => {
     inputAsset,
     outputAsset,
     getWalletAddressForChain,
-    setSource,
-    setDestination,
+    setSourceAddress,
+    setDestinationAddress,
     clearAddresses,
-    setUserSource,
-    setUserDestination,
-    clearUserAddresses,
+    setUserProvidedAddress,
+    clearUserProvidedAddress,
   ]);
 };
