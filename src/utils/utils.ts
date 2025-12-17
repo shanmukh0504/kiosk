@@ -32,6 +32,19 @@ export const capitalizeChain = (chainKey: string) => {
   return chainKey.charAt(0).toUpperCase() + chainKey.slice(1);
 };
 
+export const formatChainNameForDisplay = (
+  chain: string | undefined
+): string => {
+  if (!chain) return "Bitcoin";
+
+  const withSpaces = chain.replace(/_/g, " ");
+
+  const formatted =
+    withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1).toLowerCase();
+
+  return formatted;
+};
+
 /**
  * Gets the {Asset} from assets in store using the swap object
  * @param {Swap} swap

@@ -7,7 +7,7 @@ import { swapStore } from "../../store/swapStore";
 import { AddressType } from "../../constants/constants";
 import { validateAddress } from "../../utils/addressValidation";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { isPureBitcoin } from "../../utils/utils";
+import { isPureBitcoin, formatChainNameForDisplay } from "../../utils/utils";
 
 type InputAddressProps = {
   addressType: AddressType | undefined;
@@ -40,6 +40,7 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
   const relevantAsset = isRefund ? inputAsset : outputAsset;
   const relevantChain = relevantAsset?.chain;
   const isBitcoinAsset = relevantChain ? isPureBitcoin(relevantChain) : false;
+  const chainDisplayName = formatChainNameForDisplay(relevantChain);
   const isWalletConnected = isBitcoinAsset ? !!btcAccount : false;
 
   // Track previous editing state to detect when edit mode is first activated
@@ -174,7 +175,7 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
                 }`}
                 type="text"
                 value={displayAddress}
-                placeholder="Your Bitcoin address"
+                placeholder={`Your ${chainDisplayName} address`}
                 onChange={handleChange}
               />
               {isRefund && (
