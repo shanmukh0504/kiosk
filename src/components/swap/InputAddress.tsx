@@ -144,7 +144,6 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
     userProvidedAddress,
     walletSource,
     walletDestination,
-    validAddress,
     setValidAddress,
   ]);
 
