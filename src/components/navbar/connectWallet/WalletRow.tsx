@@ -73,8 +73,9 @@ export const WalletRow: FC<WalletRowProps> = ({
           </div>
         </div>
         <div className="flex items-center gap-4">
-          {isConnecting && <Loader />}
-          {Object.values(isConnected).some((value) => value) && (
+          {isConnecting ? (
+            <Loader />
+          ) : Object.values(isConnected).some((value) => value) ? (
             <div className="flex w-fit items-center gap-2 rounded-full bg-white p-1 pl-3 pr-2">
               <Typography size="h4" className="flex items-center gap-1">
                 Connected
@@ -85,7 +86,10 @@ export const WalletRow: FC<WalletRowProps> = ({
                     isConnected && (
                       <img
                         key={ecosystem}
-                        src={ecosystems[ecosystem as BlockchainType].icon ?? ""}
+                        src={
+                          ecosystems?.[ecosystem as keyof typeof ecosystems]
+                            ?.icon ?? ""
+                        }
                         alt={`${ecosystem} icon`}
                         className="rounded-full object-contain"
                         style={{
@@ -101,7 +105,7 @@ export const WalletRow: FC<WalletRowProps> = ({
                 )}
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </motion.div>

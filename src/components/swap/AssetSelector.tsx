@@ -23,7 +23,7 @@ import { modalStore } from "../../store/modalStore";
 import { ChainsTooltip } from "./ChainsTooltip";
 import { AvailableChainsSidebar } from "./AvailableChainsSidebar";
 import { AnimatePresence, motion } from "framer-motion";
-import { formatAmount } from "../../utils/utils";
+import { formatBalance, isStableCoinOrSeed } from "../../utils/utils";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
@@ -163,13 +163,25 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                     .toNumber()
                 : balance?.toNumber();
           const fiatBalance =
+            formattedBalance && (formattedBalance * fiatRate).toFixed(5);
+          const balanceToBeDisplayed =
             formattedBalance &&
-            (Number(formattedBalance) * Number(fiatRate)).toFixed(5);
+            formatBalance(
+              formattedBalance,
+              0,
+              isStableCoinOrSeed(asset)
+                ? 2
+                : Math.min(asset.decimals, BTC.decimals)
+            );
 
           return {
             asset,
             network,
-            formattedBalance,
+            balance:
+              typeof balanceToBeDisplayed === "number" &&
+              balanceToBeDisplayed === 0
+                ? ""
+                : balanceToBeDisplayed,
             fiatBalance,
           };
         })
@@ -399,7 +411,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
               {fiatBasedSortedResults && fiatBasedSortedResults.length > 0 ? (
                 fiatBasedSortedResults
                   .filter((result) => result !== undefined)
-                  .map(({ asset, network, formattedBalance }, index) => {
+                  .map(({ asset, network, balance }, index) => {
                     return (
                       <div
                         key={`${asset?.chain}-${asset?.htlc?.address}-${asset?.token?.address || "native"}-${index}`}
@@ -423,7 +435,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                           </Typography>
                         </div>
                         <div className="flex items-center gap-1">
-                          {formattedBalance && (
+                          {balance && (
                             <Typography
                               size={"h5"}
                               breakpoints={{
@@ -432,11 +444,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                               weight="regular"
                               className={`!text-mid-grey`}
                             >
-                              {formatAmount(
-                                Number(formattedBalance),
-                                0,
-                                Math.min(asset.decimals, BTC.decimals)
-                              )}
+                              {balance}
                             </Typography>
                           )}
                           <Typography

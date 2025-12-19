@@ -129,3 +129,57 @@ export const addressExpandAnimation: Variants = {
     },
   },
 };
+
+export const gardenPassContainerVariants: Variants = {
+  initial: {
+    width: 0,
+  },
+  animate: {
+    width: 288,
+  },
+  exit: {
+    width: 0,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 30,
+      mass: 1,
+      width: {
+        delay: 0.1,
+      },
+    },
+  },
+};
+
+export const gardenPassContentVariants: Variants = {
+  initial: {
+    opacity: 0,
+    marginRight: 0,
+    scale: 0.95,
+  },
+  animate: {
+    opacity: 1,
+    scale: 1,
+    marginRight: 16,
+    transition: {
+      scale: {
+        delay: 0.2,
+      },
+      opacity: {
+        delay: 0.12,
+      },
+    },
+  },
+  exit: {
+    opacity: 0,
+    marginRight: 0,
+    scale: 0.95,
+  },
+};
+
+export const springTransition = {
+  type: "spring",
+  stiffness: 200,
+  damping: 25,
+  mass: 1,
+};

@@ -38,13 +38,11 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
 
   const showConnectWallet = useMemo(() => {
     return !(
-      address &&
-      btcAddress &&
-      starknetAddress &&
-      solanaAddress &&
-      suiConnected
+      (address && btcAddress && starknetAddress)
+      // solanaAddress &&
+      // suiConnected
     );
-  }, [address, btcAddress, starknetAddress, solanaAddress, suiConnected]);
+  }, [address, btcAddress, starknetAddress]);
 
   const handleDisconnectClick = () => {
     clear();

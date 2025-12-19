@@ -1,4 +1,10 @@
-import { braavos, injected, publicProvider, ready } from "@starknet-react/core";
+import {
+  braavos,
+  injected,
+  legacyInjected,
+  publicProvider,
+  ready,
+} from "@starknet-react/core";
 import { mainnet, sepolia } from "@starknet-react/chains";
 import { isInArgentMobileAppBrowser } from "starknetkit/argentMobile";
 import { isInBraavosMobileAppBrowser } from "starknetkit/braavosMobile";
@@ -21,9 +27,12 @@ export const availableConnectors = () => {
     return [braavos()];
   }
 
-  return [ready(), braavos(), injected({ id: "keplr" })].filter(
-    (connector) => connector !== null
-  );
+  return [
+    ready(),
+    braavos(),
+    injected({ id: "keplr" }),
+    legacyInjected({ id: "okxwallet" }),
+  ].filter((connector) => connector !== null);
 };
 
 export const connectors = availableConnectors();

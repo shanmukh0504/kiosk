@@ -1,6 +1,12 @@
 import BigNumber from "bignumber.js";
 import { INTERNAL_ROUTES, QUERY_PARAMS, THEMES } from "../constants/constants";
-import { ChainAsset, OrderWithStatus, Swap } from "@gardenfi/orderbook";
+import {
+  Asset,
+  Chain,
+  ChainAsset,
+  OrderWithStatus,
+  Swap,
+} from "@gardenfi/orderbook";
 import { Assets } from "../store/assetInfoStore";
 
 export const isProduction = () => {
@@ -62,15 +68,16 @@ export const getDayDifference = (date: string) => {
   return "Just now";
 };
 
-export const formatAmount = (
-  amount: string | number | bigint,
+// Intentionally returns a string here to avoid browsers showing tiny balances in scientific notation.
+export const formatBigNumber = (
+  amount: BigNumber,
   decimals: number,
   toFixed?: number
 ) => {
-  const bigAmount = new BigNumber(amount);
+  const bigAmount = new BigNumber(amount).abs();
   if (bigAmount.isZero()) return 0;
 
-  const value = bigAmount.dividedBy(10 ** decimals);
+  const value = new BigNumber(amount).dividedBy(10 ** decimals);
   const precision = toFixed ? toFixed : Number(value) > 10000 ? 2 : 4;
   let temp = value.toFixed(precision, BigNumber.ROUND_DOWN);
 
@@ -83,8 +90,35 @@ export const formatAmount = (
   ) {
     temp = value.toFixed(temp.split(".")[1].length + 2, BigNumber.ROUND_DOWN);
   }
+  return temp;
+};
 
-  return Number(temp);
+export const formatAmount = (
+  amount: string | number | bigint,
+  decimals: number,
+  toFixed?: number
+) => {
+  const bigAmount = new BigNumber(amount);
+  if (bigAmount.isZero()) return 0;
+  return Number(formatBigNumber(bigAmount, decimals, toFixed));
+};
+
+export const formatBalance = (
+  amount: string | number | bigint,
+  decimals: number,
+  toFixed?: number
+) => {
+  const bigAmount = new BigNumber(amount);
+  if (bigAmount.isZero()) return "0";
+  const balance = formatBigNumber(bigAmount, decimals, toFixed);
+
+  // Preserve very small values as strings (not scientific notation) when they are <1
+  // and effectively just a run of leading zeros after the decimal.
+  return Number(balance) < 1 && /\.0{8,}/.test(balance.toString())
+    ? Number(balance)
+    : /\.0{6,}/.test(balance.toString())
+      ? balance
+      : Number(balance);
 };
 
 export const isCurrentRoute = (route: string) => {
@@ -103,7 +137,7 @@ export const formatAmountUsd = (
 ) => {
   if (!amount) return 0;
   const num = formatAmount(amount, decimals);
-  return Number(num).toLocaleString("en-US", {
+  return num.toLocaleString("en-US", {
     maximumFractionDigits: 2,
   });
 };
@@ -170,6 +204,37 @@ export const getProtocolFee = (fees: number) => {
   return protocolFee;
 };
 
+export const getDaysUntilNextEpoch = (
+  epochData: { epoch: string }[] | null
+) => {
+  const now = new Date();
+  const currentDay = now.getUTCDay();
+  const currentHour = now.getUTCHours();
+  const currentMinutes = now.getUTCMinutes();
+
+  if (epochData && epochData.length > 0) {
+    const lastEpoch = new Date(epochData[0].epoch);
+    const nextEpoch = new Date(lastEpoch);
+    nextEpoch.setDate(nextEpoch.getDate() + 7);
+
+    const diffTime = nextEpoch.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (currentDay === 0 && currentHour === 0 && currentMinutes === 0) {
+      return 7;
+    }
+
+    if (diffDays < 0 || currentDay === 0) {
+      return 7;
+    }
+
+    return diffDays;
+  }
+
+  const daysUntilNextSunday = (7 - currentDay) % 7;
+  return daysUntilNextSunday;
+};
+
 export function parseAssetNameSymbol(
   input: string | undefined,
   assetId?: string | ChainAsset,
@@ -219,3 +284,67 @@ export function normalizeChainId(chainId: string): string {
   // Otherwise return as-is (already decimal)
   return chainId;
 }
+
+export const isAsset = (
+  asset: Asset | null | undefined,
+  chain: Chain,
+  symbol?: string
+) => {
+  if (!asset?.chain) return false;
+
+  const chainMatches =
+    asset.chain.toLowerCase() === chain.toString().toLowerCase();
+
+  if (!chainMatches) return false;
+  if (!symbol) return true;
+
+  return asset?.symbol?.toUpperCase() === symbol.toUpperCase();
+};
+
+export const warningMessage = () => {
+  if (typeof window !== "undefined") {
+    const logo = `
+  ░██████╗░░█████╗░██████╗░██████╗░███████╗███╗░░██╗
+  ██╔════╝░██╔══██╗██╔══██╗██╔══██╗██╔════╝████╗░██║
+  ██║░░██╗░███████║██████╔╝██║░░██║█████╗░░██╔██╗██║
+  ██║░░╚██╗██╔══██║██╔══██╗██║░░██║██╔══╝░░██║╚████║
+  ╚██████╔╝██║░░██║██║░░██║██████╔╝███████╗██║░╚███║
+  ░╚═════╝░╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░╚══════╝╚═╝░░╚══╝
+  `;
+
+    const title = "𝐖𝐀𝐑𝐍𝐈𝐍𝐆!";
+    const firstLine = `
+You opened the browser’s developer console, a tool intended only for developers. Keep your private keys and seed phrase strictly to yourself. Executing unfamiliar code in this console may compromise your account
+and result in irreversible loss of access and tokens.
+`;
+
+    const support = `
+To learn more about Garden, refer to our documentation: https://docs.garden.finance/ and join our community:  https://discord.gg/B7RczEFuJ5
+`;
+
+    console.log("%c" + logo, "color: #eb8daf;");
+    console.log(
+      "%c" + title,
+      "color: #ff6e6e; font-size: 32px; font-weight: bold;"
+    );
+    console.log(
+      "%c" + firstLine,
+      "color: #fff; font-weight: bold; font-size: 12px;"
+    );
+    console.log(
+      "%c" + support,
+      "color: #eb8daf; font-weight: bold; font-size: 12px;"
+    );
+  }
+};
+
+export const isAlpenSignetChain = (chain: string) => {
+  return chain.toLowerCase().includes("alpen_signet");
+};
+
+export const isStableCoinOrSeed = (asset: Asset) => {
+  return (
+    asset.symbol.toLowerCase().includes("usd") ||
+    asset.symbol.toLowerCase().includes("seed")
+  );
+};

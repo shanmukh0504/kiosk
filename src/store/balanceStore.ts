@@ -29,6 +29,7 @@ import { getLegacyGasEstimate } from "../utils/getNativeTokenFee";
 import { SupportedChains } from "../layout/wagmi/config";
 import { getAllWorkingRPCs } from "../utils/rpcUtils";
 import { assetInfoStore } from "./assetInfoStore";
+import { isAlpenSignetChain } from "../utils/utils";
 
 type BalanceStoreState = {
   balances: Record<string, BigNumber | undefined>;
@@ -46,6 +47,7 @@ type BalanceStoreState = {
     address: string,
     fetchOnlyAsset?: Asset
   ) => Promise<void>;
+  balanceFetched: boolean;
   fetchAndSetBitcoinBalance: (
     provider: IInjectedBitcoinProvider,
     address: string
@@ -58,6 +60,7 @@ type BalanceStoreState = {
 };
 
 export const balanceStore = create<BalanceStoreState>((set, get) => ({
+  balanceFetched: false,
   fiatData: {},
   balances: {},
   workingRPCs: {},
@@ -87,7 +90,6 @@ export const balanceStore = create<BalanceStoreState>((set, get) => ({
         isOpen: false,
       },
     }),
-
   fetchAndSetEvmBalances: async (address: string, fetchOnlyAsset?: Asset) => {
     const { workingRPCs } = get();
     const assets = assetInfoStore.getState().assets;
@@ -163,6 +165,8 @@ export const balanceStore = create<BalanceStoreState>((set, get) => ({
           : acc;
       }, {});
 
+      set({ balanceFetched: true });
+
       set({ balances: { ...get().balances, ...finalBalances } });
     } catch (err) {
       console.error("Failed to fetch balances", err);
@@ -195,7 +199,9 @@ export const balanceStore = create<BalanceStoreState>((set, get) => ({
       const maxSpendableBalance = spendable.ok ? spendable.val : 0;
 
       const btcBalance = Object.values(assets)
-        .filter((asset) => isBitcoin(asset.chain))
+        .filter(
+          (asset) => isBitcoin(asset.chain) && !isAlpenSignetChain(asset.chain)
+        )
         .reduce(
           (acc, asset) => {
             acc[ChainAsset.from(asset.id).toString()] = new BigNumber(

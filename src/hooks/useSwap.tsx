@@ -14,6 +14,7 @@ import {
   isEVM,
   ChainAsset,
   isTron,
+  Chains,
 } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { validateBTCAddress } from "@gardenfi/core";
@@ -29,7 +30,12 @@ import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import BigNumber from "bignumber.js";
 import { useSolanaWallet } from "./useSolanaWallet";
-import { formatAmount } from "../utils/utils";
+import {
+  formatAmount,
+  formatBalance,
+  isAsset,
+  isAlpenSignetChain,
+} from "../utils/utils";
 import { useNetworkFees } from "./useNetworkFees";
 import { useSuiWallet } from "./useSuiWallet";
 import logger from "../utils/logger";
@@ -97,12 +103,12 @@ export const useSwap = () => {
       !isSolana(inputAsset.chain) &&
       !isTron(inputAsset.chain) &&
       !isSui(inputAsset.chain)
-        ? formatAmount(
+        ? formatBalance(
             Number(inputBalance),
             inputAsset.decimals,
             Math.min(inputAsset.decimals, BTC.decimals)
           )
-        : Number(inputBalance)),
+        : inputBalance.toString()),
     [inputBalance, inputAsset]
   );
 
@@ -163,10 +169,28 @@ export const useSwap = () => {
       !outputAsset.max_amount
     )
       return defaultLimits;
-    else
+    else {
+      let minAmountRaw = inputAsset.min_amount;
+
+      if (
+        isAsset(inputAsset, Chains.arbitrum) &&
+        isAsset(outputAsset, Chains.monad)
+      ) {
+        minAmountRaw = "2200";
+      } else if (
+        isAsset(inputAsset, Chains.monad) &&
+        isAsset(outputAsset, Chains.arbitrum, "WBTC")
+      ) {
+        if (isAsset(inputAsset, Chains.monad, "USDC")) {
+          minAmountRaw = "2000000";
+        } else if (isAsset(inputAsset, Chains.monad, "MON")) {
+          minAmountRaw = "51000000000000000000";
+        }
+      }
+
       return {
         minAmount: formatAmount(
-          inputAsset.min_amount,
+          minAmountRaw,
           inputAsset.decimals,
           inputAsset.decimals
         ),
@@ -176,6 +200,7 @@ export const useSwap = () => {
           inputAsset.decimals
         ),
       };
+    }
   }, [inputAsset, outputAsset]);
 
   const debouncedFetchQuote = useMemo(
@@ -284,6 +309,7 @@ export const useSwap = () => {
       setAmount,
       setFixedFee,
       setTokenPrices,
+      setSolverId,
       setFiatTokenPrices,
       setError,
       isSwapping,
@@ -538,7 +564,7 @@ export const useSwap = () => {
 
       if (isBitcoin(inputAsset.chain)) {
         const orderResponse = res.val as BitcoinOrderResponse;
-        if (provider) {
+        if (provider && !isAlpenSignetChain(inputAsset.chain)) {
           const bitcoinRes = await provider.sendBitcoin(
             orderResponse.to,
             Number(orderResponse.amount)
@@ -671,10 +697,18 @@ export const useSwap = () => {
 
   //set btc address if bitcoin wallet is connected
   useEffect(() => {
-    if (account) {
-      setBtcAddress(account);
+    if (
+      inputAsset &&
+      outputAsset &&
+      account &&
+      !isAlpenSignetChain(inputAsset.chain) &&
+      !isAlpenSignetChain(outputAsset.chain)
+    ) {
+      setBtcAddress(account ? account : "");
+    } else {
+      setBtcAddress("");
     }
-  }, [account, setBtcAddress]);
+  }, [account, setBtcAddress, inputAsset, outputAsset]);
 
   // Update isValidBitcoinAddress state in an effect
   useEffect(() => {

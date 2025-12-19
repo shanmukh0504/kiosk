@@ -9,7 +9,11 @@ import {
   Typography,
 } from "@gardenfi/garden-book";
 import { BlockchainType } from "@gardenfi/orderbook";
-import { getAvailableWallets, Wallet } from "./getSupportedWallets";
+import {
+  getAvailableWallets,
+  getWalletConnectionStatus,
+  Wallet,
+} from "./getSupportedWallets";
 import {
   IInjectedBitcoinProvider,
   useBitcoinWallet,
@@ -18,7 +22,7 @@ import { WalletRow } from "./WalletRow";
 import { MultiWalletConnection } from "./MultiWalletConnection";
 import { handleEVMConnect, handleStarknetConnect } from "./handleConnect";
 import { modalStore } from "../../../store/modalStore";
-import { ecosystems, evmToBTCid } from "./constants";
+import { ecosystems } from "./constants";
 import { AnimatePresence } from "framer-motion";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { ConnectingWalletStore } from "../../../store/connectWalletStore";
@@ -70,10 +74,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     useSuiWallet();
   const {
     wallets: tronWallets,
-    tronAddress,
-    wallet: tronWallet,
     handleTronConnect,
     tronConnected,
+    wallet: tronSelectedWallet,
   } = useTronWallet();
   const { modalData } = modalStore();
   const showOnlyBTCWallets = !!modalData.connectWallet?.bitcoin;
@@ -295,26 +298,34 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
 
       {!multiWalletConnector && (
         <div className="flex flex-wrap gap-3">
-          {Object.entries(ecosystems).map(([key, ecosystem]) => (
-            <Chip
-              key={key}
-              className={`cursor-pointer !bg-opacity-50 py-1.5 pl-3 pr-1 capitalize transition-colors ease-cubic-in-out hover:!bg-opacity-100`}
-              onClick={() => {
-                setSelectedEcosystem((prev) =>
-                  prev === key ? null : (key as BlockchainType)
-                );
-              }}
-            >
-              <Typography size="h3" weight="regular">
-                {ecosystem.name === "EVM" ? "EVM" : ecosystem.name}
-              </Typography>
-              <RadioCheckedIcon
-                className={`${
-                  selectedEcosystem === key ? "mr-1 w-4" : "w-0"
-                } fill-rose transition-all`}
-              />
-            </Chip>
-          ))}
+          {Object.entries(ecosystems)
+            .filter(
+              ([key]) =>
+                key === BlockchainType.evm ||
+                key === BlockchainType.bitcoin ||
+                key === BlockchainType.starknet ||
+                key === BlockchainType.tron
+            )
+            .map(([key, ecosystem]) => (
+              <Chip
+                key={key}
+                className={`cursor-pointer !bg-opacity-50 py-1.5 pl-3 pr-1 capitalize transition-colors ease-cubic-in-out hover:!bg-opacity-100`}
+                onClick={() => {
+                  setSelectedEcosystem((prev) =>
+                    prev === key ? null : (key as BlockchainType)
+                  );
+                }}
+              >
+                <Typography size="h3" weight="regular">
+                  {ecosystem.name === "EVM" ? "EVM" : ecosystem.name}
+                </Typography>
+                <RadioCheckedIcon
+                  className={`${
+                    selectedEcosystem === key ? "mr-1 w-4" : "w-0"
+                  } fill-rose transition-all`}
+                />
+              </Chip>
+            ))}
         </div>
       )}
 
@@ -336,66 +347,18 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                     await handleConnect(wallet);
                   }}
                   isConnecting={connectingWallet === wallet.id.toLowerCase()}
-                  isConnected={{
-                    [BlockchainType.bitcoin]: !!(
-                      provider &&
-                      (provider.id === wallet.id ||
-                        provider.id === evmToBTCid[wallet.id])
-                    ),
-                    [BlockchainType.evm]: (() =>
-                      !!(
-                        connector &&
-                        wallet.isEVM &&
-                        (connector.id === wallet.id ||
-                          (wallet.id === "app.backpack" &&
-                            connector.id === "backpack") ||
-                          (typeof window !== "undefined" &&
-                            window.ethereum &&
-                            window.ethereum.isCoinbaseWallet &&
-                            connector.id === "injected" &&
-                            wallet.id === "com.coinbase.wallet"))
-                      ))(),
-                    [BlockchainType.starknet]: !!(
-                      starknetConnector &&
-                      wallet.isStarknet &&
-                      starknetConnector.id === wallet.id &&
-                      starknetStatus === "connected"
-                    ),
-                    [BlockchainType.solana]: !!(
-                      wallet.isSolana &&
-                      solanaConnected &&
-                      ((wallet.id === "app.phantom" &&
-                        solanaSelectedWallet?.adapter.name === "Phantom") ||
-                        (wallet.id === "app.backpack" &&
-                          solanaSelectedWallet?.adapter.name === "Backpack") ||
-                        (wallet.id !== "app.phantom" &&
-                          wallet.id !== "app.backpack" &&
-                          solanaSelectedWallet?.adapter.name.toLowerCase() ===
-                            wallet.id.toLowerCase()))
-                    ),
-                    [BlockchainType.sui]: !!(
-                      wallet.isSui &&
-                      suiConnected &&
-                      ((wallet.id === "app.phantom" &&
-                        suiSelectedWallet?.name === "Phantom") ||
-                        (wallet.name === "Slush Wallet" &&
-                          suiSelectedWallet?.id ===
-                            "com.mystenlabs.suiwallet") ||
-                        (wallet.name === "Backpack" &&
-                          suiSelectedWallet?.name === "Backpack") ||
-                        (wallet.name === "OKX Wallet" &&
-                          suiSelectedWallet?.name === "OKX Wallet") ||
-                        (wallet.name === "Tokeo" &&
-                          suiSelectedWallet?.name === "Tokeo"))
-                    ),
-                    [BlockchainType.tron]: !!(
-                      wallet.isTron &&
-                      tronAddress &&
-                      tronConnected &&
-                      tronWallet?.adapter.name.toLowerCase() ===
-                        wallet.id.toLowerCase()
-                    ),
-                  }}
+                  isConnected={getWalletConnectionStatus(wallet, {
+                    btcProvider: provider,
+                    evmConnector: connector,
+                    starknetConnector,
+                    starknetStatus,
+                    solanaConnected,
+                    solanaSelectedWallet,
+                    suiConnected,
+                    suiSelectedWallet,
+                    tronConnected,
+                    tronSelectedWallet,
+                  })}
                   isAvailable={wallet.isAvailable}
                 />
               ))}
@@ -419,7 +382,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           </a>
           and{" "}
           <a
-            href="https://garden.finance/GardenFinancePrivacyPolicy.pdf"
+            href="https://garden.finance/privacy.pdf"
             target="_blank"
             rel="noreferrer"
             className="font-bold"

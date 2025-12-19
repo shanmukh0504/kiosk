@@ -1,181 +1,110 @@
-import { Button, Typography } from "@gardenfi/garden-book";
 import { stakeStore } from "../../store/stakeStore";
-import { SEED_DECIMALS, TEN_THOUSAND } from "../../constants/stake";
-import { distributerABI } from "./abi/distributerClaim";
-import { useReadContract, useSwitchChain, useWriteContract } from "wagmi";
-import { useState, useMemo } from "react";
-import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { Hex } from "viem";
-import { formatAmount, formatAmountUsd } from "../../utils/utils";
-import { REWARD_CHAIN, STAKE_REWARD } from "./constants";
-import { waitForTransactionReceipt } from "wagmi/actions";
-import { config } from "../../layout/wagmi/config";
-import { Toast } from "../toast/Toast";
+import { SEED_DECIMALS } from "../../constants/stake";
+import { useRef } from "react";
+import { formatAmount } from "../../utils/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { TooltipWrapper } from "./shared/ToolTipWrapper";
 import { OverviewStats } from "./shared/OverviewStats";
+import { RewardsToolTip } from "./shared/RewardsToolTip";
+
+const animation = {
+  initial: {
+    opacity: 0,
+    y: -20,
+    height: 0,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    height: "auto",
+    transition: {
+      delay: 0.2,
+      type: "spring",
+      stiffness: 200,
+      damping: 25,
+      mass: 0.5,
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -20,
+    height: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 20,
+    },
+  },
+};
 
 export const StakeOverview = () => {
-  const [isClaimLoading, setIsClaimLoading] = useState(false);
+  const statRef = useRef<HTMLDivElement>(null);
+  const { totalStakedAmount, totalVotes, stakeRewards, stakePosData } =
+    stakeStore();
 
-  const { totalStakedAmount, totalVotes, stakeRewards } = stakeStore();
-  const { writeContractAsync } = useWriteContract();
-  const { address, chainId } = useEVMWallet();
-  const { switchChainAsync } = useSwitchChain();
-  // get claimed amount
-  const { data: claimedAmount, refetch: refetchClaimedAmount } =
-    useReadContract({
-      abi: distributerABI,
-      functionName: "getClaimedAmount",
-      address: STAKE_REWARD.CBBTC.DISTRIBUTER_CONTRACT as Hex,
-      args: [address as Hex],
-      chainId: REWARD_CHAIN,
-      query: {
-        enabled: !!address,
-        refetchInterval: 15_000,
-      },
-    });
+  const calculatedRewardsUSD = stakePosData?.reduce((total, stakePos) => {
+    const cbbtcRewardUSD = formatAmount(
+      stakeRewards?.stakewiseRewards?.[stakePos.id]
+        ?.accumulatedCBBTCRewardsUSD ?? 0,
+      0,
+      5
+    );
+    const seedRewardUSD = formatAmount(
+      stakeRewards?.stakewiseRewards?.[stakePos.id]
+        ?.accumulatedSeedRewardsUSD ?? 0,
+      0,
+      5
+    );
+    return total + Number(cbbtcRewardUSD) + Number(seedRewardUSD);
+  }, 0);
 
   const formattedAmount =
     totalStakedAmount === undefined
       ? "0"
-      : totalStakedAmount >= TEN_THOUSAND
-        ? totalStakedAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-        : totalStakedAmount.toString();
-
-  const availableReward = useMemo(() => {
-    return stakeRewards
-      ? formatAmount(
-          stakeRewards.totalcbBtcReward - Number(claimedAmount ?? 0),
-          8,
-          8
-        )
-      : 0;
-  }, [stakeRewards, claimedAmount]);
-
-  const handleRewardClick = async () => {
-    if (!chainId || !address || !stakeRewards) return;
-    const rewardConfig = STAKE_REWARD.CBBTC;
-    if (!rewardConfig) return;
-
-    try {
-      setIsClaimLoading(true);
-      if (chainId !== REWARD_CHAIN) {
-        await switchChainAsync({ chainId: REWARD_CHAIN });
-        //small workaround to make sure the chain is switched other wise the claim is failing
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-      }
-
-      const tx = await writeContractAsync({
-        abi: distributerABI,
-        functionName: "claim",
-        address: rewardConfig.DISTRIBUTER_CONTRACT as Hex,
-        args: [
-          address as Hex,
-          BigInt(stakeRewards.rewardResponse.cumulative_rewards_cbbtc),
-          BigInt(stakeRewards.rewardResponse.nonce),
-          ("0x" + stakeRewards.rewardResponse.latest_claim_signature) as Hex,
-        ],
-        chainId: REWARD_CHAIN,
-      });
-      await waitForTransactionReceipt(config, {
-        hash: tx,
-      });
-      await refetchClaimedAmount();
-      Toast.success("Withdrawal completed successfully");
-    } catch (error) {
-      console.error("Error claiming rewards:", error);
-    } finally {
-      setIsClaimLoading(false);
-    }
-  };
+      : totalStakedAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
   return (
     <motion.div
-      animate={{
-        scale: ["80%", "100%"],
-        margin: ["-10%", "0%"],
-        opacity: ["0%", "100%"],
-        transition: {
-          duration: 0.6,
-          ease: "easeInOut",
-          once: true,
-          opacity: {
-            duration: 0.3,
-            delay: 0.4,
-          },
-        },
-      }}
+      variants={animation}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="overflow-hidden"
       style={{ transformOrigin: "top" }}
     >
-      <div className="mx-auto flex w-[328px] flex-col gap-[20px] rounded-[15px] bg-white p-6 sm:w-[424px] md:w-[740px] lg:w-[1000px]">
-        <Typography size="h5" weight="medium">
-          Staking overview
-        </Typography>
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <div className="flex w-full flex-col gap-[32.67px] sm:w-[384px] sm:flex-row md:w-[600px] md:gap-[20px]">
-            <div className="flex gap-4 sm:gap-8 md:gap-5">
+      <div className="mx-auto flex w-[328px] flex-col gap-5 bg-white/25 p-4 backdrop-blur-[20] sm:w-[460px] md:w-[740px]">
+        <div className="flex items-start justify-between gap-4 sm:items-center">
+          <div className="grid grid-cols-[90px_90px_90px] gap-5 px-2 sm:gap-[66px]">
+            <OverviewStats title={"Total SEED"} value={formattedAmount} />
+            <AnimatePresence>
               <OverviewStats
-                title={"Staked SEED"}
-                value={formattedAmount}
-                size="sm"
-                className="w-[120px] sm:w-fit md:w-[120px]"
+                title={"Total rewards"}
+                value={`$${formatAmount(Number(calculatedRewardsUSD), 0, 2) || 0}`}
+                info
+                toolTip={
+                  <RewardsToolTip
+                    seed={formatAmount(
+                      stakeRewards?.totalSeedReward ?? 0,
+                      SEED_DECIMALS,
+                      4
+                    )}
+                    cbBtc={formatAmount(
+                      Number(
+                        stakeRewards?.rewardResponse.cumulative_rewards_cbbtc ??
+                          0
+                      ),
+                      8
+                    )}
+                  />
+                }
+                targetRef={statRef}
+                className="sm:w-fit"
               />
-              <OverviewStats
-                title={"Votes"}
-                value={totalVotes !== undefined ? totalVotes : 0}
-                size="sm"
-                className="w-[120px] sm:w-fit md:w-[80px] xl:w-[120px]"
-              />
-            </div>
-            <div className="flex gap-4 sm:gap-8 md:gap-5">
-              <AnimatePresence>
-                <OverviewStats
-                  title={"Total rewards"}
-                  value={`~$${stakeRewards?.accumulatedRewardUSD ? formatAmountUsd(stakeRewards.accumulatedRewardUSD, 0) : 0}`}
-                  size="sm"
-                  toolTip={
-                    <TooltipWrapper
-                      seedReward={formatAmount(
-                        stakeRewards?.totalSeedReward ?? 0,
-                        SEED_DECIMALS,
-                        4
-                      )}
-                      cbBtcReward={formatAmount(
-                        Number(
-                          stakeRewards?.rewardResponse.cumulative_rewards_cbbtc
-                        ),
-                        8
-                      )}
-                    />
-                  }
-                  className="w-[120px] cursor-pointer sm:w-fit md:mr-5 md:w-[100px]"
-                />
-              </AnimatePresence>
-              <OverviewStats
-                title={"Staking rewards"}
-                value={`${availableReward || 0} cbBTC`}
-                size="sm"
-                isPink
-              />
-            </div>
+            </AnimatePresence>
+            <OverviewStats
+              title={"Total Votes"}
+              value={totalVotes !== undefined ? totalVotes : 0}
+            />
           </div>
-          <Button
-            variant={
-              isClaimLoading || availableReward === 0 ? "disabled" : "primary"
-            }
-            size="sm"
-            className={`w-full md:w-[120px] ${
-              isClaimLoading || !availableReward
-                ? "flex items-center justify-center self-center transition-colors duration-500"
-                : ""
-            }`}
-            onClick={handleRewardClick}
-            disabled={isClaimLoading || !availableReward}
-            loading={isClaimLoading}
-          >
-            {isClaimLoading ? "Claiming..." : "Claim"}
-          </Button>
         </div>
       </div>
     </motion.div>

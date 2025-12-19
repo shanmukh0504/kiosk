@@ -4,8 +4,9 @@ import { Tooltip } from "../../common/Tooltip";
 import { isBitcoin } from "@gardenfi/orderbook";
 import { AnimatePresence, motion } from "framer-motion";
 import { addressExpandAnimation } from "../../animations/animations";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { swapStore } from "../../store/swapStore";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import { isAlpenSignetChain } from "../../utils/utils";
 
 export const InputAddress = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -15,6 +16,7 @@ export const InputAddress = () => {
     inputAsset,
     isEditBTCAddress,
     outputAsset,
+    btcAddress,
     setBtcAddress,
     btcAddress: storedBtcAddress,
     isValidBitcoinAddress,
@@ -27,28 +29,38 @@ export const InputAddress = () => {
     [inputAsset]
   );
 
-  const shouldShowAddress = useMemo(() => {
-    return (
-      (isEditBTCAddress || !walletBtcAddress) &&
-      ((inputAsset?.chain && isBitcoin(inputAsset.chain)) ||
-        (outputAsset?.chain && isBitcoin(outputAsset.chain)))
-    );
-  }, [isEditBTCAddress, walletBtcAddress, inputAsset, outputAsset]);
+  const shouldShowAddress = () => {
+    const isAlpenAddressNeeded =
+      inputAsset &&
+      (isAlpenSignetChain(inputAsset.chain) ||
+        (outputAsset && isAlpenSignetChain(outputAsset.chain)));
+
+    const isBitcoinAddressNeeded =
+      inputAsset &&
+      (isBitcoin(inputAsset.chain) ||
+        (outputAsset && isBitcoin(outputAsset.chain)));
+
+    if (isAlpenAddressNeeded) return true;
+    if (isBitcoinAddressNeeded && (isEditBTCAddress || !walletBtcAddress))
+      return true;
+    return false;
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value;
     if (!/^[a-zA-Z0-9]$/.test(input.at(-1) || "")) {
       input = input.slice(0, -1);
     }
+
     setBtcAddress(input);
   };
 
   // Use stored address if available, otherwise use wallet address
-  const displayAddress = storedBtcAddress || walletBtcAddress || "";
+  const displayAddress = storedBtcAddress || btcAddress || "";
 
   return (
     <AnimatePresence mode="wait">
-      {shouldShowAddress && (
+      {shouldShowAddress() && (
         <motion.div
           variants={addressExpandAnimation}
           initial="hidden"

@@ -1,13 +1,55 @@
 # Changelog
 
-## [1.1.9]
+## [2.0.3]
+
+### Added
+
+- Added Starknet and Solana support to OKX, and added Solana support to MetaMask.
 
 ### Fixed
 
+- enable starknet for wallet connection.
+- Update Packages to support BNB, Botanix to Starknet routes.
+- Balance display logic in AssetSelector and fix formatBigNumber function for precision.
+- Fix Alpen Signet Bitcoin Address show.
+- Update Alpen testnet multicall address
+- Update max spendable sbtc in alpen testnet
+- Update okx wallet connector from injected connector to legacyInjected in starknet config.
+- Update starknet config
+- Update Starknet balance fetching with multiple rpc nodes
+
+## [2.0.2]
+
+### Added
+
+- Warning message in console.
+- Added Monad Mainnet Support.
+
+### Fixed
+
+- Updated output error handling and fixed balance formatting.
+- Reduced unnecessary GET requests triggered by reactive useEffect dependencies in useOrderStatus hook.
+
+## [2.0.1]
+
+### Added
+
+- Added API key requirement for quote fetching.
+
+### Fixed
+
+- Updated coinbase wallet connection logic and hid unsupported ecosystems in connect wallet modal.
+
+## [2.0.0]
+
+### Fixed
+
+- Migrated to v2 routes.
 - Fixed chain and wallet logos.
 - Fixed Icon rounded issue in assets and chain, added new footer.
 - Fixed Native assets balances fetching.
 - Fixed X Link URL
+- Add dry run to all staking and distributor contract calls
 
 ## [1.1.8]
 
@@ -17,6 +59,7 @@
 - Redirect link to mempool transaction hash when deposit is not confirmed.
 - Added starknet support for Xverse wallet.
 - Implemented Swap bridge functionality.
+- New Stake page with GardenPass and refreshed UI.
 - Added Alpen Testnet support.
 - Added Tron Chain Support.
 - Add solver_id in Create Order Request.
