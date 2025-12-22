@@ -61,6 +61,7 @@
 - Implemented Swap bridge functionality.
 - New Stake page with GardenPass and refreshed UI.
 - Added Alpen Testnet support.
+- Added Tron Chain Support.
 - Add solver_id in Create Order Request.
 
 ### Fixed

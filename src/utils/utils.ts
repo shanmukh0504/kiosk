@@ -274,6 +274,17 @@ export function sortPendingOrders(orders: OrderWithStatus[]) {
   });
 }
 
+// Convert both to decimal for comparison (handle hex and decimal formats)
+export function normalizeChainId(chainId: string): string {
+  if (!chainId) return "";
+  // If it's hex (starts with 0x), convert to decimal
+  if (chainId.toLowerCase().startsWith("0x")) {
+    return parseInt(chainId, 16).toString();
+  }
+  // Otherwise return as-is (already decimal)
+  return chainId;
+}
+
 export const isAsset = (
   asset: Asset | null | undefined,
   chain: Chain,
