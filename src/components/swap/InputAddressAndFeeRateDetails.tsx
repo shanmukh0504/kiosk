@@ -6,7 +6,10 @@ import { swapStore } from "../../store/swapStore";
 import { detailsExpandAnimation } from "../../animations/animations";
 import { AddressType } from "../../constants/constants";
 import { decideAddressVisibility, isAlpenSignetChain } from "../../utils/utils";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import {
+  useBitcoinWallet,
+  useLitecoinWallet,
+} from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { Chains, isEVM } from "@gardenfi/orderbook";
 
@@ -22,6 +25,7 @@ export const InputAddressAndFeeRateDetails = () => {
     destinationAddress: walletDestination,
   } = swapStore();
   const { account } = useBitcoinWallet();
+  const { account: ltcAccount } = useLitecoinWallet();
   const { address: walletEvmAddress } = useEVMWallet();
 
   // For decideAddressVisibility, use wallet addresses only (source of truth)
@@ -74,20 +78,27 @@ export const InputAddressAndFeeRateDetails = () => {
       (inputAsset.chain === Chains.bitcoin ||
         inputAsset.chain === Chains.bitcoin_testnet) &&
       !isAlpenSignetChain(inputAsset.chain);
+    const isLitecoinChain =
+      inputAsset &&
+      inputAsset.chain === Chains.litecoin_testnet &&
+      !isAlpenSignetChain(inputAsset.chain);
     const isEvmChain = inputAsset && isEVM(inputAsset.chain);
 
     return !!(
       inputAsset &&
       !isEditAddress.source &&
       walletSource &&
-      ((isBitcoinChain && account) || (isEvmChain && walletEvmAddress))
+      ((isBitcoinChain && account) ||
+        (isEvmChain && walletEvmAddress) ||
+        (isLitecoinChain && ltcAccount))
     );
   }, [
-    account,
-    walletEvmAddress,
     inputAsset,
     isEditAddress.source,
     walletSource,
+    account,
+    walletEvmAddress,
+    ltcAccount,
   ]);
 
   const hasReceiveAddressInBottom = useMemo(() => {

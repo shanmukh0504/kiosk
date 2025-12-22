@@ -2,7 +2,10 @@ import { FC, ReactNode } from "react";
 import { Network } from "@gardenfi/utils";
 import { network } from "../constants/constants";
 import { WagmiProvider } from "wagmi";
-import { BTCWalletProvider } from "@gardenfi/wallet-connectors";
+import {
+  BTCWalletProvider,
+  LTCWalletProvider,
+} from "@gardenfi/wallet-connectors";
 import { StarknetConfig } from "@starknet-react/core";
 import { SolanaProvider } from "./solana/SolanaProvider.tsx";
 import {
@@ -22,23 +25,25 @@ export const WalletProviders: FC<WalletProviderProps> = ({ children }) => {
   return (
     <WagmiProvider config={config}>
       <BTCWalletProvider network={network as Network} store={localStorage}>
-        <StarknetConfig
-          defaultChainId={
-            network === Network.MAINNET
-              ? BigInt(starknetConstants.StarknetChainId.SN_MAIN)
-              : BigInt(starknetConstants.StarknetChainId.SN_SEPOLIA)
-          }
-          chains={starknetChains}
-          provider={starknetProviders}
-          connectors={starknetConnectors}
-          autoConnect
-        >
-          <SolanaProvider>
-            <SuiProvider>
-              <FrameProvider>{children}</FrameProvider>
-            </SuiProvider>
-          </SolanaProvider>
-        </StarknetConfig>
+        <LTCWalletProvider network={network as Network} store={localStorage}>
+          <StarknetConfig
+            defaultChainId={
+              network === Network.MAINNET
+                ? BigInt(starknetConstants.StarknetChainId.SN_MAIN)
+                : BigInt(starknetConstants.StarknetChainId.SN_SEPOLIA)
+            }
+            chains={starknetChains}
+            provider={starknetProviders}
+            connectors={starknetConnectors}
+            autoConnect
+          >
+            <SolanaProvider>
+              <SuiProvider>
+                <FrameProvider>{children}</FrameProvider>
+              </SuiProvider>
+            </SolanaProvider>
+          </StarknetConfig>
+        </LTCWalletProvider>
       </BTCWalletProvider>
     </WagmiProvider>
   );

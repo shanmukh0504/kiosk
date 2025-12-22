@@ -11,6 +11,7 @@ import {
   isSui,
   OrderWithStatus,
   Swap,
+  isLitecoin,
 } from "@gardenfi/orderbook";
 import { Assets } from "../store/assetInfoStore";
 
@@ -381,11 +382,15 @@ export const decideAddressVisibility = (
   // For other chains (Starknet, Solana, etc.), addresses come from wallet connection
   const isSourceBitcoinType =
     inputAsset &&
-    (isBitcoin(inputAsset.chain) || isAlpenSignetChain(inputAsset.chain));
+    (isBitcoin(inputAsset.chain) ||
+      isAlpenSignetChain(inputAsset.chain) ||
+      isLitecoin(inputAsset.chain));
 
   const isDestinationBitcoinType =
     outputAsset &&
-    (isBitcoin(outputAsset.chain) || isAlpenSignetChain(outputAsset.chain));
+    (isBitcoin(outputAsset.chain) ||
+      isAlpenSignetChain(outputAsset.chain) ||
+      isLitecoin(outputAsset.chain));
 
   const isSourceNeeded =
     inputAsset &&

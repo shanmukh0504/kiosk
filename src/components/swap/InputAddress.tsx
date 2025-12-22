@@ -6,8 +6,12 @@ import { addressExpandAnimation } from "../../animations/animations";
 import { swapStore } from "../../store/swapStore";
 import { AddressType } from "../../constants/constants";
 import { validateAddress } from "../../utils/addressValidation";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import {
+  useBitcoinWallet,
+  useLitecoinWallet,
+} from "@gardenfi/wallet-connectors";
 import { isPureBitcoin, formatChainNameForDisplay } from "../../utils/utils";
+import { isLitecoin } from "@gardenfi/orderbook";
 
 type InputAddressProps = {
   addressType: AddressType | undefined;
@@ -34,14 +38,20 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
     setIsEditAddress,
   } = swapStore();
   const { account: btcAccount } = useBitcoinWallet();
+  const { account: ltcAccount } = useLitecoinWallet();
 
   const isEditing = isRefund ? isEditAddress.source : isEditAddress.destination;
 
   const relevantAsset = isRefund ? inputAsset : outputAsset;
   const relevantChain = relevantAsset?.chain;
   const isBitcoinAsset = relevantChain ? isPureBitcoin(relevantChain) : false;
+  const isLitecoinAsset = relevantChain ? isLitecoin(relevantChain) : false;
   const chainDisplayName = formatChainNameForDisplay(relevantChain);
-  const isWalletConnected = isBitcoinAsset ? !!btcAccount : false;
+  const isWalletConnected = isBitcoinAsset
+    ? !!btcAccount
+    : isLitecoinAsset
+      ? !!ltcAccount
+      : false;
 
   // Track previous editing state to detect when edit mode is first activated
   const prevIsEditingRef = useRef(isEditing);
@@ -52,7 +62,12 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
   useEffect(() => {
     const justEnteredEditMode = !prevIsEditingRef.current && isEditing;
 
-    if (justEnteredEditMode && isBitcoinAsset && isWalletConnected) {
+    if (
+      justEnteredEditMode &&
+      isBitcoinAsset &&
+      isLitecoinAsset &&
+      isWalletConnected
+    ) {
       if (isRefund) {
         if (walletSource && !userProvidedAddress.source) {
           setUserProvidedAddress({ source: walletSource });
@@ -74,6 +89,7 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
     walletSource,
     walletDestination,
     userProvidedAddress,
+    isLitecoinAsset,
     setUserProvidedAddress,
   ]);
 

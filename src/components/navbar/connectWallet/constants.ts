@@ -23,6 +23,10 @@ export const ecosystems = {
     name: "Sui",
     icon: "https://garden.imgix.net/chain_images/sui.svg",
   },
+  [BlockchainType.litecoin]: {
+    name: "Litecoin",
+    icon: "https://garden.imgix.net/assets/LitecoinIcon.svg",
+  },
 } as const;
 
 export type EcosystemKeys = keyof typeof ecosystems;
@@ -35,6 +39,7 @@ interface BaseWallet {
   isStarknetSupported: boolean;
   isSolanaSupported: boolean;
   isSuiSupported: boolean;
+  isLitecoinSupported: boolean;
 }
 
 // Wallet capabilities interface
@@ -44,6 +49,7 @@ interface WalletCapabilities {
   [BlockchainType.starknet]?: boolean;
   [BlockchainType.solana]?: boolean;
   [BlockchainType.sui]?: boolean;
+  [BlockchainType.litecoin]?: boolean;
 }
 
 type GardenSupportedWalletsType = BaseWallet & WalletCapabilities;
@@ -62,6 +68,7 @@ const createWallet = (
   isStarknetSupported: capabilities[BlockchainType.starknet] ?? false,
   isSolanaSupported: capabilities[BlockchainType.solana] ?? false,
   isSuiSupported: capabilities[BlockchainType.sui] ?? false,
+  isLitecoinSupported: capabilities[BlockchainType.litecoin] ?? false,
 });
 
 export const GardenSupportedWallets: Record<
@@ -139,6 +146,12 @@ export const GardenSupportedWallets: Record<
     "https://www.argent.xyz/argent-x",
     { starknet: true }
   ),
+  enkrypt: createWallet(
+    "Enkrypt",
+    "wallets/EnkryptIcon.svg",
+    "https://www.enkrypt.com/",
+    { litecoin: true }
+  ),
   keplr: createWallet("Keplr", "wallets/keplr.svg", "tallLink:", {
     evm: network === Network.MAINNET,
     starknet: true,
@@ -158,6 +171,7 @@ export const GardenSupportedWallets: Record<
     "https://www.xverse.app/download",
     { bitcoin: true }
   ),
+
   // solflare: createWallet(
   //   "Solflare",
   //   "wallets/Solflare.svg",

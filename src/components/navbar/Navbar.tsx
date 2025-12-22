@@ -13,13 +13,17 @@ import { MobileMenu } from "./MobileMenu";
 import { modalNames, modalStore } from "../../store/modalStore";
 import ConnectedWallets from "./ConnectedWallets";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import {
+  useBitcoinWallet,
+  useLitecoinWallet,
+} from "@gardenfi/wallet-connectors";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { viewPortStore } from "../../store/viewPortStore";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
 
 export const Navbar = () => {
   const { isConnected, address } = useEVMWallet();
+  const { account: ltcAddress } = useLitecoinWallet();
   const { starknetAddress } = useStarknetWallet();
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
@@ -84,6 +88,7 @@ export const Navbar = () => {
         {address ||
         starknetAddress ||
         btcAddress ||
+        ltcAddress ||
         solanaAddress ||
         suiConnected ? (
           <ConnectedWallets />

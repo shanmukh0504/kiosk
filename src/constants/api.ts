@@ -30,7 +30,7 @@ export const API = () => {
     buildId: "/build-id.json",
     baseUrl: new Url(REQUIRED_ENV_VARS.BASE_URL),
     quote: {
-      quote: new Url(REQUIRED_ENV_VARS.BASE_URL),
+      quote: new Url(REQUIRED_ENV_VARS.QUOTE_URL),
       fiatValues: new Url(REQUIRED_ENV_VARS.QUOTE_URL).endpoint("/fiat"),
     },
     stake: {

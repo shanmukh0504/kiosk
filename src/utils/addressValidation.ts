@@ -1,4 +1,4 @@
-import { Chain, isBitcoin } from "@gardenfi/orderbook";
+import { Chain, isBitcoin, isLitecoin } from "@gardenfi/orderbook";
 import { validateBTCAddress } from "@gardenfi/core";
 import { Environment } from "@gardenfi/utils";
 import { network } from "../constants/constants";
@@ -14,6 +14,11 @@ const validateBitcoinAddress: AddressValidator = (address: string) => {
   return validateBTCAddress(address, network as unknown as Environment);
 };
 
+const validateLitecoinAddress: AddressValidator = (address: string) => {
+  if (!address) return false;
+  return validateBTCAddress(address, network as unknown as Environment);
+};
+
 /**
  * Hash map of chain type checkers to their respective validation functions
  */
@@ -24,6 +29,10 @@ const chainValidatorMap: Array<{
   {
     check: (chain: Chain) => isBitcoin(chain) || isAlpenSignetChain(chain),
     validator: validateBitcoinAddress,
+  },
+  {
+    check: (chain: Chain) => isLitecoin(chain),
+    validator: validateLitecoinAddress,
   },
 ];
 
