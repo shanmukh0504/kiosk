@@ -9,7 +9,7 @@ import { BTC, swapStore } from "../../store/swapStore";
 
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { Asset, isBitcoin, isSolana } from "@gardenfi/orderbook";
+import { Asset, isBitcoin, isSolana, isStarknet } from "@gardenfi/orderbook";
 import { motion, AnimatePresence } from "framer-motion";
 import { delayedFadeAnimation } from "../../animations/animations";
 import { SwapSavingsAndAddresses } from "./SwapSavingsAndAddresses";
@@ -22,6 +22,7 @@ import {
 } from "../../utils/utils";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { RateAndPriceDisplay } from "./RateAndPriceDisplay";
+import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 
 export const FeesAndRateDetails = () => {
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
@@ -44,6 +45,7 @@ export const FeesAndRateDetails = () => {
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
   const { address } = useEVMWallet();
+  const { starknetAddress } = useStarknetWallet();
   const { assets, fiatData } = assetInfoStore();
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
@@ -72,11 +74,13 @@ export const FeesAndRateDetails = () => {
       inputAsset
         ? isBitcoin(inputAsset.chain)
           ? btcAddress
-          : isSolana(inputAsset.chain)
-            ? solanaAddress
-            : address
+          : isStarknet(inputAsset.chain)
+            ? starknetAddress
+            : isSolana(inputAsset.chain)
+              ? solanaAddress
+              : address
         : undefined,
-    [inputAsset, btcAddress, solanaAddress, address]
+    [inputAsset, btcAddress, solanaAddress, address, starknetAddress]
   );
 
   const receiveAddress = useMemo(
