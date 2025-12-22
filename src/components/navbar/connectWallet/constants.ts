@@ -23,6 +23,10 @@ export const ecosystems = {
     name: "Sui",
     icon: "https://garden.imgix.net/chain_images/sui.svg",
   },
+  [BlockchainType.tron]: {
+    name: "tron",
+    icon: "https://garden.imgix.net/chain_images/TronIcon.svg",
+  },
 } as const;
 
 export type EcosystemKeys = keyof typeof ecosystems;
@@ -35,6 +39,7 @@ interface BaseWallet {
   isStarknetSupported: boolean;
   isSolanaSupported: boolean;
   isSuiSupported: boolean;
+  isTronSupported: boolean;
 }
 
 // Wallet capabilities interface
@@ -44,6 +49,7 @@ interface WalletCapabilities {
   [BlockchainType.starknet]?: boolean;
   [BlockchainType.solana]?: boolean;
   [BlockchainType.sui]?: boolean;
+  [BlockchainType.tron]?: boolean;
 }
 
 type GardenSupportedWalletsType = BaseWallet & WalletCapabilities;
@@ -62,6 +68,7 @@ const createWallet = (
   isStarknetSupported: capabilities[BlockchainType.starknet] ?? false,
   isSolanaSupported: capabilities[BlockchainType.solana] ?? false,
   isSuiSupported: capabilities[BlockchainType.sui] ?? false,
+  isTronSupported: capabilities[BlockchainType.tron] ?? false,
 });
 
 export const GardenSupportedWallets: Record<
@@ -186,4 +193,10 @@ export const GardenSupportedWallets: Record<
   //   "https://tokeo.io/",
   //   { sui: network === Network.MAINNET }
   // ),
+  tronlink: createWallet(
+    "tronlink",
+    "wallets/TronLinkIcon.svg",
+    "https://www.tronlink.org/",
+    { tron: true }
+  ),
 };
