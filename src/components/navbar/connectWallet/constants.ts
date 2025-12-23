@@ -87,7 +87,7 @@ export const GardenSupportedWallets: Record<
     "https://metamask.io/download/",
     {
       evm: true,
-      // solana: true
+      solana: true,
     }
   ),
   brave: createWallet(
@@ -103,7 +103,7 @@ export const GardenSupportedWallets: Record<
     {
       evm: network === Network.MAINNET,
       bitcoin: true,
-      // solana: true,
+      solana: true,
       // sui: true,
     }
   ),
@@ -121,7 +121,7 @@ export const GardenSupportedWallets: Record<
       bitcoin: network === Network.MAINNET,
       evm: true,
       starknet: network === Network.MAINNET,
-      // solana: true,
+      solana: true,
       // sui: network === Network.MAINNET,
     }
   ),
@@ -165,18 +165,18 @@ export const GardenSupportedWallets: Record<
     "https://www.xverse.app/download",
     { bitcoin: true }
   ),
-  // solflare: createWallet(
-  //   "Solflare",
-  //   "wallets/Solflare.svg",
-  //   "https://www.solflare.com/",
-  //   { solana: true }
-  // ),
+  solflare: createWallet(
+    "Solflare",
+    "wallets/Solflare.svg",
+    "https://www.solflare.com/",
+    { solana: true }
+  ),
   backpack: createWallet(
     "Backpack",
     "wallets/Backpack.svg",
     "https://backpack.app/",
     {
-      // solana: network === Network.MAINNET,
+      solana: network === Network.MAINNET,
       evm: network === Network.MAINNET,
       // sui: network === Network.MAINNET,
     }
