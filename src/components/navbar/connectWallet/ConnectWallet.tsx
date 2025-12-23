@@ -304,7 +304,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                 key === BlockchainType.evm ||
                 key === BlockchainType.bitcoin ||
                 key === BlockchainType.starknet ||
-                key === BlockchainType.tron
+                key === BlockchainType.tron ||
+                key === BlockchainType.solana
             )
             .map(([key, ecosystem]) => (
               <Chip
