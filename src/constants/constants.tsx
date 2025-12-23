@@ -160,6 +160,7 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "sui_testnet",
   "core",
   "tron_shasta",
+  "tron",
 ] as const;
 
 export const MULTICALL_CONTRACT_ADDRESSES: Record<number, string> = {
