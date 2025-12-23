@@ -102,7 +102,7 @@ export const GardenSupportedWallets: Record<
     "https://chromewebstore.google.com/detail/phantom/bfnaelmomeimhlpmgjnjophhpkkoljpa?hl=en",
     {
       evm: network === Network.MAINNET,
-      bitcoin: true,
+      bitcoin: network === Network.MAINNET,
       solana: true,
       // sui: true,
     }
