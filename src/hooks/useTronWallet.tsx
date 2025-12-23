@@ -32,24 +32,24 @@ export const useTronWallet = () => {
   const handleTronConnect = useCallback(
     async (selectedWallet: Wallet): Promise<void> => {
       try {
-        if (!wallet || wallet.adapter.name !== selectedWallet.adapter.name) {
-          select(selectedWallet.adapter.name);
-        }
+        select(selectedWallet.adapter.name);
+
+        await new Promise((resolve) => setTimeout(resolve, 100));
 
         await tronConnect();
 
-        if (wallet?.adapter?.switchChain) {
-          await wallet.adapter.switchChain(expectedChainId);
+        if (selectedWallet.adapter.switchChain) {
+          await selectedWallet.adapter.switchChain(expectedChainId);
         } else {
           console.log(
-            `Wallet adapter ${wallet?.adapter?.name} does not support switchChain()`
+            `Wallet adapter ${selectedWallet.adapter.name} does not support switchChain()`
           );
         }
       } catch (error) {
         console.error("Tron connect/switch error:", error);
       }
     },
-    [wallet, connected, tronConnect, expectedChainId, select]
+    [tronConnect, expectedChainId, select]
   );
 
   return {
