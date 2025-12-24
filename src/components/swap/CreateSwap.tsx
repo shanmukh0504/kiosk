@@ -166,18 +166,20 @@ export const CreateSwap = () => {
   }, [inputAsset, outputAsset]);
 
   const setupBalanceStreams = useCallback(() => {
-    if (address) connectBalanceStream(ChainType.EVM, address);
-    if (btcAddress) connectBalanceStream(ChainType.BITCOIN, btcAddress);
-    if (starknetAddress)
-      connectBalanceStream(ChainType.STARKNET, starknetAddress);
-    if (solanaAnchorProvider)
-      connectBalanceStream(
-        ChainType.SOLANA,
-        solanaAnchorProvider.publicKey.toString()
-      );
-    if (currentAccount)
-      connectBalanceStream(ChainType.SUI, currentAccount.address);
-    if (tronAddress) connectBalanceStream(ChainType.TRON, tronAddress);
+    [
+      address && connectBalanceStream(ChainType.EVM, address),
+      btcAddress && connectBalanceStream(ChainType.BITCOIN, btcAddress),
+      starknetAddress &&
+        connectBalanceStream(ChainType.STARKNET, starknetAddress),
+      solanaAnchorProvider &&
+        connectBalanceStream(
+          ChainType.SOLANA,
+          solanaAnchorProvider.publicKey.toString()
+        ),
+      currentAccount &&
+        connectBalanceStream(ChainType.SUI, currentAccount.address),
+      tronAddress && connectBalanceStream(ChainType.TRON, tronAddress),
+    ].filter(Boolean);
   }, [
     address,
     btcAddress,
@@ -211,18 +213,20 @@ export const CreateSwap = () => {
     setupBalanceStreams();
 
     return () => {
-      if (address) disconnectBalanceStream(ChainType.EVM, address);
-      if (btcAddress) disconnectBalanceStream(ChainType.BITCOIN, btcAddress);
-      if (starknetAddress)
-        disconnectBalanceStream(ChainType.STARKNET, starknetAddress);
-      if (solanaAnchorProvider)
-        disconnectBalanceStream(
-          ChainType.SOLANA,
-          solanaAnchorProvider.publicKey.toString()
-        );
-      if (currentAccount)
-        disconnectBalanceStream(ChainType.SUI, currentAccount.address);
-      if (tronAddress) disconnectBalanceStream(ChainType.TRON, tronAddress);
+      [
+        address && disconnectBalanceStream(ChainType.EVM, address),
+        btcAddress && disconnectBalanceStream(ChainType.BITCOIN, btcAddress),
+        starknetAddress &&
+          disconnectBalanceStream(ChainType.STARKNET, starknetAddress),
+        solanaAnchorProvider &&
+          disconnectBalanceStream(
+            ChainType.SOLANA,
+            solanaAnchorProvider.publicKey.toString()
+          ),
+        currentAccount &&
+          disconnectBalanceStream(ChainType.SUI, currentAccount.address),
+        tronAddress && disconnectBalanceStream(ChainType.TRON, tronAddress),
+      ].filter(Boolean);
     };
   }, [
     assets,
