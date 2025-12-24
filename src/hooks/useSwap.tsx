@@ -101,16 +101,11 @@ export const useSwap = () => {
     () =>
       inputBalance &&
       inputAsset &&
-      // !isStarknet(inputAsset.chain) &&
-      (!isSolana(inputAsset.chain) &&
-      !isTron(inputAsset.chain) &&
-      !isSui(inputAsset.chain)
-        ? formatBalance(
-            Number(inputBalance),
-            inputAsset.decimals,
-            Math.min(inputAsset.decimals, BTC.decimals)
-          )
-        : inputBalance.toString()),
+      formatBalance(
+        Number(inputBalance),
+        inputAsset.decimals,
+        Math.min(inputAsset.decimals, BTC.decimals)
+      ),
     [inputBalance, inputAsset]
   );
 

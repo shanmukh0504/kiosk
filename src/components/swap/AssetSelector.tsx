@@ -7,15 +7,7 @@ import {
 } from "@gardenfi/garden-book";
 import BigNumber from "bignumber.js";
 import { FC, useState, ChangeEvent, useEffect, useMemo, useRef } from "react";
-import {
-  // isStarknet,
-  isSolana,
-  isSui,
-  isTron,
-  Asset,
-  ChainAsset,
-  ChainData,
-} from "@gardenfi/orderbook";
+import { Asset, ChainAsset, ChainData } from "@gardenfi/orderbook";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { BTC, swapStore } from "../../store/swapStore";
 import { IOType, network } from "../../constants/constants";
@@ -154,14 +146,9 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             balance && asset && balance.toNumber() === 0
               ? ""
               : balance &&
-                  // !isStarknet(asset.chain) &&
-                  !isTron(asset.chain) &&
-                  !isSolana(asset.chain) &&
-                  !isSui(asset.chain)
-                ? new BigNumber(balance)
-                    .dividedBy(10 ** asset.decimals)
-                    .toNumber()
-                : balance?.toNumber();
+                new BigNumber(balance)
+                  .dividedBy(10 ** asset.decimals)
+                  .toNumber();
           const fiatBalance =
             formattedBalance && (formattedBalance * fiatRate).toFixed(5);
           const balanceToBeDisplayed =
