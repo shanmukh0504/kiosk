@@ -17,6 +17,7 @@ import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { viewPortStore } from "../../store/viewPortStore";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
+import { useTronWallet } from "../../hooks/useTronWallet";
 
 export const Navbar = () => {
   const { isConnected, address } = useEVMWallet();
@@ -24,6 +25,7 @@ export const Navbar = () => {
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
   const { suiConnected } = useSuiWallet();
+  const { tronConnected } = useTronWallet();
   const { setOpenModal } = modalStore();
   const { isMobile } = viewPortStore();
 
@@ -85,7 +87,8 @@ export const Navbar = () => {
         starknetAddress ||
         btcAddress ||
         solanaAddress ||
-        suiConnected ? (
+        suiConnected ||
+        tronConnected ? (
           <ConnectedWallets />
         ) : (
           <Button

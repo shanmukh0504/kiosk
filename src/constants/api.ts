@@ -60,6 +60,11 @@ export const API = () => {
           .endpoint("balances")
           .endpoint("sui")
           .endpoint(address),
+      tron: (address: string) =>
+        new Url(REQUIRED_ENV_VARS.BALANCE_URL)
+          .endpoint("balances")
+          .endpoint("tron")
+          .endpoint(address),
     },
     stake: {
       stakePosition: (userId: string) =>

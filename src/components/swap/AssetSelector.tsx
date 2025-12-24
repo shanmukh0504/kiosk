@@ -11,6 +11,7 @@ import {
   // isStarknet,
   isSolana,
   isSui,
+  isTron,
   Asset,
   ChainAsset,
   ChainData,
@@ -22,7 +23,7 @@ import { modalStore } from "../../store/modalStore";
 import { ChainsTooltip } from "./ChainsTooltip";
 import { AvailableChainsSidebar } from "./AvailableChainsSidebar";
 import { AnimatePresence, motion } from "framer-motion";
-import { formatBalance } from "../../utils/utils";
+import { formatBalance, isStableCoinOrSeed } from "../../utils/utils";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
@@ -154,6 +155,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
               ? ""
               : balance &&
                   // !isStarknet(asset.chain) &&
+                  !isTron(asset.chain) &&
                   !isSolana(asset.chain) &&
                   !isSui(asset.chain)
                 ? new BigNumber(balance)
@@ -167,7 +169,9 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             formatBalance(
               formattedBalance,
               0,
-              Math.min(asset.decimals, BTC.decimals)
+              isStableCoinOrSeed(asset)
+                ? 2
+                : Math.min(asset.decimals, BTC.decimals)
             );
 
           return {

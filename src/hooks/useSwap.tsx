@@ -13,6 +13,7 @@ import {
   isStarknet,
   isEVM,
   ChainAsset,
+  isTron,
   Chains,
 } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
@@ -29,11 +30,17 @@ import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import BigNumber from "bignumber.js";
 import { useSolanaWallet } from "./useSolanaWallet";
-import { formatAmount, formatBalance, isAsset } from "../utils/utils";
+import {
+  formatAmount,
+  formatBalance,
+  isAsset,
+  isAlpenSignetChain,
+} from "../utils/utils";
 import { useNetworkFees } from "./useNetworkFees";
 import { useSuiWallet } from "./useSuiWallet";
 import logger from "../utils/logger";
 import { balanceStore } from "../store/balanceStore";
+import { useTronWallet } from "./useTronWallet";
 
 export const useSwap = () => {
   const {
@@ -81,6 +88,7 @@ export const useSwap = () => {
   const { starknetAddress } = useStarknetWallet();
   const { setOpenModal } = modalStore();
   const { solanaAddress } = useSolanaWallet();
+  const { tronAddress } = useTronWallet();
   const { currentAccount } = useSuiWallet();
   useNetworkFees();
 
@@ -93,9 +101,9 @@ export const useSwap = () => {
     () =>
       inputBalance &&
       inputAsset &&
-      (
-        // !isStarknet(inputAsset.chain) &&
-      !isSolana(inputAsset.chain) &&
+      // !isStarknet(inputAsset.chain) &&
+      (!isSolana(inputAsset.chain) &&
+      !isTron(inputAsset.chain) &&
       !isSui(inputAsset.chain)
         ? formatBalance(
             Number(inputBalance),
@@ -434,6 +442,10 @@ export const useSwap = () => {
         check: (chain: Chain) => isSui(chain),
         address: currentAccount?.address,
       },
+      tron: {
+        check: (chain: Chain) => isTron(chain),
+        address: tronAddress,
+      },
     };
 
     for (const [chainKey, { check, address }] of Object.entries(
@@ -454,6 +466,7 @@ export const useSwap = () => {
     starknetAddress,
     solanaAddress,
     currentAccount,
+    tronAddress,
   ]);
 
   const handleSwapClick = async () => {
@@ -554,7 +567,7 @@ export const useSwap = () => {
 
       if (isBitcoin(inputAsset.chain)) {
         const orderResponse = res.val as BitcoinOrderResponse;
-        if (provider) {
+        if (provider && !isAlpenSignetChain(inputAsset.chain)) {
           const bitcoinRes = await provider.sendBitcoin(
             orderResponse.to,
             Number(orderResponse.amount)
@@ -687,10 +700,18 @@ export const useSwap = () => {
 
   //set btc address if bitcoin wallet is connected
   useEffect(() => {
-    if (account) {
-      setBtcAddress(account);
+    if (
+      inputAsset &&
+      outputAsset &&
+      account &&
+      !isAlpenSignetChain(inputAsset.chain) &&
+      !isAlpenSignetChain(outputAsset.chain)
+    ) {
+      setBtcAddress(account ? account : "");
+    } else {
+      setBtcAddress("");
     }
-  }, [account, setBtcAddress]);
+  }, [account, setBtcAddress, inputAsset, outputAsset]);
 
   // Update isValidBitcoinAddress state in an effect
   useEffect(() => {

@@ -14,12 +14,14 @@ import { useAccount } from "@starknet-react/core";
 import { Network } from "@gardenfi/utils";
 import { useSolanaWallet } from "../hooks/useSolanaWallet";
 import { useSuiWallet } from "../hooks/useSuiWallet";
+import { useTronWallet } from "../hooks/useTronWallet";
 
 function App() {
   const { data: walletClient } = useWalletClient();
   const { account: starknetWallet } = useAccount();
   const { solanaAnchorProvider } = useSolanaWallet();
   const { suiSelectedWallet } = useSuiWallet();
+  const { wallet: tronWallet } = useTronWallet();
 
   return (
     <GardenProvider
@@ -37,6 +39,7 @@ function App() {
           starknet: starknetWallet,
           solana: solanaAnchorProvider ?? undefined,
           sui: suiSelectedWallet ?? undefined,
+          tron: tronWallet?.adapter ?? undefined,
         },
         solanaProgramAddress: {
           native: import.meta.env.VITE_SOLANA_PROGRAM_ADDRESS_NATIVE,

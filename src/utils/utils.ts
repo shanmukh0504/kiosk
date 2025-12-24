@@ -274,6 +274,17 @@ export function sortPendingOrders(orders: OrderWithStatus[]) {
   });
 }
 
+// Convert both to decimal for comparison (handle hex and decimal formats)
+export function normalizeChainId(chainId: string): string {
+  if (!chainId) return "";
+  // If it's hex (starts with 0x), convert to decimal
+  if (chainId.toLowerCase().startsWith("0x")) {
+    return parseInt(chainId, 16).toString();
+  }
+  // Otherwise return as-is (already decimal)
+  return chainId;
+}
+
 export const isAsset = (
   asset: Asset | null | undefined,
   chain: Chain,
@@ -325,4 +336,15 @@ To learn more about Garden, refer to our documentation: https://docs.garden.fina
       "color: #eb8daf; font-weight: bold; font-size: 12px;"
     );
   }
+};
+
+export const isAlpenSignetChain = (chain: string) => {
+  return chain.toLowerCase().includes("alpen_signet");
+};
+
+export const isStableCoinOrSeed = (asset: Asset) => {
+  return (
+    asset.symbol.toLowerCase().includes("usd") ||
+    asset.symbol.toLowerCase().includes("seed")
+  );
 };

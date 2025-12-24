@@ -3,7 +3,7 @@ import { IOType } from "../constants/constants";
 import { ChainAsset } from "@gardenfi/orderbook";
 import BigNumber from "bignumber.js";
 import { assetInfoStore } from "./assetInfoStore";
-import { balanceSSEService } from "../utils/balanceSSEService";
+import { balanceSSEService, ChainType } from "../utils/balanceSSEService";
 
 type BalanceStoreState = {
   balances: Record<string, BigNumber | undefined>;
@@ -21,14 +21,8 @@ type BalanceStoreState = {
   subscriptions: Map<string, () => void>;
 
   // New unified balance fetching methods
-  connectBalanceStream: (
-    chainType: "bitcoin" | "evm" | "starknet" | "solana" | "sui",
-    address: string
-  ) => void;
-  disconnectBalanceStream: (
-    chainType: "bitcoin" | "evm" | "starknet" | "solana" | "sui",
-    address: string
-  ) => void;
+  connectBalanceStream: (chainType: ChainType, address: string) => void;
+  disconnectBalanceStream: (chainType: ChainType, address: string) => void;
   disconnectAllStreams: () => void;
 
   clearBalances: () => void;
@@ -66,49 +60,46 @@ export const balanceStore = create<BalanceStoreState>((set, get) => ({
     const { subscriptions } = get();
 
     if (subscriptions.has(key)) {
-      balanceSSEService.subscribe(
-        chainType,
-        address,
-        async (rawBalances) => {
-          const assets = assetInfoStore.getState().assets;
-          if (!assets) {
-            return;
-          }
-
-          const updatedBalances: Record<string, BigNumber | undefined> = {};
-          const notMatchedAssets: string[] = [];
-
-          for (const [assetId, balance] of Object.entries(rawBalances)) {
-            const matchingAsset = Object.values(assets).find((asset) => {
-              if ((asset as any).formatted === assetId) return true;
-
-              if (asset.id === assetId) return true;
-
-              const [chainPart, symbolPart] = assetId.split(":");
-              const chainMatch = asset.chain === chainPart;
-              const symbolMatch = asset.symbol.toLowerCase() === symbolPart?.toLowerCase();
-              return chainMatch && symbolMatch;
-            });
-
-            if (matchingAsset) {
-              const assetKey = ChainAsset.from(matchingAsset.id).toString();
-              updatedBalances[assetKey] = balance;
-            } else {
-              notMatchedAssets.push(assetId);
-            }
-          }
-          const currentBalances = get().balances;
-          const newBalances = {
-            ...currentBalances,
-            ...updatedBalances,
-          };
-
-          set({
-            balances: newBalances,
-            balanceFetched: true,
-          });
+      balanceSSEService.subscribe(chainType, address, async (rawBalances) => {
+        const assets = assetInfoStore.getState().assets;
+        if (!assets) {
+          return;
         }
-      );
+
+        const updatedBalances: Record<string, BigNumber | undefined> = {};
+        const notMatchedAssets: string[] = [];
+
+        for (const [assetId, balance] of Object.entries(rawBalances)) {
+          const matchingAsset = Object.values(assets).find((asset) => {
+            if ((asset as any).formatted === assetId) return true;
+
+            if (asset.id === assetId) return true;
+
+            const [chainPart, symbolPart] = assetId.split(":");
+            const chainMatch = asset.chain === chainPart;
+            const symbolMatch =
+              asset.symbol.toLowerCase() === symbolPart?.toLowerCase();
+            return chainMatch && symbolMatch;
+          });
+
+          if (matchingAsset) {
+            const assetKey = ChainAsset.from(matchingAsset.id).toString();
+            updatedBalances[assetKey] = balance;
+          } else {
+            notMatchedAssets.push(assetId);
+          }
+        }
+        const currentBalances = get().balances;
+        const newBalances = {
+          ...currentBalances,
+          ...updatedBalances,
+        };
+
+        set({
+          balances: newBalances,
+          balanceFetched: true,
+        });
+      });
       return;
     }
 
@@ -132,7 +123,8 @@ export const balanceStore = create<BalanceStoreState>((set, get) => ({
 
             const [chainPart, symbolPart] = assetId.split(":");
             const chainMatch = asset.chain === chainPart;
-            const symbolMatch = asset.symbol.toLowerCase() === symbolPart?.toLowerCase();
+            const symbolMatch =
+              asset.symbol.toLowerCase() === symbolPart?.toLowerCase();
             return chainMatch && symbolMatch;
           });
 

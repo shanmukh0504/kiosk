@@ -12,6 +12,7 @@ import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
 import { balanceStore } from "../../store/balanceStore";
+import { ChainType } from "../../utils/balanceSSEService";
 import {
   capitalizeChain,
   getAssetFromChainAndSymbol,
@@ -30,12 +31,14 @@ import {
   isStarknet,
   isSolana,
   isSui,
+  isTron,
   Chain,
   BlockchainType,
 } from "@gardenfi/orderbook";
 import { swapStore } from "../../store/swapStore";
 import { AnimatePresence, motion } from "framer-motion";
 import { CompetitorComparisons } from "./CompetitorComparisons";
+import { useTronWallet } from "../../hooks/useTronWallet";
 
 export const CreateSwap = () => {
   const [loadingDisabled, setLoadingDisabled] = useState(false);
@@ -50,6 +53,7 @@ export const CreateSwap = () => {
   const { starknetAddress } = useStarknetWallet();
   const { solanaAnchorProvider } = useSolanaWallet();
   const { currentAccount } = useSuiWallet();
+  const { tronAddress } = useTronWallet();
   const { assets, fetchAndSetFiatValues } = assetInfoStore();
   const { connectBalanceStream, disconnectBalanceStream } = balanceStore();
   const {
@@ -95,7 +99,8 @@ export const CreateSwap = () => {
       isBitcoin(inputAsset.chain) ||
       isStarknet(inputAsset.chain) ||
       isSolana(inputAsset.chain) ||
-      isSui(inputAsset.chain)
+      isSui(inputAsset.chain) ||
+      isTron(inputAsset.chain)
     )
       return true;
     return WALLET_SUPPORTED_CHAINS[connector.id].includes(inputAsset.chain);
@@ -161,17 +166,25 @@ export const CreateSwap = () => {
   }, [inputAsset, outputAsset]);
 
   const setupBalanceStreams = useCallback(() => {
-    address && connectBalanceStream("evm", address);
-    btcAddress && connectBalanceStream("bitcoin", btcAddress);
-    starknetAddress && connectBalanceStream("starknet", starknetAddress);
-    solanaAnchorProvider && connectBalanceStream("solana", solanaAnchorProvider.publicKey.toString());
-    currentAccount && connectBalanceStream("sui", currentAccount.address);
+    if (address) connectBalanceStream(ChainType.EVM, address);
+    if (btcAddress) connectBalanceStream(ChainType.BITCOIN, btcAddress);
+    if (starknetAddress)
+      connectBalanceStream(ChainType.STARKNET, starknetAddress);
+    if (solanaAnchorProvider)
+      connectBalanceStream(
+        ChainType.SOLANA,
+        solanaAnchorProvider.publicKey.toString()
+      );
+    if (currentAccount)
+      connectBalanceStream(ChainType.SUI, currentAccount.address);
+    if (tronAddress) connectBalanceStream(ChainType.TRON, tronAddress);
   }, [
     address,
     btcAddress,
     currentAccount,
     starknetAddress,
     solanaAnchorProvider,
+    tronAddress,
     connectBalanceStream,
   ]);
 
@@ -198,11 +211,18 @@ export const CreateSwap = () => {
     setupBalanceStreams();
 
     return () => {
-      address && disconnectBalanceStream("evm", address);
-      btcAddress && disconnectBalanceStream("bitcoin", btcAddress);
-      starknetAddress && disconnectBalanceStream("starknet", starknetAddress);
-      solanaAnchorProvider && disconnectBalanceStream("solana", solanaAnchorProvider.publicKey.toString());
-      currentAccount && disconnectBalanceStream("sui", currentAccount.address);
+      if (address) disconnectBalanceStream(ChainType.EVM, address);
+      if (btcAddress) disconnectBalanceStream(ChainType.BITCOIN, btcAddress);
+      if (starknetAddress)
+        disconnectBalanceStream(ChainType.STARKNET, starknetAddress);
+      if (solanaAnchorProvider)
+        disconnectBalanceStream(
+          ChainType.SOLANA,
+          solanaAnchorProvider.publicKey.toString()
+        );
+      if (currentAccount)
+        disconnectBalanceStream(ChainType.SUI, currentAccount.address);
+      if (tronAddress) disconnectBalanceStream(ChainType.TRON, tronAddress);
     };
   }, [
     assets,
@@ -211,6 +231,7 @@ export const CreateSwap = () => {
     starknetAddress,
     solanaAnchorProvider,
     currentAccount,
+    tronAddress,
     setupBalanceStreams,
     disconnectBalanceStream,
     fetchAndSetFiatValues,
