@@ -10,6 +10,7 @@ import {
   isSolana,
   isStarknet,
   isSui,
+  isTron,
 } from "@gardenfi/orderbook";
 import { BitcoinProvider } from "@gardenfi/core";
 import { PublicKey } from "@solana/web3.js";
@@ -20,6 +21,7 @@ import {
   getSolanaTokenBalance,
   getStarknetTokenBalance,
   getSuiTokenBalance,
+  getTronTokenBalance,
 } from "../utils/getTokenBalance";
 import { Hex } from "viem";
 import { getSpendableBalance } from "../utils/getmaxBtc";
@@ -53,6 +55,7 @@ type BalanceStoreState = {
   fetchAndSetStarknetBalance: (address: string) => Promise<void>;
   fetchAndSetSolanaBalance: (address: PublicKey) => Promise<void>;
   fetchAndSetSuiBalance: (address: string) => Promise<void>;
+  fetchAndSetTronBalance: (address: string) => Promise<void>;
   clearBalances: () => void;
 };
 
@@ -274,6 +277,21 @@ export const balanceStore = create<BalanceStoreState>((set, get) => ({
     const assetKey = ChainAsset.from(suiAsset.id).toString();
     suiBalance[assetKey] = new BigNumber(balance);
     set({ balances: { ...get().balances, ...suiBalance } });
+  },
+
+  fetchAndSetTronBalance: async (address: string) => {
+    const assets = assetInfoStore.getState().assets;
+    if (!assets) return;
+
+    const tronAsset = Object.values(assets).find((asset) =>
+      isTron(asset.chain)
+    );
+    if (!tronAsset) return;
+    const tronBalance: Record<string, BigNumber | undefined> = {};
+    const balance = await getTronTokenBalance(address, tronAsset);
+    const assetKey = ChainAsset.from(tronAsset.id).toString();
+    tronBalance[assetKey] = new BigNumber(balance);
+    set({ balances: { ...get().balances, ...tronBalance } });
   },
 
   clearBalances: () =>

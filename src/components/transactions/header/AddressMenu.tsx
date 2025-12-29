@@ -16,6 +16,7 @@ import { useSuiWallet } from "../../../hooks/useSuiWallet";
 import transactionHistoryStore from "../../../store/transactionHistoryStore";
 import orderInProgressStore from "../../../store/orderInProgressStore";
 import { balanceStore } from "../../../store/balanceStore";
+import { useTronWallet } from "../../../hooks/useTronWallet";
 
 type AddressMenuProps = {
   onClose: () => void;
@@ -29,6 +30,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const { account: btcAddress, disconnect: btcDisconnect } = useBitcoinWallet();
   const { solanaAddress, solanaDisconnect } = useSolanaWallet();
   const { suiConnected, currentAccount, suiDisconnect } = useSuiWallet();
+  const { tronConnected, wallet: tronWallet, tronDisconnect } = useTronWallet();
   const { setIsOpen } = orderInProgressStore();
   const { setOpenModal } = modalStore();
   const { resetTransactions } = transactionHistoryStore();
@@ -55,6 +57,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
     starknetDisconnect();
     solanaDisconnect();
     suiDisconnect();
+    tronDisconnect();
     clearBalances();
     setIsOpen(false);
     onClose();
@@ -93,6 +96,12 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
             <Address
               address={currentAccount?.address ?? ""}
               logo={ecosystems.sui.icon}
+            />
+          )}
+          {tronConnected && tronWallet?.adapter.address && (
+            <Address
+              address={tronWallet.adapter.address}
+              logo={ecosystems.tron.icon}
             />
           )}
           {showConnectWallet && (

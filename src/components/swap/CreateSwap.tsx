@@ -32,12 +32,14 @@ import {
   isStarknet,
   isSolana,
   isSui,
+  isTron,
   Chain,
   BlockchainType,
 } from "@gardenfi/orderbook";
 import { swapStore } from "../../store/swapStore";
 import { AnimatePresence, motion } from "framer-motion";
 import { CompetitorComparisons } from "./CompetitorComparisons";
+import { useTronWallet } from "../../hooks/useTronWallet";
 
 export const CreateSwap = () => {
   const [loadingDisabled, setLoadingDisabled] = useState(false);
@@ -52,6 +54,7 @@ export const CreateSwap = () => {
   const { starknetAddress } = useStarknetWallet();
   const { solanaAnchorProvider } = useSolanaWallet();
   const { currentAccount } = useSuiWallet();
+  const { tronAddress } = useTronWallet();
   const { isAssetSelectorOpen, assets, fetchAndSetFiatValues } =
     assetInfoStore();
   const {
@@ -60,6 +63,7 @@ export const CreateSwap = () => {
     fetchAndSetStarknetBalance,
     fetchAndSetSolanaBalance,
     fetchAndSetSuiBalance,
+    fetchAndSetTronBalance,
   } = balanceStore();
 
   // Initialize address fillers
@@ -183,6 +187,7 @@ export const CreateSwap = () => {
       solanaAnchorProvider &&
         fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey),
       currentAccount && fetchAndSetSuiBalance(currentAccount.address),
+      tronAddress && fetchAndSetTronBalance(tronAddress),
     ]);
   }, [
     address,
@@ -197,6 +202,8 @@ export const CreateSwap = () => {
     fetchAndSetFiatValues,
     fetchAndSetStarknetBalance,
     fetchAndSetSolanaBalance,
+    fetchAndSetTronBalance,
+    tronAddress,
   ]);
 
   const fetchInputAssetBalance = useCallback(async () => {
@@ -212,6 +219,8 @@ export const CreateSwap = () => {
       await fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey);
     if (isSui(inputAsset.chain) && currentAccount)
       await fetchAndSetSuiBalance(currentAccount.address);
+    if (isTron(inputAsset.chain) && tronAddress)
+      await fetchAndSetTronBalance(tronAddress);
   }, [
     fetchAndSetFiatValues,
     inputAsset,
@@ -226,6 +235,8 @@ export const CreateSwap = () => {
     fetchAndSetSolanaBalance,
     currentAccount,
     fetchAndSetSuiBalance,
+    tronAddress,
+    fetchAndSetTronBalance,
   ]);
 
   const handleConnectWallet = () => {

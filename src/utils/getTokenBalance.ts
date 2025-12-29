@@ -7,6 +7,7 @@ import {
   isSolanaNativeToken,
   isStarknet,
   isSui,
+  isTron,
 } from "@gardenfi/orderbook";
 import { Network, with0x } from "@gardenfi/utils";
 import BigNumber from "bignumber.js";
@@ -18,11 +19,12 @@ import {
 } from "viem";
 import { formatAmount } from "./utils";
 import { RpcProvider, Contract } from "starknet";
-import { network, STARKNET_CONFIG } from "../constants/constants";
+import { network, TronConfig, STARKNET_CONFIG } from "../constants/constants";
 import { Connection, PublicKey } from "@solana/web3.js";
 import logger from "./logger";
 import { getFullnodeUrl } from "@mysten/sui/client";
 import { getSuiTotalGasFee } from "./getNetworkFees";
+import { TronWeb } from "tronweb";
 
 const erc20ABI = [
   {
@@ -308,3 +310,28 @@ export const getSuiTokenBalance = async (
     return 0;
   }
 };
+
+export async function getTronTokenBalance(
+  address: string,
+  asset: Asset
+): Promise<number> {
+  if (!isTron(asset.chain)) return 0;
+  if (!address || !asset.token?.address) return 0;
+
+  const tronWeb = new TronWeb({
+    fullHost: TronConfig[network].hostUrl,
+  });
+
+  tronWeb.setAddress(address);
+
+  try {
+    const contract = await tronWeb.contract().at(asset.token.address);
+    const balance = await contract.balanceOf(address).call();
+
+    const formattedBalance = formatAmount(balance, asset.decimals, 8);
+    return formattedBalance;
+  } catch (err) {
+    console.error("getTronTokenBalance error:", err);
+    return 0;
+  }
+}

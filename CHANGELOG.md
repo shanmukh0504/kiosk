@@ -5,6 +5,8 @@
 ### Added
 
 - Added Starknet and Solana support to OKX, and added Solana support to MetaMask.
+- Reverted Solana in Kiosk.
+- Added support for Tron Mainnet
 
 ### Fixed
 
@@ -61,6 +63,7 @@
 - Implemented Swap bridge functionality.
 - New Stake page with GardenPass and refreshed UI.
 - Added Alpen Testnet support.
+- Added Tron Chain Support.
 - Add solver_id in Create Order Request.
 
 ### Fixed

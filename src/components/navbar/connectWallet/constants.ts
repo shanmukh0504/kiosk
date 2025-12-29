@@ -23,6 +23,10 @@ export const ecosystems = {
     name: "Sui",
     icon: "https://garden.imgix.net/chain_images/sui.svg",
   },
+  [BlockchainType.tron]: {
+    name: "tron",
+    icon: "https://garden.imgix.net/chain_images/TronIcon.svg",
+  },
   [BlockchainType.litecoin]: {
     name: "Litecoin",
     icon: "https://garden.imgix.net/assets/LitecoinIcon.svg",
@@ -39,6 +43,7 @@ interface BaseWallet {
   isStarknetSupported: boolean;
   isSolanaSupported: boolean;
   isSuiSupported: boolean;
+  isTronSupported: boolean;
   isLitecoinSupported: boolean;
 }
 
@@ -49,6 +54,7 @@ interface WalletCapabilities {
   [BlockchainType.starknet]?: boolean;
   [BlockchainType.solana]?: boolean;
   [BlockchainType.sui]?: boolean;
+  [BlockchainType.tron]?: boolean;
   [BlockchainType.litecoin]?: boolean;
 }
 
@@ -68,6 +74,7 @@ const createWallet = (
   isStarknetSupported: capabilities[BlockchainType.starknet] ?? false,
   isSolanaSupported: capabilities[BlockchainType.solana] ?? false,
   isSuiSupported: capabilities[BlockchainType.sui] ?? false,
+  isTronSupported: capabilities[BlockchainType.tron] ?? false,
   isLitecoinSupported: capabilities[BlockchainType.litecoin] ?? false,
 });
 
@@ -87,7 +94,7 @@ export const GardenSupportedWallets: Record<
     "https://metamask.io/download/",
     {
       evm: true,
-      // solana: true
+      solana: true,
     }
   ),
   brave: createWallet(
@@ -102,8 +109,8 @@ export const GardenSupportedWallets: Record<
     "https://chromewebstore.google.com/detail/phantom/bfnaelmomeimhlpmgjnjophhpkkoljpa?hl=en",
     {
       evm: network === Network.MAINNET,
-      bitcoin: true,
-      // solana: true,
+      bitcoin: network === Network.MAINNET,
+      solana: true,
       // sui: true,
     }
   ),
@@ -121,7 +128,7 @@ export const GardenSupportedWallets: Record<
       bitcoin: network === Network.MAINNET,
       evm: true,
       starknet: network === Network.MAINNET,
-      // solana: true,
+      solana: true,
       // sui: network === Network.MAINNET,
     }
   ),
@@ -177,19 +184,18 @@ export const GardenSupportedWallets: Record<
     "https://www.xverse.app/download",
     { bitcoin: true }
   ),
-
-  // solflare: createWallet(
-  //   "Solflare",
-  //   "wallets/Solflare.svg",
-  //   "https://www.solflare.com/",
-  //   { solana: true }
-  // ),
+  solflare: createWallet(
+    "Solflare",
+    "wallets/Solflare.svg",
+    "https://www.solflare.com/",
+    { solana: true }
+  ),
   backpack: createWallet(
     "Backpack",
     "wallets/Backpack.svg",
     "https://backpack.app/",
     {
-      // solana: network === Network.MAINNET,
+      solana: network === Network.MAINNET,
       evm: network === Network.MAINNET,
       // sui: network === Network.MAINNET,
     }
@@ -206,4 +212,10 @@ export const GardenSupportedWallets: Record<
   //   "https://tokeo.io/",
   //   { sui: network === Network.MAINNET }
   // ),
+  tronlink: createWallet(
+    "tronlink",
+    "wallets/TronLinkIcon.svg",
+    "https://www.tronlink.org/",
+    { tron: true }
+  ),
 };

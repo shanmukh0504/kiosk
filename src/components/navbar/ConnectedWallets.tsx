@@ -14,6 +14,7 @@ import pendingOrdersStore from "../../store/pendingOrdersStore";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { deletedOrdersStore } from "../../store/deletedOrdersStore";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
+import { useTronWallet } from "../../hooks/useTronWallet";
 
 const ConnectedWallets = () => {
   const { address } = useEVMWallet();
@@ -22,6 +23,7 @@ const ConnectedWallets = () => {
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
   const { suiConnected, currentAccount } = useSuiWallet();
+  const { tronConnected, wallet: tronAccount } = useTronWallet();
   const { pendingOrders } = useGarden();
   const { setOpenModal } = modalStore();
   const { isOrderDeleted, cleanupDeletedOrders, deletedOrders } =
@@ -102,6 +104,13 @@ const ConnectedWallets = () => {
             src={ecosystems.sui.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="Sui wallet"
+          />
+        )}
+        {tronConnected && tronAccount && (
+          <img
+            src={ecosystems.tron.icon}
+            className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            alt="Tron wallet"
           />
         )}
         {pendingOrdersCount ? (

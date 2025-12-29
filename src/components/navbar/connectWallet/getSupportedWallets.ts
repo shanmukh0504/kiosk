@@ -10,6 +10,7 @@ import { GardenSupportedWallets } from "./constants";
 import { Connector as StarknetConnector } from "@starknet-react/core";
 import { Wallet as SolanaWallet } from "@solana/wallet-adapter-react";
 import { WalletWithRequiredFeatures as SuiWallet } from "@mysten/wallet-standard";
+import { Wallet as TronWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
 import { BlockchainType } from "@gardenfi/orderbook";
 
 export type Wallet = {
@@ -22,6 +23,7 @@ export type Wallet = {
     starknetWallet?: StarknetConnector;
     solanaWallet?: SolanaWallet;
     suiWallet?: SuiWallet;
+    tronWallet?: TronWallet;
     litecoinWallet?: IInjectedLitecoinProvider;
   };
   isAvailable: boolean;
@@ -31,6 +33,7 @@ export type Wallet = {
   isStarknet?: boolean;
   isSolana?: boolean;
   isSui?: boolean;
+  isTron?: boolean;
   isLitecoin?: boolean;
 };
 
@@ -44,6 +47,8 @@ export type ConnectionState = {
   solanaSelectedWallet?: SolanaWallet | null;
   suiConnected?: boolean;
   suiSelectedWallet?: SuiWallet | null;
+  tronConnected?: boolean;
+  tronSelectedWallet?: TronWallet | null;
 };
 
 const checkManualWalletAvailability = (
@@ -80,7 +85,8 @@ export const getAvailableWallets = (
   evmWallets?: GetConnectorsReturnType,
   starknetWallets?: StarknetConnector[],
   solanaWallets?: SolanaWallet[],
-  suiWallets?: SuiWallet[]
+  suiWallets?: SuiWallet[],
+  tronWallets?: TronWallet[]
 ): Wallet[] => {
   const walletMap = new Map<string, Wallet>();
 
@@ -97,6 +103,7 @@ export const getAvailableWallets = (
       isStarknet: config.isStarknetSupported,
       isSolana: config.isSolanaSupported,
       isSui: config.isSuiSupported,
+      isTron: config.isTronSupported,
       isLitecoin: config.isLitecoinSupported,
     });
   }
@@ -165,6 +172,16 @@ export const getAvailableWallets = (
     }
   }
 
+  if (tronWallets) {
+    for (const tronWallet of tronWallets) {
+      const wallet = getWallet(tronWallet.adapter.name);
+      if (wallet && wallet.isTron) {
+        wallet.wallet.tronWallet = tronWallet;
+        wallet.isAvailable = checkManualWalletAvailability(wallet.id) ?? true;
+      }
+    }
+  }
+
   return Array.from(walletMap.values()).sort((a, b) => {
     if (a.id === "injected") return 1;
     if (b.id === "injected") return -1;
@@ -225,6 +242,17 @@ export const isWalletConnected = (
         return false;
       return getWalletKey(connectionState.suiSelectedWallet.name) === wallet.id;
 
+    case BlockchainType.tron:
+      if (
+        !connectionState.tronConnected ||
+        !wallet.wallet.tronWallet ||
+        !connectionState.tronSelectedWallet
+      )
+        return false;
+      return (
+        getWalletKey(connectionState.tronSelectedWallet.adapter.name) ===
+        wallet.id
+      );
     default:
       return false;
   }
@@ -263,6 +291,11 @@ export const getWalletConnectionStatus = (
     [BlockchainType.sui]: isWalletConnected(
       wallet,
       BlockchainType.sui,
+      connectionState
+    ),
+    [BlockchainType.tron]: isWalletConnected(
+      wallet,
+      BlockchainType.tron,
       connectionState
     ),
   };
