@@ -1,11 +1,21 @@
 import { useEffect, useCallback, useRef } from "react";
 import { useEVMWallet } from "./useEVMWallet";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import {
+  useBitcoinWallet,
+  useLitecoinWallet,
+} from "@gardenfi/wallet-connectors";
 import { useStarknetWallet } from "./useStarknetWallet";
 import { useSolanaWallet } from "./useSolanaWallet";
 import { useSuiWallet } from "./useSuiWallet";
 import { swapStore } from "../store/swapStore";
-import { isEVM, isStarknet, isSolana, isSui, Chain } from "@gardenfi/orderbook";
+import {
+  isEVM,
+  isStarknet,
+  isSolana,
+  isSui,
+  Chain,
+  isLitecoin,
+} from "@gardenfi/orderbook";
 import { isPureBitcoin } from "../utils/utils";
 
 // Hook to manage wallet address storage (should only be called once)
@@ -22,6 +32,7 @@ export const useAddressFillers = () => {
   } = swapStore();
   const { address: evmAddress } = useEVMWallet();
   const { account: btcAddress } = useBitcoinWallet();
+  const { account: ltcAddress } = useLitecoinWallet();
   const { starknetAddress } = useStarknetWallet();
   const { solanaAddress } = useSolanaWallet();
   const { currentAccount } = useSuiWallet();
@@ -34,13 +45,21 @@ export const useAddressFillers = () => {
   const getWalletAddressForChain = useCallback(
     (chain: Chain): string | undefined => {
       if (isEVM(chain)) return evmAddress || undefined;
+      if (isLitecoin(chain)) return ltcAddress || undefined;
       if (isPureBitcoin(chain)) return btcAddress || undefined;
       if (isStarknet(chain)) return starknetAddress || undefined;
       if (isSolana(chain)) return solanaAddress || undefined;
       if (isSui(chain)) return currentAccount?.address || undefined;
       return undefined;
     },
-    [evmAddress, btcAddress, starknetAddress, solanaAddress, currentAccount]
+    [
+      evmAddress,
+      btcAddress,
+      starknetAddress,
+      solanaAddress,
+      currentAccount,
+      ltcAddress,
+    ]
   );
 
   // Store wallet addresses when available
