@@ -1,5 +1,5 @@
 import { Chain, isBitcoin, isLitecoin } from "@gardenfi/orderbook";
-import { validateBTCAddress } from "@gardenfi/core";
+import { validateBTCAddress, validateLTCAddress } from "@gardenfi/core";
 import { Environment } from "@gardenfi/utils";
 import { network } from "../constants/constants";
 import { isAlpenSignetChain } from "./utils";
@@ -16,7 +16,8 @@ const validateBitcoinAddress: AddressValidator = (address: string) => {
 
 const validateLitecoinAddress: AddressValidator = (address: string) => {
   if (!address) return false;
-  return true;
+
+  return validateLTCAddress(address, network as unknown as Environment);
 };
 
 /**
