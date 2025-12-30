@@ -7,6 +7,7 @@
 - Added Starknet and Solana support to OKX, and added Solana support to MetaMask.
 - Reverted Solana in Kiosk.
 - Added support for Tron Mainnet
+- Add Tron Mainnet support to OKX Wallet
 
 ### Fixed
 
