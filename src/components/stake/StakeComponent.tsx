@@ -24,7 +24,6 @@ import { fadeAnimation } from "../../animations/animations";
 import { useStake } from "../../hooks/useStake";
 import { formatAmount } from "../../utils/utils";
 import { balanceStore } from "../../store/balanceStore";
-import { ChainType } from "../../utils/balanceSSEService";
 import { Toast } from "../toast/Toast";
 import { useToastStore } from "../../store/toastStore";
 import { network } from "../../constants/constants";
@@ -49,12 +48,7 @@ export const StakeComponent: React.FC = () => {
   } = stakeStore();
   const { loading } = useStake();
   const { hideStaticToast } = useToastStore();
-  const {
-    balances,
-    balanceFetched,
-    connectBalanceStream,
-    disconnectBalanceStream,
-  } = balanceStore();
+  const { balances, balanceFetched } = balanceStore();
   const tooltipId = useId();
   const { isMobile } = viewPortStore();
 
@@ -148,16 +142,6 @@ export const StakeComponent: React.FC = () => {
     clearStakePosData,
     fetchAndSetRewards,
   ]);
-
-  useEffect(() => {
-    if (address && asset) {
-      connectBalanceStream(ChainType.EVM, address);
-
-      return () => {
-        disconnectBalanceStream(ChainType.EVM, address);
-      };
-    }
-  }, [address, asset, connectBalanceStream, disconnectBalanceStream]);
 
   useEffect(() => {
     hideStaticToast();

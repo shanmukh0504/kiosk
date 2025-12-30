@@ -6,13 +6,11 @@ import {
   WALLET_SUPPORTED_CHAINS,
   QUERY_PARAMS,
 } from "../../constants/constants";
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
-import { balanceStore } from "../../store/balanceStore";
-import { ChainType } from "../../utils/balanceSSEService";
 import {
   capitalizeChain,
   getAssetFromChainAndSymbol,
@@ -21,11 +19,7 @@ import {
 } from "../../utils/utils";
 import { ecosystems } from "../navbar/connectWallet/constants";
 import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { useStarknetWallet } from "../../hooks/useStarknetWallet";
-import { useSolanaWallet } from "../../hooks/useSolanaWallet";
-import { useSuiWallet } from "../../hooks/useSuiWallet";
 import {
   isBitcoin,
   isStarknet,
@@ -38,7 +32,6 @@ import {
 import { swapStore } from "../../store/swapStore";
 import { AnimatePresence, motion } from "framer-motion";
 import { CompetitorComparisons } from "./CompetitorComparisons";
-import { useTronWallet } from "../../hooks/useTronWallet";
 
 export const CreateSwap = () => {
   const [loadingDisabled, setLoadingDisabled] = useState(false);
@@ -48,14 +41,7 @@ export const CreateSwap = () => {
 
   const navigate = useNavigate();
   const { destinationChain } = useParams();
-  const { account: btcAddress } = useBitcoinWallet();
-  const { address } = useEVMWallet();
-  const { starknetAddress } = useStarknetWallet();
-  const { solanaAnchorProvider } = useSolanaWallet();
-  const { currentAccount } = useSuiWallet();
-  const { tronAddress } = useTronWallet();
-  const { assets, fetchAndSetFiatValues } = assetInfoStore();
-  const { connectBalanceStream, disconnectBalanceStream } = balanceStore();
+  const { assets } = assetInfoStore();
   const {
     isComparisonVisible,
     showComparison,
@@ -165,31 +151,6 @@ export const CreateSwap = () => {
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
 
-  const setupBalanceStreams = useCallback(() => {
-    [
-      address && connectBalanceStream(ChainType.EVM, address),
-      btcAddress && connectBalanceStream(ChainType.BITCOIN, btcAddress),
-      starknetAddress &&
-        connectBalanceStream(ChainType.STARKNET, starknetAddress),
-      solanaAnchorProvider &&
-        connectBalanceStream(
-          ChainType.SOLANA,
-          solanaAnchorProvider.publicKey.toString()
-        ),
-      currentAccount &&
-        connectBalanceStream(ChainType.SUI, currentAccount.address),
-      tronAddress && connectBalanceStream(ChainType.TRON, tronAddress),
-    ].filter(Boolean);
-  }, [
-    address,
-    btcAddress,
-    currentAccount,
-    starknetAddress,
-    solanaAnchorProvider,
-    tronAddress,
-    connectBalanceStream,
-  ]);
-
   const handleConnectWallet = () => {
     if (!needsWalletConnection) return;
 
@@ -204,42 +165,6 @@ export const CreateSwap = () => {
 
     setOpenModal(modalNames.connectWallet, modalState);
   };
-
-  useEffect(() => {
-    if (!assets) return;
-
-    fetchAndSetFiatValues();
-
-    setupBalanceStreams();
-
-    return () => {
-      [
-        address && disconnectBalanceStream(ChainType.EVM, address),
-        btcAddress && disconnectBalanceStream(ChainType.BITCOIN, btcAddress),
-        starknetAddress &&
-          disconnectBalanceStream(ChainType.STARKNET, starknetAddress),
-        solanaAnchorProvider &&
-          disconnectBalanceStream(
-            ChainType.SOLANA,
-            solanaAnchorProvider.publicKey.toString()
-          ),
-        currentAccount &&
-          disconnectBalanceStream(ChainType.SUI, currentAccount.address),
-        tronAddress && disconnectBalanceStream(ChainType.TRON, tronAddress),
-      ].filter(Boolean);
-    };
-  }, [
-    assets,
-    address,
-    btcAddress,
-    starknetAddress,
-    solanaAnchorProvider,
-    currentAccount,
-    tronAddress,
-    setupBalanceStreams,
-    disconnectBalanceStream,
-    fetchAndSetFiatValues,
-  ]);
 
   useEffect(() => {
     if (!assets || addParams) return;
