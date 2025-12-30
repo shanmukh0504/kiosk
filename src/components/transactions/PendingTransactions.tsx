@@ -38,7 +38,7 @@ export const PendingTransactions = () => {
       }
       txHash = tx.val;
     } else if (ltcProvider && isLitecoin(order.source_swap.chain)) {
-      const ltcRes = await ltcProvider.sendBitcoin(
+      const ltcRes = await ltcProvider.sendLitecoin(
         order.source_swap.swap_id,
         Number(order.source_swap.amount)
       );

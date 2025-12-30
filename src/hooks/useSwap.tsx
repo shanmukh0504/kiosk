@@ -571,7 +571,7 @@ export const useSwap = () => {
       if (isLitecoin(inputAsset.chain)) {
         const orderResponse = res.val as BitcoinOrderResponse;
         if (ltcProvider && !isAlpenSignetChain(inputAsset.chain)) {
-          const litecoinRes = await ltcProvider?.sendBitcoin(
+          const litecoinRes = await ltcProvider?.sendLitecoin(
             orderResponse.to,
             Number(orderResponse.amount)
           );
