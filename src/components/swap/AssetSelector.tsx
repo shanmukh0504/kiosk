@@ -226,6 +226,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     if (asset) {
       const isMatchingToken =
         asset.chain === comparisonToken?.chain &&
+        asset.htlc?.address === comparisonToken?.token?.address &&
         asset.htlc?.address === comparisonToken?.htlc?.address;
       // If selecting input and current output is invalid for the new input, clear output first
       const isValid = outputAsset && (await isRouteValid(asset, outputAsset));
