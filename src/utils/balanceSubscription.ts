@@ -25,7 +25,7 @@ export type BalanceUpdate = {
 
 type BalanceCallback = (balances: Record<string, BigNumber>) => void;
 
-class BalanceSSEService {
+class BalanceSubscription {
   private eventSources: Map<string, EventSource> = new Map();
   private callbacks: Map<string, BalanceCallback> = new Map();
   private balances: Map<string, Record<string, BigNumber>> = new Map();
@@ -180,4 +180,4 @@ class BalanceSSEService {
   }
 }
 
-export const balanceSSEService = new BalanceSSEService();
+export const balanceSubscription = new BalanceSubscription();

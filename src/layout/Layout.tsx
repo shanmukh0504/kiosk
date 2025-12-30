@@ -1,5 +1,5 @@
 import { Footer } from "@gardenfi/garden-book";
-import { FC, ReactNode, useEffect, useCallback } from "react";
+import { FC, ReactNode, useEffect } from "react";
 import { getCurrentTheme } from "../utils/utils";
 import { Navbar } from "../components/navbar/Navbar";
 import { Modal } from "../components/modal/Modal";
@@ -9,98 +9,24 @@ import { assetInfoStore } from "../store/assetInfoStore";
 import { network, THEMES } from "../constants/constants";
 import { viewPortStore } from "../store/viewPortStore";
 import { notificationStore } from "../store/notificationStore";
-import { balanceStore } from "../store/balanceStore";
-import { ChainType } from "../utils/balanceSSEService";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { useEVMWallet } from "../hooks/useEVMWallet";
-import { useStarknetWallet } from "../hooks/useStarknetWallet";
-import { useSolanaWallet } from "../hooks/useSolanaWallet";
-import { useSuiWallet } from "../hooks/useSuiWallet";
-import { useTronWallet } from "../hooks/useTronWallet";
+import { useBalance } from "../hooks/useBalance";
 
 type LayoutProps = {
   children: ReactNode;
 };
 
 const LayoutContent: FC<LayoutProps> = ({ children }) => {
-  const { fetchAndSetAssetsAndChains, assets, fetchAndSetFiatValues } =
-    assetInfoStore();
+  const { fetchAndSetAssetsAndChains } = assetInfoStore();
   const { isMobile } = viewPortStore();
   const theme = getCurrentTheme();
   const { fetchNotification } = notificationStore();
-  const { connectBalanceStream, disconnectBalanceStream } = balanceStore();
 
-  const { account: btcAddress } = useBitcoinWallet();
-  const { address } = useEVMWallet();
-  const { starknetAddress } = useStarknetWallet();
-  const { solanaAnchorProvider } = useSolanaWallet();
-  const { currentAccount } = useSuiWallet();
-  const { tronAddress } = useTronWallet();
-
-  const setupBalanceStreams = useCallback(() => {
-    [
-      address && connectBalanceStream(ChainType.EVM, address),
-      btcAddress && connectBalanceStream(ChainType.BITCOIN, btcAddress),
-      starknetAddress &&
-        connectBalanceStream(ChainType.STARKNET, starknetAddress),
-      solanaAnchorProvider &&
-        connectBalanceStream(
-          ChainType.SOLANA,
-          solanaAnchorProvider.publicKey.toString()
-        ),
-      currentAccount &&
-        connectBalanceStream(ChainType.SUI, currentAccount.address),
-      tronAddress && connectBalanceStream(ChainType.TRON, tronAddress),
-    ].filter(Boolean);
-  }, [
-    address,
-    btcAddress,
-    currentAccount,
-    starknetAddress,
-    solanaAnchorProvider,
-    tronAddress,
-    connectBalanceStream,
-  ]);
+  useBalance();
 
   useEffect(() => {
     fetchAndSetAssetsAndChains();
     fetchNotification();
   }, [fetchAndSetAssetsAndChains, fetchNotification]);
-
-  useEffect(() => {
-    if (!assets) return;
-
-    fetchAndSetFiatValues();
-    setupBalanceStreams();
-
-    return () => {
-      [
-        address && disconnectBalanceStream(ChainType.EVM, address),
-        btcAddress && disconnectBalanceStream(ChainType.BITCOIN, btcAddress),
-        starknetAddress &&
-          disconnectBalanceStream(ChainType.STARKNET, starknetAddress),
-        solanaAnchorProvider &&
-          disconnectBalanceStream(
-            ChainType.SOLANA,
-            solanaAnchorProvider.publicKey.toString()
-          ),
-        currentAccount &&
-          disconnectBalanceStream(ChainType.SUI, currentAccount.address),
-        tronAddress && disconnectBalanceStream(ChainType.TRON, tronAddress),
-      ].filter(Boolean);
-    };
-  }, [
-    assets,
-    address,
-    btcAddress,
-    starknetAddress,
-    solanaAnchorProvider,
-    currentAccount,
-    tronAddress,
-    setupBalanceStreams,
-    disconnectBalanceStream,
-    fetchAndSetFiatValues,
-  ]);
 
   return (
     <div className={`${theme} overflow-hidden overscroll-none text-dark-grey`}>

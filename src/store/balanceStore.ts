@@ -3,7 +3,7 @@ import { IOType } from "../constants/constants";
 import { ChainAsset } from "@gardenfi/orderbook";
 import BigNumber from "bignumber.js";
 import { assetInfoStore } from "./assetInfoStore";
-import { balanceSSEService, ChainType } from "../utils/balanceSSEService";
+import { balanceSubscription, ChainType } from "../utils/balanceSubscription";
 
 type BalanceStoreState = {
   balances: Record<string, BigNumber | undefined>;
@@ -60,7 +60,7 @@ export const balanceStore = create<BalanceStoreState>((set, get) => ({
     const { subscriptions } = get();
 
     if (subscriptions.has(key)) {
-      balanceSSEService.subscribe(chainType, address, async (rawBalances) => {
+      balanceSubscription.subscribe(chainType, address, async (rawBalances) => {
         const assets = assetInfoStore.getState().assets;
         if (!assets) {
           return;
@@ -103,7 +103,7 @@ export const balanceStore = create<BalanceStoreState>((set, get) => ({
       return;
     }
 
-    const unsubscribe = balanceSSEService.subscribe(
+    const unsubscribe = balanceSubscription.subscribe(
       chainType,
       address,
       async (rawBalances) => {
@@ -175,7 +175,7 @@ export const balanceStore = create<BalanceStoreState>((set, get) => ({
     subscriptions.clear();
     set({ subscriptions: new Map() });
 
-    balanceSSEService.unsubscribeAll();
+    balanceSubscription.unsubscribeAll();
   },
 
   clearBalances: () => {
