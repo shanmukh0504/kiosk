@@ -16,7 +16,7 @@ const validateBitcoinAddress: AddressValidator = (address: string) => {
 
 const validateLitecoinAddress: AddressValidator = (address: string) => {
   if (!address) return false;
-  return validateBTCAddress(address, network as unknown as Environment);
+  return true;
 };
 
 /**

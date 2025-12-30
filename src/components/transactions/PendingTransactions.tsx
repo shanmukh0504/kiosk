@@ -11,8 +11,12 @@ import {
   isStarknet,
   OrderStatus,
   isTron,
+  isLitecoin,
 } from "@gardenfi/orderbook";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import {
+  useBitcoinWallet,
+  useLitecoinWallet,
+} from "@gardenfi/wallet-connectors";
 import logger from "../../utils/logger";
 import { isAlpenSignetChain } from "../../utils/utils";
 
@@ -20,18 +24,29 @@ export const PendingTransactions = () => {
   const { pendingOrders, updateOrder } = pendingOrdersStore();
   const { garden } = useGarden();
   const { provider } = useBitcoinWallet();
+  const { provider: ltcProvider } = useLitecoinWallet();
 
   const handlePendingTransactionsClick = async (order: OrderWithStatus) => {
-    if (!garden || !garden.htlcs.evm) return;
+    if (!garden) return;
     if (order.status !== OrderStatus.Created) return;
     let txHash;
-    if (isEVM(order.source_swap.chain)) {
+    if (garden.htlcs.evm && isEVM(order.source_swap.chain)) {
       const tx = await garden.htlcs.evm.initiate(order);
       if (!tx.ok) {
         logger.error("failed to send evm ❌", tx.error);
         return;
       }
       txHash = tx.val;
+    } else if (ltcProvider && isLitecoin(order.source_swap.chain)) {
+      const ltcRes = await ltcProvider.sendBitcoin(
+        order.source_swap.swap_id,
+        Number(order.source_swap.amount)
+      );
+      if (!ltcRes.ok) {
+        logger.error("failed to send bitcoin ❌", ltcRes.error);
+        return;
+      }
+      txHash = ltcRes.val;
     } else if (
       provider &&
       isBitcoin(order.source_swap.chain) &&

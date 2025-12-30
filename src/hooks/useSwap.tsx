@@ -14,13 +14,17 @@ import {
   ChainAsset,
   isTron,
   Chains,
+  isLitecoin,
 } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useStarknetWallet } from "./useStarknetWallet";
 import { useEVMWallet } from "./useEVMWallet";
 import { modalNames, modalStore } from "../store/modalStore";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import {
+  useBitcoinWallet,
+  useLitecoinWallet,
+} from "@gardenfi/wallet-connectors";
 import { Errors } from "../constants/errors";
 import { ConnectingWalletStore } from "../store/connectWalletStore";
 import orderInProgressStore from "../store/orderInProgressStore";
@@ -85,6 +89,7 @@ export const useSwap = () => {
   const { disconnect } = useEVMWallet();
   const { swap, getQuote, garden } = useGarden();
   const { provider } = useBitcoinWallet();
+  const { provider: ltcProvider } = useLitecoinWallet();
   const controller = useRef<AbortController | null>(null);
   const { setConnectingWallet } = ConnectingWalletStore();
   const { address: evmAddress } = useEVMWallet();
@@ -563,6 +568,34 @@ export const useSwap = () => {
 
       const order = orderResult.val;
 
+      if (isLitecoin(inputAsset.chain)) {
+        const orderResponse = res.val as BitcoinOrderResponse;
+        if (ltcProvider && !isAlpenSignetChain(inputAsset.chain)) {
+          const litecoinRes = await ltcProvider?.sendBitcoin(
+            orderResponse.to,
+            Number(orderResponse.amount)
+          );
+          if (!litecoinRes.ok) {
+            logger.error("failed to send litecoin ❌", litecoinRes?.error);
+            setIsSwapping(false);
+          }
+          const updatedOrder = {
+            ...order,
+            source_swap: {
+              ...order.source_swap,
+              initiate_tx_hash: litecoinRes.val ?? "",
+            },
+            status: litecoinRes.val
+              ? OrderStatus.InitiateDetected
+              : OrderStatus.Created,
+          };
+          setOrder(updatedOrder);
+          setIsOpen(true);
+          updateOrder(updatedOrder);
+          clearSwapState();
+          return;
+        }
+      }
       if (isBitcoin(inputAsset.chain)) {
         const orderResponse = res.val as BitcoinOrderResponse;
         if (provider && !isAlpenSignetChain(inputAsset.chain)) {
