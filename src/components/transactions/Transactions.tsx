@@ -10,7 +10,10 @@ import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 import { starknetAddressToXOnly } from "../../utils/utils";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import {
+  useBitcoinWallet,
+  useLitecoinWallet,
+} from "@gardenfi/wallet-connectors";
 import { useTronWallet } from "../../hooks/useTronWallet";
 
 type TransactionsProps = {
@@ -31,6 +34,8 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
     solana: "",
     sui: "",
     tron: "",
+    litecoin: "",
+    alpen_signet: "",
   });
 
   const { garden } = useGarden();
@@ -40,6 +45,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   const { currentAccount } = useSuiWallet();
   const { tronAddress } = useTronWallet();
   const { account: btcAddress } = useBitcoinWallet();
+  const { account: ltcAddress } = useLitecoinWallet();
   const { fetchTransactions, totalItems, transactions, loadMore } =
     transactionHistoryStore();
 
@@ -69,6 +75,8 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
         solana: solanaAddress ?? "",
         sui: currentAccount?.address ?? "",
         tron: tronAddress ?? "",
+        litecoin: ltcAddress ?? "",
+        alpen_signet: "",
       });
       fetchTransactions(orderbookUrl, {
         bitcoin: btcAddress ?? "",
@@ -79,6 +87,8 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
         solana: solanaAddress ?? "",
         sui: currentAccount?.address ?? "",
         tron: tronAddress ?? "",
+        litecoin: "",
+        alpen_signet: "",
       });
     }
   }, [

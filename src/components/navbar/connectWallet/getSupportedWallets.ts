@@ -298,5 +298,6 @@ export const getWalletConnectionStatus = (
       BlockchainType.tron,
       connectionState
     ),
+    [BlockchainType.alpen_signet]: false,
   };
 };
