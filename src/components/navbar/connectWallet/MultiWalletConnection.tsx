@@ -13,7 +13,10 @@ import { Wallet as SolanaWallet } from "@solana/wallet-adapter-react";
 import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { WalletWithRequiredFeatures as SuiWallet } from "@mysten/wallet-standard";
+import { Wallet as TronWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
+import { useTronWallet } from "../../../hooks/useTronWallet";
 import { BlockchainType } from "@gardenfi/orderbook";
+
 import { useSuiWallet } from "../../../hooks/useSuiWallet";
 type Checked = Record<BlockchainType, boolean>;
 
@@ -24,6 +27,7 @@ type MultiWalletConnectionProps = {
     [BlockchainType.starknet]?: StarknetConnector;
     [BlockchainType.solana]?: SolanaWallet;
     [BlockchainType.sui]?: SuiWallet;
+    [BlockchainType.tron]?: TronWallet;
   };
   handleClose: () => void;
 };
@@ -51,13 +55,15 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
     starknetStatus,
   } = useStarknetWallet();
   const { handleSuiConnect, suiSelectedWallet } = useSuiWallet();
+  const { handleTronConnect, wallet: tronWallet } = useTronWallet();
   const availableEcosystems = Object.entries(ecosystems).filter(
     ([key]) =>
       (key === BlockchainType.evm && connectors.evm) ||
       (key === BlockchainType.bitcoin && connectors.bitcoin) ||
       (key === BlockchainType.starknet && connectors.starknet) ||
       (key === BlockchainType.solana && connectors.solana) ||
-      (key === BlockchainType.sui && connectors.sui)
+      (key === BlockchainType.sui && connectors.sui) ||
+      (key === BlockchainType.tron && connectors.tron)
   );
 
   const connectionStatus: Record<BlockchainType, boolean> = {
@@ -69,6 +75,8 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
       starknetConnector?.id === connectors.starknet?.id,
     [BlockchainType.sui]: suiSelectedWallet?.name === connectors.sui?.name,
     [BlockchainType.bitcoin]: provider?.name === connectors.bitcoin?.name,
+    [BlockchainType.tron]:
+      tronWallet?.adapter.name === connectors.tron?.adapter.name,
   };
 
   const handleCheck = (ecosystem: BlockchainType) => {
@@ -136,6 +144,14 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
         return;
       }
       await solanaConnect(connectors.solana.adapter.name);
+    }
+
+    if (checked[BlockchainType.tron]) {
+      if (!connectors.tron) {
+        setLoading(false);
+        return;
+      }
+      await handleTronConnect(connectors.tron);
     }
 
     setLoading(false);

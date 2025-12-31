@@ -7,6 +7,7 @@ import {
   isSolana,
   isStarknet,
   isSui,
+  isTron,
 } from "@gardenfi/orderbook";
 import { BitcoinNetwork } from "@gardenfi/react-hooks";
 import { Network } from "@gardenfi/utils";
@@ -99,7 +100,8 @@ export const getTimeEstimates = (inputAsset: Asset) => {
     isEVM(inputAsset.chain) ||
     isSolana(inputAsset.chain) ||
     isStarknet(inputAsset.chain) ||
-    isSui(inputAsset.chain)
+    isSui(inputAsset.chain) ||
+    isTron(inputAsset.chain)
   ) {
     return "~30s";
   }
@@ -157,6 +159,8 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "sui",
   "sui_testnet",
   "core",
+  "tron_shasta",
+  "tron",
 ] as const;
 
 export const MULTICALL_CONTRACT_ADDRESSES: Record<number, string> = {
@@ -224,6 +228,24 @@ export const SUI_SOLVER_ADDRESS =
 
 export const SUI_DEFAULT_NETWORK_FEE = 0.03;
 export const BITCOIN_DEFAULT_NETWORK_FEE = 0.49;
+
+export const TronConfig = {
+  [Network.MAINNET]: {
+    nodeUrl: "https://api.trongrid.io",
+    hostUrl: "https://api.trongrid.io",
+    chainId: "0x2b6653dc",
+  },
+  [Network.TESTNET]: {
+    nodeUrl: "https://api.shasta.trongrid.io",
+    hostUrl: "https://api.shasta.trongrid.io",
+    chainId: "0x94a9059e",
+  },
+  [Network.LOCALNET]: {
+    nodeUrl: "",
+    hostUrl: "",
+    chainId: "",
+  },
+};
 
 export type StarknetChain = "starknet" | "starknet_sepolia" | "starknet_devnet";
 

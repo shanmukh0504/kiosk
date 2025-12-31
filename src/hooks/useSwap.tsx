@@ -13,6 +13,7 @@ import {
   isStarknet,
   isEVM,
   ChainAsset,
+  isTron,
   Chains,
 } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
@@ -100,6 +101,7 @@ export const useSwap = () => {
       inputAsset &&
       (!isStarknet(inputAsset.chain) &&
       !isSolana(inputAsset.chain) &&
+      !isTron(inputAsset.chain) &&
       !isSui(inputAsset.chain)
         ? formatBalance(
             Number(inputBalance),
@@ -437,6 +439,10 @@ export const useSwap = () => {
       sui: {
         check: (chain: Chain) => isSui(chain),
         address: currentAccount?.address,
+      },
+      tron: {
+        check: (chain: Chain) => isTron(chain),
+        address: garden?.htlcs.tron?.htlcActorAddress,
       },
     };
 

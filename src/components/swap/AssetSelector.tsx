@@ -11,6 +11,7 @@ import {
   isStarknet,
   isSolana,
   isSui,
+  isTron,
   Asset,
   ChainAsset,
   ChainData,
@@ -154,6 +155,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
               ? ""
               : balance &&
                   !isStarknet(asset.chain) &&
+                  !isTron(asset.chain) &&
                   !isSolana(asset.chain) &&
                   !isSui(asset.chain)
                 ? new BigNumber(balance)
@@ -237,6 +239,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     if (asset) {
       const isMatchingToken =
         asset.chain === comparisonToken?.chain &&
+        asset.htlc?.address === comparisonToken?.token?.address &&
         asset.htlc?.address === comparisonToken?.htlc?.address;
       // If selecting input and current output is invalid for the new input, clear output first
       const isValid = outputAsset && (await isRouteValid(asset, outputAsset));
