@@ -328,7 +328,7 @@ export const CreateSwap = () => {
     } else {
       if (!destinationChain || !isBitcoin(destinationChain as Chain)) {
         const BTC = Object.values(assets).find((asset) =>
-          asset.chain.startsWith("bitcoin")
+          isBitcoin(asset.chain)
         );
         if (BTC && (!toAsset || !isBitcoin(toAsset.chain))) {
           setAsset(IOType.input, BTC);
