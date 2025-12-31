@@ -9,7 +9,7 @@ import { balanceStore } from "../store/balanceStore";
 import { ChainType } from "../utils/balanceSubscription";
 import { assetInfoStore } from "../store/assetInfoStore";
 
-export const useBalance = () => {
+export const useTokenBalances = () => {
   const { connectBalanceStream, disconnectBalanceStream } = balanceStore();
   const { assets, fetchAndSetFiatValues } = assetInfoStore();
 
@@ -22,64 +22,60 @@ export const useBalance = () => {
 
   useEffect(() => {
     if (!assets) return;
-
     fetchAndSetFiatValues();
+  }, [assets, fetchAndSetFiatValues]);
 
-    if (address) {
-      connectBalanceStream(ChainType.EVM, address);
-    }
-    if (btcAddress) {
-      connectBalanceStream(ChainType.BITCOIN, btcAddress);
-    }
-    if (starknetAddress) {
-      connectBalanceStream(ChainType.STARKNET, starknetAddress);
-    }
-    if (solanaAnchorProvider) {
-      connectBalanceStream(
-        ChainType.SOLANA,
-        solanaAnchorProvider.publicKey.toString()
-      );
-    }
-    if (currentAccount) {
-      connectBalanceStream(ChainType.SUI, currentAccount.address);
-    }
-    if (tronAddress) {
-      connectBalanceStream(ChainType.TRON, tronAddress);
-    }
-
+  useEffect(() => {
+    if (!assets || !address) return;
+    connectBalanceStream(ChainType.EVM, address);
     return () => {
-      if (address) {
-        disconnectBalanceStream(ChainType.EVM, address);
-      }
-      if (btcAddress) {
-        disconnectBalanceStream(ChainType.BITCOIN, btcAddress);
-      }
-      if (starknetAddress) {
-        disconnectBalanceStream(ChainType.STARKNET, starknetAddress);
-      }
-      if (solanaAnchorProvider) {
-        disconnectBalanceStream(
-          ChainType.SOLANA,
-          solanaAnchorProvider.publicKey.toString()
-        );
-      }
-      if (currentAccount) {
-        disconnectBalanceStream(ChainType.SUI, currentAccount.address);
-      }
-      if (tronAddress) {
-        disconnectBalanceStream(ChainType.TRON, tronAddress);
-      }
+      disconnectBalanceStream(ChainType.EVM, address);
+    };
+  }, [assets, address, connectBalanceStream, disconnectBalanceStream]);
+
+  useEffect(() => {
+    if (!assets || !btcAddress) return;
+    connectBalanceStream(ChainType.BITCOIN, btcAddress);
+    return () => {
+      disconnectBalanceStream(ChainType.BITCOIN, btcAddress);
+    };
+  }, [assets, btcAddress, connectBalanceStream, disconnectBalanceStream]);
+
+  useEffect(() => {
+    if (!assets || !starknetAddress) return;
+    connectBalanceStream(ChainType.STARKNET, starknetAddress);
+    return () => {
+      disconnectBalanceStream(ChainType.STARKNET, starknetAddress);
+    };
+  }, [assets, starknetAddress, connectBalanceStream, disconnectBalanceStream]);
+
+  useEffect(() => {
+    if (!assets || !solanaAnchorProvider) return;
+    const solanaAddress = solanaAnchorProvider.publicKey.toString();
+    connectBalanceStream(ChainType.SOLANA, solanaAddress);
+    return () => {
+      disconnectBalanceStream(ChainType.SOLANA, solanaAddress);
     };
   }, [
     assets,
-    address,
-    btcAddress,
-    starknetAddress,
     solanaAnchorProvider,
-    currentAccount,
-    tronAddress,
     connectBalanceStream,
     disconnectBalanceStream,
-    fetchAndSetFiatValues,
   ]);
+
+  useEffect(() => {
+    if (!assets || !currentAccount) return;
+    connectBalanceStream(ChainType.SUI, currentAccount.address);
+    return () => {
+      disconnectBalanceStream(ChainType.SUI, currentAccount.address);
+    };
+  }, [assets, currentAccount, connectBalanceStream, disconnectBalanceStream]);
+
+  useEffect(() => {
+    if (!assets || !tronAddress) return;
+    connectBalanceStream(ChainType.TRON, tronAddress);
+    return () => {
+      disconnectBalanceStream(ChainType.TRON, tronAddress);
+    };
+  }, [assets, tronAddress, connectBalanceStream, disconnectBalanceStream]);
 };

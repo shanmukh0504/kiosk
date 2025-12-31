@@ -9,7 +9,7 @@ import { assetInfoStore } from "../store/assetInfoStore";
 import { network, THEMES } from "../constants/constants";
 import { viewPortStore } from "../store/viewPortStore";
 import { notificationStore } from "../store/notificationStore";
-import { useBalance } from "../hooks/useBalance";
+import { useTokenBalances } from "../hooks/useBalance";
 
 type LayoutProps = {
   children: ReactNode;
@@ -21,7 +21,7 @@ const LayoutContent: FC<LayoutProps> = ({ children }) => {
   const theme = getCurrentTheme();
   const { fetchNotification } = notificationStore();
 
-  useBalance();
+  useTokenBalances();
 
   useEffect(() => {
     fetchAndSetAssetsAndChains();
