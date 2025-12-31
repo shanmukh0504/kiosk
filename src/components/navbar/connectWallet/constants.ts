@@ -157,13 +157,13 @@ export const GardenSupportedWallets: Record<
     "Enkrypt",
     "wallets/EnkryptIcon.svg",
     "https://www.enkrypt.com/",
-    { litecoin: true }
+    { litecoin: network === Network.MAINNET }
   ),
   litescribe: createWallet(
     "Litescribe",
-    "wallets/LeapLight.svg",
+    "wallets/litescribeIcon.png",
     "https://litescribe.io/",
-    { litecoin: true }
+    { litecoin: network === Network.MAINNET }
   ),
   keplr: createWallet("Keplr", "wallets/keplr.svg", "tallLink:", {
     evm: network === Network.MAINNET,

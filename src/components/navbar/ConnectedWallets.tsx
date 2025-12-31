@@ -82,7 +82,7 @@ const ConnectedWallets = () => {
           <img
             src={ecosystems.litecoin.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
-            alt="Bitcoin wallet"
+            alt="Litecoin wallet"
           />
         )}
         {starknetAddress && (
