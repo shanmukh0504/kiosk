@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.4]
+
+### Added
+
+- Migrated balance fetching to SSE-based real-time streaming service for automatic balance updates.
+- Unified balance fetching implementation across all supported chains.
+
 ## [2.0.3]
 
 ### Added

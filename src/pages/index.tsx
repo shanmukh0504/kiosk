@@ -14,8 +14,6 @@ import { useAccount } from "@starknet-react/core";
 import { Network } from "@gardenfi/utils";
 import { useSolanaWallet } from "../hooks/useSolanaWallet";
 import { useSuiWallet } from "../hooks/useSuiWallet";
-import { useEffect } from "react";
-import { balanceStore } from "../store/balanceStore";
 import { useTronWallet } from "../hooks/useTronWallet";
 
 function App() {
@@ -24,11 +22,6 @@ function App() {
   const { solanaAnchorProvider } = useSolanaWallet();
   const { suiSelectedWallet } = useSuiWallet();
   const { wallet: tronWallet } = useTronWallet();
-  const { fetchAndSetRPCs } = balanceStore();
-
-  useEffect(() => {
-    fetchAndSetRPCs();
-  }, [fetchAndSetRPCs]);
 
   return (
     <GardenProvider
