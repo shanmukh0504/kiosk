@@ -138,7 +138,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         })
         .map((asset) => {
           const network = chains?.[asset.chain];
-          const balance = balances?.[asset.id.toString()];
+          const balance = balances?.[ChainAsset.from(asset.id).toString()];
           if (!asset.id) return undefined;
           const fiatRate =
             fiatData?.[ChainAsset.from(asset.id).toString()] ?? 0;
@@ -170,6 +170,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                 ? ""
                 : balanceToBeDisplayed,
             fiatBalance,
+            hasBalance: balance !== undefined,
           };
         })
     );
@@ -200,9 +201,19 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
       sortedResults &&
       [...sortedResults].sort((a, b) => {
         if (!a || !b) return 0;
-        const aFiat = a.fiatBalance ? Number(a.fiatBalance) : 0;
-        const bFiat = b.fiatBalance ? Number(b.fiatBalance) : 0;
-        return bFiat - aFiat;
+
+        if (a.hasBalance && !b.hasBalance) return -1;
+        if (!a.hasBalance && b.hasBalance) return 1;
+
+        if (a.hasBalance && b.hasBalance) {
+          const aFiat =
+            a.fiatBalance && a.fiatBalance !== "" ? Number(a.fiatBalance) : 0;
+          const bFiat =
+            b.fiatBalance && b.fiatBalance !== "" ? Number(b.fiatBalance) : 0;
+          return bFiat - aFiat;
+        }
+
+        return 0;
       })
     );
   }, [sortedResults, isAnyWalletConnected]);
