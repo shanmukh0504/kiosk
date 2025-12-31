@@ -122,6 +122,7 @@ export const GardenSupportedWallets: Record<
       evm: true,
       starknet: network === Network.MAINNET,
       solana: true,
+      tron: network === Network.MAINNET,
       // sui: network === Network.MAINNET,
     }
   ),
