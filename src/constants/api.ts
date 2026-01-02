@@ -3,7 +3,7 @@ import { Network, Url } from "@gardenfi/utils";
 const REQUIRED_ENV_VARS = {
   STAKING_URL: import.meta.env.VITE_STAKING_URL,
   INFO_URL: import.meta.env.VITE_INFO_URL,
-  QUOTE_URL: import.meta.env.VITE_QUOTE_URL,
+  QUOTE_URL: import.meta.env.VITE_BASE_URL,
   BASE_URL: import.meta.env.VITE_BASE_URL,
   REWARD: import.meta.env.VITE_REWARD_URL,
   EXPLORER: import.meta.env.VITE_EXPLORER_URL,
