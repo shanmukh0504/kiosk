@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.0.4]
+
+- Add litecoin testnet support.
+- Add address filler to accept bitcoin like chain addresses without wallet connection
+
 ## [2.0.3]
 
 ### Added
