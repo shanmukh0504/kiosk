@@ -15,60 +15,50 @@ export const API = () => {
   return {
     api_key: REQUIRED_ENV_VARS.API_KEY,
     home: new Url("https://garden.finance"),
-    data: {
-      chains: () => new Url(REQUIRED_ENV_VARS.BASE_URL).endpoint("/v2/chains"),
-      blockNumbers: (network: "mainnet" | "testnet" | "localnet") =>
-        new Url(REQUIRED_ENV_VARS.BASE_URL)
-          .endpoint("info")
-          .endpoint("blocknumbers")
-          .endpoint(network),
-      notification: () =>
-        new Url(REQUIRED_ENV_VARS.BASE_URL)
-          .endpoint("info")
-          .endpoint("notification"),
-    },
+    data: (() => {
+      const infoBase = () =>
+        new Url(REQUIRED_ENV_VARS.BASE_URL).endpoint("info");
+      return {
+        chains: () =>
+          new Url(REQUIRED_ENV_VARS.BASE_URL).endpoint("/v2/chains"),
+        blockNumbers: (network: "mainnet" | "testnet" | "localnet") =>
+          infoBase().endpoint("blocknumbers").endpoint(network),
+        notification: () => infoBase().endpoint("notification"),
+      };
+    })(),
     buildId: "/build-id.json",
     baseUrl: new Url(REQUIRED_ENV_VARS.BASE_URL),
     quote: {
       quote: new Url(REQUIRED_ENV_VARS.BASE_URL).endpoint("quote"),
       fiatValues: new Url(REQUIRED_ENV_VARS.QUOTE_URL).endpoint("fiat"),
     },
-    stake: {
-      stakePosition: (userId: string) =>
-        new Url("stake", REQUIRED_ENV_VARS.BASE_URL)
-          .endpoint("distributor")
-          .endpoint("stakes")
-          .addSearchParams({
-            userId: userId.toLowerCase(),
-          }),
-      globalApy: new Url(REQUIRED_ENV_VARS.BASE_URL)
-        .endpoint("distributor")
-        .endpoint("apy"),
-      stakeApy: (address: string) =>
-        new Url(REQUIRED_ENV_VARS.BASE_URL)
-          .endpoint("distributor")
-          .endpoint("apy")
-          .endpoint(address.toLowerCase()),
-      stakingStats: new Url(REQUIRED_ENV_VARS.BASE_URL)
-        .endpoint("distributor")
-        .endpoint("stake")
-        .endpoint("staking-stats"),
-      accumulatedReward: (userId: string) =>
-        new Url(REQUIRED_ENV_VARS.BASE_URL)
-          .endpoint("distributor")
-          .endpoint("rewards")
-          .endpoint("accumulated")
-          .endpoint(userId),
-      reward: (userId: string) =>
-        new Url(REQUIRED_ENV_VARS.BASE_URL)
-          .endpoint("distributor")
-          .endpoint("rewards")
-          .endpoint(userId),
-      epoch: new Url(REQUIRED_ENV_VARS.BASE_URL)
-        .endpoint("distributor")
-        .endpoint("rewards")
-        .endpoint("epochs"),
-    },
+    stake: (() => {
+      const distributorBase = () =>
+        new Url(REQUIRED_ENV_VARS.BASE_URL).endpoint("distributor");
+      return {
+        stakePosition: (userId: string) =>
+          distributorBase()
+            .endpoint("stake")
+            .endpoint("stakes")
+            .addSearchParams({
+              userId: userId.toLowerCase(),
+            }),
+        globalApy: distributorBase().endpoint("apy"),
+        stakeApy: (address: string) =>
+          distributorBase().endpoint("apy").endpoint(address.toLowerCase()),
+        stakingStats: distributorBase()
+          .endpoint("stake")
+          .endpoint("staking-stats"),
+        accumulatedReward: (userId: string) =>
+          distributorBase()
+            .endpoint("rewards")
+            .endpoint("accumulated")
+            .endpoint(userId),
+        reward: (userId: string) =>
+          distributorBase().endpoint("rewards").endpoint(userId),
+        epoch: distributorBase().endpoint("rewards").endpoint("epochs"),
+      };
+    })(),
     explorer: (orderId: string) =>
       new Url("order", REQUIRED_ENV_VARS.EXPLORER).endpoint(orderId),
     mempoolTxExplorer: (network: Network, txHash: string) =>
