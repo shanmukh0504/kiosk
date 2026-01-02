@@ -22,8 +22,9 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
 }) => {
   const { chains } = assetInfoStore();
   const tooltipId = useId();
-  const { inputAsset, outputAsset, isEditBTCAddress } = swapStore();
-  const { setIsEditBTCAddress } = swapStore();
+  const { inputAsset, outputAsset, isEditAddress, setUserProvidedAddress } =
+    swapStore();
+  const { setIsEditAddress } = swapStore();
 
   const chain = useMemo(() => {
     return isRefund
@@ -41,12 +42,31 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
     window.open(url, "_blank");
   };
 
+  const handleEditAddressClick = () => {
+    // Populate userProvidedAddress with wallet address when edit is clicked
+    if (isRefund) {
+      setUserProvidedAddress({ source: address });
+      setIsEditAddress({
+        source: true,
+        destination: isEditAddress.destination,
+      });
+    } else {
+      setUserProvidedAddress({ destination: address });
+      setIsEditAddress({
+        source: isEditAddress.source,
+        destination: true,
+      });
+    }
+  };
+
+  const isEditing = isRefund ? isEditAddress.source : isEditAddress.destination;
+
   return (
     <>
       {address && chain && (
         <div
           className={`flex cursor-pointer items-center justify-between px-4 transition-all duration-200 ease-in-out hover:bg-white ${
-            !isEditBTCAddress || (chain && !isBitcoin(chain))
+            !isEditing || (chain && !isBitcoin(chain))
               ? "pointer-events-auto max-h-7 py-1 opacity-100"
               : "pointer-events-none max-h-0 py-0 opacity-0"
           }`}
@@ -68,7 +88,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
               {getTrimmedAddress(address)}
             </Typography>
             <div className="flex gap-1">
-              {!isEditBTCAddress && (
+              {!isEditing && (
                 <EditIcon
                   className={`cursor-pointer p-0.5 transition-all duration-500 ease-in-out ${
                     chain && isBitcoin(chain)
@@ -77,7 +97,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
                   }`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    setIsEditBTCAddress(true);
+                    handleEditAddressClick();
                   }}
                 />
               )}

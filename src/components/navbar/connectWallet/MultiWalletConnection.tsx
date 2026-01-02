@@ -77,6 +77,8 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
     [BlockchainType.bitcoin]: provider?.name === connectors.bitcoin?.name,
     [BlockchainType.tron]:
       tronWallet?.adapter.name === connectors.tron?.adapter.name,
+    [BlockchainType.litecoin]: false,
+    [BlockchainType.alpen_signet]: false,
   };
 
   const handleCheck = (ecosystem: BlockchainType) => {

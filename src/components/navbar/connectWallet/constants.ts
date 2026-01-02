@@ -27,6 +27,10 @@ export const ecosystems = {
     name: "tron",
     icon: "https://garden.imgix.net/chain_images/TronIcon.svg",
   },
+  [BlockchainType.litecoin]: {
+    name: "Litecoin",
+    icon: "https://garden.imgix.net/assets/LitecoinIcon.svg",
+  },
 } as const;
 
 export type EcosystemKeys = keyof typeof ecosystems;
@@ -40,6 +44,7 @@ interface BaseWallet {
   isSolanaSupported: boolean;
   isSuiSupported: boolean;
   isTronSupported: boolean;
+  isLitecoinSupported: boolean;
 }
 
 // Wallet capabilities interface
@@ -50,6 +55,7 @@ interface WalletCapabilities {
   [BlockchainType.solana]?: boolean;
   [BlockchainType.sui]?: boolean;
   [BlockchainType.tron]?: boolean;
+  [BlockchainType.litecoin]?: boolean;
 }
 
 type GardenSupportedWalletsType = BaseWallet & WalletCapabilities;
@@ -69,6 +75,7 @@ const createWallet = (
   isSolanaSupported: capabilities[BlockchainType.solana] ?? false,
   isSuiSupported: capabilities[BlockchainType.sui] ?? false,
   isTronSupported: capabilities[BlockchainType.tron] ?? false,
+  isLitecoinSupported: capabilities[BlockchainType.litecoin] ?? false,
 });
 
 export const GardenSupportedWallets: Record<
@@ -146,6 +153,18 @@ export const GardenSupportedWallets: Record<
     "wallet/argent.svg",
     "https://www.argent.xyz/argent-x",
     { starknet: true }
+  ),
+  enkrypt: createWallet(
+    "Enkrypt",
+    "wallets/EnkryptIcon.svg",
+    "https://www.enkrypt.com/",
+    { litecoin: network === Network.MAINNET }
+  ),
+  litescribe: createWallet(
+    "Litescribe",
+    "wallets/litescribeIcon.png",
+    "https://litescribe.io/",
+    { litecoin: network === Network.MAINNET }
   ),
   keplr: createWallet("Keplr", "wallets/keplr.svg", "tallLink:", {
     evm: network === Network.MAINNET,

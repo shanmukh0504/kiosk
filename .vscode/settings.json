@@ -25,7 +25,8 @@
     "unstaked",
     "Unstaking",
     "viem",
-    "Waitlist"
+    "Waitlist",
+    "litecoin"
   ],
   "prettier.semi": true,
   "prettier.singleQuote": false,

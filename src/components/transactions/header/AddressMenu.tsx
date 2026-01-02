@@ -1,6 +1,9 @@
 import { FC, useMemo, useId } from "react";
 import { AddIcon, LogoutIcon } from "@gardenfi/garden-book";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import {
+  useBitcoinWallet,
+  useLitecoinWallet,
+} from "@gardenfi/wallet-connectors";
 import { Tooltip } from "../../../common/Tooltip";
 import { modalNames, modalStore } from "../../../store/modalStore";
 import { ecosystems } from "../../navbar/connectWallet/constants";
@@ -22,6 +25,8 @@ type AddressMenuProps = {
 export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const { address, disconnect } = useEVMWallet();
   const { starknetAddress, starknetDisconnect } = useStarknetWallet();
+  const { account: ltcAddress, disconnect: ltcDisconnect } =
+    useLitecoinWallet();
   const { account: btcAddress, disconnect: btcDisconnect } = useBitcoinWallet();
   const { solanaAddress, solanaDisconnect } = useSolanaWallet();
   const { suiConnected, currentAccount, suiDisconnect } = useSuiWallet();
@@ -38,16 +43,17 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
 
   const showConnectWallet = useMemo(() => {
     return !(
-      (address && btcAddress && starknetAddress)
+      (address && btcAddress && starknetAddress && ltcAddress)
       // solanaAddress &&
       // suiConnected
     );
-  }, [address, btcAddress, starknetAddress]);
+  }, [address, btcAddress, starknetAddress, ltcAddress]);
 
   const handleDisconnectClick = () => {
     clear();
     disconnect();
     btcDisconnect();
+    ltcDisconnect();
     starknetDisconnect();
     solanaDisconnect();
     suiDisconnect();
@@ -73,6 +79,9 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
           {address && <Address address={address} logo={ecosystems.evm.icon} />}
           {btcAddress && (
             <Address address={btcAddress} logo={ecosystems.bitcoin.icon} />
+          )}
+          {ltcAddress && (
+            <Address address={ltcAddress} logo={ecosystems.litecoin.icon} />
           )}
           {starknetAddress && (
             <Address

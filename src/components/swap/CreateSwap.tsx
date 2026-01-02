@@ -20,6 +20,7 @@ import {
 import { ecosystems } from "../navbar/connectWallet/constants";
 import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
+import { useAddressFillers } from "../../hooks/useAddressFillers";
 import {
   isBitcoin,
   isStarknet,
@@ -42,6 +43,11 @@ export const CreateSwap = () => {
   const navigate = useNavigate();
   const { destinationChain } = useParams();
   const { assets } = assetInfoStore();
+
+  // Initialize address fillers
+  // This hook is used to fill the input and output addresses with the wallet addresses
+  // when the user selects an asset
+  useAddressFillers();
   const {
     isComparisonVisible,
     showComparison,

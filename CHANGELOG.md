@@ -3,7 +3,8 @@
 ## [2.0.4]
 
 ### Added
-
+- Add litecoin testnet support.
+- Add address filler to accept bitcoin like chain addresses without wallet connection
 - Migrated balance fetching to SSE-based real-time streaming service for automatic balance updates.
 - Unified balance fetching implementation across all supported chains.
 

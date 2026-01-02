@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { useGarden } from "@gardenfi/react-hooks";
 import { OrderStatus } from "@gardenfi/orderbook";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import {
+  useBitcoinWallet,
+  useLitecoinWallet,
+} from "@gardenfi/wallet-connectors";
 import { Opacity, Typography, WalletIcon } from "@gardenfi/garden-book";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
@@ -16,6 +19,7 @@ import { useTronWallet } from "../../hooks/useTronWallet";
 const ConnectedWallets = () => {
   const { address } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
+  const { account: ltcAddress } = useLitecoinWallet();
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
   const { suiConnected, currentAccount } = useSuiWallet();
@@ -72,6 +76,13 @@ const ConnectedWallets = () => {
             src={ecosystems.bitcoin.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="Bitcoin wallet"
+          />
+        )}
+        {ltcAddress && (
+          <img
+            src={ecosystems.litecoin.icon}
+            className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            alt="Litecoin wallet"
           />
         )}
         {starknetAddress && (
