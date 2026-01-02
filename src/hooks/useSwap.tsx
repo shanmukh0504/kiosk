@@ -42,6 +42,7 @@ import { useNetworkFees } from "./useNetworkFees";
 import { useSuiWallet } from "./useSuiWallet";
 import logger from "../utils/logger";
 import { balanceStore } from "../store/balanceStore";
+import { useTronWallet } from "./useTronWallet";
 
 export const useSwap = () => {
   const {
@@ -96,6 +97,7 @@ export const useSwap = () => {
   const { starknetAddress } = useStarknetWallet();
   const { setOpenModal } = modalStore();
   const { solanaAddress } = useSolanaWallet();
+  const { tronAddress } = useTronWallet();
   const { currentAccount } = useSuiWallet();
   useNetworkFees();
 
@@ -108,16 +110,11 @@ export const useSwap = () => {
     () =>
       inputBalance &&
       inputAsset &&
-      (!isStarknet(inputAsset.chain) &&
-      !isSolana(inputAsset.chain) &&
-      !isTron(inputAsset.chain) &&
-      !isSui(inputAsset.chain)
-        ? formatBalance(
-            Number(inputBalance),
-            inputAsset.decimals,
-            Math.min(inputAsset.decimals, BTC.decimals)
-          )
-        : inputBalance.toString()),
+      formatBalance(
+        Number(inputBalance),
+        inputAsset.decimals,
+        Math.min(inputAsset.decimals, BTC.decimals)
+      ),
     [inputBalance, inputAsset]
   );
 
@@ -444,7 +441,7 @@ export const useSwap = () => {
       },
       tron: {
         check: (chain: Chain) => isTron(chain),
-        address: garden?.htlcs.tron?.htlcActorAddress,
+        address: tronAddress,
       },
     };
 
@@ -466,6 +463,7 @@ export const useSwap = () => {
     starknetAddress,
     solanaAddress,
     currentAccount,
+    tronAddress,
   ]);
 
   const handleSwapClick = async () => {

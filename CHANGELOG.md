@@ -2,8 +2,11 @@
 
 ## [2.0.4]
 
+### Added
 - Add litecoin testnet support.
 - Add address filler to accept bitcoin like chain addresses without wallet connection
+- Migrated balance fetching to SSE-based real-time streaming service for automatic balance updates.
+- Unified balance fetching implementation across all supported chains.
 
 ## [2.0.3]
 
@@ -12,6 +15,7 @@
 - Added Starknet and Solana support to OKX, and added Solana support to MetaMask.
 - Reverted Solana in Kiosk.
 - Added support for Tron Mainnet
+- Add Tron Mainnet support to OKX Wallet
 
 ### Fixed
 

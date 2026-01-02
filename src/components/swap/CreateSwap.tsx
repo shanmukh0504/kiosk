@@ -6,12 +6,11 @@ import {
   WALLET_SUPPORTED_CHAINS,
   QUERY_PARAMS,
 } from "../../constants/constants";
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { modalNames, modalStore } from "../../store/modalStore";
-import { balanceStore } from "../../store/balanceStore";
 import {
   capitalizeChain,
   getAssetFromChainAndSymbol,
@@ -20,14 +19,9 @@ import {
 } from "../../utils/utils";
 import { ecosystems } from "../navbar/connectWallet/constants";
 import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { useStarknetWallet } from "../../hooks/useStarknetWallet";
-import { useSolanaWallet } from "../../hooks/useSolanaWallet";
-import { useSuiWallet } from "../../hooks/useSuiWallet";
 import { useAddressFillers } from "../../hooks/useAddressFillers";
 import {
-  isEVM,
   isBitcoin,
   isStarknet,
   isSolana,
@@ -39,7 +33,6 @@ import {
 import { swapStore } from "../../store/swapStore";
 import { AnimatePresence, motion } from "framer-motion";
 import { CompetitorComparisons } from "./CompetitorComparisons";
-import { useTronWallet } from "../../hooks/useTronWallet";
 
 export const CreateSwap = () => {
   const [loadingDisabled, setLoadingDisabled] = useState(false);
@@ -49,22 +42,7 @@ export const CreateSwap = () => {
 
   const navigate = useNavigate();
   const { destinationChain } = useParams();
-  const { account: btcAddress, provider } = useBitcoinWallet();
-  const { address } = useEVMWallet();
-  const { starknetAddress } = useStarknetWallet();
-  const { solanaAnchorProvider } = useSolanaWallet();
-  const { currentAccount } = useSuiWallet();
-  const { tronAddress } = useTronWallet();
-  const { isAssetSelectorOpen, assets, fetchAndSetFiatValues } =
-    assetInfoStore();
-  const {
-    fetchAndSetBitcoinBalance,
-    fetchAndSetEvmBalances,
-    fetchAndSetStarknetBalance,
-    fetchAndSetSolanaBalance,
-    fetchAndSetSuiBalance,
-    fetchAndSetTronBalance,
-  } = balanceStore();
+  const { assets } = assetInfoStore();
 
   // Initialize address fillers
   // This hook is used to fill the input and output addresses with the wallet addresses
@@ -113,7 +91,8 @@ export const CreateSwap = () => {
       isBitcoin(inputAsset.chain) ||
       isStarknet(inputAsset.chain) ||
       isSolana(inputAsset.chain) ||
-      isSui(inputAsset.chain)
+      isSui(inputAsset.chain) ||
+      isTron(inputAsset.chain)
     )
       return true;
     return WALLET_SUPPORTED_CHAINS[connector.id].includes(inputAsset.chain);
@@ -178,67 +157,6 @@ export const CreateSwap = () => {
     return getTimeEstimates(inputAsset);
   }, [inputAsset, outputAsset]);
 
-  const fetchAllBalances = useCallback(async () => {
-    await fetchAndSetFiatValues();
-    await Promise.allSettled([
-      address && fetchAndSetEvmBalances(address),
-      btcAddress && provider && fetchAndSetBitcoinBalance(provider, btcAddress),
-      starknetAddress && fetchAndSetStarknetBalance(starknetAddress),
-      solanaAnchorProvider &&
-        fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey),
-      currentAccount && fetchAndSetSuiBalance(currentAccount.address),
-      tronAddress && fetchAndSetTronBalance(tronAddress),
-    ]);
-  }, [
-    address,
-    provider,
-    btcAddress,
-    currentAccount,
-    fetchAndSetEvmBalances,
-    fetchAndSetBitcoinBalance,
-    fetchAndSetSuiBalance,
-    starknetAddress,
-    solanaAnchorProvider,
-    fetchAndSetFiatValues,
-    fetchAndSetStarknetBalance,
-    fetchAndSetSolanaBalance,
-    fetchAndSetTronBalance,
-    tronAddress,
-  ]);
-
-  const fetchInputAssetBalance = useCallback(async () => {
-    if (!inputAsset) return;
-    await fetchAndSetFiatValues();
-    if (isEVM(inputAsset.chain) && address)
-      await fetchAndSetEvmBalances(address, inputAsset);
-    if (isBitcoin(inputAsset.chain) && provider && btcAddress)
-      await fetchAndSetBitcoinBalance(provider, btcAddress);
-    if (isStarknet(inputAsset.chain) && starknetAddress)
-      await fetchAndSetStarknetBalance(starknetAddress);
-    if (isSolana(inputAsset.chain) && solanaAnchorProvider)
-      await fetchAndSetSolanaBalance(solanaAnchorProvider.publicKey);
-    if (isSui(inputAsset.chain) && currentAccount)
-      await fetchAndSetSuiBalance(currentAccount.address);
-    if (isTron(inputAsset.chain) && tronAddress)
-      await fetchAndSetTronBalance(tronAddress);
-  }, [
-    fetchAndSetFiatValues,
-    inputAsset,
-    address,
-    fetchAndSetEvmBalances,
-    provider,
-    btcAddress,
-    fetchAndSetBitcoinBalance,
-    starknetAddress,
-    fetchAndSetStarknetBalance,
-    solanaAnchorProvider,
-    fetchAndSetSolanaBalance,
-    currentAccount,
-    fetchAndSetSuiBalance,
-    tronAddress,
-    fetchAndSetTronBalance,
-  ]);
-
   const handleConnectWallet = () => {
     if (!needsWalletConnection) return;
 
@@ -253,32 +171,6 @@ export const CreateSwap = () => {
 
     setOpenModal(modalNames.connectWallet, modalState);
   };
-
-  useEffect(() => {
-    if (!assets) return;
-    fetchAllBalances();
-  }, [assets, fetchAllBalances]);
-
-  useEffect(() => {
-    if (!assets) return;
-
-    const interval = setInterval(() => {
-      if (isAssetSelectorOpen.isOpen) {
-        fetchAllBalances();
-      } else {
-        fetchInputAssetBalance();
-      }
-    }, 7000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [
-    assets,
-    isAssetSelectorOpen.isOpen,
-    fetchAllBalances,
-    fetchInputAssetBalance,
-  ]);
 
   useEffect(() => {
     if (!assets || addParams) return;
