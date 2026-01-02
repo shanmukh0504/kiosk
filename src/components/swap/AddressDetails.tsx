@@ -42,6 +42,23 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
     window.open(url, "_blank");
   };
 
+  const handleEditAddressClick = () => {
+    // Populate userProvidedAddress with wallet address when edit is clicked
+    if (isRefund) {
+      setUserProvidedAddress({ source: address });
+      setIsEditAddress({
+        source: true,
+        destination: isEditAddress.destination,
+      });
+    } else {
+      setUserProvidedAddress({ destination: address });
+      setIsEditAddress({
+        source: isEditAddress.source,
+        destination: true,
+      });
+    }
+  };
+
   const isEditing = isRefund ? isEditAddress.source : isEditAddress.destination;
 
   return (
@@ -80,20 +97,7 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
                   }`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    // Populate userProvidedAddress with wallet address when edit is clicked
-                    if (isRefund) {
-                      setUserProvidedAddress({ source: address });
-                      setIsEditAddress({
-                        source: true,
-                        destination: isEditAddress.destination,
-                      });
-                    } else {
-                      setUserProvidedAddress({ destination: address });
-                      setIsEditAddress({
-                        source: isEditAddress.source,
-                        destination: true,
-                      });
-                    }
+                    handleEditAddressClick();
                   }}
                 />
               )}
