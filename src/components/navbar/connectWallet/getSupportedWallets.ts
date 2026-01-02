@@ -1,6 +1,8 @@
 import {
-  AvailableWallets,
+  AvailableBTCWallets,
+  AvailableLTCWallets,
   IInjectedBitcoinProvider,
+  IInjectedLitecoinProvider,
 } from "@gardenfi/wallet-connectors";
 import { Connector } from "wagmi";
 import { GetConnectorsReturnType } from "wagmi/actions";
@@ -22,6 +24,7 @@ export type Wallet = {
     solanaWallet?: SolanaWallet;
     suiWallet?: SuiWallet;
     tronWallet?: TronWallet;
+    litecoinWallet?: IInjectedLitecoinProvider;
   };
   isAvailable: boolean;
   installLink?: string;
@@ -31,10 +34,12 @@ export type Wallet = {
   isSolana?: boolean;
   isSui?: boolean;
   isTron?: boolean;
+  isLitecoin?: boolean;
 };
 
 export type ConnectionState = {
   btcProvider?: IInjectedBitcoinProvider;
+  litecoinProvider?: IInjectedLitecoinProvider;
   evmConnector?: Connector;
   starknetConnector?: StarknetConnector;
   starknetStatus?: string;
@@ -75,7 +80,8 @@ const getWalletKey = (connectorName: string): string => {
 };
 
 export const getAvailableWallets = (
-  bitcoinWallets?: AvailableWallets,
+  bitcoinWallets?: AvailableBTCWallets,
+  litecoinWallets?: AvailableLTCWallets,
   evmWallets?: GetConnectorsReturnType,
   starknetWallets?: StarknetConnector[],
   solanaWallets?: SolanaWallet[],
@@ -98,6 +104,7 @@ export const getAvailableWallets = (
       isSolana: config.isSolanaSupported,
       isSui: config.isSuiSupported,
       isTron: config.isTronSupported,
+      isLitecoin: config.isLitecoinSupported,
     });
   }
 
@@ -120,6 +127,16 @@ export const getAvailableWallets = (
       const wallet = getWallet(provider.name);
       if (wallet && wallet.isBitcoin) {
         wallet.wallet.btcWallet = provider;
+        wallet.isAvailable = checkManualWalletAvailability(wallet.id) ?? true;
+      }
+    }
+  }
+
+  if (litecoinWallets) {
+    for (const [_, provider] of Object.entries(litecoinWallets)) {
+      const wallet = getWallet(provider.name);
+      if (wallet && wallet.isLitecoin) {
+        wallet.wallet.litecoinWallet = provider;
         wallet.isAvailable = checkManualWalletAvailability(wallet.id) ?? true;
       }
     }
@@ -185,6 +202,11 @@ export const isWalletConnected = (
         return false;
       return getWalletKey(connectionState.btcProvider.name) === wallet.id;
 
+    case BlockchainType.litecoin:
+      if (!connectionState.litecoinProvider || !wallet.wallet.litecoinWallet)
+        return false;
+      return getWalletKey(connectionState.litecoinProvider.name) === wallet.id;
+
     case BlockchainType.evm:
       if (!connectionState.evmConnector || !wallet.wallet.evmWallet)
         return false;
@@ -246,6 +268,11 @@ export const getWalletConnectionStatus = (
       BlockchainType.bitcoin,
       connectionState
     ),
+    [BlockchainType.litecoin]: isWalletConnected(
+      wallet,
+      BlockchainType.litecoin,
+      connectionState
+    ),
     [BlockchainType.evm]: isWalletConnected(
       wallet,
       BlockchainType.evm,
@@ -271,5 +298,6 @@ export const getWalletConnectionStatus = (
       BlockchainType.tron,
       connectionState
     ),
+    [BlockchainType.alpen_signet]: false,
   };
 };

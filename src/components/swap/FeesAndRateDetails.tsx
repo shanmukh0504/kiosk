@@ -7,22 +7,14 @@ import {
 } from "@gardenfi/garden-book";
 import { BTC, swapStore } from "../../store/swapStore";
 
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { Asset, isBitcoin, isSolana, isStarknet } from "@gardenfi/orderbook";
+import { Asset, isAlpenSignet, isBitcoin } from "@gardenfi/orderbook";
 import { motion, AnimatePresence } from "framer-motion";
 import { delayedFadeAnimation } from "../../animations/animations";
 import { SwapSavingsAndAddresses } from "./SwapSavingsAndAddresses";
-import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { TooltipWrapper } from "../../common/ToolTipWrapper";
-import {
-  formatAmount,
-  formatAmountUsd,
-  isAlpenSignetChain,
-} from "../../utils/utils";
+import { formatAmount, formatAmountUsd } from "../../utils/utils";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { RateAndPriceDisplay } from "./RateAndPriceDisplay";
-import { useStarknetWallet } from "../../hooks/useStarknetWallet";
 
 export const FeesAndRateDetails = () => {
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
@@ -41,11 +33,9 @@ export const FeesAndRateDetails = () => {
     networkFees,
     showComparisonHandler,
     isFetchingQuote,
+    sourceAddress: walletSource,
+    destinationAddress: walletDestination,
   } = swapStore();
-  const { account: btcAddress } = useBitcoinWallet();
-  const { solanaAddress } = useSolanaWallet();
-  const { address } = useEVMWallet();
-  const { starknetAddress } = useStarknetWallet();
   const { assets, fiatData } = assetInfoStore();
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
@@ -69,30 +59,16 @@ export const FeesAndRateDetails = () => {
     }
     return formatAmountUsd(price, 0);
   }, [inputAsset, assets, fiatData]);
+
+  // Only show wallet addresses in bottom section (source of truth)
   const refundAddress = useMemo(
-    () =>
-      inputAsset
-        ? isBitcoin(inputAsset.chain)
-          ? btcAddress
-          : isStarknet(inputAsset.chain)
-            ? starknetAddress
-            : isSolana(inputAsset.chain)
-              ? solanaAddress
-              : address
-        : undefined,
-    [inputAsset, btcAddress, solanaAddress, address, starknetAddress]
+    () => (inputAsset ? walletSource : undefined),
+    [inputAsset, walletSource]
   );
 
   const receiveAddress = useMemo(
-    () =>
-      outputAsset
-        ? isBitcoin(outputAsset.chain)
-          ? btcAddress
-          : isSolana(outputAsset.chain)
-            ? solanaAddress
-            : address
-        : undefined,
-    [outputAsset, btcAddress, solanaAddress, address]
+    () => (outputAsset ? walletDestination : undefined),
+    [outputAsset, walletDestination]
   );
 
   useEffect(() => {
@@ -225,12 +201,12 @@ export const FeesAndRateDetails = () => {
         {isDetailsExpanded && (
           <SwapSavingsAndAddresses
             refundAddress={
-              inputAsset?.chain && isAlpenSignetChain(inputAsset.chain)
+              inputAsset?.chain && isAlpenSignet(inputAsset.chain)
                 ? undefined
                 : refundAddress
             }
             receiveAddress={
-              outputAsset?.chain && isAlpenSignetChain(outputAsset.chain)
+              outputAsset?.chain && isAlpenSignet(outputAsset.chain)
                 ? undefined
                 : receiveAddress
             }

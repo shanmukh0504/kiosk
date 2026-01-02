@@ -17,6 +17,7 @@ import {
 import {
   IInjectedBitcoinProvider,
   useBitcoinWallet,
+  useLitecoinWallet,
 } from "@gardenfi/wallet-connectors";
 import { WalletRow } from "./WalletRow";
 import { MultiWalletConnection } from "./MultiWalletConnection";
@@ -62,6 +63,11 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     starknetSwitchChain,
   } = useStarknetWallet();
   const { availableWallets, connect, provider } = useBitcoinWallet();
+  const {
+    availableWallets: availableLitecoinWallets,
+    connect: connectLitecoin,
+    provider: litecoinProvider,
+  } = useLitecoinWallet();
   const { connectingWallet, setConnectingWallet } = ConnectingWalletStore();
   const {
     solanaWallets,
@@ -85,6 +91,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   const showOnlySolanaWallets = !!modalData.connectWallet?.solana;
   const showOnlySuiWallets = !!modalData.connectWallet?.sui;
   const showOnlyTronWallets = !!modalData.connectWallet?.tron;
+  const showOnlyLitecoinWallets = !!modalData.connectWallet?.litecoin;
 
   useEffect(() => {
     const selected = showOnlyStarknetWallets
@@ -99,7 +106,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
               ? BlockchainType.sui
               : showOnlyTronWallets
                 ? BlockchainType.tron
-                : null;
+                : showOnlyLitecoinWallets
+                  ? BlockchainType.litecoin
+                  : null;
 
     if (selected) setSelectedEcosystem(selected);
   }, [
@@ -109,11 +118,13 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     showOnlySolanaWallets,
     showOnlySuiWallets,
     showOnlyTronWallets,
+    showOnlyLitecoinWallets,
   ]);
 
   const allAvailableWallets = useMemo(() => {
     let allWallets = getAvailableWallets(
       availableWallets,
+      availableLitecoinWallets,
       connectors,
       starknetConnectors,
       solanaWallets,
@@ -140,6 +151,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       case BlockchainType.tron:
         allWallets = allWallets.filter((wallet) => wallet.isTron);
         break;
+      case BlockchainType.litecoin:
+        allWallets = allWallets.filter((wallet) => wallet.isLitecoin);
+        break;
     }
 
     if (
@@ -158,6 +172,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     selectedEcosystem,
     suiWallets,
     tronWallets,
+    availableLitecoinWallets,
   ]);
 
   const handleClose = useCallback(() => {
@@ -239,6 +254,12 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         if (res.error) {
           logger.error("error connecting wallet", res.error);
         }
+      } else if (connector.isLitecoin) {
+        if (!connector.wallet?.litecoinWallet) return;
+        const res = await connectLitecoin(connector.wallet.litecoinWallet);
+        if (res.error) {
+          logger.error("error connecting wallet", res.error);
+        }
       } else if (connector.isEVM) {
         if (!connector.wallet?.evmWallet) return;
 
@@ -305,7 +326,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                 key === BlockchainType.bitcoin ||
                 key === BlockchainType.starknet ||
                 key === BlockchainType.tron ||
-                key === BlockchainType.solana
+                key === BlockchainType.solana ||
+                key === BlockchainType.litecoin
             )
             .map(([key, ecosystem]) => (
               <Chip
@@ -350,6 +372,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                   isConnecting={connectingWallet === wallet.id.toLowerCase()}
                   isConnected={getWalletConnectionStatus(wallet, {
                     btcProvider: provider,
+                    litecoinProvider: litecoinProvider,
                     evmConnector: connector,
                     starknetConnector,
                     starknetStatus,

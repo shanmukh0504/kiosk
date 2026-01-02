@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { BTC, swapStore } from "../store/swapStore";
-import { IOType, network } from "../constants/constants";
+import { IOType } from "../constants/constants";
 import {
   Asset,
   BitcoinOrderResponse,
-  BlockchainType,
   Chain,
   isBitcoin,
   isSolana,
@@ -15,15 +14,18 @@ import {
   ChainAsset,
   isTron,
   Chains,
+  isLitecoin,
+  isAlpenSignet,
 } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
-import { validateBTCAddress } from "@gardenfi/core";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useStarknetWallet } from "./useStarknetWallet";
 import { useEVMWallet } from "./useEVMWallet";
 import { modalNames, modalStore } from "../store/modalStore";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { Environment } from "@gardenfi/utils";
+import {
+  useBitcoinWallet,
+  useLitecoinWallet,
+} from "@gardenfi/wallet-connectors";
 import { Errors } from "../constants/errors";
 import { ConnectingWalletStore } from "../store/connectWalletStore";
 import orderInProgressStore from "../store/orderInProgressStore";
@@ -34,12 +36,13 @@ import {
   formatAmount,
   formatBalance,
   isAsset,
-  isAlpenSignetChain,
+  isBitcoinSwap,
 } from "../utils/utils";
 import { useNetworkFees } from "./useNetworkFees";
 import { useSuiWallet } from "./useSuiWallet";
 import logger from "../utils/logger";
 import { balanceStore } from "../store/balanceStore";
+import { useTronWallet } from "./useTronWallet";
 
 export const useSwap = () => {
   const {
@@ -51,10 +54,9 @@ export const useSwap = () => {
     isApproving,
     rate,
     error,
-    btcAddress,
     tokenPrices,
     isFetchingQuote,
-    isEditBTCAddress,
+    isEditAddress,
     networkFees,
     setIsSwapping,
     setAmount,
@@ -66,27 +68,36 @@ export const useSwap = () => {
     setFiatTokenPrices,
     setFixedFee,
     isComparisonVisible,
-    setIsValidBitcoinAddress,
     // setIsApproving,
     setTokenPrices,
     clearSwapState,
-    setBtcAddress,
     setIsComparisonVisible,
     solverId,
     setSolverId,
+    validAddress,
+    sourceAddress: walletSource,
+    destinationAddress: walletDestination,
+    userProvidedAddress,
   } = swapStore();
   const { balances } = balanceStore();
+
+  // Resolve addresses: userProvidedAddress first, then walletAddress
+  const sourceAddress = userProvidedAddress.source || walletSource;
+  const destinationAddress =
+    userProvidedAddress.destination || walletDestination;
   const { setOrder, setIsOpen } = orderInProgressStore();
   const { updateOrder } = pendingOrdersStore();
   const { disconnect } = useEVMWallet();
   const { swap, getQuote, garden } = useGarden();
-  const { provider, account } = useBitcoinWallet();
+  const { provider } = useBitcoinWallet();
+  const { provider: ltcProvider } = useLitecoinWallet();
   const controller = useRef<AbortController | null>(null);
   const { setConnectingWallet } = ConnectingWalletStore();
   const { address: evmAddress } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { setOpenModal } = modalStore();
   const { solanaAddress } = useSolanaWallet();
+  const { tronAddress } = useTronWallet();
   const { currentAccount } = useSuiWallet();
   useNetworkFees();
 
@@ -99,16 +110,11 @@ export const useSwap = () => {
     () =>
       inputBalance &&
       inputAsset &&
-      (!isStarknet(inputAsset.chain) &&
-      !isSolana(inputAsset.chain) &&
-      !isTron(inputAsset.chain) &&
-      !isSui(inputAsset.chain)
-        ? formatBalance(
-            Number(inputBalance),
-            inputAsset.decimals,
-            Math.min(inputAsset.decimals, BTC.decimals)
-          )
-        : inputBalance.toString()),
+      formatBalance(
+        Number(inputBalance),
+        inputAsset.decimals,
+        Math.min(inputAsset.decimals, BTC.decimals)
+      ),
     [inputBalance, inputAsset]
   );
 
@@ -117,27 +123,14 @@ export const useSwap = () => {
     return BigNumber(inputAmount).gt(inputTokenBalance);
   }, [inputAmount, inputTokenBalance]);
 
-  const isBitcoinSwap = useMemo(() => {
-    return !!(
-      inputAsset &&
-      outputAsset &&
-      (isBitcoin(inputAsset.chain) || isBitcoin(outputAsset.chain))
-    );
-  }, [inputAsset, outputAsset]);
-  const isValidBitcoinAddress = useMemo(() => {
-    if (!isBitcoinSwap) return true;
-    return btcAddress
-      ? validateBTCAddress(btcAddress, network as unknown as Environment)
-      : false;
-  }, [btcAddress, isBitcoinSwap]);
-
   const _validSwap = useMemo(() => {
     return !!(
       inputAsset &&
       outputAmount &&
       inputAmount &&
       outputAsset &&
-      isValidBitcoinAddress &&
+      validAddress.source &&
+      validAddress.destination &&
       !error.inputError &&
       !error.outputError &&
       !error.liquidityError &&
@@ -149,12 +142,18 @@ export const useSwap = () => {
     inputAmount,
     outputAsset,
     error,
-    isValidBitcoinAddress,
+    validAddress.source,
+    validAddress.destination,
   ]);
 
   const validSwap = useMemo(() => {
-    return isBitcoinSwap ? !!(_validSwap && btcAddress) : _validSwap;
-  }, [_validSwap, isBitcoinSwap, btcAddress]);
+    if (!_validSwap) return false;
+
+    // Simply check if both addresses are present (using resolved addresses)
+    if (!sourceAddress || !destinationAddress) return false;
+
+    return true;
+  }, [_validSwap, sourceAddress, destinationAddress]);
 
   const { minAmount, maxAmount } = useMemo(() => {
     const defaultLimits = {
@@ -442,7 +441,7 @@ export const useSwap = () => {
       },
       tron: {
         check: (chain: Chain) => isTron(chain),
-        address: garden?.htlcs.tron?.htlcActorAddress,
+        address: tronAddress,
       },
     };
 
@@ -464,6 +463,7 @@ export const useSwap = () => {
     starknetAddress,
     solanaAddress,
     currentAccount,
+    tronAddress,
   ]);
 
   const handleSwapClick = async () => {
@@ -473,7 +473,15 @@ export const useSwap = () => {
       });
       return;
     }
-    if (!validSwap || !swap || !inputAsset || !outputAsset) return;
+    if (
+      !validSwap ||
+      !swap ||
+      !inputAsset ||
+      !outputAsset ||
+      !sourceAddress ||
+      !destinationAddress
+    )
+      return;
     setIsSwapping(true);
 
     const inputAmountInDecimals = new BigNumber(inputAmount)
@@ -482,12 +490,6 @@ export const useSwap = () => {
     const outputAmountInDecimals = new BigNumber(outputAmount)
       .multipliedBy(10 ** outputAsset.decimals)
       .toFixed();
-
-    const addresses: Partial<Record<BlockchainType, string>> = isBitcoinSwap
-      ? {
-          bitcoin: btcAddress,
-        }
-      : {};
 
     try {
       // if (!wallet) return;
@@ -528,8 +530,10 @@ export const useSwap = () => {
         sendAmount: inputAmountInDecimals,
         receiveAmount: outputAmountInDecimals,
         solverId,
-        addresses,
+        sourceAddress: sourceAddress,
+        destinationAddress: destinationAddress,
       });
+
       if (!res.ok) {
         if (
           res.error.includes(
@@ -562,9 +566,37 @@ export const useSwap = () => {
 
       const order = orderResult.val;
 
+      if (isLitecoin(inputAsset.chain)) {
+        const orderResponse = res.val as BitcoinOrderResponse;
+        if (ltcProvider && !isAlpenSignet(inputAsset.chain)) {
+          const litecoinRes = await ltcProvider?.sendLitecoin(
+            orderResponse.to,
+            Number(orderResponse.amount)
+          );
+          if (!litecoinRes.ok) {
+            logger.error("failed to send litecoin ❌", litecoinRes?.error);
+            setIsSwapping(false);
+          }
+          const updatedOrder = {
+            ...order,
+            source_swap: {
+              ...order.source_swap,
+              initiate_tx_hash: litecoinRes.val ?? "",
+            },
+            status: litecoinRes.val
+              ? OrderStatus.InitiateDetected
+              : OrderStatus.Created,
+          };
+          setOrder(updatedOrder);
+          setIsOpen(true);
+          updateOrder(updatedOrder);
+          clearSwapState();
+          return;
+        }
+      }
       if (isBitcoin(inputAsset.chain)) {
         const orderResponse = res.val as BitcoinOrderResponse;
-        if (provider && !isAlpenSignetChain(inputAsset.chain)) {
+        if (provider && !isAlpenSignet(inputAsset.chain)) {
           const bitcoinRes = await provider.sendBitcoin(
             orderResponse.to,
             Number(orderResponse.amount)
@@ -695,33 +727,6 @@ export const useSwap = () => {
     setError({ insufficientBalanceError: Errors.none });
   }, [isInsufficientBalance, setError, inputAsset, outputAsset, inputAmount]);
 
-  //set btc address if bitcoin wallet is connected
-  useEffect(() => {
-    if (
-      inputAsset &&
-      outputAsset &&
-      account &&
-      !isAlpenSignetChain(inputAsset.chain) &&
-      !isAlpenSignetChain(outputAsset.chain)
-    ) {
-      setBtcAddress(account ? account : "");
-    } else {
-      setBtcAddress("");
-    }
-  }, [account, setBtcAddress, inputAsset, outputAsset]);
-
-  // Update isValidBitcoinAddress state in an effect
-  useEffect(() => {
-    if (!isBitcoinSwap) {
-      setIsValidBitcoinAddress(true);
-      return;
-    }
-    const isValid = btcAddress
-      ? validateBTCAddress(btcAddress, network as unknown as Environment)
-      : false;
-    setIsValidBitcoinAddress(isValid);
-  }, [btcAddress, isBitcoinSwap, setIsValidBitcoinAddress]);
-
   return {
     inputAmount,
     outputAmount,
@@ -730,7 +735,7 @@ export const useSwap = () => {
     tokenPrices,
     rate,
     error,
-    isEditBTCAddress,
+    isEditAddress,
     loading: isFetchingQuote,
     validSwap,
     isSwapping,
@@ -738,10 +743,8 @@ export const useSwap = () => {
     isBitcoinSwap,
     inputTokenBalance,
     needsWalletConnection,
-    btcAddress,
     controller,
     isComparisonVisible,
-    setBtcAddress,
     swapAssets,
     handleInputAmountChange,
     handleOutputAmountChange,

@@ -48,7 +48,7 @@ export const StakeComponent: React.FC = () => {
   } = stakeStore();
   const { loading } = useStake();
   const { hideStaticToast } = useToastStore();
-  const { balances, balanceFetched, fetchAndSetEvmBalances } = balanceStore();
+  const { balances, balanceFetched } = balanceStore();
   const tooltipId = useId();
   const { isMobile } = viewPortStore();
 
@@ -142,18 +142,6 @@ export const StakeComponent: React.FC = () => {
     clearStakePosData,
     fetchAndSetRewards,
   ]);
-
-  useEffect(() => {
-    if (address && asset) {
-      fetchAndSetEvmBalances(address, asset);
-
-      const interval = setInterval(() => {
-        fetchAndSetEvmBalances(address, asset);
-      }, 5000);
-
-      return () => clearInterval(interval);
-    }
-  }, [address, fetchAndSetEvmBalances, asset]);
 
   useEffect(() => {
     hideStaticToast();

@@ -4,8 +4,11 @@ import {
   Asset,
   Chain,
   ChainAsset,
+  isBitcoin,
   OrderWithStatus,
   Swap,
+  isLitecoin,
+  isAlpenSignet,
 } from "@gardenfi/orderbook";
 import { Assets } from "../store/assetInfoStore";
 
@@ -25,6 +28,19 @@ export const getCurrentTheme = () => {
 export const capitalizeChain = (chainKey: string) => {
   if (chainKey === "evm") return "EVM";
   return chainKey.charAt(0).toUpperCase() + chainKey.slice(1);
+};
+
+export const formatChainNameForDisplay = (
+  chain: string | undefined
+): string => {
+  if (!chain) return "Bitcoin";
+
+  const withSpaces = chain.replace(/_/g, " ");
+
+  const formatted =
+    withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1).toLowerCase();
+
+  return formatted;
 };
 
 /**
@@ -235,54 +251,12 @@ export const getDaysUntilNextEpoch = (
   return daysUntilNextSunday;
 };
 
-export function parseAssetNameSymbol(
-  input: string | undefined,
-  assetId?: string | ChainAsset,
-  fallbackSymbol?: string
-): { name: string; symbol: string } {
-  const raw = (input ?? "").trim();
-  if (!raw) return { name: "", symbol: fallbackSymbol?.trim() || "" };
-
-  const parts = raw.split(":");
-  if (parts.length >= 2) {
-    const name = parts[0]?.trim() || "";
-    const symbol =
-      parts.slice(1).join(":").trim() || fallbackSymbol?.trim() || "";
-    return { name, symbol };
-  }
-
-  let derivedSymbol = "";
-
-  if (assetId) {
-    try {
-      const chainAsset =
-        typeof assetId === "string" ? ChainAsset.from(assetId) : assetId;
-      derivedSymbol = chainAsset.symbol.toUpperCase();
-    } catch {
-      /* empty */
-    }
-  }
-
-  return { name: raw, symbol: derivedSymbol || fallbackSymbol?.trim() || "" };
-}
-
 export function sortPendingOrders(orders: OrderWithStatus[]) {
   return orders.sort((a, b) => {
     const aTime = new Date(a.created_at).getTime();
     const bTime = new Date(b.created_at).getTime();
     return bTime - aTime;
   });
-}
-
-// Convert both to decimal for comparison (handle hex and decimal formats)
-export function normalizeChainId(chainId: string): string {
-  if (!chainId) return "";
-  // If it's hex (starts with 0x), convert to decimal
-  if (chainId.toLowerCase().startsWith("0x")) {
-    return parseInt(chainId, 16).toString();
-  }
-  // Otherwise return as-is (already decimal)
-  return chainId;
 }
 
 export const isAsset = (
@@ -338,10 +312,52 @@ To learn more about Garden, refer to our documentation: https://docs.garden.fina
   }
 };
 
-export const isAlpenSignetChain = (chain: string) => {
-  return chain.toLowerCase().includes("alpen_signet");
+export const isBitcoinSwap = (inputAsset?: Asset, outputAsset?: Asset) => {
+  return !!(
+    inputAsset &&
+    outputAsset &&
+    (isBitcoin(inputAsset.chain) || isBitcoin(outputAsset.chain))
+  );
 };
 
+export const decideAddressVisibility = (
+  inputAsset?: Asset,
+  outputAsset?: Asset,
+  address?: { source: string | undefined; destination: string | undefined },
+  isEditAddress?: { source: boolean; destination: boolean }
+) => {
+  // Only show address input for Bitcoin-type assets (Bitcoin or Alpen Signet)
+  // For other chains (Starknet, Solana, etc.), addresses come from wallet connection
+  const isSourceBitcoinType =
+    inputAsset &&
+    (isBitcoin(inputAsset.chain) ||
+      isAlpenSignet(inputAsset.chain) ||
+      isLitecoin(inputAsset.chain));
+
+  const isDestinationBitcoinType =
+    outputAsset &&
+    (isBitcoin(outputAsset.chain) ||
+      isAlpenSignet(outputAsset.chain) ||
+      isLitecoin(outputAsset.chain));
+
+  const isSourceNeeded =
+    inputAsset &&
+    outputAsset &&
+    isSourceBitcoinType &&
+    (isAlpenSignet(inputAsset.chain) ||
+      isEditAddress?.source ||
+      !address?.source);
+
+  const isDestinationNeeded =
+    inputAsset &&
+    outputAsset &&
+    isDestinationBitcoinType &&
+    (isAlpenSignet(outputAsset.chain) ||
+      isEditAddress?.destination ||
+      !address?.destination);
+
+  return { isSourceNeeded, isDestinationNeeded };
+};
 export const isStableCoinOrSeed = (asset: Asset) => {
   return (
     asset.symbol.toLowerCase().includes("usd") ||
