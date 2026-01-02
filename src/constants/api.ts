@@ -2,6 +2,7 @@ import { Network, Url } from "@gardenfi/utils";
 
 const REQUIRED_ENV_VARS = {
   BASE_URL: import.meta.env.VITE_BASE_URL,
+  QUOTE_URL: import.meta.env.VITE_QUOTE_URL,
   EXPLORER: import.meta.env.VITE_EXPLORER_URL,
   API_KEY: import.meta.env.VITE_API_KEY,
 } as const;
@@ -30,9 +31,7 @@ export const API = () => {
     baseUrl: new Url(REQUIRED_ENV_VARS.BASE_URL),
     quote: {
       quote: new Url(REQUIRED_ENV_VARS.BASE_URL).endpoint("quote"),
-      fiatValues: new Url(REQUIRED_ENV_VARS.BASE_URL)
-        .endpoint("quote")
-        .endpoint("fiat"),
+      fiatValues: new Url(REQUIRED_ENV_VARS.QUOTE_URL).endpoint("fiat"),
     },
     stake: {
       stakePosition: (userId: string) =>
