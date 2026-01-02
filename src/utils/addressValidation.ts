@@ -1,39 +1,28 @@
-import { Chain, isBitcoin, isLitecoin } from "@gardenfi/orderbook";
+import {
+  Chain,
+  isAlpenSignet,
+  isBitcoin,
+  isLitecoin,
+} from "@gardenfi/orderbook";
 import { validateBTCAddress, validateLTCAddress } from "@gardenfi/core";
 import { Environment } from "@gardenfi/utils";
 import { network } from "../constants/constants";
-import { isAlpenSignetChain } from "./utils";
-
-type AddressValidator = (address: string) => boolean;
-
-/**
- * Validates a Bitcoin address
- */
-const validateBitcoinAddress: AddressValidator = (address: string) => {
-  if (!address) return false;
-  return validateBTCAddress(address, network as unknown as Environment);
-};
-
-const validateLitecoinAddress: AddressValidator = (address: string) => {
-  if (!address) return false;
-
-  return validateLTCAddress(address, network as unknown as Environment);
-};
-
 /**
  * Hash map of chain type checkers to their respective validation functions
  */
 const chainValidatorMap: Array<{
   check: (chain: Chain) => boolean;
-  validator: AddressValidator;
+  validator: (address: string, networkType: Environment) => boolean;
 }> = [
   {
-    check: (chain: Chain) => isBitcoin(chain) || isAlpenSignetChain(chain),
-    validator: validateBitcoinAddress,
+    check: (chain: Chain) => isBitcoin(chain) || isAlpenSignet(chain),
+    validator: (address: string, networkType: Environment) =>
+      validateBTCAddress(address, networkType),
   },
   {
     check: (chain: Chain) => isLitecoin(chain),
-    validator: validateLitecoinAddress,
+    validator: (address: string, networkType: Environment) =>
+      validateLTCAddress(address, networkType),
   },
 ];
 
@@ -57,5 +46,5 @@ export const validateAddress = (
     return true;
   }
 
-  return validatorEntry.validator(address);
+  return validatorEntry.validator(address, network as unknown as Environment);
 };

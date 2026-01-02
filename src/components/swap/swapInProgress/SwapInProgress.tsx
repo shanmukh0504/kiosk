@@ -12,7 +12,12 @@ import { assetInfoStore } from "../../../store/assetInfoStore";
 import QRCode from "react-qr-code";
 import { OrderStatus } from "./OrderStatus";
 import { OrderDetails } from "./OrderDetails";
-import { isBitcoin, OrderStatus as OrderStatusEnum } from "@gardenfi/orderbook";
+import {
+  isAlpenSignet,
+  isBitcoin,
+  isLitecoin,
+  OrderStatus as OrderStatusEnum,
+} from "@gardenfi/orderbook";
 import { CopyToClipboard } from "../../../common/CopyToClipboard";
 import { useOrderStatus } from "../../../hooks/useOrderStatus";
 import { API } from "../../../constants/api";
@@ -30,15 +35,14 @@ export const SwapInProgress = () => {
   const { depositAddress, inputAsset, outputAsset } = useMemo(() => {
     return {
       depositAddress:
-        order && isBitcoin(order?.source_swap.chain)
+        order &&
+        (isBitcoin(order?.source_swap.chain) ||
+          isLitecoin(order?.source_swap.chain) ||
+          isAlpenSignet(order?.source_swap.chain))
           ? order.source_swap.swap_id
           : "",
       inputAsset: order && getAssetFromSwap(order.source_swap, assets),
       outputAsset: order && getAssetFromSwap(order.destination_swap, assets),
-      btcAddress:
-        order && isBitcoin(order?.source_swap.chain)
-          ? order?.source_swap.initiator
-          : order?.destination_swap.redeemer,
     };
   }, [assets, order]);
 
@@ -113,7 +117,9 @@ export const SwapInProgress = () => {
         )}
       </div>
       {inputAsset &&
-        isBitcoin(inputAsset.chain) &&
+        (isBitcoin(inputAsset.chain) ||
+          isLitecoin(inputAsset?.chain) ||
+          isAlpenSignet(inputAsset?.chain)) &&
         order.status === OrderStatusEnum.Created && (
           <div className="flex justify-between rounded-2xl bg-white p-4">
             <div className="flex flex-col gap-2">

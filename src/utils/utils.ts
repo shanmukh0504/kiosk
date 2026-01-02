@@ -5,13 +5,10 @@ import {
   Chain,
   ChainAsset,
   isBitcoin,
-  isEVM,
-  isStarknet,
-  isSolana,
-  isSui,
   OrderWithStatus,
   Swap,
   isLitecoin,
+  isAlpenSignet,
 } from "@gardenfi/orderbook";
 import { Assets } from "../store/assetInfoStore";
 
@@ -254,54 +251,12 @@ export const getDaysUntilNextEpoch = (
   return daysUntilNextSunday;
 };
 
-export function parseAssetNameSymbol(
-  input: string | undefined,
-  assetId?: string | ChainAsset,
-  fallbackSymbol?: string
-): { name: string; symbol: string } {
-  const raw = (input ?? "").trim();
-  if (!raw) return { name: "", symbol: fallbackSymbol?.trim() || "" };
-
-  const parts = raw.split(":");
-  if (parts.length >= 2) {
-    const name = parts[0]?.trim() || "";
-    const symbol =
-      parts.slice(1).join(":").trim() || fallbackSymbol?.trim() || "";
-    return { name, symbol };
-  }
-
-  let derivedSymbol = "";
-
-  if (assetId) {
-    try {
-      const chainAsset =
-        typeof assetId === "string" ? ChainAsset.from(assetId) : assetId;
-      derivedSymbol = chainAsset.symbol.toUpperCase();
-    } catch {
-      /* empty */
-    }
-  }
-
-  return { name: raw, symbol: derivedSymbol || fallbackSymbol?.trim() || "" };
-}
-
 export function sortPendingOrders(orders: OrderWithStatus[]) {
   return orders.sort((a, b) => {
     const aTime = new Date(a.created_at).getTime();
     const bTime = new Date(b.created_at).getTime();
     return bTime - aTime;
   });
-}
-
-// Convert both to decimal for comparison (handle hex and decimal formats)
-export function normalizeChainId(chainId: string): string {
-  if (!chainId) return "";
-  // If it's hex (starts with 0x), convert to decimal
-  if (chainId.toLowerCase().startsWith("0x")) {
-    return parseInt(chainId, 16).toString();
-  }
-  // Otherwise return as-is (already decimal)
-  return chainId;
 }
 
 export const isAsset = (
@@ -357,24 +312,6 @@ To learn more about Garden, refer to our documentation: https://docs.garden.fina
   }
 };
 
-export const isAlpenSignetChain = (chain: string) => {
-  return chain.toLowerCase().includes("alpen_signet");
-};
-
-export const isPureBitcoin = (chain: Chain): boolean => {
-  return isBitcoin(chain) && !isAlpenSignetChain(chain);
-};
-
-export const isSameChainType = (chain1: Chain, chain2: Chain): boolean => {
-  if (isPureBitcoin(chain1) && isPureBitcoin(chain2)) return true;
-  if (isAlpenSignetChain(chain1) && isAlpenSignetChain(chain2)) return true;
-  if (isEVM(chain1) && isEVM(chain2)) return true;
-  if (isStarknet(chain1) && isStarknet(chain2)) return true;
-  if (isSolana(chain1) && isSolana(chain2)) return true;
-  if (isSui(chain1) && isSui(chain2)) return true;
-  return false;
-};
-
 export const isBitcoinSwap = (inputAsset?: Asset, outputAsset?: Asset) => {
   return !!(
     inputAsset &&
@@ -394,20 +331,20 @@ export const decideAddressVisibility = (
   const isSourceBitcoinType =
     inputAsset &&
     (isBitcoin(inputAsset.chain) ||
-      isAlpenSignetChain(inputAsset.chain) ||
+      isAlpenSignet(inputAsset.chain) ||
       isLitecoin(inputAsset.chain));
 
   const isDestinationBitcoinType =
     outputAsset &&
     (isBitcoin(outputAsset.chain) ||
-      isAlpenSignetChain(outputAsset.chain) ||
+      isAlpenSignet(outputAsset.chain) ||
       isLitecoin(outputAsset.chain));
 
   const isSourceNeeded =
     inputAsset &&
     outputAsset &&
     isSourceBitcoinType &&
-    (isAlpenSignetChain(inputAsset.chain) ||
+    (isAlpenSignet(inputAsset.chain) ||
       isEditAddress?.source ||
       !address?.source);
 
@@ -415,7 +352,7 @@ export const decideAddressVisibility = (
     inputAsset &&
     outputAsset &&
     isDestinationBitcoinType &&
-    (isAlpenSignetChain(outputAsset.chain) ||
+    (isAlpenSignet(outputAsset.chain) ||
       isEditAddress?.destination ||
       !address?.destination);
 

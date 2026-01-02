@@ -5,13 +5,13 @@ import { useMemo } from "react";
 import { swapStore } from "../../store/swapStore";
 import { detailsExpandAnimation } from "../../animations/animations";
 import { AddressType } from "../../constants/constants";
-import { decideAddressVisibility, isAlpenSignetChain } from "../../utils/utils";
+import { decideAddressVisibility } from "../../utils/utils";
 import {
   useBitcoinWallet,
   useLitecoinWallet,
 } from "@gardenfi/wallet-connectors";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { Chains, isEVM } from "@gardenfi/orderbook";
+import { Chains, isAlpenSignet, isEVM } from "@gardenfi/orderbook";
 
 export const InputAddressAndFeeRateDetails = () => {
   const {
@@ -77,11 +77,11 @@ export const InputAddressAndFeeRateDetails = () => {
       inputAsset &&
       (inputAsset.chain === Chains.bitcoin ||
         inputAsset.chain === Chains.bitcoin_testnet) &&
-      !isAlpenSignetChain(inputAsset.chain);
+      !isAlpenSignet(inputAsset.chain);
     const isLitecoinChain =
       inputAsset &&
       inputAsset.chain === Chains.litecoin_testnet &&
-      !isAlpenSignetChain(inputAsset.chain);
+      !isAlpenSignet(inputAsset.chain);
     const isEvmChain = inputAsset && isEVM(inputAsset.chain);
 
     return !!(
@@ -106,7 +106,7 @@ export const InputAddressAndFeeRateDetails = () => {
       outputAsset &&
       (outputAsset.chain === Chains.bitcoin ||
         outputAsset.chain === Chains.bitcoin_testnet) &&
-      !isAlpenSignetChain(outputAsset.chain);
+      !isAlpenSignet(outputAsset.chain);
     const isEvmChain = outputAsset && isEVM(outputAsset.chain);
 
     return !!(

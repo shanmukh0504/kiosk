@@ -15,6 +15,7 @@ import {
   isTron,
   Chains,
   isLitecoin,
+  isAlpenSignet,
 } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
 import { useGarden } from "@gardenfi/react-hooks";
@@ -35,7 +36,6 @@ import {
   formatAmount,
   formatBalance,
   isAsset,
-  isAlpenSignetChain,
   isBitcoinSwap,
 } from "../utils/utils";
 import { useNetworkFees } from "./useNetworkFees";
@@ -570,7 +570,7 @@ export const useSwap = () => {
 
       if (isLitecoin(inputAsset.chain)) {
         const orderResponse = res.val as BitcoinOrderResponse;
-        if (ltcProvider && !isAlpenSignetChain(inputAsset.chain)) {
+        if (ltcProvider && !isAlpenSignet(inputAsset.chain)) {
           const litecoinRes = await ltcProvider?.sendLitecoin(
             orderResponse.to,
             Number(orderResponse.amount)
@@ -598,7 +598,7 @@ export const useSwap = () => {
       }
       if (isBitcoin(inputAsset.chain)) {
         const orderResponse = res.val as BitcoinOrderResponse;
-        if (provider && !isAlpenSignetChain(inputAsset.chain)) {
+        if (provider && !isAlpenSignet(inputAsset.chain)) {
           const bitcoinRes = await provider.sendBitcoin(
             orderResponse.to,
             Number(orderResponse.amount)

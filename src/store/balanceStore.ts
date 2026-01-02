@@ -7,6 +7,7 @@ import {
   EVMChains,
   isBitcoin,
   isEVM,
+  isAlpenSignet,
   isSolana,
   isStarknet,
   isSui,
@@ -29,7 +30,6 @@ import { getLegacyGasEstimate } from "../utils/getNativeTokenFee";
 import { SupportedChains } from "../layout/wagmi/config";
 import { getAllWorkingRPCs } from "../utils/rpcUtils";
 import { assetInfoStore } from "./assetInfoStore";
-import { isAlpenSignetChain } from "../utils/utils";
 
 type BalanceStoreState = {
   balances: Record<string, BigNumber | undefined>;
@@ -200,7 +200,7 @@ export const balanceStore = create<BalanceStoreState>((set, get) => ({
 
       const btcBalance = Object.values(assets)
         .filter(
-          (asset) => isBitcoin(asset.chain) && !isAlpenSignetChain(asset.chain)
+          (asset) => isBitcoin(asset.chain) && !isAlpenSignet(asset.chain)
         )
         .reduce(
           (acc, asset) => {

@@ -12,13 +12,13 @@ import {
   OrderStatus,
   isTron,
   isLitecoin,
+  isAlpenSignet,
 } from "@gardenfi/orderbook";
 import {
   useBitcoinWallet,
   useLitecoinWallet,
 } from "@gardenfi/wallet-connectors";
 import logger from "../../utils/logger";
-import { isAlpenSignetChain } from "../../utils/utils";
 
 export const PendingTransactions = () => {
   const { pendingOrders, updateOrder } = pendingOrdersStore();
@@ -50,7 +50,7 @@ export const PendingTransactions = () => {
     } else if (
       provider &&
       isBitcoin(order.source_swap.chain) &&
-      !isAlpenSignetChain(order.source_swap.chain)
+      !isAlpenSignet(order.source_swap.chain)
     ) {
       const bitcoinRes = await provider.sendBitcoin(
         order.source_swap.swap_id,

@@ -10,8 +10,8 @@ import {
   useBitcoinWallet,
   useLitecoinWallet,
 } from "@gardenfi/wallet-connectors";
-import { isPureBitcoin, formatChainNameForDisplay } from "../../utils/utils";
-import { isLitecoin } from "@gardenfi/orderbook";
+import { formatChainNameForDisplay } from "../../utils/utils";
+import { isBitcoin, isLitecoin } from "@gardenfi/orderbook";
 
 type InputAddressProps = {
   addressType: AddressType | undefined;
@@ -44,7 +44,7 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
 
   const relevantAsset = isRefund ? inputAsset : outputAsset;
   const relevantChain = relevantAsset?.chain;
-  const isBitcoinAsset = relevantChain ? isPureBitcoin(relevantChain) : false;
+  const isBitcoinAsset = relevantChain ? isBitcoin(relevantChain) : false;
   const isLitecoinAsset = relevantChain ? isLitecoin(relevantChain) : false;
   const chainDisplayName = formatChainNameForDisplay(relevantChain);
   const isWalletConnected = isBitcoinAsset

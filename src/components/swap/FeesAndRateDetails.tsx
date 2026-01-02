@@ -7,16 +7,12 @@ import {
 } from "@gardenfi/garden-book";
 import { BTC, swapStore } from "../../store/swapStore";
 
-import { Asset, isBitcoin } from "@gardenfi/orderbook";
+import { Asset, isAlpenSignet, isBitcoin } from "@gardenfi/orderbook";
 import { motion, AnimatePresence } from "framer-motion";
 import { delayedFadeAnimation } from "../../animations/animations";
 import { SwapSavingsAndAddresses } from "./SwapSavingsAndAddresses";
 import { TooltipWrapper } from "../../common/ToolTipWrapper";
-import {
-  formatAmount,
-  formatAmountUsd,
-  isAlpenSignetChain,
-} from "../../utils/utils";
+import { formatAmount, formatAmountUsd } from "../../utils/utils";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { RateAndPriceDisplay } from "./RateAndPriceDisplay";
 
@@ -205,12 +201,12 @@ export const FeesAndRateDetails = () => {
         {isDetailsExpanded && (
           <SwapSavingsAndAddresses
             refundAddress={
-              inputAsset?.chain && isAlpenSignetChain(inputAsset.chain)
+              inputAsset?.chain && isAlpenSignet(inputAsset.chain)
                 ? undefined
                 : refundAddress
             }
             receiveAddress={
-              outputAsset?.chain && isAlpenSignetChain(outputAsset.chain)
+              outputAsset?.chain && isAlpenSignet(outputAsset.chain)
                 ? undefined
                 : receiveAddress
             }

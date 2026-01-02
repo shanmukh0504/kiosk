@@ -16,8 +16,8 @@ import {
   Chain,
   isLitecoin,
   isTron,
+  isBitcoin,
 } from "@gardenfi/orderbook";
-import { isPureBitcoin } from "../utils/utils";
 import { useTronWallet } from "./useTronWallet";
 
 // Hook to manage wallet address storage (should only be called once)
@@ -49,7 +49,7 @@ export const useAddressFillers = () => {
     (chain: Chain): string | undefined => {
       if (isEVM(chain)) return evmAddress || undefined;
       if (isLitecoin(chain)) return ltcAddress || undefined;
-      if (isPureBitcoin(chain)) return btcAddress || undefined;
+      if (isBitcoin(chain)) return btcAddress || undefined;
       if (isStarknet(chain)) return starknetAddress || undefined;
       if (isSolana(chain)) return solanaAddress || undefined;
       if (isSui(chain)) return currentAccount?.address || undefined;
