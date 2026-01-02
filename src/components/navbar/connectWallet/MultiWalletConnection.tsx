@@ -55,7 +55,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
     starknetStatus,
   } = useStarknetWallet();
   const { handleSuiConnect, suiSelectedWallet } = useSuiWallet();
-  const { handleTronConnect } = useTronWallet();
+  const { handleTronConnect, wallet: tronWallet } = useTronWallet();
   const availableEcosystems = Object.entries(ecosystems).filter(
     ([key]) =>
       (key === BlockchainType.evm && connectors.evm) ||
@@ -75,7 +75,8 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
       starknetConnector?.id === connectors.starknet?.id,
     [BlockchainType.sui]: suiSelectedWallet?.name === connectors.sui?.name,
     [BlockchainType.bitcoin]: provider?.name === connectors.bitcoin?.name,
-    [BlockchainType.tron]: false,
+    [BlockchainType.tron]:
+      tronWallet?.adapter.name === connectors.tron?.adapter.name,
     [BlockchainType.litecoin]: false,
     [BlockchainType.alpen_signet]: false,
   };
