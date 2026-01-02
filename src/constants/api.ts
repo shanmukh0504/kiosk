@@ -35,7 +35,7 @@ export const API = () => {
     },
     stake: {
       stakePosition: (userId: string) =>
-        new Url("stake", REQUIRED_ENV_VARS.STAKING_URL)
+        new Url(REQUIRED_ENV_VARS.STAKING_URL)
           .endpoint("stakes")
           .addSearchParams({
             userId: userId.toLowerCase(),
