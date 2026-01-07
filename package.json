@@ -61,7 +61,7 @@
     "react-router-dom": "^6.26.0",
     "react-tooltip": "^5.28.0",
     "recharts": "^2.15.3",
-    "starknet": "9.2.1",
+    "starknet": "8.0.0",
     "starknetkit": "^3.4.3",
     "styled-components": "^6.1.19",
     "terser": "^5.39.2",
