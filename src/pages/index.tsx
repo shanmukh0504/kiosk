@@ -36,7 +36,7 @@ function App() {
         apiKey: import.meta.env.VITE_API_KEY,
         wallets: {
           evm: walletClient,
-          starknet: (starknetWallet as any) ?? undefined,
+          starknet: starknetWallet ?? undefined,
           solana: solanaAnchorProvider ?? undefined,
           sui: suiSelectedWallet ?? undefined,
           tron: tronWallet?.adapter ?? undefined,

@@ -88,9 +88,7 @@ export const PendingTransactions = () => {
         console.error("Starknet HTLC not available");
         return;
       }
-      console.log("going to init starknet order");
       const tx = await garden.htlcs.starknet.initiate(order);
-      console.log("tx : ", tx.error);
       if (!tx.ok) {
         console.error(tx.error);
         return;
