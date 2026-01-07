@@ -4,6 +4,7 @@ import {
   CheckIcon,
   CloseIcon,
   GardenIconOutline,
+  InfoIcon,
   Typography,
 } from "@gardenfi/garden-book";
 import { FC, useEffect } from "react";
@@ -72,28 +73,29 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
               {type === "success" ? (
                 <CheckIcon />
               ) : (
-                <span>
-                  <CloseIcon />
-                </span>
+                <InfoIcon className="h-4 w-4 rotate-180" />
               )}
             </div>
-            <Typography
-              size="h4"
-              breakpoints={{
-                md: "h3",
-              }}
-              weight="regular"
-            >
+            <Typography size="h4" weight="regular">
               {content}
             </Typography>
           </div>
-          {link && (
-            <Link to={link} target="_blank">
-              <div className="flex h-5 w-5 items-center justify-center">
-                <ArrowNorthEastIcon />
-              </div>
-            </Link>
-          )}
+          <div className="flex items-center gap-2">
+            {link && (
+              <Link to={link} target="_blank">
+                <div className="flex h-5 w-5 items-center justify-center">
+                  <ArrowNorthEastIcon />
+                </div>
+              </Link>
+            )}
+            <button
+              onClick={hideToast}
+              className="flex h-4 w-4 cursor-pointer items-center justify-center transition-opacity hover:opacity-70"
+              aria-label="Close toast"
+            >
+              <CloseIcon />
+            </button>
+          </div>
         </div>
       ) : (
         <>{renderStaticToast()}</>

@@ -43,6 +43,7 @@ import { useSuiWallet } from "./useSuiWallet";
 import logger from "../utils/logger";
 import { balanceStore } from "../store/balanceStore";
 import { useTronWallet } from "./useTronWallet";
+import { Toast } from "../components/toast/Toast";
 
 export const useSwap = () => {
   const {
@@ -237,9 +238,6 @@ export const useSwap = () => {
               setError({ liquidityError: Errors.none });
               setIsFetchingQuote({ input: false, output: false });
               return;
-            } else if (quote?.error?.includes("insufficient liquidity")) {
-              setError({ liquidityError: Errors.insufficientLiquidity });
-              setAmount(isExactOut ? IOType.input : IOType.output, "");
             } else if (quote?.error?.includes("output amount too less")) {
               setError({ outputError: Errors.outLow });
               setAmount(IOType.input, "");
@@ -523,8 +521,10 @@ export const useSwap = () => {
       //   }
       //   setIsApproving(false);
       // }
+      let res;
 
-      const res = await swap({
+      // try {
+      res = await swap({
         fromAsset: inputAsset,
         toAsset: outputAsset,
         sendAmount: inputAmountInDecimals,
@@ -546,7 +546,10 @@ export const useSwap = () => {
           //order failed due to price fluctuation, refresh quote here
           fetchQuote(inputAmount, inputAsset, outputAsset, false);
         } else {
-          logger.error("failed to create order ❌", res.error);
+          if (res.error.includes("insufficient liquidity")) {
+            setError({ liquidityError: Errors.insufficientLiquidity });
+            Toast.error("No liquidity sources found");
+          } else logger.error("failed to create order ❌", res.error);
         }
         setIsSwapping(false);
         return;

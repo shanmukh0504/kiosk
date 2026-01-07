@@ -102,19 +102,17 @@ export const CreateSwap = () => {
     if (needsWalletConnection)
       return `Connect ${capitalizeChain(needsWalletConnection)} Wallet`;
 
-    return error.liquidityError
-      ? "Insufficient liquidity"
-      : !isChainSupported
-        ? "Wallet does not support the chain"
-        : error.insufficientBalanceError
-          ? "Insufficient balance"
-          : needsWalletConnection
-            ? `Connect ${capitalizeChain(needsWalletConnection)} Wallet`
-            : isApproving
-              ? "Approving..."
-              : isSwapping
-                ? "Signing"
-                : "Swap";
+    return !isChainSupported
+      ? "Wallet does not support the chain"
+      : error.insufficientBalanceError
+        ? "Insufficient balance"
+        : needsWalletConnection
+          ? `Connect ${capitalizeChain(needsWalletConnection)} Wallet`
+          : isApproving
+            ? "Approving..."
+            : isSwapping
+              ? "Scanning for liquidity"
+              : "Swap";
   }, [
     isChainSupported,
     error.liquidityError,
@@ -125,25 +123,17 @@ export const CreateSwap = () => {
   ]);
 
   const buttonDisabled = useMemo(() => {
-    return error.liquidityError
-      ? true
-      : needsWalletConnection
-        ? false
-        : !isChainSupported || isSwapping
-          ? true
-          : validSwap
-            ? false
-            : true;
-  }, [
-    isChainSupported,
-    isSwapping,
-    validSwap,
-    error.liquidityError,
-    needsWalletConnection,
-  ]);
+    return needsWalletConnection
+      ? false
+      : !isChainSupported || isSwapping
+        ? true
+        : validSwap
+          ? false
+          : true;
+  }, [isChainSupported, isSwapping, validSwap, needsWalletConnection]);
 
   const buttonVariant = useMemo(() => {
-    return buttonDisabled
+    return buttonDisabled && !isSwapping
       ? "disabled"
       : isSwapping
         ? "ternary"
@@ -373,7 +363,7 @@ export const CreateSwap = () => {
             </div>
             <InputAddressAndFeeRateDetails />
             <Button
-              className={`mt-3 transition-colors duration-500`}
+              className={`relative mt-3 w-full transition-colors duration-500 ${isSwapping ? "button-shine !text-dark-grey" : ""}`}
               variant={buttonVariant}
               size="lg"
               disabled={buttonDisabled || loadingDisabled}
