@@ -50,6 +50,18 @@ export const SwapInProgress = () => {
     ([_, step]) => step.status === "completed"
   );
 
+  const getTitleText = useMemo(() => {
+    if (!order) return "";
+    return order.status === OrderStatusEnum.Expired
+      ? "Swap expired"
+      : order.status === OrderStatusEnum.Refunded ||
+          order.status === OrderStatusEnum.RefundDetected
+        ? "Swap refunded"
+        : isOrderCompleted
+          ? "Swap completed"
+          : "Swap in progress";
+  }, [order, isOrderCompleted]);
+
   const goBack = useCallback(() => {
     setIsOpen(false);
   }, [setIsOpen]);
@@ -73,7 +85,7 @@ export const SwapInProgress = () => {
     <div className="animate-fade-out flex flex-col gap-3 p-3">
       <div className="flex items-center justify-between p-1">
         <Typography size="h4" weight="medium">
-          {isOrderCompleted ? "Swap completed" : "Swap in progress"}
+          {getTitleText}
         </Typography>
         <div className="flex items-center justify-center gap-3">
           {showDeleteButton && (
