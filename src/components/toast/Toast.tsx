@@ -21,7 +21,7 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
 
   useEffect(() => {
     if (isVisible && (type === "success" || type === "error")) {
-      const timer = setTimeout(hideToast, 5000);
+      const timer = setTimeout(hideToast, 10000);
       return () => clearTimeout(timer);
     }
   }, [isVisible, type, hideToast]);
