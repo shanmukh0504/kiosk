@@ -331,7 +331,7 @@ export const CreateSwap = () => {
           className={`before:pointer-events-none before:absolute before:left-0 before:top-0 before:h-full before:w-full before:bg-black before:bg-opacity-0 before:transition-colors before:duration-700 before:content-['']`}
         >
           <div
-            className={`flex flex-col px-2 pb-3 pt-2 sm:px-3 sm:pb-4 sm:pt-3 ${isSwapping ? "pointer-events-none opacity-75" : ""}`}
+            className={`flex flex-col px-2 pb-3 pt-2 sm:px-3 sm:pb-4 sm:pt-3 ${isSwapping ? "pointer-events-none" : ""}`}
           >
             <div className="relative flex flex-col gap-3">
               <SwapInput
