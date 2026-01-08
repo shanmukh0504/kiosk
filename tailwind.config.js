@@ -44,16 +44,16 @@ export default {
           "0%": { transform: "translateX(-120%) skewX(135deg)", opacity: 1 },
           "100%": { left: "120%", transform: "skewX(135deg)", opacity: 1 },
         },
-        "button-shine": {
-          "0%": { transform: "translateX(-100%) skewX(30deg)", opacity: 1 },
-          "100%": { left: "100%", transform: "skewX(30deg)", opacity: 1 },
+        "shimmer": {
+          "0%": { left: "-150px", transform: "skewX(-30deg)", opacity: 1 },
+          "100%": { left: "calc(100% + 150px)", transform: "skewX(-30deg)", opacity: 1 },
         },
       },
       animation: {
         shine: `shine 1s ${cubicInOut}`,
         "navbar-shine": `navbar-shine 2s ${customCubic} infinite`,
         "loader-shine": `loader-shine 2s ${customCubic} infinite`,
-        "button-shine": `button-shine 2s ${customCubic} infinite`,
+        shimmer: `shimmer 2s ${customCubic} infinite`,
       },
       boxShadow: {
         custom: "0px 0px 16px #554B6A14",

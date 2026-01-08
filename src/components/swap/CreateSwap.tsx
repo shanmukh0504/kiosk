@@ -365,7 +365,7 @@ export const CreateSwap = () => {
             </div>
             <InputAddressAndFeeRateDetails />
             <Button
-              className={`relative mt-3 w-full transition-colors duration-500 ${isSwapping ? "button-shine !text-dark-grey" : ""}`}
+              className={`relative mt-3 w-full transition-colors duration-500 ${isSwapping ? "shimmer !text-dark-grey" : ""}`}
               variant={buttonVariant}
               size="lg"
               disabled={buttonDisabled || loadingDisabled}
