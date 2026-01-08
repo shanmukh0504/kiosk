@@ -7,6 +7,9 @@
 - Add address filler to accept bitcoin like chain addresses without wallet connection
 - Migrated balance fetching to SSE-based real-time streaming service for automatic balance updates.
 - Unified balance fetching implementation across all supported chains.
+### Fixed
+- Bump Starknet package versions
+- Update Starknet contract calls
 
 ## [2.0.3]
 
