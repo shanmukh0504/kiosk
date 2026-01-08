@@ -521,10 +521,8 @@ export const useSwap = () => {
       //   }
       //   setIsApproving(false);
       // }
-      let res;
 
-      // try {
-      res = await swap({
+      const res = await swap({
         fromAsset: inputAsset,
         toAsset: outputAsset,
         sendAmount: inputAmountInDecimals,
