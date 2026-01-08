@@ -102,19 +102,17 @@ export const CreateSwap = () => {
     if (needsWalletConnection)
       return `Connect ${capitalizeChain(needsWalletConnection)} Wallet`;
 
-    return error.liquidityError
-      ? "Insufficient liquidity"
-      : !isChainSupported
-        ? "Wallet does not support the chain"
-        : error.insufficientBalanceError
-          ? "Insufficient balance"
-          : needsWalletConnection
-            ? `Connect ${capitalizeChain(needsWalletConnection)} Wallet`
-            : isApproving
-              ? "Approving..."
-              : isSwapping
-                ? "Signing"
-                : "Swap";
+    return !isChainSupported
+      ? "Wallet does not support the chain"
+      : error.insufficientBalanceError
+        ? "Insufficient balance"
+        : needsWalletConnection
+          ? `Connect ${capitalizeChain(needsWalletConnection)} Wallet`
+          : isApproving
+            ? "Approving..."
+            : isSwapping
+              ? "Scanning for liquidity"
+              : "Swap";
   }, [
     isChainSupported,
     error.liquidityError,
@@ -125,25 +123,17 @@ export const CreateSwap = () => {
   ]);
 
   const buttonDisabled = useMemo(() => {
-    return error.liquidityError
-      ? true
-      : needsWalletConnection
-        ? false
-        : !isChainSupported || isSwapping
-          ? true
-          : validSwap
-            ? false
-            : true;
-  }, [
-    isChainSupported,
-    isSwapping,
-    validSwap,
-    error.liquidityError,
-    needsWalletConnection,
-  ]);
+    return needsWalletConnection
+      ? false
+      : !isChainSupported || isSwapping
+        ? true
+        : validSwap
+          ? false
+          : true;
+  }, [isChainSupported, isSwapping, validSwap, needsWalletConnection]);
 
   const buttonVariant = useMemo(() => {
-    return buttonDisabled
+    return buttonDisabled && !isSwapping
       ? "disabled"
       : isSwapping
         ? "ternary"
@@ -340,7 +330,9 @@ export const CreateSwap = () => {
           }}
           className={`before:pointer-events-none before:absolute before:left-0 before:top-0 before:h-full before:w-full before:bg-black before:bg-opacity-0 before:transition-colors before:duration-700 before:content-['']`}
         >
-          <div className="flex flex-col px-2 pb-3 pt-2 sm:px-3 sm:pb-4 sm:pt-3">
+          <div
+            className={`flex flex-col px-2 pb-3 pt-2 sm:px-3 sm:pb-4 sm:pt-3 ${isSwapping ? "pointer-events-none" : ""}`}
+          >
             <div className="relative flex flex-col gap-3">
               <SwapInput
                 type={IOType.input}
@@ -373,7 +365,7 @@ export const CreateSwap = () => {
             </div>
             <InputAddressAndFeeRateDetails />
             <Button
-              className={`mt-3 transition-colors duration-500`}
+              className={`relative mt-3 w-full transition-colors duration-500 ${isSwapping ? "shimmer !text-dark-grey" : ""}`}
               variant={buttonVariant}
               size="lg"
               disabled={buttonDisabled || loadingDisabled}

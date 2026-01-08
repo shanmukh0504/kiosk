@@ -4,6 +4,7 @@ import {
   CheckIcon,
   CloseIcon,
   GardenIconOutline,
+  InfoIcon,
   Typography,
 } from "@gardenfi/garden-book";
 import { FC, useEffect } from "react";
@@ -65,35 +66,36 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
     <div className={`min-h-10 sm:-translate-y-[48px] ${className}`}>
       {isVisible ? (
         <div
-          className={`shine relative flex translate-y-3 items-center justify-between overflow-hidden rounded-2xl bg-white/25 px-4 py-2 backdrop-blur-[20px]`}
+          className={`shine relative flex translate-y-3 items-center justify-between overflow-hidden rounded-2xl bg-white/25 px-4 py-2.5 backdrop-blur-[20px]`}
         >
           <div className="flex items-center gap-2">
             <div className="flex h-5 w-5 items-center justify-center">
               {type === "success" ? (
                 <CheckIcon />
               ) : (
-                <span>
-                  <CloseIcon />
-                </span>
+                <InfoIcon className="h-4 w-4 rotate-180" />
               )}
             </div>
-            <Typography
-              size="h4"
-              breakpoints={{
-                md: "h3",
-              }}
-              weight="regular"
-            >
+            <Typography size="h4" weight="regular">
               {content}
             </Typography>
           </div>
-          {link && (
-            <Link to={link} target="_blank">
-              <div className="flex h-5 w-5 items-center justify-center">
-                <ArrowNorthEastIcon />
-              </div>
-            </Link>
-          )}
+          <div className="flex items-center gap-2">
+            {link && (
+              <Link to={link} target="_blank">
+                <div className="flex h-5 w-5 items-center justify-center">
+                  <ArrowNorthEastIcon />
+                </div>
+              </Link>
+            )}
+            <button
+              onClick={hideToast}
+              className="flex h-4 w-4 cursor-pointer items-center justify-center transition-opacity hover:opacity-70"
+              aria-label="Close toast"
+            >
+              <CloseIcon />
+            </button>
+          </div>
         </div>
       ) : (
         <>{renderStaticToast()}</>
