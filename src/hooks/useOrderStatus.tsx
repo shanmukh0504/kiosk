@@ -4,9 +4,10 @@ import { assetInfoStore } from "../store/assetInfoStore";
 import { formatAmount, getAssetFromSwap } from "../utils/utils";
 import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
-import { Toast } from "../components/toast/Toast";
 import { OrderStatus, ParseOrderStatus } from "@gardenfi/orderbook";
 import { BTC } from "../store/swapStore";
+import { useToastStore } from "../store/toastStore";
+import { API } from "../constants/api";
 
 export enum SimplifiedOrderStatus {
   orderCreated = "Order created",
@@ -14,6 +15,7 @@ export enum SimplifiedOrderStatus {
   depositDetected = "Deposit detected",
   depositConfirmed = "Deposit confirmed",
   awaitingRedeem = "Awaiting redeem",
+  awaitingRefund = "Awaiting refund",
   redeeming = "Redeeming ",
   redeemed = "Redeemed ",
   swapCompleted = "Swap completed",
@@ -22,6 +24,7 @@ export enum SimplifiedOrderStatus {
 }
 
 export const STATUS_MAPPING: Record<string, SimplifiedOrderStatus> = {
+  AwaitingRefund: SimplifiedOrderStatus.awaitingRefund,
   RefundDetected: SimplifiedOrderStatus.refunded,
   Refunded: SimplifiedOrderStatus.refunded,
   AwaitingRedeem: SimplifiedOrderStatus.awaitingRedeem,
@@ -42,6 +45,7 @@ export const useOrderStatus = () => {
   const { assets } = assetInfoStore();
   const { order: orderInProgress, setOrder } = orderInProgressStore();
   const { pendingOrders } = pendingOrdersStore();
+  const { showToast } = useToastStore();
 
   const orderId = orderInProgress?.order_id;
   const orderStatus = orderInProgress?.status;
@@ -159,6 +163,25 @@ export const useOrderStatus = () => {
             },
           };
         }
+      case OrderStatus.AwaitingRefund:
+        return {
+          1: {
+            title: SimplifiedOrderStatus.orderCreated,
+            status: "completed",
+          },
+          2: {
+            title: SimplifiedOrderStatus.depositConfirmed,
+            status: "completed",
+          },
+          3: {
+            title: SimplifiedOrderStatus.redeeming + outputAsset?.symbol,
+            status: "cancel",
+          },
+          4: {
+            title: SimplifiedOrderStatus.refunded,
+            status: "inProgress",
+          },
+        };
       case OrderStatus.RefundDetected:
       case OrderStatus.Refunded:
         return {
@@ -250,8 +273,10 @@ export const useOrderStatus = () => {
           );
         if (!inputAsset || !outputAsset) return;
 
-        Toast.success(
-          `${inputAmount} ${inputAsset.symbol} swapped for ${outputAmount} ${outputAsset.symbol}`
+        showToast(
+          "success",
+          `${inputAmount} ${inputAsset.symbol} swapped for ${outputAmount} ${outputAsset.symbol}`,
+          `${API().explorer(orderId)}`
         );
       }
     };
