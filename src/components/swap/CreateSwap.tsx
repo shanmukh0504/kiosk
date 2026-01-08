@@ -253,10 +253,6 @@ export const CreateSwap = () => {
         prev.set(QUERY_PARAMS.inputAsset, inputAsset.symbol);
       }
 
-      if (inputAsset && outputAsset && inputAsset.chain === outputAsset.chain) {
-        prev.delete(QUERY_PARAMS.inputChain);
-        prev.delete(QUERY_PARAMS.inputAsset);
-      }
       if (outputAsset) {
         prev.set(QUERY_PARAMS.outputAsset, outputAsset.symbol);
       } else {
