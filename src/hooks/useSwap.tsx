@@ -547,15 +547,20 @@ export const useSwap = () => {
         ) {
           disconnect();
           setConnectingWallet(null);
+          setIsSwapping(false);
         } else if (res.error.includes("destination amount too high")) {
           //order failed due to price fluctuation, refresh quote here
           fetchQuote(inputAmount, inputAsset, outputAsset, false);
+          setIsSwapping(false);
+        } else if (res.error.includes("insufficient liquidity")) {
+          // Wait for 8 seconds before showing the error to the user
+          await new Promise((resolve) => setTimeout(resolve, 8000));
+          Toast.error("No liquidity sources found");
+          setIsSwapping(false);
         } else {
-          if (res.error.includes("insufficient liquidity")) {
-            Toast.error("No liquidity sources found");
-          } else logger.error("failed to create order ❌", res.error);
+          logger.error("failed to create order ❌", res.error);
+          setIsSwapping(false);
         }
-        setIsSwapping(false);
         return;
       }
 
