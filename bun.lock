@@ -8,10 +8,10 @@
         "@coral-xyz/anchor": "^0.31.1",
         "@farcaster/frame-sdk": "^0.1.8",
         "@farcaster/miniapp-wagmi-connector": "^1.0.0",
-        "@gardenfi/core": "3.0.6-beta.12",
+        "@gardenfi/core": "3.0.6-beta.13",
         "@gardenfi/garden-book": "0.2.17",
         "@gardenfi/orderbook": "3.0.5-beta.9",
-        "@gardenfi/react-hooks": "3.0.6-beta.8",
+        "@gardenfi/react-hooks": "3.0.6-beta.9",
         "@gardenfi/utils": "3.0.0-beta.2",
         "@gardenfi/wallet-connectors": "3.0.0-beta.3",
         "@mysten/dapp-kit": "^0.17.2",
@@ -366,13 +366,13 @@
 
     "@fractalwagmi/solana-wallet-adapter": ["@fractalwagmi/solana-wallet-adapter@0.1.1", "", { "dependencies": { "@fractalwagmi/popup-connection": "^1.0.18", "@solana/wallet-adapter-base": "^0.9.17", "bs58": "^5.0.0" } }, "sha512-oTZLEuD+zLKXyhZC5tDRMPKPj8iaxKLxXiCjqRfOo4xmSbS2izGRWLJbKMYYsJysn/OI3UJ3P6CWP8WUWi0dZg=="],
 
-    "@gardenfi/core": ["@gardenfi/core@3.0.6-beta.12", "", { "dependencies": { "@coral-xyz/anchor": "^0.31.1", "@gardenfi/orderbook": "3.0.5-beta.9", "@gardenfi/utils": "3.0.0-beta.2", "@mysten/signers": "^0.3.4", "@mysten/sui": "^1.37.1", "@mysten/wallet-standard": "^0.16.9", "@solana/spl-token": "^0.4.13", "@tronweb3/tronwallet-abstract-adapter": "^1.1.9", "bignumber.js": "^9.1.2", "bip32": "^4.0.0", "bip39": "^3.1.0", "bitcoinjs-lib": "^6.1.5", "bitcore-lib-ltc": "^10.10.5", "ecpair": "^2.1.0", "node-cache": "^5.1.2", "starknet": "8.0.0", "tiny-secp256k1": "^2.2.3", "tronweb": "^6.0.4", "varuint-bitcoin": "^1.1.2", "yup": "^1.4.0" } }, "sha512-EFC2y5ZA6Wql3XD2zKSNhcV5IL9h62sdZTBEi9WwzuG5Sc9RS6zrlJlZBZBRAKD5p6sY1SQ1QI6GjjcTUs89Nw=="],
+    "@gardenfi/core": ["@gardenfi/core@3.0.6-beta.13", "", { "dependencies": { "@coral-xyz/anchor": "^0.31.1", "@gardenfi/orderbook": "3.0.5-beta.9", "@gardenfi/utils": "3.0.0-beta.2", "@mysten/signers": "^0.3.4", "@mysten/sui": "^1.37.1", "@mysten/wallet-standard": "^0.16.9", "@solana/spl-token": "^0.4.13", "@tronweb3/tronwallet-abstract-adapter": "^1.1.9", "bignumber.js": "^9.1.2", "bip32": "^4.0.0", "bip39": "^3.1.0", "bitcoinjs-lib": "^6.1.5", "bitcore-lib-ltc": "^10.10.5", "ecpair": "^2.1.0", "node-cache": "^5.1.2", "starknet": "8.0.0", "tiny-secp256k1": "^2.2.3", "tronweb": "^6.0.4", "varuint-bitcoin": "^1.1.2", "yup": "^1.4.0" } }, "sha512-ibAMEE00XuHw48GEXbsQ9kjofv68trk17NGXdwQD0+erzav5/mdtXXP6yTHZG61bIVv+4hnvOUSTA5G5loY11w=="],
 
     "@gardenfi/garden-book": ["@gardenfi/garden-book@0.2.17", "", { "dependencies": { "class-variance-authority": "^0.7.0", "clsx": "^2.1.1", "framer-motion": "^11.5.6", "lottie-react": "^2.4.0", "postcss-prefixwrap": "^1.51.0", "react-lazy-load-image-component": "^1.6.2", "react-remove-scroll": "^2.6.3", "tailwind-merge": "^2.4.0" }, "peerDependencies": { "react": "^18.2.0", "react-dom": "^18.2.0" } }, "sha512-aeWS/+Epb7E6sI25T94vIvWs64uzD3wXLslXuZd7aavOTYtiNqeyH8axJY0Uij+T+Pzr6RUcx1FNR1iDcFv1AA=="],
 
     "@gardenfi/orderbook": ["@gardenfi/orderbook@3.0.5-beta.9", "", { "dependencies": { "@coral-xyz/anchor": "^0.31.1", "@gardenfi/utils": "3.0.0-beta.2", "bufferutil": "^4.0.8", "node-cache": "^5.1.2", "siwe": "^2.1.4", "starknet": "8.0.0", "utf-8-validate": "^6.0.3", "ws": "^8.14.2" } }, "sha512-IU1A5Ns8PcUViERM7i9mimVwE3KYZmHmD5y9vPPYLgW5CtPtqMsJpgj/FWv46zpcZ5sqyiv46e5mnHMUeZ1JGQ=="],
 
-    "@gardenfi/react-hooks": ["@gardenfi/react-hooks@3.0.6-beta.8", "", { "dependencies": { "@gardenfi/core": "3.0.6-beta.12", "@gardenfi/orderbook": "3.0.5-beta.9", "@gardenfi/utils": "3.0.0-beta.2", "react": "^18.3.1", "starknet": "8.0.0" } }, "sha512-FpPTy72/WZD/8E7J1W1l62bYVSoYRV373GGiKCQUX5P7E7eA1gt920tEhnkaeaHk0pNNNmVfetR35W4CDiekvQ=="],
+    "@gardenfi/react-hooks": ["@gardenfi/react-hooks@3.0.6-beta.9", "", { "dependencies": { "@gardenfi/core": "3.0.6-beta.13", "@gardenfi/orderbook": "3.0.5-beta.9", "@gardenfi/utils": "3.0.0-beta.2", "react": "^18.3.1", "starknet": "8.0.0" } }, "sha512-VCkbCNB3j9kUe1Jhk/NN11+StsYKIqOBpXWBp3qONBqcBeZ8uvhaxrPqfSH9f6Rq3Ap2cZ8hTN9xPBiYRUnqqg=="],
 
     "@gardenfi/utils": ["@gardenfi/utils@3.0.0-beta.2", "", { "dependencies": { "@peculiar/webcrypto": "^1.5.0", "@simplewebauthn/browser": "^13.1.0", "fetch-cookie": "^3.1.0", "jwt-decode": "^4.0.0", "tough-cookie": "^5.1.2" } }, "sha512-2BoQM5uwjkU1II7mjNjxWrbjrQFyhxD2Doq7VsgAZ1cqXOUQo+MKB1LJ0uj5a/EDf0f6niggGUTGNUI4hnVTQQ=="],
 

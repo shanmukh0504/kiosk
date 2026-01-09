@@ -33,6 +33,7 @@ import {
 import { swapStore } from "../../store/swapStore";
 import { AnimatePresence, motion } from "framer-motion";
 import { CompetitorComparisons } from "./CompetitorComparisons";
+import { OrderCreationStatus } from "@gardenfi/core";
 
 export const CreateSwap = () => {
   const [loadingDisabled, setLoadingDisabled] = useState(false);
@@ -69,6 +70,7 @@ export const CreateSwap = () => {
     inputTokenBalance,
     isApproving,
     isSwapping,
+    swapProgress,
     handleSwapClick,
     needsWalletConnection,
     controller,
@@ -111,13 +113,17 @@ export const CreateSwap = () => {
           : isApproving
             ? "Approving..."
             : isSwapping
-              ? "Scanning for liquidity"
+              ? swapProgress === OrderCreationStatus.orderInitiating ||
+                swapProgress === OrderCreationStatus.orderInitiated
+                ? "Signing"
+                : "Scanning for liquidity sources"
               : "Swap";
   }, [
     isChainSupported,
     error.liquidityError,
     isApproving,
     isSwapping,
+    swapProgress,
     needsWalletConnection,
     error.insufficientBalanceError,
   ]);

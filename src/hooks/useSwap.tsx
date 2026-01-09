@@ -52,6 +52,7 @@ export const useSwap = () => {
     inputAsset,
     outputAsset,
     isSwapping,
+    swapProgress,
     isApproving,
     rate,
     error,
@@ -60,6 +61,7 @@ export const useSwap = () => {
     isEditAddress,
     networkFees,
     setIsSwapping,
+    setSwapProgress,
     setAmount,
     setRate,
     setError,
@@ -81,6 +83,8 @@ export const useSwap = () => {
     userProvidedAddress,
   } = swapStore();
   const { balances } = balanceStore();
+  // const [swapStatus, setSwapStatus] = useState('');
+  // console.log(swapStatus);
 
   // Resolve addresses: userProvidedAddress first, then walletAddress
   const sourceAddress = userProvidedAddress.source || walletSource;
@@ -522,15 +526,18 @@ export const useSwap = () => {
       //   setIsApproving(false);
       // }
 
-      const res = await swap({
-        fromAsset: inputAsset,
-        toAsset: outputAsset,
-        sendAmount: inputAmountInDecimals,
-        receiveAmount: outputAmountInDecimals,
-        solverId,
-        sourceAddress: sourceAddress,
-        destinationAddress: destinationAddress,
-      });
+      const res = await swap(
+        {
+          fromAsset: inputAsset,
+          toAsset: outputAsset,
+          sendAmount: inputAmountInDecimals,
+          receiveAmount: outputAmountInDecimals,
+          solverId,
+          sourceAddress,
+          destinationAddress,
+        },
+        (progress) => setSwapProgress(progress)
+      );
 
       if (!res.ok) {
         if (
@@ -740,6 +747,7 @@ export const useSwap = () => {
     loading: isFetchingQuote,
     validSwap,
     isSwapping,
+    swapProgress,
     isApproving,
     isBitcoinSwap,
     inputTokenBalance,
