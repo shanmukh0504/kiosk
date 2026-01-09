@@ -83,8 +83,6 @@ export const useSwap = () => {
     userProvidedAddress,
   } = swapStore();
   const { balances } = balanceStore();
-  // const [swapStatus, setSwapStatus] = useState('');
-  // console.log(swapStatus);
 
   // Resolve addresses: userProvidedAddress first, then walletAddress
   const sourceAddress = userProvidedAddress.source || walletSource;
