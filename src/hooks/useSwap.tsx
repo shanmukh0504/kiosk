@@ -552,7 +552,6 @@ export const useSwap = () => {
           fetchQuote(inputAmount, inputAsset, outputAsset, false);
         } else {
           if (res.error.includes("insufficient liquidity")) {
-            setError({ liquidityError: Errors.insufficientLiquidity });
             Toast.error("No liquidity sources found");
           } else logger.error("failed to create order ❌", res.error);
         }

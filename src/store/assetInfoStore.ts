@@ -102,10 +102,6 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
       await manager.initialize();
 
       await manager.buildRouteMatrix();
-      console.log(manager.routeMatrix);
-      console.log(manager.routeValidator);
-      console.log(manager.assets);
-      console.log(manager.chains);
 
       set({
         assetManager: manager,
