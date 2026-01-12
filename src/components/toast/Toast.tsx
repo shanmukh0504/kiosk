@@ -81,20 +81,21 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
             </Typography>
           </div>
           <div className="flex items-center gap-2">
-            {link && (
+            {link ? (
               <Link to={link} target="_blank">
                 <div className="flex h-5 w-5 items-center justify-center">
                   <ArrowNorthEastIcon />
                 </div>
               </Link>
+            ) : (
+              <button
+                onClick={hideToast}
+                className="flex h-4 w-4 cursor-pointer items-center justify-center transition-opacity hover:opacity-70"
+                aria-label="Close toast"
+              >
+                <CloseIcon />
+              </button>
             )}
-            <button
-              onClick={hideToast}
-              className="flex h-4 w-4 cursor-pointer items-center justify-center transition-opacity hover:opacity-70"
-              aria-label="Close toast"
-            >
-              <CloseIcon />
-            </button>
           </div>
         </div>
       ) : (
