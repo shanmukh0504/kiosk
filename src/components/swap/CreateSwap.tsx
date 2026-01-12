@@ -6,7 +6,7 @@ import {
   WALLET_SUPPORTED_CHAINS,
   QUERY_PARAMS,
 } from "../../constants/constants";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSwap } from "../../hooks/useSwap";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { assetInfoStore } from "../../store/assetInfoStore";
@@ -30,6 +30,7 @@ import {
   isTron,
   Chain,
   BlockchainType,
+  Asset,
 } from "@gardenfi/orderbook";
 import { swapStore } from "../../store/swapStore";
 import { AnimatePresence, motion } from "framer-motion";
@@ -38,6 +39,7 @@ import { OrderCreationStatus } from "@gardenfi/core";
 
 export const CreateSwap = () => {
   const [loadingDisabled, setLoadingDisabled] = useState(false);
+  const outputAssetRef = useRef<Asset | undefined>(undefined);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [addParams, setAddParams] = useState(false);
@@ -72,6 +74,7 @@ export const CreateSwap = () => {
     isApproving,
     isSwapping,
     swapProgress,
+    isLiquidityToastVisible,
     handleSwapClick,
     needsWalletConnection,
     controller,
@@ -82,6 +85,7 @@ export const CreateSwap = () => {
   const { setOpenModal } = modalStore();
   const { connector } = useEVMWallet();
   const { account: btcAccount } = useBitcoinWallet();
+
   const isChainSupported = useMemo(() => {
     if (!connector || !inputAsset || !outputAsset) return true;
     if (!WALLET_SUPPORTED_CHAINS[connector.id]) return true;
@@ -128,18 +132,31 @@ export const CreateSwap = () => {
     isSwapping,
     swapProgress,
     needsWalletConnection,
+    inputAsset,
+    btcAccount,
     error.insufficientBalanceError,
   ]);
 
   const buttonDisabled = useMemo(() => {
     return needsWalletConnection
       ? false
-      : !isChainSupported || isSwapping
+      : !isChainSupported ||
+          isSwapping ||
+          (isLiquidityToastVisible && outputAsset === outputAssetRef.current)
         ? true
         : validSwap
           ? false
           : true;
-  }, [isChainSupported, isSwapping, validSwap, needsWalletConnection]);
+  }, [
+    isChainSupported,
+    isSwapping,
+    isLiquidityToastVisible,
+    validSwap,
+    needsWalletConnection,
+    outputAsset,
+    inputAsset,
+    btcAccount,
+  ]);
 
   const buttonVariant = useMemo(() => {
     return buttonDisabled && !isSwapping
@@ -170,6 +187,12 @@ export const CreateSwap = () => {
 
     setOpenModal(modalNames.connectWallet, modalState);
   };
+
+  useEffect(() => {
+    if (outputAsset) {
+      outputAssetRef.current = outputAsset;
+    }
+  }, [outputAsset]);
 
   useEffect(() => {
     if (!assets || addParams) return;

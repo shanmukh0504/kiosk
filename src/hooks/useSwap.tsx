@@ -44,6 +44,7 @@ import logger from "../utils/logger";
 import { balanceStore } from "../store/balanceStore";
 import { useTronWallet } from "./useTronWallet";
 import { Toast } from "../components/toast/Toast";
+import { useToastStore } from "../store/toastStore";
 
 export const useSwap = () => {
   const {
@@ -54,6 +55,7 @@ export const useSwap = () => {
     isSwapping,
     swapProgress,
     isApproving,
+    isLiquidityToastVisible,
     rate,
     error,
     tokenPrices,
@@ -62,6 +64,7 @@ export const useSwap = () => {
     networkFees,
     setIsSwapping,
     setSwapProgress,
+    setisLiquidityToastVisible,
     setAmount,
     setRate,
     setError,
@@ -102,6 +105,7 @@ export const useSwap = () => {
   const { solanaAddress } = useSolanaWallet();
   const { tronAddress } = useTronWallet();
   const { currentAccount } = useSuiWallet();
+  const { isVisible: isToastVisible } = useToastStore();
   useNetworkFees();
 
   const inputBalance = useMemo(() => {
@@ -278,7 +282,7 @@ export const useSwap = () => {
                   });
                 }
               }
-              setAmount(isExactOut ? IOType.input : IOType.output, "");
+              // setAmount(isExactOut ? IOType.input : IOType.output, "");
             } else {
               setAmount(isExactOut ? IOType.input : IOType.output, "");
             }
@@ -397,7 +401,6 @@ export const useSwap = () => {
           inputError: Errors.maxError(maxAmount.toString(), inputAsset?.symbol),
           outputError: Errors.none,
         });
-        setAmount(IOType.output, "");
         // cancel debounced fetch quote
         debouncedFetchQuote.cancel();
         // abort if any calls are already in progress
@@ -588,6 +591,7 @@ export const useSwap = () => {
         } else if (res.error.includes("insufficient liquidity")) {
           // Wait for 8 seconds before showing the error to the user
           await new Promise((resolve) => setTimeout(resolve, 8000));
+          setisLiquidityToastVisible(true);
           Toast.error("No liquidity sources found");
           setIsSwapping(false);
         } else {
@@ -709,10 +713,17 @@ export const useSwap = () => {
     isComparisonVisible,
   ]);
 
+  // Clear liquidity toast state when toast is manually closed or auto-hides
+  useEffect(() => {
+    if (!isToastVisible && isLiquidityToastVisible) {
+      setisLiquidityToastVisible(false);
+    }
+  }, [isToastVisible, isLiquidityToastVisible, setisLiquidityToastVisible]);
+
   //call input amount handler when assets are changed
   useEffect(() => {
     if (!inputAsset || !outputAsset) return;
-    setError({ inputError: "" });
+    setError({ inputError: Errors.none, outputError: Errors.none });
     handleInputAmountChange(inputAmount);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputAsset, handleInputAmountChange, setError]);
@@ -788,6 +799,7 @@ export const useSwap = () => {
     isSwapping,
     swapProgress,
     isApproving,
+    isLiquidityToastVisible,
     isBitcoinSwap,
     inputTokenBalance,
     needsWalletConnection,

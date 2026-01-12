@@ -39,6 +39,7 @@ type SwapState = {
   isSwapping: boolean;
   swapProgress: string;
   isApproving: boolean;
+  isLiquidityToastVisible: boolean;
   tokenPrices: TokenPrices;
   fiatTokenPrices: TokenPrices;
   error: SwapErrors;
@@ -59,6 +60,7 @@ type SwapState = {
   setIsSwapping: (isSwapping: boolean) => void;
   setSwapProgress: (swapProgress: string) => void;
   setIsApproving: (isApproving: boolean) => void;
+  setisLiquidityToastVisible: (isLiquidityToastVisible: boolean) => void;
   setAsset: (ioType: IOType, asset: Asset | undefined) => void;
   setAmount: (ioType: IOType, amount: string) => void;
   setRate: (rate: number) => void;
@@ -121,6 +123,7 @@ export const swapStore = create<SwapState>((set) => ({
   networkFees: 0,
   fixedFee: 0,
   isApproving: false,
+  isLiquidityToastVisible: false,
   isNetworkFeesLoading: false,
   swapInProgress: {
     isOpen: false,
@@ -289,6 +292,9 @@ export const swapStore = create<SwapState>((set) => ({
   setSwapProgress: (swapProgress) => {
     set({ swapProgress });
   },
+  setisLiquidityToastVisible: (isLiquidityToastVisible) => {
+    set({ isLiquidityToastVisible });
+  },
   setIsEditAddress: (isEditAddress) => {
     set({ isEditAddress });
   },
@@ -358,6 +364,7 @@ export const swapStore = create<SwapState>((set) => ({
       isApproving: false,
       isSwapping: false,
       swapProgress: "",
+      isLiquidityToastVisible: false,
       tokenPrices: {
         input: "0",
         output: "0",

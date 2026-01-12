@@ -63,10 +63,10 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
   };
 
   return (
-    <div className={`min-h-10 sm:-translate-y-[48px] ${className}`}>
+    <div className={`min-h-10 sm:-translate-y-[58px] ${className}`}>
       {isVisible ? (
         <div
-          className={`shine relative flex translate-y-3 items-center justify-between overflow-hidden rounded-2xl bg-white/25 px-4 py-2.5 backdrop-blur-[20px]`}
+          className={`${type === "success" ? "shine" : ""} relative flex translate-y-3 items-center justify-between overflow-hidden rounded-2xl bg-white/25 px-4 py-2.5 backdrop-blur-[20px]`}
         >
           <div className="flex items-center gap-2">
             <div className="flex h-5 w-5 items-center justify-center">
