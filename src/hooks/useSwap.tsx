@@ -241,11 +241,44 @@ export const useSwap = () => {
               setIsFetchingQuote({ input: false, output: false });
               return;
             } else if (quote?.error?.includes("output amount too less")) {
-              setError({ outputError: Errors.outLow });
+              setError({ outputError: Errors.outLow, inputError: Errors.none });
               setAmount(IOType.input, "");
             } else if (quote?.error?.includes("output amount too high")) {
-              setError({ outputError: Errors.outHigh });
+              setError({
+                outputError: Errors.outHigh,
+                inputError: Errors.none,
+              });
               setAmount(IOType.input, "");
+            } else if (
+              quote?.error?.includes("expected amount to be within the range")
+            ) {
+              const rangeMatch = quote.error.match(/range of (\d+) to (\d+)/);
+              if (rangeMatch) {
+                const [, minRaw, maxRaw] = rangeMatch;
+                const assetToCheck = isExactOut ? toAsset : fromAsset;
+                const { decimals, symbol } = assetToCheck;
+
+                const minAmount = Number(
+                  formatAmount(minRaw, decimals, decimals)
+                );
+                const maxAmount = Number(
+                  formatAmount(maxRaw, decimals, decimals)
+                );
+                const amountInNumber = Number(amount);
+
+                if (amountInNumber > maxAmount) {
+                  setError({
+                    inputError: Errors.maxError(maxAmount.toString(), symbol),
+                    outputError: Errors.none,
+                  });
+                } else if (amountInNumber < minAmount) {
+                  setError({
+                    inputError: Errors.minError(minAmount.toString(), symbol),
+                    outputError: Errors.none,
+                  });
+                }
+              }
+              setAmount(isExactOut ? IOType.input : IOType.output, "");
             } else {
               setAmount(isExactOut ? IOType.input : IOType.output, "");
             }
@@ -348,6 +381,7 @@ export const useSwap = () => {
       if (inputAsset && minAmount && amountInNumber < minAmount) {
         setError({
           inputError: Errors.minError(minAmount.toString(), inputAsset?.symbol),
+          outputError: Errors.none,
         });
         setAmount(IOType.output, "");
         setTokenPrices({ input: "0", output: "0" });
@@ -361,6 +395,7 @@ export const useSwap = () => {
       if (inputAsset && maxAmount && amountInNumber > maxAmount) {
         setError({
           inputError: Errors.maxError(maxAmount.toString(), inputAsset?.symbol),
+          outputError: Errors.none,
         });
         setAmount(IOType.output, "");
         // cancel debounced fetch quote
@@ -705,6 +740,7 @@ export const useSwap = () => {
     if (amountInNumber < minAmount && inputAsset) {
       setError({
         inputError: Errors.minError(minAmount.toString(), inputAsset.symbol),
+        outputError: Errors.none,
       });
       setTokenPrices({ input: "0", output: "0" });
       setAmount(IOType.output, "");
@@ -713,6 +749,7 @@ export const useSwap = () => {
     if (amountInNumber > maxAmount && inputAsset) {
       setError({
         inputError: Errors.maxError(maxAmount.toString(), inputAsset.symbol),
+        outputError: Errors.none,
       });
       setTokenPrices({ input: "0", output: "0" });
       setAmount(IOType.output, "");

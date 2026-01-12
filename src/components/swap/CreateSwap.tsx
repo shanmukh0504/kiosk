@@ -20,6 +20,7 @@ import {
 import { ecosystems } from "../navbar/connectWallet/constants";
 import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
+import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useAddressFillers } from "../../hooks/useAddressFillers";
 import {
   isBitcoin,
@@ -80,7 +81,7 @@ export const CreateSwap = () => {
   } = useSwap();
   const { setOpenModal } = modalStore();
   const { connector } = useEVMWallet();
-
+  const { account: btcAccount } = useBitcoinWallet();
   const isChainSupported = useMemo(() => {
     if (!connector || !inputAsset || !outputAsset) return true;
     if (!WALLET_SUPPORTED_CHAINS[connector.id]) return true;
@@ -113,8 +114,10 @@ export const CreateSwap = () => {
           : isApproving
             ? "Approving..."
             : isSwapping
-              ? swapProgress === OrderCreationStatus.orderInitiating ||
-                swapProgress === OrderCreationStatus.orderInitiated
+              ? (swapProgress === OrderCreationStatus.orderInitiating ||
+                  swapProgress === OrderCreationStatus.orderInitiated) &&
+                inputAsset &&
+                !(isBitcoin(inputAsset.chain) && !btcAccount)
                 ? "Signing"
                 : "Scanning for liquidity sources"
               : "Swap";
