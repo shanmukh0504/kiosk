@@ -9,6 +9,7 @@ import {
   FC,
 } from "react";
 import sdk from "@crossmarkio/sdk";
+import { network } from "../../constants/constants";
 
 interface XRPLContextType {
   xrplAddress: string | undefined;
@@ -28,6 +29,52 @@ interface XRPLProviderProps {
 
 const STORAGE_KEY = "xrpl_connected_address";
 const STORAGE_TIMESTAMP_KEY = "xrpl_connected_timestamp";
+const STORAGE_NETWORK_KEY = "xrpl_connected_network";
+const SESSION_MAX_AGE = 24 * 60 * 60 * 1000;
+
+// Helper function to check if the current network matches the app's network setting
+const isNetworkMatching = (): boolean => {
+  try {
+    const networkInfo = sdk.sync.getNetwork();
+    if (!networkInfo?.type) return false;
+    return networkInfo.type === network;
+  } catch (error) {
+    console.error("Error checking XRPL network:", error);
+    return false;
+  }
+};
+
+// Helper function to clear all localStorage items
+const clearStorage = (): void => {
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(STORAGE_TIMESTAMP_KEY);
+  localStorage.removeItem(STORAGE_NETWORK_KEY);
+};
+
+// Helper function to save session to localStorage
+const saveSession = (address: string): void => {
+  localStorage.setItem(STORAGE_KEY, address);
+  localStorage.setItem(STORAGE_TIMESTAMP_KEY, Date.now().toString());
+  localStorage.setItem(STORAGE_NETWORK_KEY, network);
+};
+
+// Helper function to get stored session data
+const getStoredSession = () => ({
+  address: localStorage.getItem(STORAGE_KEY),
+  timestamp: localStorage.getItem(STORAGE_TIMESTAMP_KEY),
+  storedNetwork: localStorage.getItem(STORAGE_NETWORK_KEY),
+});
+
+// Helper function to check if stored session is valid
+const isStoredSessionValid = (): boolean => {
+  const { address, timestamp, storedNetwork } = getStoredSession();
+  if (!address || !timestamp) return false;
+
+  if (storedNetwork !== network) return false;
+
+  const sessionAge = Date.now() - parseInt(timestamp);
+  return sessionAge < SESSION_MAX_AGE;
+};
 
 export const XRPLProvider: FC<XRPLProviderProps> = ({ children }) => {
   const [xrplAddress, setXrplAddress] = useState<string | undefined>(undefined);
@@ -35,6 +82,20 @@ export const XRPLProvider: FC<XRPLProviderProps> = ({ children }) => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [isCrossmarkInstalled, setIsCrossmarkInstalled] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+
+  // Helper function to disconnect and clear state
+  const disconnect = useCallback(() => {
+    setXrplAddress(undefined);
+    setXrplConnected(false);
+    clearStorage();
+  }, []);
+
+  // Helper function to connect and save state
+  const connect = useCallback((address: string) => {
+    setXrplAddress(address);
+    setXrplConnected(true);
+    saveSession(address);
+  }, []);
 
   // Restore session after reload
   useEffect(() => {
@@ -66,45 +127,29 @@ export const XRPLProvider: FC<XRPLProviderProps> = ({ children }) => {
         setIsCrossmarkInstalled(installed);
 
         if (!installed) {
-          setXrplAddress(undefined);
-          setXrplConnected(false);
-          localStorage.removeItem(STORAGE_KEY);
-          localStorage.removeItem(STORAGE_TIMESTAMP_KEY);
+          disconnect();
           setIsInitialized(true);
           return;
         }
 
-        // Check localStorage for previous session
-        const storedAddress = localStorage.getItem(STORAGE_KEY);
-        const storedTimestamp = localStorage.getItem(STORAGE_TIMESTAMP_KEY);
-
-        // If we have a stored address and it's recent (within 7 days), restore the session
-        if (storedAddress && storedTimestamp) {
-          const sessionAge = Date.now() - parseInt(storedTimestamp);
-          const sevenDays = 7 * 24 * 60 * 60 * 1000;
-
-          if (sessionAge < sevenDays) {
-            setXrplAddress(storedAddress);
+        // Restore session if valid and network matches
+        if (isStoredSessionValid() && isNetworkMatching()) {
+          const { address } = getStoredSession();
+          if (address) {
+            setXrplAddress(address);
             setXrplConnected(true);
           } else {
-            localStorage.removeItem(STORAGE_KEY);
-            localStorage.removeItem(STORAGE_TIMESTAMP_KEY);
-            setXrplAddress(undefined);
-            setXrplConnected(false);
+            disconnect();
           }
         } else {
-          setXrplAddress(undefined);
-          setXrplConnected(false);
+          disconnect();
         }
 
         setIsInitialized(true);
       } catch (error) {
         console.error("XRPL init failed:", error);
         if (mounted) {
-          setXrplAddress(undefined);
-          setXrplConnected(false);
-          localStorage.removeItem(STORAGE_KEY);
-          localStorage.removeItem(STORAGE_TIMESTAMP_KEY);
+          disconnect();
           setIsInitialized(true);
         }
       }
@@ -115,7 +160,7 @@ export const XRPLProvider: FC<XRPLProviderProps> = ({ children }) => {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [disconnect]);
 
   // Listen for account changes from Crossmark
   useEffect(() => {
@@ -124,16 +169,10 @@ export const XRPLProvider: FC<XRPLProviderProps> = ({ children }) => {
     const onAccountChanged = (account: { address?: string }) => {
       const address = account?.address;
 
-      if (address) {
-        setXrplAddress(address);
-        setXrplConnected(true);
-        localStorage.setItem(STORAGE_KEY, address);
-        localStorage.setItem(STORAGE_TIMESTAMP_KEY, Date.now().toString());
+      if (address && isNetworkMatching()) {
+        connect(address);
       } else {
-        setXrplAddress(undefined);
-        setXrplConnected(false);
-        localStorage.removeItem(STORAGE_KEY);
-        localStorage.removeItem(STORAGE_TIMESTAMP_KEY);
+        disconnect();
       }
     };
 
@@ -142,25 +181,53 @@ export const XRPLProvider: FC<XRPLProviderProps> = ({ children }) => {
     return () => {
       sdk.off("accountChanged", onAccountChanged);
     };
-  }, [isCrossmarkInstalled, isInitialized]);
+  }, [isCrossmarkInstalled, isInitialized, connect, disconnect]);
+
+  // Monitor network changes and disconnect if network doesn't match
+  useEffect(() => {
+    if (!xrplConnected || !isCrossmarkInstalled || !isInitialized) return;
+
+    const checkNetwork = () => {
+      if (!isNetworkMatching()) {
+        disconnect();
+      }
+    };
+
+    const interval = setInterval(checkNetwork, 2000);
+
+    try {
+      sdk.on("networkChanged", checkNetwork);
+    } catch (error) {
+      console.error("Error listening for network changes:", error);
+    }
+
+    return () => {
+      clearInterval(interval);
+      try {
+        sdk.off("networkChanged", checkNetwork);
+      } catch (error) {
+        console.error("Error removing network change listener:", error);
+      }
+    };
+  }, [xrplConnected, isCrossmarkInstalled, isInitialized, disconnect]);
 
   // Verify connection when component becomes visible
   useEffect(() => {
     if (!xrplConnected || !isCrossmarkInstalled) return;
 
     const verifyConnection = () => {
-      // When page becomes visible, check if we still have the address
-      const storedAddress = localStorage.getItem(STORAGE_KEY);
+      if (!isNetworkMatching()) {
+        disconnect();
+        return;
+      }
+
+      const { address: storedAddress } = getStoredSession();
       const currentAddress = sdk.sync.getAddress();
 
-      // If Crossmark now reports a different address or no address, update our state
       if (currentAddress && currentAddress !== xrplAddress) {
-        setXrplAddress(currentAddress);
-        localStorage.setItem(STORAGE_KEY, currentAddress);
-        localStorage.setItem(STORAGE_TIMESTAMP_KEY, Date.now().toString());
+        connect(currentAddress);
       } else if (!currentAddress && !storedAddress) {
-        setXrplConnected(false);
-        setXrplAddress(undefined);
+        disconnect();
       }
     };
 
@@ -171,7 +238,7 @@ export const XRPLProvider: FC<XRPLProviderProps> = ({ children }) => {
       document.removeEventListener("visibilitychange", verifyConnection);
       window.removeEventListener("focus", verifyConnection);
     };
-  }, [xrplConnected, isCrossmarkInstalled, xrplAddress]);
+  }, [xrplConnected, isCrossmarkInstalled, xrplAddress, connect, disconnect]);
 
   // Connect
   const handleXRPLConnect = useCallback(async (): Promise<boolean> => {
@@ -184,19 +251,14 @@ export const XRPLProvider: FC<XRPLProviderProps> = ({ children }) => {
       }
 
       const result = await sdk.methods.signInAndWait();
-
       const address = result?.response?.data?.address;
 
-      if (!address) {
+      if (!address || !isNetworkMatching()) {
         return false;
       }
 
-      setXrplAddress(address);
-      setXrplConnected(true);
+      connect(address);
       setIsCrossmarkInstalled(true);
-      localStorage.setItem(STORAGE_KEY, address);
-      localStorage.setItem(STORAGE_TIMESTAMP_KEY, Date.now().toString());
-
       return true;
     } catch (error) {
       console.error("XRPL connect error:", error);
@@ -204,15 +266,12 @@ export const XRPLProvider: FC<XRPLProviderProps> = ({ children }) => {
     } finally {
       setIsConnecting(false);
     }
-  }, []);
+  }, [connect]);
 
   // Disconnect
   const handleXRPLDisconnect = useCallback((): void => {
-    setXrplAddress(undefined);
-    setXrplConnected(false);
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(STORAGE_TIMESTAMP_KEY);
-  }, []);
+    disconnect();
+  }, [disconnect]);
 
   const value = useMemo<XRPLContextType>(
     () => ({
