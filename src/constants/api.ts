@@ -6,6 +6,7 @@ const REQUIRED_ENV_VARS = {
   EXPLORER: import.meta.env.VITE_EXPLORER_URL,
   API_KEY: import.meta.env.VITE_API_KEY,
   BALANCE_URL: import.meta.env.VITE_BALANCE_URL,
+  NOTIFICATION_URL: import.meta.env.VITE_NOTIFICATION_URL,
 } as const;
 
 export const API = () => {
@@ -24,7 +25,8 @@ export const API = () => {
           new Url(REQUIRED_ENV_VARS.BASE_URL).endpoint("/v2/chains"),
         blockNumbers: (network: "mainnet" | "testnet" | "localnet") =>
           infoBase().endpoint("blocknumbers").endpoint(network),
-        notification: () => infoBase().endpoint("notification"),
+        notification: () =>
+          new Url(REQUIRED_ENV_VARS.NOTIFICATION_URL).endpoint("notification"),
       };
     })(),
     buildId: "/build-id.json",
