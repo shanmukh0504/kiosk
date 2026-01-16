@@ -34,6 +34,7 @@ import { Wallet as TronWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
 import { Connector as StarknetConnector } from "@starknet-react/core";
 import { useSuiWallet } from "../../../hooks/useSuiWallet";
 import { useTronWallet } from "../../../hooks/useTronWallet";
+import { useXRPLWallet } from "../../../hooks/useXRPLWallet";
 
 import logger from "../../../utils/logger";
 
@@ -84,6 +85,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     tronConnected,
     wallet: tronSelectedWallet,
   } = useTronWallet();
+  const { xrplAddress, xrplConnected, handleXRPLConnect } = useXRPLWallet();
   const { modalData } = modalStore();
   const showOnlyBTCWallets = !!modalData.connectWallet?.bitcoin;
   const showOnlyStarknetWallets = !!modalData.connectWallet?.starknet;
@@ -92,6 +94,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   const showOnlySuiWallets = !!modalData.connectWallet?.sui;
   const showOnlyTronWallets = !!modalData.connectWallet?.tron;
   const showOnlyLitecoinWallets = !!modalData.connectWallet?.litecoin;
+  const showOnlyXRPLWallets = !!modalData.connectWallet?.xrpl;
 
   useEffect(() => {
     const selected = showOnlyStarknetWallets
@@ -108,7 +111,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                 ? BlockchainType.tron
                 : showOnlyLitecoinWallets
                   ? BlockchainType.litecoin
-                  : null;
+                  : showOnlyXRPLWallets
+                    ? BlockchainType.xrpl
+                    : null;
 
     if (selected) setSelectedEcosystem(selected);
   }, [
@@ -119,6 +124,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     showOnlySuiWallets,
     showOnlyTronWallets,
     showOnlyLitecoinWallets,
+    showOnlyXRPLWallets,
   ]);
 
   const allAvailableWallets = useMemo(() => {
@@ -153,6 +159,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         break;
       case BlockchainType.litecoin:
         allWallets = allWallets.filter((wallet) => wallet.isLitecoin);
+        break;
+      case BlockchainType.xrpl:
+        allWallets = allWallets.filter((wallet) => wallet.isXRPL);
         break;
     }
 
@@ -232,6 +241,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           [BlockchainType.solana]: connector.wallet.solanaWallet,
           [BlockchainType.sui]: connector.wallet.suiWallet,
           [BlockchainType.tron]: connector.wallet.tronWallet,
+          // [BlockchainType.xrpl]: undefined,
         });
         return;
       }
@@ -288,6 +298,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         if (!connector.wallet?.tronWallet) return;
         await handleTronConnect(connector.wallet.tronWallet);
         setConnectingWallet(null);
+      } else if (connector.isXRPL) {
+        await handleXRPLConnect();
+        setConnectingWallet(null);
       }
     } catch (error) {
       logger.error("Error connecting wallet:", error);
@@ -327,7 +340,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                 key === BlockchainType.starknet ||
                 key === BlockchainType.tron ||
                 key === BlockchainType.solana ||
-                key === BlockchainType.litecoin
+                key === BlockchainType.litecoin ||
+                key === BlockchainType.xrpl
             )
             .map(([key, ecosystem]) => (
               <Chip
@@ -382,6 +396,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                     suiSelectedWallet,
                     tronConnected,
                     tronSelectedWallet,
+                    xrplConnected,
+                    xrplAddress,
                   })}
                   isAvailable={wallet.isAvailable}
                 />

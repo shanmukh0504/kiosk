@@ -27,6 +27,7 @@ import {
   isSolana,
   isSui,
   isTron,
+  isXrpl,
   Chain,
   BlockchainType,
 } from "@gardenfi/orderbook";
@@ -92,7 +93,8 @@ export const CreateSwap = () => {
       isStarknet(inputAsset.chain) ||
       isSolana(inputAsset.chain) ||
       isSui(inputAsset.chain) ||
-      isTron(inputAsset.chain)
+      isTron(inputAsset.chain) ||
+      isXrpl(inputAsset.chain)
     )
       return true;
     return WALLET_SUPPORTED_CHAINS[connector.id].includes(inputAsset.chain);

@@ -13,6 +13,7 @@ import {
   isTron,
   isLitecoin,
   isAlpenSignet,
+  isXrpl,
 } from "@gardenfi/orderbook";
 import {
   useBitcoinWallet,
@@ -100,6 +101,17 @@ export const PendingTransactions = () => {
         return;
       }
       const tx = await garden.htlcs.tron.initiate(order);
+      if (!tx.ok) {
+        console.error(tx.error);
+        return;
+      }
+      txHash = tx.val;
+    } else if (isXrpl(order.source_swap.chain)) {
+      if (!garden.htlcs.xrpl) {
+        console.error("XRPL HTLC not available");
+        return;
+      }
+      const tx = await garden.htlcs.xrpl.initiate(order);
       if (!tx.ok) {
         console.error(tx.error);
         return;

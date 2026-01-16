@@ -17,6 +17,7 @@ import transactionHistoryStore from "../../../store/transactionHistoryStore";
 import orderInProgressStore from "../../../store/orderInProgressStore";
 import { balanceStore } from "../../../store/balanceStore";
 import { useTronWallet } from "../../../hooks/useTronWallet";
+import { useXRPLWallet } from "../../../hooks/useXRPLWallet";
 
 type AddressMenuProps = {
   onClose: () => void;
@@ -31,6 +32,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const { solanaAddress, solanaDisconnect } = useSolanaWallet();
   const { suiConnected, currentAccount, suiDisconnect } = useSuiWallet();
   const { tronConnected, wallet: tronWallet, tronDisconnect } = useTronWallet();
+  const { xrplAddress, handleXRPLDisconnect } = useXRPLWallet();
   const { setIsOpen } = orderInProgressStore();
   const { setOpenModal } = modalStore();
   const { resetTransactions } = transactionHistoryStore();
@@ -43,11 +45,11 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
 
   const showConnectWallet = useMemo(() => {
     return !(
-      (address && btcAddress && starknetAddress && ltcAddress)
+      (address && btcAddress && starknetAddress && ltcAddress && xrplAddress)
       // solanaAddress &&
       // suiConnected
     );
-  }, [address, btcAddress, starknetAddress, ltcAddress]);
+  }, [address, btcAddress, starknetAddress, ltcAddress, xrplAddress]);
 
   const handleDisconnectClick = () => {
     clear();
@@ -58,6 +60,7 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
     solanaDisconnect();
     suiDisconnect();
     tronDisconnect();
+    handleXRPLDisconnect();
     clearBalances();
     setIsOpen(false);
     onClose();
@@ -103,6 +106,9 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
               address={tronWallet.adapter.address}
               logo={ecosystems.tron.icon}
             />
+          )}
+          {xrplAddress && (
+            <Address address={xrplAddress} logo={ecosystems.xrpl.icon} />
           )}
           {showConnectWallet && (
             <div

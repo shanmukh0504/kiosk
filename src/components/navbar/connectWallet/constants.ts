@@ -31,6 +31,10 @@ export const ecosystems = {
     name: "Litecoin",
     icon: "https://garden.imgix.net/assets/LitecoinIcon.svg",
   },
+  [BlockchainType.xrpl]: {
+    name: "XRPL",
+    icon: "https://garden.imgix.net/chains/XRPLIcon.svg",
+  },
 } as const;
 
 export type EcosystemKeys = keyof typeof ecosystems;
@@ -45,6 +49,7 @@ interface BaseWallet {
   isSuiSupported: boolean;
   isTronSupported: boolean;
   isLitecoinSupported: boolean;
+  isXRPLSupported: boolean;
 }
 
 // Wallet capabilities interface
@@ -56,6 +61,7 @@ interface WalletCapabilities {
   [BlockchainType.sui]?: boolean;
   [BlockchainType.tron]?: boolean;
   [BlockchainType.litecoin]?: boolean;
+  [BlockchainType.xrpl]?: boolean;
 }
 
 type GardenSupportedWalletsType = BaseWallet & WalletCapabilities;
@@ -76,6 +82,7 @@ const createWallet = (
   isSuiSupported: capabilities[BlockchainType.sui] ?? false,
   isTronSupported: capabilities[BlockchainType.tron] ?? false,
   isLitecoinSupported: capabilities[BlockchainType.litecoin] ?? false,
+  isXRPLSupported: capabilities[BlockchainType.xrpl] ?? false,
 });
 
 export const GardenSupportedWallets: Record<
@@ -218,5 +225,11 @@ export const GardenSupportedWallets: Record<
     "wallets/TronLinkIcon.svg",
     "https://www.tronlink.org/",
     { tron: true }
+  ),
+  crossmark: createWallet(
+    "Crossmark",
+    "wallets/CrossMarkIcon.png",
+    "https://www.crossmark.io/",
+    { xrpl: true }
   ),
 };

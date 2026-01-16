@@ -18,6 +18,7 @@ import { useTronWallet } from "../../../hooks/useTronWallet";
 import { BlockchainType } from "@gardenfi/orderbook";
 
 import { useSuiWallet } from "../../../hooks/useSuiWallet";
+import { useXRPLWallet } from "../../../hooks/useXRPLWallet";
 type Checked = Record<BlockchainType, boolean>;
 
 type MultiWalletConnectionProps = {
@@ -28,6 +29,7 @@ type MultiWalletConnectionProps = {
     [BlockchainType.solana]?: SolanaWallet;
     [BlockchainType.sui]?: SuiWallet;
     [BlockchainType.tron]?: TronWallet;
+    [BlockchainType.xrpl]?: undefined;
   };
   handleClose: () => void;
 };
@@ -56,6 +58,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   } = useStarknetWallet();
   const { handleSuiConnect, suiSelectedWallet } = useSuiWallet();
   const { handleTronConnect, wallet: tronWallet } = useTronWallet();
+  const { handleXRPLConnect, xrplConnected, xrplAddress } = useXRPLWallet();
   const availableEcosystems = Object.entries(ecosystems).filter(
     ([key]) =>
       (key === BlockchainType.evm && connectors.evm) ||
@@ -63,7 +66,8 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
       (key === BlockchainType.starknet && connectors.starknet) ||
       (key === BlockchainType.solana && connectors.solana) ||
       (key === BlockchainType.sui && connectors.sui) ||
-      (key === BlockchainType.tron && connectors.tron)
+      (key === BlockchainType.tron && connectors.tron) ||
+      (key === BlockchainType.xrpl && connectors.xrpl !== undefined)
   );
 
   const connectionStatus: Record<BlockchainType, boolean> = {
@@ -77,6 +81,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
     [BlockchainType.bitcoin]: provider?.name === connectors.bitcoin?.name,
     [BlockchainType.tron]:
       tronWallet?.adapter.name === connectors.tron?.adapter.name,
+    [BlockchainType.xrpl]: xrplConnected && !!xrplAddress,
     [BlockchainType.litecoin]: false,
     [BlockchainType.alpen_signet]: false,
   };
@@ -154,6 +159,14 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
         return;
       }
       await handleTronConnect(connectors.tron);
+    }
+
+    if (checked[BlockchainType.xrpl]) {
+      const success = await handleXRPLConnect();
+      if (!success) {
+        setLoading(false);
+        return;
+      }
     }
 
     setLoading(false);
