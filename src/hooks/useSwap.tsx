@@ -590,7 +590,7 @@ export const useSwap = () => {
           setIsSwapping(false);
         } else if (res.error.includes("insufficient liquidity")) {
           // Wait for 8 seconds before showing the error to the user
-          await new Promise((resolve) => setTimeout(resolve, 8000));
+          // await new Promise((resolve) => setTimeout(resolve, 8000));
           setisLiquidityToastVisible(true);
           Toast.error("No liquidity sources found");
           setIsSwapping(false);
