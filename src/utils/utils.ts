@@ -358,9 +358,37 @@ export const decideAddressVisibility = (
 
   return { isSourceNeeded, isDestinationNeeded };
 };
+
 export const isStableCoinOrSeed = (asset: Asset) => {
   return (
     asset.symbol.toLowerCase().includes("usd") ||
     asset.symbol.toLowerCase().includes("seed")
   );
+};
+
+export const calculateNotificationWidth = (
+  title: string | undefined,
+  description: string | undefined
+): { textWidth: number; containerWidth: number } => {
+  const CHAR_WIDTH = 6;
+  const BUFFER_WIDTH = 128;
+  // Estimate characters per line (accounting for wrapping)
+  // For line-clamp-2, the width is determined by the longest line, not total characters
+  const CHARS_PER_LINE = 55;
+
+  const titleWidth = title ? title.length * CHAR_WIDTH : 0;
+
+  // Description can wrap to 2 lines max (line-clamp-2)
+  // If description is short, use its full length. If long, assume it wraps
+  // and the width is determined by one line's worth of characters
+  const descriptionLength = description ? description.length : 0;
+  // For wrapped text, width = longest line, so cap at CHARS_PER_LINE
+  const descriptionCharsForWidth = Math.min(descriptionLength, CHARS_PER_LINE);
+  const descriptionWidth = descriptionCharsForWidth * CHAR_WIDTH;
+
+  const maxContentWidth = Math.max(titleWidth, descriptionWidth);
+  return {
+    textWidth: Math.min(maxContentWidth, 300),
+    containerWidth: Math.min(maxContentWidth + BUFFER_WIDTH, 460),
+  };
 };
