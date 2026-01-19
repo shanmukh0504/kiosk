@@ -21,6 +21,7 @@ import { useSuiWallet } from "../../../hooks/useSuiWallet";
 type Checked = Record<BlockchainType, boolean>;
 
 type MultiWalletConnectionProps = {
+  availableBlockchainTypes: Set<BlockchainType>;
   connectors: {
     [BlockchainType.evm]?: Connector;
     [BlockchainType.bitcoin]?: IInjectedBitcoinProvider;
@@ -33,6 +34,7 @@ type MultiWalletConnectionProps = {
 };
 
 export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
+  availableBlockchainTypes,
   connectors,
   handleClose,
 }) => {
@@ -56,15 +58,17 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   } = useStarknetWallet();
   const { handleSuiConnect, suiSelectedWallet } = useSuiWallet();
   const { handleTronConnect, wallet: tronWallet } = useTronWallet();
-  const availableEcosystems = Object.entries(ecosystems).filter(
-    ([key]) =>
+  const availableEcosystems = Object.entries(ecosystems).filter(([key]) => {
+    if (!availableBlockchainTypes.has(key as BlockchainType)) return false;
+    return (
       (key === BlockchainType.evm && connectors.evm) ||
       (key === BlockchainType.bitcoin && connectors.bitcoin) ||
       (key === BlockchainType.starknet && connectors.starknet) ||
       (key === BlockchainType.solana && connectors.solana) ||
       (key === BlockchainType.sui && connectors.sui) ||
       (key === BlockchainType.tron && connectors.tron)
-  );
+    );
+  });
 
   const connectionStatus: Record<BlockchainType, boolean> = {
     [BlockchainType.evm]: evmConnector?.name === connectors.evm?.name,
