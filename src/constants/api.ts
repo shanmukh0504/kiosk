@@ -8,6 +8,8 @@ const REQUIRED_ENV_VARS = {
   BALANCE_URL: import.meta.env.VITE_BALANCE_URL,
 } as const;
 
+const NOTIFICATION_URL = import.meta.env.VITE_NOTIFICATION_URL;
+
 export const API = () => {
   Object.entries(REQUIRED_ENV_VARS).forEach(([key, value]) => {
     if (!value) throw new Error(`Missing ${key} in env`);
@@ -24,7 +26,8 @@ export const API = () => {
           new Url(REQUIRED_ENV_VARS.BASE_URL).endpoint("/v2/chains"),
         blockNumbers: (network: "mainnet" | "testnet" | "localnet") =>
           infoBase().endpoint("blocknumbers").endpoint(network),
-        notification: () => infoBase().endpoint("notification"),
+        notification: () =>
+          new Url(NOTIFICATION_URL || infoBase()).endpoint("notification"),
       };
     })(),
     buildId: "/build-id.json",
