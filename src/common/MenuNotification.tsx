@@ -26,7 +26,7 @@ export const MenuNotification = ({ notification }: MenuNotificationProps) => {
             {notification.title}
           </Typography>
           <Typography
-            className="whitespace-wrap mb-1 inline-block overflow-hidden text-ellipsis text-[10px] text-mid-grey"
+            className="whitespace-wrap mb-1 line-clamp-2 overflow-hidden text-ellipsis text-[10px] text-mid-grey"
             weight="medium"
           >
             {notification.description}
