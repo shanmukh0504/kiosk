@@ -3,13 +3,18 @@
 ## [2.0.4]
 
 ### Added
+
 - Add litecoin testnet support.
 - Add address filler to accept bitcoin like chain addresses without wallet connection
 - Migrated balance fetching to SSE-based real-time streaming service for automatic balance updates.
 - Unified balance fetching implementation across all supported chains.
+
 ### Fixed
+
 - Bump Starknet package versions
 - Update Starknet contract calls
+- Added retries for broadcasting tron transactions.
+- Added tronAddress in useAddressFilters.
 
 ## [2.0.3]
 
