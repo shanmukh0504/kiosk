@@ -49,7 +49,6 @@ function App() {
           spl: import.meta.env.VITE_SOLANA_PROGRAM_ADDRESS_SPL,
         },
       }}
-      setRedeemServiceEnabled={true}
       store={localStorage}
     >
       <Layout>
