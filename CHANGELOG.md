@@ -15,6 +15,7 @@
 - Update Starknet contract calls
 - Added retries for broadcasting tron transactions.
 - Added support for XRPL.
+- Added tronAddress in useAddressFilters.
 
 ## [2.0.3]
 

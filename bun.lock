@@ -10,7 +10,7 @@
         "@farcaster/frame-sdk": "^0.1.8",
         "@farcaster/miniapp-wagmi-connector": "^1.0.0",
         "@gardenfi/core": "3.0.8-beta.4",
-        "@gardenfi/garden-book": "0.2.17",
+        "@gardenfi/garden-book": "0.2.18",
         "@gardenfi/orderbook": "3.0.6-beta.3",
         "@gardenfi/react-hooks": "3.0.7-beta.3",
         "@gardenfi/utils": "3.0.0-beta.4",
@@ -377,7 +377,7 @@
 
     "@gardenfi/core": ["@gardenfi/core@3.0.8-beta.4", "", { "dependencies": { "@coral-xyz/anchor": "^0.31.1", "@gardenfi/orderbook": "3.0.6-beta.3", "@gardenfi/utils": "3.0.0-beta.5", "@mysten/signers": "^0.3.4", "@mysten/sui": "^1.37.1", "@mysten/wallet-standard": "^0.16.9", "@solana/spl-token": "^0.4.13", "@tronweb3/tronwallet-abstract-adapter": "^1.1.9", "bignumber.js": "^9.1.2", "bip32": "^4.0.0", "bip39": "^3.1.0", "bitcoinjs-lib": "^6.1.5", "bitcore-lib-ltc": "^10.10.5", "ecpair": "^2.1.0", "node-cache": "^5.1.2", "starknet": "8.0.0", "tiny-secp256k1": "^2.2.3", "tronweb": "^6.0.4", "varuint-bitcoin": "^1.1.2", "yup": "^1.4.0" } }, "sha512-VNS/PRonQlSKKEPAmMnr/t9F5dli2AKTCtKRRHDxQzm37k0nq76PvHpfEliUMv7Oy9bIX29IVNIotkv3lKQXsw=="],
 
-    "@gardenfi/garden-book": ["@gardenfi/garden-book@0.2.17", "", { "dependencies": { "class-variance-authority": "^0.7.0", "clsx": "^2.1.1", "framer-motion": "^11.5.6", "lottie-react": "^2.4.0", "postcss-prefixwrap": "^1.51.0", "react-lazy-load-image-component": "^1.6.2", "react-remove-scroll": "^2.6.3", "tailwind-merge": "^2.4.0" }, "peerDependencies": { "react": "^18.2.0", "react-dom": "^18.2.0" } }, "sha512-aeWS/+Epb7E6sI25T94vIvWs64uzD3wXLslXuZd7aavOTYtiNqeyH8axJY0Uij+T+Pzr6RUcx1FNR1iDcFv1AA=="],
+    "@gardenfi/garden-book": ["@gardenfi/garden-book@0.2.18", "", { "dependencies": { "class-variance-authority": "^0.7.0", "clsx": "^2.1.1", "framer-motion": "^11.5.6", "lottie-react": "^2.4.0", "postcss-prefixwrap": "^1.51.0", "react-lazy-load-image-component": "^1.6.2", "react-remove-scroll": "^2.6.3", "tailwind-merge": "^2.4.0" }, "peerDependencies": { "react": "^18.2.0", "react-dom": "^18.2.0" } }, "sha512-JtwCuD/NCGKo/kUcQNbVnmOKYRd9aIBT2f4vwD9mCsI+3gXi9y1Oq83cOb00sSuNnn7uW/lftOBlUyW5H02kMA=="],
 
     "@gardenfi/orderbook": ["@gardenfi/orderbook@3.0.6-beta.3", "", { "dependencies": { "@coral-xyz/anchor": "^0.31.1", "@gardenfi/utils": "3.0.0-beta.5", "bufferutil": "^4.0.8", "node-cache": "^5.1.2", "siwe": "^2.1.4", "starknet": "8.0.0", "utf-8-validate": "^6.0.3", "ws": "^8.14.2" } }, "sha512-lR71/NP9E5mWjoTNHehCjp4e7VHPNpviqXievq5lx4GjJELGazvw6CC/LvDpykzKOojRzTTIW4sIfETdcikLOA=="],
 
