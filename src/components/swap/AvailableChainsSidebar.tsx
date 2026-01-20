@@ -118,7 +118,7 @@ export const AvailableChainsSidebar = ({
                       <div
                         key={c.chain}
                         className="flex w-full cursor-pointer items-center justify-between hover:bg-off-white"
-                        data-itemid={`chain-selector-item-${c.chain.replace(/_/g, "-")}`}
+                        data-testid={`chain-selector-item-${c.chain.replace(/_/g, "-")}`}
                         onClick={() => onClick(c)}
                       >
                         <div className="flex w-full items-center gap-4 px-[14px] py-2">

@@ -428,7 +428,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                       <div
                         key={`${asset?.chain}-${asset?.htlc?.address}-${asset?.token?.address || "native"}-${index}`}
                         className="flex w-full cursor-pointer items-center justify-between gap-2 px-4 py-1.5 hover:bg-off-white"
-                        data-itemid={`asset-selector-item-${asset?.symbol?.toLowerCase() || index}`}
+                        data-testid={`asset-selector-item-${asset?.symbol?.toLowerCase() || index}`}
                         onClick={() => handleClick(asset)}
                       >
                         <div className="flex w-full items-center gap-2">
