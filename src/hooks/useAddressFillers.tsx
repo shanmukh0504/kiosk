@@ -63,6 +63,7 @@ export const useAddressFillers = () => {
       solanaAddress,
       currentAccount,
       ltcAddress,
+      tronAddress,
     ]
   );
 
