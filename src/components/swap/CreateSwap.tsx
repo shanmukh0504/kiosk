@@ -20,7 +20,10 @@ import {
 import { ecosystems } from "../navbar/connectWallet/constants";
 import { InputAddressAndFeeRateDetails } from "./InputAddressAndFeeRateDetails";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import {
+  useBitcoinWallet,
+  useLitecoinWallet,
+} from "@gardenfi/wallet-connectors";
 import { useAddressFillers } from "../../hooks/useAddressFillers";
 import {
   isBitcoin,
@@ -31,6 +34,8 @@ import {
   Chain,
   BlockchainType,
   Asset,
+  isLitecoin,
+  isAlpenSignet,
 } from "@gardenfi/orderbook";
 import { swapStore } from "../../store/swapStore";
 import { AnimatePresence, motion } from "framer-motion";
@@ -85,6 +90,7 @@ export const CreateSwap = () => {
   const { setOpenModal } = modalStore();
   const { connector } = useEVMWallet();
   const { account: btcAccount } = useBitcoinWallet();
+  const { account: ltcAccount } = useLitecoinWallet();
 
   const isChainSupported = useMemo(() => {
     if (!connector || !inputAsset || !outputAsset) return true;
@@ -105,6 +111,27 @@ export const CreateSwap = () => {
     return WALLET_SUPPORTED_CHAINS[connector.id].includes(inputAsset.chain);
   }, [connector, inputAsset, outputAsset]);
 
+  const showSigning = useMemo(() => {
+    return (
+      (swapProgress === OrderCreationStatus.orderInitiating ||
+        swapProgress === OrderCreationStatus.orderInitiated) &&
+      inputAsset &&
+      !isBitcoin(inputAsset.chain) &&
+      !btcAccount &&
+      !isLitecoin(inputAsset.chain) &&
+      !ltcAccount &&
+      !isAlpenSignet(inputAsset.chain)
+    );
+  }, [
+    swapProgress,
+    inputAsset,
+    btcAccount,
+    ltcAccount,
+    isAlpenSignet,
+    isLitecoin,
+    isBitcoin,
+  ]);
+
   const buttonLabel = useMemo(() => {
     if (needsWalletConnection)
       return `Connect ${capitalizeChain(needsWalletConnection)} Wallet`;
@@ -118,10 +145,7 @@ export const CreateSwap = () => {
           : isApproving
             ? "Approving..."
             : isSwapping
-              ? (swapProgress === OrderCreationStatus.orderInitiating ||
-                  swapProgress === OrderCreationStatus.orderInitiated) &&
-                inputAsset &&
-                !(isBitcoin(inputAsset.chain) && !btcAccount)
+              ? showSigning
                 ? "Signing"
                 : "Scanning for liquidity sources"
               : "Swap";
