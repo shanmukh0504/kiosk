@@ -1,4 +1,3 @@
-```
 # syntax=docker/dockerfile:1
 
 # --- Builder: Node 24 base with Bun installed for package management ---
