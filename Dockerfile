@@ -21,6 +21,9 @@ RUN curl -fsSL https://bun.com/install | bash
 ENV BUN_INSTALL="/root/.bun"
 ENV PATH="$BUN_INSTALL/bin:$PATH"
 
+# Increase Node.js heap size to prevent out-of-memory errors during build
+ENV NODE_OPTIONS="--max-old-space-size=8192"
+
 # Copy package manifests first to leverage Docker cache (include bun.lock if present)
 COPY package.json bun.lock ./
 
