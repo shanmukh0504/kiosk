@@ -13,6 +13,7 @@ import orderInProgressStore from "../../store/orderInProgressStore";
 import { BTC } from "../../store/swapStore";
 
 type TransactionProps = {
+  index: number;
   order: Order;
   status?: OrderStatus;
   isLast: boolean;
@@ -52,6 +53,7 @@ const getOrderStatusLabel = (status: OrderStatus) => {
 };
 
 export const TransactionRow: FC<TransactionProps> = ({
+  index,
   order,
   status,
   isLast,
@@ -128,6 +130,7 @@ export const TransactionRow: FC<TransactionProps> = ({
             ? "cursor-pointer hover:bg-white/50"
             : ""
         }`}
+        data-testid={`transactions-row-${index + 1}`}
         onClick={handleTransactionClick}
       >
         <div className={`flex flex-col gap-1`}>
@@ -140,10 +143,18 @@ export const TransactionRow: FC<TransactionProps> = ({
             />
           )}
           <div className="flex justify-between">
-            <Typography size="h5" weight="regular">
+            <Typography
+              size="h5"
+              weight="regular"
+              data-testid="transactions-row-status"
+            >
               {statusLabel}
             </Typography>
-            <Typography size="h5" weight="regular">
+            <Typography
+              size="h5"
+              weight="regular"
+              data-testid="transactions-row-age"
+            >
               {dayDifference}
             </Typography>
           </div>

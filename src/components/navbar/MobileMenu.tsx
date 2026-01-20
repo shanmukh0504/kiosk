@@ -32,6 +32,7 @@ export const MobileMenu = () => {
     <>
       <div
         className={`flex min-h-8 min-w-8 cursor-pointer items-center justify-center rounded-full transition-all duration-500 sm:min-h-11 sm:min-w-11 md:hidden ${isSidebarOpen ? "z-[99] bg-white" : "bg-white/50"}`}
+        data-testid="navbar-mobile-menu-button"
         onClick={handleSidebar}
       >
         <HamburgerIcon isSidebarOpen={isSidebarOpen} />

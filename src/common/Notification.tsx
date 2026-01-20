@@ -29,6 +29,7 @@ export const Notification = () => {
 
   return (
     <div
+      data-testid="app-notification"
       className={`fixed bottom-10 left-2 right-2 z-40 bg-white/50 p-4 backdrop-blur-[20px] transition-[border-radius,width,height,transform] duration-300 ease-cubic-in-out sm:bottom-10 sm:left-10 ${
         visible
           ? "h-24 w-[344px] rounded-2xl sm:w-[460px]"
@@ -38,6 +39,7 @@ export const Notification = () => {
     >
       {/* TODO: Replace with bell icon once added to garden-book */}
       <div
+        data-testid="app-notification-bell"
         className={`flex items-center justify-center transition-[opacity,height,width] ease-cubic-in-out ${
           visible
             ? // On open, fade out the bell icon
@@ -61,6 +63,7 @@ export const Notification = () => {
       </div>
       {notification && (
         <div
+          data-testid="app-notification-content"
           className={`flex justify-between gap-3 ${
             visible
               ? // On open, fade in the content once the notification has expanded
@@ -69,8 +72,13 @@ export const Notification = () => {
                 "pointer-events-none h-0 w-0 opacity-0 [transition:opacity_150ms,width_150ms_150ms,height_150ms_150ms]"
           }`}
         >
-          <Link to={notification.link} target="_blank">
+          <Link
+            data-testid="app-notification-link"
+            to={notification.link}
+            target="_blank"
+          >
             <img
+              data-testid="app-notification-image"
               src={notification.image}
               className="h-16 w-[113px] rounded-lg object-cover"
             />
@@ -81,10 +89,15 @@ export const Notification = () => {
               target="_blank"
               className="flex w-fit max-w-[306px] flex-col gap-1 leading-4"
             >
-              <Typography size="h4" weight="medium">
+              <Typography
+                data-testid="app-notification-title"
+                size="h4"
+                weight="medium"
+              >
                 {notification.title}
               </Typography>
               <Typography
+                data-testid="app-notification-description"
                 className="whitespace-wrap mb-1 inline-block overflow-hidden text-ellipsis text-mid-grey"
                 size="h5"
                 weight="regular"
@@ -93,7 +106,10 @@ export const Notification = () => {
               </Typography>
             </Link>
           </div>
-          <div className="flex h-5 w-[22px] items-center justify-center">
+          <div
+            data-testid="app-notification-close"
+            className="flex h-5 w-[22px] items-center justify-center"
+          >
             <CloseIcon className="cursor-pointer" onClick={handleClose} />
           </div>
         </div>

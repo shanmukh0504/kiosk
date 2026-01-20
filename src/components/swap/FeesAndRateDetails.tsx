@@ -167,6 +167,7 @@ export const FeesAndRateDetails = () => {
                     size="h5"
                     weight="regular"
                     className="!text-nowrap"
+                    data-testid="fees-rate-details-network-fee"
                   >
                     {networkFees === 0 ? (
                       "Free"
@@ -193,6 +194,7 @@ export const FeesAndRateDetails = () => {
             className={`h-4 w-4 cursor-pointer px-1 transition-transform duration-300 ${
               isDetailsExpanded ? "rotate-180" : ""
             }`}
+            data-testid="fees-rate-details-toggle"
             onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}
           />
         </motion.div>

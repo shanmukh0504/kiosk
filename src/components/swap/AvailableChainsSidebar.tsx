@@ -74,13 +74,18 @@ export const AvailableChainsSidebar = ({
       <motion.div
         {...(isMobile ? mobileAnimationConfig : animationConfig)}
         className={`absolute left-0 top-0 z-50 w-full rounded-[16px] p-3 ${isMobile ? "pt-7" : ""}`}
+        data-testid="available-chains-sidebar"
       >
         <div className="transition-left left-auto top-60 z-40 m-1 flex w-full flex-col gap-3 pr-2 duration-700 ease-cubic-in-out">
           <div className="flex items-center justify-between p-1">
             <Typography size="h4" weight="medium">
               Select chain
             </Typography>
-            <ArrowLeftIcon onClick={hide} className="cursor-pointer" />
+            <ArrowLeftIcon
+              onClick={hide}
+              className="cursor-pointer"
+              data-testid="chain-selector-back"
+            />
           </div>
           <div className="flex w-full items-center justify-between rounded-2xl bg-white/50 px-4 py-[10px]">
             <div className="flex flex-grow items-center">
@@ -88,6 +93,7 @@ export const AvailableChainsSidebar = ({
                 <input
                   ref={inputRef}
                   className="w-full bg-transparent outline-none placeholder:text-mid-grey focus:outline-none"
+                  data-testid="chain-selector-search"
                   type="text"
                   value={input}
                   placeholder="Search chains"
@@ -112,6 +118,7 @@ export const AvailableChainsSidebar = ({
                       <div
                         key={c.chain}
                         className="flex w-full cursor-pointer items-center justify-between hover:bg-off-white"
+                        data-itemid={`chain-selector-item-${c.chain.replace(/_/g, "-")}`}
                         onClick={() => onClick(c)}
                       >
                         <div className="flex w-full items-center gap-4 px-[14px] py-2">

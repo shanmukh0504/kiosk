@@ -26,9 +26,12 @@ export const SwapSavingsAndAddresses = ({
   networkFeesValue,
 }: SwapSavingsProps) => {
   const { outputAsset, outputAmount, maxTimeSaved, maxCostSaved } = swapStore();
-
   return (
-    <motion.div className="flex flex-col" {...expandWithDelayAnimation}>
+    <motion.div
+      className="flex flex-col"
+      {...expandWithDelayAnimation}
+      data-testid="swap-details-savings-container"
+    >
       <div className="h-full">
         <div className="flex items-center justify-between px-4 pt-1">
           <div className="flex items-center gap-1">
@@ -37,14 +40,23 @@ export const SwapSavingsAndAddresses = ({
             </Typography>
           </div>
           <div className="flex gap-5 py-1">
-            <Typography size="h5" weight="regular">
+            <Typography
+              size="h5"
+              weight="regular"
+              data-testid="swap-details-network-fee-value"
+            >
               {networkFeesValue === 0 ? "Free" : "$" + networkFeesValue}
             </Typography>
           </div>
         </div>
         <div className="flex items-center justify-between px-4">
           <div className="flex items-center gap-1">
-            <Typography size="h5" weight="regular" className="!text-mid-grey">
+            <Typography
+              size="h5"
+              weight="regular"
+              className="!text-mid-grey"
+              data-testid="swap-details-min-received-value"
+            >
               Minimum received
             </Typography>
             {/* <span
@@ -73,7 +85,11 @@ export const SwapSavingsAndAddresses = ({
             </span> */}
           </div>
           <div className="flex gap-5 py-1">
-            <Typography size="h5" weight="regular">
+            <Typography
+              size="h5"
+              weight="regular"
+              data-testid="swap-details-min-received-value"
+            >
               {outputAmount} {outputAsset?.symbol}
             </Typography>
           </div>
@@ -105,6 +121,7 @@ export const SwapSavingsAndAddresses = ({
                     e.stopPropagation();
                     showComparison("time");
                   }}
+                  data-testid="swap-details-time-saved-row"
                 >
                   <Typography
                     size="h5"
@@ -118,6 +135,7 @@ export const SwapSavingsAndAddresses = ({
                       size="h5"
                       weight="regular"
                       className="!text-light-green"
+                      data-testid="swap-details-time-saved-value"
                     >
                       {formatTime(maxTimeSaved)}
                     </Typography>
@@ -138,6 +156,7 @@ export const SwapSavingsAndAddresses = ({
                     e.stopPropagation();
                     showComparison("fees");
                   }}
+                  data-testid="swap-details-cost-saved-row"
                 >
                   <Typography
                     size="h5"
@@ -151,6 +170,7 @@ export const SwapSavingsAndAddresses = ({
                       size="h5"
                       weight="regular"
                       className="!text-light-green"
+                      data-testid="swap-details-cost-saved-value"
                     >
                       {`$${formatAmountUsd(maxCostSaved, 0)}`}
                     </Typography>

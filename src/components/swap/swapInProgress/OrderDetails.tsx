@@ -33,20 +33,26 @@ export const OrderDetailsRow: FC<OrderDetailsRowProps> = ({
   const handleClickAddress = () => {
     if (link) window.open(link, "_blank");
   };
+  const rowTestId = `order-details-row-${title.toLowerCase().replace(/\s+/g, "-")}`;
 
   return (
     <div className="flex justify-between">
-      <Typography size="h4" weight="regular">
+      <Typography size="h4" weight="regular" data-testid={`${rowTestId}`}>
         {title}
       </Typography>
       <div className="flex items-center gap-2">
-        <Typography size="h4" weight="regular">
+        <Typography
+          size="h4"
+          weight="regular"
+          data-testid={`${rowTestId}-value`}
+        >
           {link ? getTrimmedAddress(value) : value}
         </Typography>
         {copyString && <CopyToClipboard text={copyString} />}
         {link && (
           <ArrowNorthEastIcon
             className="h-[10px] w-[10px] cursor-pointer"
+            data-testid={`${rowTestId}-external-link`}
             onClick={handleClickAddress}
           />
         )}

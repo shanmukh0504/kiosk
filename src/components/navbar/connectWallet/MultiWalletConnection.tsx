@@ -163,8 +163,11 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   const isAnyEcosystemSelected = Object.values(checked).some((value) => value);
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex w-fit items-center gap-2 rounded-full bg-white px-3 py-1">
+    <div className="flex flex-col gap-5" data-testid="connect-wallet-multi">
+      <div
+        className="flex w-fit items-center gap-2 rounded-full bg-white px-3 py-1"
+        data-testid="connect-wallet-multi-wallet-chip"
+      >
         <img
           src={
             connectors[BlockchainType.bitcoin]?.icon ??
@@ -182,7 +185,10 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
             ""}
         </Typography>
       </div>
-      <div className="flex flex-col gap-1 rounded-2xl bg-white/50 p-4">
+      <div
+        className="flex flex-col gap-1 rounded-2xl bg-white/50 p-4"
+        data-testid="connect-wallet-multi-ecosystem-list"
+      >
         <Typography size="h5" weight="medium" className="px-4">
           Select ecosystems
         </Typography>
@@ -193,6 +199,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
             <div
               key={key}
               className={`flex cursor-pointer items-center gap-4 rounded-xl px-4 py-4 ${isConnected ? "cursor-default opacity-60" : "hover:bg-off-white"}`}
+              data-testid={`connect-wallet-multi-ecosystem-${key}`}
               onClick={() => {
                 if (!isConnected) handleCheck(key as BlockchainType);
               }}
@@ -206,6 +213,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
               <CheckBox
                 checked={checked[key as BlockchainType] || isConnected}
                 className="cursor-pointer"
+                data-testid={`connect-wallet-multi-checkbox-${key}`}
               />
             </div>
           );
@@ -214,6 +222,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
       <Button
         variant={loading || !isAnyEcosystemSelected ? "disabled" : "primary"}
         className="w-full cursor-pointer"
+        data-testid="connect-wallet-multi-connect"
         onClick={handleConnect}
         loading={loading}
         disabled={!isAnyEcosystemSelected}

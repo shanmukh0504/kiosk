@@ -299,19 +299,28 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
 
   return (
     <div className="flex max-h-[600px] flex-col gap-[20px] p-3">
-      <div className="flex items-center justify-between">
-        <Typography size="h4" weight="medium">
+      <div
+        className="flex items-center justify-between"
+        data-testid="connect-wallet-header"
+      >
+        <Typography
+          size="h4"
+          weight="medium"
+          data-testid="connect-wallet-title"
+        >
           Connect a Wallet
         </Typography>
-        <div className="flex gap-4">
+        <div className="flex gap-4" data-testid="connect-wallet-actions">
           {multiWalletConnector && (
             <ArrowLeftIcon
               className="h-[14px] w-6 cursor-pointer"
+              data-testid="connect-wallet-back"
               onClick={handleClose}
             />
           )}
           <CloseIcon
             className="hidden h-[14px] w-6 cursor-pointer sm:visible sm:block"
+            data-testid="connect-wallet-close"
             onClick={close}
           />
         </div>
@@ -333,6 +342,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
               <Chip
                 key={key}
                 className={`cursor-pointer !bg-opacity-50 py-1.5 pl-3 pr-1 capitalize transition-colors ease-cubic-in-out hover:!bg-opacity-100`}
+                data-testid={`connect-wallet-ecosystem-${key}`}
                 onClick={() => {
                   setSelectedEcosystem((prev) =>
                     prev === key ? null : (key as BlockchainType)
@@ -358,7 +368,10 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           handleClose={handleClose}
         />
       ) : (
-        <div className="scrollbar-hide flex flex-col gap-1 overflow-y-auto overscroll-contain rounded-2xl bg-white/50 p-4 transition-all duration-300">
+        <div
+          className="scrollbar-hide flex flex-col gap-1 overflow-y-auto overscroll-contain rounded-2xl bg-white/50 p-4 transition-all duration-300"
+          data-testid="connect-wallet-list"
+        >
           {allAvailableWallets.length > 0 ? (
             <AnimatePresence>
               {allAvailableWallets.map((wallet) => (
@@ -388,7 +401,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
               ))}
             </AnimatePresence>
           ) : (
-            <Typography size="h3">No wallets found</Typography>
+            <Typography size="h3" data-testid="connect-wallet-not-found">
+              No wallets found
+            </Typography>
           )}
         </div>
       )}
