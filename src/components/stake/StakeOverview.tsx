@@ -70,6 +70,7 @@ export const StakeOverview = () => {
       exit="exit"
       className="overflow-hidden"
       style={{ transformOrigin: "top" }}
+      data-testid="stake-overview"
     >
       <div className="mx-auto flex w-[328px] flex-col gap-5 bg-white/25 p-4 backdrop-blur-[20] sm:w-[460px] md:w-[740px]">
         <div className="flex items-start justify-between gap-4 sm:items-center">
