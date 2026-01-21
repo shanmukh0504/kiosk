@@ -112,7 +112,7 @@ const ConnectedWallets = () => {
           <img
             src={ecosystems.sui.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
-            data-testid="navbar-wallet-solana-icon"
+            data-testid="navbar-wallet-sui-icon"
             alt="Sui wallet"
           />
         )}
