@@ -77,7 +77,10 @@ export const StakeOverview = () => {
         data-testid="stake-overview-card"
       >
         <div className="flex items-start justify-between gap-4 sm:items-center">
-          <div className="grid grid-cols-[90px_90px_90px] gap-5 px-2 sm:gap-[66px]">
+          <div
+            className="grid grid-cols-[90px_90px_90px] gap-5 px-2 sm:gap-[66px]"
+            data-testid="stake-overview-stats"
+          >
             <OverviewStats title={"Total SEED"} value={formattedAmount} />
             <AnimatePresence>
               <OverviewStats

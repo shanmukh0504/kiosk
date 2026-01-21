@@ -22,19 +22,32 @@ export const UnitRewardTooltip = ({ seed, cbBtc }: UnitRewardTooltipProps) => {
       exit={{ opacity: 0, scale: 0.8, y: -10 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="relative mx-auto flex"
+      data-testid="unit-reward-tooltip"
     >
       <div className="absolute mb-[15px] ml-24 mt-[-5px] h-[14px] w-[14px] rotate-45 rounded-sm bg-white md:mb-0 md:ml-[-5px] md:mt-[15px]"></div>
-      <div className="flex max-w-[257px] flex-col gap-2 rounded-2xl bg-white px-4 py-3 shadow-custom">
+      <div
+        className="flex max-w-[257px] flex-col gap-2 rounded-2xl bg-white px-4 py-3 shadow-custom"
+        data-testid="unit-reward-tooltip-card"
+      >
         <div className="flex flex-wrap items-center justify-between space-y-1">
           {(cbBtc ?? 0) > 0 && (
-            <div className="flex items-center gap-1">
-              <Typography size="h4" weight="regular" className="w-[87px]">
+            <div
+              className="flex items-center gap-1"
+              data-testid="unit-reward-tooltip-cbbtc"
+            >
+              <Typography
+                size="h4"
+                weight="regular"
+                className="w-[87px]"
+                data-testid="unit-reward-tooltip-cbbtc-amount"
+              >
                 {formatAmount(cbBtc ?? 0, 0, 8).toFixed(8)}
               </Typography>
               <Typography
                 size="h4"
                 weight="regular"
                 className={`relative cursor-pointer before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
+                data-testid="unit-reward-tooltip-cbbtc-link"
                 onClick={(e: React.MouseEvent) => {
                   e.stopPropagation();
                   console.log("clicked");
@@ -57,14 +70,23 @@ export const UnitRewardTooltip = ({ seed, cbBtc }: UnitRewardTooltipProps) => {
             </div>
           )}
           {(seed ?? 0) > 0 && (
-            <div className="flex items-center gap-1">
-              <Typography size="h4" weight="regular" className="w-[87px]">
+            <div
+              className="flex items-center gap-1"
+              data-testid="unit-reward-tooltip-seed"
+            >
+              <Typography
+                size="h4"
+                weight="regular"
+                className="w-[87px]"
+                data-testid="unit-reward-tooltip-seed-amount"
+              >
                 {formatAmount(seed ?? 0, 0, 8)}
               </Typography>
               <Typography
                 size="h4"
                 weight="regular"
                 className={`relative cursor-pointer before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
+                data-testid="unit-reward-tooltip-seed-link"
                 onClick={(e: React.MouseEvent) => {
                   e.stopPropagation();
                   handleRedirect(
