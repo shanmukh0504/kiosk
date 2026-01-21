@@ -8,17 +8,7 @@ import {
   RadioCheckedIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import {
-  BlockchainType,
-  Chain,
-  isBitcoin,
-  isEVM,
-  isSolana,
-  isStarknet,
-  isSui,
-  isTron,
-  isLitecoin,
-} from "@gardenfi/orderbook";
+import { BlockchainType, Chain, is } from "@gardenfi/orderbook";
 import {
   getAvailableWallets,
   getWalletConnectionStatus,
@@ -108,17 +98,14 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
 
   const availableBlockchainTypes: Set<BlockchainType> = useMemo(() => {
     const availableTypes = new Set<BlockchainType>();
-
     if (chains) {
+      const blockchainTypes = Object.keys(ecosystems) as BlockchainType[];
       Object.keys(chains).forEach((chainKey) => {
-        const chain = chainKey as Chain;
-        if (isBitcoin(chain)) availableTypes.add(BlockchainType.bitcoin);
-        if (isEVM(chain)) availableTypes.add(BlockchainType.evm);
-        if (isSolana(chain)) availableTypes.add(BlockchainType.solana);
-        if (isStarknet(chain)) availableTypes.add(BlockchainType.starknet);
-        if (isSui(chain)) availableTypes.add(BlockchainType.sui);
-        if (isTron(chain)) availableTypes.add(BlockchainType.tron);
-        if (isLitecoin(chain)) availableTypes.add(BlockchainType.litecoin);
+        blockchainTypes.forEach((blockchainType) => {
+          if (is(blockchainType)(chainKey as Chain)) {
+            availableTypes.add(blockchainType);
+          }
+        });
       });
     }
 
@@ -165,19 +152,24 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     );
 
     allWallets = allWallets.filter((wallet) => {
-      return (
-        (wallet.isBitcoin &&
-          availableBlockchainTypes.has(BlockchainType.bitcoin)) ||
-        (wallet.isEVM && availableBlockchainTypes.has(BlockchainType.evm)) ||
-        (wallet.isStarknet &&
-          availableBlockchainTypes.has(BlockchainType.starknet)) ||
-        (wallet.isSolana &&
-          availableBlockchainTypes.has(BlockchainType.solana)) ||
-        (wallet.isSui && availableBlockchainTypes.has(BlockchainType.sui)) ||
-        (wallet.isTron && availableBlockchainTypes.has(BlockchainType.tron)) ||
-        (wallet.isLitecoin &&
-          availableBlockchainTypes.has(BlockchainType.litecoin))
-      );
+      return Object.keys(ecosystems).some((blockchainType) => {
+        const type = blockchainType as BlockchainType;
+        if (!availableBlockchainTypes.has(type)) return false;
+
+        //update walletTypeMap as new blockchains are added
+        const walletTypeMap: Record<BlockchainType, boolean> = {
+          [BlockchainType.bitcoin]: wallet.isBitcoin,
+          [BlockchainType.evm]: wallet.isEVM,
+          [BlockchainType.starknet]: !!wallet.isStarknet,
+          [BlockchainType.solana]: !!wallet.isSolana,
+          [BlockchainType.sui]: !!wallet.isSui,
+          [BlockchainType.tron]: !!wallet.isTron,
+          [BlockchainType.litecoin]: !!wallet.isLitecoin,
+          [BlockchainType.alpen_signet]: wallet.isBitcoin,
+        };
+
+        return walletTypeMap[type];
+      });
     });
 
     switch (selectedEcosystem) {
