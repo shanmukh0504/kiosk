@@ -111,7 +111,7 @@ export default defineConfig({
   build: {
     target: "esnext",
     sourcemap: true,
-    minify: "terser",
+    minify: "esbuild",
     reportCompressedSize: false,
     chunkSizeWarningLimit: 2000,
     rollupOptions: {
