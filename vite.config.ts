@@ -106,11 +106,11 @@ export default defineConfig({
     drop: process.env.NODE_ENV === "production" ? ["console", "debugger"] : [],
     minifyIdentifiers: true,
     minifySyntax: true,
-    minifyWhitespace: true,
+    minifyWhitespace: false,
   },
   build: {
     target: "esnext",
-    sourcemap: true,
+    sourcemap: false,
     minify: "esbuild",
     reportCompressedSize: false,
     chunkSizeWarningLimit: 2000,
