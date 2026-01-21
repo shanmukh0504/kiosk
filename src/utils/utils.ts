@@ -370,8 +370,8 @@ export const calculateNotificationWidth = (
   title: string | undefined,
   description: string | undefined
 ): { textWidth: number; containerWidth: number } => {
-  const CHAR_WIDTH = 6;
-  const BUFFER_WIDTH = 128;
+  const CHAR_WIDTH = 7;
+  const BUFFER_WIDTH = 130;
   // Estimate characters per line (accounting for wrapping)
   // For line-clamp-2, the width is determined by the longest line, not total characters
   const CHARS_PER_LINE = 55;
