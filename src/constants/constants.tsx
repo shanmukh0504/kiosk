@@ -7,11 +7,17 @@ import {
   isSolana,
   isStarknet,
   isSui,
+  isTron,
 } from "@gardenfi/orderbook";
 import { BitcoinNetwork } from "@gardenfi/react-hooks";
 import { Network } from "@gardenfi/utils";
 import { citreaTestnet } from "viem/chains";
 import { botanix, monadMainnet } from "../layout/wagmi/config";
+
+export enum AddressType {
+  RECEIVE = "receive",
+  REFUND = "refund",
+}
 
 export const network: Network = import.meta.env.VITE_NETWORK;
 export const environment: Environment = import.meta.env.VITE_ENVIRONMENT;
@@ -30,7 +36,7 @@ export const INTERNAL_ROUTES: Record<
   stake: {
     name: "Stake",
     path: ["/stake"],
-    enabled: network !== Network.TESTNET,
+    enabled: true,
     isExternal: false,
   },
   faucet: {
@@ -99,7 +105,8 @@ export const getTimeEstimates = (inputAsset: Asset) => {
     isEVM(inputAsset.chain) ||
     isSolana(inputAsset.chain) ||
     isStarknet(inputAsset.chain) ||
-    isSui(inputAsset.chain)
+    isSui(inputAsset.chain) ||
+    isTron(inputAsset.chain)
   ) {
     return "~30s";
   }
@@ -149,6 +156,7 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "unichain",
   "corn",
   "alpen_testnet",
+  "alpen_signet",
   "solana",
   "botanix",
   "bnbchain",
@@ -156,10 +164,12 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "sui",
   "sui_testnet",
   "core",
+  "tron_shasta",
+  "tron",
 ] as const;
 
 export const MULTICALL_CONTRACT_ADDRESSES: Record<number, string> = {
-  [alpenTestnet.id]: "0x9307a5F4627e7b6392e0d0DA83875bdBfbBD41ed",
+  [alpenTestnet.id]: "0x6c8f9d333964328F7AE2f0ea35389730D88f3d29",
   [hyperliquid.id]: "0xcA11bde05977b3631167028862bE2a173976CA11",
   [citreaTestnet.id]: "0x8470Ee1FCD47e7F9B90486bB5D142430e5C1f409",
   [botanix.id]: "0xeaE7721d779276eb0f5837e2fE260118724a2Ba4",
@@ -227,3 +237,53 @@ export const SUI_SOLVER_ADDRESS =
 
 export const SUI_DEFAULT_NETWORK_FEE = 0.03;
 export const BITCOIN_DEFAULT_NETWORK_FEE = 0.49;
+
+export const TronConfig = {
+  [Network.MAINNET]: {
+    nodeUrl: "https://api.trongrid.io",
+    hostUrl: "https://api.trongrid.io",
+    chainId: "0x2b6653dc",
+  },
+  [Network.TESTNET]: {
+    nodeUrl: "https://api.shasta.trongrid.io",
+    hostUrl: "https://api.shasta.trongrid.io",
+    chainId: "0x94a9059e",
+  },
+  [Network.LOCALNET]: {
+    nodeUrl: "",
+    hostUrl: "",
+    chainId: "",
+  },
+};
+
+export type StarknetChain = "starknet" | "starknet_sepolia" | "starknet_devnet";
+
+export const STARKNET_CONFIG: Record<
+  StarknetChain,
+  {
+    chainId: string;
+    nodeUrl: string[];
+  }
+> = {
+  starknet: {
+    chainId: "0x534e5f4d41494e",
+    nodeUrl: [
+      "https://starknet.api.onfinality.io/public",
+      "https://starknet.drpc.org",
+      "https://1rpc.io/starknet",
+      "https://rpc.starknet.lava.build",
+    ],
+  },
+  starknet_sepolia: {
+    chainId: "0x534e5f5345504f4c4941",
+    nodeUrl: [
+      "https://starknet-sepolia-rpc.publicnode.com",
+      "https://starknet-sepolia.drpc.org",
+      "https://starknet.api.onfinality.io/public/sepolia",
+    ],
+  },
+  starknet_devnet: {
+    chainId: "",
+    nodeUrl: [""],
+  },
+};

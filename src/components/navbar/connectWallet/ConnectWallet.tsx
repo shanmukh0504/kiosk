@@ -8,25 +8,33 @@ import {
   RadioCheckedIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { getAvailableWallets, Wallet } from "./getSupportedWallets";
+import { BlockchainType } from "@gardenfi/orderbook";
+import {
+  getAvailableWallets,
+  getWalletConnectionStatus,
+  Wallet,
+} from "./getSupportedWallets";
 import {
   IInjectedBitcoinProvider,
   useBitcoinWallet,
+  useLitecoinWallet,
 } from "@gardenfi/wallet-connectors";
 import { WalletRow } from "./WalletRow";
 import { MultiWalletConnection } from "./MultiWalletConnection";
 import { handleEVMConnect, handleStarknetConnect } from "./handleConnect";
 import { modalStore } from "../../../store/modalStore";
-import { ecosystems, evmToBTCid } from "./constants";
+import { ecosystems } from "./constants";
 import { AnimatePresence } from "framer-motion";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { ConnectingWalletStore } from "../../../store/connectWalletStore";
 import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
 import { Wallet as SolanaWallet } from "@solana/wallet-adapter-react";
 import { WalletWithRequiredFeatures as SuiWallet } from "@mysten/wallet-standard";
+import { Wallet as TronWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
 import { Connector as StarknetConnector } from "@starknet-react/core";
 import { useSuiWallet } from "../../../hooks/useSuiWallet";
-import { BlockchainType } from "@gardenfi/orderbook";
+import { useTronWallet } from "../../../hooks/useTronWallet";
+
 import logger from "../../../utils/logger";
 
 type ConnectWalletProps = {
@@ -40,6 +48,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     [BlockchainType.starknet]?: StarknetConnector | undefined;
     [BlockchainType.solana]?: SolanaWallet | undefined;
     [BlockchainType.sui]?: SuiWallet | undefined;
+    [BlockchainType.tron]?: TronWallet | undefined;
   }>();
   const [selectedEcosystem, setSelectedEcosystem] =
     useState<BlockchainType | null>(null);
@@ -54,6 +63,11 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     starknetSwitchChain,
   } = useStarknetWallet();
   const { availableWallets, connect, provider } = useBitcoinWallet();
+  const {
+    availableWallets: availableLitecoinWallets,
+    connect: connectLitecoin,
+    provider: litecoinProvider,
+  } = useLitecoinWallet();
   const { connectingWallet, setConnectingWallet } = ConnectingWalletStore();
   const {
     solanaWallets,
@@ -64,12 +78,20 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   } = useSolanaWallet();
   const { suiConnected, suiSelectedWallet, suiWallets, handleSuiConnect } =
     useSuiWallet();
+  const {
+    wallets: tronWallets,
+    handleTronConnect,
+    tronConnected,
+    wallet: tronSelectedWallet,
+  } = useTronWallet();
   const { modalData } = modalStore();
   const showOnlyBTCWallets = !!modalData.connectWallet?.bitcoin;
   const showOnlyStarknetWallets = !!modalData.connectWallet?.starknet;
   const showOnlyEVMWallets = !!modalData.connectWallet?.evm;
   const showOnlySolanaWallets = !!modalData.connectWallet?.solana;
   const showOnlySuiWallets = !!modalData.connectWallet?.sui;
+  const showOnlyTronWallets = !!modalData.connectWallet?.tron;
+  const showOnlyLitecoinWallets = !!modalData.connectWallet?.litecoin;
 
   useEffect(() => {
     const selected = showOnlyStarknetWallets
@@ -82,7 +104,11 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
             ? BlockchainType.solana
             : showOnlySuiWallets
               ? BlockchainType.sui
-              : null;
+              : showOnlyTronWallets
+                ? BlockchainType.tron
+                : showOnlyLitecoinWallets
+                  ? BlockchainType.litecoin
+                  : null;
 
     if (selected) setSelectedEcosystem(selected);
   }, [
@@ -91,15 +117,19 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     showOnlyBTCWallets,
     showOnlySolanaWallets,
     showOnlySuiWallets,
+    showOnlyTronWallets,
+    showOnlyLitecoinWallets,
   ]);
 
   const allAvailableWallets = useMemo(() => {
     let allWallets = getAvailableWallets(
       availableWallets,
+      availableLitecoinWallets,
       connectors,
       starknetConnectors,
       solanaWallets,
-      suiWallets
+      suiWallets,
+      tronWallets
     );
 
     switch (selectedEcosystem) {
@@ -118,6 +148,12 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       case BlockchainType.sui:
         allWallets = allWallets.filter((wallet) => wallet.isSui);
         break;
+      case BlockchainType.tron:
+        allWallets = allWallets.filter((wallet) => wallet.isTron);
+        break;
+      case BlockchainType.litecoin:
+        allWallets = allWallets.filter((wallet) => wallet.isLitecoin);
+        break;
     }
 
     if (
@@ -135,6 +171,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     solanaWallets,
     selectedEcosystem,
     suiWallets,
+    tronWallets,
+    availableLitecoinWallets,
   ]);
 
   const handleClose = useCallback(() => {
@@ -167,6 +205,11 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         connector.isSui && connector.isSolana,
         connector.isSui && connector.isStarknet,
         connector.isSui && connector.isBitcoin,
+        connector.isTron && connector.isEVM,
+        connector.isTron && connector.isSolana,
+        connector.isTron && connector.isStarknet,
+        connector.isTron && connector.isSui,
+        connector.isTron && connector.isBitcoin,
       ].some(Boolean);
 
       if (isMultiChain) {
@@ -177,6 +220,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           connector.wallet?.starknetWallet,
           connector.wallet?.solanaWallet,
           connector.wallet?.suiWallet,
+          connector.wallet?.tronWallet,
         ].filter(Boolean);
 
         if (walletTypes.length < 2) return;
@@ -187,6 +231,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           [BlockchainType.starknet]: connector.wallet.starknetWallet,
           [BlockchainType.solana]: connector.wallet.solanaWallet,
           [BlockchainType.sui]: connector.wallet.suiWallet,
+          [BlockchainType.tron]: connector.wallet.tronWallet,
         });
         return;
       }
@@ -198,6 +243,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           evm: connector.wallet.evmWallet,
           solana: connector.wallet.solanaWallet,
           sui: connector.wallet.suiWallet,
+          tron: connector.wallet.tronWallet,
         });
         return;
       }
@@ -205,6 +251,12 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       if (connector.isBitcoin) {
         if (!connector.wallet?.btcWallet) return;
         const res = await connect(connector.wallet.btcWallet);
+        if (res.error) {
+          logger.error("error connecting wallet", res.error);
+        }
+      } else if (connector.isLitecoin) {
+        if (!connector.wallet?.litecoinWallet) return;
+        const res = await connectLitecoin(connector.wallet.litecoinWallet);
         if (res.error) {
           logger.error("error connecting wallet", res.error);
         }
@@ -231,6 +283,10 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       } else if (connector.isSui) {
         if (!connector.wallet?.suiWallet) return;
         await handleSuiConnect(connector.wallet.suiWallet);
+        setConnectingWallet(null);
+      } else if (connector.isTron) {
+        if (!connector.wallet?.tronWallet) return;
+        await handleTronConnect(connector.wallet.tronWallet);
         setConnectingWallet(null);
       }
     } catch (error) {
@@ -268,7 +324,10 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
               ([key]) =>
                 key === BlockchainType.evm ||
                 key === BlockchainType.bitcoin ||
-                key === BlockchainType.starknet
+                key === BlockchainType.starknet ||
+                key === BlockchainType.tron ||
+                key === BlockchainType.solana ||
+                key === BlockchainType.litecoin
             )
             .map(([key, ecosystem]) => (
               <Chip
@@ -311,54 +370,19 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                     await handleConnect(wallet);
                   }}
                   isConnecting={connectingWallet === wallet.id.toLowerCase()}
-                  isConnected={{
-                    [BlockchainType.bitcoin]: !!(
-                      provider &&
-                      (provider.id === wallet.id ||
-                        provider.id === evmToBTCid[wallet.id])
-                    ),
-                    [BlockchainType.evm]: (() =>
-                      !!(
-                        connector &&
-                        wallet.isEVM &&
-                        (connector.id === wallet.id ||
-                          (wallet.id === "app.backpack" &&
-                            connector.id === "backpack"))
-                      ))(),
-                    [BlockchainType.starknet]: !!(
-                      starknetConnector &&
-                      wallet.isStarknet &&
-                      starknetConnector.id === wallet.id &&
-                      starknetStatus === "connected"
-                    ),
-                    [BlockchainType.solana]: !!(
-                      wallet.isSolana &&
-                      solanaConnected &&
-                      ((wallet.id === "app.phantom" &&
-                        solanaSelectedWallet?.adapter.name === "Phantom") ||
-                        (wallet.id === "app.backpack" &&
-                          solanaSelectedWallet?.adapter.name === "Backpack") ||
-                        (wallet.id !== "app.phantom" &&
-                          wallet.id !== "app.backpack" &&
-                          solanaSelectedWallet?.adapter.name.toLowerCase() ===
-                            wallet.id.toLowerCase()))
-                    ),
-                    [BlockchainType.sui]: !!(
-                      wallet.isSui &&
-                      suiConnected &&
-                      ((wallet.id === "app.phantom" &&
-                        suiSelectedWallet?.name === "Phantom") ||
-                        (wallet.name === "Slush Wallet" &&
-                          suiSelectedWallet?.id ===
-                            "com.mystenlabs.suiwallet") ||
-                        (wallet.name === "Backpack" &&
-                          suiSelectedWallet?.name === "Backpack") ||
-                        (wallet.name === "OKX Wallet" &&
-                          suiSelectedWallet?.name === "OKX Wallet") ||
-                        (wallet.name === "Tokeo" &&
-                          suiSelectedWallet?.name === "Tokeo"))
-                    ),
-                  }}
+                  isConnected={getWalletConnectionStatus(wallet, {
+                    btcProvider: provider,
+                    litecoinProvider: litecoinProvider,
+                    evmConnector: connector,
+                    starknetConnector,
+                    starknetStatus,
+                    solanaConnected,
+                    solanaSelectedWallet,
+                    suiConnected,
+                    suiSelectedWallet,
+                    tronConnected,
+                    tronSelectedWallet,
+                  })}
                   isAvailable={wallet.isAvailable}
                 />
               ))}

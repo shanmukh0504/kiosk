@@ -9,8 +9,11 @@ import {
   Asset,
   Chain,
   ChainAsset,
+  isBitcoin,
   OrderWithStatus,
   Swap,
+  isLitecoin,
+  isAlpenSignet,
 } from "@gardenfi/orderbook";
 import { Assets } from "../store/assetInfoStore";
 
@@ -40,6 +43,19 @@ export const formatChainDisplayName = (chainName: string): string => {
   }
 
   return chainName;
+};
+
+export const formatChainNameForDisplay = (
+  chain: string | undefined
+): string => {
+  if (!chain) return "Bitcoin";
+
+  const withSpaces = chain.replace(/_/g, " ");
+
+  const formatted =
+    withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1).toLowerCase();
+
+  return formatted;
 };
 
 /**
@@ -83,11 +99,15 @@ export const getDayDifference = (date: string) => {
   return "Just now";
 };
 
+// Intentionally returns a string here to avoid browsers showing tiny balances in scientific notation.
 export const formatBigNumber = (
-  amount: string | number | bigint,
+  amount: BigNumber,
   decimals: number,
   toFixed?: number
 ) => {
+  const bigAmount = new BigNumber(amount).abs();
+  if (bigAmount.isZero()) return 0;
+
   const value = new BigNumber(amount).dividedBy(10 ** decimals);
   const precision = toFixed ? toFixed : Number(value) > 10000 ? 2 : 4;
   let temp = value.toFixed(precision, BigNumber.ROUND_DOWN);
@@ -111,7 +131,7 @@ export const formatAmount = (
 ) => {
   const bigAmount = new BigNumber(amount);
   if (bigAmount.isZero()) return 0;
-  return Number(formatBigNumber(amount, decimals, toFixed));
+  return Number(formatBigNumber(bigAmount, decimals, toFixed));
 };
 
 export const formatBalance = (
@@ -121,7 +141,15 @@ export const formatBalance = (
 ) => {
   const bigAmount = new BigNumber(amount);
   if (bigAmount.isZero()) return "0";
-  return formatBigNumber(amount, decimals, toFixed);
+  const balance = formatBigNumber(bigAmount, decimals, toFixed);
+
+  // Preserve very small values as strings (not scientific notation) when they are <1
+  // and effectively just a run of leading zeros after the decimal.
+  return Number(balance) < 1 && /\.0{8,}/.test(balance.toString())
+    ? Number(balance)
+    : /\.0{6,}/.test(balance.toString())
+      ? balance
+      : Number(balance);
 };
 
 export const isCurrentRoute = (route: string) => {
@@ -207,36 +235,36 @@ export const getProtocolFee = (fees: number) => {
   return protocolFee;
 };
 
-export function parseAssetNameSymbol(
-  input: string | undefined,
-  assetId?: string | ChainAsset,
-  fallbackSymbol?: string
-): { name: string; symbol: string } {
-  const raw = (input ?? "").trim();
-  if (!raw) return { name: "", symbol: fallbackSymbol?.trim() || "" };
+export const getDaysUntilNextEpoch = (
+  epochData: { epoch: string }[] | null
+) => {
+  const now = new Date();
+  const currentDay = now.getUTCDay();
+  const currentHour = now.getUTCHours();
+  const currentMinutes = now.getUTCMinutes();
 
-  const parts = raw.split(":");
-  if (parts.length >= 2) {
-    const name = parts[0]?.trim() || "";
-    const symbol =
-      parts.slice(1).join(":").trim() || fallbackSymbol?.trim() || "";
-    return { name, symbol };
-  }
+  if (epochData && epochData.length > 0) {
+    const lastEpoch = new Date(epochData[0].epoch);
+    const nextEpoch = new Date(lastEpoch);
+    nextEpoch.setDate(nextEpoch.getDate() + 7);
 
-  let derivedSymbol = "";
+    const diffTime = nextEpoch.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-  if (assetId) {
-    try {
-      const chainAsset =
-        typeof assetId === "string" ? ChainAsset.from(assetId) : assetId;
-      derivedSymbol = chainAsset.symbol.toUpperCase();
-    } catch {
-      /* empty */
+    if (currentDay === 0 && currentHour === 0 && currentMinutes === 0) {
+      return 7;
     }
+
+    if (diffDays < 0 || currentDay === 0) {
+      return 7;
+    }
+
+    return diffDays;
   }
 
-  return { name: raw, symbol: derivedSymbol || fallbackSymbol?.trim() || "" };
-}
+  const daysUntilNextSunday = (7 - currentDay) % 7;
+  return daysUntilNextSunday;
+};
 
 export function sortPendingOrders(orders: OrderWithStatus[]) {
   return orders.sort((a, b) => {
@@ -297,4 +325,85 @@ To learn more about Garden, refer to our documentation: https://docs.garden.fina
       "color: #eb8daf; font-weight: bold; font-size: 12px;"
     );
   }
+};
+
+export const isBitcoinSwap = (inputAsset?: Asset, outputAsset?: Asset) => {
+  return !!(
+    inputAsset &&
+    outputAsset &&
+    (isBitcoin(inputAsset.chain) || isBitcoin(outputAsset.chain))
+  );
+};
+
+export const decideAddressVisibility = (
+  inputAsset?: Asset,
+  outputAsset?: Asset,
+  address?: { source: string | undefined; destination: string | undefined },
+  isEditAddress?: { source: boolean; destination: boolean }
+) => {
+  // Only show address input for Bitcoin-type assets (Bitcoin or Alpen Signet)
+  // For other chains (Starknet, Solana, etc.), addresses come from wallet connection
+  const isSourceBitcoinType =
+    inputAsset &&
+    (isBitcoin(inputAsset.chain) ||
+      isAlpenSignet(inputAsset.chain) ||
+      isLitecoin(inputAsset.chain));
+
+  const isDestinationBitcoinType =
+    outputAsset &&
+    (isBitcoin(outputAsset.chain) ||
+      isAlpenSignet(outputAsset.chain) ||
+      isLitecoin(outputAsset.chain));
+
+  const isSourceNeeded =
+    inputAsset &&
+    outputAsset &&
+    isSourceBitcoinType &&
+    (isAlpenSignet(inputAsset.chain) ||
+      isEditAddress?.source ||
+      !address?.source);
+
+  const isDestinationNeeded =
+    inputAsset &&
+    outputAsset &&
+    isDestinationBitcoinType &&
+    (isAlpenSignet(outputAsset.chain) ||
+      isEditAddress?.destination ||
+      !address?.destination);
+
+  return { isSourceNeeded, isDestinationNeeded };
+};
+
+export const isStableCoinOrSeed = (asset: Asset) => {
+  return (
+    asset.symbol.toLowerCase().includes("usd") ||
+    asset.symbol.toLowerCase().includes("seed")
+  );
+};
+
+export const calculateNotificationWidth = (
+  title: string | undefined,
+  description: string | undefined
+): { textWidth: number; containerWidth: number } => {
+  const CHAR_WIDTH = 7;
+  const BUFFER_WIDTH = 130;
+  // Estimate characters per line (accounting for wrapping)
+  // For line-clamp-2, the width is determined by the longest line, not total characters
+  const CHARS_PER_LINE = 55;
+
+  const titleWidth = title ? title.length * CHAR_WIDTH : 0;
+
+  // Description can wrap to 2 lines max (line-clamp-2)
+  // If description is short, use its full length. If long, assume it wraps
+  // and the width is determined by one line's worth of characters
+  const descriptionLength = description ? description.length : 0;
+  // For wrapped text, width = longest line, so cap at CHARS_PER_LINE
+  const descriptionCharsForWidth = Math.min(descriptionLength, CHARS_PER_LINE);
+  const descriptionWidth = descriptionCharsForWidth * CHAR_WIDTH;
+
+  const maxContentWidth = Math.max(titleWidth, descriptionWidth);
+  return {
+    textWidth: Math.min(maxContentWidth, 300),
+    containerWidth: Math.min(maxContentWidth + BUFFER_WIDTH, 460),
+  };
 };

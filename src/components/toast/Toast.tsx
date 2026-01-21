@@ -1,51 +1,105 @@
 import {
   ArrowNorthEastIcon,
+  Button,
   CheckIcon,
   CloseIcon,
+  GardenIconOutline,
+  InfoIcon,
   Typography,
 } from "@gardenfi/garden-book";
 import { FC, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useToastStore } from "../../store/toastStore";
 
-export const ToastContainer: FC = () => {
-  const { isVisible, content, link, type, hideToast } = useToastStore();
+type ToastContainerProps = {
+  className?: string;
+};
+
+export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
+  const { isVisible, content, link, type, hideToast, staticToasts } =
+    useToastStore();
 
   useEffect(() => {
-    if (isVisible) {
+    if (isVisible && (type === "success" || type === "error")) {
       const timer = setTimeout(hideToast, 10000);
-      return () => clearTimeout(timer); // Clear timeout if component unmounts
+      return () => clearTimeout(timer);
     }
-  }, [isVisible, hideToast]);
+  }, [isVisible, type, hideToast]);
+
+  const renderStaticToast = () => {
+    const toast = staticToasts.needSeed;
+    if (!toast.content || !toast.isVisible) return null;
+
+    return (
+      <div
+        key="needSeed"
+        className={`shine relative flex items-center justify-between overflow-hidden rounded-2xl bg-white/25 px-4 py-2 backdrop-blur-[20px]`}
+      >
+        <div className="flex items-center gap-2">
+          <div className="flex h-5 w-5 items-center justify-center">
+            <GardenIconOutline className="fill-dark-grey" />
+          </div>
+          <Typography
+            size="h4"
+            breakpoints={{
+              md: "h3",
+            }}
+            weight="regular"
+          >
+            {toast.content}
+          </Typography>
+        </div>
+        {toast.link && (
+          <Button
+            size="sm"
+            className="!h-fit !min-w-fit !rounded-full !bg-white/50 !px-3 !py-0.5 !text-sm !font-normal !text-dark-grey"
+            onClick={() => window.open(toast.link, "_blank")}
+          >
+            Buy SEED
+          </Button>
+        )}
+      </div>
+    );
+  };
 
   return (
-    <div className="min-h-10 sm:-translate-y-[48px]">
-      {isVisible && (
+    <div className={`min-h-10 sm:-translate-y-[58px] ${className}`}>
+      {isVisible ? (
         <div
-          className={`shine relative flex items-center justify-between overflow-hidden rounded-2xl bg-white/25 px-4 py-2 backdrop-blur-[20px]`}
+          className={`${type === "success" ? "shine" : ""} relative flex translate-y-3 items-center justify-between overflow-hidden rounded-2xl bg-white/25 px-4 py-2.5 backdrop-blur-[20px]`}
         >
           <div className="flex items-center gap-2">
             <div className="flex h-5 w-5 items-center justify-center">
               {type === "success" ? (
                 <CheckIcon />
               ) : (
-                <span>
-                  <CloseIcon />
-                </span>
+                <InfoIcon className="h-4 w-4 rotate-180" />
               )}
             </div>
-            <Typography size="h3" weight="medium">
+            <Typography size="h4" weight="regular">
               {content}
             </Typography>
           </div>
-          {link && (
-            <Link to={link} target="_blank">
-              <div className="flex h-5 w-5 items-center justify-center">
-                <ArrowNorthEastIcon />
-              </div>
-            </Link>
-          )}
+          <div className="flex items-center gap-2">
+            {link ? (
+              <Link to={link} target="_blank">
+                <div className="flex h-5 w-5 items-center justify-center">
+                  <ArrowNorthEastIcon />
+                </div>
+              </Link>
+            ) : (
+              <button
+                onClick={hideToast}
+                className="flex h-4 w-4 cursor-pointer items-center justify-center transition-opacity hover:opacity-70"
+                aria-label="Close toast"
+              >
+                <CloseIcon />
+              </button>
+            )}
+          </div>
         </div>
+      ) : (
+        <>{renderStaticToast()}</>
       )}
     </div>
   );
@@ -59,5 +113,9 @@ export const Toast = {
   error: (content: string, link?: string) => {
     const showToast = useToastStore.getState().showToast;
     showToast("error", content, link);
+  },
+  needSeed: (content: string, link?: string) => {
+    const showStaticToast = useToastStore.getState().showStaticToast;
+    showStaticToast(content, link);
   },
 };

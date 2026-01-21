@@ -7,13 +7,10 @@ import {
 } from "@gardenfi/garden-book";
 import { BTC, swapStore } from "../../store/swapStore";
 
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { useEVMWallet } from "../../hooks/useEVMWallet";
-import { Asset, isBitcoin, isSolana } from "@gardenfi/orderbook";
+import { Asset, isAlpenSignet, isBitcoin } from "@gardenfi/orderbook";
 import { motion, AnimatePresence } from "framer-motion";
 import { delayedFadeAnimation } from "../../animations/animations";
 import { SwapSavingsAndAddresses } from "./SwapSavingsAndAddresses";
-import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { TooltipWrapper } from "../../common/ToolTipWrapper";
 import { formatAmount, formatAmountUsd } from "../../utils/utils";
 import { assetInfoStore } from "../../store/assetInfoStore";
@@ -36,10 +33,9 @@ export const FeesAndRateDetails = () => {
     networkFees,
     showComparisonHandler,
     isFetchingQuote,
+    sourceAddress: walletSource,
+    destinationAddress: walletDestination,
   } = swapStore();
-  const { account: btcAddress } = useBitcoinWallet();
-  const { solanaAddress } = useSolanaWallet();
-  const { address } = useEVMWallet();
   const { assets, fiatData } = assetInfoStore();
 
   const isBitcoinChains = outputAsset?.symbol.includes(BTC.symbol);
@@ -63,28 +59,16 @@ export const FeesAndRateDetails = () => {
     }
     return formatAmountUsd(price, 0);
   }, [inputAsset, assets, fiatData]);
+
+  // Only show wallet addresses in bottom section (source of truth)
   const refundAddress = useMemo(
-    () =>
-      inputAsset
-        ? isBitcoin(inputAsset.chain)
-          ? btcAddress
-          : isSolana(inputAsset.chain)
-            ? solanaAddress
-            : address
-        : undefined,
-    [inputAsset, btcAddress, solanaAddress, address]
+    () => (inputAsset ? walletSource : undefined),
+    [inputAsset, walletSource]
   );
 
   const receiveAddress = useMemo(
-    () =>
-      outputAsset
-        ? isBitcoin(outputAsset.chain)
-          ? btcAddress
-          : isSolana(outputAsset.chain)
-            ? solanaAddress
-            : address
-        : undefined,
-    [outputAsset, btcAddress, solanaAddress, address]
+    () => (outputAsset ? walletDestination : undefined),
+    [outputAsset, walletDestination]
   );
 
   useEffect(() => {
@@ -216,8 +200,16 @@ export const FeesAndRateDetails = () => {
       <AnimatePresence>
         {isDetailsExpanded && (
           <SwapSavingsAndAddresses
-            refundAddress={refundAddress}
-            receiveAddress={receiveAddress}
+            refundAddress={
+              inputAsset?.chain && isAlpenSignet(inputAsset.chain)
+                ? undefined
+                : refundAddress
+            }
+            receiveAddress={
+              outputAsset?.chain && isAlpenSignet(outputAsset.chain)
+                ? undefined
+                : receiveAddress
+            }
             showComparison={showComparisonHandler}
             networkFeesValue={Number(formatAmountUsd(networkFees, 0))}
           />

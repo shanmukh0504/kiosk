@@ -1,10 +1,41 @@
 # Changelog
 
+## [2.0.4]
+
+### Added
+
+- Add litecoin testnet support.
+- Add address filler to accept bitcoin like chain addresses without wallet connection
+- Migrated balance fetching to SSE-based real-time streaming service for automatic balance updates.
+- Unified balance fetching implementation across all supported chains.
+
+### Fixed
+
+- Bump Starknet package versions
+- Update Starknet contract calls
+- Added retries for broadcasting tron transactions.
+- Added tronAddress in useAddressFilters.
+
 ## [2.0.3]
+
+### Added
+
+- Added Starknet and Solana support to OKX, and added Solana support to MetaMask.
+- Reverted Solana in Kiosk.
+- Added support for Tron Mainnet
+- Add Tron Mainnet support to OKX Wallet
 
 ### Fixed
 
 - enable starknet for wallet connection.
+- Update Packages to support BNB, Botanix to Starknet routes.
+- Balance display logic in AssetSelector and fix formatBigNumber function for precision.
+- Fix Alpen Signet Bitcoin Address show.
+- Update Alpen testnet multicall address
+- Update max spendable sbtc in alpen testnet
+- Update okx wallet connector from injected connector to legacyInjected in starknet config.
+- Update starknet config
+- Update Starknet balance fetching with multiple rpc nodes
 
 ## [2.0.2]
 
@@ -47,7 +78,9 @@
 - Redirect link to mempool transaction hash when deposit is not confirmed.
 - Added starknet support for Xverse wallet.
 - Implemented Swap bridge functionality.
+- New Stake page with GardenPass and refreshed UI.
 - Added Alpen Testnet support.
+- Added Tron Chain Support.
 - Add solver_id in Create Order Request.
 
 ### Fixed

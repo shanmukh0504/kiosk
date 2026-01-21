@@ -1,13 +1,16 @@
 import {
-  AvailableWallets,
+  AvailableBTCWallets,
+  AvailableLTCWallets,
   IInjectedBitcoinProvider,
+  IInjectedLitecoinProvider,
 } from "@gardenfi/wallet-connectors";
 import { Connector } from "wagmi";
 import { GetConnectorsReturnType } from "wagmi/actions";
-import { evmToBTCid, GardenSupportedWallets } from "./constants";
+import { GardenSupportedWallets } from "./constants";
 import { Connector as StarknetConnector } from "@starknet-react/core";
 import { Wallet as SolanaWallet } from "@solana/wallet-adapter-react";
 import { WalletWithRequiredFeatures as SuiWallet } from "@mysten/wallet-standard";
+import { Wallet as TronWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
 import { BlockchainType } from "@gardenfi/orderbook";
 
 export type Wallet = {
@@ -20,6 +23,8 @@ export type Wallet = {
     starknetWallet?: StarknetConnector;
     solanaWallet?: SolanaWallet;
     suiWallet?: SuiWallet;
+    tronWallet?: TronWallet;
+    litecoinWallet?: IInjectedLitecoinProvider;
   };
   isAvailable: boolean;
   installLink?: string;
@@ -28,320 +33,271 @@ export type Wallet = {
   isStarknet?: boolean;
   isSolana?: boolean;
   isSui?: boolean;
+  isTron?: boolean;
+  isLitecoin?: boolean;
 };
 
-type WalletInputs = {
-  bitcoinWallets?: AvailableWallets;
-  evmWallets?: GetConnectorsReturnType;
-  starknetWallets?: StarknetConnector[];
-  solanaWallets?: SolanaWallet[];
-  suiWallets?: SuiWallet[];
-};
-const blockchainConfigs = {
-  [BlockchainType.evm]: {
-    supportKey: "isEVMSupported" as const,
-    walletKey: "evmWallet" as const,
-    flagKey: "isEVM" as const,
-    inputKey: "evmWallets" as const,
-    finder: (wallets: GetConnectorsReturnType, key: string) =>
-      wallets?.find((w) => w.id === key),
-    availabilityChecker: (wallet: any, key: string) => {
-      const manualCheck = manualEVMChecks[key];
-      if (manualCheck) {
-        return manualCheck.check();
-      }
-      return !!wallet;
-    },
-  },
-  [BlockchainType.bitcoin]: {
-    supportKey: "isBitcoinSupported" as const,
-    walletKey: "btcWallet" as const,
-    flagKey: "isBitcoin" as const,
-    inputKey: "bitcoinWallets" as const,
-    finder: (wallets: AvailableWallets, key: string) =>
-      wallets?.[key] ?? wallets?.[evmToBTCid[key]],
-    availabilityChecker: (wallet: any) => !!wallet,
-  },
-  [BlockchainType.starknet]: {
-    supportKey: "isStarknetSupported" as const,
-    walletKey: "starknetWallet" as const,
-    flagKey: "isStarknet" as const,
-    inputKey: "starknetWallets" as const,
-    finder: (wallets: StarknetConnector[], key: string) =>
-      wallets?.find((w) => w.id === key),
-    availabilityChecker: (wallet: any, key: string) => {
-      if (typeof window === "undefined") return false;
-      const checks = {
-        argentX: () => window.starknet_argentX,
-        braavos: () => window.starknet_braavos,
-        keplr: () => window.starknet_keplr,
-        xverse: () => window.starknet_xverse,
-      } as Record<string, () => unknown>;
-      const manualCheck = checks[key];
-      if (manualCheck) {
-        return !!manualCheck();
-      }
-      return !!wallet;
-    },
-  },
-  [BlockchainType.solana]: {
-    supportKey: "isSolanaSupported" as const,
-    walletKey: "solanaWallet" as const,
-    flagKey: "isSolana" as const,
-    inputKey: "solanaWallets" as const,
-    finder: (wallets: SolanaWallet[], key: string) => {
-      const normalizedKey =
-        key === "app.phantom"
-          ? "phantom"
-          : key === "app.backpack"
-            ? "backpack"
-            : key;
-      return wallets?.find(
-        (w) => w.adapter.name.toLowerCase() === normalizedKey.toLowerCase()
-      );
-    },
-    availabilityChecker: (wallet: any, key: string) => {
-      if (typeof window === "undefined") return false;
-      const checks = {
-        "app.phantom": () => window.phantom,
-        solflare: () => window.solflare,
-        "app.backpack": () => window.backpack,
-      } as Record<string, () => unknown>;
-      const manualCheck = checks[key];
-      if (manualCheck) {
-        return !!manualCheck();
-      }
-      return !!wallet;
-    },
-  },
-  [BlockchainType.sui]: {
-    supportKey: "isSuiSupported" as const,
-    walletKey: "suiWallet" as const,
-    flagKey: "isSui" as const,
-    inputKey: "suiWallets" as const,
-    finder: (wallets: SuiWallet[], key: string) => {
-      const walletNameMap = {
-        slush: "com.mystenlabs.suiwallet",
-        "app.phantom": "Phantom",
-        "com.okex.wallet": "OKX Wallet",
-        "app.backpack": "Backpack",
-      } as Record<string, string>;
-
-      if (key === "app.phantom") {
-        return wallets?.find((w) => w.name === "Phantom");
-      } else if (key === "com.okex.wallet") {
-        return wallets?.find((w) => w.name === "OKX Wallet");
-      } else if (key === "app.backpack") {
-        return wallets?.find((w) => w.name === "Backpack");
-      } else if (key === "tokeo") {
-        return wallets?.find((w) => w.name === "Tokeo");
-      } else {
-        const walletId = walletNameMap[key] || key;
-        return wallets?.find((w) => w.id === walletId);
-      }
-    },
-    availabilityChecker: (wallet: any) => !!wallet,
-  },
+export type ConnectionState = {
+  btcProvider?: IInjectedBitcoinProvider;
+  litecoinProvider?: IInjectedLitecoinProvider;
+  evmConnector?: Connector;
+  starknetConnector?: StarknetConnector;
+  starknetStatus?: string;
+  solanaConnected?: boolean;
+  solanaSelectedWallet?: SolanaWallet | null;
+  suiConnected?: boolean;
+  suiSelectedWallet?: SuiWallet | null;
+  tronConnected?: boolean;
+  tronSelectedWallet?: TronWallet | null;
 };
 
-const manualEVMChecks: Record<
-  string,
-  { check: () => boolean; connectorId: string }
-> = {
-  keplr: {
-    check: () =>
-      !!window.keplr &&
-      typeof window.keplr === "object" &&
-      "ethereum" in window.keplr,
-    connectorId: "keplr",
-  },
-  leap: {
-    check: () =>
-      !!window.leap &&
-      typeof window.leap === "object" &&
-      "ethereum" in window.leap,
-    connectorId: "leap",
-  },
-  backpack: {
-    check: () =>
-      !!window.backpack &&
-      typeof window.backpack === "object" &&
-      "ethereum" in window.backpack,
-    connectorId: "app.backpack",
-  },
-};
-
-function createInitialWallet(config: any): Wallet {
-  return {
-    ...config,
-    wallet: {},
-    isAvailable: false,
-    isBitcoin: false,
-    isEVM: false,
-    isStarknet: false,
-    isSolana: false,
-    isSui: false,
-  };
-}
-
-function updateWalletWithBlockchain(
-  wallet: Wallet,
-  foundWallet: any,
-  isAvailable: boolean,
-  blockchain: BlockchainType
-): void {
-  const config = blockchainConfigs[blockchain];
-  wallet.wallet[config.walletKey] = foundWallet;
-  wallet[config.flagKey] = true;
-  if (isAvailable) {
-    wallet.isAvailable = true;
+const checkManualWalletAvailability = (
+  walletKey: string
+): boolean | undefined => {
+  if (typeof window === "undefined") return undefined;
+  switch (walletKey) {
+    case "keplr":
+      return !!window.keplr && !!window.starknet_keplr;
+    case "backpack":
+      return !!window.backpack;
+    case "leap":
+      return !!window.leap;
+    case "braavos":
+      return !!window.starknet_braavos;
+    case "ready":
+      return !!window.starknet_argentX;
+    default:
+      return undefined;
   }
-}
+};
 
-function processBlockchainWallets(
-  walletMap: Map<string, Wallet>,
-  walletInputs: WalletInputs,
-  blockchain: BlockchainType
-): void {
-  const config = blockchainConfigs[blockchain];
-  const inputWallets = walletInputs[
-    config.inputKey as keyof WalletInputs
-  ] as unknown as
-    | AvailableWallets
-    | GetConnectorsReturnType
-    | StarknetConnector[]
-    | SolanaWallet[]
-    | SuiWallet[]
-    | undefined;
-
-  if (!inputWallets && blockchain !== BlockchainType.bitcoin) return;
-
-  Object.entries(GardenSupportedWallets).forEach(([key, value]) => {
-    if (!value[config.supportKey]) return;
-    if (blockchain === BlockchainType.evm && key === "app.phantom") return;
-
-    let foundWallet = config.finder(inputWallets as any, key);
-    let isAvailable = config.availabilityChecker(foundWallet, key);
-
-    const walletId = key;
-    if (!walletMap.has(walletId)) {
-      walletMap.set(walletId, createInitialWallet(value));
-    }
-
-    const wallet = walletMap.get(walletId);
-    if (!wallet) return;
-    updateWalletWithBlockchain(wallet, foundWallet, isAvailable, blockchain);
-  });
-}
-
-// Multi-chain wallet configurations
-const multiChainWallets = {
-  "app.phantom": {
-    solanaName: "phantom",
-    suiName: "Phantom",
-    bitcoinId: "phantom",
-  },
-  "app.backpack": {
-    solanaName: "backpack",
-    suiName: "Backpack",
-  },
-} as const;
-
-function handleMultiChainWallets(
-  walletMap: Map<string, Wallet>,
-  walletInputs: WalletInputs
-): void {
-  Object.entries(multiChainWallets).forEach(([walletId, multiChainConfig]) => {
-    const config = GardenSupportedWallets[walletId];
-    if (!config) return;
-
-    const evmWallet = config.isEVMSupported
-      ? walletInputs.evmWallets?.find((w) => w.id === walletId)
-      : undefined;
-
-    const btcWallet =
-      config.isBitcoinSupported && "bitcoinId" in multiChainConfig
-        ? walletInputs.bitcoinWallets?.[multiChainConfig.bitcoinId]
-        : undefined;
-
-    const solanaWallet = config.isSolanaSupported
-      ? walletInputs.solanaWallets?.find(
-          (w) => w.adapter.name.toLowerCase() === multiChainConfig.solanaName
-        )
-      : undefined;
-
-    const suiWallet = config.isSuiSupported
-      ? walletInputs.suiWallets?.find(
-          (w) => w.name === multiChainConfig.suiName
-        )
-      : undefined;
-
-    const isEVM = !!evmWallet;
-    const isBitcoin = !!btcWallet;
-    const isSolana = !!solanaWallet;
-    const isSui = !!suiWallet;
-    const isAvailable = isEVM || isBitcoin || isSolana || isSui;
-
-    if (isAvailable) {
-      if (!walletMap.has(walletId)) {
-        walletMap.set(walletId, createInitialWallet(config));
-      }
-
-      const wallet = walletMap.get(walletId);
-      if (!wallet) return;
-      wallet.wallet = {
-        evmWallet,
-        btcWallet,
-        solanaWallet,
-        suiWallet,
-      };
-      wallet.isEVM = isEVM;
-      wallet.isBitcoin = isBitcoin;
-      wallet.isSolana = isSolana;
-      wallet.isSui = isSui;
-      wallet.isAvailable = true;
-    }
-  });
-}
+const getWalletKey = (connectorName: string): string => {
+  return connectorName
+    .toLowerCase()
+    .replace(/\s*wallet$/i, "")
+    .trim()
+    .split(/\s+/)[0];
+};
 
 export const getAvailableWallets = (
-  bitcoinWallets?: AvailableWallets,
+  bitcoinWallets?: AvailableBTCWallets,
+  litecoinWallets?: AvailableLTCWallets,
   evmWallets?: GetConnectorsReturnType,
   starknetWallets?: StarknetConnector[],
   solanaWallets?: SolanaWallet[],
-  suiWallets?: SuiWallet[]
+  suiWallets?: SuiWallet[],
+  tronWallets?: TronWallet[]
 ): Wallet[] => {
-  const walletInputs: WalletInputs = {
-    bitcoinWallets,
-    evmWallets,
-    starknetWallets,
-    solanaWallets,
-    suiWallets,
-  };
-
   const walletMap = new Map<string, Wallet>();
 
-  (
-    [
-      BlockchainType.evm,
-      BlockchainType.bitcoin,
-      BlockchainType.starknet,
-      BlockchainType.solana,
-      BlockchainType.sui,
-    ] as const
-  ).forEach((blockchain) => {
-    processBlockchainWallets(walletMap, walletInputs, blockchain);
-  });
+  for (const [key, config] of Object.entries(GardenSupportedWallets)) {
+    walletMap.set(key, {
+      id: key,
+      name: config.name,
+      logo: config.logo,
+      wallet: {},
+      isAvailable: false,
+      installLink: config.installLink,
+      isBitcoin: config.isBitcoinSupported,
+      isEVM: config.isEVMSupported,
+      isStarknet: config.isStarknetSupported,
+      isSolana: config.isSolanaSupported,
+      isSui: config.isSuiSupported,
+      isTron: config.isTronSupported,
+      isLitecoin: config.isLitecoinSupported,
+    });
+  }
 
-  handleMultiChainWallets(walletMap, walletInputs);
+  const getWallet = (connectorName: string): Wallet | undefined => {
+    return walletMap.get(getWalletKey(connectorName));
+  };
 
-  const wallets = Array.from(walletMap.values());
+  if (evmWallets) {
+    for (const connector of evmWallets) {
+      const wallet = getWallet(connector.name);
+      if (wallet && wallet.isEVM) {
+        wallet.wallet.evmWallet = connector;
+        wallet.isAvailable = checkManualWalletAvailability(wallet.id) ?? true;
+      }
+    }
+  }
 
-  return wallets.sort((a, b) => {
+  if (bitcoinWallets) {
+    for (const [_, provider] of Object.entries(bitcoinWallets)) {
+      const wallet = getWallet(provider.name);
+      if (wallet && wallet.isBitcoin) {
+        wallet.wallet.btcWallet = provider;
+        wallet.isAvailable = checkManualWalletAvailability(wallet.id) ?? true;
+      }
+    }
+  }
+
+  if (litecoinWallets) {
+    for (const [_, provider] of Object.entries(litecoinWallets)) {
+      const wallet = getWallet(provider.name);
+      if (wallet && wallet.isLitecoin) {
+        wallet.wallet.litecoinWallet = provider;
+        wallet.isAvailable = checkManualWalletAvailability(wallet.id) ?? true;
+      }
+    }
+  }
+
+  if (starknetWallets) {
+    for (const connector of starknetWallets) {
+      const wallet = getWallet(connector.name);
+      if (wallet && wallet.isStarknet) {
+        wallet.wallet.starknetWallet = connector;
+        wallet.isAvailable = checkManualWalletAvailability(wallet.id) ?? true;
+      }
+    }
+  }
+
+  if (solanaWallets) {
+    for (const solWallet of solanaWallets) {
+      const wallet = getWallet(solWallet.adapter.name);
+      if (wallet && wallet.isSolana) {
+        wallet.wallet.solanaWallet = solWallet;
+        wallet.isAvailable = checkManualWalletAvailability(wallet.id) ?? true;
+      }
+    }
+  }
+
+  if (suiWallets) {
+    for (const suiWallet of suiWallets) {
+      const wallet = getWallet(suiWallet.name);
+      if (wallet && wallet.isSui) {
+        wallet.wallet.suiWallet = suiWallet;
+        wallet.isAvailable = checkManualWalletAvailability(wallet.id) ?? true;
+      }
+    }
+  }
+
+  if (tronWallets) {
+    for (const tronWallet of tronWallets) {
+      const wallet = getWallet(tronWallet.adapter.name);
+      if (wallet && wallet.isTron) {
+        wallet.wallet.tronWallet = tronWallet;
+        wallet.isAvailable = checkManualWalletAvailability(wallet.id) ?? true;
+      }
+    }
+  }
+
+  return Array.from(walletMap.values()).sort((a, b) => {
     if (a.id === "injected") return 1;
     if (b.id === "injected") return -1;
     if (a.isAvailable && !b.isAvailable) return -1;
     if (!a.isAvailable && b.isAvailable) return 1;
     return 0;
   });
+};
+
+export const isWalletConnected = (
+  wallet: Wallet,
+  chain: BlockchainType,
+  connectionState: ConnectionState
+): boolean => {
+  switch (chain) {
+    case BlockchainType.bitcoin:
+      if (!connectionState.btcProvider || !wallet.wallet.btcWallet)
+        return false;
+      return getWalletKey(connectionState.btcProvider.name) === wallet.id;
+
+    case BlockchainType.litecoin:
+      if (!connectionState.litecoinProvider || !wallet.wallet.litecoinWallet)
+        return false;
+      return getWalletKey(connectionState.litecoinProvider.name) === wallet.id;
+
+    case BlockchainType.evm:
+      if (!connectionState.evmConnector || !wallet.wallet.evmWallet)
+        return false;
+      return getWalletKey(connectionState.evmConnector.name) === wallet.id;
+
+    case BlockchainType.starknet:
+      if (
+        !connectionState.starknetConnector ||
+        !wallet.wallet.starknetWallet ||
+        connectionState.starknetStatus !== "connected"
+      )
+        return false;
+      return getWalletKey(connectionState.starknetConnector.name) === wallet.id;
+
+    case BlockchainType.solana:
+      if (
+        !connectionState.solanaConnected ||
+        !wallet.wallet.solanaWallet ||
+        !connectionState.solanaSelectedWallet
+      )
+        return false;
+      return (
+        getWalletKey(connectionState.solanaSelectedWallet.adapter.name) ===
+        wallet.id
+      );
+
+    case BlockchainType.sui:
+      if (
+        !connectionState.suiConnected ||
+        !wallet.wallet.suiWallet ||
+        !connectionState.suiSelectedWallet
+      )
+        return false;
+      return getWalletKey(connectionState.suiSelectedWallet.name) === wallet.id;
+
+    case BlockchainType.tron:
+      if (
+        !connectionState.tronConnected ||
+        !wallet.wallet.tronWallet ||
+        !connectionState.tronSelectedWallet
+      )
+        return false;
+      return (
+        getWalletKey(connectionState.tronSelectedWallet.adapter.name) ===
+        wallet.id
+      );
+    default:
+      return false;
+  }
+};
+
+export const getWalletConnectionStatus = (
+  wallet: Wallet,
+  connectionState: ConnectionState
+): Record<BlockchainType, boolean> => {
+  return {
+    [BlockchainType.bitcoin]: isWalletConnected(
+      wallet,
+      BlockchainType.bitcoin,
+      connectionState
+    ),
+    [BlockchainType.litecoin]: isWalletConnected(
+      wallet,
+      BlockchainType.litecoin,
+      connectionState
+    ),
+    [BlockchainType.evm]: isWalletConnected(
+      wallet,
+      BlockchainType.evm,
+      connectionState
+    ),
+    [BlockchainType.starknet]: isWalletConnected(
+      wallet,
+      BlockchainType.starknet,
+      connectionState
+    ),
+    [BlockchainType.solana]: isWalletConnected(
+      wallet,
+      BlockchainType.solana,
+      connectionState
+    ),
+    [BlockchainType.sui]: isWalletConnected(
+      wallet,
+      BlockchainType.sui,
+      connectionState
+    ),
+    [BlockchainType.tron]: isWalletConnected(
+      wallet,
+      BlockchainType.tron,
+      connectionState
+    ),
+    [BlockchainType.alpen_signet]: false,
+  };
 };

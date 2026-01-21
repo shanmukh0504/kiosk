@@ -19,60 +19,65 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.8, y: -10 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="mx-auto flex"
+      className="relative mx-auto flex"
     >
-      <div className="absolute z-50 mb-[15px] ml-4 mt-[-5px] h-[14px] w-[14px] rotate-45 rounded-sm bg-white sm:mb-0 sm:ml-[-5px] sm:mt-[15px]"></div>
-      <div className="flex flex-col gap-2 rounded-2xl bg-white px-4 py-3 shadow-custom">
-        <Typography size="h5" weight="medium" className="!text-mid-grey">
-          Breakdown
+      <div className="absolute mb-[15px] ml-40 mt-[-5px] h-[14px] w-[14px] rotate-45 rounded-sm bg-white md:ml-[-5px] md:mt-[15px]"></div>
+      <div className="flex max-w-[257px] flex-col gap-2 rounded-2xl bg-white px-4 py-3 shadow-custom">
+        <Typography size="h5" weight="regular">
+          Total rewards represent the cumulative earnings so far, broken down by
+          token.
         </Typography>
-        <div className="flex flex-col gap-3">
-          <div className="flex gap-2">
-            <Typography size="h4" weight="regular" className="w-[87px]">
-              {cbBtc}
-            </Typography>
-            <Typography
-              size="h4"
-              weight="regular"
-              className={`relative w-11 before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
-              onClick={() =>
-                handleRedirect(
-                  STAKE_REWARD.CBBTC.EXPLORER,
-                  STAKE_REWARD.CBBTC.REWARD_TOKEN_ADDRESS
-                )
-              }
-            >
-              cbBTC
-            </Typography>
-            <TokenNetworkLogos
-              tokenLogo={STAKE_REWARD.CBBTC.TOKEN_LOGO}
-              chainLogo={STAKE_REWARD.CBBTC.CHAIN_LOGO}
-              className="scale-[0.8054]"
-            />
-          </div>
-          <div className="flex gap-2">
-            <Typography size="h4" weight="medium" className="w-[87px]">
-              {seed}
-            </Typography>
-            <Typography
-              size="h4"
-              weight="medium"
-              className={`relative mr-2 w-9 before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
-              onClick={() =>
-                handleRedirect(
-                  STAKE_REWARD.SEED.EXPLORER,
-                  STAKE_REWARD.SEED.REWARD_TOKEN_ADDRESS
-                )
-              }
-            >
-              SEED
-            </Typography>
-            <TokenNetworkLogos
-              tokenLogo={STAKE_REWARD.SEED.TOKEN_LOGO}
-              chainLogo={STAKE_REWARD.SEED.CHAIN_LOGO}
-              className="scale-[0.8054]"
-            />
-          </div>
+        <div className="flex flex-wrap items-center justify-between space-y-1">
+          {!!cbBtc && (
+            <div className="flex items-center gap-1">
+              <Typography size="h4" weight="regular" className="w-[87px]">
+                {cbBtc}
+              </Typography>
+              <Typography
+                size="h4"
+                weight="regular"
+                className={`relative w-11 cursor-pointer before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
+                onClick={() =>
+                  handleRedirect(
+                    STAKE_REWARD.CBBTC.EXPLORER,
+                    STAKE_REWARD.CBBTC.REWARD_TOKEN_ADDRESS
+                  )
+                }
+              >
+                cbBTC
+              </Typography>
+              <TokenNetworkLogos
+                tokenLogo={STAKE_REWARD.CBBTC.TOKEN_LOGO}
+                chainLogo={STAKE_REWARD.CBBTC.CHAIN_LOGO}
+                className="scale-[0.8054]"
+              />
+            </div>
+          )}
+          {!!seed && (
+            <div className="flex items-center gap-1">
+              <Typography size="h4" weight="regular" className="w-[87px]">
+                {seed}
+              </Typography>
+              <Typography
+                size="h4"
+                weight="regular"
+                className={`relative mr-2 w-9 cursor-pointer before:absolute before:h-[1px] before:w-full before:translate-y-5 before:bg-transparent hover:before:bg-dark-grey`}
+                onClick={() =>
+                  handleRedirect(
+                    STAKE_REWARD.SEED.EXPLORER,
+                    STAKE_REWARD.SEED.REWARD_TOKEN_ADDRESS
+                  )
+                }
+              >
+                SEED
+              </Typography>
+              <TokenNetworkLogos
+                tokenLogo={STAKE_REWARD.SEED.TOKEN_LOGO}
+                chainLogo={STAKE_REWARD.SEED.CHAIN_LOGO}
+                className="scale-[0.8054]"
+              />
+            </div>
+          )}
         </div>
       </div>
     </motion.div>

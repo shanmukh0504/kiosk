@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { useGarden } from "@gardenfi/react-hooks";
 import { OrderStatus } from "@gardenfi/orderbook";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import {
+  useBitcoinWallet,
+  useLitecoinWallet,
+} from "@gardenfi/wallet-connectors";
 import { Opacity, Typography, WalletIcon } from "@gardenfi/garden-book";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
@@ -11,13 +14,16 @@ import pendingOrdersStore from "../../store/pendingOrdersStore";
 import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { deletedOrdersStore } from "../../store/deletedOrdersStore";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
+import { useTronWallet } from "../../hooks/useTronWallet";
 
 const ConnectedWallets = () => {
   const { address } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
+  const { account: ltcAddress } = useLitecoinWallet();
   const { account: btcAddress } = useBitcoinWallet();
   const { solanaAddress } = useSolanaWallet();
   const { suiConnected, currentAccount } = useSuiWallet();
+  const { tronConnected, wallet: tronAccount } = useTronWallet();
   const { pendingOrders } = useGarden();
   const { setOpenModal } = modalStore();
   const { isOrderDeleted, cleanupDeletedOrders, deletedOrders } =
@@ -32,6 +38,7 @@ const ConnectedWallets = () => {
       order.status !== OrderStatus.Redeemed &&
       !deletedOrders.some((entry) => entry.orderId === order.order_id)
   ).length;
+
   useEffect(() => {
     if (pendingOrders.length > 0) {
       cleanupDeletedOrders(pendingOrders);
@@ -50,7 +57,7 @@ const ConnectedWallets = () => {
     <>
       <Opacity
         level="medium"
-        className="relative z-0 ml-auto flex min-h-[32px] min-w-[32px] cursor-pointer items-center justify-center gap-1.5 overflow-hidden rounded-[24px] p-2 transition-all duration-300 hover:bg-opacity-80 sm:min-h-[40px] sm:min-w-[40px] sm:gap-2 sm:p-3"
+        className="relative z-0 ml-auto flex min-h-[32px] min-w-[32px] cursor-pointer items-center justify-center gap-1.5 overflow-hidden rounded-[24px] p-2 px-3 transition-all duration-300 hover:bg-opacity-80 sm:min-h-[40px] sm:min-w-[40px] sm:gap-2 sm:p-3"
         onClick={handleAddressClick}
       >
         {!!pendingOrdersCount && (
@@ -69,6 +76,13 @@ const ConnectedWallets = () => {
             src={ecosystems.bitcoin.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="Bitcoin wallet"
+          />
+        )}
+        {ltcAddress && (
+          <img
+            src={ecosystems.litecoin.icon}
+            className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            alt="Litecoin wallet"
           />
         )}
         {starknetAddress && (
@@ -90,6 +104,13 @@ const ConnectedWallets = () => {
             src={ecosystems.sui.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             alt="Sui wallet"
+          />
+        )}
+        {tronConnected && tronAccount && (
+          <img
+            src={ecosystems.tron.icon}
+            className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            alt="Tron wallet"
           />
         )}
         {pendingOrdersCount ? (

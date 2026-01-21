@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { BTC, swapStore } from "../store/swapStore";
-import { IOType, network } from "../constants/constants";
+import { IOType } from "../constants/constants";
 import {
   Asset,
   BitcoinOrderResponse,
-  BlockchainType,
   Chain,
   isBitcoin,
   isSolana,
@@ -13,27 +12,39 @@ import {
   isStarknet,
   isEVM,
   ChainAsset,
+  isTron,
   Chains,
+  isLitecoin,
+  isAlpenSignet,
 } from "@gardenfi/orderbook";
 import debounce from "lodash.debounce";
-import { validateBTCAddress } from "@gardenfi/core";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useStarknetWallet } from "./useStarknetWallet";
 import { useEVMWallet } from "./useEVMWallet";
 import { modalNames, modalStore } from "../store/modalStore";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
-import { Environment } from "@gardenfi/utils";
+import {
+  useBitcoinWallet,
+  useLitecoinWallet,
+} from "@gardenfi/wallet-connectors";
 import { Errors } from "../constants/errors";
 import { ConnectingWalletStore } from "../store/connectWalletStore";
 import orderInProgressStore from "../store/orderInProgressStore";
 import pendingOrdersStore from "../store/pendingOrdersStore";
 import BigNumber from "bignumber.js";
 import { useSolanaWallet } from "./useSolanaWallet";
-import { formatAmount, formatBalance, isAsset } from "../utils/utils";
+import {
+  formatAmount,
+  formatBalance,
+  isAsset,
+  isBitcoinSwap,
+} from "../utils/utils";
 import { useNetworkFees } from "./useNetworkFees";
 import { useSuiWallet } from "./useSuiWallet";
 import logger from "../utils/logger";
 import { balanceStore } from "../store/balanceStore";
+import { useTronWallet } from "./useTronWallet";
+import { Toast } from "../components/toast/Toast";
+import { useToastStore } from "../store/toastStore";
 
 export const useSwap = () => {
   const {
@@ -42,15 +53,18 @@ export const useSwap = () => {
     inputAsset,
     outputAsset,
     isSwapping,
+    swapProgress,
     isApproving,
+    isLiquidityToastVisible,
     rate,
     error,
-    btcAddress,
     tokenPrices,
     isFetchingQuote,
-    isEditBTCAddress,
+    isEditAddress,
     networkFees,
     setIsSwapping,
+    setSwapProgress,
+    setisLiquidityToastVisible,
     setAmount,
     setRate,
     setError,
@@ -60,28 +74,38 @@ export const useSwap = () => {
     setFiatTokenPrices,
     setFixedFee,
     isComparisonVisible,
-    setIsValidBitcoinAddress,
     // setIsApproving,
     setTokenPrices,
     clearSwapState,
-    setBtcAddress,
     setIsComparisonVisible,
     solverId,
     setSolverId,
+    validAddress,
+    sourceAddress: walletSource,
+    destinationAddress: walletDestination,
+    userProvidedAddress,
   } = swapStore();
   const { balances } = balanceStore();
+
+  // Resolve addresses: userProvidedAddress first, then walletAddress
+  const sourceAddress = userProvidedAddress.source || walletSource;
+  const destinationAddress =
+    userProvidedAddress.destination || walletDestination;
   const { setOrder, setIsOpen } = orderInProgressStore();
   const { updateOrder } = pendingOrdersStore();
   const { disconnect } = useEVMWallet();
   const { swap, getQuote, garden } = useGarden();
-  const { provider, account } = useBitcoinWallet();
+  const { provider } = useBitcoinWallet();
+  const { provider: ltcProvider } = useLitecoinWallet();
   const controller = useRef<AbortController | null>(null);
   const { setConnectingWallet } = ConnectingWalletStore();
   const { address: evmAddress } = useEVMWallet();
   const { starknetAddress } = useStarknetWallet();
   const { setOpenModal } = modalStore();
   const { solanaAddress } = useSolanaWallet();
+  const { tronAddress } = useTronWallet();
   const { currentAccount } = useSuiWallet();
+  const { isVisible: isToastVisible } = useToastStore();
   useNetworkFees();
 
   const inputBalance = useMemo(() => {
@@ -93,15 +117,11 @@ export const useSwap = () => {
     () =>
       inputBalance &&
       inputAsset &&
-      (!isStarknet(inputAsset.chain) &&
-      !isSolana(inputAsset.chain) &&
-      !isSui(inputAsset.chain)
-        ? formatBalance(
-            Number(inputBalance),
-            inputAsset.decimals,
-            Math.min(inputAsset.decimals, BTC.decimals)
-          )
-        : inputBalance.toString()),
+      formatBalance(
+        Number(inputBalance),
+        inputAsset.decimals,
+        Math.min(inputAsset.decimals, BTC.decimals)
+      ),
     [inputBalance, inputAsset]
   );
 
@@ -110,27 +130,14 @@ export const useSwap = () => {
     return BigNumber(inputAmount).gt(inputTokenBalance);
   }, [inputAmount, inputTokenBalance]);
 
-  const isBitcoinSwap = useMemo(() => {
-    return !!(
-      inputAsset &&
-      outputAsset &&
-      (isBitcoin(inputAsset.chain) || isBitcoin(outputAsset.chain))
-    );
-  }, [inputAsset, outputAsset]);
-  const isValidBitcoinAddress = useMemo(() => {
-    if (!isBitcoinSwap) return true;
-    return btcAddress
-      ? validateBTCAddress(btcAddress, network as unknown as Environment)
-      : false;
-  }, [btcAddress, isBitcoinSwap]);
-
   const _validSwap = useMemo(() => {
     return !!(
       inputAsset &&
       outputAmount &&
       inputAmount &&
       outputAsset &&
-      isValidBitcoinAddress &&
+      validAddress.source &&
+      validAddress.destination &&
       !error.inputError &&
       !error.outputError &&
       !error.liquidityError &&
@@ -142,12 +149,18 @@ export const useSwap = () => {
     inputAmount,
     outputAsset,
     error,
-    isValidBitcoinAddress,
+    validAddress.source,
+    validAddress.destination,
   ]);
 
   const validSwap = useMemo(() => {
-    return isBitcoinSwap ? !!(_validSwap && btcAddress) : _validSwap;
-  }, [_validSwap, isBitcoinSwap, btcAddress]);
+    if (!_validSwap) return false;
+
+    // Simply check if both addresses are present (using resolved addresses)
+    if (!sourceAddress || !destinationAddress) return false;
+
+    return true;
+  }, [_validSwap, sourceAddress, destinationAddress]);
 
   const { minAmount, maxAmount } = useMemo(() => {
     const defaultLimits = {
@@ -231,15 +244,45 @@ export const useSwap = () => {
               setError({ liquidityError: Errors.none });
               setIsFetchingQuote({ input: false, output: false });
               return;
-            } else if (quote?.error?.includes("insufficient liquidity")) {
-              setError({ liquidityError: Errors.insufficientLiquidity });
-              setAmount(isExactOut ? IOType.input : IOType.output, "");
             } else if (quote?.error?.includes("output amount too less")) {
-              setError({ outputError: Errors.outLow });
+              setError({ outputError: Errors.outLow, inputError: Errors.none });
               setAmount(IOType.input, "");
             } else if (quote?.error?.includes("output amount too high")) {
-              setError({ outputError: Errors.outHigh });
+              setError({
+                outputError: Errors.outHigh,
+                inputError: Errors.none,
+              });
               setAmount(IOType.input, "");
+            } else if (
+              quote?.error?.includes("expected amount to be within the range")
+            ) {
+              const rangeMatch = quote.error.match(/range of (\d+) to (\d+)/);
+              if (rangeMatch) {
+                const [, minRaw, maxRaw] = rangeMatch;
+                const assetToCheck = isExactOut ? toAsset : fromAsset;
+                const { decimals, symbol } = assetToCheck;
+
+                const minAmount = Number(
+                  formatAmount(minRaw, decimals, decimals)
+                );
+                const maxAmount = Number(
+                  formatAmount(maxRaw, decimals, decimals)
+                );
+                const amountInNumber = Number(amount);
+
+                if (amountInNumber > maxAmount) {
+                  setError({
+                    inputError: Errors.maxError(maxAmount.toString(), symbol),
+                    outputError: Errors.none,
+                  });
+                } else if (amountInNumber < minAmount) {
+                  setError({
+                    inputError: Errors.minError(minAmount.toString(), symbol),
+                    outputError: Errors.none,
+                  });
+                }
+              }
+              // setAmount(isExactOut ? IOType.input : IOType.output, "");
             } else {
               setAmount(isExactOut ? IOType.input : IOType.output, "");
             }
@@ -342,6 +385,7 @@ export const useSwap = () => {
       if (inputAsset && minAmount && amountInNumber < minAmount) {
         setError({
           inputError: Errors.minError(minAmount.toString(), inputAsset?.symbol),
+          outputError: Errors.none,
         });
         setAmount(IOType.output, "");
         setTokenPrices({ input: "0", output: "0" });
@@ -355,8 +399,8 @@ export const useSwap = () => {
       if (inputAsset && maxAmount && amountInNumber > maxAmount) {
         setError({
           inputError: Errors.maxError(maxAmount.toString(), inputAsset?.symbol),
+          outputError: Errors.none,
         });
-        setAmount(IOType.output, "");
         // cancel debounced fetch quote
         debouncedFetchQuote.cancel();
         // abort if any calls are already in progress
@@ -433,6 +477,10 @@ export const useSwap = () => {
         check: (chain: Chain) => isSui(chain),
         address: currentAccount?.address,
       },
+      tron: {
+        check: (chain: Chain) => isTron(chain),
+        address: tronAddress,
+      },
     };
 
     for (const [chainKey, { check, address }] of Object.entries(
@@ -453,6 +501,7 @@ export const useSwap = () => {
     starknetAddress,
     solanaAddress,
     currentAccount,
+    tronAddress,
   ]);
 
   const handleSwapClick = async () => {
@@ -462,7 +511,15 @@ export const useSwap = () => {
       });
       return;
     }
-    if (!validSwap || !swap || !inputAsset || !outputAsset) return;
+    if (
+      !validSwap ||
+      !swap ||
+      !inputAsset ||
+      !outputAsset ||
+      !sourceAddress ||
+      !destinationAddress
+    )
+      return;
     setIsSwapping(true);
 
     const inputAmountInDecimals = new BigNumber(inputAmount)
@@ -471,12 +528,6 @@ export const useSwap = () => {
     const outputAmountInDecimals = new BigNumber(outputAmount)
       .multipliedBy(10 ** outputAsset.decimals)
       .toFixed();
-
-    const addresses: Partial<Record<BlockchainType, string>> = isBitcoinSwap
-      ? {
-          bitcoin: btcAddress,
-        }
-      : {};
 
     try {
       // if (!wallet) return;
@@ -511,14 +562,19 @@ export const useSwap = () => {
       //   setIsApproving(false);
       // }
 
-      const res = await swap({
-        fromAsset: inputAsset,
-        toAsset: outputAsset,
-        sendAmount: inputAmountInDecimals,
-        receiveAmount: outputAmountInDecimals,
-        solverId,
-        addresses,
-      });
+      const res = await swap(
+        {
+          fromAsset: inputAsset,
+          toAsset: outputAsset,
+          sendAmount: inputAmountInDecimals,
+          receiveAmount: outputAmountInDecimals,
+          solverId,
+          sourceAddress,
+          destinationAddress,
+        },
+        (progress) => setSwapProgress(progress)
+      );
+
       if (!res.ok) {
         if (
           res.error.includes(
@@ -527,13 +583,21 @@ export const useSwap = () => {
         ) {
           disconnect();
           setConnectingWallet(null);
+          setIsSwapping(false);
         } else if (res.error.includes("destination amount too high")) {
           //order failed due to price fluctuation, refresh quote here
           fetchQuote(inputAmount, inputAsset, outputAsset, false);
+          setIsSwapping(false);
+        } else if (res.error.includes("insufficient liquidity")) {
+          // Wait for 8 seconds before showing the error to the user
+          // await new Promise((resolve) => setTimeout(resolve, 8000));
+          setisLiquidityToastVisible(true);
+          Toast.error("No liquidity sources found");
+          setIsSwapping(false);
         } else {
           logger.error("failed to create order ❌", res.error);
+          setIsSwapping(false);
         }
-        setIsSwapping(false);
         return;
       }
 
@@ -551,9 +615,37 @@ export const useSwap = () => {
 
       const order = orderResult.val;
 
+      if (isLitecoin(inputAsset.chain)) {
+        const orderResponse = res.val as BitcoinOrderResponse;
+        if (ltcProvider && !isAlpenSignet(inputAsset.chain)) {
+          const litecoinRes = await ltcProvider?.sendLitecoin(
+            orderResponse.to,
+            Number(orderResponse.amount)
+          );
+          if (!litecoinRes.ok) {
+            logger.error("failed to send litecoin ❌", litecoinRes?.error);
+            setIsSwapping(false);
+          }
+          const updatedOrder = {
+            ...order,
+            source_swap: {
+              ...order.source_swap,
+              initiate_tx_hash: litecoinRes.val ?? "",
+            },
+            status: litecoinRes.val
+              ? OrderStatus.InitiateDetected
+              : OrderStatus.Created,
+          };
+          setOrder(updatedOrder);
+          setIsOpen(true);
+          updateOrder(updatedOrder);
+          clearSwapState();
+          return;
+        }
+      }
       if (isBitcoin(inputAsset.chain)) {
         const orderResponse = res.val as BitcoinOrderResponse;
-        if (provider) {
+        if (provider && !isAlpenSignet(inputAsset.chain)) {
           const bitcoinRes = await provider.sendBitcoin(
             orderResponse.to,
             Number(orderResponse.amount)
@@ -621,10 +713,17 @@ export const useSwap = () => {
     isComparisonVisible,
   ]);
 
+  // Clear liquidity toast state when toast is manually closed or auto-hides
+  useEffect(() => {
+    if (!isToastVisible && isLiquidityToastVisible) {
+      setisLiquidityToastVisible(false);
+    }
+  }, [isToastVisible, isLiquidityToastVisible, setisLiquidityToastVisible]);
+
   //call input amount handler when assets are changed
   useEffect(() => {
     if (!inputAsset || !outputAsset) return;
-    setError({ inputError: "" });
+    setError({ inputError: Errors.none, outputError: Errors.none });
     handleInputAmountChange(inputAmount);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputAsset, handleInputAmountChange, setError]);
@@ -652,6 +751,7 @@ export const useSwap = () => {
     if (amountInNumber < minAmount && inputAsset) {
       setError({
         inputError: Errors.minError(minAmount.toString(), inputAsset.symbol),
+        outputError: Errors.none,
       });
       setTokenPrices({ input: "0", output: "0" });
       setAmount(IOType.output, "");
@@ -660,6 +760,7 @@ export const useSwap = () => {
     if (amountInNumber > maxAmount && inputAsset) {
       setError({
         inputError: Errors.maxError(maxAmount.toString(), inputAsset.symbol),
+        outputError: Errors.none,
       });
       setTokenPrices({ input: "0", output: "0" });
       setAmount(IOType.output, "");
@@ -684,25 +785,6 @@ export const useSwap = () => {
     setError({ insufficientBalanceError: Errors.none });
   }, [isInsufficientBalance, setError, inputAsset, outputAsset, inputAmount]);
 
-  //set btc address if bitcoin wallet is connected
-  useEffect(() => {
-    if (account) {
-      setBtcAddress(account);
-    }
-  }, [account, setBtcAddress]);
-
-  // Update isValidBitcoinAddress state in an effect
-  useEffect(() => {
-    if (!isBitcoinSwap) {
-      setIsValidBitcoinAddress(true);
-      return;
-    }
-    const isValid = btcAddress
-      ? validateBTCAddress(btcAddress, network as unknown as Environment)
-      : false;
-    setIsValidBitcoinAddress(isValid);
-  }, [btcAddress, isBitcoinSwap, setIsValidBitcoinAddress]);
-
   return {
     inputAmount,
     outputAmount,
@@ -711,18 +793,18 @@ export const useSwap = () => {
     tokenPrices,
     rate,
     error,
-    isEditBTCAddress,
+    isEditAddress,
     loading: isFetchingQuote,
     validSwap,
     isSwapping,
+    swapProgress,
     isApproving,
+    isLiquidityToastVisible,
     isBitcoinSwap,
     inputTokenBalance,
     needsWalletConnection,
-    btcAddress,
     controller,
     isComparisonVisible,
-    setBtcAddress,
     swapAssets,
     handleInputAmountChange,
     handleOutputAmountChange,

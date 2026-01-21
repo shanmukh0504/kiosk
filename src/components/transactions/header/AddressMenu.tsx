@@ -1,6 +1,9 @@
 import { FC, useMemo, useId } from "react";
 import { AddIcon, LogoutIcon } from "@gardenfi/garden-book";
-import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
+import {
+  useBitcoinWallet,
+  useLitecoinWallet,
+} from "@gardenfi/wallet-connectors";
 import { Tooltip } from "../../../common/Tooltip";
 import { modalNames, modalStore } from "../../../store/modalStore";
 import { ecosystems } from "../../navbar/connectWallet/constants";
@@ -13,6 +16,7 @@ import { useSuiWallet } from "../../../hooks/useSuiWallet";
 import transactionHistoryStore from "../../../store/transactionHistoryStore";
 import orderInProgressStore from "../../../store/orderInProgressStore";
 import { balanceStore } from "../../../store/balanceStore";
+import { useTronWallet } from "../../../hooks/useTronWallet";
 
 type AddressMenuProps = {
   onClose: () => void;
@@ -21,9 +25,12 @@ type AddressMenuProps = {
 export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
   const { address, disconnect } = useEVMWallet();
   const { starknetAddress, starknetDisconnect } = useStarknetWallet();
+  const { account: ltcAddress, disconnect: ltcDisconnect } =
+    useLitecoinWallet();
   const { account: btcAddress, disconnect: btcDisconnect } = useBitcoinWallet();
   const { solanaAddress, solanaDisconnect } = useSolanaWallet();
   const { suiConnected, currentAccount, suiDisconnect } = useSuiWallet();
+  const { tronConnected, wallet: tronWallet, tronDisconnect } = useTronWallet();
   const { setIsOpen } = orderInProgressStore();
   const { setOpenModal } = modalStore();
   const { resetTransactions } = transactionHistoryStore();
@@ -36,21 +43,21 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
 
   const showConnectWallet = useMemo(() => {
     return !(
-      address &&
-      btcAddress &&
-      starknetAddress &&
-      solanaAddress &&
-      suiConnected
+      (address && btcAddress && starknetAddress && ltcAddress)
+      // solanaAddress &&
+      // suiConnected
     );
-  }, [address, btcAddress, starknetAddress, solanaAddress, suiConnected]);
+  }, [address, btcAddress, starknetAddress, ltcAddress]);
 
   const handleDisconnectClick = () => {
     clear();
     disconnect();
     btcDisconnect();
+    ltcDisconnect();
     starknetDisconnect();
     solanaDisconnect();
     suiDisconnect();
+    tronDisconnect();
     clearBalances();
     setIsOpen(false);
     onClose();
@@ -73,6 +80,9 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
           {btcAddress && (
             <Address address={btcAddress} logo={ecosystems.bitcoin.icon} />
           )}
+          {ltcAddress && (
+            <Address address={ltcAddress} logo={ecosystems.litecoin.icon} />
+          )}
           {starknetAddress && (
             <Address
               address={starknetAddress}
@@ -86,6 +96,12 @@ export const AddressMenu: FC<AddressMenuProps> = ({ onClose }) => {
             <Address
               address={currentAccount?.address ?? ""}
               logo={ecosystems.sui.icon}
+            />
+          )}
+          {tronConnected && tronWallet?.adapter.address && (
+            <Address
+              address={tronWallet.adapter.address}
+              logo={ecosystems.tron.icon}
             />
           )}
           {showConnectWallet && (

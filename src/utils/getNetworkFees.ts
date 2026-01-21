@@ -10,7 +10,7 @@ import BigNumber from "bignumber.js";
 import { Network } from "@gardenfi/utils";
 
 const getBTCPrice = async (): Promise<number> => {
-  const response = await axios.get(API().quote.fiatValues.toString(), {
+  const response = await axios.get(API().fiatValues.toString(), {
     timeout: 2000,
   });
   const result: Record<string, string> = response.data?.result || {};

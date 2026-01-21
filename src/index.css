@@ -5,7 +5,7 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+html {
   overscroll-behavior: none;
   color: #473c75;
 }
@@ -34,6 +34,16 @@ body {
   .loader-shine:before {
     @apply absolute left-0 top-0 h-full w-[424px] animate-loader-shine bg-gradient-to-l from-transparent via-white/75 via-25% to-transparent opacity-0 content-[''];
   }
+  .shimmer {
+    @apply overflow-hidden;
+  }
+  .shimmer:before {
+    @apply absolute left-0 top-0 h-full w-[134px] animate-shimmer opacity-100 z-0 content-[''];
+    background: linear-gradient(to right, rgba(255, 225, 242, 0) 0%, rgba(255, 225, 242, 1) 40%, rgba(255, 225, 242, 1) 60%, rgba(255, 225, 242, 0) 100%);
+  }
+  .shimmer > * {
+    @apply relative z-10;
+  }
 }
 
 .scrollbar-hide::-webkit-scrollbar {
@@ -43,6 +53,11 @@ body {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+/* Firefox scrollbar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #fc79c1 transparent;
 }
 
 input:active,

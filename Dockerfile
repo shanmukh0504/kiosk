@@ -1,19 +1,22 @@
 # syntax=docker/dockerfile:1
-FROM node:22-bullseye AS builder
+FROM node:22-bullseye-slim AS builder
 
 WORKDIR /app
 
-# Install ALL build dependencies for native modules (cached layer)
-# Install all build dependencies for native modules (Debian-based)
-RUN apt-get update && apt-get install -y \
+# Install build dependencies for native modules (cached layer)
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    g++ \
+    make \
     python3 \
     python3-pip \
-    libusb-dev \
-    libudev-dev \
     pkg-config \
+    libusb-1.0-0-dev \
+    libudev-dev \
     git \
- && rm -rf /var/lib/apt/lists/*
+    ca-certificates \
+    curl && \
+    rm -rf /var/lib/apt/lists/*
 
 # Set environment variables for native builds
 ENV PYTHON=/usr/bin/python3
@@ -28,6 +31,7 @@ RUN corepack enable && corepack prepare yarn@4.5.1 --activate
 # Copy ONLY package files for maximum dependency layer caching
 COPY package.json yarn.lock .yarnrc.yml ./
 
+
 # Configure yarn for optimal Docker performance
 RUN yarn config set nodeLinker node-modules && \
     yarn config set enableGlobalCache false
@@ -35,7 +39,8 @@ RUN yarn config set nodeLinker node-modules && \
 # Install dependencies with cache mount - this layer only rebuilds if package files change
 RUN --mount=type=cache,target=/usr/local/share/.cache/yarn \
     yarn config set cacheFolder /usr/local/share/.cache/yarn && \
-    yarn install 
+    # Disable husky during containerized installs to avoid git-related hooks failing
+    HUSKY=0 GIT_TERMINAL_PROMPT=0 yarn install --immutable --inline-builds
 
 # Set build args and env vars for Vite
 ARG SKIP_INSTALL_DEPS
@@ -147,14 +152,19 @@ RUN printf 'server {\n\
     gzip_types text/plain text/css application/json application/javascript text/xml application/xml text/javascript;\n\
     \n\
     location / {\n\
-    try_files $uri $uri/ /index.html;\n\
+    try_files $uri $uri.html $uri/ /index.html;\n\
+    }\n\
+    \n\
+    error_page 404 = @redirect_to_root;\n\
+    location @redirect_to_root {\n\
+    return 302 /;\n\
     }\n\
     \n\
     # Cache static assets aggressively\n\
     location ~* \\.(?:ico|css|js|gif|jpe?g|png|woff2?|eot|ttf|svg|otf|wasm)$ {\n\
-        expires 1m;\n\
-        access_log off;\n\
-        add_header Cache-Control "public, immutable";\n\
+    expires 1m;\n\
+    access_log off;\n\
+    add_header Cache-Control "public, immutable";\n\
     }\n\
     \n\
     # Security headers\n\

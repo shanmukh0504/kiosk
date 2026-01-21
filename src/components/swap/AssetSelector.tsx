@@ -7,14 +7,7 @@ import {
 } from "@gardenfi/garden-book";
 import BigNumber from "bignumber.js";
 import { FC, useState, ChangeEvent, useEffect, useMemo, useRef } from "react";
-import {
-  isStarknet,
-  isSolana,
-  isSui,
-  Asset,
-  ChainAsset,
-  ChainData,
-} from "@gardenfi/orderbook";
+import { Asset, ChainAsset, ChainData } from "@gardenfi/orderbook";
 import { assetInfoStore } from "../../store/assetInfoStore";
 import { BTC, swapStore } from "../../store/swapStore";
 import { IOType, network } from "../../constants/constants";
@@ -22,7 +15,11 @@ import { modalStore } from "../../store/modalStore";
 import { ChainsTooltip } from "./ChainsTooltip";
 import { AvailableChainsSidebar } from "./AvailableChainsSidebar";
 import { AnimatePresence, motion } from "framer-motion";
-import { formatBalance, formatChainDisplayName } from "../../utils/utils";
+import {
+  formatBalance,
+  isStableCoinOrSeed,
+  formatChainDisplayName,
+} from "../../utils/utils";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
@@ -145,7 +142,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
         })
         .map((asset) => {
           const network = chains?.[asset.chain];
-          const balance = balances?.[asset.id.toString()];
+          const balance = balances?.[ChainAsset.from(asset.id).toString()];
           if (!asset.id) return undefined;
           const fiatRate =
             fiatData?.[ChainAsset.from(asset.id).toString()] ?? 0;
@@ -153,21 +150,31 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             balance && asset && balance.toNumber() === 0
               ? ""
               : balance &&
-                  !isStarknet(asset.chain) &&
-                  !isSolana(asset.chain) &&
-                  !isSui(asset.chain)
-                ? new BigNumber(balance)
-                    .dividedBy(10 ** asset.decimals)
-                    .toNumber()
-                : balance?.toNumber();
+                new BigNumber(balance)
+                  .dividedBy(10 ** asset.decimals)
+                  .toNumber();
           const fiatBalance =
             formattedBalance && (formattedBalance * fiatRate).toFixed(5);
+          const balanceToBeDisplayed =
+            formattedBalance &&
+            formatBalance(
+              formattedBalance,
+              0,
+              isStableCoinOrSeed(asset)
+                ? 2
+                : Math.min(asset.decimals, BTC.decimals)
+            );
 
           return {
             asset,
             network,
-            formattedBalance,
+            balance:
+              typeof balanceToBeDisplayed === "number" &&
+              balanceToBeDisplayed === 0
+                ? ""
+                : balanceToBeDisplayed,
             fiatBalance,
+            hasBalance: balance !== undefined,
           };
         })
     );
@@ -198,9 +205,19 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
       sortedResults &&
       [...sortedResults].sort((a, b) => {
         if (!a || !b) return 0;
-        const aFiat = a.fiatBalance ? Number(a.fiatBalance) : 0;
-        const bFiat = b.fiatBalance ? Number(b.fiatBalance) : 0;
-        return bFiat - aFiat;
+
+        if (a.hasBalance && !b.hasBalance) return -1;
+        if (!a.hasBalance && b.hasBalance) return 1;
+
+        if (a.hasBalance && b.hasBalance) {
+          const aFiat =
+            a.fiatBalance && a.fiatBalance !== "" ? Number(a.fiatBalance) : 0;
+          const bFiat =
+            b.fiatBalance && b.fiatBalance !== "" ? Number(b.fiatBalance) : 0;
+          return bFiat - aFiat;
+        }
+
+        return 0;
       })
     );
   }, [sortedResults, isAnyWalletConnected]);
@@ -224,6 +241,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
     if (asset) {
       const isMatchingToken =
         asset.chain === comparisonToken?.chain &&
+        asset.htlc?.address === comparisonToken?.token?.address &&
         asset.htlc?.address === comparisonToken?.htlc?.address;
       // If selecting input and current output is invalid for the new input, clear output first
       const isValid = outputAsset && (await isRouteValid(asset, outputAsset));
@@ -398,7 +416,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
               {fiatBasedSortedResults && fiatBasedSortedResults.length > 0 ? (
                 fiatBasedSortedResults
                   .filter((result) => result !== undefined)
-                  .map(({ asset, network, formattedBalance }, index) => {
+                  .map(({ asset, network, balance }, index) => {
                     return (
                       <div
                         key={`${asset?.chain}-${asset?.htlc?.address}-${asset?.token?.address || "native"}-${index}`}
@@ -422,7 +440,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                           </Typography>
                         </div>
                         <div className="flex items-center gap-1">
-                          {formattedBalance && (
+                          {balance && (
                             <Typography
                               size={"h5"}
                               breakpoints={{
@@ -431,11 +449,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                               weight="regular"
                               className={`!text-mid-grey`}
                             >
-                              {formatBalance(
-                                formattedBalance,
-                                0,
-                                Math.min(asset.decimals, BTC.decimals)
-                              )}
+                              {balance}
                             </Typography>
                           )}
                           <Typography
