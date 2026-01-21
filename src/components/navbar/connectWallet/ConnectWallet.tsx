@@ -23,7 +23,11 @@ import { WalletRow } from "./WalletRow";
 import { MultiWalletConnection } from "./MultiWalletConnection";
 import { handleEVMConnect, handleStarknetConnect } from "./handleConnect";
 import { modalStore } from "../../../store/modalStore";
-import { ecosystems } from "./constants";
+import {
+  BlockChainTypes,
+  blockchainTypeToWalletProperty,
+  ecosystems,
+} from "./constants";
 import { AnimatePresence } from "framer-motion";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { ConnectingWalletStore } from "../../../store/connectWalletStore";
@@ -153,24 +157,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
 
     allWallets = allWallets.filter((wallet) => {
       return Object.keys(ecosystems).some((blockchainType) => {
-        const type = blockchainType as BlockchainType;
+        const type = blockchainType as BlockChainTypes;
         if (!availableBlockchainTypes.has(type)) return false;
-
-        //update walletTypeMap as new blockchains are added
-        const walletTypeMap: Record<
-          Exclude<BlockchainType, BlockchainType.alpen_signet>,
-          boolean
-        > = {
-          [BlockchainType.bitcoin]: wallet.isBitcoin,
-          [BlockchainType.evm]: wallet.isEVM,
-          [BlockchainType.starknet]: !!wallet.isStarknet,
-          [BlockchainType.solana]: !!wallet.isSolana,
-          [BlockchainType.sui]: !!wallet.isSui,
-          [BlockchainType.tron]: !!wallet.isTron,
-          [BlockchainType.litecoin]: !!wallet.isLitecoin,
-        };
-
-        return walletTypeMap[type as keyof typeof walletTypeMap];
+        return !!wallet[blockchainTypeToWalletProperty[type]];
       });
     });
 
@@ -352,17 +341,10 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         <div className="flex flex-wrap gap-3">
           {Object.entries(ecosystems)
             .filter(([key]) => {
-              const type = key as BlockchainType;
+              const type = key as BlockChainTypes;
               if (!availableBlockchainTypes.has(type)) return false;
               return allAvailableWallets.some(
-                (w) =>
-                  (type === BlockchainType.bitcoin && w.isBitcoin) ||
-                  (type === BlockchainType.evm && w.isEVM) ||
-                  (type === BlockchainType.starknet && w.isStarknet) ||
-                  (type === BlockchainType.solana && w.isSolana) ||
-                  (type === BlockchainType.sui && w.isSui) ||
-                  (type === BlockchainType.tron && w.isTron) ||
-                  (type === BlockchainType.litecoin && w.isLitecoin)
+                (w) => !!w[blockchainTypeToWalletProperty[type]]
               );
             })
             .map(([key, ecosystem]) => (
