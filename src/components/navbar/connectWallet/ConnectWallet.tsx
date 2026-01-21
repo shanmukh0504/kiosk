@@ -157,7 +157,10 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         if (!availableBlockchainTypes.has(type)) return false;
 
         //update walletTypeMap as new blockchains are added
-        const walletTypeMap: Record<BlockchainType, boolean> = {
+        const walletTypeMap: Record<
+          Exclude<BlockchainType, BlockchainType.alpen_signet>,
+          boolean
+        > = {
           [BlockchainType.bitcoin]: wallet.isBitcoin,
           [BlockchainType.evm]: wallet.isEVM,
           [BlockchainType.starknet]: !!wallet.isStarknet,
@@ -165,10 +168,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           [BlockchainType.sui]: !!wallet.isSui,
           [BlockchainType.tron]: !!wallet.isTron,
           [BlockchainType.litecoin]: !!wallet.isLitecoin,
-          [BlockchainType.alpen_signet]: wallet.isBitcoin,
         };
 
-        return walletTypeMap[type];
+        return walletTypeMap[type as keyof typeof walletTypeMap];
       });
     });
 
