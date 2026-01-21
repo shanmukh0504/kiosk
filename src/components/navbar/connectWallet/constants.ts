@@ -1,6 +1,7 @@
 import { Network } from "@gardenfi/utils";
 import { network } from "../../../constants/constants";
 import { BlockchainType } from "@gardenfi/orderbook";
+import { Wallet } from "./getSupportedWallets";
 
 export const ecosystems = {
   [BlockchainType.bitcoin]: {
@@ -34,6 +35,25 @@ export const ecosystems = {
 } as const;
 
 export type EcosystemKeys = keyof typeof ecosystems;
+
+export const blockchainTypeToWalletProperty: Record<
+  Exclude<BlockchainType, BlockchainType.alpen_signet>,
+  keyof Wallet
+> = {
+  [BlockchainType.bitcoin]: "isBitcoin",
+  [BlockchainType.evm]: "isEVM",
+  [BlockchainType.starknet]: "isStarknet",
+  [BlockchainType.solana]: "isSolana",
+  [BlockchainType.sui]: "isSui",
+  [BlockchainType.tron]: "isTron",
+  [BlockchainType.litecoin]: "isLitecoin",
+};
+
+export type BlockChainTypes = Exclude<
+  BlockchainType,
+  BlockchainType.alpen_signet
+>;
+
 interface BaseWallet {
   name: string;
   logo: string;
