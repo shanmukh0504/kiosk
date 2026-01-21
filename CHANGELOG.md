@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.5]
+
+### Added
+
+- Chains dependency to enable wallets and ecosystems in ConnectWallet modal.
+
 ## [2.0.4]
 
 ### Added
