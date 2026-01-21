@@ -44,6 +44,7 @@ import logger from "../utils/logger";
 import { balanceStore } from "../store/balanceStore";
 import { useTronWallet } from "./useTronWallet";
 import { Toast } from "../components/toast/Toast";
+import { useToastStore } from "../store/toastStore";
 
 export const useSwap = () => {
   const {
@@ -52,7 +53,9 @@ export const useSwap = () => {
     inputAsset,
     outputAsset,
     isSwapping,
+    swapProgress,
     isApproving,
+    isLiquidityToastVisible,
     rate,
     error,
     tokenPrices,
@@ -60,6 +63,8 @@ export const useSwap = () => {
     isEditAddress,
     networkFees,
     setIsSwapping,
+    setSwapProgress,
+    setisLiquidityToastVisible,
     setAmount,
     setRate,
     setError,
@@ -100,6 +105,7 @@ export const useSwap = () => {
   const { solanaAddress } = useSolanaWallet();
   const { tronAddress } = useTronWallet();
   const { currentAccount } = useSuiWallet();
+  const { isVisible: isToastVisible } = useToastStore();
   useNetworkFees();
 
   const inputBalance = useMemo(() => {
@@ -239,11 +245,44 @@ export const useSwap = () => {
               setIsFetchingQuote({ input: false, output: false });
               return;
             } else if (quote?.error?.includes("output amount too less")) {
-              setError({ outputError: Errors.outLow });
+              setError({ outputError: Errors.outLow, inputError: Errors.none });
               setAmount(IOType.input, "");
             } else if (quote?.error?.includes("output amount too high")) {
-              setError({ outputError: Errors.outHigh });
+              setError({
+                outputError: Errors.outHigh,
+                inputError: Errors.none,
+              });
               setAmount(IOType.input, "");
+            } else if (
+              quote?.error?.includes("expected amount to be within the range")
+            ) {
+              const rangeMatch = quote.error.match(/range of (\d+) to (\d+)/);
+              if (rangeMatch) {
+                const [, minRaw, maxRaw] = rangeMatch;
+                const assetToCheck = isExactOut ? toAsset : fromAsset;
+                const { decimals, symbol } = assetToCheck;
+
+                const minAmount = Number(
+                  formatAmount(minRaw, decimals, decimals)
+                );
+                const maxAmount = Number(
+                  formatAmount(maxRaw, decimals, decimals)
+                );
+                const amountInNumber = Number(amount);
+
+                if (amountInNumber > maxAmount) {
+                  setError({
+                    inputError: Errors.maxError(maxAmount.toString(), symbol),
+                    outputError: Errors.none,
+                  });
+                } else if (amountInNumber < minAmount) {
+                  setError({
+                    inputError: Errors.minError(minAmount.toString(), symbol),
+                    outputError: Errors.none,
+                  });
+                }
+              }
+              // setAmount(isExactOut ? IOType.input : IOType.output, "");
             } else {
               setAmount(isExactOut ? IOType.input : IOType.output, "");
             }
@@ -346,6 +385,7 @@ export const useSwap = () => {
       if (inputAsset && minAmount && amountInNumber < minAmount) {
         setError({
           inputError: Errors.minError(minAmount.toString(), inputAsset?.symbol),
+          outputError: Errors.none,
         });
         setAmount(IOType.output, "");
         setTokenPrices({ input: "0", output: "0" });
@@ -359,8 +399,8 @@ export const useSwap = () => {
       if (inputAsset && maxAmount && amountInNumber > maxAmount) {
         setError({
           inputError: Errors.maxError(maxAmount.toString(), inputAsset?.symbol),
+          outputError: Errors.none,
         });
-        setAmount(IOType.output, "");
         // cancel debounced fetch quote
         debouncedFetchQuote.cancel();
         // abort if any calls are already in progress
@@ -522,15 +562,18 @@ export const useSwap = () => {
       //   setIsApproving(false);
       // }
 
-      const res = await swap({
-        fromAsset: inputAsset,
-        toAsset: outputAsset,
-        sendAmount: inputAmountInDecimals,
-        receiveAmount: outputAmountInDecimals,
-        solverId,
-        sourceAddress: sourceAddress,
-        destinationAddress: destinationAddress,
-      });
+      const res = await swap(
+        {
+          fromAsset: inputAsset,
+          toAsset: outputAsset,
+          sendAmount: inputAmountInDecimals,
+          receiveAmount: outputAmountInDecimals,
+          solverId,
+          sourceAddress,
+          destinationAddress,
+        },
+        (progress) => setSwapProgress(progress)
+      );
 
       if (!res.ok) {
         if (
@@ -540,16 +583,21 @@ export const useSwap = () => {
         ) {
           disconnect();
           setConnectingWallet(null);
+          setIsSwapping(false);
         } else if (res.error.includes("destination amount too high")) {
           //order failed due to price fluctuation, refresh quote here
           fetchQuote(inputAmount, inputAsset, outputAsset, false);
+          setIsSwapping(false);
+        } else if (res.error.includes("insufficient liquidity")) {
+          // Wait for 8 seconds before showing the error to the user
+          // await new Promise((resolve) => setTimeout(resolve, 8000));
+          setisLiquidityToastVisible(true);
+          Toast.error("No liquidity sources found");
+          setIsSwapping(false);
         } else {
-          if (res.error.includes("insufficient liquidity")) {
-            setError({ liquidityError: Errors.insufficientLiquidity });
-            Toast.error("No liquidity sources found");
-          } else logger.error("failed to create order ❌", res.error);
+          logger.error("failed to create order ❌", res.error);
+          setIsSwapping(false);
         }
-        setIsSwapping(false);
         return;
       }
 
@@ -665,10 +713,17 @@ export const useSwap = () => {
     isComparisonVisible,
   ]);
 
+  // Clear liquidity toast state when toast is manually closed or auto-hides
+  useEffect(() => {
+    if (!isToastVisible && isLiquidityToastVisible) {
+      setisLiquidityToastVisible(false);
+    }
+  }, [isToastVisible, isLiquidityToastVisible, setisLiquidityToastVisible]);
+
   //call input amount handler when assets are changed
   useEffect(() => {
     if (!inputAsset || !outputAsset) return;
-    setError({ inputError: "" });
+    setError({ inputError: Errors.none, outputError: Errors.none });
     handleInputAmountChange(inputAmount);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputAsset, handleInputAmountChange, setError]);
@@ -696,6 +751,7 @@ export const useSwap = () => {
     if (amountInNumber < minAmount && inputAsset) {
       setError({
         inputError: Errors.minError(minAmount.toString(), inputAsset.symbol),
+        outputError: Errors.none,
       });
       setTokenPrices({ input: "0", output: "0" });
       setAmount(IOType.output, "");
@@ -704,6 +760,7 @@ export const useSwap = () => {
     if (amountInNumber > maxAmount && inputAsset) {
       setError({
         inputError: Errors.maxError(maxAmount.toString(), inputAsset.symbol),
+        outputError: Errors.none,
       });
       setTokenPrices({ input: "0", output: "0" });
       setAmount(IOType.output, "");
@@ -740,7 +797,9 @@ export const useSwap = () => {
     loading: isFetchingQuote,
     validSwap,
     isSwapping,
+    swapProgress,
     isApproving,
+    isLiquidityToastVisible,
     isBitcoinSwap,
     inputTokenBalance,
     needsWalletConnection,

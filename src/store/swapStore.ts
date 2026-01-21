@@ -37,7 +37,9 @@ type SwapState = {
   networkFees: number;
   fixedFee: number;
   isSwapping: boolean;
+  swapProgress: string;
   isApproving: boolean;
+  isLiquidityToastVisible: boolean;
   tokenPrices: TokenPrices;
   fiatTokenPrices: TokenPrices;
   error: SwapErrors;
@@ -56,7 +58,9 @@ type SwapState = {
   setTokenPrices: (tokenPrices: TokenPrices) => void;
   setSolverId: (solverId: string) => void;
   setIsSwapping: (isSwapping: boolean) => void;
+  setSwapProgress: (swapProgress: string) => void;
   setIsApproving: (isApproving: boolean) => void;
+  setisLiquidityToastVisible: (isLiquidityToastVisible: boolean) => void;
   setAsset: (ioType: IOType, asset: Asset | undefined) => void;
   setAmount: (ioType: IOType, amount: string) => void;
   setRate: (rate: number) => void;
@@ -119,12 +123,14 @@ export const swapStore = create<SwapState>((set) => ({
   networkFees: 0,
   fixedFee: 0,
   isApproving: false,
+  isLiquidityToastVisible: false,
   isNetworkFeesLoading: false,
   swapInProgress: {
     isOpen: false,
     order: null,
   },
   isSwapping: false,
+  swapProgress: "",
   tokenPrices: {
     input: "0",
     output: "0",
@@ -283,6 +289,12 @@ export const swapStore = create<SwapState>((set) => ({
   setIsSwapping: (isSwapping) => {
     set({ isSwapping });
   },
+  setSwapProgress: (swapProgress) => {
+    set({ swapProgress });
+  },
+  setisLiquidityToastVisible: (isLiquidityToastVisible) => {
+    set({ isLiquidityToastVisible });
+  },
   setIsEditAddress: (isEditAddress) => {
     set({ isEditAddress });
   },
@@ -351,6 +363,8 @@ export const swapStore = create<SwapState>((set) => ({
       inputAsset: BTC,
       isApproving: false,
       isSwapping: false,
+      swapProgress: "",
+      isLiquidityToastVisible: false,
       tokenPrices: {
         input: "0",
         output: "0",
@@ -387,6 +401,7 @@ export const swapStore = create<SwapState>((set) => ({
       outputAsset: undefined,
       inputAsset: BTC,
       isSwapping: false,
+      swapProgress: "",
       isApproving: false,
       tokenPrices: {
         input: "0",

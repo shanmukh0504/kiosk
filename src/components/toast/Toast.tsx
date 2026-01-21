@@ -69,10 +69,10 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
   };
 
   return (
-    <div className={`min-h-10 sm:-translate-y-[48px] ${className}`}>
+    <div className={`min-h-10 sm:-translate-y-[58px] ${className}`}>
       {isVisible ? (
         <div
-          className={`shine relative flex translate-y-3 items-center justify-between overflow-hidden rounded-2xl bg-white/25 px-4 py-2.5 backdrop-blur-[20px]`}
+          className={`${type === "success" ? "shine" : ""} relative flex translate-y-3 items-center justify-between overflow-hidden rounded-2xl bg-white/25 px-4 py-2.5 backdrop-blur-[20px]`}
           data-testid={`toast-${type}`}
         >
           <div className="flex items-center gap-2">
@@ -95,7 +95,7 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
             </Typography>
           </div>
           <div className="flex items-center gap-2">
-            {link && (
+            {link ? (
               <Link to={link} target="_blank">
                 <div
                   className="flex h-5 w-5 items-center justify-center"
@@ -104,15 +104,15 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
                   <ArrowNorthEastIcon />
                 </div>
               </Link>
+            ) : (
+              <button
+                onClick={hideToast}
+                className="flex h-4 w-4 cursor-pointer items-center justify-center transition-opacity hover:opacity-70"
+                aria-label="Close toast"
+              >
+                <CloseIcon />
+              </button>
             )}
-            <button
-              onClick={hideToast}
-              className="flex h-4 w-4 cursor-pointer items-center justify-center transition-opacity hover:opacity-70"
-              aria-label="Close toast"
-              data-testid={`toast--close`}
-            >
-              <CloseIcon />
-            </button>
           </div>
         </div>
       ) : (
