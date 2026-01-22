@@ -115,6 +115,14 @@ export default defineConfig({
     reportCompressedSize: false,
     chunkSizeWarningLimit: 2000,
     rollupOptions: {
+      onwarn(warning, warn) {
+        if (
+          warning.code === 'INVALID_ANNOTATION'
+        ) {
+          return
+        }
+        warn(warning)
+      },
       output: {
         manualChunks: {
           vendor: ["react", "react-dom", "react-router-dom"],
