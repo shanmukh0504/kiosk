@@ -99,7 +99,7 @@ export const StakeComponent: React.FC = () => {
   const handleBuySeedClick = () => {
     window.open(
       network === Network.MAINNET
-        ? "https://app.uniswap.org/explore/tokens/arbitrum/0x86f65121804d2cdbef79f9f072d4e0c2eebabc08"
+        ? "https://swap.cow.fi/#/42161/swap/SEED"
         : "http://testnet.garden.finance/bridge/arbitrum_sepolia?input-chain=bitcoin_testnet&input-asset=BTC&output-asset=SEED",
       "_blank"
     );
@@ -158,7 +158,7 @@ export const StakeComponent: React.FC = () => {
         Toast.needSeed(
           "Don't have SEED tokens?",
           network === Network.MAINNET
-            ? "https://app.uniswap.org/explore/tokens/arbitrum/0x86f65121804d2cdbef79f9f072d4e0c2eebabc08"
+            ? "https://swap.cow.fi/#/42161/swap/_/SEED"
             : "http://testnet.garden.finance/bridge/arbitrum_sepolia?input-chain=bitcoin_testnet&input-asset=BTC&output-asset=SEED"
         );
       }

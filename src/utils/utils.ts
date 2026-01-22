@@ -1,5 +1,10 @@
 import BigNumber from "bignumber.js";
-import { INTERNAL_ROUTES, QUERY_PARAMS, THEMES } from "../constants/constants";
+import {
+  CHAIN_NAME_MAP,
+  INTERNAL_ROUTES,
+  QUERY_PARAMS,
+  THEMES,
+} from "../constants/constants";
 import {
   Asset,
   Chain,
@@ -28,6 +33,16 @@ export const getCurrentTheme = () => {
 export const capitalizeChain = (chainKey: string) => {
   if (chainKey === "evm") return "EVM";
   return chainKey.charAt(0).toUpperCase() + chainKey.slice(1);
+};
+
+export const formatChainDisplayName = (chainName: string): string => {
+  if (!chainName) return "";
+
+  if (CHAIN_NAME_MAP[chainName.toLowerCase()]) {
+    return CHAIN_NAME_MAP[chainName.toLowerCase()];
+  }
+
+  return chainName;
 };
 
 export const formatChainNameForDisplay = (
@@ -370,8 +385,8 @@ export const calculateNotificationWidth = (
   title: string | undefined,
   description: string | undefined
 ): { textWidth: number; containerWidth: number } => {
-  const CHAR_WIDTH = 6;
-  const BUFFER_WIDTH = 128;
+  const CHAR_WIDTH = 7;
+  const BUFFER_WIDTH = 130;
   // Estimate characters per line (accounting for wrapping)
   // For line-clamp-2, the width is determined by the longest line, not total characters
   const CHARS_PER_LINE = 55;

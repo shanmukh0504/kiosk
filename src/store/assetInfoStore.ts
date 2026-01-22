@@ -73,7 +73,7 @@ export const assetInfoStore = create<AssetInfoState>((set, get) => ({
   fetchAndSetFiatValues: async () => {
     try {
       const { data } = await axios.get<FiatResponse>(
-        API().quote.fiatValues.toString()
+        API().fiatValues.toString()
       );
 
       const fiatData = Object.entries(data.result).reduce(

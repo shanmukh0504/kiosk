@@ -223,6 +223,10 @@ export const WALLET_SUPPORTED_CHAINS: Record<string, Chain[]> = {
   "app.backpack": ["ethereum", "solana", "sui", "base", "arbitrum", "bera"],
 };
 
+export const CHAIN_NAME_MAP: Record<string, string> = {
+  bnbchain: "BNB Chain",
+};
+
 export const SOCIAL_LINKS = {
   discord: "https://discord.com/invite/dZwSjh9922",
   x: "https://x.com/gardenfi",
