@@ -89,7 +89,12 @@ export const RewardStats: FC<props> = ({
         </div>
       )}
       {isHovered && targetRef && (
-        <TooltipWrapper offsetX={10} offsetY={12} targetRef={targetRef}>
+        <TooltipWrapper
+          offsetX={10}
+          offsetY={12}
+          targetRef={targetRef}
+          title={"rewards-breakdown"}
+        >
           {toolTip}
         </TooltipWrapper>
       )}

@@ -44,7 +44,9 @@ export const OverviewStats: FC<props> = ({
           >
             <InfoIcon className="h-3 w-3" />
             {isHovered && toolTip && targetRef && (
-              <TooltipWrapper targetRef={targetRef}>{toolTip}</TooltipWrapper>
+              <TooltipWrapper targetRef={targetRef} title={titleSlug}>
+                {toolTip}
+              </TooltipWrapper>
             )}
           </span>
         )}

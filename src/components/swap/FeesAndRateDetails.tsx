@@ -112,7 +112,10 @@ export const FeesAndRateDetails = () => {
                   >
                     <InfoIcon className="h-3 w-3 !fill-mid-grey" />
                     {isHovered && inputAsset && outputAsset && (
-                      <TooltipWrapper targetRef={targetRef}>
+                      <TooltipWrapper
+                        targetRef={targetRef}
+                        title={"rate-price"}
+                      >
                         <RateAndPriceDisplay
                           inputToken={inputAsset?.symbol}
                           outputToken={outputAsset?.symbol}
