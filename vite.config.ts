@@ -1,4 +1,3 @@
-import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { execSync } from "child_process";
@@ -93,11 +92,6 @@ export default defineConfig({
           dest: "public",
         },
       ],
-    }),
-    sentryVitePlugin({
-      org: "garden",
-      project: "kiosk",
-      url: "https://telemetry.garden.finance/",
     }),
   ],
   esbuild: {
