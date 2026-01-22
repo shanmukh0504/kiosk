@@ -6,7 +6,6 @@ import path from "path";
 import fs from "fs";
 import wasm from "vite-plugin-wasm";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
-import topLevelAwait from "vite-plugin-top-level-await";
 import { frameMetadataPlugin, metadataPlugin } from "./vite-metadata-plugin";
 import process from "process";
 
@@ -47,7 +46,6 @@ export default defineConfig({
         global: true,
       },
     }),
-    topLevelAwait(),
     {
       name: "generate-build-id",
       buildEnd() {
