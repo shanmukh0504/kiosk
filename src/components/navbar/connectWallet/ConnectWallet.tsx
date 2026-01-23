@@ -90,7 +90,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     wallet: tronSelectedWallet,
   } = useTronWallet();
   const { modalData } = modalStore();
-  const { chains } = assetInfoStore();
+  const { chains, isLoading: isLoadingChains } = assetInfoStore();
 
   const showOnlyBTCWallets = !!modalData.connectWallet?.bitcoin;
   const showOnlyStarknetWallets = !!modalData.connectWallet?.starknet;
@@ -163,30 +163,6 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       });
     });
 
-    switch (selectedEcosystem) {
-      case BlockchainType.bitcoin:
-        allWallets = allWallets.filter((wallet) => wallet.isBitcoin);
-        break;
-      case BlockchainType.evm:
-        allWallets = allWallets.filter((wallet) => wallet.isEVM);
-        break;
-      case BlockchainType.starknet:
-        allWallets = allWallets.filter((wallet) => wallet.isStarknet);
-        break;
-      case BlockchainType.solana:
-        allWallets = allWallets.filter((wallet) => wallet.isSolana);
-        break;
-      case BlockchainType.sui:
-        allWallets = allWallets.filter((wallet) => wallet.isSui);
-        break;
-      case BlockchainType.tron:
-        allWallets = allWallets.filter((wallet) => wallet.isTron);
-        break;
-      case BlockchainType.litecoin:
-        allWallets = allWallets.filter((wallet) => wallet.isLitecoin);
-        break;
-    }
-
     if (
       typeof window !== "undefined" &&
       window.ethereum &&
@@ -195,7 +171,26 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       allWallets = allWallets.filter((wallet) => wallet.id !== "injected");
     }
     return allWallets;
-  }, [selectedEcosystem, availableBlockchainTypes]);
+  }, [
+    availableBlockchainTypes,
+    availableWallets,
+    availableLitecoinWallets,
+    connectors,
+    starknetConnectors,
+    solanaWallets,
+    suiWallets,
+    tronWallets,
+  ]);
+
+  const filteredWallets = useMemo(() => {
+    if (!selectedEcosystem) return allAvailableWallets;
+
+    const property =
+      blockchainTypeToWalletProperty[selectedEcosystem as BlockChainTypes];
+    if (!property) return allAvailableWallets;
+
+    return allAvailableWallets.filter((wallet) => !!wallet[property]);
+  }, [selectedEcosystem, allAvailableWallets]);
 
   const handleClose = useCallback(() => {
     setConnectingWallet(null);
@@ -339,34 +334,47 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
 
       {!multiWalletConnector && (
         <div className="flex flex-wrap gap-3">
-          {Object.entries(ecosystems)
-            .filter(([key]) => {
-              const type = key as BlockChainTypes;
-              if (!availableBlockchainTypes.has(type)) return false;
-              return allAvailableWallets.some(
-                (w) => !!w[blockchainTypeToWalletProperty[type]]
-              );
-            })
-            .map(([key, ecosystem]) => (
-              <Chip
-                key={key}
-                className={`cursor-pointer !bg-opacity-50 py-1.5 pl-3 pr-1 capitalize transition-colors ease-cubic-in-out hover:!bg-opacity-100`}
-                onClick={() => {
-                  setSelectedEcosystem((prev) =>
-                    prev === key ? null : (key as BlockchainType)
-                  );
-                }}
-              >
-                <Typography size="h3" weight="regular">
-                  {ecosystem.name === "EVM" ? "EVM" : ecosystem.name}
-                </Typography>
-                <RadioCheckedIcon
-                  className={`${
-                    selectedEcosystem === key ? "mr-1 w-4" : "w-0"
-                  } fill-rose transition-all`}
+          {isLoadingChains ? (
+            <>
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-8 w-20 animate-pulse rounded-full bg-gray-200"
                 />
-              </Chip>
-            ))}
+              ))}
+            </>
+          ) : (
+            <>
+              {Object.entries(ecosystems)
+                .filter(([key]) => {
+                  const type = key as BlockChainTypes;
+                  if (!availableBlockchainTypes.has(type)) return false;
+                  return allAvailableWallets.some(
+                    (w) => !!w[blockchainTypeToWalletProperty[type]]
+                  );
+                })
+                .map(([key, ecosystem]) => (
+                  <Chip
+                    key={key}
+                    className={`cursor-pointer !bg-opacity-50 py-1.5 pl-3 pr-1 capitalize transition-colors ease-cubic-in-out hover:!bg-opacity-100`}
+                    onClick={() => {
+                      setSelectedEcosystem((prev) =>
+                        prev === key ? null : (key as BlockchainType)
+                      );
+                    }}
+                  >
+                    <Typography size="h3" weight="regular">
+                      {ecosystem.name === "EVM" ? "EVM" : ecosystem.name}
+                    </Typography>
+                    <RadioCheckedIcon
+                      className={`${
+                        selectedEcosystem === key ? "mr-1 w-4" : "w-0"
+                      } fill-rose transition-all`}
+                    />
+                  </Chip>
+                ))}
+            </>
+          )}
         </div>
       )}
 
@@ -377,10 +385,12 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           handleClose={handleClose}
         />
       ) : (
-        <div className="scrollbar-hide flex flex-col gap-1 overflow-y-auto overscroll-contain rounded-2xl bg-white/50 p-4 transition-all duration-300">
-          {allAvailableWallets.length > 0 ? (
+        <div
+          className={`scrollbar-hide flex flex-col gap-1 rounded-2xl bg-white/50 p-4 transition-all duration-300 ${isLoadingChains ? "overflow-hidden overscroll-none" : "overflow-y-auto overscroll-contain"}`}
+        >
+          {filteredWallets.length > 0 ? (
             <AnimatePresence>
-              {allAvailableWallets.map((wallet) => (
+              {filteredWallets.map((wallet, index) => (
                 <WalletRow
                   key={wallet.id}
                   name={wallet.name}
@@ -403,6 +413,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                     tronSelectedWallet,
                   })}
                   isAvailable={wallet.isAvailable}
+                  isLoadingChains={isLoadingChains}
+                  index={index}
                 />
               ))}
             </AnimatePresence>
