@@ -15,7 +15,11 @@ import { modalStore } from "../../store/modalStore";
 import { ChainsTooltip } from "./ChainsTooltip";
 import { AvailableChainsSidebar } from "./AvailableChainsSidebar";
 import { AnimatePresence, motion } from "framer-motion";
-import { formatBalance, isStableCoinOrSeed } from "../../utils/utils";
+import {
+  formatBalance,
+  isStableCoinOrSeed,
+  formatChainDisplayName,
+} from "../../utils/utils";
 import { useEVMWallet } from "../../hooks/useEVMWallet";
 import { useBitcoinWallet } from "@gardenfi/wallet-connectors";
 import { useStarknetWallet } from "../../hooks/useStarknetWallet";
@@ -399,7 +403,9 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
           <div className="flex h-[316px] flex-col overflow-auto rounded-2xl bg-white">
             <div className="px-4 pb-2 pt-2">
               <Typography size="h5" weight="medium">
-                {chain ? "Assets on " + chain.name : "Assets"}
+                {chain
+                  ? "Assets on " + formatChainDisplayName(chain.name)
+                  : "Assets"}
               </Typography>
             </div>
             <GradientScroll
