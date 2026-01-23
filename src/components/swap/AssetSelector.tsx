@@ -328,15 +328,21 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             ease: "easeOut",
           }}
           className={`left-auto top-60 z-30 flex flex-col gap-3 rounded-[20px] sm:min-w-[468px] ${isMobile ? "" : "m-1"}`}
+          data-testid="asset-selector-modal"
         >
           <div className="flex items-center justify-between p-1">
-            <Typography size="h4" weight="medium">
+            <Typography
+              size="h4"
+              weight="medium"
+              data-testid="asset-selector-title"
+            >
               {`Select token to ${
                 isAssetSelectorOpen.type === IOType.input ? "send" : "receive"
               }`}
             </Typography>
             <CloseIcon
               className="hidden cursor-pointer sm:visible sm:block"
+              data-testid="asset-selector-close"
               onClick={onClose}
             />
           </div>
@@ -349,6 +355,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                     className={`relative flex h-12 flex-1 items-center justify-center gap-2 overflow-visible rounded-xl outline-none duration-300 ease-in-out ${
                       !chain || c.id !== chain.id ? "bg-white/50" : "bg-white"
                     }`}
+                    data-testid={`asset-selector-chain-${c.id}`}
                     onMouseEnter={() => setHoveredChain(c.name)}
                     onMouseLeave={() => setHoveredChain("")}
                     onClick={() =>
@@ -372,6 +379,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
               {orderedChains.length > visibleChainsCount && (
                 <button
                   className={`h-12 w-12 cursor-pointer rounded-xl bg-white/50 p-4 duration-300 ease-in-out`}
+                  data-testid="asset-selector-more-chains"
                   onClick={() => setShowAllChains(true)}
                 >
                   <Typography
@@ -385,7 +393,10 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
               )}
             </div>
           </div>
-          <div className="flex w-full items-center justify-between rounded-2xl bg-white/50 px-4 py-[10px]">
+          <div
+            className="flex w-full items-center justify-between rounded-2xl bg-white/50 px-4 py-[10px]"
+            data-testid="asset-selector-search-wrapper"
+          >
             <div className="flex flex-grow items-center">
               <Typography size="h4" weight="regular" className="gf-w-full">
                 <input
@@ -395,6 +406,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                   value={input}
                   placeholder="Search assets or chains"
                   onChange={handleSearch}
+                  data-testid="asset-selector-search"
                 />
               </Typography>
             </div>
@@ -411,6 +423,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
             <GradientScroll
               height={272}
               gradientHeight={42}
+              data-testid="asset-selector-list"
               onClose={!modalName.assetList}
             >
               {fiatBasedSortedResults && fiatBasedSortedResults.length > 0 ? (
@@ -421,6 +434,7 @@ export const AssetSelector: FC<props> = ({ onClose }) => {
                       <div
                         key={`${asset?.chain}-${asset?.htlc?.address}-${asset?.token?.address || "native"}-${index}`}
                         className="flex w-full cursor-pointer items-center justify-between gap-2 px-4 py-1.5 hover:bg-off-white"
+                        data-testid={`asset-selector-item-${asset?.chain}-${asset?.symbol?.toLowerCase() || index}`}
                         onClick={() => handleClick(asset)}
                       >
                         <div className="flex w-full items-center gap-2">

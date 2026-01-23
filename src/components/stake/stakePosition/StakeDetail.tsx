@@ -211,24 +211,33 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
         transition: { duration: 0.1 },
       }}
       className={`origin-top ${index % 2 !== 0 && "bg-white/50"}`}
+      data-testid={`stake-position-row-${index + 1}`}
     >
-      <td className="w-[90px] py-2 pl-6 text-left">
+      <td
+        className="w-[90px] py-2 pl-6 text-left"
+        data-testid="stake-position-amount-cell"
+      >
         <Typography
           size="h4"
           weight="regular"
           className="flex items-center gap-1"
+          data-testid="stake-position-amount"
         >
           {formattedAmount}
           {stakePos.isGardenerPass && <NFTIcon className="h-4" />}
         </Typography>
       </td>
 
-      <td className="w-[156px] py-2 pl-5 text-left sm:pl-[66px]">
+      <td
+        className="w-[156px] py-2 pl-5 text-left sm:pl-[66px]"
+        data-testid="stake-position-rewards-cell"
+      >
         <span
           ref={targetRef}
           className="inline-block cursor-pointer"
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
+          data-testid="stake-position-rewards-trigger"
         >
           {hovered && (!!seedReward || !!cbbtcReward) && (
             <TooltipWrapper
@@ -239,24 +248,42 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
               <UnitRewardTooltip seed={seedReward} cbBtc={cbbtcReward} />
             </TooltipWrapper>
           )}
-          <Typography size="h4" weight="regular">
+          <Typography
+            size="h4"
+            weight="regular"
+            data-testid="stake-position-rewards-value"
+          >
             ${formatAmount(cbbtcRewardUSD + seedRewardUSD, 0, 2)}
           </Typography>
         </span>
       </td>
-      <td className="w-[130px] py-2 pl-5 text-left sm:pl-[66px]">
-        <Typography size="h4" weight="regular">
+      <td
+        className="w-[130px] py-2 pl-5 text-left sm:pl-[66px]"
+        data-testid="stake-position-votes-cell"
+      >
+        <Typography
+          size="h4"
+          weight="regular"
+          data-testid="stake-position-votes"
+        >
           {stakePos.votes}
         </Typography>
       </td>
-      <td className="w-[130px] py-2 pl-5 text-left sm:pl-[66px]">
-        <Typography size="h4" weight="regular">
+      <td
+        className="w-[130px] py-2 pl-5 text-left sm:pl-[66px]"
+        data-testid="stake-position-apy-cell"
+      >
+        <Typography size="h4" weight="regular" data-testid="stake-position-apy">
           {formattedApy}
         </Typography>
       </td>
-      <td className="flex w-[140px] items-center pl-5 pt-3 text-left sm:w-[186px] sm:pl-[66px] sm:pt-0">
+      <td
+        className="flex w-[140px] items-center pl-5 pt-3 text-left sm:w-[186px] sm:pl-[66px] sm:pt-0"
+        data-testid="stake-position-actions-cell"
+      >
         <div
           className={`mb-2.5 flex max-h-7 w-full items-center gap-3 overflow-hidden sm:mb-0 sm:mt-1.5 ${hasExpired ? "justify-center" : "justify-start"}`}
+          data-testid="stake-position-enddate-container"
         >
           {hasExpired ? (
             <Button
@@ -264,11 +291,16 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
               size="sm"
               onClick={handleRestake}
               className="!h-7 w-fit !min-w-20 !rounded-lg border border-green-500"
+              data-testid="stake-position-restake-button"
             >
               Restake
             </Button>
           ) : stakeEndDateString ? (
-            <Typography size="h4" weight="regular">
+            <Typography
+              size="h4"
+              weight="regular"
+              data-testid="stake-position-enddate"
+            >
               {stakeEndDateString}
             </Typography>
           ) : (
@@ -293,6 +325,7 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
             }, 150);
           }}
           className={`mx-1 -mt-1 flex w-8 cursor-pointer items-center sm:mb-0 sm:mt-2.5 ${isPermaStake && "pointer-events-none opacity-0"}`}
+          data-testid="stake-position-menu-trigger"
         >
           <div className="relative">
             <span ref={menuRef} className="inline-block cursor-pointer">
@@ -315,6 +348,7 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
                         closeMenu();
                       }}
                       className="z-[9999] !min-w-20 !bg-white !px-0 !text-dark-grey"
+                      data-testid="stake-position-unstake-button"
                     >
                       Unstake
                     </Button>
@@ -328,6 +362,7 @@ export const StakeDetails: FC<props> = ({ index, stakePos }) => {
                         closeMenu();
                       }}
                       className="!min-w-20 !bg-white !px-0 !text-dark-grey"
+                      data-testid="stake-position-extend-button"
                     >
                       Extend
                     </Button>

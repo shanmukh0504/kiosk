@@ -20,6 +20,7 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
       exit={{ opacity: 0, scale: 0.8, y: -10 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="relative mx-auto flex"
+      data-testid="stake-rewards-tooltip"
     >
       <div className="absolute mb-[15px] ml-40 mt-[-5px] h-[14px] w-[14px] rotate-45 rounded-sm bg-white md:ml-[-5px] md:mt-[15px]"></div>
       <div className="flex max-w-[257px] flex-col gap-2 rounded-2xl bg-white px-4 py-3 shadow-custom">
@@ -29,8 +30,16 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
         </Typography>
         <div className="flex flex-wrap items-center justify-between space-y-1">
           {!!cbBtc && (
-            <div className="flex items-center gap-1">
-              <Typography size="h4" weight="regular" className="w-[87px]">
+            <div
+              className="flex items-center gap-1"
+              data-testid="stake-rewards-tooltip-cbbtc-row"
+            >
+              <Typography
+                size="h4"
+                weight="regular"
+                className="w-[87px]"
+                data-testid="stake-rewards-tooltip-cbbtc-amount"
+              >
                 {cbBtc}
               </Typography>
               <Typography
@@ -43,6 +52,7 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
                     STAKE_REWARD.CBBTC.REWARD_TOKEN_ADDRESS
                   )
                 }
+                data-testid="stake-rewards-tooltip-cbbtc-link"
               >
                 cbBTC
               </Typography>
@@ -54,8 +64,16 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
             </div>
           )}
           {!!seed && (
-            <div className="flex items-center gap-1">
-              <Typography size="h4" weight="regular" className="w-[87px]">
+            <div
+              className="flex items-center gap-1"
+              data-testid="stake-rewards-tooltip-seed-row"
+            >
+              <Typography
+                size="h4"
+                weight="regular"
+                className="w-[87px]"
+                data-testid="stake-rewards-tooltip-seed-amount"
+              >
                 {seed}
               </Typography>
               <Typography
@@ -68,6 +86,7 @@ export const RewardsToolTip = ({ seed, cbBtc }: TooltipProps) => {
                     STAKE_REWARD.SEED.REWARD_TOKEN_ADDRESS
                   )
                 }
+                data-testid="stake-rewards-tooltip-seed-link"
               >
                 SEED
               </Typography>

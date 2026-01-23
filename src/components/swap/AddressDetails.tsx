@@ -70,6 +70,11 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
               ? "pointer-events-auto max-h-7 py-1 opacity-100"
               : "pointer-events-none max-h-0 py-0 opacity-0"
           }`}
+          data-testid={
+            isRefund
+              ? "swap-details-refund-address-row"
+              : "swap-details-receive-address-row"
+          }
           onClick={(e) => {
             e.stopPropagation();
             handleAddressRedirect(address);
@@ -84,7 +89,15 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
             {isRefund ? "Refund" : "Receive"} address
           </Typography>
           <div className="flex items-center gap-2">
-            <Typography size="h5" weight="regular">
+            <Typography
+              size="h5"
+              weight="regular"
+              data-testid={
+                isRefund
+                  ? "swap-details-refund-address-value"
+                  : "swap-details-receive-address-value"
+              }
+            >
               {getTrimmedAddress(address)}
             </Typography>
             <div className="flex gap-1">
@@ -95,13 +108,25 @@ export const AddressDetails: FC<AddressDetailsProps> = ({
                       ? "max-h-4 max-w-4 opacity-100"
                       : "-mr-3.5 max-h-0 max-w-0 opacity-0"
                   }`}
+                  data-testid={
+                    isRefund
+                      ? "swap-details-refund-address-edit"
+                      : "swap-details-receive-address-edit"
+                  }
                   onClick={(e) => {
                     e.stopPropagation();
                     handleEditAddressClick();
                   }}
                 />
               )}
-              <ArrowNorthEastIcon className="h-4 w-4 cursor-pointer p-[3px]" />
+              <ArrowNorthEastIcon
+                className="h-4 w-4 cursor-pointer p-[3px]"
+                data-testid={
+                  isRefund
+                    ? "swap-details-refund-address-explorer"
+                    : "swap-details-receive-address-explorer"
+                }
+              />
             </div>
           </div>
         </div>

@@ -15,6 +15,7 @@ type props = {
   valueSize?: "h1" | "h2" | "h3" | "h4" | "h5";
   extend?: boolean;
   previousValue?: ReactNode;
+  testId?: string;
 };
 
 export const RewardStats: FC<props> = ({
@@ -29,6 +30,7 @@ export const RewardStats: FC<props> = ({
   valueSize = "h3",
   extend = false,
   previousValue,
+  testId,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const titleSize = size === "xs" ? "h5" : size === "sm" ? "h5" : "h4";
@@ -36,6 +38,7 @@ export const RewardStats: FC<props> = ({
   return (
     <div
       className={`relative flex flex-col items-start justify-center gap-1 ${className}`}
+      data-testid={`stake-rewards-stat-${testId}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -55,6 +58,7 @@ export const RewardStats: FC<props> = ({
           size={valueSize}
           weight={weight}
           className={`sm:!gf-leading-[20px] whitespace-nowrap`}
+          data-testid={`stake-rewards-stat-${testId}-value`}
           style={{ color: textColor }}
         >
           {value}
@@ -65,6 +69,7 @@ export const RewardStats: FC<props> = ({
             size={valueSize}
             weight={weight}
             className={`sm:!gf-leading-[20px] whitespace-nowrap`}
+            data-testid={`stake-rewards-stat-${testId}-previous-value`}
             style={{ color: textColor }}
           >
             {previousValue ?? value}
@@ -74,6 +79,7 @@ export const RewardStats: FC<props> = ({
             size={valueSize}
             weight={weight}
             className={`sm:!gf-leading-[20px] whitespace-nowrap`}
+            data-testid={`stake-rewards-stat-${testId}-current-value`}
             style={{ color: textColor }}
           >
             {previousValue && Number(previousValue) > Number(value)
@@ -83,7 +89,12 @@ export const RewardStats: FC<props> = ({
         </div>
       )}
       {isHovered && targetRef && (
-        <TooltipWrapper offsetX={10} offsetY={12} targetRef={targetRef}>
+        <TooltipWrapper
+          offsetX={10}
+          offsetY={12}
+          targetRef={targetRef}
+          title={"rewards-breakdown"}
+        >
           {toolTip}
         </TooltipWrapper>
       )}

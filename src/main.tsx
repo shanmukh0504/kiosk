@@ -9,7 +9,6 @@ import "@gardenfi/garden-book/style.css";
 import { warningMessage } from "./utils/utils.ts";
 
 import { WalletProviders } from "./layout/WalletProviders.tsx";
-// import { WalletMonitor } from "./SentryInit.tsx";
 
 warningMessage();
 
@@ -21,7 +20,6 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <QueryClientProvider client={queryClient}>
         <WalletProviders>
           <App />
-          {/* <WalletMonitor /> */}
         </WalletProviders>
       </QueryClientProvider>
     </BrowserRouter>

@@ -44,14 +44,17 @@ export const Navbar = () => {
       className={
         "flex items-center justify-between gap-2 px-4 py-4 text-dark-grey sm:gap-3 sm:px-6 sm:py-6 lg:px-10"
       }
+      data-testid="navbar"
     >
       <div className="flex items-center gap-4 sm:gap-8 lg:gap-16">
         <GardenFullLogo
           onClick={handleHomeLogoClick}
+          data-testid="navbar-logo-desktop"
           className="hidden cursor-pointer sm:block"
         />
         <GardenIcon
           onClick={handleHomeLogoClick}
+          data-testid="navbar-logo-mobile"
           className="h-7 w-7 cursor-pointer sm:hidden sm:h-8 sm:w-8"
         />
         <div className="hidden gap-8 md:flex md:items-center md:gap-12">
@@ -65,6 +68,7 @@ export const Navbar = () => {
                 href={primaryPath}
                 target={route.isExternal ? "_blank" : undefined}
                 rel={route.isExternal ? "noreferrer" : undefined}
+                data-testid={`navbar-link-${route.name.toLowerCase()}`}
               >
                 <Typography size="h2" weight={isActive ? "medium" : "regular"}>
                   {route.name}
@@ -76,7 +80,10 @@ export const Navbar = () => {
       </div>
       <div className="flex items-center gap-2 sm:gap-3">
         {!isMobile && isTestnet && (
-          <div className="hidden items-center gap-2 rounded-3xl bg-white/25 px-3 py-2 sm:flex sm:px-4 sm:py-3">
+          <div
+            data-testid="navbar-testnet-badge"
+            className="hidden items-center gap-2 rounded-3xl bg-white/25 px-3 py-2 sm:flex sm:px-4 sm:py-3"
+          >
             <CodeBlockIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             <Typography
               size="h3"
@@ -99,6 +106,7 @@ export const Navbar = () => {
           <Button
             variant="primary"
             onClick={handleConnectClick}
+            data-testid="navbar-connect-button"
             className="!rounded-3xl !px-4 !py-2 text-sm sm:!px-6 sm:!py-3 sm:text-base"
             size="sm"
             breakpoints={{ sm: "lg" }}

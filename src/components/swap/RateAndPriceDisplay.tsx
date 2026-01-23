@@ -15,7 +15,10 @@ export const RateAndPriceDisplay = ({
   isLoading?: boolean;
   className?: string;
 }) => (
-  <div className={`flex min-w-fit items-center gap-1`}>
+  <div
+    className={`flex min-w-fit items-center gap-1`}
+    data-testid="rate-price-display"
+  >
     <Typography
       size="h5"
       weight="regular"
@@ -37,6 +40,7 @@ export const RateAndPriceDisplay = ({
         size="h5"
         weight="regular"
         className={`!text-nowrap ${className}`}
+        data-testid="rate-price-display-value"
       >
         {rate && `${rate}`}
         {tokenPrice && `$${tokenPrice}`}

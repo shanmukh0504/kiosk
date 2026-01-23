@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { debounce } from "lodash";
+import { debounce } from "lodash-es";
 import { getChainflipFee } from "../utils/timeAndFeeComparison/ChainFlipFees";
 import { getRelayFee } from "../utils/timeAndFeeComparison/RelayFees";
 import { getThorFee } from "../utils/timeAndFeeComparison/ThorSwapFees";
@@ -46,53 +46,56 @@ export const useCompetitorTimeFees = ({
     swapStore();
 
   const debouncedFetchAllData = useMemo(() => {
-    return debounce(async (inputAsset, outputAsset, inputAmount) => {
-      if (inputAsset && outputAsset && inputAmount) {
-        setLoading(true);
-        try {
-          const sources = {
-            Relay: getRelayFee,
-            Thorswap: getThorFee,
-            Chainflip: getChainflipFee,
-          };
+    return debounce(
+      async (inputAsset: Asset, outputAsset: Asset, inputAmount: number) => {
+        if (inputAsset && outputAsset && inputAmount) {
+          setLoading(true);
+          try {
+            const sources = {
+              Relay: getRelayFee,
+              Thorswap: getThorFee,
+              Chainflip: getChainflipFee,
+            };
 
-          const results = await Promise.all(
-            Object.entries(sources).map(async ([key, fetchFn]) => {
-              try {
-                const { fee, time } = await fetchFn(
-                  inputAsset,
-                  outputAsset,
-                  Number(inputAmount)
-                );
-                return fee === 0 && time === 0 ? null : { key, fee, time };
-              } catch {
-                // Suppress error
-              }
-            })
-          );
+            const results = await Promise.all(
+              Object.entries(sources).map(async ([key, fetchFn]) => {
+                try {
+                  const { fee, time } = await fetchFn(
+                    inputAsset,
+                    outputAsset,
+                    Number(inputAmount)
+                  );
+                  return fee === 0 && time === 0 ? null : { key, fee, time };
+                } catch {
+                  // Suppress error
+                }
+              })
+            );
 
-          const filteredResults = results.filter(Boolean) as {
-            key: string;
-            fee: number;
-            time: number;
-          }[];
+            const filteredResults = results.filter(Boolean) as {
+              key: string;
+              fee: number;
+              time: number;
+            }[];
 
-          const newData = filteredResults.reduce(
-            (acc, { key, fee, time }) => {
-              acc[key] = { fee, time };
-              return acc;
-            },
-            {} as Record<string, comparisonMetric>
-          );
+            const newData = filteredResults.reduce(
+              (acc, { key, fee, time }) => {
+                acc[key] = { fee, time };
+                return acc;
+              },
+              {} as Record<string, comparisonMetric>
+            );
 
-          setSwapData(newData);
-        } catch {
-          // suppress error
-        } finally {
-          setLoading(false);
+            setSwapData(newData);
+          } catch {
+            // suppress error
+          } finally {
+            setLoading(false);
+          }
         }
-      }
-    }, 300); // debounce delay
+      },
+      300
+    ); // debounce delay
   }, []);
 
   const gardenFee = useMemo(

@@ -173,7 +173,14 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
           animate="visible"
           exit="exit"
         >
-          <div className="flex flex-col gap-2 rounded-2xl bg-white p-4">
+          <div
+            className="flex flex-col gap-2 rounded-2xl bg-white p-4"
+            data-testid={
+              isRefund
+                ? "refund-address-container"
+                : "receive-address-container"
+            }
+          >
             <Typography
               data-tooltip-id={isRefund ? tooltipId : ""}
               size="h5"
@@ -193,6 +200,9 @@ export const InputAddress: FC<InputAddressProps> = ({ addressType }) => {
                 value={displayAddress}
                 placeholder={`Your ${chainDisplayName} address`}
                 onChange={handleChange}
+                data-testid={
+                  isRefund ? "refund-address-input" : "receive-address-input"
+                }
               />
               {isRefund && (
                 <Tooltip

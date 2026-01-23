@@ -34,9 +34,13 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
       <div
         key="needSeed"
         className={`shine relative flex items-center justify-between overflow-hidden rounded-2xl bg-white/25 px-4 py-2 backdrop-blur-[20px]`}
+        data-testid="toast-static-need-seed"
       >
         <div className="flex items-center gap-2">
-          <div className="flex h-5 w-5 items-center justify-center">
+          <div
+            className="flex h-5 w-5 items-center justify-center"
+            data-testid="toast-static-need-seed-icon"
+          >
             <GardenIconOutline className="fill-dark-grey" />
           </div>
           <Typography
@@ -45,6 +49,7 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
               md: "h3",
             }}
             weight="regular"
+            data-testid="toast-static-need-seed-content"
           >
             {toast.content}
           </Typography>
@@ -53,6 +58,7 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
           <Button
             size="sm"
             className="!h-fit !min-w-fit !rounded-full !bg-white/50 !px-3 !py-0.5 !text-sm !font-normal !text-dark-grey"
+            data-testid="toast-static-need-seed-cta"
             onClick={() => window.open(toast.link, "_blank")}
           >
             Buy SEED
@@ -67,23 +73,34 @@ export const ToastContainer: FC<ToastContainerProps> = ({ className }) => {
       {isVisible ? (
         <div
           className={`${type === "success" ? "shine" : ""} relative flex translate-y-3 items-center justify-between overflow-hidden rounded-2xl bg-white/25 px-4 py-2.5 backdrop-blur-[20px]`}
+          data-testid={`toast-${type}`}
         >
           <div className="flex items-center gap-2">
-            <div className="flex h-5 w-5 items-center justify-center">
+            <div
+              className="flex h-5 w-5 items-center justify-center"
+              data-testid={`toast-${type}-icon`}
+            >
               {type === "success" ? (
                 <CheckIcon />
               ) : (
                 <InfoIcon className="h-4 w-4 rotate-180" />
               )}
             </div>
-            <Typography size="h4" weight="regular">
+            <Typography
+              size="h4"
+              weight="regular"
+              data-testid={`toast-${type}-content`}
+            >
               {content}
             </Typography>
           </div>
           <div className="flex items-center gap-2">
             {link ? (
               <Link to={link} target="_blank">
-                <div className="flex h-5 w-5 items-center justify-center">
+                <div
+                  className="flex h-5 w-5 items-center justify-center"
+                  data-testid={`toast-${type}-link-icon`}
+                >
                   <ArrowNorthEastIcon />
                 </div>
               </Link>

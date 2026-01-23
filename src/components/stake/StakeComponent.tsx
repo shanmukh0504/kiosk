@@ -170,6 +170,7 @@ export const StakeComponent: React.FC = () => {
   return (
     <div
       className={`relative z-10 flex w-full min-w-[328px] max-w-[328px] flex-col p-4 sm:min-w-[460px] sm:max-w-[460px] sm:pb-5 ${stakeType === StakeType.GARDEN_PASS ? "gap-10 sm:gap-6" : "gap-8"}`}
+      data-testid="stake"
     >
       <motion.div
         initial={{ height: 0 }}
@@ -192,8 +193,14 @@ export const StakeComponent: React.FC = () => {
             delay: delays[0],
           }}
           className="flex w-full items-center justify-between"
+          data-testid="stake-header"
         >
-          <Typography size="h5" breakpoints={{ sm: "h4" }} weight="medium">
+          <Typography
+            size="h5"
+            breakpoints={{ sm: "h4" }}
+            weight="medium"
+            data-testid="stake-title"
+          >
             Stake
           </Typography>
           {/* <Switch<StakeType>
@@ -211,6 +218,7 @@ export const StakeComponent: React.FC = () => {
             breakpoints={{ sm: "h4" }}
             weight="regular"
             className={`mb-8 ${stakeType === StakeType.CUSTOM ? "max-h-[60px] min-h-[60px] sm:max-h-10 sm:min-h-10" : "max-h-12 min-h-12 sm:max-h-10 sm:min-h-10"}`}
+            data-testid="stake-description"
           >
             <AnimatePresence mode="wait">
               <motion.div
@@ -222,6 +230,11 @@ export const StakeComponent: React.FC = () => {
                   damping: 15,
                   delay: delays[1],
                 }}
+                data-testid={
+                  stakeType === StakeType.CUSTOM
+                    ? "stake-description-custom"
+                    : "stake-description-garden-pass"
+                }
               >
                 {stakeType === StakeType.CUSTOM ? (
                   <motion.span key="custom" {...fadeAnimation}>
@@ -270,12 +283,17 @@ export const StakeComponent: React.FC = () => {
               delay: delays[2],
             }}
             className={`flex gap-6 pl-1`}
+            data-testid="stake-stats"
           >
             <StakeStats
               title={
                 <div className="flex items-center gap-1">
                   APY
-                  <div data-tooltip-id={tooltipId} className="cursor-pointer">
+                  <div
+                    data-tooltip-id={tooltipId}
+                    className="cursor-pointer"
+                    data-testid="stake-apy-tooltip"
+                  >
                     <InfoIcon className="h-3 w-3 p-[0.5px]" />
                   </div>
                 </div>
@@ -289,6 +307,7 @@ export const StakeComponent: React.FC = () => {
                   key="custom"
                   {...fadeAnimation}
                   className="flex gap-6"
+                  data-testid="stake-stats-garden-pass"
                 >
                   <StakeStats
                     title={"Votes"}
@@ -306,6 +325,7 @@ export const StakeComponent: React.FC = () => {
                   key="garden-pass"
                   {...fadeAnimation}
                   className="flex gap-6"
+                  data-testid="stake-stats-custom"
                 >
                   <StakeStats
                     title={"SEED locked"}
@@ -326,6 +346,7 @@ export const StakeComponent: React.FC = () => {
       <div>
         <div
           className={`flex flex-col ${stakeType === StakeType.GARDEN_PASS ? "gap-4 sm:gap-10" : "gap-4"}`}
+          data-testid="stake-body"
         >
           <motion.div
             initial={{ opacity: 0, y: -25, scale: 0.9 }}
@@ -340,6 +361,7 @@ export const StakeComponent: React.FC = () => {
             {stakeType === StakeType.GARDEN_PASS ? (
               <motion.div
                 className="grid grid-cols-2 gap-3"
+                data-testid="stake-garden-pass-benefits"
                 key="garden-pass-details"
                 {...fadeAnimation}
               >
@@ -385,7 +407,11 @@ export const StakeComponent: React.FC = () => {
                 </div>
               </motion.div>
             ) : (
-              <motion.div key="custom-input" {...fadeAnimation}>
+              <motion.div
+                key="custom-input"
+                data-testid="stake-custom-input"
+                {...fadeAnimation}
+              >
                 <StakeInput balance={tokenBalance} />
               </motion.div>
             )}
@@ -412,6 +438,13 @@ export const StakeComponent: React.FC = () => {
                     (address && balanceFetched && tokenBalance === 0)))
                   ? "primary"
                   : "disabled"
+              }
+              data-testid={
+                !address
+                  ? "stake-cta-connect"
+                  : shouldBuySeed
+                    ? "stake-cta-buy-seed"
+                    : "stake-cta-stake"
               }
               onClick={
                 !address

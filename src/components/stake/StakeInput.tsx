@@ -49,7 +49,10 @@ export const StakeInput = ({ balance }: { balance: number }) => {
   };
 
   return (
-    <div className="flex flex-col gap-[7px] overflow-hidden rounded-xl bg-white p-4 pb-[15px]">
+    <div
+      className="flex flex-col gap-[7px] overflow-hidden rounded-xl bg-white p-4 pb-[15px]"
+      data-testid="stake-input"
+    >
       <div className="flex justify-between">
         <Typography size="h5" weight="medium">
           Stake SEED
@@ -58,6 +61,7 @@ export const StakeInput = ({ balance }: { balance: number }) => {
           size="h5"
           weight="medium"
           className="cursor-pointer"
+          data-testid="stake-balance"
           onClick={handleBalanceClick}
         >
           {balance ? balance.toFixed(3) : 0} available
@@ -77,6 +81,7 @@ export const StakeInput = ({ balance }: { balance: number }) => {
                     "relative flex w-full cursor-pointer items-center",
                     isAnimating && "pointer-events-none"
                   )}
+                  data-testid="stake-amount"
                   onClick={(e) => {
                     if (isAnimating) return;
                     e.preventDefault();
@@ -141,6 +146,7 @@ export const StakeInput = ({ balance }: { balance: number }) => {
                 <MinusIcon
                   onClick={handleMinusClick}
                   className="cursor-pointer"
+                  data-testid="stake-decrease"
                 />
               </motion.div>
             </motion.div>
@@ -176,6 +182,7 @@ export const StakeInput = ({ balance }: { balance: number }) => {
                 <PlusIcon
                   onClick={handlePlusClick}
                   className="cursor-pointer"
+                  data-testid="stake-increase"
                 />
               </motion.div>
             </motion.div>
