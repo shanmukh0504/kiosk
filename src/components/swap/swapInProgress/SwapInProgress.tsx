@@ -82,27 +82,43 @@ export const SwapInProgress = () => {
   }, [order?.status]);
 
   return order ? (
-    <div className="animate-fade-out flex flex-col gap-3 p-3">
+    <div
+      className="animate-fade-out flex flex-col gap-3 p-3"
+      data-testid="swap-progress"
+    >
       <div className="flex items-center justify-between p-1">
-        <Typography size="h4" weight="medium">
+        <Typography size="h4" weight="medium" data-testid="swap-progress-title">
           {getTitleText}
         </Typography>
-        <div className="flex items-center justify-center gap-3">
+        <div
+          className="flex items-center justify-center gap-3"
+          data-testid="swap-progress-actions"
+        >
           {showDeleteButton && (
             <DeleteIcon
               className="m-1 cursor-pointer"
+              data-testid="swap-progress-delete"
               onClick={handleDeleteOrder}
             />
           )}
-          <CloseIcon className="m-1 h-3 w-3 cursor-pointer" onClick={goBack} />
+          <CloseIcon
+            className="m-1 h-3 w-3 cursor-pointer"
+            data-testid="swap-progress-close"
+            onClick={goBack}
+          />
         </div>
       </div>
       <div
         className="flex cursor-pointer flex-col gap-2 rounded-2xl bg-white/50 p-4 hover:bg-white"
+        data-testid="swap-progress-transaction-card"
         onClick={handleClickTransaction}
       >
         <div className="flex items-center gap-2">
-          <Typography size="h5" weight="medium">
+          <Typography
+            size="h5"
+            weight="medium"
+            data-testid="swap-progress-transaction-label"
+          >
             Transaction
           </Typography>
           <ArrowNorthEastIcon className="h-[10px] w-[10px]" />
@@ -133,13 +149,20 @@ export const SwapInProgress = () => {
           isLitecoin(inputAsset?.chain) ||
           isAlpenSignet(inputAsset?.chain)) &&
         order.status === OrderStatusEnum.Created && (
-          <div className="flex justify-between rounded-2xl bg-white p-4">
+          <div
+            className="flex justify-between rounded-2xl bg-white p-4"
+            data-testid="swap-progress-deposit-address"
+          >
             <div className="flex flex-col gap-2">
               <Typography size="h5" weight="medium">
                 Deposit address
               </Typography>
               <div className="flex items-center gap-2">
-                <Typography size="h3" weight="medium">
+                <Typography
+                  size="h3"
+                  weight="medium"
+                  data-testid="swap-progress-deposit-address-value"
+                >
                   {getTrimmedAddress(depositAddress, 8, 6)}
                 </Typography>
                 <CopyToClipboard text={depositAddress} />

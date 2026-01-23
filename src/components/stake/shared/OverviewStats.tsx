@@ -23,7 +23,7 @@ export const OverviewStats: FC<props> = ({
   isGreen = false,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-
+  const titleSlug = title.toLowerCase().replace(/\s+/g, "-");
   return (
     <div
       className={`relative flex flex-col items-start justify-center gap-y-1 ${className}`}
@@ -40,10 +40,13 @@ export const OverviewStats: FC<props> = ({
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             className="inline-block cursor-pointer"
+            data-testid={`${titleSlug}-info`}
           >
             <InfoIcon className="h-3 w-3" />
             {isHovered && toolTip && targetRef && (
-              <TooltipWrapper targetRef={targetRef}>{toolTip}</TooltipWrapper>
+              <TooltipWrapper targetRef={targetRef} title={titleSlug}>
+                {toolTip}
+              </TooltipWrapper>
             )}
           </span>
         )}
@@ -52,6 +55,7 @@ export const OverviewStats: FC<props> = ({
         size="h4"
         weight="regular"
         className={`${isGreen ? "!text-green-500" : ""} flex items-center gap-1 lg:whitespace-nowrap`}
+        data-testid={`${titleSlug}-value`}
       >
         {Number(value) < 0 ? value?.toString().slice(1) : value}
       </Typography>

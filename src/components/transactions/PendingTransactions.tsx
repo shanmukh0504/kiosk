@@ -122,9 +122,16 @@ export const PendingTransactions = () => {
   };
 
   return (
-    <div className="flex w-full flex-col overflow-y-auto">
+    <div
+      className="flex w-full flex-col overflow-y-auto"
+      data-testid="transactions-pending-list"
+    >
       {pendingOrders && pendingOrders.length === 0 ? (
-        <Typography size="h5" className="pb-4 text-center">
+        <Typography
+          size="h5"
+          className="pb-4 text-center"
+          data-testid="transactions-pending-empty"
+        >
           No transactions found.
         </Typography>
       ) : (
@@ -132,6 +139,7 @@ export const PendingTransactions = () => {
           <div key={index} className="w-full">
             <TransactionRow
               order={order}
+              index={index}
               status={order.status}
               isLast={index === pendingOrders.length - 1}
               isFirst={index === 0}

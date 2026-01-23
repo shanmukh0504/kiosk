@@ -55,6 +55,7 @@ export const WalletRow: FC<WalletRowProps> = ({
               ? "cursor-pointer hover:bg-off-white"
               : "pointer-events-none opacity-50"
           }`}
+          data-testid={`connect-wallet-row-${name.toLowerCase().replace(/\s+/g, "-")}`}
         >
           <div className="flex items-center gap-4">
             <img
@@ -88,7 +89,10 @@ export const WalletRow: FC<WalletRowProps> = ({
             {isConnecting ? (
               <Loader />
             ) : Object.values(isConnected).some((value) => value) ? (
-              <div className="flex w-fit items-center gap-2 rounded-full bg-white p-1 pl-3 pr-2">
+              <div
+                className="flex w-fit items-center gap-2 rounded-full bg-white p-1 pl-3 pr-2"
+                data-testid="wallet-connected"
+              >
                 <Typography size="h4" className="flex items-center gap-1">
                   Connected
                 </Typography>

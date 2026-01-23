@@ -58,7 +58,10 @@ export const OrderStatus: FC<OrderStatusProps> = ({
   };
 
   return (
-    <div className="flex flex-col justify-between rounded-2xl bg-white p-4">
+    <div
+      className="flex flex-col justify-between rounded-2xl bg-white p-4"
+      data-testid="order-status-card"
+    >
       {currentStatus ? (
         <>
           <div
@@ -66,6 +69,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({
             className={`flex flex-col gap-2 ${
               !viewableStatus && "cursor-pointer"
             } `}
+            data-testid="order-status-toggle"
           >
             <div className="flex items-center justify-between">
               <Typography size="h5" weight="medium">
@@ -75,6 +79,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({
                 className={`transform transition-transform duration-300 ${
                   dropdown ? "rotate-180" : "rotate-0"
                 }`}
+                data-testid="order-status-chevron"
               >
                 <KeyboardDownIcon />
               </div>
@@ -85,6 +90,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({
             className={`transition-all duration-300 ease-in-out ${
               dropdown ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
             }`}
+            data-testid="order-status-steps"
           >
             <ul className="mt-2">
               {orderProgress &&
@@ -94,6 +100,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({
                     className={`relative mx-1 flex items-center gap-1 ${
                       index !== NoOfSteps - 1 ? "pb-4" : ""
                     }`}
+                    data-testid={`order-status-step-${index + 1}`}
                   >
                     {index !== NoOfSteps - 1 &&
                       Object.values(orderProgress)[index + 1].status !==
@@ -133,6 +140,7 @@ export const OrderStatus: FC<OrderStatusProps> = ({
                           weight={
                             currentStatus === step.title ? "medium" : "regular"
                           }
+                          data-testid={`order-status-step-title-${index}`}
                         >
                           {step.title}
                         </Typography>
@@ -147,12 +155,17 @@ export const OrderStatus: FC<OrderStatusProps> = ({
                                 )
                               }
                               className="h-[10px] w-[10px] cursor-pointer"
+                              data-testid="order-status-deposit-tx-explorer"
                             />
                           )}
                       </div>
                       {index === 1 && step.status === "inProgress" && (
                         <>
-                          <Typography size="h5" weight="regular">
+                          <Typography
+                            size="h5"
+                            weight="regular"
+                            data-testid="order-status-confirmations"
+                          >
                             {confirmationString}
                           </Typography>
                         </>
@@ -175,7 +188,12 @@ export const OrderStatus: FC<OrderStatusProps> = ({
             <div className="mt-2 flex items-center justify-between">
               {currentStatus === SimplifiedOrderStatus.depositDetected ? (
                 <div className="flex gap-3">
-                  <Typography size="h3" weight="medium" className="!leading-5">
+                  <Typography
+                    size="h3"
+                    weight="medium"
+                    className="!leading-5"
+                    data-testid="order-status-current"
+                  >
                     {currentStatus}
                   </Typography>
                   <Typography size="h3" weight="medium" className="my-auto">
@@ -188,7 +206,12 @@ export const OrderStatus: FC<OrderStatusProps> = ({
                 </Typography>
               )}
               {orderProgress && (
-                <Typography size="h5" weight="medium" className="my-auto">
+                <Typography
+                  size="h5"
+                  weight="medium"
+                  className="my-auto"
+                  data-testid="order-status-progress"
+                >
                   {completedSteps} of {NoOfSteps}
                 </Typography>
               )}

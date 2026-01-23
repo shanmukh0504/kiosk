@@ -169,10 +169,12 @@ export const StakeRewards = ({
         },
       }}
       style={{ transformOrigin: "top" }}
+      data-testid="stake-rewards"
     >
       <motion.div
         onClick={() => setShowDetails(!showDetails)}
         className={`ease- -in-out mx-auto flex w-[328px] cursor-pointer flex-col gap-4 rounded-2xl bg-white p-6 pb-5 transition-all duration-300 sm:w-[460px] md:w-[740px] ${showDetails && "rounded-b-none"}`}
+        data-testid="stake-rewards-toggle"
       >
         <div className="flex items-center justify-between">
           <Typography size="h5" weight="medium">
@@ -186,10 +188,12 @@ export const StakeRewards = ({
           <div className="grid w-full grid-cols-2 md:w-[210px] md:grid-cols-[90px_90px] md:gap-[66px]">
             <RewardStats
               title={"Next payout"}
+              testId="next-payout"
               value={`${daysUntilNextEpoch} days`}
             />
             <RewardStats
               title={"Rewards"}
+              testId="rewards"
               value={`$${availableRewardUsd.toFixed(2) || "0.00"}`}
               textColor={availableRewardUsd > 0 ? "#2CC994" : ""}
             />
@@ -205,6 +209,7 @@ export const StakeRewards = ({
                   ? "flex items-center justify-center self-center transition-colors duration-500"
                   : ""
               }`}
+              data-testid="stake-rewards-claim-button"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();

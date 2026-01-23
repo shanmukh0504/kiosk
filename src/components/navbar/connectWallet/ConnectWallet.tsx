@@ -314,19 +314,28 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
 
   return (
     <div className="flex max-h-[600px] flex-col gap-[20px] p-3">
-      <div className="flex items-center justify-between">
-        <Typography size="h4" weight="medium">
+      <div
+        className="flex items-center justify-between"
+        data-testid="connect-wallet-header"
+      >
+        <Typography
+          size="h4"
+          weight="medium"
+          data-testid="connect-wallet-title"
+        >
           Connect a Wallet
         </Typography>
-        <div className="flex gap-4">
+        <div className="flex gap-4" data-testid="connect-wallet-actions">
           {multiWalletConnector && (
             <ArrowLeftIcon
               className="h-[14px] w-6 cursor-pointer"
+              data-testid="connect-wallet-back"
               onClick={handleClose}
             />
           )}
           <CloseIcon
             className="hidden h-[14px] w-6 cursor-pointer sm:visible sm:block"
+            data-testid="connect-wallet-close"
             onClick={close}
           />
         </div>
@@ -387,6 +396,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       ) : (
         <div
           className={`scrollbar-hide flex flex-col gap-1 rounded-2xl bg-white/50 p-4 transition-all duration-300 ${isLoadingChains ? "overflow-hidden overscroll-none" : "overflow-y-auto overscroll-contain"}`}
+          data-testid="connect-wallet-list"
         >
           {filteredWallets.length > 0 ? (
             <AnimatePresence>
@@ -419,7 +429,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
               ))}
             </AnimatePresence>
           ) : (
-            <Typography size="h3">No wallets found</Typography>
+            <Typography size="h3" data-testid="connect-wallet-not-found">
+              No wallets found
+            </Typography>
           )}
         </div>
       )}

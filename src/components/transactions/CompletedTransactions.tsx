@@ -22,7 +22,10 @@ export const CompletedTransactions = () => {
   );
 
   return (
-    <div className="flex w-full flex-col overflow-y-auto">
+    <div
+      className="flex w-full flex-col overflow-y-auto"
+      data-testid="transactions-completed-list"
+    >
       {isLoading ? (
         <TransactionsSkeleton />
       ) : filteredTransactions.length === 0 ? (
@@ -35,6 +38,7 @@ export const CompletedTransactions = () => {
           return (
             <div key={index} className="w-full">
               <TransactionRow
+                index={index}
                 order={order}
                 status={parsedStatus}
                 isLast={index === filteredTransactions.length - 1}
