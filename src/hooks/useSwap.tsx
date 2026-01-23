@@ -18,7 +18,7 @@ import {
   isAlpenSignet,
   isXrpl,
 } from "@gardenfi/orderbook";
-import debounce from "lodash.debounce";
+import { debounce } from "lodash-es";
 import { useGarden } from "@gardenfi/react-hooks";
 import { useStarknetWallet } from "./useStarknetWallet";
 import { useEVMWallet } from "./useEVMWallet";

@@ -44,7 +44,7 @@ FROM nginx:stable-alpine AS production
 RUN rm -rf /usr/share/nginx/html/*
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Configure nginx for SPA with optimized caching + embedding support
+# Configure nginx for SPA
 RUN printf 'server {\n\
     listen 80;\n\
     server_name _;\n\
@@ -58,25 +58,19 @@ RUN printf 'server {\n\
     gzip_types text/plain text/css application/json application/javascript text/xml application/xml text/javascript;\n\
     \n\
     location / {\n\
-    try_files $uri $uri.html $uri/ /index.html;\n\
+        try_files $uri $uri.html $uri/ /index.html;\n\
     }\n\
     \n\
-    error_page 404 = @redirect_to_root;\n\
-    location @redirect_to_root {\n\
-    return 302 /;\n\
-    }\n\
-    \n\
-    # Cache static assets aggressively\n\
+    # Cache static assets\n\
     location ~* \\.(?:ico|css|js|gif|jpe?g|png|woff2?|eot|ttf|svg|otf|wasm)$ {\n\
-    expires 1m;\n\
-    access_log off;\n\
-    add_header Cache-Control "public, immutable";\n\
+        expires 1m;\n\
+        access_log off;\n\
+        add_header Cache-Control "public, immutable";\n\
     }\n\
     \n\
     # Security headers\n\
     add_header X-Content-Type-Options "nosniff" always;\n\
     add_header Content-Security-Policy "frame-ancestors *;" always;\n\
-    }\n' > /etc/nginx/conf.d/default.conf
-
+}\n' > /etc/nginx/conf.d/default.conf
 
 CMD ["nginx", "-g", "daemon off;"]

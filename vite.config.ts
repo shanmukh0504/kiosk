@@ -1,4 +1,3 @@
-import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { execSync } from "child_process";
@@ -7,7 +6,6 @@ import path from "path";
 import fs from "fs";
 import wasm from "vite-plugin-wasm";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
-import topLevelAwait from "vite-plugin-top-level-await";
 import { frameMetadataPlugin, metadataPlugin } from "./vite-metadata-plugin";
 import process from "process";
 
@@ -48,7 +46,6 @@ export default defineConfig({
         global: true,
       },
     }),
-    topLevelAwait(),
     {
       name: "generate-build-id",
       buildEnd() {
@@ -94,11 +91,6 @@ export default defineConfig({
         },
       ],
     }),
-    sentryVitePlugin({
-      org: "garden",
-      project: "kiosk",
-      url: "https://telemetry.garden.finance/",
-    }),
   ],
   esbuild: {
     target: "esnext",
@@ -106,15 +98,23 @@ export default defineConfig({
     drop: process.env.NODE_ENV === "production" ? ["console", "debugger"] : [],
     minifyIdentifiers: true,
     minifySyntax: true,
-    minifyWhitespace: true,
+    minifyWhitespace: false,
   },
   build: {
     target: "esnext",
-    sourcemap: true,
-    minify: "terser",
+    sourcemap: false,
+    minify: "esbuild",
     reportCompressedSize: false,
     chunkSizeWarningLimit: 2000,
     rollupOptions: {
+      onwarn(warning, warn) {
+        if (
+          warning.code === 'INVALID_ANNOTATION'
+        ) {
+          return
+        }
+        warn(warning)
+      },
       output: {
         manualChunks: {
           vendor: ["react", "react-dom", "react-router-dom"],
