@@ -163,30 +163,6 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       });
     });
 
-    switch (selectedEcosystem) {
-      case BlockchainType.bitcoin:
-        allWallets = allWallets.filter((wallet) => wallet.isBitcoin);
-        break;
-      case BlockchainType.evm:
-        allWallets = allWallets.filter((wallet) => wallet.isEVM);
-        break;
-      case BlockchainType.starknet:
-        allWallets = allWallets.filter((wallet) => wallet.isStarknet);
-        break;
-      case BlockchainType.solana:
-        allWallets = allWallets.filter((wallet) => wallet.isSolana);
-        break;
-      case BlockchainType.sui:
-        allWallets = allWallets.filter((wallet) => wallet.isSui);
-        break;
-      case BlockchainType.tron:
-        allWallets = allWallets.filter((wallet) => wallet.isTron);
-        break;
-      case BlockchainType.litecoin:
-        allWallets = allWallets.filter((wallet) => wallet.isLitecoin);
-        break;
-    }
-
     if (
       typeof window !== "undefined" &&
       window.ethereum &&
@@ -195,7 +171,26 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       allWallets = allWallets.filter((wallet) => wallet.id !== "injected");
     }
     return allWallets;
-  }, [selectedEcosystem, availableBlockchainTypes]);
+  }, [
+    availableBlockchainTypes,
+    availableWallets,
+    availableLitecoinWallets,
+    connectors,
+    starknetConnectors,
+    solanaWallets,
+    suiWallets,
+    tronWallets,
+  ]);
+
+  const filteredWallets = useMemo(() => {
+    if (!selectedEcosystem) return allAvailableWallets;
+
+    const property =
+      blockchainTypeToWalletProperty[selectedEcosystem as BlockChainTypes];
+    if (!property) return allAvailableWallets;
+
+    return allAvailableWallets.filter((wallet) => !!wallet[property]);
+  }, [selectedEcosystem, allAvailableWallets]);
 
   const handleClose = useCallback(() => {
     setConnectingWallet(null);
@@ -378,9 +373,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         />
       ) : (
         <div className="scrollbar-hide flex flex-col gap-1 overflow-y-auto overscroll-contain rounded-2xl bg-white/50 p-4 transition-all duration-300">
-          {allAvailableWallets.length > 0 ? (
+          {filteredWallets.length > 0 ? (
             <AnimatePresence>
-              {allAvailableWallets.map((wallet) => (
+              {filteredWallets.map((wallet) => (
                 <WalletRow
                   key={wallet.id}
                   name={wallet.name}
