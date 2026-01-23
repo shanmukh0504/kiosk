@@ -13,7 +13,7 @@ import { erc20Abi, Hex, maxUint256 } from "viem";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "../layout/wagmi/config";
 import { flowerABI } from "../components/stake/abi/flower";
-import { logger } from "@sentry/react";
+import logger from "../utils/logger";
 import { Toast } from "../components/toast/Toast";
 import { stakeABI } from "../components/stake/abi/stake";
 import { stakeStore, StakeType } from "../store/stakeStore";
@@ -122,7 +122,7 @@ export const useStake = () => {
         hash,
       });
       //✅ stake success
-      logger.info("Stake tx hash : ", { hash });
+      logger.log("Stake tx hash : ", { hash });
       Toast.success(
         `Staked ${amount} SEED for ${selectedDuration} months successfully`
       );

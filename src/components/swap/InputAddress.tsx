@@ -10,8 +10,8 @@ import {
   useBitcoinWallet,
   useLitecoinWallet,
 } from "@gardenfi/wallet-connectors";
-import { formatChainNameForDisplay } from "../../utils/utils";
 import { isBitcoin, isLitecoin } from "@gardenfi/orderbook";
+import { formatChainNameForDisplay } from "../../utils/utils";
 
 type InputAddressProps = {
   addressType: AddressType | undefined;

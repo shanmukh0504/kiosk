@@ -8,6 +8,7 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import { ChangeEvent, useMemo, useRef, useState } from "react";
 import { viewPortStore } from "../../store/viewPortStore";
+import { formatChainDisplayName } from "../../utils/utils";
 
 type SidebarProps = {
   show: boolean;
@@ -132,7 +133,7 @@ export const AvailableChainsSidebar = ({
                             breakpoints={{ sm: "h4" }}
                             weight="regular"
                           >
-                            {c.name}
+                            {formatChainDisplayName(c.name)}
                           </Typography>
                         </div>
                       </div>

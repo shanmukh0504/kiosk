@@ -1,5 +1,10 @@
 import BigNumber from "bignumber.js";
-import { INTERNAL_ROUTES, QUERY_PARAMS, THEMES } from "../constants/constants";
+import {
+  CHAIN_NAME_MAP,
+  INTERNAL_ROUTES,
+  QUERY_PARAMS,
+  THEMES,
+} from "../constants/constants";
 import {
   Asset,
   Chain,
@@ -28,6 +33,16 @@ export const getCurrentTheme = () => {
 export const capitalizeChain = (chainKey: string) => {
   if (chainKey === "evm") return "EVM";
   return chainKey.charAt(0).toUpperCase() + chainKey.slice(1);
+};
+
+export const formatChainDisplayName = (chainName: string): string => {
+  if (!chainName) return "";
+
+  if (CHAIN_NAME_MAP[chainName.toLowerCase()]) {
+    return CHAIN_NAME_MAP[chainName.toLowerCase()];
+  }
+
+  return chainName;
 };
 
 export const formatChainNameForDisplay = (
