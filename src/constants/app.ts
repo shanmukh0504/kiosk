@@ -25,11 +25,11 @@ export const FRAME_METADATA = {
 export const MINI_APP_METADATA = {
   name: APP_NAME,
   version: "1",
-  iconUrl: `${APP_URL}/favicon.svg`,
+  iconUrl: `${APP_URL}/favicon.ico`,
   homeUrl: APP_URL,
   imageUrl: `${APP_URL}/metadata.png`,
   buttonTitle: "Bridge with Garden Finance",
-  splashImageUrl: `${APP_URL}/icon.png`,
+  splashImageUrl: `${APP_URL}/favicon.ico`,
   splashBackgroundColor: "#E4EBF2",
   webhookUrl: `${APP_URL}/api/webhook`,
   subtitle: APP_DESCRIPTION,

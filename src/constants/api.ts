@@ -31,10 +31,7 @@ export const API = () => {
     })(),
     buildId: "/build-id.json",
     baseUrl: new Url(REQUIRED_ENV_VARS.BASE_URL),
-    quote: {
-      quote: new Url(REQUIRED_ENV_VARS.BASE_URL).endpoint("quote"),
-      fiatValues: new Url(REQUIRED_ENV_VARS.BASE_URL).endpoint("v2/fiat"),
-    },
+    fiatValues: new Url(REQUIRED_ENV_VARS.BASE_URL).endpoint("v2/fiat"),
     balance: (() => {
       const balancesBaseApi = () =>
         new Url(REQUIRED_ENV_VARS.BALANCE_URL).endpoint("balances");

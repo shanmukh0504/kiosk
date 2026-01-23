@@ -8,7 +8,7 @@ import {
   RadioCheckedIcon,
   Typography,
 } from "@gardenfi/garden-book";
-import { BlockchainType } from "@gardenfi/orderbook";
+import { BlockchainType, Chain, is } from "@gardenfi/orderbook";
 import {
   getAvailableWallets,
   getWalletConnectionStatus,
@@ -23,7 +23,11 @@ import { WalletRow } from "./WalletRow";
 import { MultiWalletConnection } from "./MultiWalletConnection";
 import { handleEVMConnect, handleStarknetConnect } from "./handleConnect";
 import { modalStore } from "../../../store/modalStore";
-import { ecosystems } from "./constants";
+import {
+  BlockChainTypes,
+  blockchainTypeToWalletProperty,
+  ecosystems,
+} from "./constants";
 import { AnimatePresence } from "framer-motion";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { ConnectingWalletStore } from "../../../store/connectWalletStore";
@@ -35,6 +39,7 @@ import { Connector as StarknetConnector } from "@starknet-react/core";
 import { useSuiWallet } from "../../../hooks/useSuiWallet";
 import { useTronWallet } from "../../../hooks/useTronWallet";
 import { useXRPLWallet } from "../../../hooks/useXRPLWallet";
+import { assetInfoStore } from "../../../store/assetInfoStore";
 
 import logger from "../../../utils/logger";
 
@@ -87,6 +92,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   } = useTronWallet();
   const { xrplAddress, xrplConnected, handleXRPLConnect } = useXRPLWallet();
   const { modalData } = modalStore();
+  const { chains } = assetInfoStore();
+
   const showOnlyBTCWallets = !!modalData.connectWallet?.bitcoin;
   const showOnlyStarknetWallets = !!modalData.connectWallet?.starknet;
   const showOnlyEVMWallets = !!modalData.connectWallet?.evm;
@@ -95,6 +102,22 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   const showOnlyTronWallets = !!modalData.connectWallet?.tron;
   const showOnlyLitecoinWallets = !!modalData.connectWallet?.litecoin;
   const showOnlyXRPLWallets = !!modalData.connectWallet?.xrpl;
+
+  const availableBlockchainTypes: Set<BlockchainType> = useMemo(() => {
+    const availableTypes = new Set<BlockchainType>();
+    if (chains) {
+      const blockchainTypes = Object.keys(ecosystems) as BlockchainType[];
+      Object.keys(chains).forEach((chainKey) => {
+        blockchainTypes.forEach((blockchainType) => {
+          if (is(blockchainType)(chainKey as Chain)) {
+            availableTypes.add(blockchainType);
+          }
+        });
+      });
+    }
+
+    return availableTypes;
+  }, [chains]);
 
   useEffect(() => {
     const selected = showOnlyStarknetWallets
@@ -138,6 +161,14 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       tronWallets
     );
 
+    allWallets = allWallets.filter((wallet) => {
+      return Object.keys(ecosystems).some((blockchainType) => {
+        const type = blockchainType as BlockChainTypes;
+        if (!availableBlockchainTypes.has(type)) return false;
+        return !!wallet[blockchainTypeToWalletProperty[type]];
+      });
+    });
+
     switch (selectedEcosystem) {
       case BlockchainType.bitcoin:
         allWallets = allWallets.filter((wallet) => wallet.isBitcoin);
@@ -173,16 +204,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       allWallets = allWallets.filter((wallet) => wallet.id !== "injected");
     }
     return allWallets;
-  }, [
-    availableWallets,
-    connectors,
-    starknetConnectors,
-    solanaWallets,
-    selectedEcosystem,
-    suiWallets,
-    tronWallets,
-    availableLitecoinWallets,
-  ]);
+  }, [selectedEcosystem, availableBlockchainTypes]);
 
   const handleClose = useCallback(() => {
     setConnectingWallet(null);
@@ -202,7 +224,6 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     }
     setConnectingWallet(connector.id);
     try {
-      // Check if this is a multi-chain wallet
       const isMultiChain = [
         connector.isBitcoin && connector.isEVM,
         connector.isBitcoin && connector.isStarknet,
@@ -222,7 +243,6 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       ].some(Boolean);
 
       if (isMultiChain) {
-        // Validate that we have at least two wallet types available
         const walletTypes = [
           connector.wallet?.evmWallet,
           connector.wallet?.btcWallet,
@@ -333,16 +353,13 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       {!multiWalletConnector && (
         <div className="flex flex-wrap gap-3">
           {Object.entries(ecosystems)
-            .filter(
-              ([key]) =>
-                key === BlockchainType.evm ||
-                key === BlockchainType.bitcoin ||
-                key === BlockchainType.starknet ||
-                key === BlockchainType.tron ||
-                key === BlockchainType.solana ||
-                key === BlockchainType.litecoin ||
-                key === BlockchainType.xrpl
-            )
+            .filter(([key]) => {
+              const type = key as BlockChainTypes;
+              if (!availableBlockchainTypes.has(type)) return false;
+              return allAvailableWallets.some(
+                (w) => !!w[blockchainTypeToWalletProperty[type]]
+              );
+            })
             .map(([key, ecosystem]) => (
               <Chip
                 key={key}
@@ -368,6 +385,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
 
       {multiWalletConnector ? (
         <MultiWalletConnection
+          availableBlockchainTypes={availableBlockchainTypes}
           connectors={multiWalletConnector}
           handleClose={handleClose}
         />

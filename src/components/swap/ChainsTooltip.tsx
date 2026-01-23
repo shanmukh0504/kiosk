@@ -1,4 +1,5 @@
 import { Typography } from "@gardenfi/garden-book";
+import { formatChainDisplayName } from "../../utils/utils";
 
 type TooltipProps = {
   chain: string;
@@ -17,7 +18,7 @@ export const ChainsTooltip = ({ chain, className }: TooltipProps) => {
           weight="medium"
           className="text-center !text-dark-grey"
         >
-          {chain}
+          {formatChainDisplayName(chain)}
         </Typography>
       </div>
     </div>

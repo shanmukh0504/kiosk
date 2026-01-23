@@ -34,7 +34,12 @@ function App() {
                 network: Network.TESTNET,
                 baseurl: import.meta.env.VITE_BASE_URL,
               }
-            : (network as unknown as Network),
+            : environment === Environment.Production
+              ? {
+                  network: Network.MAINNET,
+                  baseurl: import.meta.env.VITE_BASE_URL,
+                }
+              : (network as unknown as Network),
         apiKey: import.meta.env.VITE_API_KEY,
         wallets: {
           evm: walletClient,
