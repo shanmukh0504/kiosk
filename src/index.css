@@ -33,6 +33,7 @@ html {
   }
   .loader-shine:before {
     @apply absolute left-0 top-0 h-full w-[424px] animate-loader-shine bg-gradient-to-l from-transparent via-white/75 via-25% to-transparent opacity-0 content-[''];
+    animation-delay: var(--animation-delay, 0ms);
   }
   .shimmer {
     @apply overflow-hidden;
