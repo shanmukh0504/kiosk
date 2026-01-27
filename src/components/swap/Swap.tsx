@@ -73,6 +73,7 @@ export const Swap = () => {
         <ToastContainer />
         <div
           className={`relative overflow-hidden rounded-[20px] bg-white/50 sm:translate-y-[-48px]`}
+          data-testid="kiosk-swap-card"
         >
           {isOpen ? <SwapInProgress /> : <CreateSwap />}
         </div>

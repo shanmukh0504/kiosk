@@ -72,7 +72,10 @@ export const UnstakeAndRestake: FC<UnstakeAndRestakeProps> = ({ stakePos }) => {
   };
 
   return (
-    <div className="flex w-full gap-2 sm:w-min">
+    <div
+      className="flex w-full gap-2 sm:w-min"
+      data-testid="stake-position-actions"
+    >
       <Button
         variant={isUnstaking ? "disabled" : "secondary"}
         size="sm"
@@ -80,6 +83,7 @@ export const UnstakeAndRestake: FC<UnstakeAndRestakeProps> = ({ stakePos }) => {
         onClick={handleUnstake}
         loading={isUnstaking}
         className="w-full"
+        data-testid="stake-unstake-button"
       >
         Unstake
       </Button>
@@ -88,6 +92,7 @@ export const UnstakeAndRestake: FC<UnstakeAndRestakeProps> = ({ stakePos }) => {
         size="sm"
         onClick={handleRestake}
         className="w-full"
+        data-testid="stake-restake-button"
       >
         Restake
       </Button>

@@ -365,7 +365,7 @@ export const CreateSwap = () => {
   }, [clearSwapState, controller]);
 
   return (
-    <div className="relative">
+    <div className="relative" data-testid="kiosk-create-swap">
       <CompetitorComparisons
         hide={hideComparison}
         isTime={showComparison.isTime}
@@ -386,8 +386,12 @@ export const CreateSwap = () => {
         >
           <div
             className={`flex flex-col px-2 pb-3 pt-2 sm:px-3 sm:pb-4 sm:pt-3 ${isSwapping ? "pointer-events-none" : ""}`}
+            data-testid="kiosk-create-swap-form"
           >
-            <div className="relative flex flex-col gap-3">
+            <div
+              className="relative flex flex-col gap-3"
+              data-testid="kiosk-swap-inputs"
+            >
               <SwapInput
                 type={IOType.input}
                 amount={inputAmount}
@@ -400,6 +404,7 @@ export const CreateSwap = () => {
               />
               <div
                 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+                data-testid="kiosk-swap-switch-button"
                 onClick={swapAssets}
               >
                 <div className="h-8 w-8 origin-center rounded-full border border-light-grey bg-white p-1.5 transition-transform hover:scale-[1.1]"></div>
@@ -420,6 +425,7 @@ export const CreateSwap = () => {
             <InputAddressAndFeeRateDetails />
             <Button
               className={`relative mt-3 w-full transition-colors duration-500 ${isSwapping ? "shimmer !text-dark-grey" : ""}`}
+              data-testid="kiosk-swap-submit-button"
               variant={buttonVariant}
               size="lg"
               disabled={buttonDisabled || loadingDisabled}

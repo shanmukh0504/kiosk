@@ -9,6 +9,7 @@ interface TooltipWrapperProps {
   targetRef: React.RefObject<HTMLElement>;
   offsetY?: number;
   offsetX?: number;
+  title?: string;
 }
 
 export const TooltipWrapper: FC<TooltipWrapperProps> = ({
@@ -16,6 +17,7 @@ export const TooltipWrapper: FC<TooltipWrapperProps> = ({
   targetRef,
   offsetY = 16,
   offsetX = 10,
+  title,
 }) => {
   const [position, setPosition] = useState<{ top: number; left: number }>({
     top: 0,
@@ -90,6 +92,7 @@ export const TooltipWrapper: FC<TooltipWrapperProps> = ({
             pointerEvents: "auto",
           }}
           className="tooltip-wrapper before:absolute before:-top-10 before:right-14 before:h-12 before:w-8 before:cursor-pointer before:sm:-left-7 before:sm:top-2"
+          data-testid={`${title ? `${title}-tooltip` : "tooltip"}`}
         >
           {children}
         </motion.div>

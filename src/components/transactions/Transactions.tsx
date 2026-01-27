@@ -111,16 +111,18 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   ]);
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex gap-2">
+    <div className="flex flex-col gap-3" data-testid="transactions">
+      <div className="flex gap-2" data-testid="transactions-tabs">
         <Chip
           className={`cursor-pointer px-2 py-1 ${activeTab === "pending" ? "!bg-white/50" : "border !border-white/50 !bg-white/25"}`}
+          data-testid="transactions-tab-pending"
           onClick={() => setActiveTab("pending")}
         >
           <Typography size="h4">Pending</Typography>
         </Chip>
         <Chip
           className={`cursor-pointer px-2 py-1 ${activeTab === "completed" ? "!bg-white/50" : "border !border-white/50 !bg-white/25"}`}
+          data-testid="transactions-tab-completed"
           onClick={() => setActiveTab("completed")}
         >
           <Typography size="h4">Completed</Typography>
@@ -130,7 +132,12 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
         className={`scrollbar-hide flex max-h-[50vh] flex-col gap-5 overflow-y-auto rounded-2xl pb-6 sm:h-full sm:max-h-[calc(100vh-180px)]`}
       >
         <div className="flex flex-col rounded-2xl bg-white/50">
-          <Typography size="h5" weight="medium" className="p-4">
+          <Typography
+            size="h5"
+            weight="medium"
+            className="p-4"
+            data-testid="transactions-title"
+          >
             Transactions
           </Typography>
           {activeTab === "pending" ? (
@@ -144,6 +151,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
             onClick={handleLoadMore}
             variant={isLoadingMore ? "disabled" : "secondary"}
             className="mx-auto min-h-10 w-1/4"
+            data-testid="transactions-load-more"
           >
             {isLoadingMore ? "Loading..." : "Load More"}
           </Button>

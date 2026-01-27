@@ -60,16 +60,21 @@ const ConnectedWallets = () => {
       <Opacity
         level="medium"
         className="relative z-0 ml-auto flex min-h-[32px] min-w-[32px] cursor-pointer items-center justify-center gap-1.5 overflow-hidden rounded-[24px] p-2 px-3 transition-all duration-300 hover:bg-opacity-80 sm:min-h-[40px] sm:min-w-[40px] sm:gap-2 sm:p-3"
+        data-testid="navbar-wallets-button"
         onClick={handleAddressClick}
       >
         {!!pendingOrdersCount && (
           <div className="navbar-shine absolute left-0 top-0 -z-10 h-full w-full translate-x-[-25%] scale-150" />
         )}
-        <WalletIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+        <WalletIcon
+          className="h-4 w-4 sm:h-5 sm:w-5"
+          data-testid="navbar-wallets-icon"
+        />
         {address && (
           <img
             src={ecosystems.evm.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            data-testid="navbar-wallet-evm-icon"
             alt="EVM wallet"
           />
         )}
@@ -77,6 +82,7 @@ const ConnectedWallets = () => {
           <img
             src={ecosystems.bitcoin.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            data-testid="navbar-wallet-bitcoin-icon"
             alt="Bitcoin wallet"
           />
         )}
@@ -84,6 +90,7 @@ const ConnectedWallets = () => {
           <img
             src={ecosystems.litecoin.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            data-testid="navbar-wallet-litecoin-icon"
             alt="Litecoin wallet"
           />
         )}
@@ -91,6 +98,7 @@ const ConnectedWallets = () => {
           <img
             src={ecosystems.starknet.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            data-testid="navbar-wallet-starknet-icon"
             alt="Starknet wallet"
           />
         )}
@@ -98,6 +106,7 @@ const ConnectedWallets = () => {
           <img
             src={ecosystems.solana.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            data-testid="navbar-wallet-solana-icon"
             alt="Solana wallet"
           />
         )}
@@ -105,6 +114,7 @@ const ConnectedWallets = () => {
           <img
             src={ecosystems.sui.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            data-testid="navbar-wallet-sui-icon"
             alt="Sui wallet"
           />
         )}
@@ -112,6 +122,7 @@ const ConnectedWallets = () => {
           <img
             src={ecosystems.tron.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            data-testid="navbar-wallet-tron-icon"
             alt="Tron wallet"
           />
         )}
@@ -123,8 +134,16 @@ const ConnectedWallets = () => {
           />
         )}
         {pendingOrdersCount ? (
-          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-rose p-2">
-            <Typography size="h5" weight="medium" className="h-4 !text-white">
+          <div
+            className="flex h-5 w-5 items-center justify-center rounded-full bg-rose p-2"
+            data-testid="navbar-pending-orders-badge"
+          >
+            <Typography
+              size="h5"
+              weight="medium"
+              className="h-4 !text-white"
+              data-testid="navbar-pending-orders-count"
+            >
               {pendingOrdersCount}
             </Typography>
           </div>

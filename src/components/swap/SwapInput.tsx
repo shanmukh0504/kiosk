@@ -54,6 +54,8 @@ export const SwapInput: FC<SwapInputProps> = ({
   }, [asset, chains]);
 
   const label = type === IOType.input ? "Send" : "Receive";
+  const testIdPrefix =
+    type === IOType.input ? "kiosk-swap-input" : "kiosk-swap-output";
 
   const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
     let input = e.target.value;
@@ -126,7 +128,10 @@ export const SwapInput: FC<SwapInputProps> = ({
 
   return (
     <>
-      <div className="flex flex-col gap-2 rounded-2xl bg-white p-4">
+      <div
+        className="flex flex-col gap-2 rounded-2xl bg-white p-4"
+        data-testid={testIdPrefix}
+      >
         <div className="flex justify-between">
           <div className="flex gap-3">
             <Typography
@@ -138,7 +143,11 @@ export const SwapInput: FC<SwapInputProps> = ({
             </Typography>
             <div className="flex gap-2">
               {amount && Number(price) !== 0 && (
-                <Typography size="h5" weight="regular">
+                <Typography
+                  size="h5"
+                  data-testid={`${testIdPrefix}-usd-estimate`}
+                  weight="regular"
+                >
                   <span className="text-mid-grey">
                     ~${formatAmountUsd(price, 0)}
                   </span>
@@ -152,12 +161,14 @@ export const SwapInput: FC<SwapInputProps> = ({
                 size="h5"
                 weight="regular"
                 className="!text-error-red"
+                data-testid={`${testIdPrefix}-error`}
               >
                 {error}
               </Typography>
             ) : balance !== undefined && !Number.isNaN(balance) ? (
               <div
                 className="flex cursor-pointer items-center gap-1"
+                data-testid="kiosk-swap-input-balance"
                 onClick={handleBalanceClick}
               >
                 <WalletIcon className="h-2.5 w-2.5" />
@@ -179,7 +190,10 @@ export const SwapInput: FC<SwapInputProps> = ({
               </Typography>
             ) : (
               timeEstimate && (
-                <div className="flex items-end gap-1">
+                <div
+                  className="flex items-end gap-1"
+                  data-testid="kiosk-swap-output-time-estimate"
+                >
                   <TimerIcon className="h-4" />
                   <Typography
                     size="h5"
@@ -206,6 +220,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                   "relative flex w-full items-center",
                   !isAnimating && "cursor-text"
                 )}
+                data-testid={`${testIdPrefix}-amount-container`}
                 onClick={(e) => {
                   if (isAnimating) return;
                   e.preventDefault();
@@ -223,6 +238,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                       "w-full bg-transparent py-[1px] text-start font-[inherit] outline-none",
                       isAnimating && "pointer-events-none"
                     )}
+                    data-testid={`${testIdPrefix}-amount-input`}
                     style={{ fontKerning: "none" }}
                     inputMode="decimal"
                     value={amount}
@@ -251,6 +267,7 @@ export const SwapInput: FC<SwapInputProps> = ({
                     className={`w-full text-start font-[inherit] tracking-normal duration-200 ease-in-out ${
                       showLoadingOpacity ? "opacity-75" : ""
                     }`}
+                    data-testid={`${testIdPrefix}-amount-display`}
                     willChange
                   />
                 )}
@@ -263,10 +280,12 @@ export const SwapInput: FC<SwapInputProps> = ({
               tokenLogo={asset.icon || ""}
               chainLogo={network?.icon}
               onClick={handleOpenAssetSelector}
+              data-testid={`${testIdPrefix}-token-button`}
             />
           ) : (
             <div
               className="flex cursor-pointer items-center gap-1"
+              data-testid={`${testIdPrefix}-token-button`}
               onClick={handleOpenAssetSelector}
             >
               <Typography

@@ -59,7 +59,12 @@ export const StakeStats: FC<props> = ({
         {value}
       </Typography>
       {isHovered && targetRef && (
-        <TooltipWrapper offsetX={10} offsetY={12} targetRef={targetRef}>
+        <TooltipWrapper
+          offsetX={10}
+          offsetY={12}
+          targetRef={targetRef}
+          title={"apy"}
+        >
           {toolTip}
         </TooltipWrapper>
       )}
