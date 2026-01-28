@@ -1,4 +1,10 @@
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useMemo,
+  useEffect,
+  useCallback,
+  CSSProperties,
+} from "react";
 import { useEVMWallet } from "../../../hooks/useEVMWallet";
 import { Connector } from "wagmi";
 import {
@@ -311,7 +317,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       setConnectingWallet(null);
     }
   };
-
+  console.log("filteredWallets", filteredWallets);
   return (
     <div className="flex max-h-[600px] flex-col gap-[20px] p-3">
       <div
@@ -395,44 +401,62 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         />
       ) : (
         <div
-          className={`scrollbar-hide flex flex-col gap-1 rounded-2xl bg-white/50 p-4 transition-all duration-300 ${isLoadingChains ? "overflow-hidden overscroll-none" : "overflow-y-auto overscroll-contain"}`}
+          className={`scrollbar-hide flex flex-col gap-1 overflow-y-auto overscroll-contain rounded-2xl bg-white/50 p-4 transition-all duration-300 ${
+            isLoadingChains
+              ? "overflow-hidden overscroll-none"
+              : !selectedEcosystem
+                ? "h-[432px]"
+                : ""
+          }`}
           data-testid="connect-wallet-list"
         >
-          {filteredWallets.length > 0 ? (
-            <AnimatePresence>
-              {filteredWallets.map((wallet, index) => (
-                <WalletRow
-                  key={wallet.id}
-                  name={wallet.name}
-                  logo={wallet.logo}
-                  onClick={async () => {
-                    await handleConnect(wallet);
-                  }}
-                  isConnecting={connectingWallet === wallet.id.toLowerCase()}
-                  isConnected={getWalletConnectionStatus(wallet, {
-                    btcProvider: provider,
-                    litecoinProvider: litecoinProvider,
-                    evmConnector: connector,
-                    starknetConnector,
-                    starknetStatus,
-                    solanaConnected,
-                    solanaSelectedWallet,
-                    suiConnected,
-                    suiSelectedWallet,
-                    tronConnected,
-                    tronSelectedWallet,
-                  })}
-                  isAvailable={wallet.isAvailable}
-                  isLoadingChains={isLoadingChains}
-                  index={index}
-                />
-              ))}
-            </AnimatePresence>
-          ) : (
-            <Typography size="h3" data-testid="connect-wallet-not-found">
-              No wallets found
-            </Typography>
-          )}
+          <AnimatePresence mode="wait">
+            {filteredWallets.length > 0 && !isLoadingChains ? (
+              <>
+                {filteredWallets.map((wallet) => (
+                  <WalletRow
+                    key={wallet.id}
+                    name={wallet.name}
+                    logo={wallet.logo}
+                    onClick={async () => {
+                      await handleConnect(wallet);
+                    }}
+                    isConnecting={connectingWallet === wallet.id.toLowerCase()}
+                    isConnected={getWalletConnectionStatus(wallet, {
+                      btcProvider: provider,
+                      litecoinProvider: litecoinProvider,
+                      evmConnector: connector,
+                      starknetConnector,
+                      starknetStatus,
+                      solanaConnected,
+                      solanaSelectedWallet,
+                      suiConnected,
+                      suiSelectedWallet,
+                      tronConnected,
+                      tronSelectedWallet,
+                    })}
+                    isAvailable={wallet.isAvailable}
+                  />
+                ))}
+              </>
+            ) : (
+              <>
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div
+                    className="relative mt-3 flex h-16 w-full items-center overflow-hidden rounded-xl bg-gray-200 p-3 transition-colors duration-500"
+                    key={i}
+                  >
+                    <div
+                      className="loader-shine h-12 w-full animate-pulse rounded-lg"
+                      style={
+                        { "--animation-delay": `${i * 70}ms` } as CSSProperties
+                      }
+                    />
+                  </div>
+                ))}
+              </>
+            )}
+          </AnimatePresence>
         </div>
       )}
 
