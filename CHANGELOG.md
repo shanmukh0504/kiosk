@@ -6,6 +6,10 @@
 
 - Chains dependency to enable wallets and ecosystems in ConnectWallet modal.
 
+### Fixed
+
+- Remove Error's on input box and output box related to minimum and maximum limits
+
 ## [2.0.4]
 
 ### Added

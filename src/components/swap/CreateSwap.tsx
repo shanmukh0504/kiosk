@@ -399,7 +399,6 @@ export const CreateSwap = () => {
                 onChange={handleInputAmountChange}
                 loading={loading.input}
                 price={tokenPrices.input}
-                error={error.inputError}
                 balance={inputTokenBalance?.toString()}
               />
               <div
@@ -417,7 +416,6 @@ export const CreateSwap = () => {
                 asset={outputAsset}
                 onChange={handleOutputAmountChange}
                 loading={loading.output}
-                error={error.outputError}
                 price={tokenPrices.output}
                 timeEstimate={timeEstimate}
               />
