@@ -253,7 +253,6 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           [BlockchainType.solana]: connector.wallet.solanaWallet,
           [BlockchainType.sui]: connector.wallet.suiWallet,
           [BlockchainType.tron]: connector.wallet.tronWallet,
-          // [BlockchainType.xrpl]: undefined,
         });
         return;
       }

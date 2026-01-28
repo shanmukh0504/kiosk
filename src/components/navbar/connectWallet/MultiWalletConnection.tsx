@@ -31,7 +31,6 @@ type MultiWalletConnectionProps = {
     [BlockchainType.solana]?: SolanaWallet;
     [BlockchainType.sui]?: SuiWallet;
     [BlockchainType.tron]?: TronWallet;
-    [BlockchainType.xrpl]?: undefined;
     [BlockchainType.litecoin]?: IInjectedLitecoinProvider;
   };
   handleClose: () => void;
@@ -67,7 +66,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   const availableEcosystems = Object.entries(ecosystems).filter(([key]) => {
     const type = key as Exclude<BlockchainType, BlockchainType.alpen_signet>;
     if (!availableBlockchainTypes.has(type)) return false;
-    return !!connectors[type];
+    return !!connectors[type as keyof typeof connectors];
   });
 
   const connectionStatus: Record<BlockchainType, boolean> = {
