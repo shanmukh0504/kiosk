@@ -122,15 +122,7 @@ export const CreateSwap = () => {
       !ltcAccount &&
       !isAlpenSignet(inputAsset.chain)
     );
-  }, [
-    swapProgress,
-    inputAsset,
-    btcAccount,
-    ltcAccount,
-    isAlpenSignet,
-    isLitecoin,
-    isBitcoin,
-  ]);
+  }, [swapProgress, inputAsset, btcAccount, ltcAccount]);
 
   const buttonLabel = useMemo(() => {
     if (needsWalletConnection)
