@@ -317,7 +317,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
       setConnectingWallet(null);
     }
   };
-  console.log("filteredWallets", filteredWallets);
+
   return (
     <div className="flex max-h-[600px] flex-col gap-[20px] p-3">
       <div
