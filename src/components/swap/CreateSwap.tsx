@@ -151,6 +151,7 @@ export const CreateSwap = () => {
     inputAsset,
     btcAccount,
     error.insufficientBalanceError,
+    showSigning,
   ]);
 
   const buttonDisabled = useMemo(() => {
