@@ -9,6 +9,25 @@ on:
       - main
 
 jobs:
+  # Job that sets outputs so we can gate visual jobs without using secrets in 'if' (not allowed by GitHub).
+  check-secrets:
+    name: Check visual test secrets
+    runs-on: ubuntu-latest
+    outputs:
+      chromatic_enabled: ${{ steps.check.outputs.chromatic_enabled }}
+      percy_enabled: ${{ steps.check.outputs.percy_enabled }}
+      playwright_enabled: ${{ steps.check.outputs.playwright_enabled }}
+    steps:
+      - id: check
+        run: |
+          echo "chromatic_enabled=$([ -n \"$CHROMATIC_PROJECT_TOKEN\" ] && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "percy_enabled=$([ -n \"$PERCY_TOKEN\" ] && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "playwright_enabled=$([ -n \"$PERCY_TOKEN\" ] && [ -n \"$VITE_API_KEY\" ] && echo true || echo false)" >> $GITHUB_OUTPUT
+        env:
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          VITE_API_KEY: ${{ secrets.VITE_API_KEY }}
+
   test:
     name: Run tests & coverage
     runs-on: ubuntu-latest
@@ -34,7 +53,8 @@ jobs:
   visual-regression-chromatic:
     name: Visual tests (Chromatic)
     runs-on: ubuntu-latest
-    if: ${{ secrets.CHROMATIC_PROJECT_TOKEN != '' }}
+    needs: [check-secrets]
+    if: needs.check-secrets.outputs.chromatic_enabled == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -55,7 +75,8 @@ jobs:
   visual-regression-percy:
     name: Visual tests (Percy)
     runs-on: ubuntu-latest
-    if: ${{ secrets.PERCY_TOKEN != '' }}
+    needs: [check-secrets]
+    if: needs.check-secrets.outputs.percy_enabled == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -83,7 +104,8 @@ jobs:
   visual-regression-playwright:
     name: Visual tests (Playwright + Percy)
     runs-on: ubuntu-latest
-    if: ${{ secrets.PERCY_TOKEN != '' && secrets.VITE_API_KEY != '' }}
+    needs: [check-secrets]
+    if: needs.check-secrets.outputs.playwright_enabled == 'true'
     env:
       VITE_EXPOSE_STORES_FOR_TESTS: "true"
       VITE_BASE_URL: ${{ secrets.VITE_BASE_URL }}
