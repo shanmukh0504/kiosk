@@ -1,4 +1,4 @@
-import { alpenTestnet, hyperliquid } from "@gardenfi/core";
+import { alpenTestnet, hyperevm } from "@gardenfi/core";
 import {
   Asset,
   Chain,
@@ -150,7 +150,7 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "monad_testnet",
   "hyperliquid_testnet",
   "starknet_sepolia",
-  "hyperliquid",
+  "hyperevm",
   "starknet",
   "solana_testnet",
   "unichain",
@@ -166,11 +166,13 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "core",
   "tron_shasta",
   "tron",
+  "xrpl",
+  "xrpl_testnet",
 ] as const;
 
 export const MULTICALL_CONTRACT_ADDRESSES: Record<number, string> = {
   [alpenTestnet.id]: "0x6c8f9d333964328F7AE2f0ea35389730D88f3d29",
-  [hyperliquid.id]: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  [hyperevm.id]: "0xcA11bde05977b3631167028862bE2a173976CA11",
   [citreaTestnet.id]: "0x8470Ee1FCD47e7F9B90486bB5D142430e5C1f409",
   [botanix.id]: "0xeaE7721d779276eb0f5837e2fE260118724a2Ba4",
   [monadMainnet.id]: "0xcA11bde05977b3631167028862bE2a173976CA11",
@@ -204,7 +206,7 @@ export const WALLET_SUPPORTED_CHAINS: Record<string, Chain[]> = {
     "arbitrum",
     "solana",
     "bera",
-    "hyperliquid",
+    "hyperevm",
     "unichain",
     "citrea_testnet",
   ],

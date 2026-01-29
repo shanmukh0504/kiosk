@@ -16,6 +16,7 @@ import {
   Chains,
   isLitecoin,
   isAlpenSignet,
+  isXrpl,
 } from "@gardenfi/orderbook";
 import { debounce } from "lodash-es";
 import { useGarden } from "@gardenfi/react-hooks";
@@ -43,6 +44,7 @@ import { useSuiWallet } from "./useSuiWallet";
 import logger from "../utils/logger";
 import { balanceStore } from "../store/balanceStore";
 import { useTronWallet } from "./useTronWallet";
+import { useXRPLWallet } from "./useXRPLWallet";
 import { Toast } from "../components/toast/Toast";
 import { useToastStore } from "../store/toastStore";
 
@@ -105,6 +107,7 @@ export const useSwap = () => {
   const { solanaAddress } = useSolanaWallet();
   const { tronAddress } = useTronWallet();
   const { currentAccount } = useSuiWallet();
+  const { xrplAddress } = useXRPLWallet();
   const { isVisible: isToastVisible } = useToastStore();
   useNetworkFees();
 
@@ -481,6 +484,10 @@ export const useSwap = () => {
         check: (chain: Chain) => isTron(chain),
         address: tronAddress,
       },
+      xrpl: {
+        check: (chain: Chain) => isXrpl(chain),
+        address: xrplAddress,
+      },
     };
 
     for (const [chainKey, { check, address }] of Object.entries(
@@ -502,6 +509,7 @@ export const useSwap = () => {
     solanaAddress,
     currentAccount,
     tronAddress,
+    xrplAddress,
   ]);
 
   const handleSwapClick = async () => {

@@ -21,6 +21,7 @@ import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { viewPortStore } from "../../store/viewPortStore";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
 import { useTronWallet } from "../../hooks/useTronWallet";
+import { useXRPLWallet } from "../../hooks/useXRPLWallet";
 
 export const Navbar = () => {
   const { isConnected, address } = useEVMWallet();
@@ -30,6 +31,7 @@ export const Navbar = () => {
   const { solanaAddress } = useSolanaWallet();
   const { suiConnected } = useSuiWallet();
   const { tronConnected } = useTronWallet();
+  const { xrplAddress } = useXRPLWallet();
   const { setOpenModal } = modalStore();
   const { isMobile } = viewPortStore();
 
@@ -100,7 +102,8 @@ export const Navbar = () => {
         ltcAddress ||
         solanaAddress ||
         suiConnected ||
-        tronConnected ? (
+        tronConnected ||
+        xrplAddress ? (
           <ConnectedWallets />
         ) : (
           <Button

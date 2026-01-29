@@ -48,6 +48,8 @@ export const API = () => {
           balancesBaseApi().endpoint("sui").endpoint(address),
         tron: (address: string) =>
           balancesBaseApi().endpoint("tron").endpoint(address),
+        xrpl: (address: string) =>
+          balancesBaseApi().endpoint("xrpl").endpoint(address),
       };
     })(),
     stake: (() => {

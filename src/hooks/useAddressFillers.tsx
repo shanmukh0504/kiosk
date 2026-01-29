@@ -17,8 +17,10 @@ import {
   isLitecoin,
   isTron,
   isBitcoin,
+  isXrpl,
 } from "@gardenfi/orderbook";
 import { useTronWallet } from "./useTronWallet";
+import { useXRPLWallet } from "./useXRPLWallet";
 
 // Hook to manage wallet address storage (should only be called once)
 // Only stores addresses from connected wallet providers
@@ -39,6 +41,7 @@ export const useAddressFillers = () => {
   const { solanaAddress } = useSolanaWallet();
   const { tronAddress } = useTronWallet();
   const { currentAccount } = useSuiWallet();
+  const { xrplAddress } = useXRPLWallet();
 
   const prevChainsRef = useRef<{
     inputChain?: Chain;
@@ -54,6 +57,7 @@ export const useAddressFillers = () => {
       if (isSolana(chain)) return solanaAddress || undefined;
       if (isSui(chain)) return currentAccount?.address || undefined;
       if (isTron(chain)) return tronAddress || undefined;
+      if (isXrpl(chain)) return xrplAddress || undefined;
       return undefined;
     },
     [
@@ -63,6 +67,7 @@ export const useAddressFillers = () => {
       solanaAddress,
       currentAccount,
       ltcAddress,
+      xrplAddress,
       tronAddress,
     ]
   );

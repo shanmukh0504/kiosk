@@ -266,7 +266,7 @@ export const ASSET_MAPPINGS: AssetMappings = {
       chainId: "56",
       currency: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580",
     },
-    "hyperliquid:uBTC": {
+    "hyperevm:uBTC": {
       chainId: "999",
       currency: "0x9fdbda0a5e284c32744d2f17ee5c74b284993463",
     },

@@ -15,6 +15,7 @@ import {
   useLitecoinWallet,
 } from "@gardenfi/wallet-connectors";
 import { useTronWallet } from "../../hooks/useTronWallet";
+import { useXRPLWallet } from "../../hooks/useXRPLWallet";
 
 type TransactionsProps = {
   isOpen: boolean;
@@ -36,6 +37,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
     tron: "",
     litecoin: "",
     alpen_signet: "",
+    xrpl: "",
   });
 
   const { garden } = useGarden();
@@ -48,7 +50,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
   const { account: ltcAddress } = useLitecoinWallet();
   const { fetchTransactions, totalItems, transactions, loadMore } =
     transactionHistoryStore();
-
+  const { xrplAddress } = useXRPLWallet();
   const showLoadMore = useMemo(
     () => activeTab === "completed" && transactions.length < totalItems,
     [transactions.length, totalItems, activeTab]
@@ -77,6 +79,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
         tron: tronAddress ?? "",
         litecoin: ltcAddress ?? "",
         alpen_signet: "",
+        xrpl: xrplAddress ?? "",
       });
       fetchTransactions(orderbookUrl, {
         bitcoin: btcAddress ?? "",
@@ -89,6 +92,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
         tron: tronAddress ?? "",
         litecoin: "",
         alpen_signet: "",
+        xrpl: xrplAddress ?? "",
       });
     }
   }, [
@@ -102,6 +106,8 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
     currentAccount,
     tronAddress,
     btcAddress,
+    xrplAddress,
+    ltcAddress,
   ]);
 
   return (
