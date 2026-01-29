@@ -6,6 +6,7 @@ on:
       - main
       - dev
       - stage
+      - ci/approval-main
 
 env:
   NODE_VERSION: 24
@@ -66,7 +67,7 @@ jobs:
               INFISICAL_ENV=testnet
               BASE_BRANCH=dev
               ;;
-            refs/heads/stage)
+            refs/heads/stage|refs/heads/ci/approval-main)
               INFISICAL_ENV=stage
               BASE_BRANCH=stage
               ;;
@@ -141,11 +142,13 @@ jobs:
       # ----------------------------
       - name: Approval
         id: approval
+        if: github.ref == 'refs/heads/main'
         uses: abdulsaheel/release-gate-action@v1.2
         with:
           base_url: ${{ secrets.RELEASE_GATE_URL }}
           token: ${{ secrets.RELEASE_GATE_TOKEN }}
           link: ${{ env.PREVIEW_URL }}
+
 
       # ----------------------------
       # Production Deploy (BASE_BRANCH)
