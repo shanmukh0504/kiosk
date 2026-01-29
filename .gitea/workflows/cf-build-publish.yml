@@ -16,15 +16,30 @@ jobs:
     runs-on: amd64
     container:
       image: node:24-bullseye
+
     permissions:
       contents: read
       deployments: write
       pull-requests: write
 
     steps:
+      # ----------------------------
+      # Checkout
+      # ----------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # ----------------------------
+      # System deps
+      # ----------------------------
+      - name: Install System Dependencies
+        run: |
+          apt-get update
+          apt-get install -y jq curl
+
+      # ----------------------------
+      # Bun
+      # ----------------------------
       - name: Setup Bun
         run: |
           if command -v bun >/dev/null 2>&1; then
@@ -37,44 +52,71 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Determine environment and branch
+      # ----------------------------
+      # Branch / env resolution
+      # ----------------------------
+      - name: Determine environment and branches
         run: |
           case "$GITHUB_REF" in
             refs/heads/main)
-              echo "INFISICAL_ENV=mainnet" >> $GITHUB_ENV
-              echo "BRANCH=main" >> $GITHUB_ENV
+              INFISICAL_ENV=mainnet
+              BASE_BRANCH=main
               ;;
             refs/heads/dev)
-              echo "INFISICAL_ENV=testnet" >> $GITHUB_ENV
-              echo "BRANCH=dev" >> $GITHUB_ENV
+              INFISICAL_ENV=testnet
+              BASE_BRANCH=dev
               ;;
             refs/heads/stage)
-              echo "INFISICAL_ENV=stage" >> $GITHUB_ENV
-              echo "BRANCH=stage" >> $GITHUB_ENV
+              INFISICAL_ENV=stage
+              BASE_BRANCH=stage
               ;;
             *)
               echo "Branch $GITHUB_REF_NAME not configured for deployment"
               exit 0
               ;;
           esac
-          echo "Resolved BRANCH: $BRANCH"
-          echo "Resolved INFISICAL_ENV: $INFISICAL_ENV"
 
+          PREVIEW_BRANCH="preview-${BASE_BRANCH}"
+
+          echo "INFISICAL_ENV=$INFISICAL_ENV" >> $GITHUB_ENV
+          echo "BASE_BRANCH=$BASE_BRANCH" >> $GITHUB_ENV
+          echo "PREVIEW_BRANCH=$PREVIEW_BRANCH" >> $GITHUB_ENV
+
+          echo "Resolved:"
+          echo "  INFISICAL_ENV=$INFISICAL_ENV"
+          echo "  BASE_BRANCH=$BASE_BRANCH"
+          echo "  PREVIEW_BRANCH=$PREVIEW_BRANCH"
+
+      # ----------------------------
+      # Infisical
+      # ----------------------------
       - name: Install Infisical CLI
         run: |
           curl -1sLf 'https://artifacts-cli.infisical.com/setup.deb.sh' | bash
           apt-get update && apt-get install -y infisical
 
-
+      # ----------------------------
+      # Build
+      # ----------------------------
       - name: Build project
         run: |
-          echo "Building with INFISICAL_ENV=$INFISICAL_ENV"
-          infisical run --projectId=${{ secrets.INFISICAL_PROJECT_ID }} --env="$INFISICAL_ENV" --token=${{ secrets.INFISICAL_TOKEN }} --domain=${{ secrets.INFISICAL_API_URL }} -- bun run build
+          infisical run \
+            --projectId=${{ secrets.INFISICAL_PROJECT_ID }} \
+            --env="$INFISICAL_ENV" \
+            --token=${{ secrets.INFISICAL_TOKEN }} \
+            --domain=${{ secrets.INFISICAL_API_URL }} \
+            -- bun run build
 
+      # ----------------------------
+      # Wrangler
+      # ----------------------------
       - name: Install Wrangler
         run: npm install -g wrangler@3
-        
-      - name: Deploy to Cloudflare Pages
+
+      # ----------------------------
+      # Preview (Jury) Deploy
+      # ----------------------------
+      - name: Jury Deployment
         run: |
           infisical run \
             --projectId=${{ secrets.INFISICAL_CF_PROJECT_ID }} \
@@ -86,5 +128,42 @@ jobs:
 
               wrangler pages deploy dist \
                 --project-name "$CF_PAGES_PROJECT_NAME" \
-                --branch "$BRANCH"
+                --branch "$PREVIEW_BRANCH"
+
+              PREVIEW_URL="https://${PREVIEW_BRANCH}.${CF_PAGES_PROJECT_NAME}.pages.dev"
+
+              echo "PREVIEW_URL=$PREVIEW_URL" >> $GITHUB_ENV
+              echo "Jury preview URL: $PREVIEW_URL"
+            '
+
+      # ----------------------------
+      # Approval Gate
+      # ----------------------------
+      - name: Approval
+        id: approval
+        if: github.ref == 'refs/heads/main'
+        uses: abdulsaheel/release-gate-action@v1.2
+        with:
+          base_url: ${{ secrets.RELEASE_GATE_URL }}
+          token: ${{ secrets.RELEASE_GATE_TOKEN }}
+          link: ${{ env.PREVIEW_URL }}
+
+
+      # ----------------------------
+      # Production Deploy (BASE_BRANCH)
+      # ----------------------------
+      - name: Production Deployment
+        if: success()
+        run: |
+          infisical run \
+            --projectId=${{ secrets.INFISICAL_CF_PROJECT_ID }} \
+            --env="$INFISICAL_ENV" \
+            --token=${{ secrets.INFISICAL_CF_TOKEN }} \
+            --domain=${{ secrets.INFISICAL_API_URL }} \
+            -- bash -c '
+              set -e
+
+              wrangler pages deploy dist \
+                --project-name "$CF_PAGES_PROJECT_NAME" \
+                --branch "$BASE_BRANCH"
             '
