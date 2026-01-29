@@ -35,6 +35,7 @@ export type Wallet = {
   isSui?: boolean;
   isTron?: boolean;
   isLitecoin?: boolean;
+  isXRPL?: boolean;
 };
 
 export type ConnectionState = {
@@ -49,6 +50,8 @@ export type ConnectionState = {
   suiSelectedWallet?: SuiWallet | null;
   tronConnected?: boolean;
   tronSelectedWallet?: TronWallet | null;
+  xrplConnected?: boolean;
+  xrplAddress?: string;
 };
 
 const checkManualWalletAvailability = (
@@ -66,6 +69,8 @@ const checkManualWalletAvailability = (
       return !!window.starknet_braavos;
     case "ready":
       return !!window.starknet_argentX;
+    case "crossmark":
+      return !!window.xrpl && !!window.crossmark;
     default:
       return undefined;
   }
@@ -105,6 +110,7 @@ export const getAvailableWallets = (
       isSui: config.isSuiSupported,
       isTron: config.isTronSupported,
       isLitecoin: config.isLitecoinSupported,
+      isXRPL: config.isXRPLSupported,
     });
   }
 
@@ -182,6 +188,12 @@ export const getAvailableWallets = (
     }
   }
 
+  const crossmarkWallet = walletMap.get("crossmark");
+  if (crossmarkWallet && crossmarkWallet.isXRPL) {
+    crossmarkWallet.isAvailable =
+      checkManualWalletAvailability("crossmark") ?? false;
+  }
+
   return Array.from(walletMap.values()).sort((a, b) => {
     if (a.id === "injected") return 1;
     if (b.id === "injected") return -1;
@@ -253,6 +265,10 @@ export const isWalletConnected = (
         getWalletKey(connectionState.tronSelectedWallet.adapter.name) ===
         wallet.id
       );
+    case BlockchainType.xrpl:
+      if (!connectionState.xrplConnected || !connectionState.xrplAddress)
+        return false;
+      return wallet.id === "crossmark";
     default:
       return false;
   }
@@ -296,6 +312,11 @@ export const getWalletConnectionStatus = (
     [BlockchainType.tron]: isWalletConnected(
       wallet,
       BlockchainType.tron,
+      connectionState
+    ),
+    [BlockchainType.xrpl]: isWalletConnected(
+      wallet,
+      BlockchainType.xrpl,
       connectionState
     ),
     [BlockchainType.alpen_signet]: false,

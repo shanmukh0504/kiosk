@@ -8,6 +8,7 @@ import { useTronWallet } from "./useTronWallet";
 import { balanceStore } from "../store/balanceStore";
 import { ChainType } from "../utils/balanceSubscription";
 import { assetInfoStore } from "../store/assetInfoStore";
+import { useXRPLWallet } from "./useXRPLWallet";
 
 export const useTokenBalances = () => {
   const { connectBalanceStream, disconnectBalanceStream } = balanceStore();
@@ -19,6 +20,7 @@ export const useTokenBalances = () => {
   const { solanaAnchorProvider } = useSolanaWallet();
   const { currentAccount } = useSuiWallet();
   const { tronAddress } = useTronWallet();
+  const { xrplAddress } = useXRPLWallet();
 
   useEffect(() => {
     if (!assets) return;
@@ -78,4 +80,12 @@ export const useTokenBalances = () => {
       disconnectBalanceStream(ChainType.TRON, tronAddress);
     };
   }, [assets, tronAddress, connectBalanceStream, disconnectBalanceStream]);
+
+  useEffect(() => {
+    if (!assets || !xrplAddress) return;
+    connectBalanceStream(ChainType.XRPL, xrplAddress);
+    return () => {
+      disconnectBalanceStream(ChainType.XRPL, xrplAddress);
+    };
+  }, [assets, xrplAddress, connectBalanceStream, disconnectBalanceStream]);
 };

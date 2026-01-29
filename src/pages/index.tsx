@@ -15,6 +15,7 @@ import { Network } from "@gardenfi/utils";
 import { useSolanaWallet } from "../hooks/useSolanaWallet";
 import { useSuiWallet } from "../hooks/useSuiWallet";
 import { useTronWallet } from "../hooks/useTronWallet";
+import { useXRPLWallet } from "../hooks/useXRPLWallet";
 
 function App() {
   const { data: walletClient } = useWalletClient();
@@ -22,6 +23,7 @@ function App() {
   const { solanaAnchorProvider } = useSolanaWallet();
   const { suiSelectedWallet } = useSuiWallet();
   const { wallet: tronWallet } = useTronWallet();
+  const { xrplWallet } = useXRPLWallet();
 
   return (
     <GardenProvider
@@ -45,13 +47,13 @@ function App() {
           solana: solanaAnchorProvider ?? undefined,
           sui: suiSelectedWallet ?? undefined,
           tron: tronWallet?.adapter ?? undefined,
+          xrpl: xrplWallet ?? undefined,
         },
         solanaProgramAddress: {
           native: import.meta.env.VITE_SOLANA_PROGRAM_ADDRESS_NATIVE,
           spl: import.meta.env.VITE_SOLANA_PROGRAM_ADDRESS_SPL,
         },
       }}
-      setRedeemServiceEnabled={true}
       store={localStorage}
     >
       <Layout>

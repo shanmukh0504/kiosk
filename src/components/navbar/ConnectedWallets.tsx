@@ -15,6 +15,7 @@ import { useSolanaWallet } from "../../hooks/useSolanaWallet";
 import { deletedOrdersStore } from "../../store/deletedOrdersStore";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
 import { useTronWallet } from "../../hooks/useTronWallet";
+import { useXRPLWallet } from "../../hooks/useXRPLWallet";
 
 const ConnectedWallets = () => {
   const { address } = useEVMWallet();
@@ -24,6 +25,7 @@ const ConnectedWallets = () => {
   const { solanaAddress } = useSolanaWallet();
   const { suiConnected, currentAccount } = useSuiWallet();
   const { tronConnected, wallet: tronAccount } = useTronWallet();
+  const { xrplAddress } = useXRPLWallet();
   const { pendingOrders } = useGarden();
   const { setOpenModal } = modalStore();
   const { isOrderDeleted, cleanupDeletedOrders, deletedOrders } =
@@ -122,6 +124,13 @@ const ConnectedWallets = () => {
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
             data-testid="navbar-wallet-tron-icon"
             alt="Tron wallet"
+          />
+        )}
+        {xrplAddress && (
+          <img
+            src={ecosystems.xrpl.icon}
+            className="h-4 w-4 object-contain sm:h-5 sm:w-5"
+            alt="XRPL wallet"
           />
         )}
         {pendingOrdersCount ? (

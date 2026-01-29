@@ -38,6 +38,7 @@ import { Wallet as TronWallet } from "@tronweb3/tronwallet-adapter-react-hooks";
 import { Connector as StarknetConnector } from "@starknet-react/core";
 import { useSuiWallet } from "../../../hooks/useSuiWallet";
 import { useTronWallet } from "../../../hooks/useTronWallet";
+import { useXRPLWallet } from "../../../hooks/useXRPLWallet";
 import { assetInfoStore } from "../../../store/assetInfoStore";
 
 import logger from "../../../utils/logger";
@@ -89,6 +90,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     tronConnected,
     wallet: tronSelectedWallet,
   } = useTronWallet();
+  const { xrplAddress, xrplConnected, handleXRPLConnect } = useXRPLWallet();
   const { modalData } = modalStore();
   const { chains, isLoading: isLoadingChains } = assetInfoStore();
 
@@ -99,6 +101,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
   const showOnlySuiWallets = !!modalData.connectWallet?.sui;
   const showOnlyTronWallets = !!modalData.connectWallet?.tron;
   const showOnlyLitecoinWallets = !!modalData.connectWallet?.litecoin;
+  const showOnlyXRPLWallets = !!modalData.connectWallet?.xrpl;
 
   const availableBlockchainTypes: Set<BlockchainType> = useMemo(() => {
     const availableTypes = new Set<BlockchainType>();
@@ -131,7 +134,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                 ? BlockchainType.tron
                 : showOnlyLitecoinWallets
                   ? BlockchainType.litecoin
-                  : null;
+                  : showOnlyXRPLWallets
+                    ? BlockchainType.xrpl
+                    : null;
 
     if (selected) setSelectedEcosystem(selected);
   }, [
@@ -142,6 +147,7 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     showOnlySuiWallets,
     showOnlyTronWallets,
     showOnlyLitecoinWallets,
+    showOnlyXRPLWallets,
   ]);
 
   const allAvailableWallets = useMemo(() => {
@@ -303,6 +309,9 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
         if (!connector.wallet?.tronWallet) return;
         await handleTronConnect(connector.wallet.tronWallet);
         setConnectingWallet(null);
+      } else if (connector.isXRPL) {
+        await handleXRPLConnect();
+        setConnectingWallet(null);
       }
     } catch (error) {
       logger.error("Error connecting wallet:", error);
@@ -421,6 +430,8 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
                     suiSelectedWallet,
                     tronConnected,
                     tronSelectedWallet,
+                    xrplConnected,
+                    xrplAddress,
                   })}
                   isAvailable={wallet.isAvailable}
                   isLoadingChains={isLoadingChains}

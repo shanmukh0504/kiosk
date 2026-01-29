@@ -150,7 +150,7 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "monad_testnet",
   "hyperliquid_testnet",
   "starknet_sepolia",
-  "hyperliquid",
+  "hyperevm",
   "starknet",
   "solana_testnet",
   "unichain",
@@ -166,6 +166,8 @@ export const SUPPORTED_CHAINS: Chain[] = [
   "core",
   "tron_shasta",
   "tron",
+  "xrpl",
+  "xrpl_testnet",
 ] as const;
 
 export const MULTICALL_CONTRACT_ADDRESSES: Record<number, string> = {
