@@ -4,6 +4,7 @@ import { Loader } from "../../../common/Loader";
 import { ecosystems } from "./constants";
 import { motion } from "framer-motion";
 import { BlockchainType } from "@gardenfi/orderbook";
+import { walletRowVariants } from "../../../animations/animations";
 
 type WalletRowProps = {
   name: string;
@@ -12,6 +13,7 @@ type WalletRowProps = {
   isConnecting: boolean;
   isConnected: IsConnected;
   isAvailable: boolean;
+  index: number;
 };
 
 type IsConnected = {
@@ -25,16 +27,16 @@ export const WalletRow: FC<WalletRowProps> = ({
   isConnecting,
   isConnected,
   isAvailable,
+  index,
 }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, marginBottom: -65 }}
-      animate={{ opacity: 1, marginBottom: 0 }}
-      exit={{ opacity: 0, marginBottom: -65 }}
-      transition={{
-        duration: 0.3,
-        ease: "easeOut",
-      }}
+      layout
+      variants={walletRowVariants}
+      custom={index}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
     >
       <div
         onClick={onClick}
@@ -99,10 +101,6 @@ export const WalletRow: FC<WalletRowProps> = ({
                         style={{
                           width: 24,
                           height: 24,
-                          minWidth: 24,
-                          minHeight: 24,
-                          maxWidth: 24,
-                          maxHeight: 24,
                         }}
                       />
                     )

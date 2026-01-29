@@ -34,7 +34,7 @@ import {
   blockchainTypeToWalletProperty,
   ecosystems,
 } from "./constants";
-import { AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useStarknetWallet } from "../../../hooks/useStarknetWallet";
 import { ConnectingWalletStore } from "../../../store/connectWalletStore";
 import { useSolanaWallet } from "../../../hooks/useSolanaWallet";
@@ -47,6 +47,7 @@ import { useTronWallet } from "../../../hooks/useTronWallet";
 import { assetInfoStore } from "../../../store/assetInfoStore";
 
 import logger from "../../../utils/logger";
+import { walletListVariants } from "../../../animations/animations";
 
 type ConnectWalletProps = {
   open: boolean;
@@ -318,6 +319,22 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
     }
   };
 
+  const walletListHeight = useMemo(() => {
+    const MAX_HEIGHT = 432;
+    const ROW_HEIGHT = 64;
+    const GAP = 4;
+    const PADDING = 32;
+    if (isLoadingChains || !selectedEcosystem) return MAX_HEIGHT;
+
+    const walletCount = filteredWallets.length;
+    if (walletCount === 0) return MAX_HEIGHT;
+
+    return Math.min(
+      MAX_HEIGHT,
+      walletCount * ROW_HEIGHT + (walletCount - 1) * GAP + PADDING
+    );
+  }, [isLoadingChains, selectedEcosystem, filteredWallets.length]);
+
   return (
     <div className="flex max-h-[600px] flex-col gap-[20px] p-3">
       <div
@@ -400,64 +417,63 @@ export const ConnectWallet: React.FC<ConnectWalletProps> = ({ onClose }) => {
           handleClose={handleClose}
         />
       ) : (
-        <div
-          className={`scrollbar-hide flex flex-col gap-1 overflow-y-auto overscroll-contain rounded-2xl bg-white/50 p-4 transition-all duration-300 ${
-            isLoadingChains
-              ? "overflow-hidden overscroll-none"
-              : !selectedEcosystem
-                ? "h-[432px]"
-                : ""
-          }`}
+        <motion.div
+          className="scrollbar-hide flex flex-col gap-1 overflow-y-auto overscroll-contain rounded-2xl bg-white/50 p-4"
+          variants={walletListVariants}
+          initial="hidden"
+          animate="visible"
+          custom={walletListHeight}
           data-testid="connect-wallet-list"
         >
-          <AnimatePresence mode="wait">
-            {filteredWallets.length > 0 && !isLoadingChains ? (
-              <>
-                {filteredWallets.map((wallet) => (
-                  <WalletRow
-                    key={wallet.id}
-                    name={wallet.name}
-                    logo={wallet.logo}
-                    onClick={async () => {
-                      await handleConnect(wallet);
-                    }}
-                    isConnecting={connectingWallet === wallet.id.toLowerCase()}
-                    isConnected={getWalletConnectionStatus(wallet, {
-                      btcProvider: provider,
-                      litecoinProvider: litecoinProvider,
-                      evmConnector: connector,
-                      starknetConnector,
-                      starknetStatus,
-                      solanaConnected,
-                      solanaSelectedWallet,
-                      suiConnected,
-                      suiSelectedWallet,
-                      tronConnected,
-                      tronSelectedWallet,
-                    })}
-                    isAvailable={wallet.isAvailable}
-                  />
-                ))}
-              </>
-            ) : (
-              <>
-                {Array.from({ length: 6 }).map((_, i) => (
+          {filteredWallets.length > 0 && !isLoadingChains ? (
+            // <AnimatePresence mode="wait">
+            <>
+              {filteredWallets.map((wallet, index) => (
+                <WalletRow
+                  key={`${wallet.id}`}
+                  name={wallet.name}
+                  logo={wallet.logo}
+                  onClick={async () => {
+                    await handleConnect(wallet);
+                  }}
+                  isConnecting={connectingWallet === wallet.id.toLowerCase()}
+                  isConnected={getWalletConnectionStatus(wallet, {
+                    btcProvider: provider,
+                    litecoinProvider: litecoinProvider,
+                    evmConnector: connector,
+                    starknetConnector,
+                    starknetStatus,
+                    solanaConnected,
+                    solanaSelectedWallet,
+                    suiConnected,
+                    suiSelectedWallet,
+                    tronConnected,
+                    tronSelectedWallet,
+                  })}
+                  isAvailable={wallet.isAvailable}
+                  index={index}
+                />
+              ))}
+            </>
+          ) : (
+            // </AnimatePresence>
+            <>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  className="relative mt-3 flex h-16 w-full items-center overflow-hidden rounded-xl bg-gray-200 p-3 transition-colors duration-500"
+                  key={i}
+                >
                   <div
-                    className="relative mt-3 flex h-16 w-full items-center overflow-hidden rounded-xl bg-gray-200 p-3 transition-colors duration-500"
-                    key={i}
-                  >
-                    <div
-                      className="loader-shine h-12 w-full animate-pulse rounded-lg"
-                      style={
-                        { "--animation-delay": `${i * 70}ms` } as CSSProperties
-                      }
-                    />
-                  </div>
-                ))}
-              </>
-            )}
-          </AnimatePresence>
-        </div>
+                    className="loader-shine h-12 w-full animate-pulse rounded-lg"
+                    style={
+                      { "--animation-delay": `${i * 70}ms` } as CSSProperties
+                    }
+                  />
+                </div>
+              ))}
+            </>
+          )}
+        </motion.div>
       )}
 
       <div className="mb-2">

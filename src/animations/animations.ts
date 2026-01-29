@@ -1,5 +1,33 @@
 import { Variants } from "framer-motion";
 
+export const walletListVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: (height: number) => ({
+    opacity: 1,
+    height: height,
+    transition: {
+      staggerChildren: 0.03,
+      delayChildren: 0.1,
+    },
+  }),
+};
+
+export const walletRowVariants: Variants = {
+  hidden: { opacity: 0, y: -10, scale: 0.9 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 250,
+      damping: 25,
+      delay: i * 0.08,
+    },
+  }),
+  exit: { opacity: 0, y: -10, scale: 0.9 },
+};
+
 export const expandAnimation: Variants = {
   initial: { opacity: 0, height: 0 },
   animate: {
