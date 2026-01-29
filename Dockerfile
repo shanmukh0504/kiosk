@@ -1,28 +1,47 @@
 # syntax=docker/dockerfile:1
-FROM oven/bun:1.1.29 AS builder
+
+# --- Builder: Node 24 base with Bun installed for package management ---
+FROM node:24-bullseye-slim AS builder
 
 WORKDIR /app
 
-# Copy package files
-COPY package.json ./
+# Install minimal build dependencies and curl for installing Bun
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    build-essential \
+    python3 \
+    ca-certificates \
+    unzip \
+    git && rm -rf /var/lib/apt/lists/*
 
-# Install dependencies (skip scripts to avoid native module build issues in Docker)
-RUN bun install --ignore-scripts
+# Install Bun (pinned) and ensure it's on PATH
+RUN curl -fsSL https://bun.com/install | bash
 
-# Copy source
+# Add Bun's bin directory to the PATH environment variable for all subsequent commands
+ENV BUN_INSTALL="/root/.bun"
+ENV PATH="$BUN_INSTALL/bin:$PATH"
+
+# Increase Node.js heap size to prevent out-of-memory errors during build
+ENV NODE_OPTIONS="--max-old-space-size=8192"
+
+# Copy package manifests first to leverage Docker cache (include bun.lock if present)
+COPY package.json bun.lock ./
+
+# Install dependencies with Bun (frozen lock for reproducibility when bun.lock exists)
+RUN bun install --frozen-lockfile
+
+# Copy the rest of the application source code
 COPY . .
-
-# Build (disable topLevelAwait plugin due to Bun compatibility issues in Docker)
-# See: https://github.com/oven-sh/bun/issues/9860
-ENV SKIP_TOP_LEVEL_AWAIT=true
+ 
+# Copy source and run the build using Bun command
 RUN bun run build
 
-FROM nginx:1.27-alpine AS production
 
-# Remove default nginx content
+# --- Production: serve built assets with nginx ---
+FROM nginx:stable-alpine AS production
+
+# Clean default content and copy built assets
 RUN rm -rf /usr/share/nginx/html/*
-
-# Copy built assets
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Configure nginx for SPA
@@ -54,5 +73,4 @@ RUN printf 'server {\n\
     add_header Content-Security-Policy "frame-ancestors *;" always;\n\
 }\n' > /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

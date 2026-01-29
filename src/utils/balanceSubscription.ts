@@ -8,6 +8,7 @@ export enum ChainType {
   SOLANA = "solana",
   SUI = "sui",
   TRON = "tron",
+  XRPL = "xrpl",
 }
 
 export type BalanceAsset = {
@@ -75,6 +76,9 @@ class BalanceSubscription {
         break;
       case ChainType.TRON:
         url = api.balance.tron(address).toString();
+        break;
+      case ChainType.XRPL:
+        url = api.balance.xrpl(address).toString();
         break;
       default:
         throw new Error(`Unsupported chain type: ${chainType}`);

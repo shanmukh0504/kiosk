@@ -17,6 +17,7 @@ import { config } from "./wagmi/config";
 import { SuiProvider } from "./sui/SuiProvider.tsx";
 import { FrameProvider } from "./FrameProvider.tsx";
 import { TronWalletProvider } from "./tron/TronProvider.tsx";
+import { XRPLProvider } from "./xrpl/XRPLProvider.tsx";
 import { constants as starknetConstants } from "starknet";
 
 interface WalletProviderProps {
@@ -41,7 +42,9 @@ export const WalletProviders: FC<WalletProviderProps> = ({ children }) => {
             <SolanaProvider>
               <SuiProvider>
                 <TronWalletProvider>
-                  <FrameProvider>{children}</FrameProvider>
+                  <XRPLProvider>
+                    <FrameProvider>{children}</FrameProvider>
+                  </XRPLProvider>
                 </TronWalletProvider>
               </SuiProvider>
             </SolanaProvider>

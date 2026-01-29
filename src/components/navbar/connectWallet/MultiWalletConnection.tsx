@@ -19,6 +19,7 @@ import { useTronWallet } from "../../../hooks/useTronWallet";
 import { BlockchainType } from "@gardenfi/orderbook";
 
 import { useSuiWallet } from "../../../hooks/useSuiWallet";
+import { useXRPLWallet } from "../../../hooks/useXRPLWallet";
 type Checked = Record<BlockchainType, boolean>;
 
 type MultiWalletConnectionProps = {
@@ -60,10 +61,12 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
   } = useStarknetWallet();
   const { handleSuiConnect, suiSelectedWallet } = useSuiWallet();
   const { handleTronConnect, wallet: tronWallet } = useTronWallet();
+  const { handleXRPLConnect, xrplConnected, xrplAddress } = useXRPLWallet();
+
   const availableEcosystems = Object.entries(ecosystems).filter(([key]) => {
     const type = key as Exclude<BlockchainType, BlockchainType.alpen_signet>;
     if (!availableBlockchainTypes.has(type)) return false;
-    return !!connectors[type];
+    return !!connectors[type as keyof typeof connectors];
   });
 
   const connectionStatus: Record<BlockchainType, boolean> = {
@@ -77,6 +80,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
     [BlockchainType.bitcoin]: provider?.name === connectors.bitcoin?.name,
     [BlockchainType.tron]:
       tronWallet?.adapter.name === connectors.tron?.adapter.name,
+    [BlockchainType.xrpl]: xrplConnected && !!xrplAddress,
     [BlockchainType.litecoin]: false,
     [BlockchainType.alpen_signet]: false,
   };
@@ -154,6 +158,14 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
         return;
       }
       await handleTronConnect(connectors.tron);
+    }
+
+    if (checked[BlockchainType.xrpl]) {
+      const success = await handleXRPLConnect();
+      if (!success) {
+        setLoading(false);
+        return;
+      }
     }
 
     setLoading(false);
