@@ -124,15 +124,7 @@ export const CreateSwap = () => {
       !ltcAccount &&
       !isAlpenSignet(inputAsset.chain)
     );
-  }, [
-    swapProgress,
-    inputAsset,
-    btcAccount,
-    ltcAccount,
-    isAlpenSignet,
-    isLitecoin,
-    isBitcoin,
-  ]);
+  }, [swapProgress, inputAsset, btcAccount, ltcAccount]);
 
   const buttonLabel = useMemo(() => {
     if (needsWalletConnection)
@@ -161,6 +153,7 @@ export const CreateSwap = () => {
     inputAsset,
     btcAccount,
     error.insufficientBalanceError,
+    showSigning,
   ]);
 
   const buttonDisabled = useMemo(() => {

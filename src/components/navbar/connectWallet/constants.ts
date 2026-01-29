@@ -26,7 +26,7 @@ export const ecosystems = {
   },
   [BlockchainType.tron]: {
     name: "tron",
-    icon: "https://garden.imgix.net/chain_images/TronIcon.svg",
+    icon: "https://garden-finance.imgix.net/chain_images/tron.png",
   },
   [BlockchainType.litecoin]: {
     name: "Litecoin",
