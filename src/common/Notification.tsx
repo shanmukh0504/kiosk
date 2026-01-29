@@ -15,7 +15,7 @@ export const Notification = () => {
       notification &&
       calculateNotificationWidth(notification.title, notification.description)
     );
-  }, [notification?.title, notification?.description]);
+  }, [notification]);
 
   useEffect(() => {
     if (!notification) {
