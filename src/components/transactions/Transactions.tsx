@@ -38,6 +38,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
     litecoin: "",
     alpen_signet: "",
     xrpl: "",
+    spark: "",
   });
 
   const { garden } = useGarden();
@@ -80,6 +81,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
         litecoin: ltcAddress ?? "",
         alpen_signet: "",
         xrpl: xrplAddress ?? "",
+        spark: "",
       });
       fetchTransactions(orderbookUrl, {
         bitcoin: btcAddress ?? "",
@@ -93,6 +95,7 @@ export const Transactions: FC<TransactionsProps> = ({ isOpen }) => {
         litecoin: "",
         alpen_signet: "",
         xrpl: xrplAddress ?? "",
+        spark: "",
       });
     }
   }, [
