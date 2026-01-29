@@ -25,8 +25,6 @@ export default [
 
   {
     files: ["src/**/*.{js,mjs,cjs,ts,jsx,tsx}"],
-  },
-  {
     languageOptions: {
       globals: globals.browser,
       parser: tsParser,
@@ -86,6 +84,32 @@ export default [
     settings: {
       react: {
         version: "detect",
+      },
+    },
+  },
+  {
+    files: ["jest.config.cjs", "jest.setup.js", "*.config.cjs", "*.config.js"],
+    languageOptions: {
+      globals: globals.node,
+      parserOptions: {
+        ecmaVersion: 2020,
+        sourceType: "module",
+      },
+    },
+  },
+  {
+    files: ["**/__tests__/**/*.{js,ts,jsx,tsx}", "**/*.{spec,test}.{js,ts,jsx,tsx}"],
+    languageOptions: {
+      globals: { ...globals.browser, ...globals.node, ...globals.jest, React: "readonly" },
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 2020,
+        sourceType: "module",
+        ecmaFeatures: {
+          jsx: true,
+        },
+        project: "./tsconfig.jest.json",
+        tsconfigRootDir: import.meta.dirname,
       },
     },
   },

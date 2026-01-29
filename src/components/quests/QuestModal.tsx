@@ -32,6 +32,7 @@ export const QuestModal: React.FC<QuestModalProps> = ({
         <div className="flex items-center justify-between">
           <PartnerChip name={partner} logo={logo} />
           <CloseIcon
+            data-testid="close-icon"
             className="h-[14px] w-6 cursor-pointer"
             onClick={onClose}
           />

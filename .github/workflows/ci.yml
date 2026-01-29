@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - '**'
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Run tests & coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run tests with coverage
+        run: bunx jest --coverage
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage
+
+  visual-regression-chromatic:
+    name: Visual tests (Chromatic)
+    runs-on: ubuntu-latest
+    if: ${{ secrets.CHROMATIC_PROJECT_TOKEN != '' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node (for Storybook/Chromatic)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies (npm)
+        run: npm install
+
+      - name: Publish storybook to Chromatic
+        env:
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        run: npx chromatic --project-token $CHROMATIC_PROJECT_TOKEN --exit-once-uploaded
+
+  visual-regression-percy:
+    name: Visual tests (Percy)
+    runs-on: ubuntu-latest
+    if: ${{ secrets.PERCY_TOKEN != '' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      # This assumes you have storybook scripts configured. Percy snapshots can be added to your test suite.
+      - name: Run Storybook (for Percy)
+        run: npm run build-storybook
+
+      - name: Upload build to Percy
+        uses: percy/exec-action@v1
+        with:
+          command: npx percy upload ./storybook-static
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+
