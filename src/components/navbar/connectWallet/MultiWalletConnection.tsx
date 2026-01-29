@@ -83,6 +83,7 @@ export const MultiWalletConnection: FC<MultiWalletConnectionProps> = ({
     [BlockchainType.xrpl]: xrplConnected && !!xrplAddress,
     [BlockchainType.litecoin]: false,
     [BlockchainType.alpen_signet]: false,
+    [BlockchainType.spark]: false,
   };
 
   const handleCheck = (ecosystem: BlockchainType) => {

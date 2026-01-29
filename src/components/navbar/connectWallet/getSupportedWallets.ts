@@ -36,6 +36,7 @@ export type Wallet = {
   isTron?: boolean;
   isLitecoin?: boolean;
   isXRPL?: boolean;
+  isSpark?: boolean;
 };
 
 export type ConnectionState = {
@@ -111,6 +112,7 @@ export const getAvailableWallets = (
       isTron: config.isTronSupported,
       isLitecoin: config.isLitecoinSupported,
       isXRPL: config.isXRPLSupported,
+      isSpark: false,
     });
   }
 
@@ -320,5 +322,6 @@ export const getWalletConnectionStatus = (
       connectionState
     ),
     [BlockchainType.alpen_signet]: false,
+    [BlockchainType.spark]: false,
   };
 };

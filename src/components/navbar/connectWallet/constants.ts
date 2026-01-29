@@ -52,6 +52,7 @@ export const blockchainTypeToWalletProperty: Record<
   [BlockchainType.tron]: "isTron",
   [BlockchainType.xrpl]: "isXRPL",
   [BlockchainType.litecoin]: "isLitecoin",
+  [BlockchainType.spark]: "isSpark",
 };
 
 export type BlockChainTypes = Exclude<
