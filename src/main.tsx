@@ -34,12 +34,12 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
 // Expose stores for end-to-end / visual tests when requested via env.
 // This is intentionally gated behind a VITE flag so it only runs in CI/test environments.
 if (import.meta.env.VITE_EXPOSE_STORES_FOR_TESTS === "true") {
-  // @ts-expect-error - test-only global for Playwright
-  window.__stores = {
+  const stores = {
     assetInfoStore,
     orderInProgressStore,
     pendingOrdersStore,
     swapStore,
     balanceStore,
   };
+  (window as Window & { __stores?: typeof stores }).__stores = stores;
 }

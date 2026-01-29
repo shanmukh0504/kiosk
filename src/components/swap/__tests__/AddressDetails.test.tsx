@@ -100,7 +100,7 @@ jest.mock("@gardenfi/orderbook", () => ({
 
 // Mock @gardenfi/utils
 jest.mock("@gardenfi/utils", () => ({
-  Url: jest.fn().mockImplementation((type: string, baseUrl: string) => ({
+  Url: jest.fn().mockImplementation((_type: string, baseUrl: string) => ({
     endpoint: (address: string) => `${baseUrl}/${address}`,
   })),
 }));

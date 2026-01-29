@@ -142,7 +142,7 @@ jest.mock("../../../../hooks/useTronWallet", () => ({
 describe("ConnectWallet", () => {
   it("renders header and wallet list", () => {
     const onClose = jest.fn();
-    render(<ConnectWallet onClose={onClose} />);
+    render(<ConnectWallet open onClose={onClose} />);
     expect(screen.getByTestId("connect-wallet-title")).toBeInTheDocument();
     expect(screen.getByTestId("connect-wallet-list")).toBeInTheDocument();
   });
@@ -150,7 +150,7 @@ describe("ConnectWallet", () => {
   it("renders wallet rows and calls close on close click", async () => {
     const onClose = jest.fn();
     const user = userEvent.setup();
-    render(<ConnectWallet onClose={onClose} />);
+    render(<ConnectWallet open onClose={onClose} />);
 
     expect(screen.getByTestId("connect-wallet-list")).toBeInTheDocument();
     const close = screen.getByTestId("connect-wallet-close");
