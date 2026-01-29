@@ -6,7 +6,6 @@ on:
       - main
       - dev
       - stage
-      - ci/approval-main
 
 env:
   NODE_VERSION: 24
@@ -67,7 +66,7 @@ jobs:
               INFISICAL_ENV=testnet
               BASE_BRANCH=dev
               ;;
-            refs/heads/stage|refs/heads/ci/approval-main)
+            refs/heads/stage)
               INFISICAL_ENV=stage
               BASE_BRANCH=stage
               ;;
