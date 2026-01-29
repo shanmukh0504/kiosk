@@ -13,6 +13,7 @@ import { modalNames, modalStore } from "../../store/modalStore";
 import NumberFlow from "@number-flow/react";
 import clsx from "clsx";
 import { formatAmountUsd } from "../../utils/utils";
+import { ErrorFormat } from "../../constants/errors";
 
 type SwapInputProps = {
   type: IOType;
@@ -21,6 +22,7 @@ type SwapInputProps = {
   asset?: Asset;
   loading: boolean;
   price: string;
+  error?: ErrorFormat;
   balance?: string;
   timeEstimate?: string;
 };
@@ -31,6 +33,7 @@ export const SwapInput: FC<SwapInputProps> = ({
   asset,
   onChange,
   price,
+  error,
   balance,
   timeEstimate,
   loading,
@@ -166,17 +169,56 @@ export const SwapInput: FC<SwapInputProps> = ({
                 </Typography>
               </div>
             )}
-          {type === IOType.output && timeEstimate && (
-            <div
-              className="flex items-end gap-1"
-              data-testid="kiosk-swap-output-time-estimate"
-            >
-              <TimerIcon className="h-4" />
-              <Typography size="h5" weight="regular" className="!leading-none">
-                {timeEstimate}
+          {type === IOType.input &&
+            (error ? (
+              <Typography
+                size="h5"
+                weight="regular"
+                className="!text-error-red"
+                data-testid={`${testIdPrefix}-error`}
+              >
+                {error}
               </Typography>
-            </div>
-          )}
+            ) : balance !== undefined && !Number.isNaN(balance) ? (
+              <div
+                className="flex cursor-pointer items-center gap-1"
+                data-testid="kiosk-swap-input-balance"
+                onClick={handleBalanceClick}
+              >
+                <WalletIcon className="h-2.5 w-2.5" />
+                <Typography size="h5" weight="regular">
+                  {balance}
+                </Typography>
+              </div>
+            ) : (
+              <></>
+            ))}
+          {type === IOType.output &&
+            (error ? (
+              <Typography
+                size="h5"
+                weight="regular"
+                className="!text-error-red"
+              >
+                {error}
+              </Typography>
+            ) : (
+              timeEstimate && (
+                <div
+                  className="flex items-end gap-1"
+                  data-testid="kiosk-swap-output-time-estimate"
+                >
+                  <TimerIcon className="h-4" />
+                  <Typography
+                    size="h5"
+                    weight="regular"
+                    className="!leading-none"
+                  >
+                    {timeEstimate}
+                  </Typography>
+                </div>
+              )
+            ))}
         </div>
         <div className="flex h-6 justify-between sm:h-7">
           <Typography

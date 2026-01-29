@@ -240,6 +240,7 @@ export const useSwap = () => {
               request: {
                 signal: controller.current.signal,
               },
+              indicative: true,
             },
           });
           if (!quote || !quote.ok) {
