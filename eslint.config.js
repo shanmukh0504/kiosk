@@ -98,7 +98,7 @@ export default [
     },
   },
   {
-    files: ["**/__tests__/**/*.{js,ts,jsx,tsx}", "**/*.{spec,test}.{js,ts,jsx,tsx}"],
+    files: ["**/__tests__/**/*.{js,ts,jsx,tsx}", "src/**/*.{spec,test}.{js,ts,jsx,tsx}"],
     languageOptions: {
       globals: { ...globals.browser, ...globals.node, ...globals.jest, React: "readonly" },
       parser: tsParser,
@@ -109,6 +109,22 @@ export default [
           jsx: true,
         },
         project: "./tsconfig.jest.json",
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
+  {
+    files: ["tests/**/*.{js,ts,jsx,tsx}", "playwright.config.ts"],
+    languageOptions: {
+      globals: { ...globals.browser, ...globals.node, React: "readonly" },
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 2020,
+        sourceType: "module",
+        ecmaFeatures: {
+          jsx: true,
+        },
+        project: "./tsconfig.playwright.json",
         tsconfigRootDir: import.meta.dirname,
       },
     },
