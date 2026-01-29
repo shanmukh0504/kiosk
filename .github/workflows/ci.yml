@@ -59,18 +59,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node (for Storybook/Chromatic)
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
 
-      - name: Install dependencies (npm)
-        run: npm install
+      - name: Install dependencies
+        run: bun install
 
       - name: Publish storybook to Chromatic
         env:
           CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-        run: npx chromatic --project-token $CHROMATIC_PROJECT_TOKEN --exit-once-uploaded
+        run: bunx chromatic --project-token $CHROMATIC_PROJECT_TOKEN --exit-once-uploaded
 
   visual-regression-percy:
     name: Visual tests (Percy)
@@ -81,22 +79,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
-        run: npm install
+        run: bun install
 
       # This assumes you have storybook scripts configured. Percy snapshots can be added to your test suite.
       - name: Run Storybook (for Percy)
-        run: npm run build-storybook
+        run: bun run build-storybook
 
-      - name: Upload build to Percy
-        uses: percy/exec-action@v1
-        with:
-          command: npx percy upload ./storybook-static
+      - name: Install Percy CLI and upload snapshots
+        run: bunx percy snapshot ./storybook-static
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
 
@@ -117,24 +111,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
-        run: npm ci
+        run: bun install
 
       - name: Build
-        run: npm run build
+        run: bun run build
 
       - name: Start preview server
-        run: npx vite preview --port 4173 &
+        run: bunx vite preview --port 4173 &
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+        run: bunx playwright install --with-deps
 
       - name: Run Playwright visual tests
-        run: npx playwright test --config=playwright.config.ts
+        run: bunx playwright test --config=playwright.config.ts
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
