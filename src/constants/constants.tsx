@@ -1,4 +1,4 @@
-import { hyperevm, alpenTestnet } from "@gardenfi/core";
+import { alpenTestnet, hyperevm } from "@gardenfi/core";
 import {
   Asset,
   Chain,
