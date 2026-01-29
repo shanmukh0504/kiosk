@@ -1,5 +1,5 @@
 import { test } from "@playwright/test";
-import percySnapshot from "@percy/playwright";
+import { percySnapshot } from "./percy";
 
 test.describe("Swap visual states (mocked)", () => {
   const mockAssets = {
@@ -77,11 +77,11 @@ test.describe("Swap visual states (mocked)", () => {
         // @ts-ignore
         window.__stores.assetInfoStore.setState({ assets });
       }
-      // reset swap state
+      // reset swap state (use getState() so we don't trigger React hooks)
       // @ts-ignore
       if ((window as any).__stores?.swapStore) {
         // @ts-ignore
-        window.__stores.swapStore.clearSwapState();
+        window.__stores.swapStore.getState().clearSwapState();
       }
     }, mockAssets);
 
@@ -92,7 +92,7 @@ test.describe("Swap visual states (mocked)", () => {
 
   test("swap - assets selected state", async ({ page }) => {
     await page.evaluate((assets) => {
-      // set assets and choose BTC -> ETH and amount
+      // set assets and choose BTC -> WBTC and amount
       // @ts-ignore
       window.__stores.assetInfoStore.setState({ assets });
       // @ts-ignore
@@ -143,7 +143,7 @@ test.describe("Swap visual states (mocked)", () => {
     await page.waitForTimeout(200);
     await percySnapshot(page, "Swap - progress processing");
 
-    // simulate completed -> update pending orders / orderInProgress stores
+    // simulate completed -> update pending orders / orderInProgress stores (call stores to get actions)
     await page.evaluate(() => {
       const fakeOrder = {
         order_id: "MOCK_ORDER_1",
@@ -152,9 +152,9 @@ test.describe("Swap visual states (mocked)", () => {
         status: "redeem_detected",
       };
       // @ts-ignore
-      window.__stores.orderInProgressStore.setOrder(fakeOrder);
+      window.__stores.orderInProgressStore.getState().setOrder(fakeOrder);
       // @ts-ignore
-      window.__stores.pendingOrdersStore.setPendingOrders([fakeOrder]);
+      window.__stores.pendingOrdersStore.getState().setPendingOrders([fakeOrder]);
       // clear swapping UI
       // @ts-ignore
       window.__stores.swapStore.setState({ isSwapping: false, swapProgress: "" });
