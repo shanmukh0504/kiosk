@@ -45,7 +45,6 @@ jobs:
           name: coverage-report
           path: coverage
 
-  # Requires GitHub Secrets: PERCY_TOKEN, VITE_BASE_URL, VITE_BALANCE_URL, VITE_API_KEY, VITE_EXPLORER_URL
   visual-regression-playwright:
     name: Visual tests (Playwright + Percy)
     runs-on: ubuntu-latest
@@ -60,6 +59,8 @@ jobs:
       VITE_API_KEY: ${{ secrets.VITE_API_KEY }}
       VITE_EXPLORER_URL: ${{ secrets.VITE_EXPLORER_URL }}
       PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+      PERCY_PULL_REQUEST: ${{ github.event_name == 'pull_request' && github.event.pull_request.number || '' }}
+      PERCY_BRANCH: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -80,6 +81,88 @@ jobs:
         run: bunx playwright install --with-deps
 
       - name: Run Playwright visual tests
-        run: bunx @percy/cli exec -- bunx playwright test --config=playwright.config.ts
+        run: |
+          bunx @percy/cli exec -- bunx playwright test --config=playwright.config.ts 2>&1 | tee percy-test-output.txt
+          exit ${PIPESTATUS[0]}
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+
+      - name: Upload test output for PR comment
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: percy-test-output
+          path: percy-test-output.txt
+          retention-days: 1
+
+  pr-comment-visual:
+    name: Comment PR with visual test result
+    runs-on: ubuntu-latest
+    needs: [visual-regression-playwright]
+    if: always() && github.event_name == 'pull_request' && (needs.visual-regression-playwright.result == 'success' || needs.visual-regression-playwright.result == 'failure')
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Download test output
+        uses: actions/download-artifact@v4
+        with:
+          name: percy-test-output
+
+      - name: Post PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- percy-visual-pr -->';
+            const runUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+            let body = '## Visual tests (Playwright + Percy)\n\n' + marker + '\n\n';
+
+            // Extract Percy build URL from output (Percy CLI often prints "Build link: https://percy.io/...")
+            let output = '';
+            try {
+              output = fs.readFileSync('percy-test-output.txt', 'utf8');
+            } catch (e) {}
+
+            const percyUrlMatch = output.match(/https:\/\/percy\.io\/[^\s)\]]+/);
+            if (percyUrlMatch) {
+              body += `**Visual comparison:** [View Percy build](${percyUrlMatch[0]})\n\n`;
+            } else {
+              body += 'Percy build link was not found in the logs. Check the workflow run for details.\n\n';
+            }
+
+            const jobFailed = '${{ needs.visual-regression-playwright.result }}' === 'failure';
+            if (jobFailed) {
+              body += '### Some visual tests failed\n\n';
+              body += `[View workflow run](${runUrl}) for full logs.\n\n`;
+              // Last ~80 lines of output (failure summary)
+              const lines = output.split('\n');
+              const snippet = lines.slice(-80).join('\n');
+              const escaped = snippet.replace(/```/g, '`\u200b`\u200b`');
+              body += '<details><summary>Test output (last 80 lines)</summary>\n\n```\n' + escaped + '\n```\n</details>\n';
+            } else {
+              body += `[Workflow run](${runUrl})\n`;
+            }
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const botComment = comments.find(c => c.body && c.body.includes(marker) && c.user.type === 'Bot');
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
