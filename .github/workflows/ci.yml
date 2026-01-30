@@ -78,6 +78,6 @@ jobs:
         run: bunx playwright install --with-deps
 
       - name: Run Playwright visual tests
-        run: bunx playwright test --config=playwright.config.ts
+        run: bunx percy exec -- bunx playwright test --config=playwright.config.ts
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
