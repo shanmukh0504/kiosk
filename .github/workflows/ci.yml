@@ -37,13 +37,24 @@ jobs:
         run: bun install
 
       - name: Run tests with coverage
-        run: bunx jest --coverage
+        run: |
+          bunx jest --coverage 2>&1 | tee jest-test-output.txt
+          exit ${PIPESTATUS[0]}
 
       - name: Upload coverage artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage
+
+      - name: Upload test output for PR comment
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: jest-test-output
+          path: jest-test-output.txt
+          retention-days: 1
 
   visual-regression-playwright:
     name: Visual tests (Playwright + Percy)
@@ -60,7 +71,7 @@ jobs:
       VITE_EXPLORER_URL: ${{ secrets.VITE_EXPLORER_URL }}
       PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
       PERCY_PULL_REQUEST: ${{ github.event_name == 'pull_request' && github.event.pull_request.number || '' }}
-      PERCY_BRANCH: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+      PERCY_BRANCH: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref || github.ref_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -96,53 +107,178 @@ jobs:
           retention-days: 1
 
   pr-comment-visual:
-    name: Comment PR with visual test result
+    name: Comment PR with test results
     runs-on: ubuntu-latest
-    needs: [visual-regression-playwright]
-    if: always() && github.event_name == 'pull_request' && (needs.visual-regression-playwright.result == 'success' || needs.visual-regression-playwright.result == 'failure')
+    needs: [test, visual-regression-playwright]
+    if: always() && github.event_name == 'pull_request'
     permissions:
       contents: read
       pull-requests: write
     steps:
-      - name: Download test output
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: percy-test-output
+          pattern: |
+            percy-test-output
+            jest-test-output
+            coverage-report
+          merge-multiple: false
 
       - name: Post PR comment
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
-            const marker = '<!-- percy-visual-pr -->';
+            const path = require('path');
+            const marker = '<!-- ci-test-results -->';
             const runUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
-            let body = '## Visual tests (Playwright + Percy)\n\n' + marker + '\n\n';
+            let body = '## CI Test Results\n\n' + marker + '\n\n';
 
-            // Extract Percy build URL from output (Percy CLI often prints "Build link: https://percy.io/...")
-            let output = '';
+            // === VISUAL TESTS (Percy) ===
+            body += '### 🎨 Visual Tests (Playwright + Percy)\n\n';
+            let percyOutput = '';
             try {
-              output = fs.readFileSync('percy-test-output.txt', 'utf8');
-            } catch (e) {}
+              percyOutput = fs.readFileSync('percy-test-output/percy-test-output.txt', 'utf8');
+            } catch (e) {
+              try {
+                percyOutput = fs.readFileSync('percy-test-output.txt', 'utf8');
+              } catch (e2) {}
+            }
 
-            const percyUrlMatch = output.match(/https:\/\/percy\.io\/[^\s)\]]+/);
+            const percyUrlMatch = percyOutput.match(/https:\/\/percy\.io\/[^\s)\]]+/);
+            const visualJobFailed = '${{ needs.visual-regression-playwright.result }}' === 'failure';
             if (percyUrlMatch) {
               body += `**Visual comparison:** [View Percy build](${percyUrlMatch[0]})\n\n`;
+            } else if (visualJobFailed) {
+              body += '❌ Visual tests failed. Percy build link not found.\n\n';
             } else {
-              body += 'Percy build link was not found in the logs. Check the workflow run for details.\n\n';
+              body += '⚠️ Visual tests were skipped (secrets not configured).\n\n';
             }
 
-            const jobFailed = '${{ needs.visual-regression-playwright.result }}' === 'failure';
-            if (jobFailed) {
-              body += '### Some visual tests failed\n\n';
-              body += `[View workflow run](${runUrl}) for full logs.\n\n`;
-              // Last ~80 lines of output (failure summary)
-              const lines = output.split('\n');
-              const snippet = lines.slice(-80).join('\n');
+            if (visualJobFailed) {
+              const lines = percyOutput.split('\n');
+              const snippet = lines.slice(-60).join('\n');
               const escaped = snippet.replace(/```/g, '`\u200b`\u200b`');
-              body += '<details><summary>Test output (last 80 lines)</summary>\n\n```\n' + escaped + '\n```\n</details>\n';
-            } else {
-              body += `[Workflow run](${runUrl})\n`;
+              body += '<details><summary>Visual test output (last 60 lines)</summary>\n\n```\n' + escaped + '\n```\n</details>\n\n';
             }
+
+            // === COVERAGE RESULTS ===
+            body += '### 📊 Coverage Results\n\n';
+            let coverageSummary = null;
+            try {
+              const coveragePath = 'coverage-report/coverage-summary.json';
+              if (fs.existsSync(coveragePath)) {
+                coverageSummary = JSON.parse(fs.readFileSync(coveragePath, 'utf8'));
+              }
+            } catch (e) {
+              try {
+                coverageSummary = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
+              } catch (e2) {}
+            }
+
+            if (coverageSummary && coverageSummary.total) {
+              const total = coverageSummary.total;
+              const formatPct = (pct) => pct === undefined ? 'N/A' : `${pct.toFixed(1)}%`;
+              body += `| Metric | Coverage |\n`;
+              body += `|--------|----------|\n`;
+              body += `| **Statements** | ${formatPct(total.statements.pct)} |\n`;
+              body += `| **Branches** | ${formatPct(total.branches.pct)} |\n`;
+              body += `| **Functions** | ${formatPct(total.functions.pct)} |\n`;
+              body += `| **Lines** | ${formatPct(total.lines.pct)} |\n\n`;
+
+              // Files with low/no coverage
+              const lowCoverage = [];
+              const noCoverage = [];
+              Object.entries(coverageSummary).forEach(([file, data]) => {
+                if (file === 'total') return;
+                if (data.statements && data.statements.pct !== undefined) {
+                  if (data.statements.pct === 0) {
+                    noCoverage.push({ file, ...data });
+                  } else if (data.statements.pct < 80) {
+                    lowCoverage.push({ file, ...data });
+                  }
+                }
+              });
+
+              if (noCoverage.length > 0) {
+                body += '<details><summary>❌ Files with no coverage (' + noCoverage.length + ')</summary>\n\n';
+                noCoverage.slice(0, 20).forEach(({ file }) => {
+                  const relPath = file.replace(process.cwd() + '/', '');
+                  body += `- \`${relPath}\`\n`;
+                });
+                if (noCoverage.length > 20) {
+                  body += `\n... and ${noCoverage.length - 20} more\n`;
+                }
+                body += '</details>\n\n';
+              }
+
+              if (lowCoverage.length > 0) {
+                body += '<details><summary>⚠️ Files with low coverage (< 80%, ' + lowCoverage.length + ')</summary>\n\n';
+                lowCoverage.slice(0, 20).forEach(({ file, statements }) => {
+                  const relPath = file.replace(process.cwd() + '/', '');
+                  body += `- \`${relPath}\` (${statements.pct.toFixed(1)}%)\n`;
+                });
+                if (lowCoverage.length > 20) {
+                  body += `\n... and ${lowCoverage.length - 20} more\n`;
+                }
+                body += '</details>\n\n';
+              }
+            } else {
+              body += '⚠️ Coverage data not available. Check the workflow run for details.\n\n';
+            }
+
+            // === TEST RESULTS ===
+            body += '### ✅ Test Results\n\n';
+            const testJobFailed = '${{ needs.test.result }}' === 'failure';
+            let jestOutput = '';
+            try {
+              jestOutput = fs.readFileSync('jest-test-output/jest-test-output.txt', 'utf8');
+            } catch (e) {
+              try {
+                jestOutput = fs.readFileSync('jest-test-output.txt', 'utf8');
+              } catch (e2) {}
+            }
+
+            if (testJobFailed) {
+              body += '❌ **Some tests failed.**\n\n';
+              // Extract failed test names
+              const failedTests = [];
+              const lines = jestOutput.split('\n');
+              lines.forEach((line, i) => {
+                if (line.includes('FAIL') || line.match(/✕|×/)) {
+                  const testMatch = line.match(/(?:FAIL|✕|×)\s+(.+)/);
+                  if (testMatch) {
+                    failedTests.push(testMatch[1].trim());
+                  }
+                }
+              });
+
+              if (failedTests.length > 0) {
+                body += '**Failed tests:**\n';
+                failedTests.slice(0, 15).forEach(test => {
+                  body += `- ${test}\n`;
+                });
+                if (failedTests.length > 15) {
+                  body += `\n... and ${failedTests.length - 15} more\n`;
+                }
+                body += '\n';
+              }
+
+              body += `[View workflow run](${runUrl}) for full test output.\n\n`;
+              const snippet = jestOutput.split('\n').slice(-50).join('\n');
+              const escaped = snippet.replace(/```/g, '`\u200b`\u200b`');
+              body += '<details><summary>Test output (last 50 lines)</summary>\n\n```\n' + escaped + '\n```\n</details>\n\n';
+            } else {
+              // Extract test summary (e.g., "Tests: 42 passed, 3 skipped")
+              const summaryMatch = jestOutput.match(/Tests:\s*(\d+)\s*(?:passed|PASS)/i) || jestOutput.match(/(\d+)\s*(?:passed|PASS)/i);
+              if (summaryMatch) {
+                body += `✅ **All tests passed** (${summaryMatch[1]} tests)\n\n`;
+              } else {
+                body += '✅ **All tests passed**\n\n';
+              }
+            }
+
+            body += `---\n[View full workflow run](${runUrl})\n`;
 
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
