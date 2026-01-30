@@ -53,6 +53,8 @@ jobs:
     if: needs.check-secrets.outputs.playwright_enabled == 'true'
     env:
       VITE_EXPOSE_STORES_FOR_TESTS: "true"
+      VITE_NETWORK: "mainnet"
+      VITE_ENVIRONMENT: "production"
       VITE_BASE_URL: ${{ secrets.VITE_BASE_URL }}
       VITE_BALANCE_URL: ${{ secrets.VITE_BALANCE_URL }}
       VITE_API_KEY: ${{ secrets.VITE_API_KEY }}
@@ -78,6 +80,6 @@ jobs:
         run: bunx playwright install --with-deps
 
       - name: Run Playwright visual tests
-        run: bunx percy exec -- bunx playwright test --config=playwright.config.ts
+        run: bunx @percy/cli exec -- bunx playwright test --config=playwright.config.ts
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}

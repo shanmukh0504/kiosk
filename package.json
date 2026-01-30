@@ -106,6 +106,7 @@
     "vite-plugin-wasm": "^3.3.0",
     "vitest": "^2.1.4",
     "@playwright/test": "^1.37.0",
+    "@percy/cli": "^1.30.0",
     "@percy/playwright": "^1.0.0",
     "@percy/sdk-utils": "^1.0.0",
     "start-server-and-test": "^2.0.3"
