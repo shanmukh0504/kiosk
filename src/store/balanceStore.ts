@@ -26,6 +26,9 @@ type BalanceStoreState = {
   disconnectAllStreams: () => void;
 
   clearBalances: () => void;
+
+  /** Test-only: set balances by asset key (e.g. "bitcoin:btc") with string amounts */
+  setBalancesForTest?: (record: Record<string, string>) => void;
 };
 
 export const balanceStore = create<BalanceStoreState>((set, get) => ({
@@ -185,5 +188,17 @@ export const balanceStore = create<BalanceStoreState>((set, get) => ({
       balances: {},
       balanceFetched: false,
     });
+  },
+
+  setBalancesForTest: (record) => {
+    const balances: Record<string, BigNumber | undefined> = {};
+    for (const [key, value] of Object.entries(record)) {
+      try {
+        balances[key] = new BigNumber(value);
+      } catch {
+        balances[key] = undefined;
+      }
+    }
+    set({ balances, balanceFetched: true });
   },
 }));
