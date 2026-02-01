@@ -14,6 +14,7 @@ import orderInProgressStore from "./store/orderInProgressStore";
 import pendingOrdersStore from "./store/pendingOrdersStore";
 import { swapStore } from "./store/swapStore";
 import { balanceStore } from "./store/balanceStore";
+import { mockWalletStore } from "./store/mockWalletStore";
 
 warningMessage();
 
@@ -40,6 +41,7 @@ if (import.meta.env.VITE_EXPOSE_STORES_FOR_TESTS === "true") {
     pendingOrdersStore,
     swapStore,
     balanceStore,
+    mockWalletStore,
   };
   (window as Window & { __stores?: typeof stores }).__stores = stores;
 }

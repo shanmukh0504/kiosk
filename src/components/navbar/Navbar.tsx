@@ -22,6 +22,16 @@ import { viewPortStore } from "../../store/viewPortStore";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
 import { useTronWallet } from "../../hooks/useTronWallet";
 import { useXRPLWallet } from "../../hooks/useXRPLWallet";
+import { mockWalletStore } from "../../store/mockWalletStore";
+
+const useMockAddresses = () => {
+  const addresses = mockWalletStore((s) => s.addresses);
+  if (import.meta.env.VITE_EXPOSE_STORES_FOR_TESTS !== "true") return null;
+  const hasMock =
+    addresses &&
+    Object.values(addresses).some((v) => typeof v === "string" && v.length > 0);
+  return hasMock ? addresses : null;
+};
 
 export const Navbar = () => {
   const { isConnected, address } = useEVMWallet();
@@ -34,10 +44,21 @@ export const Navbar = () => {
   const { xrplAddress } = useXRPLWallet();
   const { setOpenModal } = modalStore();
   const { isMobile } = viewPortStore();
+  const mockAddresses = useMockAddresses();
+  const isConnectedOrMock =
+    !!mockAddresses ||
+    address ||
+    starknetAddress ||
+    btcAddress ||
+    ltcAddress ||
+    solanaAddress ||
+    suiConnected ||
+    tronConnected ||
+    xrplAddress;
 
   const handleHomeLogoClick = () => window.open(API().home, "_blank");
   const handleConnectClick = () => {
-    if (isConnected) return;
+    if (isConnected || mockAddresses) return;
     setOpenModal(modalNames.connectWallet);
   };
 
@@ -96,14 +117,7 @@ export const Navbar = () => {
             </Typography>
           </div>
         )}
-        {address ||
-        starknetAddress ||
-        btcAddress ||
-        ltcAddress ||
-        solanaAddress ||
-        suiConnected ||
-        tronConnected ||
-        xrplAddress ? (
+        {isConnectedOrMock ? (
           <ConnectedWallets />
         ) : (
           <Button

@@ -16,6 +16,7 @@ import { deletedOrdersStore } from "../../store/deletedOrdersStore";
 import { useSuiWallet } from "../../hooks/useSuiWallet";
 import { useTronWallet } from "../../hooks/useTronWallet";
 import { useXRPLWallet } from "../../hooks/useXRPLWallet";
+import { mockWalletStore } from "../../store/mockWalletStore";
 
 const ConnectedWallets = () => {
   const { address } = useEVMWallet();
@@ -26,6 +27,18 @@ const ConnectedWallets = () => {
   const { suiConnected, currentAccount } = useSuiWallet();
   const { tronConnected, wallet: tronAccount } = useTronWallet();
   const { xrplAddress } = useXRPLWallet();
+  const mockAddresses =
+    import.meta.env.VITE_EXPOSE_STORES_FOR_TESTS === "true"
+      ? mockWalletStore((s) => s.addresses)
+      : null;
+  const addressOrMock = address || mockAddresses?.evm;
+  const btcAddressOrMock = btcAddress || mockAddresses?.bitcoin;
+  const ltcAddressOrMock = ltcAddress || mockAddresses?.litecoin;
+  const starknetAddressOrMock = starknetAddress || mockAddresses?.starknet;
+  const solanaAddressOrMock = solanaAddress || mockAddresses?.solana;
+  const suiConnectedOrMock = suiConnected || !!mockAddresses?.sui;
+  const tronConnectedOrMock = tronConnected || !!mockAddresses?.tron;
+  const xrplAddressOrMock = xrplAddress || mockAddresses?.xrpl;
   const { pendingOrders } = useGarden();
   const { setOpenModal } = modalStore();
   const { isOrderDeleted, cleanupDeletedOrders, deletedOrders } =
@@ -70,7 +83,7 @@ const ConnectedWallets = () => {
           className="h-4 w-4 sm:h-5 sm:w-5"
           data-testid="navbar-wallets-icon"
         />
-        {address && (
+        {addressOrMock && (
           <img
             src={ecosystems.evm.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
@@ -78,7 +91,7 @@ const ConnectedWallets = () => {
             alt="EVM wallet"
           />
         )}
-        {btcAddress && (
+        {btcAddressOrMock && (
           <img
             src={ecosystems.bitcoin.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
@@ -86,7 +99,7 @@ const ConnectedWallets = () => {
             alt="Bitcoin wallet"
           />
         )}
-        {ltcAddress && (
+        {ltcAddressOrMock && (
           <img
             src={ecosystems.litecoin.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
@@ -94,7 +107,7 @@ const ConnectedWallets = () => {
             alt="Litecoin wallet"
           />
         )}
-        {starknetAddress && (
+        {starknetAddressOrMock && (
           <img
             src={ecosystems.starknet.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
@@ -102,7 +115,7 @@ const ConnectedWallets = () => {
             alt="Starknet wallet"
           />
         )}
-        {solanaAddress && (
+        {solanaAddressOrMock && (
           <img
             src={ecosystems.solana.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
@@ -110,7 +123,7 @@ const ConnectedWallets = () => {
             alt="Solana wallet"
           />
         )}
-        {suiConnected && currentAccount && (
+        {suiConnectedOrMock && (currentAccount || mockAddresses?.sui) && (
           <img
             src={ecosystems.sui.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
@@ -118,7 +131,7 @@ const ConnectedWallets = () => {
             alt="Sui wallet"
           />
         )}
-        {tronConnected && tronAccount && (
+        {tronConnectedOrMock && (tronAccount || mockAddresses?.tron) && (
           <img
             src={ecosystems.tron.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
@@ -126,7 +139,7 @@ const ConnectedWallets = () => {
             alt="Tron wallet"
           />
         )}
-        {xrplAddress && (
+        {xrplAddressOrMock && (
           <img
             src={ecosystems.xrpl.icon}
             className="h-4 w-4 object-contain sm:h-5 sm:w-5"
