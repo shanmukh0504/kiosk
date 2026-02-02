@@ -27,18 +27,36 @@ const mockAssets = {
         icon: "https://garden.imgix.net/token-images/wbtc.svg",
         token: null,
         htlc: null,
-        chain: "ethereum",
+        chain: "evm:1",
     },
 };
 
 const mockChains = {
     bitcoin: {
+        chain: "bitcoin",
         name: "Bitcoin",
-        icon: "https://garden.imgix.net/chain-images/bitcoin.svg",
+        id: "bitcoin",
+        native_asset_id: "bitcoin:btc",
+        icon: "https://garden.imgix.net/chain_images/bitcoin.svg",
+        explorer_url: "https://blockstream.info",
+        confirmation_target: 1,
+        source_timelock: "7200",
+        destination_timelock: "600",
+        supported_htlc_schemas: ["bitcoin:htlc"],
+        supported_token_schemas: [],
     },
-    ethereum: {
+    "evm:1": {
+        chain: "ethereum",
         name: "Ethereum",
-        icon: "https://garden.imgix.net/chain-images/ethereum.svg",
+        id: "evm:1",
+        native_asset_id: "ethereum:eth",
+        icon: "https://garden.imgix.net/chain_images/ethereum.svg",
+        explorer_url: "https://etherscan.io",
+        confirmation_target: 1,
+        source_timelock: "7200",
+        destination_timelock: "600",
+        supported_htlc_schemas: ["evm:htlc_erc20"],
+        supported_token_schemas: ["evm:erc20"],
     },
 };
 
@@ -131,22 +149,22 @@ test.describe("Swap visual states (mocked)", () => {
     test("Swap - default (not connected)", async ({ page }) => {
         await page.goto("/swap");
         await page.waitForTimeout(400);
-    await page.evaluate(
-      ({ assets, chains }) => {
-        const w = (window as any).__stores;
-        if (!w) return;
-        if (w.assetInfoStore) w.assetInfoStore.setState({ assets, chains });
-        if (w.swapStore) w.swapStore.getState().clearSwapState();
-        if (w.balanceStore) w.balanceStore.getState().clearBalances?.() ?? w.balanceStore.setState({ balances: {}, balanceFetched: false });
-        if (w.mockWalletStore) w.mockWalletStore.getState().clear();
-        if (w.orderInProgressStore) {
-          w.orderInProgressStore.getState().setOrder(null as any);
-          w.orderInProgressStore.getState().setIsOpen(false);
-        }
-        if (w.pendingOrdersStore) w.pendingOrdersStore.getState().setPendingOrders([]);
-      },
-      { assets: mockAssets, chains: mockChains }
-    );
+        await page.evaluate(
+            ({ assets, chains }) => {
+                const w = (window as any).__stores;
+                if (!w) return;
+                if (w.assetInfoStore) w.assetInfoStore.setState({ assets, chains });
+                if (w.swapStore) w.swapStore.getState().clearSwapState();
+                if (w.balanceStore) w.balanceStore.getState().clearBalances?.() ?? w.balanceStore.setState({ balances: {}, balanceFetched: false });
+                if (w.mockWalletStore) w.mockWalletStore.getState().clear();
+                if (w.orderInProgressStore) {
+                    w.orderInProgressStore.getState().setOrder(null as any);
+                    w.orderInProgressStore.getState().setIsOpen(false);
+                }
+                if (w.pendingOrdersStore) w.pendingOrdersStore.getState().setPendingOrders([]);
+            },
+            { assets: mockAssets, chains: mockChains }
+        );
         await page.waitForTimeout(400);
         await percySnapshot(page, "Swap - default (not connected)");
     });
@@ -193,10 +211,10 @@ test.describe("Swap visual states (mocked)", () => {
         await page.goto("/swap");
         await page.waitForTimeout(400);
         await page.evaluate(
-      ({ assets, chains, order }) => {
-        const w = (window as any).__stores;
-        if (!w) return;
-        if (w.assetInfoStore) w.assetInfoStore.setState({ assets, chains });
+            ({ assets, chains, order }) => {
+                const w = (window as any).__stores;
+                if (!w) return;
+                if (w.assetInfoStore) w.assetInfoStore.setState({ assets, chains });
                 if (w.orderInProgressStore) {
                     w.orderInProgressStore.getState().setOrder(order);
                     w.orderInProgressStore.getState().setIsOpen(true);
@@ -218,10 +236,10 @@ test.describe("Swap visual states (mocked)", () => {
         await page.goto("/swap");
         await page.waitForTimeout(400);
         await page.evaluate(
-      ({ assets, chains, order }) => {
-        const w = (window as any).__stores;
-        if (!w) return;
-        if (w.assetInfoStore) w.assetInfoStore.setState({ assets, chains });
+            ({ assets, chains, order }) => {
+                const w = (window as any).__stores;
+                if (!w) return;
+                if (w.assetInfoStore) w.assetInfoStore.setState({ assets, chains });
                 if (w.orderInProgressStore) {
                     w.orderInProgressStore.getState().setOrder(order);
                     w.orderInProgressStore.getState().setIsOpen(true);
@@ -243,10 +261,10 @@ test.describe("Swap visual states (mocked)", () => {
         await page.goto("/swap");
         await page.waitForTimeout(400);
         await page.evaluate(
-      ({ assets, chains, order }) => {
-        const w = (window as any).__stores;
-        if (!w) return;
-        if (w.assetInfoStore) w.assetInfoStore.setState({ assets, chains });
+            ({ assets, chains, order }) => {
+                const w = (window as any).__stores;
+                if (!w) return;
+                if (w.assetInfoStore) w.assetInfoStore.setState({ assets, chains });
                 if (w.orderInProgressStore) {
                     w.orderInProgressStore.getState().setOrder(order);
                     w.orderInProgressStore.getState().setIsOpen(true);
@@ -269,10 +287,10 @@ test.describe("Swap visual states (mocked)", () => {
         await page.goto("/swap");
         await page.waitForTimeout(400);
         await page.evaluate(
-      ({ assets, chains, orders, wallet }) => {
-        const w = (window as any).__stores;
-        if (!w) return;
-        if (w.assetInfoStore) w.assetInfoStore.setState({ assets, chains });
+            ({ assets, chains, orders, wallet }) => {
+                const w = (window as any).__stores;
+                if (!w) return;
+                if (w.assetInfoStore) w.assetInfoStore.setState({ assets, chains });
                 if (w.pendingOrdersStore) w.pendingOrdersStore.getState().setPendingOrders(orders);
                 if (w.mockWalletStore) {
                     w.mockWalletStore.getState().setAddresses({ evm: wallet.evm, bitcoin: wallet.bitcoin });
