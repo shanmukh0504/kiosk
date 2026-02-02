@@ -170,19 +170,20 @@ test.describe("Swap visual states (mocked)", () => {
     });
 
     test("Swap - assets selected (connected, mock balance)", async ({ page }) => {
-        await page.goto("/swap");
-        await page.waitForTimeout(400);
+        await page.goto("/swap?input-chain=bitcoin&input-asset=BTC&output-asset=WBTC&value=0.01");
+        await page.waitForTimeout(1000);
         await page.evaluate(
             ({ assets, chains, wallet, balances }) => {
                 const w = (window as any).__stores;
                 if (!w) return;
                 if (w.assetInfoStore) w.assetInfoStore.setState({ assets, chains });
                 if (w.swapStore) {
-                    const { setAsset, setAmount } = w.swapStore.getState();
-                    setAsset("input", assets.BTC);
-                    setAsset("output", assets.WBTC);
-                    setAmount("input", "0.01");
-                    setAmount("output", "0.00997");
+                    w.swapStore.setState({
+                        inputAsset: assets.BTC,
+                        outputAsset: assets.WBTC,
+                        inputAmount: "0.01",
+                        outputAmount: "0.00997",
+                    });
                 }
                 if (w.balanceStore?.getState().setBalancesForTest) {
                     w.balanceStore.getState().setBalancesForTest(balances);
@@ -203,6 +204,23 @@ test.describe("Swap visual states (mocked)", () => {
             }
         );
         await page.waitForTimeout(400);
+        const outputAssetVisible = await page
+            .getByTestId("kiosk-swap-output-token-button")
+            .getByText("WBTC", { exact: false })
+            .isVisible({ timeout: 2000 })
+            .catch(() => false);
+        if (!outputAssetVisible) {
+            const debugInfo = await page.evaluate(() => {
+                const w = (window as any).__stores;
+                return {
+                    outputAsset: w?.swapStore?.getState?.()?.outputAsset,
+                    inputAsset: w?.swapStore?.getState?.()?.inputAsset,
+                    assets: Object.keys(w?.assetInfoStore?.getState?.()?.assets || {}),
+                };
+            });
+            console.error("Output asset not visible. Debug info:", debugInfo);
+            throw new Error("Output asset WBTC was not visible in UI");
+        }
         await percySnapshot(page, "Swap - assets selected");
     });
 
