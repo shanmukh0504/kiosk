@@ -32,19 +32,6 @@ const mockAssets = {
 };
 
 const mockChains = {
-    bitcoin: {
-        chain: "bitcoin",
-        name: "Bitcoin",
-        id: "bitcoin",
-        native_asset_id: "bitcoin:btc",
-        icon: "https://garden.imgix.net/chain_images/bitcoin.svg",
-        explorer_url: "https://blockstream.info",
-        confirmation_target: 1,
-        source_timelock: "7200",
-        destination_timelock: "600",
-        supported_htlc_schemas: ["bitcoin:htlc"],
-        supported_token_schemas: [],
-    },
     "evm:1": {
         chain: "ethereum",
         name: "Ethereum",
