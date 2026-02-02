@@ -46,7 +46,7 @@ function buildMockOrder(opts: {
     status = "Created",
     sourceAsset = "bitcoin:btc",
     destAsset = "ethereum:wbtc",
-    sourceAmount = "100000", // 0.001 BTC in satoshi-like units
+    sourceAmount = "100000",
     destAmount = "10000",
     depositAddress = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfj5x4wlh",
   } = opts;
@@ -149,12 +149,11 @@ test.describe("Swap visual states (mocked)", () => {
         if (!w) return;
         if (w.assetInfoStore) w.assetInfoStore.setState({ assets });
         if (w.swapStore) {
-          w.swapStore.setState({
-            inputAsset: assets.BTC,
-            outputAsset: assets.WBTC,
-            inputAmount: "0.01",
-            outputAmount: "0.0005",
-          });
+          const { setAsset, setAmount } = w.swapStore.getState();
+          setAsset("input", assets.BTC);
+          setAsset("output", assets.WBTC);
+          setAmount("input", "0.01");
+          setAmount("output", "0.00997");
         }
         if (w.balanceStore?.getState().setBalancesForTest) {
           w.balanceStore.getState().setBalancesForTest(balances);
@@ -170,7 +169,7 @@ test.describe("Swap visual states (mocked)", () => {
       {
         assets: mockAssets,
         wallet: MOCK_WALLET,
-        balances: { "bitcoin:btc": "1.5", "ethereum:wbtc": "0.25" },
+        balances: { "bitcoin:btc": "15000000", "ethereum:wbtc": "2500000" },
       }
     );
     await page.waitForTimeout(400);
