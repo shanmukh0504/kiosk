@@ -32,8 +32,6 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   </StrictMode>
 );
 
-// Expose stores for end-to-end / visual tests when requested via env.
-// This is intentionally gated behind a VITE flag so it only runs in CI/test environments.
 if (import.meta.env.VITE_EXPOSE_STORES_FOR_TESTS === "true") {
   const stores = {
     assetInfoStore,

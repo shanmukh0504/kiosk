@@ -84,6 +84,8 @@ jobs:
 
       - name: Build
         run: bun run build
+        env:
+          VITE_EXPOSE_STORES_FOR_TESTS: "true"
 
       - name: Start preview server
         run: bunx vite preview --port 4173 &

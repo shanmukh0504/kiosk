@@ -1,13 +1,12 @@
 import { test } from "@playwright/test";
+import { OrderStatus } from "@gardenfi/orderbook";
 import { percySnapshot } from "./percy";
 
-/** Mock wallet addresses used across tests for consistent "connected" state */
 const MOCK_WALLET = {
     evm: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
     bitcoin: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfj5x4wlh",
 };
 
-/** Mock assets matching assetInfoStore keys and getAssetFromSwap(swap.asset) */
 const mockAssets = {
     BTC: {
         id: "bitcoin:btc",
@@ -47,10 +46,9 @@ const mockChains = {
     },
 };
 
-/** Build a minimal OrderWithStatus for progress/completed/sidebar. Asset ids must match mockAssets. */
 function buildMockOrder(opts: {
     orderId: string;
-    status: string;
+    status: string | OrderStatus;
     sourceAsset?: string;
     destAsset?: string;
     sourceAmount?: string;
@@ -58,37 +56,91 @@ function buildMockOrder(opts: {
     depositAddress?: string;
 }) {
     const {
-        orderId = "MOCK_ORDER_1",
-        status = "Created",
+        orderId = "22ca826d366347f01a19b17942a5135ee79b21398e3f4ba202d60ddd5f0d92ad",
+        status = OrderStatus.Created,
         sourceAsset = "bitcoin:btc",
         destAsset = "ethereum:wbtc",
-        sourceAmount = "100000",
-        destAmount = "10000",
-        depositAddress = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfj5x4wlh",
+        sourceAmount = "2615978",
+        destAmount = "1997827630",
+        depositAddress = "bc1p537s2efgqq0y8gqd0q08a5j065ac3863206pqey6gpvf8dux640q7frm27",
     } = opts;
+
+    const now = new Date().toISOString();
+    const isCreated = status === OrderStatus.Created || status === "Created";
+    const isInitiateDetected = status === OrderStatus.InitiateDetected || status === "InitiateDetected";
+    const isInitiated =
+        status === OrderStatus.Initiated ||
+        status === OrderStatus.AwaitingRedeem ||
+        status === "Initiated" ||
+        status === "AwaitingRedeem";
+    const isRedeemDetected =
+        status === OrderStatus.RedeemDetected ||
+        status === OrderStatus.Redeemed ||
+        status === "RedeemDetected" ||
+        status === "Redeemed";
+    const hasInitiateTx = !isCreated;
+    const hasRedeemTx = isRedeemDetected;
+
     return {
         order_id: orderId,
         status,
+        created_at: now,
         source_swap: {
+            created_at: now,
+            swap_id: depositAddress,
             chain: "bitcoin",
             asset: sourceAsset,
-            amount: sourceAmount,
-            swap_id: depositAddress,
             initiator: MOCK_WALLET.bitcoin,
-            initiate_tx_hash: status !== "Created" ? "mock_tx_hash_1" : "",
-            filled_amount: status === "RedeemDetected" || status === "Redeemed" ? sourceAmount : "0",
-            asset_price: "1",
+            redeemer: "03c15ad9d33d21a1a7ff75276dd530717988003b977525c726f72b7ccf4dc610",
+            delegate: "babd4bece34791d7126c148266e1726421660567dcca68a7097a65d7a7f86d9b",
+            timelock: 144,
+            filled_amount: isRedeemDetected ? sourceAmount : isInitiateDetected || isInitiated ? sourceAmount : "0",
+            asset_price: 76600.0,
+            amount: sourceAmount,
+            secret_hash: "6c5b26f0767e74c25f0ab627f494e5296210426a46e229c172e81acb6b340a83",
+            secret: isRedeemDetected ? "fa572f347615e91662ee7f6ad2b24153579b08fcec230af8345def7226793e8e" : "",
+            instant_refund_tx: hasInitiateTx ? "020000000001012cbfd464eb7eb78c0c97f53a95d1f9a88ec37e2e4c5ffca77e3c9a9596864ebd0000000000ffffffff01aaea270000000000160014b73db83debee785f2f869bbc19930bd0b420c16604412854f3e4d9c905d43996314ca86b7dea8cceff0cdcdd57b5606123517f378bc06227a4168fe60613fe0d9b3e1387ea1e68be1c17a2f6416273765912f6d2130583412854f3e4d9c905d43996314ca86b7dea8cceff0cdcdd57b5606123517f378bc06227a4168fe60613fe0d9b3e1387ea1e68be1c17a2f6416273765912f6d21305834620babd4bece34791d7126c148266e1726421660567dcca68a7097a65d7a7f86d9bac2003c15ad9d33d21a1a7ff75276dd530717988003b977525c726f72b7ccf4dc610ba529c61c02160e11a135f94e536a5b222e5d09fd9db1be5f5f5e753920290c0410cf388f0e439a922488f0650969c5026bf37c6fac8a330741e89fdf0ed95c56268e6bf2296c0bf91f39f0c28f918dbda2d0120531396f626a587e8035fffc3900f7f3a9700000000" : "",
+            initiate_tx_hash: hasInitiateTx ? "bd4e8696959a3c7ea7fc5f4c2e7ec38ea8f9d1953af5970c8cb77eeb64d4bf2c:934704" : "",
+            redeem_tx_hash: hasRedeemTx ? "4f19f4df6b8f26847f4597842c02f055e68f757d9a5b27187d46c12a8315e044" : "",
             refund_tx_hash: "",
+            initiate_block_number: hasInitiateTx ? "934704" : "0",
+            redeem_block_number: hasRedeemTx ? "934705" : "0",
+            refund_block_number: "0",
+            required_confirmations: 1,
+            current_confirmations: isInitiateDetected ? 0 : isInitiated || isRedeemDetected ? 1 : 0,
+            initiate_timestamp: hasInitiateTx ? new Date(Date.now() - 5 * 60 * 1000).toISOString() : null,
+            redeem_timestamp: hasRedeemTx ? new Date(Date.now() - 2 * 60 * 1000).toISOString() : null,
+            refund_timestamp: null,
         },
         destination_swap: {
-            chain: "evm",
+            created_at: now,
+            swap_id: "89d5446a26a5fd76f19a3d12c8a715ea28a220d2f8e2cd9bc2a4e33cc0866cb9",
+            chain: "ethereum",
             asset: destAsset,
-            amount: destAmount,
+            initiator: "0x18e489f22461281879e1D161C55668b7a521a3A9",
             redeemer: MOCK_WALLET.evm,
-            redeem_tx_hash: status === "RedeemDetected" || status === "Redeemed" ? "mock_redeem_tx" : "",
-            filled_amount: status === "RedeemDetected" || status === "Redeemed" ? destAmount : "0",
-            asset_price: "1",
+            timelock: 600,
+            filled_amount: isRedeemDetected ? destAmount : isInitiated ? destAmount : "0",
+            asset_price: 1.0,
+            amount: destAmount,
+            secret_hash: "6c5b26f0767e74c25f0ab627f494e5296210426a46e229c172e81acb6b340a83",
+            secret: isRedeemDetected ? "fa572f347615e91662ee7f6ad2b24153579b08fcec230af8345def7226793e8e" : "",
+            initiate_tx_hash: hasInitiateTx ? "0xb7a45f5748ab517bbadadac8fceb94b364efbaff35434681ef8afb397de899ac" : "",
+            redeem_tx_hash: hasRedeemTx ? "0xfbb64adc4732ba2c27614094a8c2e910d4d77bc01285ec54c76a10bb641920c5" : "",
+            refund_tx_hash: "",
+            initiate_block_number: hasInitiateTx ? "24367856" : "0",
+            redeem_block_number: hasRedeemTx ? "24367858" : "0",
+            refund_block_number: "0",
+            required_confirmations: 0,
+            current_confirmations: 0,
+            initiate_timestamp: hasInitiateTx ? new Date(Date.now() - 4 * 60 * 1000).toISOString() : null,
+            redeem_timestamp: hasRedeemTx ? new Date(Date.now() - 1 * 60 * 1000).toISOString() : null,
+            refund_timestamp: null,
         },
+        nonce: "1770019195280",
+        affiliate_fees: [],
+        version: "v3",
+        solver_id: "0x18e489f22461281879e1d161c55668b7a521a3a9",
     };
 }
 
@@ -111,20 +163,18 @@ test.describe("Swap visual states (mocked)", () => {
                                         {
                                             asset_id: "ethereum:wbtc",
                                             asset_name: "WBTC",
-                                            chain: "evm:1",
-                                            balance: "100000000",
-                                            decimals: 8,
+                                            balance: "2500000",
                                         },
                                     ],
                                 }),
                             });
                         }
-                    }, 200);
+                    }, 100);
                 }
-                close() { }
+                close() {}
             }
             // @ts-ignore
-            (window as any).EventSource = MockEventSource;
+            window.EventSource = MockEventSource;
         });
     };
 
@@ -135,23 +185,6 @@ test.describe("Swap visual states (mocked)", () => {
 
     test("Swap - default (not connected)", async ({ page }) => {
         await page.goto("/swap");
-        await page.waitForTimeout(400);
-        await page.evaluate(
-            ({ assets, chains }) => {
-                const w = (window as any).__stores;
-                if (!w) return;
-                if (w.assetInfoStore) w.assetInfoStore.setState({ assets, chains });
-                if (w.swapStore) w.swapStore.getState().clearSwapState();
-                if (w.balanceStore) w.balanceStore.getState().clearBalances?.() ?? w.balanceStore.setState({ balances: {}, balanceFetched: false });
-                if (w.mockWalletStore) w.mockWalletStore.getState().clear();
-                if (w.orderInProgressStore) {
-                    w.orderInProgressStore.getState().setOrder(null as any);
-                    w.orderInProgressStore.getState().setIsOpen(false);
-                }
-                if (w.pendingOrdersStore) w.pendingOrdersStore.getState().setPendingOrders([]);
-            },
-            { assets: mockAssets, chains: mockChains }
-        );
         await page.waitForTimeout(400);
         await percySnapshot(page, "Swap - default (not connected)");
     });
@@ -207,12 +240,9 @@ test.describe("Swap visual states (mocked)", () => {
             return {
                 outputAsset: w?.swapStore?.getState?.()?.outputAsset,
                 inputAsset: w?.swapStore?.getState?.()?.inputAsset,
-                assets: w?.assetInfoStore?.getState?.()?.assets,
-                chains: w?.assetInfoStore?.getState?.()?.chains,
             };
         });
         if (!storeState.outputAsset || storeState.outputAsset.symbol !== "WBTC") {
-            console.error("Output asset not set in store. Debug info:", storeState);
             throw new Error(`Output asset WBTC was not set in store. Got: ${JSON.stringify(storeState.outputAsset)}`);
         }
         const outputAssetVisible = await page
@@ -221,14 +251,14 @@ test.describe("Swap visual states (mocked)", () => {
             .isVisible({ timeout: 3000 })
             .catch(() => false);
         if (!outputAssetVisible) {
-            console.error("Output asset not visible in UI. Store state:", storeState);
             throw new Error("Output asset WBTC was not visible in UI");
         }
+        await page.waitForTimeout(2000);
         await percySnapshot(page, "Swap - assets selected");
     });
 
     test("Swap - progress submitted", async ({ page }) => {
-        const orderSubmitted = buildMockOrder({ orderId: "MOCK_ORDER_1", status: "Created" });
+        const orderSubmitted = buildMockOrder({ orderId: "MOCK_ORDER_1", status: OrderStatus.Created });
         await page.goto("/swap");
         await page.waitForTimeout(400);
         await page.evaluate(
@@ -253,7 +283,18 @@ test.describe("Swap visual states (mocked)", () => {
     });
 
     test("Swap - progress processing", async ({ page }) => {
-        const orderProcessing = buildMockOrder({ orderId: "MOCK_ORDER_1", status: "InitiateDetected" });
+        const orderProcessing = buildMockOrder({ orderId: "MOCK_ORDER_1", status: OrderStatus.InitiateDetected });
+        await page.goto("/");
+        await page.waitForTimeout(200);
+        await page.evaluate(
+            ({ assets, chains }) => {
+                const w = (window as any).__stores;
+                if (!w) return;
+                if (w.assetInfoStore) w.assetInfoStore.setState({ assets, chains });
+            },
+            { assets: mockAssets, chains: mockChains }
+        );
+        await page.waitForTimeout(200);
         await page.goto("/swap");
         await page.waitForTimeout(400);
         await page.evaluate(
@@ -273,12 +314,37 @@ test.describe("Swap visual states (mocked)", () => {
         );
         await page.waitForTimeout(400);
         await page.waitForURL(/\/(swap)?\/?/, { timeout: 3000 }).catch(() => { });
-        await page.waitForTimeout(300);
+        await page.waitForTimeout(1500);
+        await page.waitForSelector('[data-testid="order-status-card"]', { timeout: 5000 });
+        await page.evaluate(
+            ({ assets, chains }) => {
+                const w = (window as any).__stores;
+                if (w?.assetInfoStore) w.assetInfoStore.setState({ assets, chains });
+            },
+            { assets: mockAssets, chains: mockChains }
+        );
+        await page.waitForTimeout(500);
+        const orderStatusToggle = page.getByTestId("order-status-toggle");
+        await orderStatusToggle.waitFor({ state: "visible", timeout: 5000 });
+        await orderStatusToggle.click();
+        await page.waitForTimeout(800);
+        await page.waitForSelector('[data-testid="order-status-steps"]', { timeout: 2000 });
         await percySnapshot(page, "Swap - progress processing");
     });
 
     test("Swap - completed", async ({ page }) => {
-        const orderCompleted = buildMockOrder({ orderId: "MOCK_ORDER_1", status: "RedeemDetected" });
+        const orderCompleted = buildMockOrder({ orderId: "MOCK_ORDER_1", status: OrderStatus.RedeemDetected });
+        await page.goto("/");
+        await page.waitForTimeout(200);
+        await page.evaluate(
+            ({ assets, chains }) => {
+                const w = (window as any).__stores;
+                if (!w) return;
+                if (w.assetInfoStore) w.assetInfoStore.setState({ assets, chains });
+            },
+            { assets: mockAssets, chains: mockChains }
+        );
+        await page.waitForTimeout(200);
         await page.goto("/swap");
         await page.waitForTimeout(400);
         await page.evaluate(
@@ -298,13 +364,27 @@ test.describe("Swap visual states (mocked)", () => {
         );
         await page.waitForTimeout(400);
         await page.waitForURL(/\/(swap)?\/?/, { timeout: 3000 }).catch(() => { });
-        await page.waitForTimeout(300);
+        await page.waitForTimeout(1500);
+        await page.waitForSelector('[data-testid="order-status-card"]', { timeout: 5000 });
+        await page.evaluate(
+            ({ assets, chains }) => {
+                const w = (window as any).__stores;
+                if (w?.assetInfoStore) w.assetInfoStore.setState({ assets, chains });
+            },
+            { assets: mockAssets, chains: mockChains }
+        );
+        await page.waitForTimeout(500);
+        const orderStatusToggle = page.getByTestId("order-status-toggle");
+        await orderStatusToggle.waitFor({ state: "visible", timeout: 5000 });
+        await orderStatusToggle.click();
+        await page.waitForTimeout(800);
+        await page.waitForSelector('[data-testid="order-status-steps"]', { timeout: 2000 });
         await percySnapshot(page, "Swap - completed");
     });
 
     test("Swap - sidebar (transactions modal, connected, mock orders)", async ({ page }) => {
-        const pendingOrder1 = buildMockOrder({ orderId: "MOCK_ORDER_1", status: "Created" });
-        const pendingOrder2 = buildMockOrder({ orderId: "MOCK_ORDER_2", status: "InitiateDetected" });
+        const pendingOrder1 = buildMockOrder({ orderId: "MOCK_ORDER_1", status: OrderStatus.Created });
+        const pendingOrder2 = buildMockOrder({ orderId: "MOCK_ORDER_2", status: OrderStatus.InitiateDetected });
         await page.goto("/swap");
         await page.waitForTimeout(400);
         await page.evaluate(
