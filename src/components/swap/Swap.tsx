@@ -71,11 +71,8 @@ export const Swap = () => {
     <div className="mx-auto flex h-full w-full max-w-[328px] flex-col justify-center gap-4 sm:min-h-[calc(100vh-96px)] sm:max-w-[424px]">
       <div className="flex h-full flex-col justify-center gap-4 sm:-translate-y-7">
         <ToastContainer />
-        <div className="mb-2 rounded bg-red-500 px-3 py-1 text-center text-sm font-bold text-white">
-          VISUAL TEST — REMOVE ME
-        </div>
         <div
-          className={`relative overflow-hidden rounded-[20px] border-4 border-red-500 bg-white/50 sm:translate-y-[-48px]`}
+          className={`relative overflow-hidden rounded-[20px] bg-white/50 sm:translate-y-[-48px]`}
           data-testid="kiosk-swap-card"
         >
           {isOpen ? <SwapInProgress /> : <CreateSwap />}
