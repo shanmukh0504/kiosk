@@ -220,7 +220,7 @@ export const SwapInput: FC<SwapInputProps> = ({
               )
             ))}
         </div>
-        <div className="flex h-6 justify-between sm:h-7">
+        <div className="flex h-6 items-center justify-between gap-2 sm:h-7">
           <Typography
             size={"h3"}
             breakpoints={{
@@ -288,6 +288,20 @@ export const SwapInput: FC<SwapInputProps> = ({
               </div>
             </div>
           </Typography>
+          {type === IOType.input &&
+            balance !== undefined &&
+            !Number.isNaN(balance) && (
+              <div
+                className="flex cursor-pointer items-center gap-1"
+                data-testid="kiosk-swap-input-balance-center"
+                onClick={handleBalanceClick}
+              >
+                <WalletIcon className="h-2.5 w-2.5" />
+                <Typography size="h5" weight="regular">
+                  {balance}
+                </Typography>
+              </div>
+            )}
           {asset ? (
             <TokenInfo
               symbol={asset.symbol}
